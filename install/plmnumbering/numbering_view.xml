@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data>    
+    <record model="ir.ui.view" id="plm_number1_form">
+        <field name="name">plm.number1</field>
+        <field name="model">plm.number1</field>
+        <field name="type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="arch" type="xml">
+            <form string="Numbering 1">
+                <group colspan="8" col="8" string="Part Number Area">
+             	   <field name="name" select="1"/>
+             	   <field name="description"/>
+             	   <field name="auto_code"/>
+             	   <field name="category"/>
+                </group>
+            </form>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="plm_number1_tree">
+        <field name="name">plm.number1</field>
+        <field name="model">plm.number1</field>
+        <field name="type">tree</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <tree string="Numbering 1">
+             	<field name="name"/>
+             	<field name="description"/>
+             	<field name="auto_code"/>
+                <field name="category"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="plm_number1_search">
+        <field name="name">plm.number1</field>
+        <field name="model">plm.number1</field>
+        <field name="type">search</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+			 <search>
+             	<field name="name"/>
+             	<field name="description"/>
+             	<field name="auto_code"/>
+             	<field name="category"/>
+             </search>
+         </field>
+    </record>
+
+
+    <record model="ir.ui.view" id="plm_number2_form">
+        <field name="name">plm.number2</field>
+        <field name="model">plm.number2</field>
+        <field name="type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="arch" type="xml">
+            <form string="Numbering 2">
+                <group colspan="8" col="8" string="Part Number Area">
+             	   <field name="name" select="1"/>
+             	   <field name="description"/>
+             	   <field name="auto_code"/>
+                </group>
+            </form>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="plm_number2_tree">
+        <field name="name">plm.number2</field>
+        <field name="model">plm.number2</field>
+        <field name="type">tree</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <tree string="Numbering 2">
+             	<field name="name"/>
+             	<field name="description"/>
+             	<field name="auto_code"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="plm_number2_search">
+        <field name="name">plm.number2</field>
+        <field name="model">plm.number2</field>
+        <field name="type">search</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+			 <search>
+             	<field name="name"/>
+             	<field name="description"/>
+             	<field name="auto_code"/>
+             </search>
+         </field>
+    </record>
+   
+
+    <record model="ir.ui.view" id="plm_number3_form">
+        <field name="name">plm.number3</field>
+        <field name="model">plm.number3</field>
+        <field name="type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="arch" type="xml">
+            <form string="Numbering 3">
+                <group colspan="8" col="8" string="Part Number Area">
+             	   <field name="name" select="1"/>
+             	   <field name="description"/>
+             	   <field name="auto_code"/>
+                </group>
+            </form>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="plm_number3_tree">
+        <field name="name">plm.number3</field>
+        <field name="model">plm.number3</field>
+        <field name="type">tree</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <tree string="Numbering 3">
+             	<field name="name"/>
+             	<field name="description"/>
+             	<field name="auto_code"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="plm_number3_search">
+        <field name="name">plm.number3</field>
+        <field name="model">plm.number3</field>
+        <field name="type">search</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+			 <search>
+             	<field name="name"/>
+             	<field name="description"/>
+             	<field name="auto_code"/>
+             </search>
+         </field>
+    </record>
+
+
+    <record model="ir.ui.view" id="plm_number4_form">
+        <field name="name">plm.number4</field>
+        <field name="model">plm.number4</field>
+        <field name="type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="arch" type="xml">
+            <form string="Numbering 4">
+                <group colspan="8" col="8" string="Part Number Area">
+             	   <field name="name" select="1"/>
+             	   <field name="description"/>
+             	   <field name="auto_code"/>
+                </group>
+            </form>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="plm_number4_tree">
+        <field name="name">plm.number4</field>
+        <field name="model">plm.number4</field>
+        <field name="type">tree</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <tree string="Numbering 4">
+             	<field name="name"/>
+             	<field name="description"/>
+             	<field name="auto_code"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="plm_number4_search">
+        <field name="name">plm.number4</field>
+        <field name="model">plm.number4</field>
+        <field name="type">search</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+			 <search>
+             	<field name="name"/>
+             	<field name="description"/>
+             	<field name="auto_code"/>
+             </search>
+         </field>
+    </record>
+
+
+    <record model="ir.ui.view" id="plm_number5_form">
+        <field name="name">plm.number5</field>
+        <field name="model">plm.number5</field>
+        <field name="type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="arch" type="xml">
+            <form string="Numbering 5">
+                <group colspan="8" col="8" string="Part Number Area">
+             	   <field name="name" select="1"/>
+             	   <field name="description"/>
+             	   <field name="auto_code"/>
+             		<field name="auto_codeid"/>
+                </group>
+            </form>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="plm_number5_tree">
+        <field name="name">plm.number5</field>
+        <field name="model">plm.number5</field>
+        <field name="type">tree</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <tree string="Numbering 5">
+             	<field name="name"/>
+             	<field name="description"/>
+             	<field name="auto_code"/>
+             	<field name="auto_codeid"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="plm_number5_search">
+        <field name="name">plm.number5</field>
+        <field name="model">plm.number5</field>
+        <field name="type">search</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+			 <search>
+             	<field name="name"/>
+             	<field name="description"/>
+             	<field name="auto_code"/>
+             	<field name="auto_codeid"/>
+             </search>
+         </field>
+    </record>
+
+    <record model="ir.ui.view" id="plm_number6_form">
+        <field name="name">plm.number6</field>
+        <field name="model">plm.number6</field>
+        <field name="type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="arch" type="xml">
+            <form string="Numbering 6">
+                <group colspan="8" col="8" string="Part Number Area">
+             	   <field name="name" select="1"/>
+             	   <field name="description"/>
+             	   <field name="auto_code"/>
+             	   <field name="auto_codeid"/>
+                </group>
+            </form>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="plm_number6_tree">
+        <field name="name">plm.number6</field>
+        <field name="model">plm.number6</field>
+        <field name="type">tree</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <tree string="Numbering 6">
+             	<field name="name"/>
+             	<field name="description"/>
+             	<field name="auto_code"/>
+             	<field name="auto_codeid"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="plm_number6_search">
+        <field name="name">plm.number6</field>
+        <field name="model">plm.number6</field>
+        <field name="type">search</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+			 <search>
+             	<field name="name"/>
+             	<field name="description"/>
+             	<field name="auto_code"/>
+             	<field name="auto_codeid"/>
+             </search>
+         </field>
+    </record>
+
+
+    <record model="ir.ui.view" id="plm_number7_form">
+        <field name="name">plm.number7</field>
+        <field name="model">plm.number7</field>
+        <field name="type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="arch" type="xml">
+            <form string="Numbering 7">
+                <group colspan="8" col="8" string="Part Number Area">
+             	   <field name="name" select="1"/>
+             	   <field name="description"/>
+             	   <field name="auto_code"/>
+             	   <field name="category"/>
+<!--
+             	   <field name="auto_codeid"/>
+-->
+                </group>
+            </form>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="plm_number7_tree">
+        <field name="name">plm.number7</field>
+        <field name="model">plm.number7</field>
+        <field name="type">tree</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <tree string="Numbering 7">
+             	<field name="name"/>
+             	<field name="description"/>
+             	<field name="auto_code"/>
+             	<field name="category"/>
+<!--
+             	<field name="auto_codeid"/>
+-->
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="plm_number7_search">
+        <field name="name">plm.number7</field>
+        <field name="model">plm.number7</field>
+        <field name="type">search</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+			 <search>
+             	<field name="name"/>
+             	<field name="description"/>
+             	<field name="auto_code"/>
+            	<field name="category"/>
+<!--
+             	<field name="auto_codeid"/>
+-->
+             </search>
+         </field>
+    </record>
+
+
+    <record model="ir.ui.view" id="plm_number8_form">
+        <field name="name">plm.number8</field>
+        <field name="model">plm.number8</field>
+        <field name="type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="arch" type="xml">
+            <form string="Numbering 8">
+                <group colspan="8" col="8" string="Part Number Area">
+             	   <field name="name" select="1"/>
+             	   <field name="description"/>
+             	   <field name="auto_code"/>
+<!--
+             	   <field name="auto_codeid"/>
+-->
+                </group>
+            </form>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="plm_number8_tree">
+        <field name="name">plm.number8</field>
+        <field name="model">plm.number8</field>
+        <field name="type">tree</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <tree string="Numbering 8">
+             	<field name="name"/>
+             	<field name="description"/>
+             	<field name="auto_code"/>
+<!--
+             	<field name="auto_codeid"/>
+-->
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="plm_number8_search">
+        <field name="name">plm.number8</field>
+        <field name="model">plm.number8</field>
+        <field name="type">search</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+			 <search>
+             	<field name="name"/>
+             	<field name="description"/>
+             	<field name="auto_code"/>
+<!--
+             	<field name="auto_codeid"/>
+-->
+             </search>
+         </field>
+    </record>
+
+</data>
+</openerp>
+

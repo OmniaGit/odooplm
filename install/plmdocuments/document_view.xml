@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data>
+    <menuitem name="Documents View" id="plm_document_form" parent="plm_menu" sequence="11"/>
+    <record model="ir.ui.view" id="view_plm_document">
+        <field name="name">plm.document</field>
+        <field name="model">ir.attachment</field>
+        <field name="priority" eval="1"/>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Document">
+                <group colspan="4" col="6">
+                    <field name="name" select="1" colspan="4" attrs="{'readonly':[('state','!=','draft')]}"/>
+                    <field name="revisionid" readonly="True"/>
+                    <newline/>
+                    <field name="parent_id"/>
+                    <field name="user_id"/>
+                    <newline/>
+                    <field name="state"/>
+                    <group col="4" colspan="2">
+                        <button name="release" states="confirmed" string="Release Document" icon="gtk-apply"/>
+                        <button name="correct" states="confirmed" string="Correct Document" icon="gtk-cancel"/>
+                        <button name="confirm" states="draft" string="Confirm Document" icon="gtk-go-forward"/>
+                    </group>
+                </group>
+                <notebook colspan="4">
+                <page string="Attachment">
+                    <group col="2" colspan="2">
+                        <separator string="Data" colspan="2"/>
+                        <field name="type"/>
+                        <newline/>
+                        <group col="2" colspan="2" attrs="{'invisible':[('type','=','url')]}">
+                            <field name="datas" filename="datas_fname"/>
+                            <field name="datas_fname" select="1"/>
+                        </group>
+                        <group col="2" colspan="2" attrs="{'invisible':[('type','=','binary')]}">
+                            <field name="url" widget="url"/>
+                        </group>
+                        <group col="2" colspan="2">
+                        <field name="res_id" invisible="True"/>
+                            <group col="2" colspan="2" attrs="{'invisible': [('res_id','=',0)]}">
+                                <separator string="Attached To" colspan="2"/>
+                                <field name="res_model" readonly="True" invisible="True"/>
+                                <field name="res_name" readonly="1"/>
+                            </group>
+                            <separator string="Related to" colspan="2"/>
+                                <field name="partner_id"/>
+                        </group>
+                        <group col="2" colspan="2" groups="base.group_extended">
+                            <separator string="Created" colspan="2"/>
+                            <field name="create_uid" readonly="1"/>
+                            <field name="create_date" readonly="1"/>
+                        </group>
+                        <group col="2" colspan="2" groups="base.group_extended">
+                            <separator string="Modified" colspan="2"/>
+                            <field name="write_uid" readonly="1"/>
+                            <field name="write_date" readonly="1"/>
+                        </group>
+                    </group>
+                    <group col="2" colspan="2">
+                    	<separator string="Preview" colspan="2"/>
+                    		<field
+                        		name="preview"
+                        		widget="image"
+                        		readonly="1"
+                        		nolabel="1"
+                        		colspan="2"
+                        		img_height="400"
+                        		img_width="400"/>
+                    </group>
+                </page>
+                <page string="Linked Parts">
+                    <field colspan="4" name="linkedcomponents" nolabel="1"/>
+                </page>
+                <page string="Indexed Content" groups="base.group_extended">
+                    <field name="index_content" colspan="4" nolabel="1"/>
+                </page>
+                <page string="Notes">
+                    <field colspan="4" name="description" nolabel="1"/>
+                </page>
+                </notebook>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="plm_document_tree">
+        <field name="name">plm.document</field>
+        <field name="model">ir.attachment</field>
+        <field name="type">tree</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+			<tree string="Documents">
+                <field name="name" select="True"/>
+                <field name="revisionid" select="True"/>
+                <field name="state" select="True"/>
+                <field name="parent_id"/>
+                <field name="datas_fname" select="True"/>
+                <field name="create_uid" select="True"/>
+                <field name="create_date" select="True"/>
+                <field name="write_uid" select="True"/>
+                <field name="write_date" select="True"/>
+         	</tree>
+         </field>
+    </record>
+
+    <record model="ir.ui.view" id="plm_document_search">
+         <field name="name">plm.document</field>
+         <field name="model">ir.attachment</field>
+         <field name="type">search</field>
+         <field name="priority" eval="1"/>
+         <field name="arch" type="xml">
+			  <search string="Attachments">
+                    <group colspan="4" col="10">
+                        <filter icon="terp-go-month" string="  Last Month  " separator="1"
+                                domain="[('create_date','&lt;=', (datetime.date.today() - relativedelta(day=31,months=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today() - relativedelta(day=1,months=1)).strftime('%%Y-%%m-%%d'))]"
+                                help="Created last month"/>
+                        <filter icon="terp-go-month" string="  Last Week  " separator="1"
+                                domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"
+                                help="Created last week"/>
+                        <filter icon="terp-go-month" string="  Latest 7 Days  " separator="1"
+                                domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
+                                help="Created latest 7 Days"/>
+                 		<filter icon="terp-go-month" string="  Yesterday  " separator="1"
+                         		domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
+                         		help="Created yesterday"/>
+                		<filter icon="terp-go-month" string="  Today  " separator="1"
+                         		domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
+                         		help="Created today"/>
+                   		<separator orientation="vertical"/>
+                        <field name="name"/>
+                        <field name="datas_fname"/>
+                        <field name="create_uid">
+                            <filter icon="terp-personal" domain="[('create_uid','=',uid)]" help="Filter on documents created by me"/>
+                        </field>
+                        <field name="write_uid">
+                            <filter icon="terp-personal" domain="[('write_uid','=',uid)]" help="Filter on documents changed by me"/>
+                        </field>
+                   		<separator orientation="vertical"/>
+                   		<filter string="Confirmed" icon="terp-stock_symbol-selection" domain="[('state', '=', 'confirmed')]"/>
+                   		<filter string="Released" icon="terp-stock_symbol-selection" domain="['|',('state', '=', 'released'),('state', '=', 'undermodify')]"/>
+                    </group>
+                    <newline/>
+                    <group expand="0" string="Group By...">
+                        <filter string="Owner" icon="terp-personal" domain="[]" context="{'group_by':'create_uid'}"/>
+                        <filter string="Month" help="Creation Month" icon="terp-go-month" domain="[]" context="{'group_by':'create_date'}"/>
+                    </group>
+              </search>
+         </field>
+    </record> 
+
+
+    <record model="ir.actions.act_window" id="plm_action_document_form">
+    	<field name="name">Document</field>
+    	 <field name="res_model">ir.attachment</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        name="Search on Document"
+        action="plm_action_document_form"
+        id="menu_document_files"
+        parent="plm_document_form"/>
+
+</data>
+</openerp>

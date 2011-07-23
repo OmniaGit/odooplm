@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+        <!-- Sequences for plm.material --> 
+        <record id="seq_type_plm_description" model="ir.sequence.type">
+            <field name="name">PLM Description Sequence Type</field>
+            <field name="code">plm.description</field>
+        </record>
+        <record id="seq_plm_description" model="ir.sequence">
+            <field name="name">PLM description Sequence</field>
+            <field name="code">plm.description</field>
+            <field name="prefix">DS</field>
+            <field name="padding">5</field>
+        </record>
+    </data>
+</openerp>

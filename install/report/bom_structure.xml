@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <report auto="True"
+                header="False"
+        		id="report_plm_bom_structure_all"
+                string="BOM All Levels"
+                model="mrp.bom"
+                name="plm.bom.structure.all"
+                report_type="pdf"
+                rml="OpenPLM/install/report/bom_structure.rml"
+                file=""
+                />
+
+        <report auto="True"
+                header="False"
+        		id="report_plm_bom_structure_one"
+                string="BOM One Level"
+                model="mrp.bom"
+                name="plm.bom.structure.one"
+                report_type="pdf"
+                rml="OpenPLM/install/report/bom_structure.rml"
+                file=""
+                />
+
+        <report auto="True"
+                header="False"
+        		id="report_plm_bom_structure_all_sum"
+                string="BOM All Levels Summarized"
+                model="mrp.bom"
+                name="plm.bom.structure.all.sum"
+                report_type="pdf"
+                rml="OpenPLM/install/report/bom_structure.rml"
+                file=""
+                />
+
+        <report auto="True"
+                header="False"
+        		id="report_plm_bom_structure_one_sum"
+                string="BOM One Level Summarized"
+                model="mrp.bom"
+                name="plm.bom.structure.one.sum"
+                report_type="pdf"
+                rml="OpenPLM/install/report/bom_structure.rml"
+                file=""
+                />
+
+        <report auto="True"
+                header="False"
+        		id="report_plm_bom_structure_leaves"
+                string="BOM Only Leaves Summarized"
+                model="mrp.bom"
+                name="plm.bom.structure.leaves"
+                report_type="pdf"
+                rml="OpenPLM/install/report/bom_structure.rml"
+                file=""
+                />
+
+    </data>
+</openerp>

@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+        <report id="report_ir_attachment_pdf"
+                string="Print Pdf"
+                model="ir.attachment"
+                name="ir.attachment.pdf"
+                report_type="sxw"
+                file=""
+                header="False"
+                />
+    </data>
+</openerp>
