@@ -25,6 +25,7 @@ import random
 import string
 import pooler
 import base64
+import time
 from report.render import render
 from report.interface import report_int
 from reportlab.lib import colors
@@ -132,7 +133,10 @@ class component_spare_parts_report(report_int):
         self.pool = pooler.get_pool(cr.dbname)
         componentType=self.pool.get('product.product')
         children=[]
-        output = BookCollector()
+        userType=self.pool.get('res.users')
+        user=userType.browse(cr, uid, uid, context=context)
+        msg = "Printed by "+str(user.name)+" : "+ str(time.strftime("%d/%m/%Y %H:%M:%S"))
+        output = BookCollector(customTest=(True,msg))
         components=componentType.browse(cr, uid, ids, context=context)
         for component in components:
             buf=self.getFirstPage(component.name,component.description)

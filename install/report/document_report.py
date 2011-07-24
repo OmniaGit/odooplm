@@ -30,8 +30,8 @@ class document_custom_report(report_int):
         documents = self.pool.get('ir.attachment').browse(cr, uid, ids, context=context)
         userType=self.pool.get('res.users')
         user=userType.browse(cr, uid, uid, context=context)
-        msg = str(user.name)+" : "+ str(time.strftime("%d/%m/%Y"))
-        output  = BookCollector(jumpFirst=False,customTest=(True,msg),bottomHeight=10)
+        msg = "Printed by "+str(user.name)+" : "+ str(time.strftime("%d/%m/%Y %H:%M:%S"))
+        output  = BookCollector(jumpFirst=False,customTest=(False,msg),bottomHeight=10)
         return packDocuments(documents,output)
     
 document_custom_report('report.ir.attachment.pdf')

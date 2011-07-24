@@ -31,10 +31,10 @@ class BookCollector(object):
                 msg="Page: "+str(self.pageCount) +str(message)
                 cha=len(msg)
                 c.drawRightString(float(x1)-cha,self.bottomHeight," Page: "+str(self.pageCount))
-                c.drawString(float(x)+10,self.bottomHeight,str(message))
+                c.drawString(float(x)+20,self.bottomHeight,str(message))
             else:
                 cha=len(str(message))
-                c.drawString(float(x)+cha,self.bottomHeight,str(message))
+                c.drawString(float(x)+20,self.bottomHeight,str(message))
         else:
             c.drawRightString(float(x1)-50,self.bottomHeight,"Page: "+str(self.pageCount))
         c.showPage()
@@ -84,7 +84,7 @@ def packDocuments(documents,bookCollector):
         if document.printout:
             if not document.id in packed:   
                 input1 = StringIO.StringIO(base64.decodestring(document.printout))
-                page=PdfFileReader(StringIO.StringIO(base64.decodestring(document.printout)))
+                page=PdfFileReader(input1)
                 orientation,paper=paperFormat(page.getPage(0).mediaBox)
                 if(paper==0)  :
                     output0.append(input1)
@@ -94,6 +94,8 @@ def packDocuments(documents,bookCollector):
                     output2.append(input1)
                 elif(paper==3):
                     output3.append(input1)
+                elif(paper==4):
+                    output4.append(input1)
                 else: 
                     output0.append(input1)
                 packed.append(document.id)

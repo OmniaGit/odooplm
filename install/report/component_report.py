@@ -37,18 +37,18 @@ class component_custom_report(report_int):
         componentType=self.pool.get('product.product')
         userType=self.pool.get('res.users')
         user=userType.browse(cr, uid, uid, context=context)
-        msg = str(user.name)+" : "+ str(time.strftime("%d/%m/%Y"))
+        msg = "Printed by "+str(user.name)+" : "+ str(time.strftime("%d/%m/%Y %H:%M:%S"))
         output  = BookCollector(jumpFirst=False,customTest=(False,msg),bottomHeight=10)
         children=[]
+        documents=[]
         components=componentType.browse(cr, uid, ids, context=context)
         for component in components:
             tmp_children=componentType._getChildrenBom(cr, uid, component.id, 1, context=context)
             children=[ tmp_child for tmp_child in tmp_children if (tmp_child in children) == False ]
             children=componentType.browse(cr, uid, children, context=context)
-            documents=[]
             for child in children:
                 documents.extend(child.linkeddocuments)
-            return packDocuments(documents,output)
+        return packDocuments(documents,output)
 
 component_custom_report('report.product.product.pdf')
 
