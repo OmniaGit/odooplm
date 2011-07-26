@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
 <data>
-    <menuitem id="plm_menu" name="Open PLM" icon="terp-stock" />
+    <menuitem id="plm_menu" name="PLM Module" icon="terp-stock" />
     <menuitem id="plm_menu_dictionaries" name="PLM Dictionaries" parent="plm_menu" sequence="20"/>
 </data>
 </openerp>
