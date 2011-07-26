@@ -62,7 +62,7 @@ def PageCellHeader(text):
 def TableHeader(text):
     styleSheet = getSampleStyleSheet()
     ss=styleSheet["BodyText"]
-    ss.backColor="#2D9AED"
+    #ss.backColor="#2D9AED"
     p = Paragraph("""
     <para align=center spaceb=3>
     <b>
