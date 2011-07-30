@@ -495,9 +495,11 @@ class plm_document(osv.osv):
     def getLastTime(self, cr, uid, id, default=None, context=None):
         obj = self.browse(cr, uid, id, context=context)
         if(obj.write_date!=False):
-            return datetime.strptime(obj.write_date,'%Y-%m-%d %H:%M:%S')
+            #return str(datetime.strptime(obj.write_date,'%Y-%m-%d %H:%M:%S'))
+            return str(obj.write_date)
         else:
-            return datetime.strptime(obj.create_date,'%Y-%m-%d %H:%M:%S')
+            #return str(datetime.strptime(obj.create_date,'%Y-%m-%d %H:%M:%S'))
+            return str(obj.create_date)
 
     def getUserSign(self, cr, uid, id, default=None, context=None):
         userType=self.pool.get('res.users')

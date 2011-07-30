@@ -222,7 +222,7 @@ class plm_component(osv.osv):
             else:
                 existingID=existingID[0]
                 objPart=self.browse(cr, uid, existingID)
-                if (self.getLastTime(cr,uid,existingID)<datetime.strptime(str(part['lastupdate']),'%Y%m%dT%H:%M:%S')):
+                if (self.getLastTime(cr,uid,existingID)<datetime.strptime(part['lastupdate'],'%Y-%m-%d %H:%M:%S')):
                     if objPart.engineering_writable:
                         del(part['lastupdate'])
                         if not self.write(cr,uid,[existingID], part , context=context, check=True):
