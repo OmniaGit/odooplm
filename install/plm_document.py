@@ -246,7 +246,7 @@ class plm_document(osv.osv):
             else:
                 existingID=existingID[0]
                 objDocument=self.browse(cr, uid, existingID)
-                if (self.getLastTime(cr,uid,existingID)<datetime.strptime(str(document['lastupdate']),'%Y-%m-%d %H:%M:%S')):
+                if (datetime.strptime(self.getLastTime(cr,uid,existingID),'%Y-%m-%d %H:%M:%S')<datetime.strptime(str(document['lastupdate']),'%Y-%m-%d %H:%M:%S')):
                     if objDocument.writable:
                          hasSaved=True
             document['documentID']=existingID
@@ -489,17 +489,17 @@ class plm_document(osv.osv):
         return exitDatas
 
     def getServerTime(self, cr, uid, id, default=None, context=None):
-        cr.execute("select current_timestamp;")
-        return cr.fetchall()
+        #cr.execute("select current_timestamp;")
+        #return cr.fetchall()
+        return [str(time.strftime('%Y-%m-%d %H:%M:%S'))]
 
     def getLastTime(self, cr, uid, id, default=None, context=None):
         obj = self.browse(cr, uid, id, context=context)
         if(obj.write_date!=False):
-            #return str(datetime.strptime(obj.write_date,'%Y-%m-%d %H:%M:%S'))
-            return str(obj.write_date)
+            return str(datetime.strptime(obj.write_date,'%Y-%m-%d %H:%M:%S'))
         else:
-            #return str(datetime.strptime(obj.create_date,'%Y-%m-%d %H:%M:%S'))
-            return str(obj.create_date)
+            return str(datetime.strptime(obj.create_date,'%Y-%m-%d %H:%M:%S'))
+            
 
     def getUserSign(self, cr, uid, id, default=None, context=None):
         userType=self.pool.get('res.users')
