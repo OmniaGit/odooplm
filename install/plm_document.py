@@ -550,7 +550,7 @@ class plm_checkout(osv.osv):
     ]
 
     def create(self, cr, uid, vals, context=None):
-        if context!=None:
+        if context!=None and context!={}:
             return False
         documentType=self.pool.get('ir.attachment')
         docID=documentType.browse(cr, uid, vals['documentid'])
