@@ -494,8 +494,8 @@ class plm_document(osv.osv):
             calculate the server db time 
         """
         cr.execute("select current_timestamp;")
-        return cr.fetchall()[0][0]
-
+        return cr.fetchall()
+    
     def getLastTime(self, cr, uid, id, default=None, context=None):
         """
             get document last modification time 
