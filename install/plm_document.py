@@ -246,7 +246,7 @@ class plm_document(osv.osv):
             else:
                 existingID=existingID[0]
                 objDocument=self.browse(cr, uid, existingID)
-                if (datetime.strptime(self.getLastTime(cr,uid,existingID),'%Y-%m-%d %H:%M:%S')<datetime.strptime(str(document['lastupdate']),'%Y-%m-%d %H:%M:%S')):
+                if self.getLastTime(cr,uid,existingID)<datetime.strptime(str(document['lastupdate']),'%Y-%m-%d %H:%M:%S'):
                     if objDocument.writable:
                          hasSaved=True
             document['documentID']=existingID
@@ -276,7 +276,7 @@ class plm_document(osv.osv):
             else:
                 existingID=existingID[0]
                 objDocument=self.browse(cr, uid, existingID)
-                if (self.getLastTime(cr,uid,existingID)<datetime.strptime(str(document['lastupdate']),'%Y-%m-%d %H:%M:%S')):
+                if self.getLastTime(cr,uid,existingID)<datetime.strptime(str(document['lastupdate']),'%Y-%m-%d %H:%M:%S'):
                     if objDocument.writable:
                         del(document['lastupdate'])
                         if not self.write(cr,uid,[existingID], document , context=context, check=True):
@@ -370,7 +370,8 @@ class plm_document(osv.osv):
         if check:
             customObjects=self.browse(cr,user,ids,context=context)
             for customObject in customObjects:
-                #raise AttributeError(_errMsg)                if customObject.state in checkState:
+                #raise AttributeError(_errMsg)
+                if customObject.state in checkState:
                     print _errMsg
                     return False
         return super(plm_document,self).write(cr, user, ids, vals, context=context)
@@ -489,19 +490,27 @@ class plm_document(osv.osv):
         return exitDatas
 
     def getServerTime(self, cr, uid, id, default=None, context=None):
-        #cr.execute("select current_timestamp;")
-        #return cr.fetchall()
-        return [str(time.strftime('%Y-%m-%d %H:%M:%S'))]
+        """
+            calculate the server db time 
+        """
+        cr.execute("select current_timestamp;")
+        return cr.fetchall()[0][0]
 
     def getLastTime(self, cr, uid, id, default=None, context=None):
+        """
+            get document last modification time 
+        """
         obj = self.browse(cr, uid, id, context=context)
         if(obj.write_date!=False):
-            return str(datetime.strptime(obj.write_date,'%Y-%m-%d %H:%M:%S'))
+            return datetime.strptime(obj.write_date,'%Y-%m-%d %H:%M:%S')
         else:
-            return str(datetime.strptime(obj.create_date,'%Y-%m-%d %H:%M:%S'))
+            return datetime.strptime(obj.create_date,'%Y-%m-%d %H:%M:%S')
             
 
     def getUserSign(self, cr, uid, id, default=None, context=None):
+        """
+            get the user name
+        """
         userType=self.pool.get('res.users')
         uiUser=userType.browse(cr,uid,uid,context=context)
         return uiUser.name
