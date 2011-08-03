@@ -372,7 +372,7 @@ class plm_component(osv.osv):
 
 #   Overridden methods for this entity
     def create(self, cr, user, vals, context=None):
-        existingIDs=self.search(cr, user, [('name','=',vals['name'])], order = 'engineering_revisionid', context=context)
+        existingIDs=self.search(cr, user, [('name','=',vals['name'])], order = 'engineering_revision', context=context)
         if 'engineering_code' in vals:
             if vals['engineering_code'] == False:
                 vals['engineering_code'] = vals['name']
