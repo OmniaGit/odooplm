@@ -384,8 +384,7 @@ class plm_component(osv.osv):
             try:
                 return super(plm_component,self).create(cr, user, vals, context=context)
             except:
-                raise AttributeError(_("It has tried to create %s , %s - %s"\
-                    %(str(vals['name']),str(vals['engineering_code']),str(vals['engineering_revisionid']))))
+                raise AttributeError(_("It has tried to create %s , %s"%(str(vals['name']),str(vals))))
                 return False
          
     def write(self, cr, user, ids, vals, context=None, check=True):
