@@ -381,7 +381,12 @@ class plm_component(osv.osv):
         if len(existingIDs)>0:
             return existingIDs[len(existingIDs)-1]           #TODO : Manage search for highest revisonid
         else:
-            return super(plm_component,self).create(cr, user, vals, context=context)   
+            try:
+                return super(plm_component,self).create(cr, user, vals, context=context)
+            except:
+                raise AttributeError(_("It has tried to create %s , %s - %s"\
+                    %(str(vals['name']),str(vals['engineering_code']),str(vals['engineering_revisionid']))))
+                return False
          
     def write(self, cr, user, ids, vals, context=None, check=True):
         checkState=('confirmed','released','undermodify','canceled')
