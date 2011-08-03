@@ -204,7 +204,7 @@ class plm_component(osv.osv):
         """
             Save or Update Parts
         """
-        typeEnt=self.pool.get('product.template')
+        
         retValues=[]
         for part in ids:
             hasSaved=False
@@ -212,7 +212,7 @@ class plm_component(osv.osv):
                 part['componentID']=False
                 part['hasSaved']=hasSaved
                 continue
-            existingID=typeEnt.search(cr,uid,[
+            existingID=self.search(cr,uid,[
                                            ('engineering_code','=',part['engineering_code'])
                                           ,('engineering_revision','=',part['engineering_revision'])])
             if not existingID:
@@ -372,8 +372,7 @@ class plm_component(osv.osv):
 
 #   Overridden methods for this entity
     def create(self, cr, user, vals, context=None):
-        typeEnt=self.pool.get('product.template')
-        existingIDs=typeEnt.search(cr, user, [('name','=',vals['name'])], order = 'engineering_revision', context=context)
+        existingIDs=self.search(cr, user, [('name','=',vals['name'])], order = 'engineering_revision', context=context)
         if 'engineering_code' in vals:
             if vals['engineering_code'] == False:
                 vals['engineering_code'] = vals['name']
