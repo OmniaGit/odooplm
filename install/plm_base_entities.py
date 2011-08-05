@@ -173,7 +173,7 @@ class plm_relation(osv.osv):
             relationDatas[keyData]=bufDatas[relids[keyData]]
         return relationDatas
 
-    def GetWhereUsed(self, cr, uid, ids, default=None, context=None):
+    def GetWhereUsed(self, cr, uid, ids, context=None):
         def _bomid(cr, pid, sid=None):
             ids=[]
             if sid == None:
@@ -234,7 +234,7 @@ class plm_relation(osv.osv):
         prtDatas=self._getpackdatas(cr, uid, relDatas)
         return (relDatas, prtDatas, self._getpackreldatas(cr, uid, relDatas, prtDatas))
     
-    def GetExplose(self, cr, uid, ids):
+    def GetExplose(self, cr, uid, ids, context=None):
         """
             Return a list of all children in a Bom (all levels)
         """
@@ -253,7 +253,7 @@ class plm_relation(osv.osv):
         prtDatas=self._getpackdatas(cr, uid, relDatas)
         return (relDatas, prtDatas, self._getpackreldatas(cr, uid, relDatas, prtDatas))
 
-    def GetExploseSum(self, cr, uid, ids):
+    def GetExploseSum(self, cr, uid, ids, context=None):
         """
             Return a list of all children in a Bom (all levels)
         """
@@ -276,7 +276,7 @@ class plm_relation(osv.osv):
         prtDatas=self._getpackdatas(cr, uid, relDatas)
         return (relDatas, prtDatas, self._getpackreldatas(cr, uid, relDatas, prtDatas))
 
-    def GetWhereUsedSum(self, cr, uid, ids, default=None, context=None):
+    def GetWhereUsedSum(self, cr, uid, ids, context=None):
         def _bomid(cr, pid, sid=None):
             ids=[]
             if sid == None:
@@ -419,7 +419,7 @@ class plm_relation(osv.osv):
         weight=self.RebaseWeight(cr, uid, self.browse(cr,uid,tmpBomId).child_complete_ids)
         return False
     
-    def RebaseWeight(self, cr, uid, bomObjects):
+    def RebaseWeight(self, cr, uid, bomObjects, context=None):
         """
             Evaluate net weight for assembly, based on net weight of each part  
         """

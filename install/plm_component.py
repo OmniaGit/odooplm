@@ -372,7 +372,7 @@ class plm_component(osv.osv):
 
 #   Overridden methods for this entity
     def create(self, cr, user, vals, context=None):
-        existingIDs=self.search(cr, user, [('name','=',vals['name'])], order = 'engineering_revisionid', context=context)
+        existingIDs=self.search(cr, user, [('name','=',vals['name'])], order = 'engineering_revision', context=context)
         if 'engineering_code' in vals:
             if vals['engineering_code'] == False:
                 vals['engineering_code'] = vals['name']
@@ -384,8 +384,7 @@ class plm_component(osv.osv):
             try:
                 return super(plm_component,self).create(cr, user, vals, context=context)
             except:
-                raise AttributeError(_("It has tried to create %s , %s - %s"\
-                    %(str(vals['name']),str(vals['engineering_code']),str(vals['engineering_revisionid']))))
+                raise AttributeError(_("It has tried to create %s , %s"%(str(vals['name']),str(vals))))
                 return False
          
     def write(self, cr, user, ids, vals, context=None, check=True):
