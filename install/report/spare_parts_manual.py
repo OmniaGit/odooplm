@@ -177,7 +177,7 @@ class component_spare_parts_report(report_int):
     def getPdfComponentLayout(self,component):
         ret=[]
         for document in component.linkeddocuments:
-            if document.printout and document.name[0]=='L':
+            if document.printout:# and document.name[0]=='L':
                 ret.append( StringIO.StringIO(base64.decodestring(document.printout)))
         return ret 
       
