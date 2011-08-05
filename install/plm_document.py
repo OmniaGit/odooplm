@@ -80,9 +80,11 @@ class plm_document(osv.osv):
         for object in objects:
             try:
                 isCheckedOutToMe=self._is_checkedout_for_me(cr, uid, object.id)
-                if not(object.datas_fname in listedFiles) and isCheckedOutToMe:
+                if not(object.datas_fname in listedFiles and isCheckedOutToMe):
                     value = file(os.path.join(self._get_filestore(cr), object.store_fname), 'rb').read()
                     result.append((object.id, object.datas_fname, base64.encodestring(value), isCheckedOutToMe))
+                else:
+                    result.append((object.id,object.datas_fname,None, isCheckedOutToMe))
             except Exception, ex:
                 logging.error("_data_get_files : Unable to access to document ("+str(object.name)+"). Error :" + str(ex))
                 result.append((object.id,object.datas_fname,None, True))
@@ -617,7 +619,7 @@ class plm_document_relation(osv.osv):
                 res['parent_id'],res['child_id'],res['configuration'],res['link_kind']=args
                 self.create(cr, uid, res)
             except:
-                logging.warning("saveChild : Unable to create a relation. Arguments(" + str(args) +") ")
+                logging.error("saveChild : Unable to create a relation. Arguments(" + str(args) +") ")
                 raise Exception("saveChild: Unable to create a relation.")
             
         if len(relations)<1: # no relation to save 
