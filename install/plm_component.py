@@ -204,10 +204,12 @@ class plm_component(osv.osv):
         """
             Save or Update Parts
         """
-        
+        listedParts=[]
         retValues=[]
         for part in ids:
             hasSaved=False
+            if part['engineering_code'] in listedParts:
+                continue
             if not ('engineering_code' in part) or (not 'engineering_revision' in part):
                 part['componentID']=False
                 part['hasSaved']=hasSaved
@@ -232,6 +234,7 @@ class plm_component(osv.osv):
             part['componentID']=objPart.id
             part['hasSaved']=hasSaved
             retValues.append(part)
+            listedParts.append(part['engineering_code'])
         return retValues 
 
 ##  Work Flow Internal Methods

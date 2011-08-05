@@ -74,14 +74,17 @@ class plm_document(osv.osv):
             treated.append(object)
         return result
             
-    def _data_get_files(self, cr, uid, ids, name, arg, context):
+    def _data_get_files(self, cr, uid, ids, name, listedFiles=[], context=None):
         result = []
         objects = self.browse(cr, uid, ids, context=context)
         for object in objects:
             try:
-                value = file(os.path.join(self._get_filestore(cr), object.store_fname), 'rb').read()
-                result.append((object.id, object.datas_fname, base64.encodestring(value), self._is_checkedout_for_me(cr, uid, object.id)))
-            except:
+                isCheckedOutToMe=self._is_checkedout_for_me(cr, uid, object.id)
+                if not(object.datas_fname in listedFiles) and isCheckedOutToMe:
+                    value = file(os.path.join(self._get_filestore(cr), object.store_fname), 'rb').read()
+                    result.append((object.id, object.datas_fname, base64.encodestring(value), isCheckedOutToMe))
+            except Exception, ex:
+                logging.error("_data_get_files : Unable to access to document ("+str(object.name)+"). Error :" + str(ex))
                 result.append((object.id,object.datas_fname,None, True))
         return result
             
@@ -453,7 +456,7 @@ class plm_document(osv.osv):
             retValues=getcheckedfiles(files)
         return retValues
 
-    def GetAllFiles(self, cr, uid, id, default=None, context=None):
+    def GetAllFiles(self, cr, uid, request, default=None, context=None):
         def _treebom(cr, id, kind):
             result=[]
             documentRelation=self.pool.get('plm.document.relation')
@@ -478,6 +481,7 @@ class plm_document(osv.osv):
                 result.append(child.parent_id.id)
             return result
 
+        id, listedFiles = request
         kind='LyTree'   # Get relations due to layout connected
         docArray=_laybom(cr, id, kind)
 
@@ -486,7 +490,7 @@ class plm_document(osv.osv):
         docArray=self._getlastrev(cr, uid, docArray+modArray, context)
         
         docArray.append(id)     # Add requested document to package
-        exitDatas=self._data_get_files(cr, uid, docArray, '', '', context)
+        exitDatas=self._data_get_files(cr, uid, docArray, '', listedFiles, context)
         return exitDatas
 
     def getServerTime(self, cr, uid, id, default=None, context=None):
