@@ -74,7 +74,7 @@ class plm_document(osv.osv):
             treated.append(object)
         return result
             
-    def _data_get_files(self, cr, uid, ids, name, listedFiles=[], context):
+    def _data_get_files(self, cr, uid, ids, name, listedFiles=[], context=None):
         result = []
         objects = self.browse(cr, uid, ids, context=context)
         for object in objects:
