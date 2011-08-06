@@ -61,6 +61,29 @@ class plm_component(osv.osv):
     _sql_constraints = [
         ('partnumber_uniq', 'unique (engineering_code,engineering_revision)', 'Part Number has to be unique!')
     ]
+    
+    def init(self, cr):
+        cr.execute("""
+-- Index: product_template_engcode_index
+
+-- DROP INDEX product_template_engcode_index;
+
+CREATE INDEX product_template_engcode_index
+  ON product_template
+  USING btree
+  (engineering_code);
+  """)
+  
+        cr.execute("""
+-- Index: product_template_engcoderev_index
+
+-- DROP INDEX product_template_engcoderev_index;
+
+CREATE INDEX product_template_engcoderev_index
+  ON product_template
+  USING btree
+  (engineering_code, engineering_revision);
+  """)
 
 plm_component()
 
