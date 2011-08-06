@@ -65,7 +65,7 @@ class plm_component(osv.osv):
             if len(relIDs)>0:
                 expData=bomType.export_data(cr, uid, relIDs,rel_fields)
                 if not self._export_csv(filename, rel_fields, expData, True):
-                    raise AttributeError(_("No Bom extraction files was generated, about entity (%s)." %(fname)))
+                    raise Exception(_("No Bom extraction files was generated, about entity (%s)." %(fname)))
         return True
 
     def _export_csv(self, fname, fields, result, write_title=False):
@@ -387,7 +387,7 @@ class plm_component(osv.osv):
             try:
                 return super(plm_component,self).create(cr, user, vals, context=context)
             except:
-                raise AttributeError(_("It has tried to create %s , %s"%(str(vals['name']),str(vals))))
+                raise Exception(_("It has tried to create %s , %s"%(str(vals['name']),str(vals))))
                 return False
          
     def write(self, cr, user, ids, vals, context=None, check=True):
@@ -396,7 +396,7 @@ class plm_component(osv.osv):
             customObjects=self.browse(cr, user, ids, context=context)
             for customObject in customObjects:
                 if not customObject.engineering_writable:
-                    raise AttributeError(_("No changes are allowed on entity (%s)." %(customObject.name)))
+                    raise Exception(_("No changes are allowed on entity (%s)." %(customObject.name)))
                     return False
                 if customObject.state in checkState:
                     raise AttributeError(_("The active state does not allow you to make save action"))

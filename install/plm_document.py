@@ -113,16 +113,16 @@ class plm_document(osv.osv):
             try:
                 os.unlink(os.path.join(self._get_filestore(cr), filename))
             except:
-                pass
+                logging.error("_data_set : Unable to remove document ("+str(filename)+").")
             cr.execute('update ir_attachment set store_fname=NULL WHERE id=%s', (id,) )
             return True
-        #if (not context) or context.get('store_method','fs')=='fs':
         try:
-            fname,filesize=self._manageFile(cr,uid,id,binvalue=value,context=context)
-            cr.execute('update ir_attachment set store_fname=%s,file_size=%s where id=%s', (fname,filesize,id))
+            filename,filesize=self._manageFile(cr,uid,id,binvalue=value,context=context)
+            cr.execute('update ir_attachment set store_fname=%s,file_size=%s where id=%s', (filename,filesize,id))
             return True
-        except Exception,e :
-            raise except_orm(_('Error in _data_set'), str(e))
+        except Exception,ex :
+            logging.error("_data_set : Unable to access to document ("+str(filename)+"). Error :" + str(ex))
+            raise except_orm(_('Error in _data_set'), str(ex))
 
     def copy(self,cr,uid,id,defaults={},context=None):
         """
@@ -371,13 +371,11 @@ class plm_document(osv.osv):
 #   Overridden methods for this entity
     def write(self, cr, user, ids, vals, context=None, check=True):
         checkState=('confirmed','released','undermodify','canceled')
-        _errMsg=_("The active state does not allow you to make save action")
         if check:
             customObjects=self.browse(cr,user,ids,context=context)
             for customObject in customObjects:
-                #raise AttributeError(_errMsg)
                 if customObject.state in checkState:
-                    print _errMsg
+                    logging.error(_("The workflow state of "+str(customObject.name)+" does not allow you to write its data."))
                     return False
         return super(plm_document,self).write(cr, user, ids, vals, context=context)
 
