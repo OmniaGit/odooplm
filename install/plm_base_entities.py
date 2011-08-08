@@ -66,7 +66,7 @@ class plm_component(osv.osv):
         cr.execute("""
 -- Index: product_template_engcode_index
 
-DROP INDEX product_template_engcode_index;
+DROP INDEX IF EXISTS product_template_engcode_index;
 
 CREATE INDEX product_template_engcode_index
   ON product_template
@@ -77,7 +77,7 @@ CREATE INDEX product_template_engcode_index
         cr.execute("""
 -- Index: product_template_engcoderev_index
 
-DROP INDEX product_template_engcoderev_index;
+DROP INDEX IF EXISTS product_template_engcoderev_index;
 
 CREATE INDEX product_template_engcoderev_index
   ON product_template
