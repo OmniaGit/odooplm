@@ -23,6 +23,7 @@
 import sys
 from osv import osv, fields
 from tools.translate import _
+import logging
 
 # To be adequated to plm.document class states
 USED_STATES=[('draft','Draft'),('confirmed','Confirmed'),('transmitted','Transmitted'),('released','Released'),('undermodify','UnderModify'),('obsoleted','Obsoleted'),('reactivated','Reactivated')]

@@ -24,6 +24,7 @@ import string
 import base64
 import tools
 import os
+import logging 
 
 from tools.translate import _
 from osv import osv, fields
