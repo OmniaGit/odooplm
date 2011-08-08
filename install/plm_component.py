@@ -135,6 +135,9 @@ class plm_component(osv.osv):
 
     def getLastTime(self, cr, uid, id, default=None, context=None):
         obj = self.browse(cr, uid, id, context=context)
+        return self.getUpdTime(obj)
+
+    def getUpdTime(self, obj):
         if(obj.write_date!=False):
             return datetime.strptime(obj.write_date,'%Y-%m-%d %H:%M:%S')
         else:
@@ -219,19 +222,18 @@ class plm_component(osv.osv):
                                           ,('engineering_revision','=',part['engineering_revision'])])
             if not existingID:
                 existingID=self.create(cr,uid,part)
-                objPart=self.browse(cr, uid, existingID)
                 hasSaved=True
             else:
                 existingID=existingID[0]
                 objPart=self.browse(cr, uid, existingID)
-                if (self.getLastTime(cr,uid,existingID)<datetime.strptime(part['lastupdate'],'%Y-%m-%d %H:%M:%S')):
+                if (self.getUpdTime(objPart)<datetime.strptime(part['lastupdate'],'%Y-%m-%d %H:%M:%S')):
                     if objPart.engineering_writable:
                         del(part['lastupdate'])
                         if not self.write(cr,uid,[existingID], part , context=context, check=True):
                             raise Exception(_("This component %s cannot be updated" %(str(part['engineering_code']))))
                         hasSaved=True
-            part['name']=objPart.name
-            part['componentID']=objPart.id
+                part['name']=objPart.name
+            part['componentID']=existingID
             part['hasSaved']=hasSaved
             retValues.append(part)
             listedParts.append(part['engineering_code'])
