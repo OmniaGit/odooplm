@@ -23,7 +23,7 @@ import random
 import string
 import base64
 import tools
-import os
+import os, sys
 
 from tools.translate import _
 from osv import osv, fields
@@ -457,6 +457,8 @@ class plm_document(osv.osv):
         return retValues
 
     def GetAllFiles(self, cr, uid, request, default=None, context=None):
+        sys.setrecursionlimit(10000)    # Default is 1000
+        
         def _treebom(cr, id, kind):
             result=[]
             documentRelation=self.pool.get('plm.document.relation')
