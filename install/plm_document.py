@@ -458,11 +458,13 @@ class plm_document(osv.osv):
 
     def GetAllFiles(self, cr, uid, request, default=None, context=None):
         sys.setrecursionlimit(10000)    # Default is 1000
+        listed_models=[]
         listed_documents=[]
         def _treebom(cr, id, kind):
             result=[]
             if (id in listed_documents):
                 return result
+            listed_documents.append(id)
             documentRelation=self.pool.get('plm.document.relation')
             docRelIds=documentRelation.search(cr,uid,[('parent_id', '=',id),('link_kind', '=',kind)])
             if len(docRelIds)==0:
@@ -471,13 +473,13 @@ class plm_document(osv.osv):
             for child in children:
                 result.extend(_treebom(cr, child.child_id.id, kind))
                 result.append(child.child_id.id)
-            listed_documents.append(id)
             return result
 
         def _laybom(cr, id, kind):
             result=[]
-            if (id in listed_documents):
+            if (id in listed_models):
                 return result
+            listed_models.append(id)
             documentRelation=self.pool.get('plm.document.relation')
             docRelIds=documentRelation.search(cr,uid,[('child_id', '=',id),('link_kind', '=',kind)])
             if len(docRelIds)==0:
@@ -486,7 +488,6 @@ class plm_document(osv.osv):
             for child in children:
                 result.extend(_laybom(cr, child.parent_id.id, kind))
                 result.append(child.parent_id.id)
-            listed_documents.append(id)
             return result
 
         id, listedFiles = request
