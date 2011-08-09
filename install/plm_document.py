@@ -160,8 +160,8 @@ class plm_document(osv.osv):
         objects = self.browse(cr, uid, ids, context=context)
         for object in objects:
             isCheckedOutToMe=self._is_checkedout_for_me(cr, uid, object.id)
-            if not(object.datas_fname in listedFiles and isCheckedOutToMe):
-                result.append((object.id, object.datas_fname, object.file_size, isCheckedOutToMe))
+            collectable = not((object.datas_fname in listedFiles) and isCheckedOutToMe)
+            result.append((object.id, object.datas_fname, object.file_size, collectable))
         return result
             
     def copy(self,cr,uid,id,defaults={},context=None):
@@ -500,16 +500,18 @@ class plm_document(osv.osv):
         """
             Evaluate documents to return
         """
+        listed_models=[]
         listed_documents=[]
         id, listedFiles = request
         kind='LyTree'   # Get relations due to layout connected
         docArray=self._laybom(cr, uid, id, kind, listed_documents)
 
         kind='HiTree'   # Get Hierarchical tree relations due to children
-        modArray=self._treebom(cr, uid, id, kind, listed_documents)
+        modArray=self._treebom(cr, uid, id, kind, listed_models)
         docArray=self._getlastrev(cr, uid, docArray+modArray, context)
         
-        docArray.append(id)     # Add requested document to package
+        if not id in docArray:
+            docArray.append(id)     # Add requested document to package
         return self._data_check_files(cr, uid, docArray, listedFiles, context)
 
     def GetSomeFiles(self, cr, uid, request, default=None, context=None):
