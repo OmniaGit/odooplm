@@ -74,7 +74,7 @@ class plm_document(osv.osv):
             treated.append(object)
         return result
             
-    def _data_get_files(self, cr, uid, ids, name, listedFiles=[], context=None):
+    def _data_get_files(self, cr, uid, ids, listedFiles=[], context=None):
         result = []
         objects = self.browse(cr, uid, ids, context=context)
         for object in objects:
@@ -124,6 +124,45 @@ class plm_document(osv.osv):
         except Exception,e :
             raise except_orm(_('Error in _data_set'), str(e))
 
+    def _treebom(self, cr, uid, id, kind, listed_documents=[]):
+        result=[]
+        if (id in listed_documents):
+            return result
+        listed_documents.append(id)
+        documentRelation=self.pool.get('plm.document.relation')
+        docRelIds=documentRelation.search(cr,uid,[('parent_id', '=',id),('link_kind', '=',kind)])
+        if len(docRelIds)==0:
+            return result
+        children=documentRelation.browse(cr,uid,docRelIds)
+        for child in children:
+            result.extend(self._treebom(cr, uid, child.child_id.id, kind, listed_documents))
+            result.append(child.child_id.id)
+        return result
+
+    def _laybom(self, cr, uid, id, kind, listed_documents=[]):
+        result=[]
+        if (id in listed_documents):
+            return result
+        listed_documents.append(id)
+        documentRelation=self.pool.get('plm.document.relation')
+        docRelIds=documentRelation.search(cr,uid,[('child_id', '=',id),('link_kind', '=',kind)])
+        if len(docRelIds)==0:
+            return result
+        children=documentRelation.browse(cr,uid,docRelIds)
+        for child in children:
+            result.extend(self._laybom(cr, uid, child.parent_id.id, kind, listed_documents))
+            result.append(child.parent_id.id)
+        return result
+
+    def _data_check_files(self, cr, uid, ids, listedFiles=[], context=None):
+        result = []
+        objects = self.browse(cr, uid, ids, context=context)
+        for object in objects:
+            isCheckedOutToMe=self._is_checkedout_for_me(cr, uid, object.id)
+            collectable = not((object.datas_fname in listedFiles) and isCheckedOutToMe)
+            result.append((object.id, object.datas_fname, object.file_size, collectable))
+        return result
+            
     def copy(self,cr,uid,id,defaults={},context=None):
         """
             Overwrite the default copy method
@@ -458,42 +497,49 @@ class plm_document(osv.osv):
             retValues=getcheckedfiles(files)
         return retValues
 
-    def GetAllFiles(self, cr, uid, request, default=None, context=None):
-        def _treebom(cr, id, kind):
-            result=[]
-            documentRelation=self.pool.get('plm.document.relation')
-            docRelIds=documentRelation.search(cr,uid,[('parent_id', '=',id),('link_kind', '=',kind)])
-            if len(docRelIds)==0:
-                return result
-            children=documentRelation.browse(cr,uid,docRelIds,context=context)
-            for child in children:
-                result.extend(_treebom(cr, child.child_id.id, kind))
-                result.append(child.child_id.id)
-            return result
 
-        def _laybom(cr, id, kind):
-            result=[]
-            documentRelation=self.pool.get('plm.document.relation')
-            docRelIds=documentRelation.search(cr,uid,[('child_id', '=',id),('link_kind', '=',kind)])
-            if len(docRelIds)==0:
-                return result
-            children=documentRelation.browse(cr,uid,docRelIds,context=context)
-            for child in children:
-                result.extend(_laybom(cr, child.parent_id.id, kind))
-                result.append(child.parent_id.id)
-            return result
-
+    def CheckAllFiles(self, cr, uid, request, default=None, context=None):
+        """
+            Evaluate documents to return
+        """
+        listed_models=[]
+        listed_documents=[]
         id, listedFiles = request
         kind='LyTree'   # Get relations due to layout connected
-        docArray=_laybom(cr, id, kind)
+        docArray=self._laybom(cr, uid, id, kind, listed_documents)
 
         kind='HiTree'   # Get Hierarchical tree relations due to children
-        modArray=_treebom(cr, id, kind)
+        modArray=self._treebom(cr, uid, id, kind, listed_models)
         docArray=self._getlastrev(cr, uid, docArray+modArray, context)
         
-        docArray.append(id)     # Add requested document to package
-        exitDatas=self._data_get_files(cr, uid, docArray, '', listedFiles, context)
-        return exitDatas
+        if not id in docArray:
+            docArray.append(id)     # Add requested document to package
+        return self._data_check_files(cr, uid, docArray, listedFiles, context)
+
+    def GetSomeFiles(self, cr, uid, request, default=None, context=None):
+        """
+            Extract documents to be returned 
+        """
+        ids, listedFiles = request
+        docArray=self._getlastrev(cr, uid, ids, context)
+        return self._data_get_files(cr, uid, docArray, listedFiles, context)
+
+    def GetAllFiles(self, cr, uid, request, default=None, context=None):
+        """
+            Extract documents to be returned 
+        """
+        listed_documents=[]
+        id, listedFiles = request
+        kind='LyTree'   # Get relations due to layout connected
+        docArray=self._laybom(cr, uid, id, kind, listed_documents)
+
+        kind='HiTree'   # Get Hierarchical tree relations due to children
+        modArray=self._treebom(cr, uid, id, kind, listed_documents)
+        docArray=self._getlastrev(cr, uid, docArray+modArray, context)
+        
+        if not id in docArray:
+            docArray.append(id)     # Add requested document to package
+        return self._data_get_files(cr, uid, docArray, listedFiles, context)
 
     def getServerTime(self, cr, uid, id, default=None, context=None):
         """
