@@ -65,7 +65,7 @@ class plm_component(osv.osv):
             if len(relIDs)>0:
                 expData=bomType.export_data(cr, uid, relIDs,rel_fields)
                 if not self._export_csv(filename, rel_fields, expData, True):
-                    raise AttributeError(_("No Bom extraction files was generated, about entity (%s)." %(fname)))
+                    raise Exception(_("No Bom extraction files was generated, about entity (%s)." %(fname)))
         return True
 
     def _export_csv(self, fname, fields, result, write_title=False):
@@ -135,6 +135,9 @@ class plm_component(osv.osv):
 
     def getLastTime(self, cr, uid, id, default=None, context=None):
         obj = self.browse(cr, uid, id, context=context)
+        return self.getUpdTime(obj)
+
+    def getUpdTime(self, obj):
         if(obj.write_date!=False):
             return datetime.strptime(obj.write_date,'%Y-%m-%d %H:%M:%S')
         else:
@@ -219,19 +222,18 @@ class plm_component(osv.osv):
                                           ,('engineering_revision','=',part['engineering_revision'])])
             if not existingID:
                 existingID=self.create(cr,uid,part)
-                objPart=self.browse(cr, uid, existingID)
                 hasSaved=True
             else:
                 existingID=existingID[0]
                 objPart=self.browse(cr, uid, existingID)
-                if (self.getLastTime(cr,uid,existingID)<datetime.strptime(part['lastupdate'],'%Y-%m-%d %H:%M:%S')):
+                if (self.getUpdTime(objPart)<datetime.strptime(part['lastupdate'],'%Y-%m-%d %H:%M:%S')):
                     if objPart.engineering_writable:
                         del(part['lastupdate'])
                         if not self.write(cr,uid,[existingID], part , context=context, check=True):
                             raise Exception(_("This component %s cannot be updated" %(str(part['engineering_code']))))
                         hasSaved=True
-            part['name']=objPart.name
-            part['componentID']=objPart.id
+                part['name']=objPart.name
+            part['componentID']=existingID
             part['hasSaved']=hasSaved
             retValues.append(part)
             listedParts.append(part['engineering_code'])
@@ -387,7 +389,7 @@ class plm_component(osv.osv):
             try:
                 return super(plm_component,self).create(cr, user, vals, context=context)
             except:
-                raise AttributeError(_("It has tried to create %s , %s"%(str(vals['name']),str(vals))))
+                raise Exception(_("It has tried to create %s , %s"%(str(vals['name']),str(vals))))
                 return False
          
     def write(self, cr, user, ids, vals, context=None, check=True):
@@ -396,7 +398,7 @@ class plm_component(osv.osv):
             customObjects=self.browse(cr, user, ids, context=context)
             for customObject in customObjects:
                 if not customObject.engineering_writable:
-                    raise AttributeError(_("No changes are allowed on entity (%s)." %(customObject.name)))
+                    raise Exception(_("No changes are allowed on entity (%s)." %(customObject.name)))
                     return False
                 if customObject.state in checkState:
                     raise AttributeError(_("The active state does not allow you to make save action"))

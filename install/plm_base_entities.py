@@ -23,6 +23,7 @@
 import sys
 from osv import osv, fields
 from tools.translate import _
+import logging
 
 # To be adequated to plm.document class states
 USED_STATES=[('draft','Draft'),('confirmed','Confirmed'),('transmitted','Transmitted'),('released','Released'),('undermodify','UnderModify'),('obsoleted','Obsoleted'),('reactivated','Reactivated')]
@@ -61,6 +62,29 @@ class plm_component(osv.osv):
     _sql_constraints = [
         ('partnumber_uniq', 'unique (engineering_code,engineering_revision)', 'Part Number has to be unique!')
     ]
+    
+    def init(self, cr):
+        cr.execute("""
+-- Index: product_template_engcode_index
+
+DROP INDEX IF EXISTS product_template_engcode_index;
+
+CREATE INDEX product_template_engcode_index
+  ON product_template
+  USING btree
+  (engineering_code);
+  """)
+  
+        cr.execute("""
+-- Index: product_template_engcoderev_index
+
+DROP INDEX IF EXISTS product_template_engcoderev_index;
+
+CREATE INDEX product_template_engcoderev_index
+  ON product_template
+  USING btree
+  (engineering_code, engineering_revision);
+  """)
 
 plm_component()
 
@@ -135,7 +159,43 @@ class plm_relation(osv.osv):
                     DROP LANGUAGE IF EXISTS 'plpgsql' CASCADE;
                     CREATE LANGUAGE'plpgsql';
                    """
-    )
+                   )
+
+    def _getbomidnullsrc(self, cr, pid):
+        ids=[]
+        cr.execute(
+            """
+                SELECT bom_id from mrp_bom where product_id = %s and source_id is not NULL
+            """%(str(pid), )
+            )
+        for idc in cr.fetchall():
+            if idc[0]!=None:
+                ids.append(idc[0])
+        return ids
+
+    def _getbomid(self, cr, pid, sid):
+        ids=[]
+        cr.execute(
+            """
+               SELECT bom_id from mrp_bom where product_id = %s and source_id = %s
+            """%(str(pid), str(sid))
+            )
+        for idc in cr.fetchall():
+            if idc[0]!=None:
+                ids.append(idc[0])
+        return ids
+
+    def _getidbom(self, cr, pid, sid):
+        ids=[]
+        cr.execute(
+            """
+               SELECT id from mrp_bom where product_id = %s and source_id = %s
+            """%(str(pid), str(sid))
+            )
+        for idc in cr.fetchall():
+            if idc[0]!=None:
+                ids.append(idc[0])
+        return ids
 
     def _getpackdatas(self, cr, uid, relDatas):
         prtDatas={}
@@ -177,21 +237,10 @@ class plm_relation(osv.osv):
         def _bomid(cr, pid, sid=None):
             ids=[]
             if sid == None:
-                cr.execute(
-                       """
-                        SELECT bom_id from mrp_bom where product_id = %s and source_id is not NULL
-                       """%(str(pid), )
-                       )
+                return self._getbomidnullsrc(cr, pid)
+
             else:
-                cr.execute(
-                       """
-                        SELECT bom_id from mrp_bom where product_id = %s and source_id = %s
-                       """%(str(pid), str(sid))
-                       )
-            for idc in cr.fetchall():
-                if idc[0]!=None:
-                    ids.append(idc[0])
-            return ids
+                return self._getbomid(cr, pid, sid)
                 
         def _source(cr, bid):
             ids=[]
@@ -371,6 +420,23 @@ class plm_relation(osv.osv):
             ids=self.search(cr,uid,[('source_id','=',sourceID)])
             self.unlink(cr,uid,ids)
 
+        def toCleanRelations(parentName, relations):
+            """
+                Processes relations  
+            """
+            sourceID=None
+            subRelations=[(a, b, c, d, e, f) for a, b, c, d, e, f in relations if a == parentName]
+            if len(subRelations)<1: # no relation to save 
+                return None
+            parentName, parentID, tmpChildName, tmpChildID, sourceID, tempRelArgs=subRelations[0]
+            relids=self._getidbom(cr, parentID, sourceID)
+            self.unlink(cr,uid,relids)
+            for rel in subRelations:
+                #print "Save Relation ", rel
+                parentName, parentID, childName, childID, sourceID, relArgs=rel
+                toCleanRelations(childName, relations)
+            return False
+
         def toCompute(parentName, relations):
             """
                 Processes relations  
@@ -380,7 +446,6 @@ class plm_relation(osv.osv):
             if len(subRelations)<1: # no relation to save 
                 return None
             parentName, parentID, tmpChildName, tmpChildID, sourceID, tempRelArgs=subRelations[0]
-            cleanStructure(sourceID)
             bomID=saveChild(parentName, parentID, sourceID)
             for rel in subRelations:
                 #print "Save Relation ", rel
@@ -415,6 +480,7 @@ class plm_relation(osv.osv):
         if len(relations)<1: # no relation to save 
             return False
         parentName, parentID, childName, childID, sourceID, relArgs=relations[0]
+        toCleanRelations(parentName, relations)
         tmpBomId=toCompute(parentName, relations)
         weight=self.RebaseWeight(cr, uid, self.browse(cr,uid,tmpBomId).child_complete_ids)
         return False
