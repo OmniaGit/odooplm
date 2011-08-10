@@ -88,7 +88,6 @@
                          <newline/>
                      </group>
       	             <separator colspan="4" col="1" string="WorkFlow Status"/>
-                     <field name="state" colspan="2"/>
                      <group col="4" colspan="2">
                          <button name="release" states="confirmed" string="Release Component" icon="gtk-apply"/>
                          <button name="correct" states="confirmed" string="Correct Component" icon="gtk-cancel"/>
@@ -117,8 +116,6 @@
                          <field name="engineering_material" colspan="2"/>
                          <field name="engineering_surface" colspan="2"/>
                          <newline/>
-                         <field digits="(14, 3)" name="weight_net" attrs="{'readonly':[('type','=','service')]}"/>
-                         <field name="uom_id"/>
                      </group>
                  </page>
                  <page string="Linked Documents">
