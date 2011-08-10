@@ -24,7 +24,6 @@ import string
 import base64
 import tools
 import os
-import logging 
 
 from tools.translate import _
 from osv import osv, fields
@@ -114,16 +113,16 @@ class plm_document(osv.osv):
             try:
                 os.unlink(os.path.join(self._get_filestore(cr), filename))
             except:
-                logging.error("_data_set : Unable to remove document ("+str(filename)+").")
+                pass
             cr.execute('update ir_attachment set store_fname=NULL WHERE id=%s', (id,) )
             return True
+        #if (not context) or context.get('store_method','fs')=='fs':
         try:
-            filename,filesize=self._manageFile(cr,uid,id,binvalue=value,context=context)
-            cr.execute('update ir_attachment set store_fname=%s,file_size=%s where id=%s', (filename,filesize,id))
+            fname,filesize=self._manageFile(cr,uid,id,binvalue=value,context=context)
+            cr.execute('update ir_attachment set store_fname=%s,file_size=%s where id=%s', (fname,filesize,id))
             return True
-        except Exception,ex :
-            logging.error("_data_set : Unable to access to document ("+str(filename)+"). Error :" + str(ex))
-            raise except_orm(_('Error in _data_set'), str(ex))
+        except Exception,e :
+            raise except_orm(_('Error in _data_set'), str(e))
 
     def _treebom(self, cr, uid, id, kind, listed_documents=[]):
         result=[]
@@ -411,11 +410,13 @@ class plm_document(osv.osv):
 #   Overridden methods for this entity
     def write(self, cr, user, ids, vals, context=None, check=True):
         checkState=('confirmed','released','undermodify','canceled')
+        _errMsg=_("The active state does not allow you to make save action")
         if check:
             customObjects=self.browse(cr,user,ids,context=context)
             for customObject in customObjects:
+                #raise AttributeError(_errMsg)
                 if customObject.state in checkState:
-                    logging.error(_("The workflow state of "+str(customObject.name)+" does not allow you to write its data."))
+                    print _errMsg
                     return False
         return super(plm_document,self).write(cr, user, ids, vals, context=context)
 
@@ -495,6 +496,7 @@ class plm_document(osv.osv):
         if len(files)>0: # no files to process 
             retValues=getcheckedfiles(files)
         return retValues
+
 
     def CheckAllFiles(self, cr, uid, request, default=None, context=None):
         """
