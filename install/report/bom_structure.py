@@ -26,7 +26,7 @@
 #           python openerp_sxw2rml.py bom_structure.sxw > bom_structure.rml
 #
 ##############################################################################
-
+import os
 import time
 from report import report_sxw
 from osv import osv
@@ -34,6 +34,15 @@ import pooler
 from operator import itemgetter
 
 
+
+
+
+def _moduleName():
+    path = os.path.dirname(__file__)
+    return os.path.basename(os.path.dirname(os.path.dirname(path)))
+
+modulName=_moduleName()
+print "*"*20 ,modulName
 def BomSort(object):
     bomobject=[]
     res={}
@@ -83,7 +92,7 @@ class bom_structure_all_custom_report(report_sxw.rml_parse):
 
         return children
 
-report_sxw.report_sxw('report.plm.bom.structure.all','mrp.bom','OpenPLM/install/report/bom_structure.rml',parser=bom_structure_all_custom_report,header='internal')
+report_sxw.report_sxw('report.plm.bom.structure.all','mrp.bom','/'+modulName+'/install/report/bom_structure.rml',parser=bom_structure_all_custom_report,header='internal')
 
 
 class bom_structure_one_custom_report(report_sxw.rml_parse):
@@ -118,7 +127,7 @@ class bom_structure_one_custom_report(report_sxw.rml_parse):
 
         return children
 
-report_sxw.report_sxw('report.plm.bom.structure.one','mrp.bom','OpenPLM/install/report/bom_structure.rml',parser=bom_structure_one_custom_report,header='internal')
+report_sxw.report_sxw('report.plm.bom.structure.one','mrp.bom','/'+modulName+'/install/report/bom_structure.rml',parser=bom_structure_one_custom_report,header='internal')
 
 
 class bom_structure_all_sum_custom_report(report_sxw.rml_parse):
@@ -171,7 +180,7 @@ class bom_structure_all_sum_custom_report(report_sxw.rml_parse):
 
         return result
 
-report_sxw.report_sxw('report.plm.bom.structure.all.sum','mrp.bom','OpenPLM/install/report/bom_structure.rml',parser=bom_structure_all_sum_custom_report,header='internal')
+report_sxw.report_sxw('report.plm.bom.structure.all.sum','mrp.bom','/'+modulName+'/install/report/bom_structure.rml',parser=bom_structure_all_sum_custom_report,header='internal')
 
 class bom_structure_one_sum_custom_report(report_sxw.rml_parse):
     def __init__(self, cr, uid, name, context):
@@ -215,7 +224,7 @@ class bom_structure_one_sum_custom_report(report_sxw.rml_parse):
 
         return result
 
-report_sxw.report_sxw('report.plm.bom.structure.one.sum','mrp.bom','OpenPLM/install/report/bom_structure.rml',parser=bom_structure_one_sum_custom_report,header='internal')
+report_sxw.report_sxw('report.plm.bom.structure.one.sum','mrp.bom','/'+modulName+'/install/report/bom_structure.rml',parser=bom_structure_one_sum_custom_report,header='internal')
 
 class bom_structure_leaves_custom_report(report_sxw.rml_parse):
     def __init__(self, cr, uid, name, context):
@@ -263,4 +272,4 @@ class bom_structure_leaves_custom_report(report_sxw.rml_parse):
 
         return result
 
-report_sxw.report_sxw('report.plm.bom.structure.leaves','mrp.bom','OpenPLM/install/report/bom_structure.rml',parser=bom_structure_leaves_custom_report,header='internal')
+report_sxw.report_sxw('report.plm.bom.structure.leaves','mrp.bom','/'+modulName+'/install/report/bom_structure.rml',parser=bom_structure_leaves_custom_report,header='internal')

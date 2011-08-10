@@ -8,7 +8,7 @@
                 model="mrp.bom"
                 name="plm.bom.structure.all"
                 report_type="pdf"
-                rml="OpenPLM/install/report/bom_structure.rml"
+        		rml="openerpplm/install/report/bom_structure.rml"        
                 file=""
                 />
 
@@ -19,7 +19,7 @@
                 model="mrp.bom"
                 name="plm.bom.structure.one"
                 report_type="pdf"
-                rml="OpenPLM/install/report/bom_structure.rml"
+                rml="openerpplm/install/report/bom_structure.rml"
                 file=""
                 />
 
@@ -30,7 +30,7 @@
                 model="mrp.bom"
                 name="plm.bom.structure.all.sum"
                 report_type="pdf"
-                rml="OpenPLM/install/report/bom_structure.rml"
+                rml="openerpplm/install/report/bom_structure.rml"
                 file=""
                 />
 
@@ -41,7 +41,7 @@
                 model="mrp.bom"
                 name="plm.bom.structure.one.sum"
                 report_type="pdf"
-                rml="OpenPLM/install/report/bom_structure.rml"
+                rml="openerpplm/install/report/bom_structure.rml"
                 file=""
                 />
 
@@ -52,7 +52,7 @@
                 model="mrp.bom"
                 name="plm.bom.structure.leaves"
                 report_type="pdf"
-                rml="OpenPLM/install/report/bom_structure.rml"
+                rml="openerpplm/install/report/bom_structure.rml"
                 file=""
                 />
 
