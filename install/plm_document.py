@@ -543,8 +543,7 @@ class plm_document(osv.osv):
         """
             calculate the server db time 
         """
-        cr.execute("select current_timestamp;")
-        return cr.fetchall()
+        return datetime.now()
     
     def getLastTime(self, cr, uid, id, default=None, context=None):
         """
