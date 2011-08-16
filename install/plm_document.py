@@ -124,34 +124,52 @@ class plm_document(osv.osv):
         except Exception,e :
             raise except_orm(_('Error in _data_set'), str(e))
 
-    def _treebom(self, cr, uid, id, kind, listed_documents=[]):
+    def _explodedocs(self, cr, uid, id, kind, listed_documents=[], recursion=True):
         result=[]
         if (id in listed_documents):
             return result
-        listed_documents.append(id)
         documentRelation=self.pool.get('plm.document.relation')
         docRelIds=documentRelation.search(cr,uid,[('parent_id', '=',id),('link_kind', '=',kind)])
         if len(docRelIds)==0:
             return result
         children=documentRelation.browse(cr,uid,docRelIds)
         for child in children:
-            result.extend(self._treebom(cr, uid, child.child_id.id, kind, listed_documents))
+            if recursion:
+                listed_documents.append(id)
+                result.extend(self._explodedocs(cr, uid, child.child_id.id, kind, listed_documents,recursion))
             result.append(child.child_id.id)
         return result
 
-    def _laybom(self, cr, uid, id, kind, listed_documents=[]):
+    def _relateddocs(self, cr, uid, id, kind, listed_documents=[], recursion=True):
         result=[]
         if (id in listed_documents):
             return result
-        listed_documents.append(id)
         documentRelation=self.pool.get('plm.document.relation')
         docRelIds=documentRelation.search(cr,uid,[('child_id', '=',id),('link_kind', '=',kind)])
         if len(docRelIds)==0:
             return result
         children=documentRelation.browse(cr,uid,docRelIds)
         for child in children:
-            result.extend(self._laybom(cr, uid, child.parent_id.id, kind, listed_documents))
+            if recursion:
+                listed_documents.append(id)
+                result.extend(self._relateddocs(cr, uid, child.parent_id.id, kind, listed_documents, recursion))
             result.append(child.parent_id.id)
+        return result
+
+    def _relatedbydocs(self, cr, uid, id, kind, listed_documents=[], recursion=True):
+        result=[]
+        if (id in listed_documents):
+            return result
+        documentRelation=self.pool.get('plm.document.relation')
+        docRelIds=documentRelation.search(cr,uid,[('parent_id', '=',id),('link_kind', '=',kind)])
+        if len(docRelIds)==0:
+            return result
+        children=documentRelation.browse(cr,uid,docRelIds)
+        for child in children:
+            if recursion:
+                listed_documents.append(id)
+                result.extend(self._relatedbydocs(cr, uid, child.child_id.id, kind, listed_documents, recursion))
+            result.append(child.child_id.id)
         return result
 
     def _data_check_files(self, cr, uid, ids, listedFiles=[], context=None):
@@ -506,10 +524,10 @@ class plm_document(osv.osv):
         listed_documents=[]
         id, listedFiles = request
         kind='LyTree'   # Get relations due to layout connected
-        docArray=self._laybom(cr, uid, id, kind, listed_documents)
+        docArray=self._relateddocs(cr, uid, id, kind, listed_documents)
 
         kind='HiTree'   # Get Hierarchical tree relations due to children
-        modArray=self._treebom(cr, uid, id, kind, listed_models)
+        modArray=self._explodedocs(cr, uid, id, kind, listed_models)
         docArray=self._getlastrev(cr, uid, docArray+modArray, context)
         
         if not id in docArray:
@@ -531,15 +549,36 @@ class plm_document(osv.osv):
         listed_documents=[]
         id, listedFiles = request
         kind='LyTree'   # Get relations due to layout connected
-        docArray=self._laybom(cr, uid, id, kind, listed_documents)
+        docArray=self._relateddocs(cr, uid, id, kind, listed_documents)
 
         kind='HiTree'   # Get Hierarchical tree relations due to children
-        modArray=self._treebom(cr, uid, id, kind, listed_documents)
+        modArray=self._explodedocs(cr, uid, id, kind, listed_documents)
         docArray=self._getlastrev(cr, uid, docArray+modArray, context)
         
         if not id in docArray:
             docArray.append(id)     # Add requested document to package
         return self._data_get_files(cr, uid, docArray, listedFiles, context)
+
+    def GetRelatedDocs(self, cr, uid, ids, default=None, context=None):
+        """
+            Extract documents related to current one(s) (layouts, referred models, etc.)
+        """
+        related_documents=[]
+        listed_documents=[]
+        read_docs=[]
+        for id in ids:
+            kind='RfTree'   # Get relations due to referred models
+            read_docs.extend(self._relateddocs(cr, uid, id, kind, listed_documents, False))
+            read_docs.extend(self._relatedbydocs(cr, uid, id, kind, listed_documents, False))
+
+            kind='LyTree'   # Get relations due to layout connected
+            read_docs.extend(self._relateddocs(cr, uid, id, kind, listed_documents, False))
+            read_docs.extend(self._relatedbydocs(cr, uid, id, kind, listed_documents, False))
+       
+        documents=self.browse(cr, uid, read_docs, context=context)
+        for document in documents:
+            related_documents.append([document.id,document.name,document.preview])
+        return related_documents
 
     def getServerTime(self, cr, uid, id, default=None, context=None):
         """
