@@ -685,13 +685,15 @@ class plm_document_relation(osv.osv):
         """
         def cleanStructure(relations):
             res={}
-            latest=None
             for relation in relations:
                 res['parent_id'],res['child_id'],res['configuration'],res['link_kind']=relation
-                if latest==res['parent_id']:
-                    continue
-                latest=res['parent_id']
-                ids=self.search(cr,uid,[('parent_id','=',res['parent_id']),('link_kind','=',res['link_kind'])])
+                if (res['link_kind']=='LyTree') or (res['link_kind']=='RfTree'):
+                    to_remove=res['child_id']
+                    criteria='child_id'
+                else:
+                    to_remove=res['parent_id']
+                    criteria='parent_id'
+                ids=self.search(cr,uid,[(criteria,'=',to_remove),('link_kind','=',res['link_kind'])])
                 self.unlink(cr,uid,ids)
 
         def saveChild(args):
