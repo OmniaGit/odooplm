@@ -332,11 +332,13 @@ class plm_component(osv.osv):
            action to be executed for Released state
         """
         defaults={}
-        excludeStatuses=['confirmed','released','undermodify','canceled']
-        includeStatuses=['draft','transmitted']
+#        excludeStatuses=['confirmed','released','undermodify','canceled']
+#        includeStatuses=['draft','transmitted']
+        excludeStatuses=['released','undermodify','canceled']
+        includeStatuses=['confirmed']
         stopFlag,allIDs=self._get_recursive_parts(cr, uid, ids, excludeStatuses, includeStatuses)
-        if stopFlag:
-            raise Exception(_("This component cannot be released"))
+        if len(allIDs)<1 or stopFlag:
+            raise Exception(_("This component cannot be released."))
         oldObjects=self.browse(cr, uid, allIDs, context=context)
         for oldObject in oldObjects:
             last_id=self._getbyrevision(cr, uid, oldObject.engineering_code, oldObject.engineering_revision-1)
