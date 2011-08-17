@@ -26,9 +26,9 @@ from tools.translate import _
 from osv import osv, fields
 from datetime import datetime
 
-#USED_STATES=[('draft','Draft'),('confirmed','Confirmed'),('released','Released'),('undermodify','UnderModify'),('canceled','Canceled')]
+#USED_STATES=[('draft','Draft'),('confirmed','Confirmed'),('released','Released'),('undermodify','UnderModify'),('obsoleted','Obsoleted')]
 #STATEFORRELEASE=['confirmed']
-#STATESRELEASABLE=['confirmed','transmitted','released','undermodify','canceled']
+#STATESRELEASABLE=['confirmed','transmitted','released','undermodify','obsoleted']
 
 class plm_component(osv.osv):
     _inherit = 'product.product'
@@ -308,7 +308,7 @@ class plm_component(osv.osv):
         defaults={}
         defaults['engineering_writable']=True
         defaults['state']='draft'
-        excludeStatuses=['draft','released','undermodify','canceled']
+        excludeStatuses=['draft','released','undermodify','obsoleted']
         includeStatuses=['confirmed','transmitted']
         stopFlag,allIDs=self._get_recursive_parts(cr, uid, ids, excludeStatuses, includeStatuses)
         self._action_ondocuments(cr,uid,allIDs,'draft')
@@ -321,7 +321,7 @@ class plm_component(osv.osv):
         defaults={}
         defaults['engineering_writable']=False
         defaults['state']='confirmed'
-        excludeStatuses=['confirmed','transmitted','released','undermodify','canceled']
+        excludeStatuses=['confirmed','transmitted','released','undermodify','obsoleted']
         includeStatuses=['draft']
         stopFlag,allIDs=self._get_recursive_parts(cr, uid, ids, excludeStatuses, includeStatuses)
         self._action_ondocuments(cr,uid,allIDs,'confirm')
@@ -332,9 +332,9 @@ class plm_component(osv.osv):
            action to be executed for Released state
         """
         defaults={}
-#        excludeStatuses=['confirmed','released','undermodify','canceled']
+#        excludeStatuses=['confirmed','released','undermodify','obsoleted']
 #        includeStatuses=['draft','transmitted']
-        excludeStatuses=['released','undermodify','canceled']
+        excludeStatuses=['released','undermodify','obsoleted']
         includeStatuses=['confirmed']
         stopFlag,allIDs=self._get_recursive_parts(cr, uid, ids, excludeStatuses, includeStatuses)
         if len(allIDs)<1 or stopFlag:
@@ -344,7 +344,7 @@ class plm_component(osv.osv):
             last_id=self._getbyrevision(cr, uid, oldObject.engineering_code, oldObject.engineering_revision-1)
             if last_id != None:
                 defaults['engineering_writable']=False
-                defaults['state']='canceled'
+                defaults['state']='obsoleted'
                 self.write(cr,uid,[last_id],defaults ,context=context,check=False)
             defaults['engineering_writable']=False
             defaults['state']='released'
@@ -358,7 +358,7 @@ class plm_component(osv.osv):
         defaults={}
         defaults['engineering_writable']=True
         defaults['state']='obsoleted'
-        excludeStatuses=['draft','confirmed','transmitted','undermodify','canceled']
+        excludeStatuses=['draft','confirmed','transmitted','undermodify','obsoleted']
         includeStatuses=['released']
         stopFlag,allIDs=self._get_recursive_parts(cr, uid, ids, excludeStatuses, includeStatuses)
         self._action_ondocuments(cr,uid,allIDs,'obsolete')
@@ -371,7 +371,7 @@ class plm_component(osv.osv):
         defaults={}
         defaults['engineering_writable']=True
         defaults['state']='released'
-        excludeStatuses=['draft','confirmed','transmitted','undermodify','canceled']
+        excludeStatuses=['draft','confirmed','transmitted','undermodify','obsoleted']
         includeStatuses=['obsoleted']
         stopFlag,allIDs=self._get_recursive_parts(cr, uid, ids, excludeStatuses, includeStatuses)
         self._action_ondocuments(cr,uid,allIDs,'reactivate')
@@ -395,7 +395,7 @@ class plm_component(osv.osv):
                 return False
          
     def write(self, cr, user, ids, vals, context=None, check=True):
-        checkState=('confirmed','released','undermodify','canceled')
+        checkState=('confirmed','released','undermodify','obsoleted')
         if check:
             customObjects=self.browse(cr, user, ids, context=context)
             for customObject in customObjects:

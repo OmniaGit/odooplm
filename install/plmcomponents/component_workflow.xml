@@ -31,9 +31,9 @@
         <field name="action">action_release()</field>
     </record>
 
-    <record model="workflow.activity" id="act_plm_comp_canceled">
+    <record model="workflow.activity" id="act_plm_comp_obsoleted">
         <field name="wkf_id" ref="plm_component_flow"/>
-        <field name="name">canceled</field>
+        <field name="name">obsoleted</field>
         <field name="flow_stop">True</field>
     </record>
 
@@ -57,9 +57,10 @@
         <field name="signal">release</field>
     </record>
 
-    <record model="workflow.transition" id="trans_plm_comp_released_canceled">
+    <record model="workflow.transition" id="trans_plm_comp_released_obsoleted">
         <field name="act_from" ref="act_plm_comp_released"/>
-        <field name="act_to" ref="act_plm_comp_canceled"/>
+        <field name="act_to" ref="act_plm_comp_obsoleted"/>
+        <field name="signal">obsolete</field>
     </record>
     
 </data>

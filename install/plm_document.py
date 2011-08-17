@@ -33,7 +33,7 @@ import time
 from datetime import datetime
 
 # To be adequated to plm.component class states
-USED_STATES=[('draft','Draft'),('confirmed','Confirmed'),('released','Released'),('undermodify','UnderModify'),('canceled','Canceled')]
+USED_STATES=[('draft','Draft'),('confirmed','Confirmed'),('released','Released'),('undermodify','UnderModify'),('obsoleted','Obsoleted')]
 #STATEFORRELEASE=['confirmed']
 #STATESRELEASABLE=['confirmed','released','undermodify','UnderModify']
 
@@ -375,7 +375,18 @@ class plm_document(osv.osv):
         cr.execute('delete from ir_attachment where store_fname=NULL')
         return True 
 
-
+    def _check_in(self, cr, uid, ids, context=None):
+        """
+            move workflow on documents having the same state of component 
+        """
+        documents=self.browse(cr, uid, ids, context=context)
+        checkoutType=self.pool.get('plm.checkout')
+             
+        for document in documents:
+            if checkoutType.search(cr, uid, [('documentid','=',document.id)], context=context):
+                raise Exception(_("The document %s has not checked-in" %str(document.name)))
+        return False
+ 
     def action_draft(self, cr, uid, ids, *args):
         """
             release the object
@@ -405,7 +416,7 @@ class plm_document(osv.osv):
             last_id=self._getbyrevision(cr, uid, oldObject.name, oldObject.revisionid-1)
             if last_id != None:
                 defaults['writable']=False
-                defaults['state']='canceled'
+                defaults['state']='obsoleted'
                 self.write(cr, uid, [last_id], defaults, check=False)
         defaults['writable']=False
         defaults['state']='released'
@@ -434,7 +445,7 @@ class plm_document(osv.osv):
 
 #   Overridden methods for this entity
     def write(self, cr, user, ids, vals, context=None, check=True):
-        checkState=('confirmed','released','undermodify','canceled')
+        checkState=('confirmed','released','undermodify','obsoleted')
         _errMsg=_("The active state does not allow you to make save action")
         if check:
             customObjects=self.browse(cr,user,ids,context=context)
@@ -445,18 +456,6 @@ class plm_document(osv.osv):
                     return False
         return super(plm_document,self).write(cr, user, ids, vals, context=context)
 
-    def _check_in(self, cr, uid, ids, context=None):
-        """
-            move workflow on documents having the same state of component 
-        """
-        documents=self.browse(cr, uid, ids, context=context)
-        checkoutType=self.pool.get('plm.checkout')
-             
-        for document in documents:
-            if checkoutType.search(cr, uid, [('documentid','=',document.id)], context=context):
-                raise Exception(_("The document %s has not checked-in" %str(document.name)))
-        return False
- 
     def _check_duplication(self, cr, uid, vals, ids=[], op='create'):
         """
             Overridden, due to revision id management, filename can be duplicated, 
@@ -480,7 +479,7 @@ class plm_document(osv.osv):
                 if not revisionid:
                     revisionid = file.revisionid and file.revisionid or 0
                 res = self.search(cr, uid, [('id', '<>', file.id), ('name', '=', name), ('parent_id', '=', parent_id), ('res_model', '=', res_model), ('res_id', '=', res_id), ('revisionid', '=', revisionid)])
-                if len(res):
+                if len(res)>1:
                     return False
         if op == 'create':
             res = self.search(cr, uid, [('name', '=', name), ('parent_id', '=', parent_id), ('res_id', '=', res_id), ('res_model', '=', res_model)])
