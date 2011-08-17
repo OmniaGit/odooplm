@@ -52,10 +52,14 @@ class plm_document(osv.osv):
     _name = 'ir.attachment'
     _inherit = 'ir.attachment'
 
-    def _is_checkedout_for_me(self, cr, uid, id):
+    def _is_checkedout_for_me(self, cr, uid, id, context=None):
+        """
+            Get if given document (or its latest revision) is checked-out for the requesting user
+        """
         act=False
+        lastDoc=self._getlastrev(cr, uid, [id], context)
         checkType=self.pool.get('plm.checkout')
-        docIDs=checkType.search(cr, uid, [('documentid','=',id)])
+        docIDs=checkType.search(cr, uid, [('documentid','=',lastDoc[0])])
         for docID in docIDs:
             objectCheck = checkType.browse(cr, uid, docID)
             if objectCheck.userid.id==uid:
@@ -71,7 +75,7 @@ class plm_document(osv.osv):
             if object in treated:
                 continue
             docIds=self.search(cr,uid,[('name','=',object.name)],order='revisionid',context=context)
-            result.append(docIds[0])
+            result.append(docIds[len(docIds)-1])
             treated.append(object)
         return result
             
@@ -80,7 +84,7 @@ class plm_document(osv.osv):
         objects = self.browse(cr, uid, ids, context=context)
         for object in objects:
             try:
-                isCheckedOutToMe=self._is_checkedout_for_me(cr, uid, object.id)
+                isCheckedOutToMe=self._is_checkedout_for_me(cr, uid, object.id, context)
                 if not(object.datas_fname in listedFiles and isCheckedOutToMe):
                     value = file(os.path.join(self._get_filestore(cr), object.store_fname), 'rb').read()
                     result.append((object.id, object.datas_fname, base64.encodestring(value), isCheckedOutToMe))
@@ -177,7 +181,7 @@ class plm_document(osv.osv):
         result = []
         objects = self.browse(cr, uid, ids, context=context)
         for object in objects:
-            isCheckedOutToMe=self._is_checkedout_for_me(cr, uid, object.id)
+            isCheckedOutToMe=self._is_checkedout_for_me(cr, uid, object.id, context)
             collectable = not((object.datas_fname in listedFiles) and isCheckedOutToMe)
             result.append((object.id, object.datas_fname, object.file_size, collectable))
         return result
@@ -511,7 +515,7 @@ class plm_document(osv.osv):
             for file in files:
                 ids=self.search(cr,uid,[('datas_fname','=',file)],order='revisionid')
                 if len(ids)>0:
-                    res.append([file,not(self._is_checkedout_for_me(cr, uid, ids[0]))])
+                    res.append([file,not(self._is_checkedout_for_me(cr, uid, ids[0], context))])
             return res
         
         if len(files)>0: # no files to process 
@@ -525,13 +529,19 @@ class plm_document(osv.osv):
         """
         listed_models=[]
         listed_documents=[]
-        id, listedFiles = request
+        id, listedFiles,selection = request
+        if selection == None:
+            selection=1
+
         kind='LyTree'   # Get relations due to layout connected
         docArray=self._relateddocs(cr, uid, id, kind, listed_documents)
 
         kind='HiTree'   # Get Hierarchical tree relations due to children
         modArray=self._explodedocs(cr, uid, id, kind, listed_models)
-        docArray=self._getlastrev(cr, uid, docArray+modArray, context)
+        if selection == 2:
+            docArray=self._getlastrev(cr, uid, docArray+modArray, context)
+        else:
+            docArray=docArray+modArray
         
         if not id in docArray:
             docArray.append(id)     # Add requested document to package
@@ -541,8 +551,14 @@ class plm_document(osv.osv):
         """
             Extract documents to be returned 
         """
-        ids, listedFiles = request
-        docArray=self._getlastrev(cr, uid, ids, context)
+        ids, listedFiles,selection = request
+        if selection == None:
+            selection=1
+
+        if selection == 2:
+            docArray=self._getlastrev(cr, uid, ids, context)
+        else:
+            docArray=ids
         return self._data_get_files(cr, uid, docArray, listedFiles, context)
 
     def GetAllFiles(self, cr, uid, request, default=None, context=None):
@@ -550,13 +566,19 @@ class plm_document(osv.osv):
             Extract documents to be returned 
         """
         listed_documents=[]
-        id, listedFiles = request
+        id, listedFiles,selection = request
+        if selection == None:
+            selection=1
+
         kind='LyTree'   # Get relations due to layout connected
         docArray=self._relateddocs(cr, uid, id, kind, listed_documents)
 
         kind='HiTree'   # Get Hierarchical tree relations due to children
         modArray=self._explodedocs(cr, uid, id, kind, listed_documents)
-        docArray=self._getlastrev(cr, uid, docArray+modArray, context)
+        if selection == 2:
+            docArray=self._getlastrev(cr, uid, docArray+modArray, context)
+        else:
+            docArray=docArray+modArray
         
         if not id in docArray:
             docArray.append(id)     # Add requested document to package
