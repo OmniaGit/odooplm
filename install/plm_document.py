@@ -100,7 +100,7 @@ class plm_document(osv.osv):
         objects = self.browse(cr, uid, ids, context=context)
         for object in objects:
             if not object.store_fname:
-                raise osv.except_osv(_('Stored Document Error'), _("Document %s cannot be accessed" %(str(object.name)))
+                raise osv.except_osv(_('Stored Document Error'), _("Document %s cannot be accessed" %(str(object.name))))
             filestore=os.path.join(self._get_filestore(cr), object.store_fname)
             if os.path.exists(filestore):
                 value = file(filestore, 'rb').read()
@@ -232,7 +232,7 @@ class plm_document(osv.osv):
             try:
                 os.makedirs(path)
             except:
-                raise osv.except_osv(_('Document Error'), _("Permission denied or directory %s cannot be created." %(str(path)))
+                raise osv.except_osv(_('Document Error'), _("Permission denied or directory %s cannot be created." %(str(path))))
         
         flag = None
         # This can be improved
@@ -349,7 +349,7 @@ class plm_document(osv.osv):
                     if objDocument.writable:
                         del(document['lastupdate'])
                         if not self.write(cr,uid,[existingID], document , context=context, check=True):
-                            raise osv.except_osv(_('Update Document Error'), _("Document %s cannot be updated" %(str(str(document['name']))))
+                            raise osv.except_osv(_('Update Document Error'), _("Document %s cannot be updated" %(str(str(document['name'])))))
                         hasSaved=True
             document['documentID']=existingID
             document['hasSaved']=hasSaved
