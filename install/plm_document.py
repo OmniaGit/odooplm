@@ -482,7 +482,7 @@ class plm_document(osv.osv):
                 if len(res)>1:
                     return False
         if op == 'create':
-            res = self.search(cr, uid, [('name', '=', name), ('parent_id', '=', parent_id), ('res_id', '=', res_id), ('res_model', '=', res_model)])
+            res = self.search(cr, uid, [('name', '=', name), ('parent_id', '=', parent_id), ('res_id', '=', res_id), ('res_model', '=', res_model), ('revisionid', '=', revisionid)])
             if len(res):
                 return False
         return True
