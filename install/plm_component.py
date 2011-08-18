@@ -65,7 +65,7 @@ class plm_component(osv.osv):
             if len(relIDs)>0:
                 expData=bomType.export_data(cr, uid, relIDs,rel_fields)
                 if not self._export_csv(filename, rel_fields, expData, True):
-                    raise Exception(_("No Bom extraction files was generated, about entity (%s)." %(fname)))
+                    raise osv.except_osv(_('Export Data Error'), _("No Bom extraction files was generated, about entity (%s)." %(fname)))
         return True
 
     def _export_csv(self, fname, fields, result, write_title=False):
@@ -230,7 +230,7 @@ class plm_component(osv.osv):
                     if objPart.engineering_writable:
                         del(part['lastupdate'])
                         if not self.write(cr,uid,[existingID], part , context=context, check=True):
-                            raise Exception(_("This component %s cannot be updated" %(str(part['engineering_code']))))
+                            raise osv.except_osv(_('Update Part Error'), _("Part %s cannot be updated" %(str(part['engineering_code']))))
                         hasSaved=True
                 part['name']=objPart.name
             part['componentID']=existingID
@@ -338,7 +338,7 @@ class plm_component(osv.osv):
         includeStatuses=['confirmed']
         stopFlag,allIDs=self._get_recursive_parts(cr, uid, ids, excludeStatuses, includeStatuses)
         if len(allIDs)<1 or stopFlag:
-            raise Exception(_("This component cannot be released."))
+            raise osv.except_osv(_('WorkFlow Error'), _("Part cannot be released."))
         oldObjects=self.browse(cr, uid, allIDs, context=context)
         for oldObject in oldObjects:
             last_id=self._getbyrevision(cr, uid, oldObject.engineering_code, oldObject.engineering_revision-1)
@@ -400,10 +400,10 @@ class plm_component(osv.osv):
             customObjects=self.browse(cr, user, ids, context=context)
             for customObject in customObjects:
                 if not customObject.engineering_writable:
-                    raise Exception(_("No changes are allowed on entity (%s)." %(customObject.name)))
+                    raise osv.except_osv(_('Edit Entity Error'), _("No changes are allowed on entity (%s)." %(customObject.name)))
                     return False
                 if customObject.state in checkState:
-                    raise AttributeError(_("The active state does not allow you to make save action"))
+                    raise osv.except_osv(_('Edit Entity Error'), _("The active state does not allow you to make save action"))
                     return False
                 if customObject.engineering_code == False:
                     vals['engineering_code'] = customObject.name

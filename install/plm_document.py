@@ -100,7 +100,7 @@ class plm_document(osv.osv):
         objects = self.browse(cr, uid, ids, context=context)
         for object in objects:
             if not object.store_fname:
-                raise Exception(_("This document %s cannot be accessed" %(str(object.name))))
+                raise osv.except_osv(_('Stored Document Error'), _("Document %s cannot be accessed" %(str(object.name)))
             filestore=os.path.join(self._get_filestore(cr), object.store_fname)
             if os.path.exists(filestore):
                 value = file(filestore, 'rb').read()
@@ -232,7 +232,7 @@ class plm_document(osv.osv):
             try:
                 os.makedirs(path)
             except:
-                raise except_orm(_('Permission Denied !'), _('You have not permissions to write on the server side.'))
+                raise osv.except_osv(_('Document Error'), _("Permission denied or directory %s cannot be created." %(str(path)))
         
         flag = None
         # This can be improved
@@ -349,7 +349,7 @@ class plm_document(osv.osv):
                     if objDocument.writable:
                         del(document['lastupdate'])
                         if not self.write(cr,uid,[existingID], document , context=context, check=True):
-                            raise Exception(_("This document %s cannot be updated" %(str(document['name']))))
+                            raise osv.except_osv(_('Update Document Error'), _("Document %s cannot be updated" %(str(str(document['name']))))
                         hasSaved=True
             document['documentID']=existingID
             document['hasSaved']=hasSaved
@@ -384,7 +384,7 @@ class plm_document(osv.osv):
              
         for document in documents:
             if checkoutType.search(cr, uid, [('documentid','=',document.id)], context=context):
-                raise Exception(_("The document %s has not checked-in" %str(document.name)))
+                raise osv.except_osv(_('WorkFlow Error'), _("The document %s has not checked-in" %str(document.name)))
         return False
  
     def action_draft(self, cr, uid, ids, *args):
@@ -446,13 +446,11 @@ class plm_document(osv.osv):
 #   Overridden methods for this entity
     def write(self, cr, user, ids, vals, context=None, check=True):
         checkState=('confirmed','released','undermodify','obsoleted')
-        _errMsg=_("The active state does not allow you to make save action")
         if check:
             customObjects=self.browse(cr,user,ids,context=context)
             for customObject in customObjects:
-                #raise AttributeError(_errMsg)
                 if customObject.state in checkState:
-                    print _errMsg
+                    raise osv.except_osv(_('Edit Entity Error'), _("The active state does not allow you to make save action"))
                     return False
         return super(plm_document,self).write(cr, user, ids, vals, context=context)
 
