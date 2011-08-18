@@ -100,7 +100,7 @@ class plm_document(osv.osv):
         objects = self.browse(cr, uid, ids, context=context)
         for object in objects:
             if not object.store_fname:
-                raise osv.except_osv(_('Stored Document Error'), _("Document %s cannot be accessed" %(str(object.name))))
+                raise osv.except_osv(_('Stored Document Error'), _("Document %s - %s cannot be accessed" %(str(object.name),str(object.revisionid))))
             filestore=os.path.join(self._get_filestore(cr), object.store_fname)
             if os.path.exists(filestore):
                 value = file(filestore, 'rb').read()
@@ -349,7 +349,7 @@ class plm_document(osv.osv):
                     if objDocument.writable:
                         del(document['lastupdate'])
                         if not self.write(cr,uid,[existingID], document , context=context, check=True):
-                            raise osv.except_osv(_('Update Document Error'), _("Document %s cannot be updated" %(str(str(document['name'])))))
+                            raise osv.except_osv(_('Update Document Error'), _("Document %s - %s cannot be updated" %(str(document['name']), str(document['revisionid']))))
                         hasSaved=True
             document['documentID']=existingID
             document['hasSaved']=hasSaved
@@ -384,7 +384,7 @@ class plm_document(osv.osv):
              
         for document in documents:
             if checkoutType.search(cr, uid, [('documentid','=',document.id)], context=context):
-                raise osv.except_osv(_('WorkFlow Error'), _("The document %s has not checked-in" %str(document.name)))
+                raise osv.except_osv(_('WorkFlow Error'), _("The document %s - %s has not checked-in" %(str(document.name),str(document.revisionid))))
         return False
  
     def action_draft(self, cr, uid, ids, *args):
