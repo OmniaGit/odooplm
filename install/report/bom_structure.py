@@ -34,15 +34,42 @@ import pooler
 from operator import itemgetter
 
 
-
-
-
 def _moduleName():
     path = os.path.dirname(__file__)
     return os.path.basename(os.path.dirname(os.path.dirname(path)))
+openerpModule=_moduleName()
 
-modulName=_moduleName()
-print "*"*20 ,modulName
+def _thisModule():
+    return os.path.splitext(os.path.basename(__file__))[0]
+thisModule=_thisModule()
+
+def _createtemplate():
+    filepath=os.path.dirname(__file__)
+    fileName=thisModule+'.xml'
+    fileOut = open(os.path.join(filepath,fileName), 'w')
+    
+    listout=[('report_plm_bom_structure_all','BOM All Levels','plm.bom.structure.all')]
+    listout.append(('report_plm_bom_structure_one','BOM One Level','plm.bom.structure.one'))
+    listout.append(('report_plm_bom_structure_all_sum','BOM All Levels Summarized','plm.bom.structure.all.sum'))
+    listout.append(('report_plm_bom_structure_one_sum','BOM One Level Summarized','plm.bom.structure.one.sum'))
+    listout.append(('report_plm_bom_structure_leaves','BOM Only Leaves Summarized','plm.bom.structure.leaves'))
+
+    fileOut.write(u'<?xml version="1.0"?>\n<openerp>\n    <data>\n\n')
+    fileOut.write(u'<!--\n       IMPORTANT : DO NOT CHANGE THIS FILE, IT WILL BE REGENERERATED AUTOMATICALLY\n-->\n\n')
+  
+    for label,description,name in listout:
+        fileOut.write(u'        <report auto="True"\n                header="False"\n                model="mrp.bom"\n')
+        fileOut.write(u'                id="%s"\n                string="%s"\n                name="%s"\n' %(label,description,name))
+        fileOut.write(u'                rml="%s/install/report/%s.rml"\n' %(openerpModule, thisModule))
+        fileOut.write(u'                report_type="pdf"\n                file=""\n                 />\n')
+    
+    fileOut.write(u'<!--\n       IMPORTANT : DO NOT CHANGE THIS FILE, IT WILL BE REGENERERATED AUTOMATICALLY\n-->\n\n')
+    fileOut.write(u'    </data>\n</openerp>\n')
+    fileOut.close()
+_createtemplate()
+
+
+
 def BomSort(object):
     bomobject=[]
     res={}
@@ -92,7 +119,7 @@ class bom_structure_all_custom_report(report_sxw.rml_parse):
 
         return children
 
-report_sxw.report_sxw('report.plm.bom.structure.all','mrp.bom','/'+modulName+'/install/report/bom_structure.rml',parser=bom_structure_all_custom_report,header='internal')
+report_sxw.report_sxw('report.plm.bom.structure.all','mrp.bom','/'+openerpModule+'/install/report/'+thisModule+'.rml',parser=bom_structure_all_custom_report,header='internal')
 
 
 class bom_structure_one_custom_report(report_sxw.rml_parse):
@@ -127,7 +154,7 @@ class bom_structure_one_custom_report(report_sxw.rml_parse):
 
         return children
 
-report_sxw.report_sxw('report.plm.bom.structure.one','mrp.bom','/'+modulName+'/install/report/bom_structure.rml',parser=bom_structure_one_custom_report,header='internal')
+report_sxw.report_sxw('report.plm.bom.structure.one','mrp.bom','/'+openerpModule+'/install/report/'+thisModule+'.rml',parser=bom_structure_one_custom_report,header='internal')
 
 
 class bom_structure_all_sum_custom_report(report_sxw.rml_parse):
@@ -180,7 +207,7 @@ class bom_structure_all_sum_custom_report(report_sxw.rml_parse):
 
         return result
 
-report_sxw.report_sxw('report.plm.bom.structure.all.sum','mrp.bom','/'+modulName+'/install/report/bom_structure.rml',parser=bom_structure_all_sum_custom_report,header='internal')
+report_sxw.report_sxw('report.plm.bom.structure.all.sum','mrp.bom','/'+openerpModule+'/install/report/'+thisModule+'.rml',parser=bom_structure_all_sum_custom_report,header='internal')
 
 class bom_structure_one_sum_custom_report(report_sxw.rml_parse):
     def __init__(self, cr, uid, name, context):
@@ -224,7 +251,7 @@ class bom_structure_one_sum_custom_report(report_sxw.rml_parse):
 
         return result
 
-report_sxw.report_sxw('report.plm.bom.structure.one.sum','mrp.bom','/'+modulName+'/install/report/bom_structure.rml',parser=bom_structure_one_sum_custom_report,header='internal')
+report_sxw.report_sxw('report.plm.bom.structure.one.sum','mrp.bom','/'+openerpModule+'/install/report/'+thisModule+'.rml',parser=bom_structure_one_sum_custom_report,header='internal')
 
 class bom_structure_leaves_custom_report(report_sxw.rml_parse):
     def __init__(self, cr, uid, name, context):
@@ -272,4 +299,4 @@ class bom_structure_leaves_custom_report(report_sxw.rml_parse):
 
         return result
 
-report_sxw.report_sxw('report.plm.bom.structure.leaves','mrp.bom','/'+modulName+'/install/report/bom_structure.rml',parser=bom_structure_leaves_custom_report,header='internal')
+report_sxw.report_sxw('report.plm.bom.structure.leaves','mrp.bom','/'+openerpModule+'/install/report/'+thisModule+'.rml',parser=bom_structure_leaves_custom_report,header='internal')
