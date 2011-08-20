@@ -56,11 +56,10 @@
     <paraStyle name="P2" fontName="Helvetica-Bold" fontSize="8.0" leading="10" alignment="CENTER" spaceBefore="0.0" spaceAfter="0.0"/>
     <paraStyle name="P3" fontName="Helvetica-Bold" fontSize="9.0" leading="11" alignment="CENTER" spaceBefore="6.0" spaceAfter="6.0"/>
     <paraStyle name="P4" fontName="Helvetica-Bold" fontSize="9.0" leading="11" alignment="CENTER" spaceBefore="0.0" spaceAfter="0.0"/>
-    <paraStyle name="P5" fontName="Helvetica" fontSize="9.0" leading="11" alignment="CENTER" spaceBefore="0.0" spaceAfter="0.0"/>
-    <paraStyle name="P6" fontName="Helvetica-Bold" fontSize="9.0" leading="11" alignment="CENTER" spaceBefore="6.0" spaceAfter="6.0"/>
+    <paraStyle name="P5" fontName="Helvetica-Bold" fontSize="9.0" leading="11" alignment="CENTER" spaceBefore="6.0" spaceAfter="6.0"/>
+    <paraStyle name="P6" fontName="Helvetica" fontSize="9.0" leading="11" alignment="CENTER" spaceBefore="0.0" spaceAfter="0.0"/>
     <paraStyle name="P7" fontName="Helvetica" fontSize="9.0" leading="11" alignment="CENTER" spaceBefore="0.0" spaceAfter="0.0"/>
-    <paraStyle name="P8" fontName="Helvetica" fontSize="9.0" leading="11" alignment="CENTER" spaceBefore="0.0" spaceAfter="0.0"/>
-    <paraStyle name="P9" fontName="Helvetica-Bold" fontSize="9.0" leading="11" alignment="CENTER" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="P8" fontName="Helvetica-Bold" fontSize="9.0" leading="11" alignment="CENTER" spaceBefore="0.0" spaceAfter="0.0"/>
     <paraStyle name="Standard" fontName="Helvetica"/>
     <paraStyle name="Heading" fontName="Helvetica" fontSize="14.0" leading="17" spaceBefore="12.0" spaceAfter="6.0"/>
     <paraStyle name="Text body" fontName="Helvetica" spaceBefore="0.0" spaceAfter="6.0"/>
@@ -120,10 +119,10 @@
           <para style="terp_tblheader_Details">Description</para>
         </td>
         <td>
-          <para style="P6">Qty</para>
+          <para style="P5">Qty</para>
         </td>
         <td>
-          <para style="P6">UoM</para>
+          <para style="P5">UoM</para>
         </td>
         <td>
           <para style="terp_tblheader_General_Centre">Weight</para>
@@ -157,10 +156,10 @@
             <para style="terp_default_Bold_9">[[ o.product_id.description ]]</para>
           </td>
           <td>
-            <para style="P9">[[ o.product_qty ]]</para>
+            <para style="P8">[[ o.product_qty ]]</para>
           </td>
           <td>
-            <para style="P9">[[ o.product_uom.name ]]</para>
+            <para style="P8">[[ o.product_uom.name ]]</para>
           </td>
           <td>
             <para style="terp_tblheader_Details_Centre">[[ o.product_id.weight_net ]]</para>
@@ -186,19 +185,19 @@
               <para style="terp_default_9">[[ l['pname'] ]]</para>
             </td>
             <td>
-              <para style="P1">[[ l['previ] ]]</para>
+              <para style="P1">[[ l['previ'] ]]</para>
             </td>
             <td>
               <para style="terp_default_9">[[ l['pdesc'] ]]</para>
             </td>
             <td>
-              <para style="P8">[[ l['pqty'] ]]</para>
+              <para style="P7">[[ l['pqty'] ]]</para>
             </td>
             <td>
-              <para style="P8">[[ l['uname'] ]]</para>
+              <para style="P7">[[ l['uname'] ]]</para>
             </td>
             <td>
-              <para style="P7">[[ l['pweight'] ]]</para>
+              <para style="P6">[[ l['pweight'] ]]</para>
             </td>
           </tr>
         </blockTable>
