@@ -1,60 +1,64 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
+
+<!--
+       IMPORTANT : DO NOT CHANGE THIS FILE, IT WILL BE REGENERERATED AUTOMATICALLY
+-->
+
         <report auto="True"
                 header="False"
-        		id="report_plm_bom_structure_all"
+                model="mrp.bom"
+                id="report_plm_bom_structure_all"
                 string="BOM All Levels"
-                model="mrp.bom"
                 name="plm.bom.structure.all"
+                rml="OpenErpPlm/install/report/bom_structure.rml"
                 report_type="pdf"
-        		rml="openerpplm/install/report/bom_structure.rml"        
                 file=""
-                />
-
+                 />
         <report auto="True"
                 header="False"
-        		id="report_plm_bom_structure_one"
+                model="mrp.bom"
+                id="report_plm_bom_structure_one"
                 string="BOM One Level"
-                model="mrp.bom"
                 name="plm.bom.structure.one"
+                rml="OpenErpPlm/install/report/bom_structure.rml"
                 report_type="pdf"
-                rml="openerpplm/install/report/bom_structure.rml"
                 file=""
-                />
-
+                 />
         <report auto="True"
                 header="False"
-        		id="report_plm_bom_structure_all_sum"
+                model="mrp.bom"
+                id="report_plm_bom_structure_all_sum"
                 string="BOM All Levels Summarized"
-                model="mrp.bom"
                 name="plm.bom.structure.all.sum"
+                rml="OpenErpPlm/install/report/bom_structure.rml"
                 report_type="pdf"
-                rml="openerpplm/install/report/bom_structure.rml"
                 file=""
-                />
-
+                 />
         <report auto="True"
                 header="False"
-        		id="report_plm_bom_structure_one_sum"
+                model="mrp.bom"
+                id="report_plm_bom_structure_one_sum"
                 string="BOM One Level Summarized"
-                model="mrp.bom"
                 name="plm.bom.structure.one.sum"
+                rml="OpenErpPlm/install/report/bom_structure.rml"
                 report_type="pdf"
-                rml="openerpplm/install/report/bom_structure.rml"
                 file=""
-                />
-
+                 />
         <report auto="True"
                 header="False"
-        		id="report_plm_bom_structure_leaves"
-                string="BOM Only Leaves Summarized"
                 model="mrp.bom"
+                id="report_plm_bom_structure_leaves"
+                string="BOM Only Leaves Summarized"
                 name="plm.bom.structure.leaves"
+                rml="OpenErpPlm/install/report/bom_structure.rml"
                 report_type="pdf"
-                rml="openerpplm/install/report/bom_structure.rml"
                 file=""
-                />
+                 />
+<!--
+       IMPORTANT : DO NOT CHANGE THIS FILE, IT WILL BE REGENERERATED AUTOMATICALLY
+-->
 
     </data>
 </openerp>
