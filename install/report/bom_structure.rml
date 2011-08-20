@@ -20,6 +20,8 @@
       <lineStyle kind="LINEBELOW" colorName="#000000" start="4,-1" stop="4,-1"/>
       <lineStyle kind="LINEBELOW" colorName="#000000" start="5,-1" stop="5,-1"/>
       <lineStyle kind="LINEBELOW" colorName="#000000" start="6,-1" stop="6,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#000000" start="7,-1" stop="7,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#000000" start="8,-1" stop="8,-1"/>
     </blockTableStyle>
     <blockTableStyle id="Table1">
       <blockAlignment value="LEFT"/>
@@ -31,6 +33,8 @@
       <lineStyle kind="LINEBELOW" colorName="#999999" start="4,-1" stop="4,-1"/>
       <lineStyle kind="LINEBELOW" colorName="#999999" start="5,-1" stop="5,-1"/>
       <lineStyle kind="LINEBELOW" colorName="#999999" start="6,-1" stop="6,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#999999" start="7,-1" stop="7,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#999999" start="8,-1" stop="8,-1"/>
     </blockTableStyle>
     <blockTableStyle id="Table3">
       <blockAlignment value="LEFT"/>
@@ -42,6 +46,8 @@
       <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="4,-1" stop="4,-1"/>
       <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="5,-1" stop="5,-1"/>
       <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="6,-1" stop="6,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="7,-1" stop="7,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="8,-1" stop="8,-1"/>
     </blockTableStyle>
     <initialize>
       <paraStyle name="all" alignment="justify"/>
@@ -49,6 +55,12 @@
     <paraStyle name="P1" fontName="Helvetica" fontSize="9.0" leading="11" alignment="CENTER" spaceBefore="0.0" spaceAfter="0.0"/>
     <paraStyle name="P2" fontName="Helvetica-Bold" fontSize="8.0" leading="10" alignment="CENTER" spaceBefore="0.0" spaceAfter="0.0"/>
     <paraStyle name="P3" fontName="Helvetica-Bold" fontSize="9.0" leading="11" alignment="CENTER" spaceBefore="6.0" spaceAfter="6.0"/>
+    <paraStyle name="P4" fontName="Helvetica-Bold" fontSize="9.0" leading="11" alignment="CENTER" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="P5" fontName="Helvetica" fontSize="9.0" leading="11" alignment="CENTER" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="P6" fontName="Helvetica-Bold" fontSize="9.0" leading="11" alignment="CENTER" spaceBefore="6.0" spaceAfter="6.0"/>
+    <paraStyle name="P7" fontName="Helvetica" fontSize="9.0" leading="11" alignment="CENTER" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="P8" fontName="Helvetica" fontSize="9.0" leading="11" alignment="CENTER" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="P9" fontName="Helvetica-Bold" fontSize="9.0" leading="11" alignment="CENTER" spaceBefore="0.0" spaceAfter="0.0"/>
     <paraStyle name="Standard" fontName="Helvetica"/>
     <paraStyle name="Heading" fontName="Helvetica" fontSize="14.0" leading="17" spaceBefore="12.0" spaceAfter="6.0"/>
     <paraStyle name="Text body" fontName="Helvetica" spaceBefore="0.0" spaceAfter="6.0"/>
@@ -87,13 +99,13 @@
   </stylesheet>
   <story>
     <para style="terp_header_Centre">BOM Structure Report</para>
-    <blockTable colWidths="88.0,37.0,32.0,85.0,211.0,40.0,40.0" style="Table2">
+    <blockTable colWidths="71.0,30.0,27.0,68.0,27.0,214.0,32.0,32.0,32.0" style="Table2">
       <tr>
         <td>
           <para style="terp_tblheader_Details">BOM Name</para>
         </td>
         <td>
-          <para style="P3">Position</para>
+          <para style="P3">Pos.</para>
         </td>
         <td>
           <para style="P3">Level</para>
@@ -102,10 +114,16 @@
           <para style="terp_tblheader_Details">Product Name</para>
         </td>
         <td>
+          <para style="P3">Rev.</para>
+        </td>
+        <td>
           <para style="terp_tblheader_Details">Description</para>
         </td>
         <td>
-          <para style="terp_tblheader_Details_Right">Quantity</para>
+          <para style="P6">Qty</para>
+        </td>
+        <td>
+          <para style="P6">UoM</para>
         </td>
         <td>
           <para style="terp_tblheader_General_Centre">Weight</para>
@@ -114,7 +132,7 @@
     </blockTable>
     <section>
       <para style="terp_default_8">[[ repeatIn(objects, 'o') ]]</para>
-      <blockTable colWidths="88.0,37.0,32.0,85.0,211.0,40.0,40.0" style="Table1">
+      <blockTable colWidths="71.0,30.0,27.0,68.0,27.0,214.0,32.0,32.0,32.0" style="Table1">
         <tr>
           <td>
             <para style="terp_default_Bold_9">[[ o.name ]]</para>
@@ -133,10 +151,16 @@
             <para style="terp_default_Bold_9">[ [[ (o.product_id.default_code) or removeParentNode('font') ]] ] [[ o.product_id.name ]]</para>
           </td>
           <td>
+            <para style="P4">[[ (o.product_id.engineering_revision) ]]</para>
+          </td>
+          <td>
             <para style="terp_default_Bold_9">[[ o.product_id.description ]]</para>
           </td>
           <td>
-            <para style="terp_default_Right_9_Bold">[[ o.product_qty ]] [[ o.product_uom.name ]]</para>
+            <para style="P9">[[ o.product_qty ]]</para>
+          </td>
+          <td>
+            <para style="P9">[[ o.product_uom.name ]]</para>
           </td>
           <td>
             <para style="terp_tblheader_Details_Centre">[[ o.product_id.weight_net ]]</para>
@@ -145,7 +169,7 @@
       </blockTable>
       <section>
         <para style="terp_default_8">[[ repeatIn(get_children(o.bom_lines), 'l') ]]</para>
-        <blockTable colWidths="88.0,36.0,32.0,85.0,211.0,40.0,40.0" style="Table3">
+        <blockTable colWidths="71.0,30.0,27.0,68.0,27.0,213.0,32.0,32.0,33.0" style="Table3">
           <tr>
             <td>
               <para style="terp_default_9">
@@ -162,13 +186,19 @@
               <para style="terp_default_9">[[ l['pname'] ]]</para>
             </td>
             <td>
+              <para style="P1">[[ l['previ] ]]</para>
+            </td>
+            <td>
               <para style="terp_default_9">[[ l['pdesc'] ]]</para>
             </td>
             <td>
-              <para style="terp_default_Right_9">[[ l['pqty'] ]] [[ l['uname'] ]]</para>
+              <para style="P8">[[ l['pqty'] ]]</para>
             </td>
             <td>
-              <para style="terp_default_Centre_9">[[ l['pweight'] ]]</para>
+              <para style="P8">[[ l['uname'] ]]</para>
+            </td>
+            <td>
+              <para style="P7">[[ l['pweight'] ]]</para>
             </td>
           </tr>
         </blockTable>
