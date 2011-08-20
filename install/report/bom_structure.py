@@ -43,7 +43,12 @@ def _thisModule():
     return os.path.splitext(os.path.basename(__file__))[0]
 thisModule=_thisModule()
 
+###############################################################################################################à
+
 def _createtemplate():
+    """
+        Automatic XML menu creation
+    """
     filepath=os.path.dirname(__file__)
     fileName=thisModule+'.xml'
     fileOut = open(os.path.join(filepath,fileName), 'w')
@@ -68,7 +73,7 @@ def _createtemplate():
     fileOut.close()
 _createtemplate()
 
-
+###############################################################################################################à
 
 def BomSort(object):
     bomobject=[]
