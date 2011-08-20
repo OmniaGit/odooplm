@@ -57,6 +57,7 @@
                     <field name="description" select="True"/>
                     <field name="code"  select="True"/>
                     <field name="product_id"  select="True"/>
+                    <field name="engineering_revision"/>
                     <field name="product_qty"/>
                     <field name="product_uom"/>
                     <field name="weight_net"/>
