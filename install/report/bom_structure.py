@@ -29,8 +29,6 @@
 import os
 import time
 from report import report_sxw
-from osv import osv
-import pooler
 from operator import itemgetter
 
 
