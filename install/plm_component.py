@@ -332,8 +332,6 @@ class plm_component(osv.osv):
            action to be executed for Released state
         """
         defaults={}
-#        excludeStatuses=['confirmed','released','undermodify','obsoleted']
-#        includeStatuses=['draft','transmitted']
         excludeStatuses=['released','undermodify','obsoleted']
         includeStatuses=['confirmed']
         stopFlag,allIDs=self._get_recursive_parts(cr, uid, ids, excludeStatuses, includeStatuses)
@@ -371,7 +369,7 @@ class plm_component(osv.osv):
         defaults={}
         defaults['engineering_writable']=True
         defaults['state']='released'
-        excludeStatuses=['draft','confirmed','transmitted','undermodify','obsoleted']
+        excludeStatuses=['draft','confirmed','transmitted','released','undermodify','obsoleted']
         includeStatuses=['obsoleted']
         stopFlag,allIDs=self._get_recursive_parts(cr, uid, ids, excludeStatuses, includeStatuses)
         self._action_ondocuments(cr,uid,allIDs,'reactivate')
