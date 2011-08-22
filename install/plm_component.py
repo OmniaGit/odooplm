@@ -50,11 +50,13 @@ class plm_component(osv.osv):
             rel_fields=['bom_id','product_id','product_qty','itemnum']
         outputpath=r'C:\Temp'
         if not os.path.exists(outputpath):
+            raise osv.except_osv(_('Export Data Error'), _("Requested writing path (%s) doesn't exist." %(outputpath)))
             return False 
         fname=datetime.now().isoformat(' ').replace('.','').replace(':','').replace(' ','').replace('-','')+'.csv'
         filename=os.path.join(outputpath,fname)
         expData=self.export_data(cr, uid, allIDs,anag_fields)
         if not self._export_csv(filename, anag_fields, expData, True):
+            raise osv.except_osv(_('Export Data Error'), _("Writing operations on file (%s) have failed." %(filename)))
             return False
         bomType=self.pool.get('mrp.bom')
         for id in ids:
