@@ -562,6 +562,7 @@ class plm_document(osv.osv):
         """
             Extract documents to be returned 
         """
+        listed_models=[]
         listed_documents=[]
         id, listedFiles,selection = request
         if selection == None:
@@ -571,7 +572,7 @@ class plm_document(osv.osv):
         docArray=self._relateddocs(cr, uid, id, kind, listed_documents)
 
         kind='HiTree'   # Get Hierarchical tree relations due to children
-        modArray=self._explodedocs(cr, uid, id, kind, listed_documents)
+        modArray=self._explodedocs(cr, uid, id, kind, listed_models)
         if selection == 2:
             docArray=self._getlastrev(cr, uid, docArray+modArray, context)
         else:
