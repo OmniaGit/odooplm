@@ -669,12 +669,16 @@ class plm_checkout(osv.osv):
         docID=documentType.browse(cr, uid, vals['documentid'])
         values={'writable':True,}
         if not documentType.write(cr, uid, [docID.id], values):
+            logging.warning("create : Unable to check-out the required document ("+str(docID.name)+"-"+str(docID.revisionid)+").")
+            raise osv.except_osv(_('Check-Out Error'), _("Unable to check-out the required document ("+str(docID.name)+"-"+str(docID.revisionid)+")."))
             return False
         return super(plm_checkout,self).create(cr, uid, vals, context=context)   
          
     def unlink(self, cr, uid, ids, context=None):
         if context!=None and context!={}:
             if uid!=1:
+                logging.warning("unlink : Unable to Check-In the required document.\n You aren't authorized in this context.")
+                raise osv.except_osv(_('Check-In Error'), _("Unable to Check-In the required document.\n You aren't authorized in this context."))
                 return False
         documentType=self.pool.get('ir.attachment')
         checkObjs=self.browse(cr, uid, ids)
@@ -682,6 +686,8 @@ class plm_checkout(osv.osv):
             checkObj.documentid.writable=False
             values={'writable':False,}
             if not documentType.write(cr, uid, [checkObj.documentid.id], values):
+                logging.warning("unlink : Unable to check-in the document ("+str(checkObj.documentid.name)+"-"+str(checkObj.documentid.revisionid)+").\n You can't change writable flag.")
+                raise osv.except_osv(_('Check-In Error'), _("Unable to Check-In the document ("+str(checkObj.documentid.name)+"-"+str(checkObj.documentid.revisionid)+").\n You can't change writable flag."))
                 return False
         return super(plm_checkout,self).unlink(cr, uid, ids, context=context)
 
