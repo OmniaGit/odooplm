@@ -673,7 +673,7 @@ class plm_checkout(osv.osv):
         return super(plm_checkout,self).create(cr, uid, vals, context=context)   
          
     def unlink(self, cr, uid, ids, context=None):
-        if context!=None:
+        if context!=None and context!={}:
             if uid!=1:
                 return False
         documentType=self.pool.get('ir.attachment')
