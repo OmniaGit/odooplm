@@ -61,8 +61,6 @@
         'install/plmfinishings/finishing_view.xml',
         'install/plmdescriptions/description_sequence.xml',
         'install/plmdescriptions/description_view.xml',
-        'install/plmnumbering/numbering_view.xml',
-        'install/plmnumbering/numbering_menu.xml'
     ],
     'demo_xml': [],
     'installable': True,
