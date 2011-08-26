@@ -23,7 +23,6 @@ import plm_base_entities
 import plm_document
 import plm_component
 import plmdescriptions
-import plmnumbering
 import plm_extend_entities
 import report
 
