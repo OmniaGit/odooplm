@@ -25,6 +25,7 @@ import types
 from tools.translate import _
 from osv import osv, fields
 from datetime import datetime
+import logging
 
 #USED_STATES=[('draft','Draft'),('confirmed','Confirmed'),('released','Released'),('undermodify','UnderModify'),('obsoleted','Obsoleted')]
 #STATEFORRELEASE=['confirmed']
@@ -68,11 +69,13 @@ class plm_component(osv.osv):
                 expData=bomType.export_data(cr, uid, relIDs,rel_fields)
                 if not self._export_csv(filename, rel_fields, expData, True):
                     raise osv.except_osv(_('Export Data Error'), _("No Bom extraction files was generated, about entity (%s)." %(fname)))
+                    return False
         return True
 
     def _export_csv(self, fname, fields, result, write_title=False):
         import csv
         if not 'datas' in result:
+            logging.error("_export_csv : No 'datas' in result.")
             return False
         try:
             fp = file(fname, 'wb+')
@@ -91,6 +94,7 @@ class plm_component(osv.osv):
             fp.close()
             return True
         except IOError, (errno, strerror):
+            logging.error("_export_csv : IOError : ("+str(strerror)+").")
             return False
            
     def _getbyrevision(self, cr, uid, name, revision):
@@ -167,10 +171,6 @@ class plm_component(osv.osv):
             exitValues['name']=newEnt.name
             exitValues['engineering_code']=newEnt.engineering_code
             exitValues['engineering_revision']=newEnt.engineering_revision
-            exitValues['auto_code1']=False
-            exitValues['auto_code2']=False
-            exitValues['auto_code3']=False
-            exitValues['auto_code4']=False
         return exitValues
 
     def newVersion(self,cr,uid,ids,context=None):
