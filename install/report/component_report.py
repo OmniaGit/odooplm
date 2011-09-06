@@ -28,6 +28,26 @@ import pooler
 from report.interface import report_int
 from book_collector import BookCollector,packDocuments
 
+class component_custom_report(report_int):
+    """
+        Return a pdf report of each printable document attached to given Part ( level = 0 one level only, level = 1 all levels)
+    """
+    def create(self, cr, uid, ids, datas, context=None):
+        self.pool = pooler.get_pool(cr.dbname)
+        componentType=self.pool.get('product.product')
+        user=self.pool.get('res.users').browse(cr, uid, uid, context=context)
+        msg = "Printed by "+str(user.name)+" : "+ str(time.strftime("%d/%m/%Y %H:%M:%S"))
+        output  = BookCollector(jumpFirst=False,customTest=(False,msg),bottomHeight=10)
+        children=[]
+        documents=[]
+        components=componentType.browse(cr, uid, ids, context=context)
+        for component in components:
+            for child in children:
+                documents.extend(component.linkeddocuments)
+        return packDocuments(documents,output)
+
+component_custom_report('report.product.product.pdf')
+
 class component_one_custom_report(report_int):
     """
         Return a pdf report of each printable document attached to children in a Bom ( level = 0 one level only, level = 1 all levels)
@@ -73,13 +93,3 @@ class component_all_custom_report(report_int):
         return packDocuments(documents,output)
 
 component_all_custom_report('report.all.product.product.pdf')
-
-
-
-
-
-
-
-
-
-
