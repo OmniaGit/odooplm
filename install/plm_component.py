@@ -119,7 +119,7 @@ class plm_component(osv.osv):
                 result.extend(children)
         return result
 
-    def _getChildrenBom(self, cr, uid, id, level=0, currlevel=0, context=None):
+    def _getChildrenBom(self, cr, uid, component, level=0, currlevel=0, context=None):
         """
             Return a flat list of each child, listed once, in a Bom ( level = 0 one level only, level = 1 all levels)
         """
@@ -127,11 +127,9 @@ class plm_component(osv.osv):
         buffer=[]
         if level==0 and currlevel>1:
             return buffer
-        component=self.pool.get('product.product').browse(cr, uid, id, context=context)
-        relType=self.pool.get('mrp.bom')
         for bomid in component.bom_ids:
-            for bom in relType.browse(cr, uid, bomid.id, context=context).bom_lines:
-                children=self._getChildrenBom(cr, uid, bom.product_id.id, level, currlevel+1, context=context)
+            for bom in bomid.bom_lines:
+                children=self._getChildrenBom(cr, uid, bom.product_id, level, currlevel+1, context=context)
                 buffer.extend(children)
         if not (component.id in buffer):
             buffer.append(component.id)
@@ -251,7 +249,7 @@ class plm_component(osv.osv):
         children=[]
         components=self.browse(cr, uid, ids)
         for component in components:
-            children=self._getChildrenBom(cr, uid, component.id, 1)
+            children=self._getChildrenBom(cr, uid, component, 1)
             children=self.browse(cr, uid, children)
             for child in children:
                 if (not child.state in excludeStatuses) and (not child.state in includeStatuses):

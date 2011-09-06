@@ -2,10 +2,21 @@
 <openerp>
     <data>
 
-        <report id="report_product_product_pdf"
-                string="Print Drawings Pdf"
+        <report id="report_all_product_product_pdf"
+                string="Print All Levels PDF Drawings"
                 model="product.product"
-                name="product.product.pdf"
+                name="all.product.product.pdf"
+                report_type="sxw"
+                file=""
+                header="False"
+                />
+    </data>
+    <data>
+
+        <report id="report_one_product_product_pdf"
+                string="Print One Level PDF Drawings"
+                model="product.product"
+                name="one.product.product.pdf"
                 report_type="sxw"
                 file=""
                 header="False"
