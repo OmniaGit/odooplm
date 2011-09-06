@@ -42,8 +42,7 @@ class component_custom_report(report_int):
         documents=[]
         components=componentType.browse(cr, uid, ids, context=context)
         for component in components:
-            for child in children:
-                documents.extend(component.linkeddocuments)
+            documents.extend(component.linkeddocuments)
         return packDocuments(documents,output)
 
 component_custom_report('report.product.product.pdf')
