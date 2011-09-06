@@ -161,7 +161,7 @@ class component_spare_parts_report(report_int):
     def getSparePartsPdfFile(self,cr,uid,context,component,output,componentTemplate):
         for pageStream in self.getPdfComponentLayout(component):
             output.addPage(pageStream)
-        childrenids=componentTemplate._getChildrenBom(cr, uid, component.id, FIRST_LEVEL, context=context)
+        childrenids=componentTemplate._getChildrenBom(cr, uid, component, FIRST_LEVEL, context=context)
         if component.id in childrenids:
             childrenids.remove(component.id)
         children=componentTemplate.browse(cr, uid, childrenids, context=context)
