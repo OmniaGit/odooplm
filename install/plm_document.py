@@ -204,7 +204,6 @@ class plm_document(osv.osv):
         """
             Overwrite the default copy method
         """
-        newID=None
         #get All document relation 
         documentRelation=self.pool.get('plm.document.relation')
         docRelIds=documentRelation.search(cr,uid,[('parent_id', '=',id)],context=context)
@@ -296,7 +295,6 @@ class plm_document(osv.osv):
         """
             create a new revision of the document
         """
-        newID=None
         defaults={}
         exitValues={}
         newID=self.copy(cr,uid,id,defaults,context)
