@@ -21,8 +21,6 @@
 ##############################################################################
 
 from osv import osv, fields
-import time
-
 
 
 class plm_document(osv.osv):
