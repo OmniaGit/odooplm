@@ -266,7 +266,6 @@ class plm_document(osv.osv):
             create a new revision of the document
         """
         newID=None
-        newIndex=0
         oldObjects=self.browse(cr,uid,ids,context=context)
         for oldObject in oldObjects:
             self.write(cr,uid,[oldObject.id],{'state':'undermodify',} ,context=context,check=False)
@@ -313,10 +312,10 @@ class plm_document(osv.osv):
             else:
                 existingID=existingID[0]
                 objDocument=self.browse(cr, uid, existingID)
-#                logging.info("CheckSaveUpdate : time db : %s time file : %s" %(str(self.getLastTime(cr,uid,existingID).strftime('%Y-%m-%d %H:%M:%S')), str(document['lastupdate'])))
+#               logging.info("CheckSaveUpdate : time db : %s time file : %s" %(str(self.getLastTime(cr,uid,existingID).strftime('%Y-%m-%d %H:%M:%S')), str(document['lastupdate'])))
                 if self.getLastTime(cr,uid,existingID)<datetime.strptime(str(document['lastupdate']),'%Y-%m-%d %H:%M:%S'):
                     if objDocument.writable:
-                         hasSaved=True
+                        hasSaved=True
             document['documentID']=existingID
             document['hasSaved']=hasSaved
             retValues.append(document)
@@ -431,7 +430,7 @@ class plm_document(osv.osv):
         defaults['writable']=False
         defaults['state']='obsoleted'
         self._check_in(cr, uid, ids,context)
-        return self.write(cr, uid, allIDs, defaults, context=context, check=False)
+        return self.write(cr, uid, ids, defaults, context=context, check=False)
 
     def action_reactivate(self,cr,uid,ids,context=None):
         """
@@ -441,7 +440,7 @@ class plm_document(osv.osv):
         defaults['engineering_writable']=False
         defaults['state']='released'
         self._check_in(cr, uid, ids,context)
-        return self.write(cr, uid, allIDs, defaults, context=context, check=False)
+        return self.write(cr, uid, ids, defaults, context=context, check=False)
 
 #   Overridden methods for this entity
     def write(self, cr, user, ids, vals, context=None, check=True):
@@ -508,7 +507,6 @@ class plm_document(osv.osv):
         retValues=[]
         def getcheckedfiles(files):
             res=[]
-            latest=None
             for file in files:
                 ids=self.search(cr,uid,[('datas_fname','=',file)],order='revisionid')
                 if len(ids)>0:
