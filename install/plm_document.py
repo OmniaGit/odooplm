@@ -79,17 +79,26 @@ class plm_document(osv.osv):
             treated.append(object)
         return result
             
-    def _data_get_files(self, cr, uid, ids, listedFiles=[], context=None):
+    def _data_get_files(self, cr, uid, ids, listedFiles=(), context=None):
+        """
+            Get Files to return to Client
+        """
         result = []
+        datefiles,listfiles=listedFiles
         objects = self.browse(cr, uid, ids, context=context)
         for object in objects:
             try:
                 isCheckedOutToMe=self._is_checkedout_for_me(cr, uid, object.id, context)
-                if not(object.datas_fname in listedFiles and isCheckedOutToMe):
+                if not(object.datas_fname in listfiles):
                     value = file(os.path.join(self._get_filestore(cr), object.store_fname), 'rb').read()
                     result.append((object.id, object.datas_fname, base64.encodestring(value), isCheckedOutToMe))
                 else:
-                    result.append((object.id,object.datas_fname,None, isCheckedOutToMe))
+                    isNewer=self.getLastTime(cr,uid,object.id)>=datetime.strptime(str(datefiles[listfiles.index(object.datas_fname)]),'%Y-%m-%d %H:%M:%S')
+                    if (isNewer and not(isCheckedOutToMe)):
+                        value = file(os.path.join(self._get_filestore(cr), object.store_fname), 'rb').read()
+                        result.append((object.id, object.datas_fname, base64.encodestring(value), isCheckedOutToMe))
+                    else:
+                        result.append((object.id,object.datas_fname,None, isCheckedOutToMe))
             except Exception, ex:
                 logging.error("_data_get_files : Unable to access to document ("+str(object.name)+"). Error :" + str(ex))
                 result.append((object.id,object.datas_fname,None, True))
@@ -177,12 +186,17 @@ class plm_document(osv.osv):
             result.append(child.child_id.id)
         return result
 
-    def _data_check_files(self, cr, uid, ids, listedFiles=[], context=None):
+    def _data_check_files(self, cr, uid, ids, listedFiles=(), context=None):
         result = []
+        datefiles,listfiles=listedFiles
         objects = self.browse(cr, uid, ids, context=context)
         for object in objects:
-            isCheckedOutToMe=self._is_checkedout_for_me(cr, uid, object.id, context)
-            collectable = not((object.datas_fname in listedFiles) and isCheckedOutToMe)
+            if (object.datas_fname in listfiles):
+                isCheckedOutToMe=self._is_checkedout_for_me(cr, uid, object.id, context)
+                isNewer=self.getLastTime(cr,uid,object.id)>=datetime.strptime(str(datefiles[listfiles.index(object.datas_fname)]),'%Y-%m-%d %H:%M:%S')
+                collectable = isNewer and not(isCheckedOutToMe)
+            else:
+                collectable = True
             result.append((object.id, object.datas_fname, object.file_size, collectable))
         return result
             
@@ -524,7 +538,7 @@ class plm_document(osv.osv):
         """
         listed_models=[]
         listed_documents=[]
-        id, listedFiles,selection = request
+        id, listedFiles, selection = request
         if selection == None:
             selection=1
 
@@ -546,7 +560,7 @@ class plm_document(osv.osv):
         """
             Extract documents to be returned 
         """
-        ids, listedFiles,selection = request
+        ids, listedFiles, selection = request
         if selection == None:
             selection=1
 
@@ -562,7 +576,7 @@ class plm_document(osv.osv):
         """
         listed_models=[]
         listed_documents=[]
-        id, listedFiles,selection = request
+        id, listedFiles, selection = request
         if selection == None:
             selection=1
 
