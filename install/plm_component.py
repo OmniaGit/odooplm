@@ -44,7 +44,6 @@ class plm_component(osv.osv):
             action to be executed for Transmitted state.
             Transmit the object to ERP Metodo
         """
-        defaults=[]
         if not anag_fields:
             anag_fields=['name','description']
         if not rel_fields:
