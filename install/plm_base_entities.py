@@ -235,10 +235,8 @@ class plm_relation(osv.osv):
 
     def GetWhereUsed(self, cr, uid, ids, context=None):
         def _bomid(cr, pid, sid=None):
-            ids=[]
             if sid == None:
                 return self._getbomidnullsrc(cr, pid)
-
             else:
                 return self._getbomid(cr, pid, sid)
                 
@@ -296,8 +294,6 @@ class plm_relation(osv.osv):
 #                   innerids=[innerid for innerid in innerids]
                     output.append([bom_line.product_id.id, innerids])
             return(output)
-        relDatas={}
-        prtDatas={}
         relDatas=[ids[0],explodebom(ids[0])]
         prtDatas=self._getpackdatas(cr, uid, relDatas)
         return (relDatas, prtDatas, self._getpackreldatas(cr, uid, relDatas, prtDatas))
@@ -319,8 +315,6 @@ class plm_relation(osv.osv):
 #                   innerids=[innerid for innerid in innerids]
                     output.append([bom_line.product_id.id, innerids])
             return(output)
-        relDatas={}
-        prtDatas={}
         relDatas=[ids[0],explodebom(ids[0])]
         prtDatas=self._getpackdatas(cr, uid, relDatas)
         return (relDatas, prtDatas, self._getpackreldatas(cr, uid, relDatas, prtDatas))
