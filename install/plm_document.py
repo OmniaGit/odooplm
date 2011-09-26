@@ -634,7 +634,6 @@ class plm_document(osv.osv):
             return datetime.strptime(obj.write_date,'%Y-%m-%d %H:%M:%S')
         else:
             return datetime.strptime(obj.create_date,'%Y-%m-%d %H:%M:%S')
-            
 
     def getUserSign(self, cr, uid, id, default=None, context=None):
         """
