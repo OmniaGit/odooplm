@@ -167,7 +167,8 @@ class plm_document(osv.osv):
             if recursion:
                 listed_documents.append(id)
                 result.extend(self._relateddocs(cr, uid, child.parent_id.id, kind, listed_documents, recursion))
-            result.append(child.parent_id.id)
+            if child.parent_id.id:
+                result.append(child.parent_id.id)
         return result
 
     def _relatedbydocs(self, cr, uid, id, kind, listed_documents=[], recursion=True):
@@ -183,7 +184,8 @@ class plm_document(osv.osv):
             if recursion:
                 listed_documents.append(id)
                 result.extend(self._relatedbydocs(cr, uid, child.child_id.id, kind, listed_documents, recursion))
-            result.append(child.child_id.id)
+            if child.child_id.id:
+                result.append(child.child_id.id)
         return result
 
     def _data_check_files(self, cr, uid, ids, listedFiles=(), context=None):
@@ -746,7 +748,8 @@ class plm_document_relation(osv.osv):
             try:
                 res={}
                 res['parent_id'],res['child_id'],res['configuration'],res['link_kind']=args
-                self.create(cr, uid, res)
+                if (len(str(res['parent_id']))>0) and (len(str(res['child_id']))>0):
+                    self.create(cr, uid, res)
             except:
                 logging.error("saveChild : Unable to create a relation. Arguments(" + str(args) +") ")
                 raise Exception("saveChild: Unable to create a relation.")
