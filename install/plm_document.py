@@ -545,10 +545,12 @@ class plm_document(osv.osv):
 
         kind='HiTree'   # Get Hierarchical tree relations due to children
         modArray=self._explodedocs(cr, uid, id, kind, listed_models)
+        for item in docArray:
+            if item not in modArray:
+                modArray.append(item)
+        docArray=modArray  
         if selection == 2:
-            docArray=self._getlastrev(cr, uid, docArray+modArray, context)
-        else:
-            docArray=docArray+modArray
+            docArray=self._getlastrev(cr, uid, docArray, context)
         
         if not id in docArray:
             docArray.append(id)     # Add requested document to package
@@ -583,10 +585,12 @@ class plm_document(osv.osv):
 
         kind='HiTree'   # Get Hierarchical tree relations due to children
         modArray=self._explodedocs(cr, uid, id, kind, listed_models)
+        for item in docArray:
+            if item not in modArray:
+                modArray.append(item)
+        docArray=modArray  
         if selection == 2:
-            docArray=self._getlastrev(cr, uid, docArray+modArray, context)
-        else:
-            docArray=docArray+modArray
+            docArray=self._getlastrev(cr, uid, docArray, context)
         
         if not id in docArray:
             docArray.append(id)     # Add requested document to package
