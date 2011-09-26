@@ -19,8 +19,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
-
 {
     'name': 'Product Lifecycle Management',
     'version': '1.0',
@@ -40,6 +38,7 @@
     
     - Category : CAD / Mechanical CAD
     * ThinkDesign 2009.3 (and above)
+    * SolidWorks 2011.1 (and above)
     """,
     'website': 'http://www.omniasolutions.eu',
     'init_xml': [],
