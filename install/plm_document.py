@@ -750,6 +750,9 @@ class plm_document_relation(osv.osv):
                 if (res['parent_id']!= None) and (res['child_id']!=None):
                     if (len(str(res['parent_id']))>0) and (len(str(res['child_id']))>0):
                         self.create(cr, uid, res)
+                else:
+                    logging.error("saveChild : Unable to create a relation between documents. One of documents involved doesn't exist. Arguments(" + str(args) +") ")
+                    raise Exception("saveChild: Unable to create a relation between documents. One of documents involved doesn't exist.")
             except:
                 logging.error("saveChild : Unable to create a relation. Arguments(" + str(args) +") ")
                 raise Exception("saveChild: Unable to create a relation.")
