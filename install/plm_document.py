@@ -747,8 +747,9 @@ class plm_document_relation(osv.osv):
             try:
                 res={}
                 res['parent_id'],res['child_id'],res['configuration'],res['link_kind']=args
-                if (len(str(res['parent_id']))>0) and (len(str(res['child_id']))>0):
-                    self.create(cr, uid, res)
+                if (res['parent_id']!= None) and (res['child_id']!=None):
+                    if (len(str(res['parent_id']))>0) and (len(str(res['child_id']))>0):
+                        self.create(cr, uid, res)
             except:
                 logging.error("saveChild : Unable to create a relation. Arguments(" + str(args) +") ")
                 raise Exception("saveChild: Unable to create a relation.")
