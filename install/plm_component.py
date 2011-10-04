@@ -48,7 +48,12 @@ class plm_component(osv.osv):
             anag_fields=['name','description']
         if not rel_fields:
             rel_fields=['bom_id','product_id','product_qty','itemnum']
-        outputpath=r'C:\Temp'
+
+        outputpath=os.environ.get('TEMP')
+        tmppws=os.environ.get('OPENPLMOUTPUTPATH')
+        if tmppws!=None and os.path.exists(tmppws):
+            outputpath=tmppws
+
         if not os.path.exists(outputpath):
             raise osv.except_osv(_('Export Data Error'), _("Requested writing path (%s) doesn't exist." %(outputpath)))
             return False 
