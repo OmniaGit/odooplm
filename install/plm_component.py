@@ -149,6 +149,10 @@ class plm_component(osv.osv):
 ##  Customized Automations
     def on_change_name(self, cr, uid, id, name=False, engineering_code=False):
         if name:
+            existingIDs=self.search(cr, uid, [('name','=',name)])
+            if existingIDs:
+#                raise osv.except_osv(_('Manual Numbering Warning'), _("Part number already exists."))
+                return {'value': {'name': ''}}
             if not engineering_code:
                 return {'value': {'engineering_code': name}}            
         return {}
