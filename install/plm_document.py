@@ -79,7 +79,7 @@ class plm_document(osv.osv):
             treated.append(object)
         return result
             
-    def _data_get_files(self, cr, uid, ids, listedFiles=(), context=None):
+    def _data_get_files(self, cr, uid, ids, listedFiles=([],[]), context=None):
         """
             Get Files to return to Client
         """
