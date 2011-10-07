@@ -124,12 +124,12 @@ def paperFormat(_boundingBox):
         deltaX=maxX-minX
         deltaY=maxY-minY
         if deltaX > deltaY:
-            measureX = deltaX
-            measureY = deltaY
+            measureX = float(deltaX)
+            measureY = float(deltaY)
             orientation = 1                             # Landscape
         else:
-            measureX = deltaY
-            measureY = deltaX
+            measureX = float(deltaY)
+            measureY = float(deltaX)
             orientation = 0                             # Portrait
             
         minX = (measureX*defaultUSpace) - clearance
