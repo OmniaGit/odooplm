@@ -139,7 +139,8 @@ class plm_relation(osv.osv):
     _inherit = 'mrp.bom'
     _columns = {
                 'create_date': fields.datetime('Date Created', readonly=True),
-                'source_id': fields.integer('Source Document Relation'),
+                'source_id': fields.many2one('ir.attachment','name',ondelete='no action'),
+#                'source_id': fields.integer('Source Document Relation'),
 #                'type': fields.selection([('ebom','Engineering BoM'),('normal','Normal BoM'),('phantom','Sets / Phantom')], 'BoM Type', required=True, help=
 #                    "Use a phantom bill of material in raw materials lines that have to be " \
 #                    "automatically computed in on eproduction order and not one per level." \

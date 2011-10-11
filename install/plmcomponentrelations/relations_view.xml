@@ -58,7 +58,8 @@
                     <field name="code"  select="True"/>
                     <field name="product_id"  select="True"/>
                     <field name="engineering_revision"/>
-                    <field name="product_qty"/>
+                    <field name="source_id" select="True" string="Source Relation Document"/>
+       				<field name="product_qty"/>
                     <field name="product_uom"/>
                     <field name="weight_net"/>
                     <field name="method"/>
@@ -114,6 +115,9 @@
         		</field>
         		<field name="code" position="before">
                     <field name="description"/>
+        		</field>
+        		<field name="product_qty" position="before">
+                    <field name="source_id" string="Source Relation Document"/>
         		</field>
         		<field name="type" position="before">
                     <field name="weight_net"/>
