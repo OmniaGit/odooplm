@@ -90,6 +90,7 @@
                     <field name="name"/>
                     <field name="description"/>
                     <field name="code" string="Reference"/>
+                    <field name="source_id"  string="Source Relation Document"/>
                     <newline/>
                     <group expand="0" string="Group By..." colspan="4" col="8" groups="base.group_extended">
                         <filter string="Product" icon="terp-accessories-archiver" domain="[]" context="{'group_by':'product_id'}"/>
