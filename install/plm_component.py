@@ -387,6 +387,8 @@ class plm_component(osv.osv):
                 vals['engineering_code'] = vals['name']
         else:
             vals['engineering_code'] = vals['name']
+        if 'name' in vals:
+            vals['name']=vals['name'].replace(' (copy)','')
         if len(existingIDs)>0:
             return existingIDs[len(existingIDs)-1]           #TODO : Manage search for highest revisonid
         else:
