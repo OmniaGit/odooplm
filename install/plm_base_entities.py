@@ -419,6 +419,7 @@ class plm_relation(osv.osv):
             """
                 Processes relations  
             """
+            listedChildren=[]
             sourceID=None
             subRelations=[(a, b, c, d, e, f) for a, b, c, d, e, f in relations if a == parentName]
             if len(subRelations)<1: # no relation to save 
@@ -429,7 +430,9 @@ class plm_relation(osv.osv):
             for rel in subRelations:
                 #print "Save Relation ", rel
                 parentName, parentID, childName, childID, sourceID, relArgs=rel
-                toCleanRelations(childName, relations)
+                if not (childName in listedChildren):
+                    toCleanRelations(childName, relations)
+                    listedChildren.append(childName)
             return False
 
         def toCompute(parentName, relations):
