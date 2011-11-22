@@ -430,6 +430,9 @@ class plm_relation(osv.osv):
             for rel in subRelations:
                 #print "Save Relation ", rel
                 parentName, parentID, childName, childID, sourceID, relArgs=rel
+                if parentName == childName:
+                    logging.error('toCleanRelations : Father %s refers to himself' %(str(parentName)))
+                    continue
                 if not (childName in listedChildren):
                     toCleanRelations(childName, relations)
                     listedChildren.append(childName)
@@ -448,6 +451,10 @@ class plm_relation(osv.osv):
             for rel in subRelations:
                 #print "Save Relation ", rel
                 parentName, parentID, childName, childID, sourceID, relArgs=rel
+                if parentName == childName:
+                    logging.error('toCompute : Father (%s) refers to himself' %(str(parentName)))
+                    raise Exception('saveChild.toCompute : Father "%s" refers to himself' %(str(parentName)))
+
                 tmpBomId=saveChild(childName, childID, sourceID, bomID, args=relArgs)
                 tmpBomId=toCompute(childName, relations)
             return bomID
