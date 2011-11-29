@@ -25,7 +25,7 @@
     'category': 'Generic Modules/Others',
     'depends': ['base', 'process','document','product','mrp'],
     'author': 'OmniaSolutions',
-    'description': """ This is a Product Lifecycle Management System providing:
+    'description': """ This is a Product Lifecycle Management system providing:
     
     * Editor Integration
     * Document Management
@@ -60,6 +60,7 @@
         'install/plmfinishings/finishing_view.xml',
         'install/plmdescriptions/description_sequence.xml',
         'install/plmdescriptions/description_view.xml',
+        'plm_installer.xml',
     ],
     'demo_xml': [],
     'installable': True,
