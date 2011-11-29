@@ -11,6 +11,7 @@
             <field name="arch" type="xml">
                 <form string="Engineering Bill of Material">
                     <field name="product_id" on_change="onchange_product_id(product_id, name)" select="1"/>
+                    <field name="itemnum"/>
                     <newline/>
                     <field name="product_uom"/>
                     <field name="product_qty"/>
