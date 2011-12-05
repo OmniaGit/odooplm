@@ -158,7 +158,7 @@ class plm_relation(osv.osv):
     def init(self, cr):
         cr.execute("""
                     DROP LANGUAGE IF EXISTS 'plpgsql' CASCADE;
-                    CREATE LANGUAGE'plpgsql';
+                    CREATE LANGUAGE 'plpgsql';
                    """
                    )
 
