@@ -749,7 +749,9 @@ class plm_document_relation(osv.osv):
                 res['parent_id'],res['child_id'],res['configuration'],res['link_kind']=args
                 if (res['parent_id']!= None) and (res['child_id']!=None):
                     if (len(str(res['parent_id']))>0) and (len(str(res['child_id']))>0):
-                        self.create(cr, uid, res)
+                        if not((res['parent_id'],res['child_id']) in savedItems):
+                            savedItems.append((res['parent_id'],res['child_id']))
+                            self.create(cr, uid, res)
                 else:
                     logging.error("saveChild : Unable to create a relation between documents. One of documents involved doesn't exist. Arguments(" + str(args) +") ")
                     raise Exception("saveChild: Unable to create a relation between documents. One of documents involved doesn't exist.")
@@ -757,6 +759,7 @@ class plm_document_relation(osv.osv):
                 logging.error("saveChild : Unable to create a relation. Arguments(" + str(args) +") ")
                 raise Exception("saveChild: Unable to create a relation.")
             
+        savedItems=[]
         if len(relations)<1: # no relation to save 
             return False
         cleanStructure(relations)
