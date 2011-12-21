@@ -196,8 +196,8 @@ class plm_document(osv.osv):
         datefiles,listfiles=listedFiles
         objects = self.browse(cr, uid, ids, context=context)
         for object in objects:
+            isCheckedOutToMe=self._is_checkedout_for_me(cr, uid, object.id, context)
             if (object.datas_fname in listfiles):
-                isCheckedOutToMe=self._is_checkedout_for_me(cr, uid, object.id, context)
                 if forceFlag:
                     isNewer = True
                 else:
@@ -205,7 +205,7 @@ class plm_document(osv.osv):
                 collectable = isNewer and not(isCheckedOutToMe)
             else:
                 collectable = True
-            result.append((object.id, object.datas_fname, object.file_size, collectable))
+            result.append((object.id, object.datas_fname, object.file_size, collectable, isCheckedOutToMe))
         return result
             
     def copy(self,cr,uid,id,defaults={},context=None):
