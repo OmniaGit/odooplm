@@ -79,7 +79,7 @@ class plm_document(osv.osv):
             treated.append(object)
         return result
             
-    def _data_get_files(self, cr, uid, ids, listedFiles=([],[]), context=None):
+    def _data_get_files(self, cr, uid, ids, listedFiles=([],[]), forceFlag=False, context=None):
         """
             Get Files to return to Client
         """
@@ -93,7 +93,10 @@ class plm_document(osv.osv):
                     value = file(os.path.join(self._get_filestore(cr), object.store_fname), 'rb').read()
                     result.append((object.id, object.datas_fname, base64.encodestring(value), isCheckedOutToMe))
                 else:
-                    isNewer=self.getLastTime(cr,uid,object.id)>=datetime.strptime(str(datefiles[listfiles.index(object.datas_fname)]),'%Y-%m-%d %H:%M:%S')
+                    if forceFlag:
+                        isNewer=True
+                    else:
+                        isNewer=self.getLastTime(cr,uid,object.id)>=datetime.strptime(str(datefiles[listfiles.index(object.datas_fname)]),'%Y-%m-%d %H:%M:%S')
                     if (isNewer and not(isCheckedOutToMe)):
                         value = file(os.path.join(self._get_filestore(cr), object.store_fname), 'rb').read()
                         result.append((object.id, object.datas_fname, base64.encodestring(value), isCheckedOutToMe))
@@ -188,14 +191,17 @@ class plm_document(osv.osv):
                 result.append(child.child_id.id)
         return result
 
-    def _data_check_files(self, cr, uid, ids, listedFiles=(), context=None):
+    def _data_check_files(self, cr, uid, ids, listedFiles=(), forceFlag=False, context=None):
         result = []
         datefiles,listfiles=listedFiles
         objects = self.browse(cr, uid, ids, context=context)
         for object in objects:
             if (object.datas_fname in listfiles):
                 isCheckedOutToMe=self._is_checkedout_for_me(cr, uid, object.id, context)
-                isNewer=self.getLastTime(cr,uid,object.id)>=datetime.strptime(str(datefiles[listfiles.index(object.datas_fname)]),'%Y-%m-%d %H:%M:%S')
+                if forceFlag:
+                    isNewer = True
+                else:
+                    isNewer=self.getLastTime(cr,uid,object.id)>=datetime.strptime(str(datefiles[listfiles.index(object.datas_fname)]),'%Y-%m-%d %H:%M:%S')
                 collectable = isNewer and not(isCheckedOutToMe)
             else:
                 collectable = True
@@ -536,11 +542,15 @@ class plm_document(osv.osv):
         """
             Evaluate documents to return
         """
+        forceFlag=False
         listed_models=[]
         listed_documents=[]
-        id, listedFiles, selection = request
+        id, listedFiles, selection = request        
         if selection == None:
             selection=1
+        if selection<0:
+            forceFlag=True
+            selection=selection*(-1)
 
         kind='LyTree'   # Get relations due to layout connected
         docArray=self._relateddocs(cr, uid, id, kind, listed_documents)
@@ -556,31 +566,41 @@ class plm_document(osv.osv):
         
         if not id in docArray:
             docArray.append(id)     # Add requested document to package
-        return self._data_check_files(cr, uid, docArray, listedFiles, context)
+        return self._data_check_files(cr, uid, docArray, listedFiles, forceFlag, context)
 
     def GetSomeFiles(self, cr, uid, request, default=None, context=None):
         """
             Extract documents to be returned 
         """
+        forceFlag=False
         ids, listedFiles, selection = request
         if selection == None:
             selection=1
+
+        if selection<0:
+            forceFlag=True
+            selection=selection*(-1)
 
         if selection == 2:
             docArray=self._getlastrev(cr, uid, ids, context)
         else:
             docArray=ids
-        return self._data_get_files(cr, uid, docArray, listedFiles, context)
+        return self._data_get_files(cr, uid, docArray, listedFiles, forceFlag, context)
 
     def GetAllFiles(self, cr, uid, request, default=None, context=None):
         """
             Extract documents to be returned 
         """
+        forceFlag=False
         listed_models=[]
         listed_documents=[]
         id, listedFiles, selection = request
         if selection == None:
             selection=1
+
+        if selection<0:
+            forceFlag=True
+            selection=selection*(-1)
 
         kind='LyTree'   # Get relations due to layout connected
         docArray=self._relateddocs(cr, uid, id, kind, listed_documents)
@@ -596,7 +616,7 @@ class plm_document(osv.osv):
         
         if not id in docArray:
             docArray.append(id)     # Add requested document to package
-        return self._data_get_files(cr, uid, docArray, listedFiles, context)
+        return self._data_get_files(cr, uid, docArray, listedFiles, forceFlag, context)
 
     def GetRelatedDocs(self, cr, uid, ids, default=None, context=None):
         """
