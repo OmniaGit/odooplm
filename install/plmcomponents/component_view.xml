@@ -149,7 +149,7 @@
         <field name="name">plm.base.component</field>
         <field name="model">product.product</field>
         <field name="type">tree</field>
-        <field name="priority" eval="10"/>
+        <field name="priority" eval="15"/>
         <field name="arch" type="xml">
             <tree string="Engineering Parts">
                 <field name="name" select="True"/>
@@ -169,7 +169,7 @@
         <field name="name">plm.base.component</field>
         <field name="model">product.product</field>
         <field name="type">search</field>
-        <field name="priority" eval="5"/>
+        <field name="priority" eval="15"/>
         <field name="arch" type="xml">
 		 	<search string="Parts">
                    	<filter icon="terp-go-month" string="  Latest 7 Days  " separator="1"
@@ -199,7 +199,7 @@
         <field name="name">plm.base.component</field>
         <field name="model">product.product</field>
         <field name="type">form</field>
-        <field name="priority" eval="5"/>
+        <field name="priority" eval="15"/>
         <field name="arch" type="xml">
              <form string="Engineering Product">
                  <group colspan="4" col="2">
