@@ -41,7 +41,8 @@
     * SolidWorks 2011.1 (and above)
     """,
     'website': 'http://www.omniasolutions.eu',
-    'init_xml': [],
+    'init_xml': [
+        ],
     'update_xml': [
         'install/plmviews/plm_menu.xml',
         'install/plmdocuments/document_view.xml',
@@ -60,6 +61,7 @@
         'install/plmfinishings/finishing_view.xml',
         'install/plmdescriptions/description_sequence.xml',
         'install/plmdescriptions/description_view.xml',
+
         'plm_installer.xml',
     ],
     'demo_xml': [],
