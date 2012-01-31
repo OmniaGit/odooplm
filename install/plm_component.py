@@ -54,6 +54,8 @@ class plm_component(osv.osv):
         if tmppws!=None and os.path.exists(tmppws):
             outputpath=tmppws
 
+        if outputpath==None:
+            return True
         if not os.path.exists(outputpath):
             raise osv.except_osv(_('Export Data Error'), _("Requested writing path (%s) doesn't exist." %(outputpath)))
             return False 
@@ -154,6 +156,9 @@ class plm_component(osv.osv):
 ##  Customized Automations
     def on_change_name(self, cr, uid, id, name=False, engineering_code=False):
         if name:
+            results=self.search(cr,uid,[('name','=',name)])
+            if len(results) > 0:
+                raise osv.except_osv(_('Update Part Warning'), _("Part %s already exists.\nClose with OK to reuse, with Cancel to discharge." %(name)))
             if not engineering_code:
                 return {'value': {'engineering_code': name}}            
         return {}
