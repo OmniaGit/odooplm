@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+<data>
+    <menuitem name="Backup Documents View" id="plm_menu_backup" parent="plm_menu" sequence="15"/>
+
+    <record model="ir.ui.view" id="plm_backupdoc_search">
+        <field name="name">plm.backupdoc</field>
+        <field name="model">plm.backupdoc</field>
+        <field name="type">search</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <search string="Backup Document Set">
+                <filter icon="terp-go-month" string="  Last Month  " separator="1"
+                         domain="[('createdate','&lt;=', (datetime.date.today() - relativedelta(day=31,months=1)).strftime('%%Y-%%m-%%d')),('createdate','&gt;=',(datetime.date.today() - relativedelta(day=1,months=1)).strftime('%%Y-%%m-%%d'))]"
+                         help="Checked-Out in last month"/>
+                <filter icon="terp-go-month" string="  Last Week  " separator="1"
+                         domain="[('createdate','&lt;=', (datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d')),('createdate','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"
+                         help="Checked-Out in last week"/>
+                <filter icon="terp-go-month" string="  Latest 7 Days  " separator="1"
+                         domain="[('createdate','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('createdate','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
+                         help="Checked-Out in last week"/>
+                 <filter icon="terp-go-month" string="  Yesterday  " separator="1"
+                         domain="[('createdate','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('createdate','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
+                         help="Checked-Out Yesterday"/>
+                 <filter icon="terp-go-month" string="  Today  " separator="1"
+                         domain="[('createdate','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('createdate','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
+                         help="Checked-Out today"/>
+                <newline/>
+                <field name="userid">
+                	<filter icon="terp-personal" domain="[('userid','=',uid)]" help="Filter on my documents"/>
+                </field>
+              	<field name="createdate"/>
+            	<field name="existingfile"/>
+              	<field name="documentid"/>
+            </search>
+     	</field>
+    </record>
+
+    <record model="ir.ui.view" id="plm_backupdoc_tree">
+        <field name="name">plm.backupdoc</field>
+        <field name="model">plm.backupdoc</field>
+        <field name="type">tree</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <tree string="Documents in Check-Out">
+                <field name="userid" select="1"/>
+                <field name="createdate" select="1"/>
+                <field name="documentid" select="1"/>
+                <field name="revisionid" select="1"/>
+                <field name="existingfile" select="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_plm_backupdoc">
+        <field name="name">Backup Data Set</field>
+        <field name="res_model">plm.backupdoc</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree</field>
+        <field eval="False" name="filter"/>
+        <field name="view_id" ref="plm_backupdoc_tree"/>
+        <field name="search_view_id" ref="plm_backupdoc_search"/>
+    </record>
+
+ 
+    <record id="restore_document_button_view" model="ir.ui.view">
+        <field name="name">Restore Document Button</field>
+        <field name="model">plm.backupdoc</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+        <form string="Restore Selected Document">
+            <label string="Are you sure you want to restore this document?" colspan="4"/>
+            <separator string="" colspan="4" />
+            <group colspan="4" col="6">
+            	<button icon="gtk-cancel" special="cancel" string="Cancel"/>
+            	<button icon="terp-gtk-go-back-rtl" string="Restore Entries" name="action_restore_document" type="object"/>
+            </group>
+        </form>
+        </field>
+    </record>
+
+    <record id="action_restore_document_button" model="ir.actions.act_window">
+        <field name="name">Restore Document</field>
+        <field name="res_model">plm.backupdoc</field>
+        <field name="view_type">tree</field>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="restore_document_button_view"/>
+        <field name="context">{'current_id': active_id}</field>
+    </record>
+
+    <record id="ir_restore_document" model="ir.values">
+        <field name="key2">client_action_multi</field>
+        <field name="model">plm.backupdoc</field>
+        <field name="name">Restore Documents</field>
+        <field eval="'ir.actions.act_window,%d'%action_restore_document_button" name="value"/>
+        <field eval="True" name="object"/>
+    </record>
+
+        
+    <menuitem
+        name="Search on Backup Data Set"
+        action="action_plm_backupdoc"
+        id="menu_backupdoc"
+        parent="plm_menu_backup"/>
+
+</data>
+</openerp>

@@ -47,6 +47,7 @@
         'install/plmviews/plm_menu.xml',
         'install/plmdocuments/document_view.xml',
         'install/plmdocuments/document_workflow.xml',
+        'install/plmdocuments/backupdoc_view.xml',
         'install/plmcomponents/component_view.xml',
         'install/plmcomponents/component_workflow.xml',
         'install/plmcomponentrelations/relations_view.xml',
