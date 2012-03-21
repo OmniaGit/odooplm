@@ -520,7 +520,7 @@ class plm_document(osv.osv):
     }
 
     _sql_constraints = [
-        ('filename_uniq', 'unique (name,partner_id,res_id,res_model,revisionid)', 'File name has to be unique!') # qui abbiamo la sicurezza dell'univocita del nome file
+        ('filename_uniq', 'unique (name,revisionid)', 'File name has to be unique!') # qui abbiamo la sicurezza dell'univocita del nome file
     ]
 
     def CheckedIn(self, cr, uid, files, default=None, context=None):
