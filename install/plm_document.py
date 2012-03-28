@@ -400,7 +400,7 @@ class plm_document(osv.osv):
         cr.execute('delete from ir_attachment where store_fname=NULL')
         return True 
 
-    def _ischecked_in(self, cr, uid, ids, context=None):
+    def ischecked_in(self, cr, uid, ids, context=None):
         """
             Check if a document is checked-in 
         """
@@ -429,7 +429,7 @@ class plm_document(osv.osv):
         defaults={}
         defaults['writable']=False
         defaults['state']='confirmed'
-        if self._ischecked_in(cr, uid, ids,context):
+        if self.ischecked_in(cr, uid, ids,context):
             return self.write(cr, uid, ids, defaults, context=context, check=False)
         return False
     
@@ -447,7 +447,7 @@ class plm_document(osv.osv):
                 self.write(cr, uid, [last_id], defaults, check=False)
         defaults['writable']=False
         defaults['state']='released'
-        if self._ischecked_in(cr, uid, ids):
+        if self.ischecked_in(cr, uid, ids):
             return self.write(cr, uid, ids, defaults, check=False)
         return False
 
@@ -458,7 +458,7 @@ class plm_document(osv.osv):
         defaults={}
         defaults['writable']=False
         defaults['state']='obsoleted'
-        if self._ischecked_in(cr, uid, ids,context):
+        if self.ischecked_in(cr, uid, ids,context):
             return self.write(cr, uid, ids, defaults, context=context, check=False)
         return False
 
@@ -469,7 +469,7 @@ class plm_document(osv.osv):
         defaults={}
         defaults['engineering_writable']=False
         defaults['state']='released'
-        if self._ischecked_in(cr, uid, ids,context):
+        if self.ischecked_in(cr, uid, ids,context):
             return self.write(cr, uid, ids, defaults, context=context, check=False)
         return False
 
@@ -852,14 +852,14 @@ class plm_backupdoc(osv.osv):
                 raise osv.except_osv(_('Backup Error'), _("Unable to remove the required document.\n You aren't authorized in this context."))
                 return False
         documentType=self.pool.get('ir.attachment')
-        checkObj=self.browse(cr, uid, context['current_id'])
+        checkObj=self.browse(cr, uid, context['active_id'])
         objDoc=documentType.browse(cr, uid, checkObj.documentid.id)
-        if objDoc.state=='draft':
+        if objDoc.state=='draft' and documentType.ischecked_in(cr, uid, ids, context):
             if checkObj.existingfile != objDoc.store_fname:
                 committed=documentType.write(cr, uid, [objDoc.id], {'store_fname':checkObj.existingfile,}, context, check=False)
-            if not committed:
-                logging.warning("action_restore_document : Unable to restore the document ("+str(checkObj.documentid.name)+"-"+str(checkObj.documentid.revisionid)+") from backup set.")
-                raise osv.except_osv(_('Check-In Error'), _("Unable to remove the document ("+str(checkObj.documentid.name)+"-"+str(checkObj.documentid.revisionid)+") from backup set.\n Check if it's checked-in, before to proceed."))
+                if not committed:
+                    logging.warning("action_restore_document : Unable to restore the document ("+str(checkObj.documentid.name)+"-"+str(checkObj.documentid.revisionid)+") from backup set.")
+                    raise osv.except_osv(_('Check-In Error'), _("Unable to restore the document ("+str(checkObj.documentid.name)+"-"+str(checkObj.documentid.revisionid)+") from backup set.\n Check if it's checked-in, before to proceed."))
         self.unlink(cr, uid, ids, context)
         return committed
 

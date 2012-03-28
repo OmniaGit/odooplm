@@ -62,9 +62,15 @@
         <field name="search_view_id" ref="plm_backupdoc_search"/>
     </record>
 
+    <menuitem
+        name="Search on Backup Data Set"
+        action="action_plm_backupdoc"
+        id="menu_backupdoc"
+        parent="plm_menu_backup"/>
+ 
  
     <record id="restore_document_button_view" model="ir.ui.view">
-        <field name="name">Restore Document Button</field>
+        <field name="name">Restore Document</field>
         <field name="model">plm.backupdoc</field>
         <field name="type">form</field>
         <field name="arch" type="xml">
@@ -73,35 +79,20 @@
             <separator string="" colspan="4" />
             <group colspan="4" col="6">
             	<button icon="gtk-cancel" special="cancel" string="Cancel"/>
-            	<button icon="terp-gtk-go-back-rtl" string="Restore Entries" name="action_restore_document" type="object"/>
+            	<button icon="terp-gtk-go-back-rtl" special="cancel" string="Restore Entry" name="action_restore_document" type="object"/>
             </group>
         </form>
         </field>
     </record>
 
-    <record id="action_restore_document_button" model="ir.actions.act_window">
-        <field name="name">Restore Document</field>
-        <field name="res_model">plm.backupdoc</field>
-        <field name="view_type">tree</field>
-        <field name="view_mode">tree</field>
-        <field name="view_id" ref="restore_document_button_view"/>
-        <field name="context">{'current_id': active_id}</field>
-    </record>
-
-    <record id="ir_restore_document" model="ir.values">
-        <field name="key2">client_action_multi</field>
-        <field name="model">plm.backupdoc</field>
-        <field name="name">Restore Documents</field>
-        <field eval="'ir.actions.act_window,%d'%action_restore_document_button" name="value"/>
-        <field eval="True" name="object"/>
-    </record>
-
+    <act_window name="Restore Document"
+        res_model="plm.backupdoc"
+        src_model="plm.backupdoc"
+        view_mode="form"
+        target="new"
+        key2="client_action_multi"
+        id="act_restore_document"/>
+ 
         
-    <menuitem
-        name="Search on Backup Data Set"
-        action="action_plm_backupdoc"
-        id="menu_backupdoc"
-        parent="plm_menu_backup"/>
-
 </data>
 </openerp>
