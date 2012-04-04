@@ -495,18 +495,18 @@ class plm_document(osv.osv):
         res_id = vals.get('res_id', 0)
         revisionid = vals.get('revisionid', 0)
         if op == 'write':
-            for file in self.browse(cr, uid, ids): # FIXME fields_only
+            for thisfile in self.browse(cr, uid, ids): # FIXME fields_only
                 if not name:
-                    name = file.name
+                    name = thisfile.name
                 if not parent_id:
-                    parent_id = file.parent_id and file.parent_id.id or False
+                    parent_id = thisfile.parent_id and thisfile.parent_id.id or False
                 if not res_model:
-                    res_model = file.res_model and file.res_model or False
+                    res_model = thisfile.res_model and thisfile.res_model or False
                 if not res_id:
-                    res_id = file.res_id and file.res_id or 0
+                    res_id = thisfile.res_id and thisfile.res_id or 0
                 if not revisionid:
-                    revisionid = file.revisionid and file.revisionid or 0
-                res = self.search(cr, uid, [('id', '<>', file.id), ('name', '=', name), ('parent_id', '=', parent_id), ('res_model', '=', res_model), ('res_id', '=', res_id), ('revisionid', '=', revisionid)])
+                    revisionid = thisfile.revisionid and thisfile.revisionid or 0
+                res = self.search(cr, uid, [('id', '<>', thisfile.id), ('name', '=', name), ('parent_id', '=', parent_id), ('res_model', '=', res_model), ('res_id', '=', res_id), ('revisionid', '=', revisionid)])
                 if len(res)>1:
                     return False
         if op == 'create':
