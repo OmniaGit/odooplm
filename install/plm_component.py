@@ -66,11 +66,10 @@ class plm_component(osv.osv):
             raise osv.except_osv(_('Export Data Error'), _("Writing operations on file (%s) have failed." %(filename)))
             return False
         bomType=self.pool.get('mrp.bom')
-        for id in ids:
-            component=self.browse(cr, uid, id)
-            fname=str(component.name)+'.csv'
+        for oic in self.browse(cr, uid, ids, context=None):
+            fname=str(oic.name)+'.csv'
             filename=os.path.join(outputpath,fname)
-            relIDs=self._getExplodedBom(cr, uid, [id], 1, 0)
+            relIDs=self._getExplodedBom(cr, uid, [oic.id], 1, 0)
             if len(relIDs)>0:
                 expData=bomType.export_data(cr, uid, relIDs,rel_fields)
                 if not self._export_csv(filename, rel_fields, expData, True):
@@ -130,22 +129,21 @@ class plm_component(osv.osv):
             Return a flat list of each child, listed once, in a Bom ( level = 0 one level only, level = 1 all levels)
         """
         result=[]
-        buffer=[]
+        bufferdata=[]
         if level==0 and currlevel>1:
-            return buffer
+            return bufferdata
         for bomid in component.bom_ids:
             for bom in bomid.bom_lines:
                 children=self._getChildrenBom(cr, uid, bom.product_id, level, currlevel+1, context=context)
-                buffer.extend(children)
-        if not (component.id in buffer):
-            buffer.append(component.id)
-        for id in buffer:
-            result.append(id)
+                bufferdata.extend(children)
+        if not (component.id in bufferdata):
+            bufferdata.append(component.id)
+        for oid in bufferdata:
+            result.append(oid)
         return result
 
-    def getLastTime(self, cr, uid, id, default=None, context=None):
-        obj = self.browse(cr, uid, id, context=context)
-        return self.getUpdTime(obj)
+    def getLastTime(self, cr, uid, oid, default=None, context=None):
+        return self.getUpdTime(self.browse(cr, uid, oid, context=context))
 
     def getUpdTime(self, obj):
         if(obj.write_date!=False):
@@ -154,7 +152,7 @@ class plm_component(osv.osv):
             return datetime.strptime(obj.create_date,'%Y-%m-%d %H:%M:%S')
 
 ##  Customized Automations
-    def on_change_name(self, cr, uid, id, name=False, engineering_code=False):
+    def on_change_name(self, cr, uid, oid, name=False, engineering_code=False):
         if name:
             results=self.search(cr,uid,[('name','=',name)])
             if len(results) > 0:
@@ -164,14 +162,13 @@ class plm_component(osv.osv):
         return {}
 
 ##  External methods
-    def Clone(self, cr, uid, id, default=None, context=None):
+    def Clone(self, cr, uid, oid, default=None, context=None):
         """
             create a new revision of the component
         """
-        newID=None
         defaults={}
         exitValues={}
-        newID=self.copy(cr,uid,id,defaults,context)
+        newID=self.copy(cr,uid,oid,defaults,context)
         if newID != None:
             newEnt=self.browse(cr,uid,newID,context=context)
             exitValues['_id']=newID
@@ -194,8 +191,7 @@ class plm_component(osv.osv):
         """
         newID=None
         newIndex=0
-        oldObjects=self.browse(cr, uid, ids, context=context)
-        for oldObject in oldObjects:
+        for oldObject in self.browse(cr, uid, ids, context=context):
             newIndex=int(oldObject.engineering_revision)+1
             defaults={}
             defaults['engineering_writable']=False
@@ -234,7 +230,7 @@ class plm_component(osv.osv):
                 hasSaved=True
             else:
                 existingID=existingID[0]
-                objPart=self.browse(cr, uid, existingID)
+                objPart=self.browse(cr, uid, existingID, context=context)
                 if (self.getUpdTime(objPart)<datetime.strptime(part['lastupdate'],'%Y-%m-%d %H:%M:%S')):
                     if objPart.engineering_writable:
                         del(part['lastupdate'])
@@ -256,10 +252,8 @@ class plm_component(osv.osv):
         stopFlag=False
         tobeReleasedIDs=[]
         children=[]
-        components=self.browse(cr, uid, ids)
-        for component in components:
-            children=self._getChildrenBom(cr, uid, component, 1)
-            children=self.browse(cr, uid, children)
+        for oic in self.browse(cr, uid, ids, context=None):
+            children=self.browse(cr, uid, self._getChildrenBom(cr, uid, oic, 1), context=None)
             for child in children:
                 if (not child.state in excludeStatuses) and (not child.state in includeStatuses):
                     stopFlag=True
@@ -275,9 +269,7 @@ class plm_component(osv.osv):
         """
         docIDs=[]
         documentType=self.pool.get('ir.attachment')
-        oldObjects=self.browse(cr, uid, ids, context=context)
-            
-        for oldObject in oldObjects:
+        for oldObject in self.browse(cr, uid, ids, context=context):
             if (action_name!='transmit') and (action_name!='reject') and (action_name!='release'):
                 check_state=oldObject.state
             else:
@@ -346,8 +338,7 @@ class plm_component(osv.osv):
         stopFlag,allIDs=self._get_recursive_parts(cr, uid, ids, excludeStatuses, includeStatuses)
         if len(allIDs)<1 or stopFlag:
             raise osv.except_osv(_('WorkFlow Error'), _("Part cannot be released."))
-        oldObjects=self.browse(cr, uid, allIDs, context=context)
-        for oldObject in oldObjects:
+        for oldObject in self.browse(cr, uid, allIDs, context=context):
             last_id=self._getbyrevision(cr, uid, oldObject.engineering_code, oldObject.engineering_revision-1)
             if last_id != None:
                 defaults['engineering_writable']=False
@@ -407,8 +398,7 @@ class plm_component(osv.osv):
     def write(self, cr, user, ids, vals, context=None, check=True):
         checkState=('confirmed','released','undermodify','obsoleted')
         if check:
-            customObjects=self.browse(cr, user, ids, context=context)
-            for customObject in customObjects:
+            for customObject in self.browse(cr, user, ids, context=context):
                 if not customObject.engineering_writable:
                     raise osv.except_osv(_('Edit Entity Error'), _("No changes are allowed on entity (%s)." %(customObject.name)))
                     return False
@@ -420,11 +410,11 @@ class plm_component(osv.osv):
                     # Force copy engineering_code to name if void
         return super(plm_component,self).write(cr, user, ids, vals, context=context)  
 
-    def copy(self,cr,uid,id,defaults={},context=None):
+    def copy(self,cr,uid,oid,defaults={},context=None):
         """
             Overwrite the default copy method
         """
-        previous_name=self.browse(cr,uid,id,context=context).name
+        previous_name=self.browse(cr,uid,oid,context=context).name
         if not 'name' in defaults:
             new_name='Copy of %s'%previous_name
             l=self.search(cr,uid,[('name','like',new_name)],context=context)
@@ -438,7 +428,7 @@ class plm_component(osv.osv):
         defaults['engineering_writable']=True
         defaults['write_date']=None
         defaults['linkeddocuments']=[]
-        return super(plm_component,self).copy(cr,uid,id,defaults,context=context)
+        return super(plm_component,self).copy(cr,uid,oid,defaults,context=context)
 
     def unlink(self, cr, uid, ids, context=None):
         values={'state':'released',}

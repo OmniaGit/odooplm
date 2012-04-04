@@ -52,12 +52,12 @@ class plm_document(osv.osv):
     _name = 'ir.attachment'
     _inherit = 'ir.attachment'
 
-    def _is_checkedout_for_me(self, cr, uid, id, context=None):
+    def _is_checkedout_for_me(self, cr, uid, oid, context=None):
         """
             Get if given document (or its latest revision) is checked-out for the requesting user
         """
         act=False
-        lastDoc=self._getlastrev(cr, uid, [id], context)
+        lastDoc=self._getlastrev(cr, uid, [oid], context)
         checkType=self.pool.get('plm.checkout')
         docIDs=checkType.search(cr, uid, [('documentid','=',lastDoc[0])])
         for docID in docIDs:
@@ -70,13 +70,12 @@ class plm_document(osv.osv):
     def _getlastrev(self, cr, uid, ids, context=None):
         result = []
         treated = []
-        objects = self.browse(cr, uid, ids, context=context)
-        for object in objects:
-            if object in treated:
+        for objDoc in self.browse(cr, uid, ids, context=context):
+            if objDoc in treated:
                 continue
-            docIds=self.search(cr,uid,[('name','=',object.name)],order='revisionid',context=context)
+            docIds=self.search(cr,uid,[('name','=',objDoc.name)],order='revisionid',context=context)
             result.append(docIds[len(docIds)-1])
-            treated.append(object)
+            treated.append(objDoc)
         return result
             
     def _data_get_files(self, cr, uid, ids, listedFiles=([],[]), forceFlag=False, context=None):
@@ -85,113 +84,111 @@ class plm_document(osv.osv):
         """
         result = []
         datefiles,listfiles=listedFiles
-        objects = self.browse(cr, uid, ids, context=context)
-        for object in objects:
+        for objDoc in self.browse(cr, uid, ids, context=context):
             try:
-                isCheckedOutToMe=self._is_checkedout_for_me(cr, uid, object.id, context)
-                if not(object.datas_fname in listfiles):
-                    value = file(os.path.join(self._get_filestore(cr), object.store_fname), 'rb').read()
-                    result.append((object.id, object.datas_fname, base64.encodestring(value), isCheckedOutToMe))
+                isCheckedOutToMe=self._is_checkedout_for_me(cr, uid, objDoc.id, context)
+                if not(objDoc.datas_fname in listfiles):
+                    value = file(os.path.join(self._get_filestore(cr), objDoc.store_fname), 'rb').read()
+                    result.append((objDoc.id, objDoc.datas_fname, base64.encodestring(value), isCheckedOutToMe))
                 else:
                     if forceFlag:
                         isNewer=True
                     else:
-                        isNewer=self.getLastTime(cr,uid,object.id)>=datetime.strptime(str(datefiles[listfiles.index(object.datas_fname)]),'%Y-%m-%d %H:%M:%S')
+                        isNewer=self.getLastTime(cr,uid,objDoc.id)>=datetime.strptime(str(datefiles[listfiles.index(objDoc.datas_fname)]),'%Y-%m-%d %H:%M:%S')
                     if (isNewer and not(isCheckedOutToMe)):
-                        value = file(os.path.join(self._get_filestore(cr), object.store_fname), 'rb').read()
-                        result.append((object.id, object.datas_fname, base64.encodestring(value), isCheckedOutToMe))
+                        value = file(os.path.join(self._get_filestore(cr), objDoc.store_fname), 'rb').read()
+                        result.append((objDoc.id, objDoc.datas_fname, base64.encodestring(value), isCheckedOutToMe))
                     else:
-                        result.append((object.id,object.datas_fname,None, isCheckedOutToMe))
+                        result.append((objDoc.id,objDoc.datas_fname,None, isCheckedOutToMe))
             except Exception, ex:
-                logging.error("_data_get_files : Unable to access to document ("+str(object.name)+"). Error :" + str(ex))
-                result.append((object.id,object.datas_fname,None, True))
+                logging.error("_data_get_files : Unable to access to document ("+str(objDoc.name)+"). Error :" + str(ex))
+                result.append((objDoc.id,objDoc.datas_fname,None, True))
         return result
             
     def _data_get(self, cr, uid, ids, name, arg, context):
         result = {}
-        objects = self.browse(cr, uid, ids, context=context)
-        for object in objects:
-            if not object.store_fname:
-                raise osv.except_osv(_('Stored Document Error'), _("Document %s - %s cannot be accessed" %(str(object.name),str(object.revisionid))))
-            filestore=os.path.join(self._get_filestore(cr), object.store_fname)
+        for objDoc in self.browse(cr, uid, ids, context=context):
+            if not objDoc.store_fname:
+                raise osv.except_osv(_('Stored Document Error'), _("Document %s - %s cannot be accessed" %(str(objDoc.name),str(objDoc.revisionid))))
+            filestore=os.path.join(self._get_filestore(cr), objDoc.store_fname)
             if os.path.exists(filestore):
                 value = file(filestore, 'rb').read()
                 if len(value)>0:
-                    result[object.id] = base64.encodestring(value)
+                    result[objDoc.id] = base64.encodestring(value)
                 else:
-                    result[object.id] = ''
+                    result[objDoc.id] = ''
             else:
-                result[object.id] = ''
+                result[objDoc.id] = ''
         return result
 
-    def _data_set(self, cr, uid, id, name, value, args=None, context=None):
+    def _data_set(self, cr, uid, oid, name, value, args=None, context=None):
         if not value:
-            filename = self.browse(cr, uid, id, context).store_fname
+            filename = self.browse(cr, uid, oid, context).store_fname
             try:
                 os.unlink(os.path.join(self._get_filestore(cr), filename))
             except:
                 pass
-            cr.execute('update ir_attachment set store_fname=NULL WHERE id=%s', (id,) )
+            cr.execute('update ir_attachment set store_fname=NULL WHERE id=%s', (oid,) )
             return True
         #if (not context) or context.get('store_method','fs')=='fs':
         try:
-            fname,filesize=self._manageFile(cr,uid,id,binvalue=value,context=context)
-            cr.execute('update ir_attachment set store_fname=%s,file_size=%s where id=%s', (fname,filesize,id))
+            fname,filesize=self._manageFile(cr,uid,oid,binvalue=value,context=context)
+            cr.execute('update ir_attachment set store_fname=%s,file_size=%s where id=%s', (fname,filesize,oid))
             self.pool.get('plm.backupdoc').create(cr,uid, {
                                           'userid':uid,
                                           'existingfile':fname,
-                                          'documentid':id,
+                                          'documentid':oid,
                                          }, context=context)
 
             return True
         except Exception,e :
             raise except_orm(_('Error in _data_set'), str(e))
 
-    def _explodedocs(self, cr, uid, id, kind, listed_documents=[], recursion=True):
+    def _explodedocs(self, cr, uid, oid, kind, listed_documents=[], recursion=True):
         result=[]
-        if (id in listed_documents):
+        if (oid in listed_documents):
             return result
         documentRelation=self.pool.get('plm.document.relation')
-        docRelIds=documentRelation.search(cr,uid,[('parent_id', '=',id),('link_kind', '=',kind)])
+        docRelIds=documentRelation.search(cr,uid,[('parent_id', '=',oid),('link_kind', '=',kind)])
         if len(docRelIds)==0:
             return result
         children=documentRelation.browse(cr,uid,docRelIds)
         for child in children:
             if recursion:
-                listed_documents.append(id)
+                listed_documents.append(oid)
                 result.extend(self._explodedocs(cr, uid, child.child_id.id, kind, listed_documents,recursion))
             result.append(child.child_id.id)
         return result
 
-    def _relateddocs(self, cr, uid, id, kind, listed_documents=[], recursion=True):
+    def _relateddocs(self, cr, uid, oid, kind, listed_documents=[], recursion=True):
         result=[]
-        if (id in listed_documents):
+        if (oid in listed_documents):
             return result
         documentRelation=self.pool.get('plm.document.relation')
-        docRelIds=documentRelation.search(cr,uid,[('child_id', '=',id),('link_kind', '=',kind)])
+        docRelIds=documentRelation.search(cr,uid,[('child_id', '=',oid),('link_kind', '=',kind)])
         if len(docRelIds)==0:
             return result
         children=documentRelation.browse(cr,uid,docRelIds)
         for child in children:
             if recursion:
-                listed_documents.append(id)
+                listed_documents.append(oid)
                 result.extend(self._relateddocs(cr, uid, child.parent_id.id, kind, listed_documents, recursion))
             if child.parent_id.id:
                 result.append(child.parent_id.id)
         return result
 
-    def _relatedbydocs(self, cr, uid, id, kind, listed_documents=[], recursion=True):
+    def _relatedbydocs(self, cr, uid, oid, kind, listed_documents=[], recursion=True):
         result=[]
-        if (id in listed_documents):
+        if (oid in listed_documents):
             return result
         documentRelation=self.pool.get('plm.document.relation')
-        docRelIds=documentRelation.search(cr,uid,[('parent_id', '=',id),('link_kind', '=',kind)])
+        docRelIds=documentRelation.search(cr,uid,[('parent_id', '=',oid),('link_kind', '=',kind)])
         if len(docRelIds)==0:
             return result
         children=documentRelation.browse(cr,uid,docRelIds)
         for child in children:
             if recursion:
-                listed_documents.append(id)
+                listed_documents.append(oid)
                 result.extend(self._relatedbydocs(cr, uid, child.child_id.id, kind, listed_documents, recursion))
             if child.child_id.id:
                 result.append(child.child_id.id)
@@ -200,30 +197,29 @@ class plm_document(osv.osv):
     def _data_check_files(self, cr, uid, ids, listedFiles=(), forceFlag=False, context=None):
         result = []
         datefiles,listfiles=listedFiles
-        objects = self.browse(cr, uid, ids, context=context)
-        for object in objects:
-            isCheckedOutToMe=self._is_checkedout_for_me(cr, uid, object.id, context)
-            if (object.datas_fname in listfiles):
+        for objDoc in self.browse(cr, uid, ids, context=context):
+            isCheckedOutToMe=self._is_checkedout_for_me(cr, uid, objDoc.id, context)
+            if (objDoc.datas_fname in listfiles):
                 if forceFlag:
                     isNewer = True
                 else:
-                    isNewer=self.getLastTime(cr,uid,object.id)>=datetime.strptime(str(datefiles[listfiles.index(object.datas_fname)]),'%Y-%m-%d %H:%M:%S')
+                    isNewer=self.getLastTime(cr,uid,objDoc.id)>=datetime.strptime(str(datefiles[listfiles.index(objDoc.datas_fname)]),'%Y-%m-%d %H:%M:%S')
                 collectable = isNewer and not(isCheckedOutToMe)
             else:
                 collectable = True
-            result.append((object.id, object.datas_fname, object.file_size, collectable, isCheckedOutToMe))
+            result.append((objDoc.id, objDoc.datas_fname, objDoc.file_size, collectable, isCheckedOutToMe))
         return result
             
-    def copy(self,cr,uid,id,defaults={},context=None):
+    def copy(self,cr,uid,oid,defaults={},context=None):
         """
             Overwrite the default copy method
         """
         #get All document relation 
         documentRelation=self.pool.get('plm.document.relation')
-        docRelIds=documentRelation.search(cr,uid,[('parent_id', '=',id)],context=context)
+        docRelIds=documentRelation.search(cr,uid,[('parent_id', '=',oid)],context=context)
         if len(docRelIds)==0:
             docRelIds=False 
-        previous_name=self.browse(cr,uid,id,context=context).name
+        previous_name=self.browse(cr,uid,oid,context=context).name
         if not 'name' in defaults:
             new_name='Copy of %s'%previous_name
             l=self.search(cr,uid,[('name','=',new_name)],order='revisionid',context=context)
@@ -231,13 +227,13 @@ class plm_document(osv.osv):
                 new_name='%s (%s)'%(new_name,len(l)+1)
             defaults['name']=new_name
         #manage copy of the file
-        fname,filesize=self._manageFile(cr,uid,id,context=context)
+        fname,filesize=self._manageFile(cr,uid,oid,context=context)
         #assign default value
         defaults['store_fname']=fname
         defaults['file_size']=filesize
         defaults['state']='draft'
         defaults['writable']=True
-        newID=super(plm_document,self).copy(cr,uid,id,defaults,context=context)
+        newID=super(plm_document,self).copy(cr,uid,oid,defaults,context=context)
         if docRelIds:
             # create all the document relation
             brwEnts=documentRelation.browse(cr,uid,docRelIds,context=context)
@@ -250,7 +246,7 @@ class plm_document(osv.osv):
                                          }, context=context)
         return newID 
 
-    def _manageFile(self,cr,uid, id, binvalue=None, context=None):
+    def _manageFile(self,cr,uid, oid, binvalue=None, context=None):
         """
             use given 'binvalue' to save it on physical repository and to read size (in bytes).
         """
@@ -268,7 +264,7 @@ class plm_document(osv.osv):
                 flag = dirs
                 break
         if binvalue==None:
-            fileStream=self._data_get(cr, uid, [id], name=None, arg=None, context=context)
+            fileStream=self._data_get(cr, uid, [oid], name=None, arg=None, context=context)
             binvalue=fileStream[fileStream.keys()[0]]
         
         flag = flag or create_directory(path)
@@ -293,8 +289,7 @@ class plm_document(osv.osv):
             create a new revision of the document
         """
         newID=None
-        oldObjects=self.browse(cr,uid,ids,context=context)
-        for oldObject in oldObjects:
+        for oldObject in self.browse(cr,uid,ids,context=context):
             self.write(cr,uid,[oldObject.id],{'state':'undermodify',} ,context=context,check=False)
             defaults={}
             defaults['name']=oldObject.name
@@ -305,13 +300,13 @@ class plm_document(osv.osv):
             break
         return (newID, defaults['revisionid']) 
     
-    def Clone(self, cr, uid, id, defaults={}, context=None):
+    def Clone(self, cr, uid, oid, defaults={}, context=None):
         """
             create a new revision of the document
         """
         defaults={}
         exitValues={}
-        newID=self.copy(cr,uid,id,defaults,context)
+        newID=self.copy(cr,uid,oid,defaults,context)
         if newID != None:
             newEnt=self.browse(cr,uid,newID,context=context)
             exitValues['_id']=newID
@@ -337,7 +332,7 @@ class plm_document(osv.osv):
                 hasSaved=True
             else:
                 existingID=existingID[0]
-                objDocument=self.browse(cr, uid, existingID)
+                objDocument=self.browse(cr, uid, existingID, context=context)
 #               logging.info("CheckSaveUpdate : time db : %s time file : %s" %(str(self.getLastTime(cr,uid,existingID).strftime('%Y-%m-%d %H:%M:%S')), str(document['lastupdate'])))
                 if self.getLastTime(cr,uid,existingID)<datetime.strptime(str(document['lastupdate']),'%Y-%m-%d %H:%M:%S'):
                     if objDocument.writable:
@@ -368,7 +363,7 @@ class plm_document(osv.osv):
                 hasSaved=True
             else:
                 existingID=existingID[0]
-                objDocument=self.browse(cr, uid, existingID)
+                objDocument=self.browse(cr, uid, existingID, context=context)
 #                logging.info("SaveOrUpdate : time db : %s time file : %s" %(str(self.getLastTime(cr,uid,existingID).strftime('%Y-%m-%d %H:%M:%S')), str(document['lastupdate'])))
                 if self.getLastTime(cr,uid,existingID)<datetime.strptime(str(document['lastupdate']),'%Y-%m-%d %H:%M:%S'):
                     if objDocument.writable:
@@ -388,9 +383,9 @@ class plm_document(osv.osv):
         """
         ret=True
         for document in documents:
-            id=document['documentID']
+            oid=document['documentID']
             del(document['documentID'])
-            ret=ret and self.write(cr,uid,[id], document , context=context, check=True)
+            ret=ret and self.write(cr,uid,[oid], document , context=context, check=True)
         return ret 
 
     def CleanUp(self, cr, uid, ids, default=None, context=None):
@@ -438,8 +433,7 @@ class plm_document(osv.osv):
             release the object
         """
         defaults={}
-        oldObjects=self.browse(cr, uid, ids)
-        for oldObject in oldObjects:
+        for oldObject in self.browse(cr, uid, ids, context=None):
             last_id=self._getbyrevision(cr, uid, oldObject.name, oldObject.revisionid-1)
             if last_id != None:
                 defaults['writable']=False
@@ -477,8 +471,7 @@ class plm_document(osv.osv):
     def write(self, cr, uid, ids, vals, context=None, check=True):
         checkState=('confirmed','released','undermodify','obsoleted')
         if check:
-            customObjects=self.browse(cr,uid,ids,context=context)
-            for customObject in customObjects:
+            for customObject in self.browse(cr,uid,ids,context=context):
                 if customObject.state in checkState:
                     raise osv.except_osv(_('Edit Entity Error'), _("The active state does not allow you to make save action"))
                     return False
@@ -508,7 +501,7 @@ class plm_document(osv.osv):
         res_id = vals.get('res_id', 0)
         revisionid = vals.get('revisionid', 0)
         if op == 'write':
-            for thisfile in self.browse(cr, uid, ids): # FIXME fields_only
+            for thisfile in self.browse(cr, uid, ids, context=None): # FIXME fields_only
                 if not name:
                     name = thisfile.name
                 if not parent_id:
@@ -551,10 +544,10 @@ class plm_document(osv.osv):
         retValues=[]
         def getcheckedfiles(files):
             res=[]
-            for file in files:
-                ids=self.search(cr,uid,[('datas_fname','=',file)],order='revisionid')
+            for fileName in files:
+                ids=self.search(cr,uid,[('datas_fname','=',fileName)],order='revisionid')
                 if len(ids)>0:
-                    res.append([file,not(self._is_checkedout_for_me(cr, uid, ids[0], context))])
+                    res.append([fileName,not(self._is_checkedout_for_me(cr, uid, ids[0], context))])
             return res
         
         if len(files)>0: # no files to process 
@@ -569,7 +562,7 @@ class plm_document(osv.osv):
         forceFlag=False
         listed_models=[]
         listed_documents=[]
-        id, listedFiles, selection = request        
+        oid, listedFiles, selection = request        
         if selection == None:
             selection=1
         if selection<0:
@@ -577,10 +570,10 @@ class plm_document(osv.osv):
             selection=selection*(-1)
 
         kind='LyTree'   # Get relations due to layout connected
-        docArray=self._relateddocs(cr, uid, id, kind, listed_documents)
+        docArray=self._relateddocs(cr, uid, oid, kind, listed_documents)
 
         kind='HiTree'   # Get Hierarchical tree relations due to children
-        modArray=self._explodedocs(cr, uid, id, kind, listed_models)
+        modArray=self._explodedocs(cr, uid, oid, kind, listed_models)
         for item in docArray:
             if item not in modArray:
                 modArray.append(item)
@@ -588,8 +581,8 @@ class plm_document(osv.osv):
         if selection == 2:
             docArray=self._getlastrev(cr, uid, docArray, context)
         
-        if not id in docArray:
-            docArray.append(id)     # Add requested document to package
+        if not oid in docArray:
+            docArray.append(oid)     # Add requested document to package
         return self._data_check_files(cr, uid, docArray, listedFiles, forceFlag, context)
 
     def GetSomeFiles(self, cr, uid, request, default=None, context=None):
@@ -618,7 +611,7 @@ class plm_document(osv.osv):
         forceFlag=False
         listed_models=[]
         listed_documents=[]
-        id, listedFiles, selection = request
+        oid, listedFiles, selection = request
         if selection == None:
             selection=1
 
@@ -627,10 +620,10 @@ class plm_document(osv.osv):
             selection=selection*(-1)
 
         kind='LyTree'   # Get relations due to layout connected
-        docArray=self._relateddocs(cr, uid, id, kind, listed_documents)
+        docArray=self._relateddocs(cr, uid, oid, kind, listed_documents)
 
         kind='HiTree'   # Get Hierarchical tree relations due to children
-        modArray=self._explodedocs(cr, uid, id, kind, listed_models)
+        modArray=self._explodedocs(cr, uid, oid, kind, listed_models)
         for item in docArray:
             if item not in modArray:
                 modArray.append(item)
@@ -638,8 +631,8 @@ class plm_document(osv.osv):
         if selection == 2:
             docArray=self._getlastrev(cr, uid, docArray, context)
         
-        if not id in docArray:
-            docArray.append(id)     # Add requested document to package
+        if not oid in docArray:
+            docArray.append(oid)     # Add requested document to package
         return self._data_get_files(cr, uid, docArray, listedFiles, forceFlag, context)
 
     def GetRelatedDocs(self, cr, uid, ids, default=None, context=None):
@@ -649,37 +642,37 @@ class plm_document(osv.osv):
         related_documents=[]
         listed_documents=[]
         read_docs=[]
-        for id in ids:
+        for oid in ids:
             kind='RfTree'   # Get relations due to referred models
-            read_docs.extend(self._relateddocs(cr, uid, id, kind, listed_documents, False))
-            read_docs.extend(self._relatedbydocs(cr, uid, id, kind, listed_documents, False))
+            read_docs.extend(self._relateddocs(cr, uid, oid, kind, listed_documents, False))
+            read_docs.extend(self._relatedbydocs(cr, uid, oid, kind, listed_documents, False))
 
             kind='LyTree'   # Get relations due to layout connected
-            read_docs.extend(self._relateddocs(cr, uid, id, kind, listed_documents, False))
-            read_docs.extend(self._relatedbydocs(cr, uid, id, kind, listed_documents, False))
+            read_docs.extend(self._relateddocs(cr, uid, oid, kind, listed_documents, False))
+            read_docs.extend(self._relatedbydocs(cr, uid, oid, kind, listed_documents, False))
        
         documents=self.browse(cr, uid, read_docs, context=context)
         for document in documents:
             related_documents.append([document.id,document.name,document.preview])
         return related_documents
 
-    def getServerTime(self, cr, uid, id, default=None, context=None):
+    def getServerTime(self, cr, uid, oid, default=None, context=None):
         """
             calculate the server db time 
         """
         return datetime.now()
     
-    def getLastTime(self, cr, uid, id, default=None, context=None):
+    def getLastTime(self, cr, uid, oid, default=None, context=None):
         """
             get document last modification time 
         """
-        obj = self.browse(cr, uid, id, context=context)
+        obj = self.browse(cr, uid, oid, context=context)
         if(obj.write_date!=False):
             return datetime.strptime(obj.write_date,'%Y-%m-%d %H:%M:%S')
         else:
             return datetime.strptime(obj.create_date,'%Y-%m-%d %H:%M:%S')
 
-    def getUserSign(self, cr, uid, id, default=None, context=None):
+    def getUserSign(self, cr, uid, oid, default=None, context=None):
         """
             get the user name
         """
@@ -694,12 +687,12 @@ class plm_document(osv.osv):
             break
         return result
     
-    def getCheckedOut(self, cr, uid, id, default=None, context=None):
+    def getCheckedOut(self, cr, uid, oid, default=None, context=None):
         checkoutType=self.pool.get('plm.checkout')
-        checkoutIDs=checkoutType.search(cr,uid,[('documentid', '=',id)])
+        checkoutIDs=checkoutType.search(cr,uid,[('documentid', '=',oid)])
         for checkoutID in checkoutIDs:
-            object=checkoutType.browse(cr,uid,checkoutID)
-            return(object.documentid.name,object.documentid.revisionid,self.getUserSign(cr,object.userid.id,1),object.hostname)
+            objDoc=checkoutType.browse(cr,uid,checkoutID)
+            return(objDoc.documentid.name,objDoc.documentid.revisionid,self.getUserSign(cr,objDoc.userid.id,1),objDoc.hostname)
         return False
 
 plm_document()
@@ -740,7 +733,7 @@ class plm_checkout(osv.osv):
                 raise osv.except_osv(_('Check-In Error'), _("Unable to Check-In the required document.\n You aren't authorized in this context."))
                 return False
         documentType=self.pool.get('ir.attachment')
-        checkObjs=self.browse(cr, uid, ids)
+        checkObjs=self.browse(cr, uid, ids, context=context)
         for checkObj in checkObjs:
             checkObj.documentid.writable=False
             values={'writable':False,}
@@ -835,7 +828,7 @@ class plm_backupdoc(osv.osv):
                 raise osv.except_osv(_('Backup Error'), _("Unable to remove the required document.\n You aren't authorized in this context."))
                 return False
         documentType=self.pool.get('ir.attachment')
-        checkObjs=self.browse(cr, uid, ids)
+        checkObjs=self.browse(cr, uid, ids, context=context)
         for checkObj in checkObjs:
             if not int(checkObj.documentid):
                 return super(plm_backupdoc,self).unlink(cr, uid, ids, context=context)
