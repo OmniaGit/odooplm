@@ -474,15 +474,28 @@ class plm_document(osv.osv):
         return False
 
 #   Overridden methods for this entity
-    def write(self, cr, user, ids, vals, context=None, check=True):
+    def write(self, cr, uid, ids, vals, context=None, check=True):
         checkState=('confirmed','released','undermodify','obsoleted')
         if check:
-            customObjects=self.browse(cr,user,ids,context=context)
+            customObjects=self.browse(cr,uid,ids,context=context)
             for customObject in customObjects:
                 if customObject.state in checkState:
                     raise osv.except_osv(_('Edit Entity Error'), _("The active state does not allow you to make save action"))
                     return False
-        return super(plm_document,self).write(cr, user, ids, vals, context=context)
+        return super(plm_document,self).write(cr, uid, ids, vals, context=context)
+
+    def unlink(self, cr, uid, ids, context=None):
+        values={'state':'released',}
+        checkState=('undermodify','obsoleted')
+        for checkObj in self.browse(cr, uid, ids, context=context):
+            existingID = self.search(cr, uid, [('name', '=', checkObj.name),('revisionid', '=', checkObj.revisionid-1)])
+            if len(existingID)>0:
+                oldObject=self.browse(cr, uid, existingID[0], context=context)
+                if oldObject.state in checkState:
+                    if not self.write(cr, uid, [oldObject.id], values, context, check=False):
+                        logging.warning("unlink : Unable to update state to old document ("+str(oldObject.name)+"-"+str(oldObject.revisionid)+").")
+                        return False
+        return super(plm_document,self).unlink(cr, uid, ids, context=context)
 
     def _check_duplication(self, cr, uid, vals, ids=[], op='create'):
         """

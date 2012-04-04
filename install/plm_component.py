@@ -439,6 +439,20 @@ class plm_component(osv.osv):
         defaults['write_date']=None
         defaults['linkeddocuments']=[]
         return super(plm_component,self).copy(cr,uid,id,defaults,context=context)
+
+    def unlink(self, cr, uid, ids, context=None):
+        values={'state':'released',}
+        checkState=('undermodify','obsoleted')
+        for checkObj in self.browse(cr, uid, ids, context=context):
+            existingID = self.search(cr, uid, [('engineering_code', '=', checkObj.engineering_code),('engineering_revision', '=', checkObj.engineering_revision-1)])
+            if len(existingID)>0:
+                oldObject=self.browse(cr, uid, existingID[0], context=context)
+                if oldObject.state in checkState:
+                    if not self.write(cr, uid, [oldObject.id], values, context, check=False):
+                        logging.warning("unlink : Unable to update state to old component ("+str(oldObject.engineering_revision)+"-"+str(oldObject.engineering_revision)+").")
+                        return False
+        return super(plm_component,self).unlink(cr, uid, ids, context=context)
+
 #   Overridden methods for this entity
 
 plm_component()
