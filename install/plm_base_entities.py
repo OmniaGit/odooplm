@@ -509,6 +509,19 @@ class plm_relation(osv.osv):
             partType.write(cr,uid,[ancestor.id],values,check=False)
         return weight
 
+#   Overridden methods for this entity
+    def copy(self,cr,uid,oid,defaults={},context=None):
+        """
+            Return new object copied (removing SourceID)
+        """
+        newId=super(plm_relation,self).copy(cr,uid,oid,defaults,context=context)
+        if newId:
+            newOid=self.browse(cr,uid,newId,context=context)
+            for bom_line in newOid.bom_lines:
+                self.write(cr,uid,[bom_line.id],{'source_id':False,'name':bom_line.name.replace(' Copy',''),},context=None)
+            self.write(cr,uid,[newId],{'source_id':False,},context=None)
+        return newId
+#   Overridden methods for this entity
 
 plm_relation()
 
