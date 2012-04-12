@@ -122,8 +122,9 @@ class plm_document(osv.osv):
         return result
 
     def _data_set(self, cr, uid, oid, name, value, args=None, context=None):
+        oiDocument=self.browse(cr, uid, oid, context)
         if not value:
-            filename = self.browse(cr, uid, oid, context).store_fname
+            filename = oiDocument.store_fname
             try:
                 os.unlink(os.path.join(self._get_filestore(cr), filename))
             except:
@@ -138,6 +139,8 @@ class plm_document(osv.osv):
                                           'userid':uid,
                                           'existingfile':fname,
                                           'documentid':oid,
+                                          'printout': oiDocument.printout,
+                                          'preview': oiDocument.preview
                                          }, context=context)
 
             return True
@@ -815,6 +818,8 @@ class plm_backupdoc(osv.osv):
                 'existingfile':fields.char('Document Location',size=1024), 
                 'documentid':fields.many2one('ir.attachment', 'Related Document', ondelete='cascade'), 
                 'revisionid': fields.related('documentid','revisionid',type="int",relation="ir.attachment",string="Revision",store=False),
+                'printout': fields.binary('Printout Content'),
+                'preview': fields.binary('Preview Content'),
     }
     _defaults = {
         'createdate': lambda self,cr,uid,ctx:time.strftime("%Y-%m-%d %H:%M:%S")
@@ -862,7 +867,7 @@ class plm_backupdoc(osv.osv):
         objDoc=documentType.browse(cr, uid, checkObj.documentid.id)
         if objDoc.state=='draft' and documentType.ischecked_in(cr, uid, ids, context):
             if checkObj.existingfile != objDoc.store_fname:
-                committed=documentType.write(cr, uid, [objDoc.id], {'store_fname':checkObj.existingfile,}, context, check=False)
+                committed=documentType.write(cr, uid, [objDoc.id], {'store_fname':checkObj.existingfile,'printout':checkObj.printout,'preview':checkObj.preview,}, context, check=False)
                 if not committed:
                     logging.warning("action_restore_document : Unable to restore the document ("+str(checkObj.documentid.name)+"-"+str(checkObj.documentid.revisionid)+") from backup set.")
                     raise osv.except_osv(_('Check-In Error'), _("Unable to restore the document ("+str(checkObj.documentid.name)+"-"+str(checkObj.documentid.revisionid)+") from backup set.\n Check if it's checked-in, before to proceed."))
