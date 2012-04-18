@@ -89,6 +89,7 @@
         res_model="plm.backupdoc"
         src_model="plm.backupdoc"
         view_mode="form"
+        view_id="restore_document_button_view"
         target="new"
         key2="client_action_multi"
         id="act_restore_document"/>
