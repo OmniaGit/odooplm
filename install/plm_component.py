@@ -99,7 +99,7 @@ class plm_component(osv.osv):
             fp.close()
             return True
         except IOError, (errno, strerror):
-            logging.error("_export_csv : IOError : ("+str(strerror)+").")
+            logging.error("_export_csv : IOError : "+str(errno)+" ("+str(strerror)+").")
             return False
            
     def _getbyrevision(self, cr, uid, name, revision):
