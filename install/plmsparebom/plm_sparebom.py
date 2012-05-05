@@ -29,11 +29,49 @@ class plm_component(osv.osv):
 ##  Specialized Actions callable interactively
     def action_create_spareBom(self, cr, uid, ids, context=None):
         """
-            Create a new Spare Bom (if it doesn't already exist)
+            Create a new Spare Bom if doesn't exist (action callable from views)
         """
         if not 'active_id' in context:
             return False
-        checkObj=self.browse(cr, uid, context['active_id'])
+        return self.action_create_spareBom_WF(cr, uid, context['active_ids'])
+
+    def action_check_spareBom(self, cr, uid, ids, context=None):
+        """
+            Check if a Spare Bom exists (action callable from views)
+        """
+        if not 'active_id' in context:
+            return False
+        if self.action_check_spareBom_WF(cr, uid, context['active_ids'], context):
+            logMessage=_('Following Parts are without Spare BOM :')+'\n'+RETDMESSAGE
+            raise osv.except_osv(_('Check on Spare Bom'), logMessage)
+        return False
+
+#  Work Flow Actions
+    def action_create_spareBom_WF(self, cr, uid, ids, context=None):
+        """
+            Create a new Spare Bom if doesn't exist (action callable from code)
+        """
+        for idd in ids:
+            self._create_spareBom(cr, uid, idd, context)
+        return False
+
+    def action_check_spareBom_WF(self, cr, uid, ids, context=None):
+        """
+            Check if a Spare Bom exists (action callable from code)
+        """
+        RETDMESSAGE=''
+        for idd in ids:
+            self._check_spareBom(cr, uid, idd, context)
+        if len(RETDMESSAGE)>0:
+            return True
+        return False
+
+#   Internal methods
+    def _create_spareBom(self, cr, uid, idd, context=None):
+        """
+            Create a new Spare Bom (recursive on all EBom children)
+        """
+        checkObj=self.browse(cr, uid, idd, context)
         if '-Spare' in checkObj.name:
             return False
         bomType=self.pool.get('mrp.bom')
@@ -52,38 +90,22 @@ class plm_component(osv.osv):
                 for bom_line in oidBom.bom_lines:
 #                    bom_line.product_id
                     bomType.write(cr,uid,[bom_line.id],{'source_id':False,'name':bom_line.name.replace(' Copy',''),},context=None)
+
+        if checkObj.engineering_revision:
+            objEBom=bomType.search(cr, uid, [('name','=',checkObj.name),('engineering_revision','=',checkObj.engineering_revision)])
+        else:
+            objEBom=bomType.search(cr, uid, [('name','=',checkObj.name)])
+        if objEBom:
+            for bom_line in objEBom.bom_lines:
+                self._create_spareBom(cr, uid, bom_line.product_id, context)
         return False
 
-    def action_check_spareBom(self, cr, uid, ids, context=None):
-        """
-            Check if a Spare Bom exists (action callable from views)
-        """
-        if not 'active_id' in context:
-            return False
-        if self.action_check_spareBom_WF(cr, uid, [context['active_id']], context):
-            logMessage=_('Following Parts are without Spare BOM :')+'\n'+RETDMESSAGE
-            raise osv.except_osv(_('Check on Spare Bom'), logMessage)
-        return False
-
-#  Work Flow Actions
-    def action_check_spareBom_WF(self, cr, uid, ids, context=None):
-        """
-            Check if a Spare Bom exists (action callable from code)
-        """
-        RETDMESSAGE=''
-        for id in ids:
-            self._check_spareBom(cr, uid, id, context)
-        if len(RETDMESSAGE)>0:
-            return True
-        return False
-
-#   Internal methods
-    def _check_spareBom(self, cr, uid, oid, context=None):
+    def _check_spareBom(self, cr, uid, idd, context=None):
         """
             Check if a Spare Bom exists (recursive on all EBom children)
         """
         bomType=self.pool.get('mrp.bom')
-        checkObj=self.browse(cr, uid, oid, context)
+        checkObj=self.browse(cr, uid, idd, context)
         if checkObj.std_description.bom_tmpl:
             if checkObj.engineering_revision:
                 objBom=bomType.search(cr, uid, [('name','=',checkObj.name+'-Spare'),('engineering_revision','=',checkObj.engineering_revision)])
