@@ -51,6 +51,13 @@ class plm_component(osv.osv):
                     bomType.write(cr,uid,[bom_line.id],{'source_id':False,'name':bom_line.name.replace(' Copy',''),},context=None)
         return False
 
+    def action_check_spareBom(self, cr, uid, ids, context=None):
+        """
+            Check if a Spare Bom exists (if required)
+        """
+        #TODO : to be implemented "action_check_spareBom"
+        return False
+
 plm_component()
 
 
