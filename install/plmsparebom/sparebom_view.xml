@@ -28,6 +28,32 @@
         id="act_create_spareBom"/>
 
         
-</data>
+    <record id="plm_component_check_sparebom" model="ir.ui.view">
+        <field name="name">plm.relation.spare</field>
+        <field name="model">product.product</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+        <form string="Check of Spare Bom">
+            <label string=" This is a check for existence\n of required Spare Bom." colspan="4"/>
+            <separator string="" colspan="4" />
+            <group colspan="4" col="6">
+            	<button icon="gtk-cancel" special="cancel" string="Cancel"/>
+            	<button icon="terp-gtk-go-back-rtl" special="cancel" string="Check Spare Bom" name="action_check_spareBom" type="object"/>
+            </group>
+        </form>
+        </field>
+    </record>
+
+    <act_window name="Check Spare Bom"
+        res_model="product.product"
+        src_model="product.product"
+        view_mode="form"
+        view_id="plm_component_check_sparebom"
+        target="new"
+        key2="client_action_multi"
+        id="act_check_spareBom"/>
+
+ 
+ </data>
 </openerp>
         
