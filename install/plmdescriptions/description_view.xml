@@ -33,6 +33,9 @@
                     	<newline/>
                     	<separator colspan="4" string="Normative"/>
                     	<field name="unitab"/>
+                    	<newline/>
+                    	<separator colspan="4" string="Template BOM"/>
+                    	<field name="bom_tmpl"/>
                 	</group>
                 </group>
             </form>

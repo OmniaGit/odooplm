@@ -50,6 +50,7 @@
         'install/plmdocuments/backupdoc_view.xml',
         'install/plmcomponents/component_view.xml',
         'install/plmcomponents/component_workflow.xml',
+        'install/plmsparebom/sparebom_view.xml',
         'install/plmcomponentrelations/relations_view.xml',
         'install/plmcheckedout/checkout_view.xml',
         'install/report/bom_structure.xml',
