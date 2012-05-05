@@ -19,6 +19,9 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+
+from osv import osv, fields
+
 class plm_component(osv.osv):
     _inherit = 'product.product'
 
@@ -51,4 +54,15 @@ class plm_component(osv.osv):
 plm_component()
 
 
+class plm_description(osv.osv):
+    _inherit = "plm.description"
+    _columns = {
+                'bom_tmpl': fields.many2one('mrp.bom','Template BOM', required=False, change_default=True, help="Select a template BOM to drive Spare BOM."),
+    }
+    _defaults = {
+                 'bom_tmpl': lambda *a: False,
+    }
+#       Introduced relationship with mrp.bom to implement Spare Part Bom functionality
+    
+plm_description()
 

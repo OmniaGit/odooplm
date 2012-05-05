@@ -84,14 +84,3 @@ class plm_relation(osv.osv):
 plm_relation()
 
 
-class plm_description(osv.osv):
-    _inherit = "plm.description"
-    _columns = {
-                'bom_tmpl': fields.many2one('mrp.bom','Template BOM', required=False, change_default=True, help="Select a template BOM to drive Spare BOM."),
-    }
-    _defaults = {
-                 'bom_tmpl': lambda *a: False,
-    }
-#       Introduced relationship with mrp.bom to implement Spare Part Bom functionality
-    
-plm_description()
