@@ -124,25 +124,6 @@
             </notebook>
         </field>
     </record>  
-               
- 
-<!--           
-    <record model="ir.actions.act_window" id="plm_action_component_form">
-        <field name="type">ir.actions.act_window</field>
-        <field name="res_model">product.product</field>
-        <field name="view_type">form</field>
-        <field name="view_mode">tree,form</field>
-        <field name="view_id" ref="plm_view_component_tree"/>
-        <field name="view_id_search" ref="plm_component_search"/>
-    </record>
-    
-    
-    <menuitem
-        name="Search on Parts"
-        action="plm_action_component_form"
-        id="menu_component"
-        parent="plm_component_menu_view"/>
--->            
 
 
     <record model="ir.ui.view" id="plm_component_base_tree">
