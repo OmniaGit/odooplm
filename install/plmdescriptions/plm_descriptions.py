@@ -137,6 +137,8 @@ class plm_component(osv.osv):
                     values['std_umc2']=thisObject.umc2
                 if thisObject.umc3:
                     values['std_umc3']=thisObject.umc3
+                if thisObject.unitab:
+                    values['description']=values['description']+" "+thisObject.unitab
         return {'value': values}
 
     def on_change_stdvalue(self, cr, uid, id, std_description=False, std_umc1=False, std_value1=False,\
