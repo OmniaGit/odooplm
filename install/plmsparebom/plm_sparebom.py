@@ -21,6 +21,8 @@
 ##############################################################################
 
 from osv import osv, fields
+from tools.translate import _
+
 RETDMESSAGE=''
 
 class plm_component(osv.osv):
@@ -39,6 +41,7 @@ class plm_component(osv.osv):
         """
             Check if a Spare Bom exists (action callable from views)
         """
+        global RETDMESSAGE
         if not 'active_id' in context:
             return False
         if self.action_check_spareBom_WF(cr, uid, context['active_ids'], context):
@@ -59,6 +62,7 @@ class plm_component(osv.osv):
         """
             Check if a Spare Bom exists (action callable from code)
         """
+        global RETDMESSAGE
         RETDMESSAGE=''
         for idd in ids:
             self._check_spareBom(cr, uid, idd, context)
@@ -104,6 +108,7 @@ class plm_component(osv.osv):
         """
             Check if a Spare Bom exists (recursive on all EBom children)
         """
+        global RETDMESSAGE
         bomType=self.pool.get('mrp.bom')
         checkObj=self.browse(cr, uid, idd, context)
         if checkObj.std_description.bom_tmpl:
@@ -112,7 +117,7 @@ class plm_component(osv.osv):
             else:
                 objBom=bomType.search(cr, uid, [('name','=',checkObj.name+'-Spare')])
             if not objBom:
-                RETDMESSAGE=RETDMESSAGE+checkObj.name+'/'+checkObj.engineering_revision+'\n'
+                RETDMESSAGE=RETDMESSAGE+"%s/%d \n" %(checkObj.name,checkObj.engineering_revision)
 
         if checkObj.engineering_revision:
             objEBom=bomType.search(cr, uid, [('name','=',checkObj.name),('engineering_revision','=',checkObj.engineering_revision)])
