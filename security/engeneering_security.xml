@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+        <data>
+                <record id="group_openerpplm_viewuser" model="res.groups">
+                        <field name="name">OpenErpPlm / User</field>
+                </record>
+                <record id="group_openerpplm_integrationuser" model="res.groups">
+                        <field name="name">OpenErpPlm / IntegrationUser</field>
+                </record>
+                <record id="group_openerpplm_admin" model="res.groups">
+                        <field name="name">OpenErpPlm / Administrator</field>
+                </record>
+        </data>
+</openerp>

@@ -44,6 +44,9 @@
     'init_xml': [
         ],
     'update_xml': [
+        # Verifie it before uncomment
+        #'security/engeneering_security.xml',
+        #'security/ir.model.access.csv',
         'install/plmviews/plm_menu.xml',
         'install/plmdocuments/document_view.xml',
         'install/plmdocuments/document_workflow.xml',
