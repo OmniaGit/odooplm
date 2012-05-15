@@ -76,6 +76,8 @@ class plm_component(osv.osv):
             Create a new Spare Bom (recursive on all EBom children)
         """
         checkObj=self.browse(cr, uid, idd, context)
+        if not checkObj:
+            return False
         if '-Spare' in checkObj.name:
             return False
         bomType=self.pool.get('mrp.bom')
@@ -96,11 +98,11 @@ class plm_component(osv.osv):
                     bomType.write(cr,uid,[bom_line.id],{'source_id':False,'name':bom_line.name.replace(' Copy',''),},context=None)
 
         if checkObj.engineering_revision:
-            objEBom=bomType.search(cr, uid, [('name','=',checkObj.name),('engineering_revision','=',checkObj.engineering_revision)])
+            idBoms=bomType.search(cr, uid, [('name','=',checkObj.name),('engineering_revision','=',checkObj.engineering_revision)])
         else:
-            objEBom=bomType.search(cr, uid, [('name','=',checkObj.name)])
-        if objEBom:
-            for bom_line in objEBom.bom_lines:
+            idBoms=bomType.search(cr, uid, [('name','=',checkObj.name)])
+        for idBom in idBoms:
+            for bom_line in bomType.browse(cr,uid,idBom,context=context).bom_lines:
                 self._create_spareBom(cr, uid, bom_line.product_id, context)
         return False
 
@@ -111,6 +113,8 @@ class plm_component(osv.osv):
         global RETDMESSAGE
         bomType=self.pool.get('mrp.bom')
         checkObj=self.browse(cr, uid, idd, context)
+        if not checkObj:
+            return False
         if checkObj.std_description.bom_tmpl:
             if checkObj.engineering_revision:
                 objBom=bomType.search(cr, uid, [('name','=',checkObj.name+'-Spare'),('engineering_revision','=',checkObj.engineering_revision)])
@@ -120,11 +124,11 @@ class plm_component(osv.osv):
                 RETDMESSAGE=RETDMESSAGE+"%s/%d \n" %(checkObj.name,checkObj.engineering_revision)
 
         if checkObj.engineering_revision:
-            objEBom=bomType.search(cr, uid, [('name','=',checkObj.name),('engineering_revision','=',checkObj.engineering_revision)])
+            idBoms=bomType.search(cr, uid, [('name','=',checkObj.name),('engineering_revision','=',checkObj.engineering_revision)])
         else:
-            objEBom=bomType.search(cr, uid, [('name','=',checkObj.name)])
-        if objEBom:
-            for bom_line in objEBom.bom_lines:
+            idBoms=bomType.search(cr, uid, [('name','=',checkObj.name)])
+        for idBom in idBoms:
+            for bom_line in bomType.browse(cr,uid,idBom,context=context).bom_lines:
                 self._check_spareBom(cr, uid, bom_line.product_id, context)
         return False
 
