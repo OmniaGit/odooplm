@@ -133,14 +133,21 @@ class plm_document(osv.osv):
             return True
         #if (not context) or context.get('store_method','fs')=='fs':
         try:
+            printout=False
+            preview=False
+            if oiDocument.printout:
+                printout=oiDocument.printout
+            if oiDocument.preview:
+                preview=oiDocument.preview
+                
             fname,filesize=self._manageFile(cr,uid,oid,binvalue=value,context=context)
             cr.execute('update ir_attachment set store_fname=%s,file_size=%s where id=%s', (fname,filesize,oid))
             self.pool.get('plm.backupdoc').create(cr,uid, {
                                           'userid':uid,
                                           'existingfile':fname,
                                           'documentid':oid,
-                                          'printout': oiDocument.printout,
-                                          'preview': oiDocument.preview
+                                          'printout': printout,
+                                          'preview': preview
                                          }, context=context)
 
             return True
