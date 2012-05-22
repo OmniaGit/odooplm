@@ -302,11 +302,11 @@ class plm_component(osv.osv):
         return docIDs
 
     def _iswritable(self, cr, user, oid):
-        checkState=('confirmed','released','undermodify','obsoleted')
+        checkState=('draft')
         if not oid.engineering_writable:
             logging.warning("_iswritable : Part ("+str(oid.engineering_code)+"-"+str(oid.engineering_revision)+") not writable.")
             return False
-        if oid.state in checkState:
+        if not oid.state in checkState:
             logging.warning("_iswritable : Part ("+str(oid.engineering_code)+"-"+str(oid.engineering_revision)+") in status ; "+str(oid.state)+".")
             return False
         if oid.engineering_code == False:
@@ -314,8 +314,6 @@ class plm_component(osv.osv):
             return False
         return True  
 
-
-##  Work Flow Actions
     def action_draft(self,cr,uid,ids,context=None):
         """
             release the object
