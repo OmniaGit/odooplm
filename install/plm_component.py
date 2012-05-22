@@ -208,13 +208,13 @@ class plm_component(osv.osv):
             break
         return (newID, newIndex) 
 
-    def SaveOrUpdate(self, cr, uid, ids, default=None, context=None):
+    def SaveOrUpdate(self, cr, uid, vals, default=None, context=None):
         """
             Save or Update Parts
         """
         listedParts=[]
         retValues=[]
-        for part in ids:
+        for part in vals:
             hasSaved=False
             if part['engineering_code'] in listedParts:
                 continue
@@ -232,7 +232,7 @@ class plm_component(osv.osv):
                 existingID=existingID[0]
                 objPart=self.browse(cr, uid, existingID, context=context)
                 if (self.getUpdTime(objPart)<datetime.strptime(part['lastupdate'],'%Y-%m-%d %H:%M:%S')):
-                    if objPart.engineering_writable:
+                    if self._iswritable(cr,uid,objPart):
                         del(part['lastupdate'])
                         if not self.write(cr,uid,[existingID], part , context=context, check=True):
                             raise osv.except_osv(_('Update Part Error'), _("Part %s cannot be updated" %(str(part['engineering_code']))))
@@ -300,6 +300,20 @@ class plm_component(osv.osv):
             elif action_name=='obsolete':
                 documentType.action_obsolete(cr,uid,docIDs)
         return docIDs
+
+    def _iswritable(self, cr, user, oid):
+        checkState=('confirmed','released','undermodify','obsoleted')
+        if not oid.engineering_writable:
+            logging.warning("_iswritable : Part ("+str(oid.engineering_code)+"-"+str(oid.engineering_revision)+") not writable.")
+            return False
+        if oid.state in checkState:
+            logging.warning("_iswritable : Part ("+str(oid.engineering_code)+"-"+str(oid.engineering_revision)+") in status ; "+str(oid.state)+".")
+            return False
+        if oid.engineering_code == False:
+            logging.warning("_iswritable : Part ("+str(oid.name)+"-"+str(oid.engineering_revision)+") without Engineering P/N.")
+            return False
+        return True  
+
 
 ##  Work Flow Actions
     def action_draft(self,cr,uid,ids,context=None):
@@ -403,7 +417,7 @@ class plm_component(osv.osv):
                     raise osv.except_osv(_('Edit Entity Error'), _("No changes are allowed on entity (%s)." %(customObject.name)))
                     return False
                 if customObject.state in checkState:
-                    raise osv.except_osv(_('Edit Entity Error'), _("The active state does not allow you to make save action"))
+                    raise osv.except_osv(_('Edit Entity Error'), _("The active state does not allow you to make save action on entity (%s)." %(customObject.name)))
                     return False
                 if customObject.engineering_code == False:
                     vals['engineering_code'] = customObject.name
@@ -439,7 +453,7 @@ class plm_component(osv.osv):
                 oldObject=self.browse(cr, uid, existingID[0], context=context)
                 if oldObject.state in checkState:
                     if not self.write(cr, uid, [oldObject.id], values, context, check=False):
-                        logging.warning("unlink : Unable to update state to old component ("+str(oldObject.engineering_revision)+"-"+str(oldObject.engineering_revision)+").")
+                        logging.warning("unlink : Unable to update state to old component ("+str(oldObject.engineering_code)+"-"+str(oldObject.engineering_revision)+").")
                         return False
         return super(plm_component,self).unlink(cr, uid, ids, context=context)
 
