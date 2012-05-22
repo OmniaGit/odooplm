@@ -366,7 +366,7 @@ class plm_component(osv.osv):
             obsolete the object
         """
         defaults={}
-        defaults['engineering_writable']=True
+        defaults['engineering_writable']=False
         defaults['state']='obsoleted'
         excludeStatuses=['draft','confirmed','transmitted','undermodify','obsoleted']
         includeStatuses=['released']
