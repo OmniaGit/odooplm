@@ -103,7 +103,7 @@ class plm_component(osv.osv):
             idBoms=bomType.search(cr, uid, [('name','=',checkObj.name)])
         for idBom in idBoms:
             for bom_line in bomType.browse(cr,uid,idBom,context=context).bom_lines:
-                self._create_spareBom(cr, uid, bom_line.product_id, context)
+                self._create_spareBom(cr, uid, bom_line.product_id.id, context)
         return False
 
     def _check_spareBom(self, cr, uid, idd, context=None):
@@ -129,7 +129,7 @@ class plm_component(osv.osv):
             idBoms=bomType.search(cr, uid, [('name','=',checkObj.name)])
         for idBom in idBoms:
             for bom_line in bomType.browse(cr,uid,idBom,context=context).bom_lines:
-                self._check_spareBom(cr, uid, bom_line.product_id, context)
+                self._check_spareBom(cr, uid, bom_line.product_id.id, context)
         return False
 
 plm_component()
