@@ -808,7 +808,7 @@ class plm_backupdoc(osv.osv):
     _columns = {
                 'userid':fields.many2one('res.users', 'Related User', ondelete='cascade'), 
                 'createdate':fields.datetime('Date Created', readonly=True),
-                'existingfile':fields.char('Document Location',size=1024), 
+                'existingfile':fields.char('Physical Document Location',size=1024), 
                 'documentid':fields.many2one('ir.attachment', 'Related Document', ondelete='cascade'), 
                 'revisionid': fields.related('documentid','revisionid',type="int",relation="ir.attachment",string="Revision",store=False),
                 'printout': fields.binary('Printout Content'),
