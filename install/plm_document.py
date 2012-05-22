@@ -285,6 +285,19 @@ class plm_document(osv.osv):
         fobj.write(value)
         fobj.close()
         return (os.path.join(flag,filename),len(value))
+
+    def _iswritable(self, cr, user, oid):
+        checkState=('draft')
+        if not oid.engineering_writable:
+            logging.warning("_iswritable : Part ("+str(oid.engineering_code)+"-"+str(oid.engineering_revision)+") not writable.")
+            return False
+        if not oid.state in checkState:
+            logging.warning("_iswritable : Part ("+str(oid.engineering_code)+"-"+str(oid.engineering_revision)+") in status ; "+str(oid.state)+".")
+            return False
+        if oid.engineering_code == False:
+            logging.warning("_iswritable : Part ("+str(oid.name)+"-"+str(oid.engineering_revision)+") without Engineering P/N.")
+            return False
+        return True  
     
     def newVersion(self,cr,uid,ids,context=None):
         """
@@ -376,7 +389,7 @@ class plm_document(osv.osv):
                 objDocument=self.browse(cr, uid, existingID, context=context)
 #                logging.info("SaveOrUpdate : time db : %s time file : %s" %(str(self.getLastTime(cr,uid,existingID).strftime('%Y-%m-%d %H:%M:%S')), str(document['lastupdate'])))
                 if self.getLastTime(cr,uid,existingID)<datetime.strptime(str(document['lastupdate']),'%Y-%m-%d %H:%M:%S'):
-                    if objDocument.writable:
+                    if self._iswritable(cr,uid,objDocument):
                         del(document['lastupdate'])
                         if not self.write(cr,uid,[existingID], document , context=context, check=True):
                             raise osv.except_osv(_('Update Document Error'), _("Document %s - %s cannot be updated" %(str(document['name']), str(document['revisionid']))))
