@@ -127,16 +127,46 @@
            </field>
         </record>
 
-    <record model="ir.actions.act_window" id="plm_action_relation_form">
+    <record model="ir.actions.act_window" id="plm_action_normal_form">
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">mrp.bom</field>
         <field name="view_type">form</field>
+        <field name="domain">[('type','=','normal')]</field>
+        <field name="filter" eval="True"/>
+    </record>
+
+    <menuitem
+        name="Search on Standard Bill of Materials"
+        action="plm_action_normal_form"
+        id="menu_relation_normal"
+        parent="plm_menu_relation"/>
+
+    <record model="ir.actions.act_window" id="plm_action_ebom_form">
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">mrp.bom</field>
+        <field name="view_type">form</field>
+        <field name="domain">[('type','=','ebom')]</field>
+        <field name="filter" eval="True"/>
     </record>
 
     <menuitem
         name="Search on Engineering Bill of Materials"
-        action="plm_action_relation_form"
-        id="menu_relation_files"
+        action="plm_action_ebom_form"
+        id="menu_relation_ebom"
+        parent="plm_menu_relation"/>
+
+    <record model="ir.actions.act_window" id="plm_action_spare_form">
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">mrp.bom</field>
+        <field name="view_type">form</field>
+        <field name="domain">[('type','=','spare')]</field>
+        <field name="filter" eval="True"/>
+    </record>
+
+    <menuitem
+        name="Search on Spare Bill of Materials"
+        action="plm_action_spare_form"
+        id="menu_relation_spare"
         parent="plm_menu_relation"/>
 
 
