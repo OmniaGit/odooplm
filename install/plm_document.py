@@ -185,7 +185,7 @@ class plm_document(osv.osv):
                 result.extend(self._relateddocs(cr, uid, child.parent_id.id, kind, listed_documents, recursion))
             if child.parent_id.id:
                 result.append(child.parent_id.id)
-        return result
+        return list(set(result))
 
     def _relatedbydocs(self, cr, uid, oid, kind, listed_documents=[], recursion=True):
         result=[]
@@ -202,12 +202,12 @@ class plm_document(osv.osv):
                 result.extend(self._relatedbydocs(cr, uid, child.child_id.id, kind, listed_documents, recursion))
             if child.child_id.id:
                 result.append(child.child_id.id)
-        return result
+        return list(set(result))
 
     def _data_check_files(self, cr, uid, ids, listedFiles=(), forceFlag=False, context=None):
         result = []
         datefiles,listfiles=listedFiles
-        for objDoc in self.browse(cr, uid, ids, context=context):
+        for objDoc in self.browse(cr, uid, list(set(ids)), context=context):
             isCheckedOutToMe=self._is_checkedout_for_me(cr, uid, objDoc.id, context)
             if (objDoc.datas_fname in listfiles):
                 if forceFlag:
@@ -218,7 +218,7 @@ class plm_document(osv.osv):
             else:
                 collectable = True
             result.append((objDoc.id, objDoc.datas_fname, objDoc.file_size, collectable, isCheckedOutToMe))
-        return result
+        return list(set(result))
             
     def copy(self,cr,uid,oid,defaults={},context=None):
         """
