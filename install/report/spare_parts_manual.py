@@ -127,7 +127,7 @@ class external_pdf(render):
     
 class component_spare_parts_report(report_int):
     """
-        Calculate the bom structure spare parts manual
+        Calculates the bom structure spare parts manual
     """
     def create(self, cr, uid, ids, datas, context=None):
         self.pool = pooler.get_pool(cr.dbname)
@@ -161,7 +161,6 @@ class component_spare_parts_report(report_int):
         spbom=[]
         retd=[]
         for bomid in parent.bom_ids:
-            #TODO: If bomid in ('normal','ebom') don't evaluate spbom ?!
             buffer=[]
             for bom in bomid.bom_lines:
                 buffer.append(bom)
@@ -198,7 +197,8 @@ class component_spare_parts_report(report_int):
     def getPdfComponentLayout(self,component):
         ret=[]
         for document in component.linkeddocuments:
-            if document.printout:# and document.name[0]=='L':
+            if document.printout: # and document.name[0]=='L':
+                #TODO: To Evaluate document type 
                 ret.append( StringIO.StringIO(base64.decodestring(document.printout)))
         return ret 
       
@@ -214,8 +214,9 @@ class component_spare_parts_report(report_int):
     
     def createBom(self,data,parentCode,parentDescription):
         buffer = StringIO.StringIO()
-        if len(data):
+        if len(data)<1:
             return buffer
+            # avoid blank page for no bom data
         doc = SimpleDocTemplate(buffer, pagesize=A4)
         elements = []
         header=[TableHeader(col) for col in BOM_SHOW_FIELDS]

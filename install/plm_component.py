@@ -136,11 +136,9 @@ class plm_component(osv.osv):
             for bom in bomid.bom_lines:
                 children=self._getChildrenBom(cr, uid, bom.product_id, level, currlevel+1, context=context)
                 bufferdata.extend(children)
-        if not (component.id in bufferdata):
             bufferdata.append(component.id)
-        for oid in bufferdata:
-            result.append(oid)
-        return result
+        result.extend(bufferdata)
+        return list(set(result))
 
     def getLastTime(self, cr, uid, oid, default=None, context=None):
         return self.getUpdTime(self.browse(cr, uid, oid, context=context))
