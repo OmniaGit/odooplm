@@ -61,12 +61,11 @@ class component_one_custom_report(report_int):
         documents=[]
         components=componentType.browse(cr, uid, ids, context=context)
         for component in components:
-            tmp_children=componentType._getChildrenBom(cr, uid, component, 0, context=context)
-            children=[ tmp_child for tmp_child in tmp_children if (tmp_child in children) == False ]
-            children=componentType.browse(cr, uid, children, context=context)
+            idcs=componentType._getChildrenBom(cr, uid, component, 0, context=context)
+            children=componentType.browse(cr, uid, idcs, context=context)
             for child in children:
                 documents.extend(child.linkeddocuments)
-        return packDocuments(documents,output)
+        return packDocuments(list(set(documents)),output)
 
 component_one_custom_report('report.one.product.product.pdf')
 
@@ -84,11 +83,10 @@ class component_all_custom_report(report_int):
         documents=[]
         components=componentType.browse(cr, uid, ids, context=context)
         for component in components:
-            tmp_children=componentType._getChildrenBom(cr, uid, component, 1, context=context)
-            children=[ tmp_child for tmp_child in tmp_children if (tmp_child in children) == False ]
-            children=componentType.browse(cr, uid, children, context=context)
+            idcs=componentType._getChildrenBom(cr, uid, component, 1, context=context)
+            children=componentType.browse(cr, uid, idcs, context=context)
             for child in children:
                 documents.extend(child.linkeddocuments)
-        return packDocuments(documents,output)
+        return packDocuments(list(set(documents)),output)
 
 component_all_custom_report('report.all.product.product.pdf')

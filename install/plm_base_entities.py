@@ -180,21 +180,19 @@ class plm_relation(osv.osv):
         ids=self.search(cr,uid,[('product_id','=',pid),('bom_id','=',False),('source_id','!=',False),('type','=','ebom')])
         if not ids:
             ids=self.search(cr,uid,[('product_id','=',pid),('bom_id','=',False),('source_id','!=',False),('type','=','normal')])
-        for obj in self.browse(cr,uid,ids,context=None):
-            if obj in counted:
-                continue
-            counted.append(obj)
-        return counted
+        for obj in self.browse(cr,uid,list(set(ids)),context=None):
+             counted.append(obj)
+        return list(set(counted))
 
     def _getbomid(self, cr, uid, pid, sid):
         ids=self._getidbom(cr, uid, pid, sid)
-        return self.browse(cr,uid,ids,context=None)
+        return self.browse(cr,uid,list(set(ids)),context=None)
 
     def _getidbom(self, cr, uid, pid, sid):
         ids=self.search(cr,uid,[('product_id','=',pid),('bom_id','=',False),('source_id','=',sid),('type','=','ebom')])
         if not ids:
             ids=self.search(cr,uid,[('product_id','=',pid),('bom_id','=',False),('source_id','=',sid),('type','=','normal')])
-        return ids
+        return list(set(ids))
 
     def _getpackdatas(self, cr, uid, relDatas):
         prtDatas={}
@@ -282,8 +280,7 @@ class plm_relation(osv.osv):
                     continue
                 innerids=self._explodebom(cr, uid, self._bomid(cr, uid, bom_line.product_id.id), check)
                 self._packed.append(bom_line.product_id.id)
-#               innerids=[innerid for innerid in innerids]
-                output.append([bom_line.product_id.id, innerids])
+                output.append([bom_line.product_id.id, list(set(innerids))])
         return(output)
     
 
@@ -308,8 +305,7 @@ class plm_relation(osv.osv):
                 continue
             self._packed.append(bomObj.product_id.id)
             innerids=self._implodebom(cr, uid, self._inbomid(cr, uid, bomObj.product_id.id))
-#            innerids=[innerid for innerid in innerids]
-            pids.append((bomObj.product_id.id,innerids))
+            pids.append((bomObj.product_id.id,list(set(innerids))))
         return pids
 
     def GetWhereUsedSum(self, cr, uid, ids, context=None):

@@ -259,7 +259,7 @@ class plm_component(osv.osv):
                 if child.state in includeStatuses:
                     if not child.id in tobeReleasedIDs:
                         tobeReleasedIDs.append(child.id)
-        return (stopFlag,tobeReleasedIDs)
+        return (stopFlag,list(set(tobeReleasedIDs)))
     
     def _action_ondocuments(self,cr,uid,ids,action_name,context=None):
         """
