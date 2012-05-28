@@ -59,6 +59,7 @@
                     <field name="code"  select="True"/>
                     <field name="product_id"  select="True"/>
                     <field name="engineering_revision"/>
+                    <field name="state"/>
                     <field name="source_id" select="True" string="Source Relation Document"/>
         			<field name="type"/>
        				<field name="product_qty"/>
