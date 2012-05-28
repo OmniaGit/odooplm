@@ -203,21 +203,21 @@ class component_spare_parts_report(report_int):
         return ret 
       
     def getFirstPage(self,parentCode,parentDescription):
-        buffer = StringIO.StringIO()
-        doc = SimpleDocTemplate(buffer, pagesize=A4)
+        strbuffer = StringIO.StringIO()
+        doc = SimpleDocTemplate(strbuffer, pagesize=A4)
         elements = []
         header="Spare Parts Manual<br/>%s<br/>%s"%(parentCode,parentDescription)
         p=PageCellHeader(header)
         elements.append(p)
         doc.build(elements)
-        return buffer
+        return strbuffer
     
     def createBom(self,data,parentCode,parentDescription):
-        buffer = StringIO.StringIO()
+        strbuffer = StringIO.StringIO()
         if len(data)<1:
-            return buffer
+            return strbuffer
             # avoid blank page for no bom data
-        doc = SimpleDocTemplate(buffer, pagesize=A4)
+        doc = SimpleDocTemplate(strbuffer, pagesize=A4)
         elements = []
         header=[TableHeader(col) for col in BOM_SHOW_FIELDS]
         val=self.getSummarizedBom(data)
@@ -231,7 +231,7 @@ class component_spare_parts_report(report_int):
         elements.append(t)
         # write the document to disk
         doc.build(elements)
-        return buffer
+        return strbuffer
    
     def getSummarizedBom(self,data):
         dic={}

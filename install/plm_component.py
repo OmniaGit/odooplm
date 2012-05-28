@@ -242,6 +242,61 @@ class plm_component(osv.osv):
             listedParts.append(part['engineering_code'])
         return retValues 
 
+##  Menu action Methods
+    def action_create_normalBom(self, cr, uid, ids, context=None):
+        """
+            Create a new Spare Bom if doesn't exist (action callable from views)
+        """
+        if not 'active_id' in context:
+            return False
+        return self.action_create_normalBom_WF(cr, uid, context['active_ids'])
+
+    def _create_normalBom(self, cr, uid, idd, context=None):
+        """
+            Create a new Normal Bom (recursive on all EBom children)
+        """
+
+        checkObj=self.browse(cr, uid, idd, context)
+        if not checkObj:
+            return False
+        bomType=self.pool.get('mrp.bom')
+        if checkObj.engineering_revision:
+            objBom=bomType.search(cr, uid, [('name','=',checkObj.name),('engineering_revision','=',checkObj.engineering_revision),('type','=','normal')])
+            idBoms=bomType.search(cr, uid, [('name','=',checkObj.name),('engineering_revision','=',checkObj.engineering_revision)],('type','=','ebom'))
+        else:
+            objBom=bomType.search(cr, uid, [('name','=',checkObj.name),('type','=','normal')])
+            idBoms=bomType.search(cr, uid, [('name','=',checkObj.name),('type','=','ebom')])
+        defaults={}
+        if not objBom:
+            for idBom in idBoms:
+                newidBom=bomType.copy(cr, uid, idBom, defaults, context)
+                if newidBom:
+                    bomType.write(cr,uid,[newidBom],{'name':checkObj.name,'product_id':checkObj.id,'type':'normal',},context=None)
+                    oidBom=bomType.browse(cr,uid,newidBom,context=context)
+                    ok_rows=self._summarizeBom(cr, uid, oidBom.bom_lines)
+                    for bom_line in ok_rows:
+                        bomType.write(cr,uid,[bom_line.id],{'type':'normal','source_id':False,'name':bom_line.name.replace(' Copy',''),'product_qty':bom_line.product_qty,},context=None)
+                    for bom_line in list(set(oidBom.bom_lines) ^ set(ok_rows)):
+                        bomType.unlink(cr,uid,[bom_line.id],context=None)
+
+        for idBom in idBoms:
+            for bom_line in bomType.browse(cr,uid,idBom,context=context).bom_lines:
+                self._create_normalBom(cr, uid, bom_line.product_id.id, context)
+        return False
+
+    def _summarizeBom(self, cr, uid, datarows):
+        dic={}
+        retd=[]
+        bomType=self.pool.get('mrp.bom')
+        for datarow in datarows:
+            key=str(datarow.product_id.name)
+            if key in dic:
+                dic[key].product_qty=float(dic[key].product_qty)+float(datarow.product_qty)
+            else:
+                dic[key]=datarow
+        retd=dic.values()
+        return retd
+
 ##  Work Flow Internal Methods
     def _get_recursive_parts(self, cr, uid, ids, excludeStatuses, includeStatuses):
         """
@@ -261,6 +316,14 @@ class plm_component(osv.osv):
                         tobeReleasedIDs.append(child.id)
         return (stopFlag,list(set(tobeReleasedIDs)))
     
+    def action_create_normalBom_WF(self, cr, uid, ids, context=None):
+        """
+            Create a new Nornmal Bom if doesn't exist (action callable from code)
+        """
+        for idd in ids:
+            self._create_normalBom(cr, uid, idd, context)
+        return False
+
     def _action_ondocuments(self,cr,uid,ids,action_name,context=None):
         """
             move workflow on documents having the same state of component 
