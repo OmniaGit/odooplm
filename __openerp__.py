@@ -21,7 +21,7 @@
 ##############################################################################
 {
     'name': 'Product Lifecycle Management',
-    'version': '2011.0',
+    'version': '1.0',
     'category': 'Generic Modules/Others',
     'depends': ['base', 'process','document','product','mrp'],
     'author': 'OmniaSolutions',
