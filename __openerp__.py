@@ -45,8 +45,6 @@
     'init_xml': [
         ],
     'update_xml': [
-        #'security/engeneering_security.xml',
-        #'security/ir.model.access.csv',
         'install/plmviews/plm_menu.xml',
         'install/plmdocuments/document_view.xml',
         'install/plmdocuments/document_workflow.xml',
@@ -66,10 +64,12 @@
         'install/plmmaterials/material_view.xml',
         'install/plmfinishings/finishing_sequence.xml',
         'install/plmfinishings/finishing_view.xml',
-
+        'security/base_plm_security.xml',
+        'security/ir.model.access.csv',
         'plm_installer.xml',
-    ],
-    'demo_xml': [],
+        ],
+    'demo_xml': [
+        ],
     'installable': True,
     'active': True,
 }

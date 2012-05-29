@@ -47,12 +47,16 @@ class plm_installer(osv.osv_memory):
         'openerpplm' : False,
         'name' : 'OpenErpPlm.exe',
         'description' : """
-        * Save the OpenErp PLM Client file.
+        To complete your installation follow these notes :
+         
+        * Configure OpenErp access capabilty adding Users to the group 'PLM / Integration' before to use Clients.
+        
+        * Download the OpenErp PLM Client file.
         * Follow these steps to install Product Life-Cycle Management Client.
             1. Double click on OpenErp PLM Client file.
             2. Select language.
             3. Select the directory where to install integrations.
-            4. Select the editor to be integrated.
+            4. Select the editor that has to be connected.
         
         * At editor startup OpenERP PLM menu and toolbar will be automatically loaded.
         * At first time execution :
