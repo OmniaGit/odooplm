@@ -227,7 +227,7 @@
             </field>
         </record>
 
-<!--        <act_window
+        <act_window
             domain="[('bom_id','=',False),('product_id', '=', active_id)]"
             context="{'search_default_product_id': [active_id],'default_product_id':active_id}"
             id="act_product_product_2_mrp_bom"
@@ -235,27 +235,7 @@
             res_model="mrp.bom"
             src_model="product.product"
             groups="mrp.group_mrp_user"/>
--->
 
-        <record id="mrp_bom_form_action" model="ir.actions.act_window">
-            <field name="name">Bill of Materials</field>
-            <field name="type">ir.actions.act_window</field>
-            <field name="res_model">mrp.bom</field>
-            <field name="view_type">form</field>
-            <field name="domain">[('type','=','normal'),('bom_id','=',False)]</field>
-            <field name="search_view_id" ref="view_mrp_bom_filter"/>
-            <field name="help">Master Bills of Materials allow you to create and manage the list of necessary raw materials used to make a finished product. OpenERP will use these BoMs to automatically propose manufacturing orders according to product needs. You can either create a bill of materials to define specific production steps or define a single multi-level bill of materials.</field>
-        </record>
-        <record id="mrp_bom_form_action2" model="ir.actions.act_window">
-            <field name="name">Bill of Material Components</field>
-            <field name="type">ir.actions.act_window</field>
-            <field name="res_model">mrp.bom</field>
-            <field name="view_type">form</field>
-            <field name="view_id" ref="mrp_bom_component_tree_view"/>
-            <field name="domain">[('type','=','normal'),('bom_id','!=',False)]</field>
-            <field name="help">Bills of materials components are components and sub-products used to create master bills of materials. Use this menu to search in which BoM a specific component is used.</field>
-        </record>
-	
 </data>
 </openerp>
 
