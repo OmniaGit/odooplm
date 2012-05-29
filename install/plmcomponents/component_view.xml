@@ -263,7 +263,7 @@
 
 
     <record id="plm_component_create_normalbom" model="ir.ui.view">
-        <field name="name">plm.relation.spare</field>
+        <field name="name">plm.relation.normal</field>
         <field name="model">product.product</field>
         <field name="type">form</field>
         <field name="arch" type="xml">
