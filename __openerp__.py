@@ -32,6 +32,7 @@
     * Document Indexation
     * Documents Relationship
     * Engineering Bill of Materials
+    * Spare Part Bom & Report
     
     
     Supported Editors :
