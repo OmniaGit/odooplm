@@ -543,7 +543,7 @@ class plm_document(osv.osv):
             if len(res):
                 return False
         return True
-         
+
 
     _columns = {
                 'revisionid': fields.integer('Revision Index', required=True),
@@ -562,10 +562,6 @@ class plm_document(osv.osv):
 
     _sql_constraints = [
         ('filename_uniq', 'unique (name,revisionid)', 'File name has to be unique!') # qui abbiamo la sicurezza dell'univocita del nome file
-    ]
-
-    _constraints = [
-                  (_check_duplication, 'File name must be unique!', ['name', 'parent_id', 'res_model', 'res_id'])
     ]
 
     def CheckedIn(self, cr, uid, files, default=None, context=None):
