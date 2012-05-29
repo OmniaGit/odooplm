@@ -513,16 +513,34 @@ class plm_document(osv.osv):
                         return False
         return super(plm_document,self).unlink(cr, uid, ids, context=context)
 
-    def _check_duplication(self, cr, uid, ids, context=None):
-        for attach in self.browse(cr, uid, ids, context):
-            domain = [('id', '!=', attach.id),
-                      ('name', '=', attach.name),
-                      ('parent_id', '=', attach.parent_id.id),
-                      ('res_model', '=', attach.res_model),
-                      ('res_id', '=', attach.res_id),
-                      ('revisionid', '=', attach.revisionid),
-                     ]
-            if self.search(cr, uid, domain, context=context):
+    def _check_duplication(self, cr, uid, vals, ids=[], op='create'):
+        """
+            Overridden, due to revision id management, filename can be duplicated, 
+            because system has to manage several revisions of a document.
+        """
+        name = vals.get('name', False)
+        parent_id = vals.get('parent_id', False)
+        res_model = vals.get('res_model', False)
+        res_id = vals.get('res_id', 0)
+        revisionid = vals.get('revisionid', 0)
+        if op == 'write':
+            for thisfile in self.browse(cr, uid, ids, context=None): # FIXME fields_only
+                if not name:
+                    name = thisfile.name
+                if not parent_id:
+                    parent_id = thisfile.parent_id and thisfile.parent_id.id or False
+                if not res_model:
+                    res_model = thisfile.res_model and thisfile.res_model or False
+                if not res_id:
+                    res_id = thisfile.res_id and thisfile.res_id or 0
+                if not revisionid:
+                    revisionid = thisfile.revisionid and thisfile.revisionid or 0
+                res = self.search(cr, uid, [('id', '<>', thisfile.id), ('name', '=', name), ('parent_id', '=', parent_id), ('res_model', '=', res_model), ('res_id', '=', res_id), ('revisionid', '=', revisionid)])
+                if len(res)>1:
+                    return False
+        if op == 'create':
+            res = self.search(cr, uid, [('name', '=', name), ('parent_id', '=', parent_id), ('res_id', '=', res_id), ('res_model', '=', res_model), ('revisionid', '=', revisionid)])
+            if len(res):
                 return False
         return True
 
@@ -544,10 +562,6 @@ class plm_document(osv.osv):
 
     _sql_constraints = [
         ('filename_uniq', 'unique (name,revisionid)', 'File name has to be unique!') # qui abbiamo la sicurezza dell'univocita del nome file
-    ]
-
-    _constraints = [
-                  (_check_duplication, 'File name must be unique!', ['name', 'parent_id', 'res_model', 'res_id'])
     ]
 
     def CheckedIn(self, cr, uid, files, default=None, context=None):
