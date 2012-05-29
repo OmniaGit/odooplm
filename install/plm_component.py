@@ -303,7 +303,7 @@ class plm_component(osv.osv):
             release the object recursively
         """
         stopFlag=False
-        tobeReleasedIDs=[]
+        tobeReleasedIDs=ids
         children=[]
         for oic in self.browse(cr, uid, ids, context=None):
             children=self.browse(cr, uid, self._getChildrenBom(cr, uid, oic, 1), context=None)
