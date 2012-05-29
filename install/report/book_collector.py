@@ -42,8 +42,10 @@ class BookCollector(object):
         self.pageCount+=1
         return pagetNumberBuffer
     
-    def addPage(self,streamBaffer):
-        mainPage=PdfFileReader(streamBaffer)
+    def addPage(self,streamBuffer):
+        if streamBuffer.len<1:
+            return False
+        mainPage=PdfFileReader(streamBuffer)
         for i in range(0,mainPage.getNumPages()):
             if self.jumpFirst:
                 self.collector.addPage(mainPage.getPage(i))

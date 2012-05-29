@@ -25,6 +25,7 @@ from osv import osv, fields
 from tools.translate import _
 import logging
 
+
 # To be adequated to plm.document class states
 USED_STATES=[('draft','Draft'),('confirmed','Confirmed'),('transmitted','Transmitted'),('released','Released'),('undermodify','UnderModify'),('obsoleted','Obsoleted'),('reactivated','Reactivated')]
 
@@ -139,15 +140,14 @@ class plm_relation(osv.osv):
     _inherit = 'mrp.bom'
     _columns = {
                 'create_date': fields.datetime('Date Created', readonly=True),
-                'source_id': fields.many2one('ir.attachment','name',ondelete='no action'),
-#                'source_id': fields.integer('Source Document Relation'),
-#                'type': fields.selection([('ebom','Engineering BoM'),('normal','Normal BoM'),('phantom','Sets / Phantom')], 'BoM Type', required=True, help=
-#                    "Use a phantom bill of material in raw materials lines that have to be " \
-#                    "automatically computed in on eproduction order and not one per level." \
-#                    "If you put \"Phantom/Set\" at the root level of a bill of material " \
-#                    "it is considered as a set or pack: the products are replaced by the components " \
-#                    "between the sale order to the picking without going through the production order." \
-#                    "The normal BoM will generate one production order per BoM level."),
+                'source_id': fields.many2one('ir.attachment','name',ondelete='no action', readonly=True),
+                'type': fields.selection([('normal','Normal BoM'),('phantom','Sets / Phantom'),('ebom','Engineering BoM'),('spbom','Spare BoM')], 'BoM Type', required=True, help=
+                    "Use a phantom bill of material in raw materials lines that have to be " \
+                    "automatically computed in on eproduction order and not one per level." \
+                    "If you put \"Phantom/Set\" at the root level of a bill of material " \
+                    "it is considered as a set or pack: the products are replaced by the components " \
+                    "between the sale order to the picking without going through the production order." \
+                    "The normal BoM will generate one production order per BoM level."),
                 'itemnum': fields.integer(_('Cad Item Position')),
                 'itemlbl': fields.char(_('Cad Item Position Label'),size=64)
                 }
@@ -156,47 +156,43 @@ class plm_relation(osv.osv):
     }
 
     def init(self, cr):
-        cr.execute("""
-                    DROP LANGUAGE IF EXISTS 'plpgsql' CASCADE;
-                    CREATE LANGUAGE 'plpgsql';
-                   """
-                   )
+       self._packed=[]
 
-    def _getbomidnullsrc(self, cr, pid):
-        ids=[]
-        cr.execute(
-            """
-                SELECT bom_id from mrp_bom where product_id = %s and source_id is not NULL
-            """%(str(pid), )
-            )
-        for idc in cr.fetchall():
-            if idc[0]!=None:
-                ids.append(idc[0])
-        return ids
+    def _getinbomidnullsrc(self, cr, uid, pid):
+        counted=[]
+        ids=self.search(cr,uid,[('product_id','=',pid),('bom_id','!=',False),('source_id','!=',False),('type','=','ebom')])
+        if not ids:
+            ids=self.search(cr,uid,[('product_id','=',pid),('bom_id','!=',False),('source_id','!=',False),('type','=','normal')])
+        for obj in self.browse(cr,uid,ids,context=None):
+            if obj.bom_id in counted:
+                continue
+            counted.append(obj.bom_id)
+        return counted
 
-    def _getbomid(self, cr, pid, sid):
-        ids=[]
-        cr.execute(
-            """
-               SELECT bom_id from mrp_bom where product_id = %s and source_id = %s
-            """%(str(pid), str(sid))
-            )
-        for idc in cr.fetchall():
-            if idc[0]!=None:
-                ids.append(idc[0])
-        return ids
+    def _getinbom(self, cr, uid, pid, sid):
+        ids=self.search(cr,uid,[('product_id','=',pid),('bom_id','!=',False),('source_id','=',sid),('type','=','ebom')])
+        if not ids:
+            ids=self.search(cr,uid,[('product_id','=',pid),('bom_id','!=',False),('source_id','=',sid),('type','=','normal')])
+        return self.browse(cr,uid,ids,context=None)
 
-    def _getidbom(self, cr, pid, sid):
-        ids=[]
-        cr.execute(
-            """
-               SELECT id from mrp_bom where product_id = %s and source_id = %s
-            """%(str(pid), str(sid))
-            )
-        for idc in cr.fetchall():
-            if idc[0]!=None:
-                ids.append(idc[0])
-        return ids
+    def _getbomidnullsrc(self, cr, uid, pid):
+        counted=[]
+        ids=self.search(cr,uid,[('product_id','=',pid),('bom_id','=',False),('source_id','!=',False),('type','=','ebom')])
+        if not ids:
+            ids=self.search(cr,uid,[('product_id','=',pid),('bom_id','=',False),('source_id','!=',False),('type','=','normal')])
+        for obj in self.browse(cr,uid,list(set(ids)),context=None):
+             counted.append(obj)
+        return list(set(counted))
+
+    def _getbomid(self, cr, uid, pid, sid):
+        ids=self._getidbom(cr, uid, pid, sid)
+        return self.browse(cr,uid,list(set(ids)),context=None)
+
+    def _getidbom(self, cr, uid, pid, sid):
+        ids=self.search(cr,uid,[('product_id','=',pid),('bom_id','=',False),('source_id','=',sid),('type','=','ebom')])
+        if not ids:
+            ids=self.search(cr,uid,[('product_id','=',pid),('bom_id','=',False),('source_id','=',sid),('type','=','normal')])
+        return list(set(ids))
 
     def _getpackdatas(self, cr, uid, relDatas):
         prtDatas={}
@@ -234,40 +230,23 @@ class plm_relation(osv.osv):
             relationDatas[keyData]=bufDatas[relids[keyData]]
         return relationDatas
 
-    def GetWhereUsed(self, cr, uid, ids, context=None):
-        def _bomid(cr, pid, sid=None):
-            if sid == None:
-                return self._getbomidnullsrc(cr, pid)
-            else:
-                return self._getbomid(cr, pid, sid)
-                
-        def _source(cr, bid):
-            ids=[]
-            if bid == None:
-                return ids
-            cr.execute(
-                       """
-                        SELECT distinct(source_id) from mrp_bom where id = %s
-                       """%(str(bid), )
-                       )
-            ids=[idc[0] for idc in cr.fetchall()]
-            return ids
-        
-        def _implodebom(cr, bids):
-            ids=[]
-            for bid in bids:
-                cr.execute(
-                           """
-                            SELECT distinct(product_id) from mrp_bom where id = %s
-                           """%(str(bid))
-                        )
-                for idc in cr.fetchall():
-                    bomid=_bomid(cr, idc[0])
-                    innerids=_implodebom(cr, bomid)
-                    innerids=[innerid for innerid in innerids]
-                    ids.append((idc[0],innerids))
-            return ids
+    def _bomid(self, cr, uid, pid, sid=None):
+        if sid == None:
+            return self._getbomidnullsrc(cr, uid, pid)
+        else:
+            return self._getbomid(cr, uid, pid, sid)
 
+    def _inbomid(self, cr, uid, pid, sid=None):
+        if sid == None:
+            return self._getinbomidnullsrc(cr, uid, pid)
+        else:
+            return self._getinbom(cr, uid, pid, sid)
+
+    def GetWhereUsed(self, cr, uid, ids, context=None):
+        """
+            Return a list of all fathers of a Part (all levels)
+        """
+        self._packed=[]
         relDatas=[]
         sid=None
         if len(ids)<1:
@@ -276,9 +255,8 @@ class plm_relation(osv.osv):
         if len(ids)>1:
             sid=ids[1]
         id=ids[0]
-        bomid=_bomid(cr, id, sid)
         relDatas.append(id)
-        relDatas.append(_implodebom(cr, bomid))
+        relDatas.append(self._implodebom(cr, uid, self._inbomid(cr, uid, id, sid)))
         prtDatas=self._getpackdatas(cr, uid, relDatas)
         return (relDatas, prtDatas, self._getpackreldatas(cr, uid, relDatas, prtDatas))
     
@@ -286,91 +264,55 @@ class plm_relation(osv.osv):
         """
             Return a list of all children in a Bom (all levels)
         """
-        def explodebom(id):
-            output=[]
-            bomids=self.search(cr,uid,[('product_id','=',id)])
-            for bom in self.browse(cr, uid, bomids):
-                for bom_line in bom.bom_lines:
-                    innerids=explodebom([bom_line.product_id.id])
-#                   innerids=[innerid for innerid in innerids]
-                    output.append([bom_line.product_id.id, innerids])
-            return(output)
-        relDatas=[ids[0],explodebom(ids[0])]
+        self._packed=[]
+        relDatas=[ids[0],self._explodebom(cr, uid, self._bomid(cr, uid, ids[0]), False)]
         prtDatas=self._getpackdatas(cr, uid, relDatas)
         return (relDatas, prtDatas, self._getpackreldatas(cr, uid, relDatas, prtDatas))
+
+    def _explodebom(self, cr, uid, bids, check=True):
+        """
+            Explodes a bom entity  (all levels)
+        """
+        output=[]
+        for bid in bids:
+            for bom_line in bid.bom_lines:
+                if check and (bom_line.product_id.id in self._packed):
+                    continue
+                innerids=self._explodebom(cr, uid, self._bomid(cr, uid, bom_line.product_id.id), check)
+                self._packed.append(bom_line.product_id.id)
+                output.append([bom_line.product_id.id, list(set(innerids))])
+        return(output)
+    
 
     def GetExploseSum(self, cr, uid, ids, context=None):
         """
-            Return a list of all children in a Bom (all levels)
+            Return a list of all children in a Bom taken once (all levels)
         """
-        def explodebom(id):
-            output=[]
-            counted=[]
-            bomids=self.search(cr,uid,[('product_id','=',id)])
-            for bom in self.browse(cr, uid, bomids):
-                for bom_line in bom.bom_lines:
-                    if bom_line.product_id.id in counted:
-                        continue
-                    innerids=explodebom([bom_line.product_id.id])
-                    counted.append(bom_line.product_id.id)
-#                   innerids=[innerid for innerid in innerids]
-                    output.append([bom_line.product_id.id, innerids])
-            return(output)
-        relDatas=[ids[0],explodebom(ids[0])]
+        self._packed=[]
+        relDatas=[ids[0],self._explodebom(cr, uid, self._bomid(cr, uid, ids[0]), True)]
         prtDatas=self._getpackdatas(cr, uid, relDatas)
         return (relDatas, prtDatas, self._getpackreldatas(cr, uid, relDatas, prtDatas))
 
-    def GetWhereUsedSum(self, cr, uid, ids, context=None):
-        def _bomid(cr, pid, sid=None):
-            ids=[]
-            if sid == None:
-                cr.execute(
-                       """
-                        SELECT bom_id from mrp_bom where product_id = %s and source_id is not NULL
-                       """%(str(pid), )
-                       )
-            else:
-                cr.execute(
-                       """
-                        SELECT bom_id from mrp_bom where product_id = %s and source_id = %s
-                       """%(str(pid), str(sid))
-                       )
-            for idc in cr.fetchall():
-                if idc[0]!=None:
-                    ids.append(idc[0])
-            return ids
-               
-        def _source(cr, bid):
-            ids=[]
-            if bid == None:
-                return ids
-            cr.execute(
-                       """
-                        SELECT distinct(source_id) from mrp_bom where id = %s
-                       """%(str(bid), )
-                       )
-            ids=[idc[0] for idc in cr.fetchall()]
-            return ids
-        
-        def _implodebom(cr, bids):
-            ids=[]
-            packed=[]
-            for bid in bids:
-                cr.execute(
-                           """
-                            SELECT distinct(product_id) from mrp_bom where id = %s
-                           """%(str(bid))
-                        )
-                for idc in cr.fetchall():
-                    if idc[0] in packed:
-                        continue
-                    packed.append(idc[0])
-                    bomid=_bomid(cr, idc[0])
-                    innerids=_implodebom(cr, bomid)
-                    innerids=[innerid for innerid in innerids]
-                    ids.append((idc[0],innerids))
-            return ids
+    def _implodebom(self, cr, uid, bomObjs):
+        """
+            Execute implosion for a a bom object
+        """
+        pids=[]
+        for bomObj in bomObjs:
+            if not bomObj.product_id:
+                continue
+            if bomObj.product_id.id in self._packed:
+                continue
+            self._packed.append(bomObj.product_id.id)
+            innerids=self._implodebom(cr, uid, self._inbomid(cr, uid, bomObj.product_id.id))
+            pids.append((bomObj.product_id.id,list(set(innerids))))
+        return pids
 
+    def GetWhereUsedSum(self, cr, uid, ids, context=None):
+        """
+            Return a list of all fathers of a Part (all levels)
+        """
+        self._packed=[]
         relDatas=[]
         sid=None
         if len(ids)<1:
@@ -379,9 +321,8 @@ class plm_relation(osv.osv):
         if len(ids)>1:
             sid=ids[1]
         id=ids[0]
-        bomid=_bomid(cr, id, sid)
         relDatas.append(id)
-        relDatas.append(_implodebom(cr, bomid))
+        relDatas.append(self._implodebom(cr, uid, self._inbomid(cr, uid, id, sid)))
         prtDatas=self._getpackdatas(cr, uid, relDatas)
         return (relDatas, prtDatas, self._getpackreldatas(cr, uid, relDatas, prtDatas))
 
@@ -389,13 +330,13 @@ class plm_relation(osv.osv):
         """
             Return a list of all children in a Bom ( level = 0 one level only, level = 1 all levels)
         """
+        self._packed=[]
         result=[]
         if level==0 and currlevel>1:
             return result
-        relType=self.pool.get('mrp.bom')
-        bomids=relType.browse(cr, uid, ids)
+        bomids=self.browse(cr, uid, ids)
         for bomid in bomids:
-            for bom in relType.browse(cr, uid, bomid.id).bom_lines:
+            for bom in bomid.bom_lines:
                 children=self.GetExplodedBom(cr, uid, [bom.id], level, currlevel+1)
                 result.extend(children)
             if len(str(bomid.bom_id))>0:
@@ -425,7 +366,7 @@ class plm_relation(osv.osv):
             if len(subRelations)<1: # no relation to save 
                 return None
             parentName, parentID, tmpChildName, tmpChildID, sourceID, tempRelArgs=subRelations[0]
-            relids=self._getidbom(cr, parentID, sourceID)
+            relids=self._getidbom(cr, uid, parentID, sourceID)
             self.unlink(cr,uid,relids)
             for rel in subRelations:
                 #print "Save Relation ", rel
@@ -447,7 +388,7 @@ class plm_relation(osv.osv):
             if len(subRelations)<1: # no relation to save 
                 return None
             parentName, parentID, tmpChildName, tmpChildID, sourceID, tempRelArgs=subRelations[0]
-            bomID=saveChild(parentName, parentID, sourceID)
+            bomID=saveChild(parentName, parentID, sourceID, kindBom='ebom')
             for rel in subRelations:
                 #print "Save Relation ", rel
                 parentName, parentID, childName, childID, sourceID, relArgs=rel
@@ -455,7 +396,7 @@ class plm_relation(osv.osv):
                     logging.error('toCompute : Father (%s) refers to himself' %(str(parentName)))
                     raise Exception('saveChild.toCompute : Father "%s" refers to himself' %(str(parentName)))
 
-                tmpBomId=saveChild(childName, childID, sourceID, bomID, args=relArgs)
+                tmpBomId=saveChild(childName, childID, sourceID, bomID, kindBom='ebom', args=relArgs)
                 tmpBomId=toCompute(childName, relations)
             return bomID
 

@@ -21,7 +21,7 @@
 ##############################################################################
 {
     'name': 'Product Lifecycle Management',
-    'version': '2011.0',
+    'version': '3.0',
     'category': 'Generic Modules/Others',
     'depends': ['base', 'process','document','product','mrp'],
     'author': 'OmniaSolutions',
@@ -32,6 +32,7 @@
     * Document Indexation
     * Documents Relationship
     * Engineering Bill of Materials
+    * Spare Part Bom & Report
     
     
     Supported Editors :
@@ -44,7 +45,6 @@
     'init_xml': [
         ],
     'update_xml': [
-        # Verifie it before uncomment
         #'security/engeneering_security.xml',
         #'security/ir.model.access.csv',
         'install/plmviews/plm_menu.xml',
@@ -53,6 +53,9 @@
         'install/plmdocuments/backupdoc_view.xml',
         'install/plmcomponents/component_view.xml',
         'install/plmcomponents/component_workflow.xml',
+        'install/plmdescriptions/description_sequence.xml',
+        'install/plmsparebom/sparebom_view.xml',
+        'install/plmsparebom/description_view.xml',
         'install/plmcomponentrelations/relations_view.xml',
         'install/plmcheckedout/checkout_view.xml',
         'install/report/bom_structure.xml',
@@ -63,8 +66,6 @@
         'install/plmmaterials/material_view.xml',
         'install/plmfinishings/finishing_sequence.xml',
         'install/plmfinishings/finishing_view.xml',
-        'install/plmdescriptions/description_sequence.xml',
-        'install/plmdescriptions/description_view.xml',
 
         'plm_installer.xml',
     ],

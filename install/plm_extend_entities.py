@@ -30,6 +30,7 @@ class plm_document(osv.osv):
     }    
     _defaults = {
                  'state': lambda *a: 'draft',
+                 'res_id': lambda *a: False,
     }    
 plm_document()
 
@@ -42,7 +43,8 @@ class plm_component(osv.osv):
 #                'tmp_treatment': fields.many2one('plm.treatment','Thermal Treatment', required=False, change_default=True, help="Select thermal treatment for current product"),
                 'tmp_surface': fields.many2one('plm.finishing','Surface Finishing', required=False, change_default=True, help="Select surface finishing for current product")
                }
-    def on_change_tmpmater(self, cr, uid, id, tmp_material=False):
+ 
+    def on_change_tmpmater(self, cr, uid, ids, tmp_material=False):
         values={'engineering_material':''}
         if tmp_material:
             thisMaterial=self.pool.get('plm.material')
@@ -51,7 +53,7 @@ class plm_component(osv.osv):
                 values['engineering_material']=thisObject.name
         return {'value': {'engineering_material':str(values['engineering_material'])}}
 
-    def on_change_tmptreatment(self, cr, uid, id, tmp_treatment=False):
+    def on_change_tmptreatment(self, cr, uid, ids, tmp_treatment=False):
         values={'engineering_treatment':''}
         if tmp_treatment:
             thisTreatment=self.pool.get('plm.treatment')
@@ -60,7 +62,7 @@ class plm_component(osv.osv):
                 values['engineering_treatment']=thisObject.name
         return {'value': {'engineering_treatment':str(values['engineering_treatment'])}}
 
-    def on_change_tmpsurface(self, cr, uid, id, tmp_surface=False):
+    def on_change_tmpsurface(self, cr, uid, ids, tmp_surface=False):
         values={'engineering_surface':''}
         if tmp_surface:
             thisSurface=self.pool.get('plm.finishing')
@@ -74,9 +76,12 @@ plm_component()
 class plm_relation(osv.osv):
     _inherit = 'mrp.bom'
     _columns = {
+                'state': fields.related('product_id','state',type="char",relation="product.template",string="Status",store=False),
                 'engineering_revision': fields.related('product_id','engineering_revision',type="char",relation="product.template",string="Revision",store=False),
                 'description': fields.related('product_id','description',type="char",relation="product.template",string="Description",store=False),
                 'weight_net': fields.related('product_id','weight_net',type="float",relation="product.product",string="Weight Net",store=False),
                 'uom_id': fields.related('product_id','uom_id',type="integer",relation="product.product",string="Unit of Measure",store=False)
                }
 plm_relation()
+
+

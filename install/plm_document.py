@@ -133,14 +133,21 @@ class plm_document(osv.osv):
             return True
         #if (not context) or context.get('store_method','fs')=='fs':
         try:
+            printout=False
+            preview=False
+            if oiDocument.printout:
+                printout=oiDocument.printout
+            if oiDocument.preview:
+                preview=oiDocument.preview
+                
             fname,filesize=self._manageFile(cr,uid,oid,binvalue=value,context=context)
             cr.execute('update ir_attachment set store_fname=%s,file_size=%s where id=%s', (fname,filesize,oid))
             self.pool.get('plm.backupdoc').create(cr,uid, {
                                           'userid':uid,
                                           'existingfile':fname,
                                           'documentid':oid,
-                                          'printout': oiDocument.printout,
-                                          'preview': oiDocument.preview
+                                          'printout': printout,
+                                          'preview': preview
                                          }, context=context)
 
             return True
@@ -178,7 +185,7 @@ class plm_document(osv.osv):
                 result.extend(self._relateddocs(cr, uid, child.parent_id.id, kind, listed_documents, recursion))
             if child.parent_id.id:
                 result.append(child.parent_id.id)
-        return result
+        return list(set(result))
 
     def _relatedbydocs(self, cr, uid, oid, kind, listed_documents=[], recursion=True):
         result=[]
@@ -195,12 +202,12 @@ class plm_document(osv.osv):
                 result.extend(self._relatedbydocs(cr, uid, child.child_id.id, kind, listed_documents, recursion))
             if child.child_id.id:
                 result.append(child.child_id.id)
-        return result
+        return list(set(result))
 
     def _data_check_files(self, cr, uid, ids, listedFiles=(), forceFlag=False, context=None):
         result = []
         datefiles,listfiles=listedFiles
-        for objDoc in self.browse(cr, uid, ids, context=context):
+        for objDoc in self.browse(cr, uid, list(set(ids)), context=context):
             isCheckedOutToMe=self._is_checkedout_for_me(cr, uid, objDoc.id, context)
             if (objDoc.datas_fname in listfiles):
                 if forceFlag:
@@ -211,7 +218,7 @@ class plm_document(osv.osv):
             else:
                 collectable = True
             result.append((objDoc.id, objDoc.datas_fname, objDoc.file_size, collectable, isCheckedOutToMe))
-        return result
+        return list(set(result))
             
     def copy(self,cr,uid,oid,defaults={},context=None):
         """
@@ -278,6 +285,19 @@ class plm_document(osv.osv):
         fobj.write(value)
         fobj.close()
         return (os.path.join(flag,filename),len(value))
+
+    def _iswritable(self, cr, user, oid):
+        checkState=('draft')
+        if not oid.engineering_writable:
+            logging.warning("_iswritable : Part ("+str(oid.engineering_code)+"-"+str(oid.engineering_revision)+") not writable.")
+            return False
+        if not oid.state in checkState:
+            logging.warning("_iswritable : Part ("+str(oid.engineering_code)+"-"+str(oid.engineering_revision)+") in status ; "+str(oid.state)+".")
+            return False
+        if oid.engineering_code == False:
+            logging.warning("_iswritable : Part ("+str(oid.name)+"-"+str(oid.engineering_revision)+") without Engineering P/N.")
+            return False
+        return True  
     
     def newVersion(self,cr,uid,ids,context=None):
         """
@@ -369,7 +389,7 @@ class plm_document(osv.osv):
                 objDocument=self.browse(cr, uid, existingID, context=context)
 #                logging.info("SaveOrUpdate : time db : %s time file : %s" %(str(self.getLastTime(cr,uid,existingID).strftime('%Y-%m-%d %H:%M:%S')), str(document['lastupdate'])))
                 if self.getLastTime(cr,uid,existingID)<datetime.strptime(str(document['lastupdate']),'%Y-%m-%d %H:%M:%S'):
-                    if objDocument.writable:
+                    if self._iswritable(cr,uid,objDocument):
                         del(document['lastupdate'])
                         if not self.write(cr,uid,[existingID], document , context=context, check=True):
                             raise osv.except_osv(_('Update Document Error'), _("Document %s - %s cannot be updated" %(str(document['name']), str(document['revisionid']))))
@@ -493,37 +513,20 @@ class plm_document(osv.osv):
                         return False
         return super(plm_document,self).unlink(cr, uid, ids, context=context)
 
-    def _check_duplication(self, cr, uid, vals, ids=[], op='create'):
-        """
-            Overridden, due to revision id management, filename can be duplicated, 
-            because system has to manage several revisions of a document.
-        """
-        name = vals.get('name', False)
-        parent_id = vals.get('parent_id', False)
-        res_model = vals.get('res_model', False)
-        res_id = vals.get('res_id', 0)
-        revisionid = vals.get('revisionid', 0)
-        if op == 'write':
-            for thisfile in self.browse(cr, uid, ids, context=None): # FIXME fields_only
-                if not name:
-                    name = thisfile.name
-                if not parent_id:
-                    parent_id = thisfile.parent_id and thisfile.parent_id.id or False
-                if not res_model:
-                    res_model = thisfile.res_model and thisfile.res_model or False
-                if not res_id:
-                    res_id = thisfile.res_id and thisfile.res_id or 0
-                if not revisionid:
-                    revisionid = thisfile.revisionid and thisfile.revisionid or 0
-                res = self.search(cr, uid, [('id', '<>', thisfile.id), ('name', '=', name), ('parent_id', '=', parent_id), ('res_model', '=', res_model), ('res_id', '=', res_id), ('revisionid', '=', revisionid)])
-                if len(res)>1:
-                    return False
-        if op == 'create':
-            res = self.search(cr, uid, [('name', '=', name), ('parent_id', '=', parent_id), ('res_id', '=', res_id), ('res_model', '=', res_model), ('revisionid', '=', revisionid)])
-            if len(res):
+    def _check_duplication(self, cr, uid, ids, context=None):
+        for attach in self.browse(cr, uid, ids, context):
+            domain = [('id', '!=', attach.id),
+                      ('name', '=', attach.name),
+                      ('parent_id', '=', attach.parent_id.id),
+                      ('res_model', '=', attach.res_model),
+                      ('res_id', '=', attach.res_id),
+                      ('revisionid', '=', attach.revisionid),
+                     ]
+            if self.search(cr, uid, domain, context=context):
                 return False
         return True
-         
+
+
     _columns = {
                 'revisionid': fields.integer('Revision Index', required=True),
                 'writable': fields.boolean('Writable'),
@@ -541,6 +544,10 @@ class plm_document(osv.osv):
 
     _sql_constraints = [
         ('filename_uniq', 'unique (name,revisionid)', 'File name has to be unique!') # qui abbiamo la sicurezza dell'univocita del nome file
+    ]
+
+    _constraints = [
+                  (_check_duplication, 'File name must be unique!', ['name', 'parent_id', 'res_model', 'res_id'])
     ]
 
     def CheckedIn(self, cr, uid, files, default=None, context=None):
@@ -815,7 +822,7 @@ class plm_backupdoc(osv.osv):
     _columns = {
                 'userid':fields.many2one('res.users', 'Related User', ondelete='cascade'), 
                 'createdate':fields.datetime('Date Created', readonly=True),
-                'existingfile':fields.char('Document Location',size=1024), 
+                'existingfile':fields.char('Physical Document Location',size=1024), 
                 'documentid':fields.many2one('ir.attachment', 'Related Document', ondelete='cascade'), 
                 'revisionid': fields.related('documentid','revisionid',type="int",relation="ir.attachment",string="Revision",store=False),
                 'printout': fields.binary('Printout Content'),

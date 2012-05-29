@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data>
+
+    <record id="plm_component_manage_sparebom" model="ir.ui.view">
+        <field name="name">plm.relation.spare</field>
+        <field name="model">product.product</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+        <form string="Creation of Spare Bom">
+            <label string="Are you sure you want to create a new Spare Bom?" colspan="4"/>
+            <separator string="" colspan="4" />
+            <group colspan="4" col="6">
+            	<button icon="gtk-cancel" special="cancel" string="Cancel"/>
+            	<button icon="terp-camera_test" special="cancel" string="Check Spare Bom" name="action_check_spareBom" type="object"/>
+            	<button icon="terp-gtk-go-back-rtl" special="cancel" string="Create Spare Bom" name="action_create_spareBom" type="object"/>
+            </group>
+        </form>
+        </field>
+    </record>
+
+    <act_window name="Manage Spare Bom"
+        res_model="product.product"
+        src_model="product.product"
+        view_mode="form"
+        view_id="plm_component_manage_sparebom"
+        target="new"
+        key2="client_action_multi"
+        id="act_manage_spareBom"/>
+ 
+ </data>
+</openerp>
+        

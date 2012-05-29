@@ -34,6 +34,8 @@
                     	<separator colspan="4" string="Normative"/>
                     	<field name="unitab"/>
                     	<newline/>
+                    	<separator colspan="4" string="Template BOM"/>
+                    	<field name="bom_tmpl"/>
                 	</group>
                 </group>
             </form>
@@ -59,6 +61,7 @@
                    	<field name="fmtend"/>
                     <field name="unitab"/>
                    	<field name="sequence"/>
+                    <field name="bom_tmpl"/>
             </tree>
         </field>
     </record>

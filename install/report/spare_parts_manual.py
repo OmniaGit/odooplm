@@ -127,7 +127,7 @@ class external_pdf(render):
     
 class component_spare_parts_report(report_int):
     """
-        Calculate the bom structure spare parts manual
+        Calculates the bom structure spare parts manual
     """
     def create(self, cr, uid, ids, datas, context=None):
         self.pool = pooler.get_pool(cr.dbname)
@@ -151,12 +151,32 @@ class component_spare_parts_report(report_int):
             return (self.obj.pdf, 'pdf')
         return (False, '')  
     
+       
     def getBomRows(self,cr, uid,parent, context=None):
         """
            Return the first level bom fields
         """
-        relType=self.pool.get('mrp.bom')
-        return relType.browse(cr, uid,parent.bom_ids[0].id, context=context).bom_lines 
+        normal=[]
+        ebom=[]
+        spbom=[]
+        retd=[]
+        for bomid in parent.bom_ids:
+            buffer=[]
+            for bom in bomid.bom_lines:
+                buffer.append(bom)
+            if bomid.type in('spbom'):
+                spbom=buffer
+            if bomid.type in('ebom'):
+                ebom=buffer
+            if bomid.type in('normal'):
+                normal=buffer
+        if len(spbom):
+            return spbom
+        if len(ebom):
+            return ebom
+        if len(normal):
+            return normal
+        return retd
        
     def getSparePartsPdfFile(self,cr,uid,context,component,output,componentTemplate):
         for pageStream in self.getPdfComponentLayout(component):
@@ -177,23 +197,27 @@ class component_spare_parts_report(report_int):
     def getPdfComponentLayout(self,component):
         ret=[]
         for document in component.linkeddocuments:
-            if document.printout:# and document.name[0]=='L':
+            if document.printout: # and document.name[0]=='L':
+                #TODO: To Evaluate document type 
                 ret.append( StringIO.StringIO(base64.decodestring(document.printout)))
         return ret 
       
     def getFirstPage(self,parentCode,parentDescription):
-        buffer = StringIO.StringIO()
-        doc = SimpleDocTemplate(buffer, pagesize=A4)
+        strbuffer = StringIO.StringIO()
+        doc = SimpleDocTemplate(strbuffer, pagesize=A4)
         elements = []
         header="Spare Parts Manual<br/>%s<br/>%s"%(parentCode,parentDescription)
         p=PageCellHeader(header)
         elements.append(p)
         doc.build(elements)
-        return buffer
+        return strbuffer
     
     def createBom(self,data,parentCode,parentDescription):
-        buffer = StringIO.StringIO()
-        doc = SimpleDocTemplate(buffer, pagesize=A4)
+        strbuffer = StringIO.StringIO()
+        if len(data)<1:
+            return strbuffer
+            # avoid blank page for no bom data
+        doc = SimpleDocTemplate(strbuffer, pagesize=A4)
         elements = []
         header=[TableHeader(col) for col in BOM_SHOW_FIELDS]
         val=self.getSummarizedBom(data)
@@ -207,7 +231,7 @@ class component_spare_parts_report(report_int):
         elements.append(t)
         # write the document to disk
         doc.build(elements)
-        return buffer
+        return strbuffer
    
     def getSummarizedBom(self,data):
         dic={}

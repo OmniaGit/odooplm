@@ -3,6 +3,32 @@
 <data>
     <menuitem name="Backup Documents View" id="plm_menu_backup" parent="plm_menu" sequence="15"/>
 
+    <record model="ir.ui.view" id="view_plm_backupdoc">
+        <field name="name">plm.backupdoc</field>
+        <field name="model">plm.backupdoc</field>
+        <field name="priority" eval="1"/>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Backup Document">
+                <group colspan="2" col="2">
+                    <field name="documentid" readonly="True"/>
+                    <field name="createdate" readonly="True"/>
+                    <field name="userid" readonly="True"/>
+                </group>
+                <newline/>
+                <separator colspan="4" string="Preview"/>
+                <group colspan="2" col="2">
+                     <field  name="preview"
+                        	widget="image"
+                        	readonly="1"
+                        	nolabel="1"
+                        	img_height="400"
+                        	img_width="400"/>
+                </group>
+            </form>
+        </field>
+    </record>
+
     <record model="ir.ui.view" id="plm_backupdoc_search">
         <field name="name">plm.backupdoc</field>
         <field name="model">plm.backupdoc</field>
@@ -56,7 +82,7 @@
         <field name="name">Backup Data Set</field>
         <field name="res_model">plm.backupdoc</field>
         <field name="view_type">form</field>
-        <field name="view_mode">tree</field>
+        <field name="view_mode">tree,form</field>
         <field eval="False" name="filter"/>
         <field name="view_id" ref="plm_backupdoc_tree"/>
         <field name="search_view_id" ref="plm_backupdoc_search"/>
@@ -89,6 +115,7 @@
         res_model="plm.backupdoc"
         src_model="plm.backupdoc"
         view_mode="form"
+        view_id="restore_document_button_view"
         target="new"
         key2="client_action_multi"
         id="act_restore_document"/>
