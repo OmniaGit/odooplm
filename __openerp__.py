@@ -22,7 +22,7 @@
 {
     'name': 'Product Lifecycle Management',
     'version': '1.0',
-    'category': 'Generic Modules/Others',
+    'category': 'LifeCycle Management',
     'depends': ['base', 'process','document','product','mrp'],
     'author': 'OmniaSolutions',
     'description': """ This is a Product Lifecycle Management system providing:
@@ -42,6 +42,7 @@
     * SolidWorks 2011.1 (and above)
     """,
     'website': 'http://www.omniasolutions.eu',
+    'images': ['images/EngineeringPart.jpeg','images/OpenComponent.jpeg','images/OpenDocument.jpeg'],
     'init_xml': [
         ],
     'update_xml': [

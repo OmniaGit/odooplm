@@ -19,6 +19,7 @@
 #
 ##############################################################################
 
+import logging
 from osv import fields, osv
 from tools import config
 
@@ -29,6 +30,7 @@ import difflib
 class plm_installer(osv.osv_memory):
     _name='plm.installer'
     _inherit='res.config.installer'
+    __logger = logging.getLogger(_name)
 
     def default_get(self, cr, uid, fields, context=None):
         data=super(plm_installer, self).default_get(cr, uid, fields, context)
