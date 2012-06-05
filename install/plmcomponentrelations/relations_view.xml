@@ -165,7 +165,7 @@
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">mrp.bom</field>
         <field name="view_type">form</field>
-        <field name="domain">[('type','=','spare'),('bom_id','=',False)]</field>
+        <field name="domain">[('type','=','spbom'),('bom_id','=',False)]</field>
         <field name="filter" eval="True"/>
     </record>
 
