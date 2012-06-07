@@ -2,7 +2,7 @@
 "group_plm_admin","access_plm_checkout","plm_checkout","plm.checkout",1,1,1,1
 "group_plm_admin","access_plm_component_document_rel","plm_component_document_rel","plm.component.document.rel",1,1,1,1
 "group_plm_admin","access_plm_document_relation","plm_document_relation","plm.document.relation",1,1,1,1
-"group_plm_admin","access_prudct_product","product_product","product.product",1,1,1,1
+"group_plm_admin","access_product_product","product_product","product.product",1,1,1,1
 "group_plm_admin","access_product_template","product_template","product.template",1,1,1,1
 "group_plm_admin","access_ir_attachment","ir_attachment","ir.attachment",1,1,1,1
 "group_plm_admin","access_mrp_bom","mrp_bom","mrp.bom",1,1,1,1

@@ -67,6 +67,8 @@
         'install/plmfinishings/finishing_view.xml',
         'security/base_plm_security.xml',
         'security/ir.model.access.csv',
+        'security/ir.actions.act_window.csv',
+        'security/res.groups.csv',
         'plm_installer.xml',
         ],
     'demo_xml': [

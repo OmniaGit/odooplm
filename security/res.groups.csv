@@ -1,0 +1,4 @@
+"id","name","menu_access"
+"group_plm_admin","PLM / Administrator","PLM Module,Component Relations View,PLM Dictionaries,Backup Documents View,Checked-Out Documents View"
+"group_plm_integrationuser","PLM / Integration User","PLM Module,Component Relations View,PLM Dictionaries,Backup Documents View,Checked-Out Documents View"
+"group_plm_viewuser","PLM Module","Component Relations View"

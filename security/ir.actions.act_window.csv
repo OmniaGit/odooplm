@@ -1,0 +1,8 @@
+"id","name","usage","auto_search","auto_refresh","context","domain","filter","groups_id","limit","menus","res_model","src_model","view_mode"
+"plm_action_spare_form","Spare Bom","","True","","{}","[('type','=','spbom'),('bom_id','=',False)]","True","PLM / User,PLM / Administrator,PLM / Integration User","80","","mrp.bom","","tree,form"
+"plm_action_ebom_form","Engineering Bom","","True","","{}","[('type','=','ebom'),('bom_id','=',False)]","True","PLM / User,PLM / Administrator,PLM / Integration User","80","","mrp.bom","","tree,form"
+"plm_action_normal_form","Normal Bom","","True","","{}","[('type','=','normal'),('bom_id','=',False)]","True","PLM / User,PLM / Administrator,PLM / Integration User","80","","mrp.bom","","tree,form"
+"mrp.mrp_bom_form_action2","Bill of Material Components","","True","","{}","[('bom_id','!=',False)]","","PLM / Administrator,PLM / Integration User","80","","mrp.bom","","tree,form"
+"act_product_product_2_mrp_bom","Bill of Materials","","True","","{'search_default_product_id': ['active_id'], 'default_product_id': 'active_id'}","[('bom_id', '=', False), ('product_id', '=', 'active_id')]","","Manufacturing / User,PLM / Administrator,PLM / Integration User","","","mrp.bom","product.product","tree,form"
+"mrp.action2","Bill of Materials Structure","","True","","{}","[('id','=',active_id)]","","PLM / User,PLM / Administrator,PLM / Integration User","80","","mrp.bom","","tree,form"
+"mrp.action_product_bom_structure","Product BoM Structure","","True","","{}","[('product_id', '=', 'active_id'), ('bom_id', '=', False)]","","Manufacturing / User,PLM / User,PLM / Administrator,PLM / Integration User","","","mrp.bom","product.product","tree,form"
