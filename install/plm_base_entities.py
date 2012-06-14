@@ -280,7 +280,7 @@ class plm_relation(osv.osv):
                     continue
                 innerids=self._explodebom(cr, uid, self._bomid(cr, uid, bom_line.product_id.id), check)
                 self._packed.append(bom_line.product_id.id)
-                output.append([bom_line.product_id.id, list(set(innerids))])
+                output.append([bom_line.product_id.id, innerids])
         return(output)
     
 
@@ -305,8 +305,8 @@ class plm_relation(osv.osv):
                 continue
             self._packed.append(bomObj.product_id.id)
             innerids=self._implodebom(cr, uid, self._inbomid(cr, uid, bomObj.product_id.id))
-            pids.append((bomObj.product_id.id,list(set(innerids))))
-        return pids
+            pids.append((bomObj.product_id.id,innerids))
+        return (pids)
 
     def GetWhereUsedSum(self, cr, uid, ids, context=None):
         """
