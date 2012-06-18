@@ -177,11 +177,36 @@ class plm_component(osv.osv):
 
     def newVersion(self,cr,uid,ids,context=None):
         """
-            create a new version of the document (to WorkFlow calling)
+            create a new version of the component (to WorkFlow calling)
         """
         if self.newRevision(cr,uid,ids,context=context)!=None:
             return True 
-        return False 
+        return False
+
+    def GetUpdated(self,cr,uid,vals,context=None):
+        """
+            Get Last/Requested revision of given items (by name, revision, update time)
+        """
+        ids=[]
+        partData, attribNames = vals
+        for partName, partRev, updateDate in partData:
+            if updateDate:
+                if partRev == None:
+                    partIds=self.search(cr,uid,[('engineering_code','=',partName),('write_date','>',updateDate)],order='engineering_revision',context=context)
+                    if len(partIds)>0:
+                        ids.append(partIds[len(partIds)-1])
+                else:
+                    ids.extend(self.search(cr,uid,[('engineering_code','=',partName),('engineering_revision','=',partRev),('write_date','>',updateDate)],context=context))
+            else:
+                if partRev == None:
+                    partIds=self.search(cr,uid,[('engineering_code','=',partName)],order='engineering_revision',context=context)
+                    if len(partIds)>0:
+                        ids.append(partIds[len(partIds)-1])
+                else:
+                    ids.extend(self.search(cr,uid,[('engineering_code','=',partName),('engineering_revision','=',partRev)],context=context))
+
+        return self.read(cr, uid, list(set(ids)), attribNames)
+
 
     def NewRevision(self,cr,uid,ids,context=None):
         """

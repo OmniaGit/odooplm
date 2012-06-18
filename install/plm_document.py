@@ -69,14 +69,10 @@ class plm_document(osv.osv):
 
     def _getlastrev(self, cr, uid, ids, context=None):
         result = []
-        treated = []
         for objDoc in self.browse(cr, uid, ids, context=context):
-            if objDoc in treated:
-                continue
             docIds=self.search(cr,uid,[('name','=',objDoc.name)],order='revisionid',context=context)
             result.append(docIds[len(docIds)-1])
-            treated.append(objDoc)
-        return result
+        return list(set(result))
             
     def _data_get_files(self, cr, uid, ids, listedFiles=([],[]), forceFlag=False, context=None):
         """
@@ -565,6 +561,9 @@ class plm_document(osv.osv):
     ]
 
     def CheckedIn(self, cr, uid, files, default=None, context=None):
+        """
+            Get checked status for requested files
+        """
         retValues=[]
         def getcheckedfiles(files):
             res=[]
@@ -578,6 +577,29 @@ class plm_document(osv.osv):
             retValues=getcheckedfiles(files)
         return retValues
 
+    def GetUpdated(self,cr,uid,vals,context=None):
+        """
+            Get Last/Requested revision of given items (by ids)
+        """
+        ids=[]
+        docData, atttribNames = vals
+        for docName, docRev, updateDate in docData:
+            if updateDate:
+                if docRev == None:
+                    docIds=self.search(cr,uid,[('name','=',docName),('write_date','>',updateDate)],order='revisionid',context=context)
+                    if len(docIds)>0:
+                        ids.append(docIds[len(docIds)-1])
+                else:
+                    ids.extend(self.search(cr,uid,[('name','=',docName),('revisionid','=',docRev),('write_date','>',updateDate)],context=context))
+            else:
+                if docRev == None:
+                    docIds=self.search(cr,uid,[('name','=',docName)],order='revisionid',context=context)
+                    if len(docIds)>0:
+                        ids.append(docIds[len(docIds)-1])
+                else:
+                    ids.extend(self.search(cr,uid,[('name','=',docName),('revisionid','=',docRev)],context=context))
+
+        return self.read(cr, uid, list(set(ids)), atttribNames)
 
     def CheckAllFiles(self, cr, uid, request, default=None, context=None):
         """
