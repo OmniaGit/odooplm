@@ -462,6 +462,15 @@ class plm_relation(osv.osv):
                 self.write(cr,uid,[bom_line.id],{'source_id':False,'name':bom_line.name.replace(' Copy',''),},context=None)
             self.write(cr,uid,[newId],{'source_id':False,},context=None)
         return newId
+
+    def _check_product(self, cr, uid, ids, context=None):
+        """
+            Override original one, to allow to have multiple lines with same Part Number
+        """
+        return True
+    _constraints = [
+        (_check_product, 'BoM line product should not be same as BoM product.', ['product_id']),
+    ]
 #   Overridden methods for this entity
 
 plm_relation()
