@@ -1,7 +1,0 @@
-"id","name","groups_id","res_model","src_model"
-"plm_action_ebom_form","Plm Action Ebom Form","PLM / Administrator,PLM / Integration User","mrp.bom",""
-"plm_action_normal_form","Plm Action Normal Form","PLM / Administrator,PLM / Integration User","mrp.bom",""
-"plm_action_spare_form","Plm Action Spare Form","PLM / Administrator,PLM / Integration User","mrp.bom",""
-"mrp.mrp_bom_form_action2","Bill of Material Components","PLM / Administrator,PLM / Integration User","mrp.bom",""
-"mrp.act_product_product_2_mrp_bom","Bill of Materials","PLM / Administrator,PLM / Integration User,PLM / View User","mrp.bom","product.product"
-"mrp.action_product_bom_structure","Product BoM Structure","PLM / Administrator,PLM / Integration User","mrp.bom","product.product"
