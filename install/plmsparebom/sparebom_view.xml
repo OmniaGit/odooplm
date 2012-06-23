@@ -4,7 +4,7 @@
 
     <record id="plm_component_manage_sparebom" model="ir.ui.view">
         <field name="name">plm.relation.spare</field>
-        <field name="model">product.product</field>
+        <field name="model">plm.temporary</field>
         <field name="type">form</field>
         <field name="arch" type="xml">
         <form string="Creation of Spare Bom">
@@ -12,15 +12,15 @@
             <separator string="" colspan="4" />
             <group colspan="4" col="6">
             	<button icon="gtk-cancel" special="cancel" string="Cancel"/>
-            	<button icon="terp-camera_test" special="cancel" string="Check Spare Bom" name="action_check_spareBom" type="object"/>
-            	<button icon="terp-gtk-go-back-rtl" special="cancel" string="Create Spare Bom" name="action_create_spareBom" type="object"/>
+            	<button icon="terp-camera_test" string="Check Spare Bom" name="action_check_spareBom" type="object"/>
+            	<button icon="terp-gtk-go-back-rtl" string="Create Spare Bom" name="action_create_spareBom" type="object"/>
             </group>
         </form>
         </field>
     </record>
 
     <act_window name="Manage Spare Bom"
-        res_model="product.product"
+        res_model="plm.temporary"
         src_model="product.product"
         view_mode="form"
         view_id="plm_component_manage_sparebom"

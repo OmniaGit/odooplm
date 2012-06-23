@@ -507,3 +507,30 @@ class plm_finishing(osv.osv):
     ]
 plm_finishing()
 
+
+class plm_temporary(osv.osv_memory):
+    _name = "plm.temporary"
+    _description = "Temporary Class"
+    _columns = {
+                'name': fields.char('Temp', size=128),
+    }
+
+    def action_create_normalBom(self, cr, uid, ids, context=None):
+        """
+            Create a new Spare Bom if doesn't exist (action callable from views)
+        """
+        if not 'active_id' in context:
+            return False
+        self.pool.get('product.product').action_create_normalBom_WF(cr, uid, context['active_ids'])
+
+        return {
+              'name': _('Bill of Materials'),
+              'view_type': 'form',
+              "view_mode": 'tree,form',
+              'res_model': 'mrp.bom',
+              'type': 'ir.actions.act_window',
+              'domain': "[('product_id','in', ["+','.join(map(str,context['active_ids']))+"])]",
+         }
+
+    
+plm_temporary()

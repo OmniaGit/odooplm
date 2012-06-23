@@ -25,9 +25,8 @@ from tools.translate import _
 
 RETDMESSAGE=''
 
-class plm_component(osv.osv):
-    _inherit = 'product.product'
-
+class plm_temporary(osv.osv_memory):
+    _inherit = "plm.temporary"
 ##  Specialized Actions callable interactively
     def action_create_spareBom(self, cr, uid, ids, context=None):
         """
@@ -35,8 +34,17 @@ class plm_component(osv.osv):
         """
         if not 'active_id' in context:
             return False
-        return self.action_create_spareBom_WF(cr, uid, context['active_ids'])
+        self.pool.get('product.product').action_create_spareBom_WF(cr, uid, context['active_ids'])
 
+        return {
+              'name': _('Bill of Materials'),
+              'view_type': 'form',
+              "view_mode": 'tree,form',
+              'res_model': 'mrp.bom',
+              'type': 'ir.actions.act_window',
+              'domain': "[('product_id','in', ["+','.join(map(str,context['active_ids']))+"])]",
+         }
+    
     def action_check_spareBom(self, cr, uid, ids, context=None):
         """
             Check if a Spare Bom exists (action callable from views)
@@ -44,10 +52,23 @@ class plm_component(osv.osv):
         global RETDMESSAGE
         if not 'active_id' in context:
             return False
-        if self.action_check_spareBom_WF(cr, uid, context['active_ids'], context):
+        if self.pool.get('product.product').action_check_spareBom_WF(cr, uid, context['active_ids'], context):
             logMessage=_('Following Parts are without Spare BOM :')+'\n'+RETDMESSAGE
             raise osv.except_osv(_('Check on Spare Bom'), logMessage)
-        return False
+
+        return {
+              'name': _('Engineering Parts'),
+              'view_type': 'form',
+              "view_mode": 'tree,form',
+              'res_model': 'product.product',
+              'type': 'ir.actions.act_window',
+              'domain': "[('id','in', ["+','.join(map(str,context['active_ids']))+"])]",
+         }
+    
+plm_temporary()
+
+class plm_component(osv.osv):
+    _inherit = 'product.product'
 
 #  Work Flow Actions
     def action_create_spareBom_WF(self, cr, uid, ids, context=None):

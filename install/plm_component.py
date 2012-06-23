@@ -268,14 +268,6 @@ class plm_component(osv.osv):
         return retValues 
 
 ##  Menu action Methods
-    def action_create_normalBom(self, cr, uid, ids, context=None):
-        """
-            Create a new Spare Bom if doesn't exist (action callable from views)
-        """
-        if not 'active_id' in context:
-            return False
-        return self.action_create_normalBom_WF(cr, uid, context['active_ids'])
-
     def _create_normalBom(self, cr, uid, idd, context=None):
         """
             Create a new Normal Bom (recursive on all EBom children)
@@ -475,6 +467,8 @@ class plm_component(osv.osv):
 
 #   Overridden methods for this entity
     def create(self, cr, user, vals, context=None):
+        if not vals:
+            return False
         existingIDs=self.search(cr, user, [('name','=',vals['name'])], order = 'engineering_revision', context=context)
         if 'engineering_code' in vals:
             if vals['engineering_code'] == False:
