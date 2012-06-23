@@ -81,24 +81,27 @@ class plm_document(osv.osv):
         result = []
         datefiles,listfiles=listedFiles
         for objDoc in self.browse(cr, uid, ids, context=context):
+            timeDoc=self.getLastTime(cr,uid,objDoc.id)
+            timeSaved=time.mktime(timeDoc.timetuple())
             try:
                 isCheckedOutToMe=self._is_checkedout_for_me(cr, uid, objDoc.id, context)
                 if not(objDoc.datas_fname in listfiles):
                     value = file(os.path.join(self._get_filestore(cr), objDoc.store_fname), 'rb').read()
-                    result.append((objDoc.id, objDoc.datas_fname, base64.encodestring(value), isCheckedOutToMe))
+                    result.append((objDoc.id, objDoc.datas_fname, base64.encodestring(value), isCheckedOutToMe, timeDoc))
                 else:
                     if forceFlag:
                         isNewer=True
                     else:
-                        isNewer=self.getLastTime(cr,uid,objDoc.id)>=datetime.strptime(str(datefiles[listfiles.index(objDoc.datas_fname)]),'%Y-%m-%d %H:%M:%S')
+                        timefile=time.mktime(datetime.strptime(str(datefiles[listfiles.index(objDoc.datas_fname)]),'%Y-%m-%d %H:%M:%S').timetuple())
+                        isNewer=abs(timeSaved)-abs(timefile)>5
                     if (isNewer and not(isCheckedOutToMe)):
                         value = file(os.path.join(self._get_filestore(cr), objDoc.store_fname), 'rb').read()
-                        result.append((objDoc.id, objDoc.datas_fname, base64.encodestring(value), isCheckedOutToMe))
+                        result.append((objDoc.id, objDoc.datas_fname, base64.encodestring(value), isCheckedOutToMe, timeDoc))
                     else:
-                        result.append((objDoc.id,objDoc.datas_fname,None, isCheckedOutToMe))
+                        result.append((objDoc.id,objDoc.datas_fname,None, isCheckedOutToMe, timeDoc))
             except Exception, ex:
                 logging.error("_data_get_files : Unable to access to document ("+str(objDoc.name)+"). Error :" + str(ex))
-                result.append((objDoc.id,objDoc.datas_fname,None, True))
+                result.append((objDoc.id,objDoc.datas_fname,None, True, self.getServerTime(cr, uid, ids)))
         return result
             
     def _data_get(self, cr, uid, ids, name, arg, context):
@@ -204,16 +207,19 @@ class plm_document(osv.osv):
         result = []
         datefiles,listfiles=listedFiles
         for objDoc in self.browse(cr, uid, list(set(ids)), context=context):
+            timeDoc=self.getLastTime(cr,uid,objDoc.id)
+            timeSaved=time.mktime(timeDoc.timetuple())
             isCheckedOutToMe=self._is_checkedout_for_me(cr, uid, objDoc.id, context)
             if (objDoc.datas_fname in listfiles):
                 if forceFlag:
                     isNewer = True
                 else:
-                    isNewer=self.getLastTime(cr,uid,objDoc.id)>=datetime.strptime(str(datefiles[listfiles.index(objDoc.datas_fname)]),'%Y-%m-%d %H:%M:%S')
+                    timefile=time.mktime(datetime.strptime(str(datefiles[listfiles.index(objDoc.datas_fname)]),'%Y-%m-%d %H:%M:%S').timetuple())
+                    isNewer=abs(timeSaved)-abs(timefile)>5
                 collectable = isNewer and not(isCheckedOutToMe)
             else:
                 collectable = True
-            result.append((objDoc.id, objDoc.datas_fname, objDoc.file_size, collectable, isCheckedOutToMe))
+            result.append((objDoc.id, objDoc.datas_fname, objDoc.file_size, collectable, isCheckedOutToMe, timeDoc))
         return list(set(result))
             
     def copy(self,cr,uid,oid,defaults={},context=None):
