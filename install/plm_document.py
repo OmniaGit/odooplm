@@ -93,7 +93,7 @@ class plm_document(osv.osv):
                         isNewer=True
                     else:
                         timefile=time.mktime(datetime.strptime(str(datefiles[listfiles.index(objDoc.datas_fname)]),'%Y-%m-%d %H:%M:%S').timetuple())
-                        isNewer=abs(timeSaved)-abs(timefile)>5
+                        isNewer=(timeSaved-timefile)>5
                     if (isNewer and not(isCheckedOutToMe)):
                         value = file(os.path.join(self._get_filestore(cr), objDoc.store_fname), 'rb').read()
                         result.append((objDoc.id, objDoc.datas_fname, base64.encodestring(value), isCheckedOutToMe, timeDoc))
@@ -215,7 +215,7 @@ class plm_document(osv.osv):
                     isNewer = True
                 else:
                     timefile=time.mktime(datetime.strptime(str(datefiles[listfiles.index(objDoc.datas_fname)]),'%Y-%m-%d %H:%M:%S').timetuple())
-                    isNewer=abs(timeSaved)-abs(timefile)>5
+                    isNewer=(timeSaved-timefile)>5
                 collectable = isNewer and not(isCheckedOutToMe)
             else:
                 collectable = True
