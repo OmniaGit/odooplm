@@ -663,6 +663,7 @@ class plm_document(osv.osv):
         forceFlag=False
         listed_models=[]
         listed_documents=[]
+        modArray=[]
         oid, listedFiles, selection = request
         if selection == None:
             selection=1
@@ -671,15 +672,23 @@ class plm_document(osv.osv):
             forceFlag=True
             selection=selection*(-1)
 
-        kind='LyTree'   # Get relations due to layout connected
-        docArray=self._relateddocs(cr, uid, oid, kind, listed_documents)
-
-        kind='HiTree'   # Get Hierarchical tree relations due to children
-        modArray=self._explodedocs(cr, uid, oid, kind, listed_models)
+        kind='HiTree'                   # Get Hierarchical tree relations due to children
+        docArray=self._explodedocs(cr, uid, oid, kind, listed_models)
+        
+        if not oid in docArray:
+            docArray.append(oid)        # Add requested document to package
+                
         for item in docArray:
-            if item not in modArray:
-                modArray.append(item)
-        docArray=modArray  
+            kind='LyTree'               # Get relations due to layout connected
+            modArray.extend(self._relateddocs(cr, uid, item, kind, listed_documents))
+            modArray.extend(self._explodedocs(cr, uid, item, kind, listed_documents))
+            kind='RfTree'               # Get relations due to referred connected
+            modArray.extend(self._relateddocs(cr, uid, item, kind, listed_documents))
+            modArray.extend(self._explodedocs(cr, uid, item, kind, listed_documents))
+
+        modArray.extend(docArray)
+        docArray=list(set(modArray))    # Get unique documents object IDs
+
         if selection == 2:
             docArray=self._getlastrev(cr, uid, docArray, context)
         
