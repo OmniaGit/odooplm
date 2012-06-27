@@ -267,19 +267,19 @@
         <field name="model">plm.temporary</field>
         <field name="type">form</field>
         <field name="arch" type="xml">
-        <form string="Creation of Standard Bom">
-            <label string="Are you sure you want to create a new Standard Bom?" colspan="4"/>
+        <form string="Creation of Normal Bom">
+            <label string="Are you sure you want to create a new Normal Bom?" colspan="4"/>
             <separator string="" colspan="4" />
             <group colspan="4" col="6">
             	<button icon="gtk-cancel" special="cancel" string="Cancel"/>
-            	<button icon="terp-gtk-go-back-rtl" string="Create Standard Bom" name="action_create_normalBom" type="object"/>
+            	<button icon="terp-gtk-go-back-rtl" special="cancel" string="Create Normal Bom" name="action_create_normalBom" type="object"/>
             </group>
         </form>
         </field>
     </record>
 
-    <act_window name="Create Standard Bom"
-        res_model="plm.temporary"
+    <act_window name="Create Normal Bom"
+        res_model="product.product"
         src_model="product.product"
         view_mode="form"
         view_id="plm_component_create_normalbom"

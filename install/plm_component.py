@@ -278,11 +278,11 @@ class plm_component(osv.osv):
             return False
         bomType=self.pool.get('mrp.bom')
         if checkObj.engineering_revision:
-            objBom=bomType.search(cr, uid, [('name','=',checkObj.name),('engineering_revision','=',checkObj.engineering_revision),('type','=','normal')])
-            idBoms=bomType.search(cr, uid, [('name','=',checkObj.name),('engineering_revision','=',checkObj.engineering_revision)],('type','=','ebom'))
+            objBom=bomType.search(cr, uid, [('name','=',checkObj.name),('engineering_revision','=',checkObj.engineering_revision),('type','=','normal'),('bom_id','=',False)])
+            idBoms=bomType.search(cr, uid, [('name','=',checkObj.name),('engineering_revision','=',checkObj.engineering_revision),('type','=','ebom'),('bom_id','=',False)])
         else:
-            objBom=bomType.search(cr, uid, [('name','=',checkObj.name),('type','=','normal')])
-            idBoms=bomType.search(cr, uid, [('name','=',checkObj.name),('type','=','ebom')])
+            objBom=bomType.search(cr, uid, [('name','=',checkObj.name),('type','=','normal'),('bom_id','=',False)])
+            idBoms=bomType.search(cr, uid, [('name','=',checkObj.name),('type','=','ebom'),('bom_id','=',False)])
         defaults={}
         if not objBom:
             for idBom in idBoms:
@@ -295,6 +295,7 @@ class plm_component(osv.osv):
                         bomType.write(cr,uid,[bom_line.id],{'type':'normal','source_id':False,'name':bom_line.name.replace(' Copy',''),'product_qty':bom_line.product_qty,},context=None)
                     for bom_line in list(set(oidBom.bom_lines) ^ set(ok_rows)):
                         bomType.unlink(cr,uid,[bom_line.id],context=None)
+                break
 
         for idBom in idBoms:
             for bom_line in bomType.browse(cr,uid,idBom,context=context).bom_lines:

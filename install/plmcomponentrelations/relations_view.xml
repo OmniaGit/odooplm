@@ -140,7 +140,7 @@
     </record>
 
     <menuitem
-        name="Search on Standard Bill of Materials"
+        name="Search on Normal Bill of Materials"
         action="plm_action_normal_form"
         id="menu_relation_normal"
         parent="plm_menu_relation"/>
