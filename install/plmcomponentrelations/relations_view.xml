@@ -52,7 +52,7 @@
             <field name="field_parent">child_complete_ids</field>
         	<field name="priority" eval="10"/>
             <field name="arch" type="xml">
-                <tree string="BoM Structure" colors="blue:method">
+                <tree string="Bill of Materials" colors="blue:method">
                     <field name="itemnum"/>
                     <field name="name" select="True"/>
                     <field name="description" select="True"/>
@@ -210,7 +210,7 @@
             <field name="type">tree</field>
             <field name="field_parent">child_complete_ids</field>
             <field name="arch" type="xml">
-                <tree string="BoM Structure" colors="blue:method">
+                <tree string="Bill of Materials" colors="blue:method">
                     <field name="sequence" invisible="1"/>
                     <field name="name" string="Component Name"/>
                     <field name="code"/>
