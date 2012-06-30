@@ -278,28 +278,28 @@ class plm_component(osv.osv):
             return False
         bomType=self.pool.get('mrp.bom')
         if checkObj.engineering_revision:
-            objBom=bomType.search(cr, uid, [('name','=',checkObj.name),('engineering_revision','=',checkObj.engineering_revision),('type','=','normal'),('bom_id','=',False)])
+            objBoms=bomType.search(cr, uid, [('name','=',checkObj.name),('engineering_revision','=',checkObj.engineering_revision),('type','=','normal'),('bom_id','=',False)])
             idBoms=bomType.search(cr, uid, [('name','=',checkObj.name),('engineering_revision','=',checkObj.engineering_revision),('type','=','ebom'),('bom_id','=',False)])
         else:
-            objBom=bomType.search(cr, uid, [('name','=',checkObj.name),('type','=','normal'),('bom_id','=',False)])
+            objBoms=bomType.search(cr, uid, [('name','=',checkObj.name),('type','=','normal'),('bom_id','=',False)])
             idBoms=bomType.search(cr, uid, [('name','=',checkObj.name),('type','=','ebom'),('bom_id','=',False)])
-        defaults={}
-        if not objBom:
-            for idBom in idBoms:
-                newidBom=bomType.copy(cr, uid, idBom, defaults, context)
+
+        if not objBoms:
+            if idBoms:
+                newidBom=bomType.copy(cr, uid, idBoms[0], defaults, context)
                 if newidBom:
                     bomType.write(cr,uid,[newidBom],{'name':checkObj.name,'product_id':checkObj.id,'type':'normal',},context=None)
                     oidBom=bomType.browse(cr,uid,newidBom,context=context)
                     ok_rows=self._summarizeBom(cr, uid, oidBom.bom_lines)
-                    for bom_line in ok_rows:
-                        bomType.write(cr,uid,[bom_line.id],{'type':'normal','source_id':False,'name':bom_line.name.replace(' Copy',''),'product_qty':bom_line.product_qty,},context=None)
                     for bom_line in list(set(oidBom.bom_lines) ^ set(ok_rows)):
                         bomType.unlink(cr,uid,[bom_line.id],context=None)
-                break
-
-        for idBom in idBoms:
-            for bom_line in bomType.browse(cr,uid,idBom,context=context).bom_lines:
+                    for bom_line in ok_rows:
+                        bomType.write(cr,uid,[bom_line.id],{'type':'normal','source_id':False,'name':bom_line.name.replace(' Copy',''),'product_qty':bom_line.product_qty,},context=None)
+                        self._create_normalBom(cr, uid, bom_line.product_id.id, context)
+        else:
+            for bom_line in bomType.browse(cr,uid,objBoms[0],context=context).bom_lines:
                 self._create_normalBom(cr, uid, bom_line.product_id.id, context)
+            
         return False
 
     def _summarizeBom(self, cr, uid, datarows):
@@ -467,10 +467,10 @@ class plm_component(osv.osv):
         return self.write(cr, uid, allIDs, defaults, context=context, check=False)
 
 #   Overridden methods for this entity
-    def create(self, cr, user, vals, context=None):
+    def create(self, cr, uid, vals, context=None):
         if not vals:
             return False
-        existingIDs=self.search(cr, user, [('name','=',vals['name'])], order = 'engineering_revision', context=context)
+        existingIDs=self.search(cr, uid, [('name','=',vals['name'])], order = 'engineering_revision', context=context)
         if 'engineering_code' in vals:
             if vals['engineering_code'] == False:
                 vals['engineering_code'] = vals['name']
@@ -483,15 +483,15 @@ class plm_component(osv.osv):
             return existingIDs[len(existingIDs)-1]           #TODO : Manage search for highest revisonid
         else:
             try:
-                return super(plm_component,self).create(cr, user, vals, context=context)
+                return super(plm_component,self).create(cr, uid, vals, context=context)
             except:
                 raise Exception(_("It has tried to create %s , %s"%(str(vals['name']),str(vals))))
                 return False
          
-    def write(self, cr, user, ids, vals, context=None, check=True):
+    def write(self, cr, uid, ids, vals, context=None, check=True):
         checkState=('confirmed','released','undermodify','obsoleted')
         if check:
-            for customObject in self.browse(cr, user, ids, context=context):
+            for customObject in self.browse(cr, uid, ids, context=context):
                 if not customObject.engineering_writable:
                     raise osv.except_osv(_('Edit Entity Error'), _("No changes are allowed on entity (%s)." %(customObject.name)))
                     return False
@@ -501,7 +501,7 @@ class plm_component(osv.osv):
                 if customObject.engineering_code == False:
                     vals['engineering_code'] = customObject.name
                     # Force copy engineering_code to name if void
-        return super(plm_component,self).write(cr, user, ids, vals, context=context)  
+        return super(plm_component,self).write(cr, uid, ids, vals, context=context)  
 
     def copy(self,cr,uid,oid,defaults={},context=None):
         """
