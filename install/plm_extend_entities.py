@@ -74,14 +74,54 @@ plm_component()
 
 
 class plm_relation(osv.osv):
+    _name = 'mrp.bom'
     _inherit = 'mrp.bom'
+
+    def _child_compute(self, cr, uid, ids, name, arg, context=None):
+        """ Gets child bom.
+        @param self: The object pointer
+        @param cr: The current row, from the database cursor,
+        @param uid: The current user ID for security checks
+        @param ids: List of selected IDs
+        @param name: Name of the field
+        @param arg: User defined argument
+        @param context: A standard dictionary for contextual values
+        @return:  Dictionary of values
+        """
+        result = {}
+        if context is None:
+            context = {}
+        bom_obj = self.pool.get('mrp.bom')
+        bom_id = context and context.get('active_id', False) or False
+        cr.execute('select id from mrp_bom')
+        if all(bom_id != r[0] for r in cr.fetchall()):
+            ids.sort()
+            bom_id = ids[0]
+        bom_parent = bom_obj.browse(cr, uid, bom_id, context=context)
+        for bom in self.browse(cr, uid, ids, context=context):
+            if (bom_parent) or (bom.id == bom_id):
+                result[bom.id] = map(lambda x: x.id, bom.bom_lines)
+            else:
+                result[bom.id] = []
+            if bom.bom_lines:
+                continue
+            ok = ((name=='child_complete_ids') and (bom.product_id.supply_method=='produce'))
+            if (bom.type=='phantom' or ok):
+                sids = bom_obj.search(cr, uid, [('bom_id','=',False),('product_id','=',bom.product_id.id),('type','=',bom.type)])
+                # Added type to search to avoid to mix different kinds of BoM. 
+                if sids:
+                    bom2 = bom_obj.browse(cr, uid, sids[0], context=context)
+                    result[bom.id] += map(lambda x: x.id, bom2.bom_lines)
+
+        return result
+
     _columns = {
                 'state': fields.related('product_id','state',type="char",relation="product.template",string="Status",store=False),
                 'engineering_revision': fields.related('product_id','engineering_revision',type="char",relation="product.template",string="Revision",store=False),
                 'description': fields.related('product_id','description',type="char",relation="product.template",string="Description",store=False),
                 'weight_net': fields.related('product_id','weight_net',type="float",relation="product.product",string="Weight Net",store=False),
-                'uom_id': fields.related('product_id','uom_id',type="integer",relation="product.product",string="Unit of Measure",store=False)
+                'uom_id': fields.related('product_id','uom_id',type="integer",relation="product.product",string="Unit of Measure",store=False),
+                'child_complete_ids': fields.function(_child_compute, relation='mrp.bom', method=True, string="BoM Hierarchy", type='many2many'),
                }
+
 plm_relation()
-
-
