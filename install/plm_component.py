@@ -299,7 +299,6 @@ class plm_component(osv.osv):
         else:
             for bom_line in bomType.browse(cr,uid,objBoms[0],context=context).bom_lines:
                 self._create_normalBom(cr, uid, bom_line.product_id.id, context)
-            
         return False
 
     def _summarizeBom(self, cr, uid, datarows):
