@@ -22,8 +22,8 @@
 {
     'name': 'Product Lifecycle Management',
     'version': '1.0',
-    'category': 'LifeCycle Management',
-    'depends': ['base', 'process','document','product','mrp'],
+    'category': 'Tools',
+    'depends': ['base', 'process','board','document','product','mrp'],
     'author': 'OmniaSolutions',
     'description': """ This is a Product Lifecycle Management system providing:
     
@@ -32,7 +32,7 @@
     * Document Indexation
     * Documents Relationship
     * Engineering Bill of Materials
-    * Spare Part Bom & Report
+    * Spare Part BoM & Report
     
     
     Supported Editors :
@@ -46,6 +46,7 @@
     'init_xml': [
         ],
     'update_xml': [
+        'board_plm_view.xml',
         'install/plmviews/plm_menu.xml',
         'install/plmdocuments/document_view.xml',
         'install/plmdocuments/document_workflow.xml',
@@ -73,6 +74,7 @@
     'demo_xml': [
         ],
     'installable': True,
+    'auto_install': False,
     'active': True,
 }
 
