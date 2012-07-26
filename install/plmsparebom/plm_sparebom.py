@@ -20,6 +20,8 @@
 #
 ##############################################################################
 
+from types import *
+
 from osv import osv, fields
 from tools.translate import _
 
@@ -96,18 +98,21 @@ class plm_component(osv.osv):
         """
             Create a new Spare Bom (recursive on all EBom children)
         """
+        sourceBomType='ebom'
         checkObj=self.browse(cr, uid, idd, context)
         if not checkObj:
             return False
         if '-Spare' in checkObj.name:
             return False
+        if (type(context) is DictType) and ('sourceBomType' in context):
+            sourceBomType=context['sourceBomType']
         bomType=self.pool.get('mrp.bom')
         if checkObj.engineering_revision:
             objBoms=bomType.search(cr, uid, [('name','=',checkObj.name),('engineering_revision','=',checkObj.engineering_revision),('type','=','spbom'),('bom_id','=',False)])
-            idBoms=bomType.search(cr, uid, [('name','=',checkObj.name),('engineering_revision','=',checkObj.engineering_revision),('type','=','ebom'),('bom_id','=',False)])
+            idBoms=bomType.search(cr, uid, [('name','=',checkObj.name),('engineering_revision','=',checkObj.engineering_revision),('type','=',sourceBomType),('bom_id','=',False)])
         else:
             objBoms=bomType.search(cr, uid, [('name','=',checkObj.name),('type','=','spbom'),('bom_id','=',False)])
-            idBoms=bomType.search(cr, uid, [('name','=',checkObj.name),('type','=','ebom'),('bom_id','=',False)])
+            idBoms=bomType.search(cr, uid, [('name','=',checkObj.name),('type','=',sourceBomType),('bom_id','=',False)])
         defaults={}
         if not objBoms:
             if idBoms:
@@ -134,11 +139,14 @@ class plm_component(osv.osv):
         """
             Check if a Spare Bom exists (recursive on all EBom children)
         """
+        sourceBomType='ebom'
         global RETDMESSAGE
         bomType=self.pool.get('mrp.bom')
         checkObj=self.browse(cr, uid, idd, context)
         if not checkObj:
             return False
+        if (type(context) is DictType) and ('sourceBomType' in context):
+            sourceBomType=context['sourceBomType']
         if checkObj.std_description.bom_tmpl:
             if checkObj.engineering_revision:
                 objBom=bomType.search(cr, uid, [('name','=',checkObj.name),('engineering_revision','=',checkObj.engineering_revision),('type','=','spbom'),('bom_id','=',False)])
@@ -148,9 +156,9 @@ class plm_component(osv.osv):
                 RETDMESSAGE=RETDMESSAGE+"%s/%d \n" %(checkObj.name,checkObj.engineering_revision)
 
         if checkObj.engineering_revision:
-            idBoms=bomType.search(cr, uid, [('name','=',checkObj.name),('engineering_revision','=',checkObj.engineering_revision),('type','=','ebom'),('bom_id','=',False)])
+            idBoms=bomType.search(cr, uid, [('name','=',checkObj.name),('engineering_revision','=',checkObj.engineering_revision),('type','=',sourceBomType),('bom_id','=',False)])
         else:
-            idBoms=bomType.search(cr, uid, [('name','=',checkObj.name),('type','=','ebom')])
+            idBoms=bomType.search(cr, uid, [('name','=',checkObj.name),('type','=',sourceBomType)])
         if not idBoms:
             if checkObj.engineering_revision:
                 idBoms=bomType.search(cr, uid, [('name','=',checkObj.name),('engineering_revision','=',checkObj.engineering_revision),('type','=','normal'),('bom_id','=',False)])
