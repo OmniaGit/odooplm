@@ -98,6 +98,7 @@ class plm_component(osv.osv):
         """
             Create a new Spare Bom (recursive on all EBom children)
         """
+        newidBom=False
         sourceBomType='ebom'
         checkObj=self.browse(cr, uid, idd, context)
         if not checkObj:
@@ -115,24 +116,23 @@ class plm_component(osv.osv):
             idBoms=bomType.search(cr, uid, [('name','=',checkObj.name),('type','=',sourceBomType),('bom_id','=',False)])
         defaults={}
         if not objBoms:
-            if idBoms:
-                if checkObj.std_description.bom_tmpl:
-                    newidBom=bomType.copy(cr, uid, checkObj.std_description.bom_tmpl.id, defaults, context)
-                else:
+            if checkObj.std_description.bom_tmpl:
+                newidBom=bomType.copy(cr, uid, checkObj.std_description.bom_tmpl.id, defaults, context)
+            if (not newidBom) and idBoms:
                     newidBom=bomType.copy(cr, uid, idBoms[0], defaults, context)
-                if newidBom:
-                    bomType.write(cr,uid,[newidBom],{'name':checkObj.name,'product_id':checkObj.id,'type':'spbom',},context=None)
-                    oidBom=bomType.browse(cr,uid,newidBom,context=context)
-
-                    ok_rows=self._summarizeBom(cr, uid, oidBom.bom_lines)
-                    for bom_line in list(set(oidBom.bom_lines) ^ set(ok_rows)):
-                        bomType.unlink(cr,uid,[bom_line.id],context=None)
-                    for bom_line in ok_rows:
-                        bomType.write(cr,uid,[bom_line.id],{'type':'spbom','source_id':False,'name':bom_line.name.replace(' Copy',''),'product_qty':bom_line.product_qty,},context=None)
-                        self._create_spareBom(cr, uid, bom_line.product_id.id, context)
+            if newidBom:
+                bomType.write(cr,uid,[newidBom],{'name':checkObj.name,'product_id':checkObj.id,'type':'spbom',},context=None)
+                oidBom=bomType.browse(cr,uid,newidBom,context=None)
+                
+                ok_rows=self._summarizeBom(cr, uid, oidBom.bom_lines)
+                for bom_line in list(set(oidBom.bom_lines) ^ set(ok_rows)):
+                    bomType.unlink(cr,uid,[bom_line.id],context=None)
+                for bom_line in ok_rows:
+                    bomType.write(cr,uid,[bom_line.id],{'type':'spbom','source_id':False,'name':bom_line.name.replace(' Copy',''),'product_qty':bom_line.product_qty,},context=None)
+                    self._create_spareBom(cr, uid, bom_line.product_id.id, context)
         else:
             for bom_line in bomType.browse(cr,uid,objBoms[0],context=context).bom_lines:
-                self._create_spareBom(cr, uid, bom_line.product_id.id, context)
+                self._create_spareBom(cr, uid, bom_line.product_id.id, context=context)
         return False
 
     def _check_spareBom(self, cr, uid, idd, context=None):
@@ -158,7 +158,7 @@ class plm_component(osv.osv):
         if checkObj.engineering_revision:
             idBoms=bomType.search(cr, uid, [('name','=',checkObj.name),('engineering_revision','=',checkObj.engineering_revision),('type','=',sourceBomType),('bom_id','=',False)])
         else:
-            idBoms=bomType.search(cr, uid, [('name','=',checkObj.name),('type','=',sourceBomType)])
+            idBoms=bomType.search(cr, uid, [('name','=',checkObj.name),('type','=',sourceBomType),('bom_id','=',False)])
         if not idBoms:
             if checkObj.engineering_revision:
                 idBoms=bomType.search(cr, uid, [('name','=',checkObj.name),('engineering_revision','=',checkObj.engineering_revision),('type','=','normal'),('bom_id','=',False)])

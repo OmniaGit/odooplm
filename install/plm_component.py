@@ -272,7 +272,7 @@ class plm_component(osv.osv):
         """
             Create a new Normal Bom (recursive on all EBom children)
         """
-
+        defaults={}
         checkObj=self.browse(cr, uid, idd, context)
         if not checkObj:
             return False
@@ -303,8 +303,6 @@ class plm_component(osv.osv):
 
     def _summarizeBom(self, cr, uid, datarows):
         dic={}
-        retd=[]
-        bomType=self.pool.get('mrp.bom')
         for datarow in datarows:
             key=str(datarow.product_id.name)
             if key in dic:

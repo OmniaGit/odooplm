@@ -156,7 +156,7 @@ class plm_relation(osv.osv):
     }
 
     def init(self, cr):
-       self._packed=[]
+        self._packed=[]
 
     def _getinbomidnullsrc(self, cr, uid, pid):
         counted=[]
@@ -181,7 +181,7 @@ class plm_relation(osv.osv):
         if not ids:
             ids=self.search(cr,uid,[('product_id','=',pid),('bom_id','=',False),('source_id','!=',False),('type','=','normal')])
         for obj in self.browse(cr,uid,list(set(ids)),context=None):
-             counted.append(obj)
+            counted.append(obj)
         return list(set(counted))
 
     def _getbomid(self, cr, uid, pid, sid):
@@ -254,9 +254,9 @@ class plm_relation(osv.osv):
         
         if len(ids)>1:
             sid=ids[1]
-        id=ids[0]
-        relDatas.append(id)
-        relDatas.append(self._implodebom(cr, uid, self._inbomid(cr, uid, id, sid)))
+        oid=ids[0]
+        relDatas.append(oid)
+        relDatas.append(self._implodebom(cr, uid, self._inbomid(cr, uid, oid, sid)))
         prtDatas=self._getpackdatas(cr, uid, relDatas)
         return (relDatas, prtDatas, self._getpackreldatas(cr, uid, relDatas, prtDatas))
     
@@ -320,9 +320,9 @@ class plm_relation(osv.osv):
         
         if len(ids)>1:
             sid=ids[1]
-        id=ids[0]
-        relDatas.append(id)
-        relDatas.append(self._implodebom(cr, uid, self._inbomid(cr, uid, id, sid)))
+        oid=ids[0]
+        relDatas.append(oid)
+        relDatas.append(self._implodebom(cr, uid, self._inbomid(cr, uid, oid, sid)))
         prtDatas=self._getpackdatas(cr, uid, relDatas)
         return (relDatas, prtDatas, self._getpackreldatas(cr, uid, relDatas, prtDatas))
 
