@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+ <openerp>
+     <data>
+        <record model="ir.ui.view" id="board_plm_manager_form">
+            <field name="name">board.plm.manager.form</field>
+             <field name="model">board.board</field>
+             <field name="type">form</field>
+             <field name="arch" type="xml">
+                <form string="Document board">
+                     <board style="2-1" >
+                        <column>
+                            <action string="New Documents"
+                                name="%(document.action_view_all_document_tree1)d"
+                                view_mode="tree,form"/>
+                        </column>
+                        <column>
+                            <action string="File Size by Month"
+                                name="%(document.action_view_size_month)d"
+                                view_mode="graph,tree"/>
+                        </column>
+                     </board>
+                 </form>
+             </field>
+         </record>
+
+
+        <record model="ir.actions.act_window" id="open_board_plm_manager">
+             <field name="name">PLM Dashboard</field>
+             <field name="res_model">board.board</field>
+             <field name="view_type">form</field>
+             <field name="view_mode">form</field>
+             <field name="view_id" ref="board_plm_manager_form"/>
+        </record>
+     </data>
+ </openerp>
