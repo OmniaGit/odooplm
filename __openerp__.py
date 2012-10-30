@@ -50,6 +50,7 @@
         'install/plmdocuments/document_view.xml',
         'install/plmdocuments/document_workflow.xml',
         'install/plmdocuments/backupdoc_view.xml',
+        'install/plmdocrelations/document_relations.xml',
         'install/plmcomponents/component_view.xml',
         'install/plmcomponents/component_workflow.xml',
         'install/plmdescriptions/description_sequence.xml',
