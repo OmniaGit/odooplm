@@ -125,3 +125,17 @@ class plm_relation(osv.osv):
                }
 
 plm_relation()
+
+class plm_document_relation(osv.osv):
+    _name = 'plm.document.relation'
+    _inherit = 'plm.document.relation'
+    _columns = {
+                'parent_preview': fields.related('parent_id','preview',type="binary",relation="ir.attachment",string="Preview",store=False),
+                'parent_state': fields.related('parent_id','state',type="char",relation="ir.attachment",string="Status",store=False),
+                'parent_revision': fields.related('parent_id','revisionid',type="integer",relation="ir.attachment",string="Revision",store=False),
+                'child_preview': fields.related('child_id','preview',type="binary",relation="ir.attachment",string="Preview",store=False),
+                'child_state': fields.related('child_id','state',type="char",relation="ir.attachment",string="Status",store=False),
+                'child_revision': fields.related('child_id','revisionid',type="integer",relation="ir.attachment",string="Revision",store=False),
+              }
+plm_document_relation()
+
