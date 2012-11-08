@@ -125,21 +125,28 @@ class external_pdf(render):
     def _render(self):
         return self.pdf
     
+HEDER=report_sxw.report_sxw("report.spare.parts.heder", 
+                            "product.product", 
+                            rml='addons/OpenErpPlm/install/report/spare_parts_header.rml')   
+BODY=report_sxw.report_sxw("report.spare.parts.body", 
+                           "mrp.bom", 
+                           rml='addons/OpenErpPlm/install/report/spare_parts_header_body.rml')
+
 class component_spare_parts_report(report_int):
     """
         Calculates the bom structure spare parts manual
     """
+    
     def create(self, cr, uid, ids, datas, context=None):
         self.pool = pooler.get_pool(cr.dbname)
         componentType=self.pool.get('product.product')
-        children=[]
         userType=self.pool.get('res.users')
         user=userType.browse(cr, uid, uid, context=context)
         msg = "Printed by "+str(user.name)+" : "+ str(time.strftime("%d/%m/%Y %H:%M:%S"))
         output = BookCollector(customTest=(True,msg))
         components=componentType.browse(cr, uid, ids, context=context)
         for component in components:
-            buf=self.getFirstPage(component.name,component.description)
+            buf=self.getFirstPage(cr, uid, [component.id],context)
             output.addPage(buf)
             self.getSparePartsPdfFile(cr, uid,context,component, output,componentType)
         if output != None:
@@ -149,35 +156,8 @@ class component_spare_parts_report(report_int):
             self.obj.render()
             pdf_string.close()
             return (self.obj.pdf, 'pdf')
-        return (False, '')  
-    
-       
-    def getBomRows(self,cr, uid,parent, context=None):
-        """
-           Return the first level bom fields
-        """
-        normal=[]
-        ebom=[]
-        spbom=[]
-        retd=[]
-        for bomid in parent.bom_ids:
-            buffer=[]
-            for bom in bomid.bom_lines:
-                buffer.append(bom)
-            if bomid.type in('spbom'):
-                spbom=buffer
-            if bomid.type in('ebom'):
-                ebom=buffer
-            if bomid.type in('normal'):
-                normal=buffer
-        if len(spbom):
-            return spbom
-        if len(ebom):
-            return ebom
-        if len(normal):
-            return normal
-        return retd
-       
+        return (False, '')    
+   
     def getSparePartsPdfFile(self,cr,uid,context,component,output,componentTemplate):
         for pageStream in self.getPdfComponentLayout(component):
             output.addPage(pageStream)
@@ -186,14 +166,19 @@ class component_spare_parts_report(report_int):
             childrenids.remove(component.id)
         children=componentTemplate.browse(cr, uid, childrenids, context=context)
         if len(children)>0:
-            pageStream=self.createBom(self.getBomRows(cr,uid,component),component.name,component.description)
-            output.addPage(pageStream)
-            processed=[]
-            for child in children:
-                if not child.id in processed:
-                    self.getSparePartsPdfFile(cr,uid,context,child,output,componentTemplate)   
-                processed.append(child.id)    
-    
+            baseBom=self.pool.get('mrp.bom')
+            childBomObject=baseBom.search(cr,uid,[('product_id','=',component.id),('type','=','spbom')])
+            if len(childBomObject)>0:
+                stream,type=BODY.create(cr, uid, childBomObject, data={'report_type': u'pdf'},context=context) 
+                pageStream=StringIO.StringIO()
+                pageStream.write(stream)
+                output.addPage(pageStream)
+                processed=[]
+                for child in children:
+                    if not child.id in processed:
+                        self.getSparePartsPdfFile(cr,uid,context,child,output,componentTemplate)   
+                processed.append(child.id) 
+
     def getPdfComponentLayout(self,component):
         ret=[]
         for document in component.linkeddocuments:
@@ -201,49 +186,13 @@ class component_spare_parts_report(report_int):
                 #TODO: To Evaluate document type 
                 ret.append( StringIO.StringIO(base64.decodestring(document.printout)))
         return ret 
-      
-    def getFirstPage(self,parentCode,parentDescription):
-        strbuffer = StringIO.StringIO()
-        doc = SimpleDocTemplate(strbuffer, pagesize=A4)
-        elements = []
-        header="Spare Parts Manual<br/>%s<br/>%s"%(parentCode,parentDescription)
-        p=PageCellHeader(header)
-        elements.append(p)
-        doc.build(elements)
-        return strbuffer
     
-    def createBom(self,data,parentCode,parentDescription):
+    def getFirstPage(self,cr, uid, ids,context):
         strbuffer = StringIO.StringIO()
-        if len(data)<1:
-            return strbuffer
-            # avoid blank page for no bom data
-        doc = SimpleDocTemplate(strbuffer, pagesize=A4)
-        elements = []
-        header=[TableHeader(col) for col in BOM_SHOW_FIELDS]
-        val=self.getSummarizedBom(data)
-        dataVal=[]
-        dataVal.append(header)
-        dataVal.extend(val)
-        header="%s<br/>%s"%(parentCode,parentDescription)
-        p=PageCellHeader(header)
-        elements.append(p)
-        t=Table(dataVal)
-        elements.append(t)
-        # write the document to disk
-        doc.build(elements)
+        reportStream,reportType=HEDER.create(cr, uid, ids, data={'report_type': u'pdf'},context=context)
+        strbuffer.write(reportStream)
         return strbuffer
-   
-    def getSummarizedBom(self,data):
-        dic={}
-        for d in data:
-            key=str(d.itemnum)+"_"+str(d.product_id.name)
-            if key in dic:
-                qty=float(dic[key].product_qty)+float(d.product_qty)
-                dic[key].product_qty=qty
-            else:
-                dic[key]=d
-        dicOrder=dic.keys()
-        dicOrder.sort()
-        return [getBomRow(dic[key]) for key in dicOrder]
+          
+
 
 component_spare_parts_report('report.product.product.spare.parts.pdf')
