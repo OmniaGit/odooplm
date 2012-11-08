@@ -263,6 +263,7 @@ report_sxw.report_sxw('report.plm.bom.structure.one.sum','mrp.bom','/'+openerpMo
 class bom_structure_leaves_custom_report(report_sxw.rml_parse):
     def __init__(self, cr, uid, name, context):
         super(bom_structure_leaves_custom_report, self).__init__(cr, uid, name, context=context)
+        self.keyIndex=0
         self.localcontext.update({
             'time': time,
             'get_children':self.get_children,
@@ -271,10 +272,10 @@ class bom_structure_leaves_custom_report(report_sxw.rml_parse):
     def get_children(self, object, level=0):
         result=[]
         listed={}
+        
 
         def _get_rec(bomobject,level,fth_qty):
             object=BomSort(bomobject)
-            keyIndex=0
             for l in object:
                 res={}
                 if l.name in listed.keys():
@@ -289,7 +290,7 @@ class bom_structure_leaves_custom_report(report_sxw.rml_parse):
                     res['pdesc']=l.product_id.description
                     res['pcode']=l.product_id.default_code
                     res['previ']=l.product_id.engineering_revision
-                    res['pqty']=l.product_qty*fth_qty
+                    res['pqty']=l.product_qty
                     res['uname']=l.product_uom.name
                     res['pweight']=l.product_id.weight_net
                     res['code']=l.code
@@ -298,8 +299,8 @@ class bom_structure_leaves_custom_report(report_sxw.rml_parse):
                         _get_rec(l.child_complete_ids,level+1,l.product_qty)
                     else:
                         result.append(res)
-                        listed[l.name]=keyIndex
-                        keyIndex+=1
+                        listed[l.name]=self.keyIndex
+                        self.keyIndex+=1
 
             return result
 
