@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data>
+        <record id="plm_docbom_form_view" model="ir.ui.view">
+            <field name="name">plm.doc.relation.form</field>
+            <field name="model">plm.document.relation</field>
+            <field name="type">form</field>
+        	<field name="priority" eval="10"/>
+            <field name="arch" type="xml">
+                <form string="Show Document Relation">
+                <group colspan="4" col="4">
+	               	<separator colspan="4" string="Parent Preview"/>
+	                <group colspan="2" col="2">
+	                    <field name="parent_id" readonly="True"/>
+	                    <field name="parent_revision" readonly="True"/>
+	                    <field name="parent_state" readonly="True"/>
+	                </group>
+	                <group colspan="2" col="2">
+	                 	<field  name="parent_preview" colspan="2"
+								widget="image" 
+	                     		readonly="1"
+	                        	nolabel="1"
+	                        	img_height="400"
+	                        	img_width="400"/>
+	                </group>
+  					<newline/>
+	            	<separator colspan="4" string="Child Preview"/>
+	                <group colspan="2" col="2">
+	                    <field name="child_id" readonly="True"/>
+	                    <field name="child_revision" readonly="True"/>
+	                    <field name="child_state" readonly="True"/>
+	                </group>
+	                <group colspan="2" col="2">
+	                    <field  name="child_preview" colspan="2"
+								widget="image" 
+	                     		readonly="1"
+	                        	nolabel="1"
+	                        	img_height="400"
+	                        	img_width="400"/>
+	                </group>
+                </group>
+               </form>
+            </field>
+        </record>
+
+
+       <record id="plm_docbom_tree_view" model="ir.ui.view">
+            <field name="name">plm.doc.relation.tree</field>
+            <field name="model">plm.document.relation</field>
+            <field name="type">tree</field>
+        	<field name="priority" eval="10"/>
+            <field name="arch" type="xml">
+                <tree string="Document Relations" colors="blue:method">
+                    <field name="parent_id" select="True"/>
+                    <field name="parent_revision" select="True"/>
+                    <field name="parent_state" select="True"/>
+                    <field name="child_id" select="True"/>
+                    <field name="child_revision" select="True"/>
+                    <field name="child_state" select="True"/>
+                    <field name="configuration"/>
+                    <field name="link_kind"  select="True"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="plm_docbom_search" model="ir.ui.view">
+            <field name="name">plm.doc.relation.search</field>
+            <field name="model">plm.document.relation</field>
+            <field name="type">search</field>
+        	<field name="priority" eval="10"/>
+            <field name="arch" type="xml">
+				<search string="Search on Document Relations">
+                   	<filter icon="terp-go-month" string="  Latest 7 Days  " separator="1"
+                           	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
+                          	help="Created latest 7 Days"/>
+                 	<filter icon="terp-go-month" string="  Yesterday  " separator="1"
+                         	domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
+                    		help="Created yesterday"/>
+                	<filter icon="terp-go-month" string="  Today  " separator="1"
+                         	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
+                         	help="Created today"/>
+                   	<separator orientation="vertical"/>
+                    <field name="parent_id"/>
+                    <field name="child_id"/>
+                    <field name="link_kind"  string="Document Relation Kind"/>
+                    <newline/>
+                    <group expand="0" string="Group By..." colspan="4" col="8" groups="base.group_extended">
+                        <filter string="Parent" icon="terp-accessories-archiver" domain="[]" context="{'group_by':'parent_id'}"/>
+                        <filter string="Child" icon="terp-mrp" domain="[]" context="{'group_by' : 'child_id'}"/>
+                        <separator orientation="vertical"/>
+                        <filter string="Kind" icon="terp-stock_align_left_24" domain="[]" context="{'group_by':'link_kind'}"/>
+                   </group>
+                </search>
+            </field>
+        </record>
+
+    <record model="ir.actions.act_window" id="plm_action_document_relations">
+    	<field name="name">Document Relations</field>
+    	 <field name="res_model">plm.document.relation</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        name="Search on Document Relations"
+        action="plm_action_document_relations"
+        id="menu_document_relations"
+        parent="plm_document_form"/>
+
+</data>
+</openerp>

@@ -21,6 +21,7 @@
 ##############################################################################
 
 import sys
+import types
 from osv import osv, fields
 from tools.translate import _
 import logging
@@ -416,11 +417,12 @@ class plm_relation(osv.osv):
                 if args!=None:
                     for arg in args:
                         res[str(arg)]=args[str(arg)]
-                if ('product_qty' in res) and (res['product_qty']<1e-6):
-                    res['product_qty']=1.0
+                if ('product_qty' in res):
+                    if(type(res['product_qty'])!=types.FloatType) or (res['product_qty']<1e-6):
+                        res['product_qty']=1.0
                 return self.create(cr, uid, res)
             except:
-                print "saveChild :  unable to create a relation for part (%s) with source (%d) : %s." %(name,sourceID,str(args))
+                logging.error("saveChild :  unable to create a relation for part (%s) with source (%d) : %s." %(name,sourceID,str(args)))
                 raise AttributeError(_("saveChild :  unable to create a relation for part (%s) with source (%d) : %s." %(name,sourceID,str(sys.exc_info()))))
 
         if len(relations)<1: # no relation to save 
