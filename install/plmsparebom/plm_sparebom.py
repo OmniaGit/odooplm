@@ -78,6 +78,7 @@ class plm_component(osv.osv):
             Create a new Spare Bom if doesn't exist (action callable from code)
         """
         for idd in ids:
+            self.processedIds=[]
             self._create_spareBom(cr, uid, idd, context)
         return False
 
@@ -100,6 +101,9 @@ class plm_component(osv.osv):
         """
         newidBom=False
         sourceBomType='ebom'
+        if idd in self.processedIds:
+            return False
+        self.processedIds.append(idd)
         checkObj=self.browse(cr, uid, idd, context)
         if not checkObj:
             return False

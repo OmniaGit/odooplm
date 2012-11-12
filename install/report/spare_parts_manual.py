@@ -197,9 +197,9 @@ BODY=report_sxw.report_sxw("report.spare.parts.body",
 class component_spare_parts_report(report_int):
     """
         Calculates the bom structure spare parts manual
-    """
-    
+    """   
     def create(self, cr, uid, ids, datas, context=None):
+        self.processedObjs=[]
         self.pool = pooler.get_pool(cr.dbname)
         componentType=self.pool.get('product.product')
         bomType=self.pool.get('mrp.bom')
@@ -209,6 +209,7 @@ class component_spare_parts_report(report_int):
         output = BookCollector(customTest=(True,msg))
         components=componentType.browse(cr, uid, ids, context=context)
         for component in components:
+            self.processedObjs=[]
             buf=self.getFirstPage(cr, uid, [component.id],context)
             output.addPage(buf)
             self.getSparePartsPdfFile(cr, uid, context, component, output, componentType, bomType)
@@ -224,17 +225,19 @@ class component_spare_parts_report(report_int):
     def getSparePartsPdfFile(self, cr, uid, context, component, output, componentTemplate, bomTemplate):
         packedObjs=[]
         packedIds=[]
-        bomIds=bomTemplate.search(cr,uid,[('product_id','=',component.id),('type','=','spbom')])
+        bomIds=bomTemplate.search(cr,uid,[('product_id','=',component.id),('type','=','spbom'),('bom_id','=',False)])
 #        if len(bomIds)<1:
-#            bomIds=bomTemplate.search(cr,uid,[('product_id','=',component.id),('type','=','normal')])
+#            bomIds=bomTemplate.search(cr,uid,[('product_id','=',component.id),('type','=','normal'),('bom_id','=',False)])
 #        if len(bomIds)<1:
-#            bomIds=bomTemplate.search(cr,uid,[('product_id','=',component.id),('type','=','ebom')])
+#            bomIds=bomTemplate.search(cr,uid,[('product_id','=',component.id),('type','=','ebom'),('bom_id','=',False)])
         if len(bomIds)>0:
             BomObject=bomTemplate.browse(cr, uid, bomIds[0], context=context)
             if BomObject:
                 for bom_line in BomObject.bom_lines:
-                    packedObjs.append(bom_line.product_id)
-                    packedIds.append(bom_line.id)
+                    if not(bom_line.product_id in self.processedObjs):
+                        self.processedObjs.append(bom_line.product_id)
+                        packedObjs.append(bom_line.product_id)
+                        packedIds.append(bom_line.id)
                 if len(packedIds)>0:
                     for pageStream in self.getPdfComponentLayout(component):
                         output.addPage(pageStream)

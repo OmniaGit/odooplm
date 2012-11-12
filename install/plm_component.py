@@ -273,6 +273,9 @@ class plm_component(osv.osv):
             Create a new Normal Bom (recursive on all EBom children)
         """
         defaults={}
+        if idd in self.processedIds:
+            return False
+        self.processedIds.append(idd)
         checkObj=self.browse(cr, uid, idd, context)
         if not checkObj:
             return False
@@ -335,7 +338,9 @@ class plm_component(osv.osv):
         """
             Create a new Nornmal Bom if doesn't exist (action callable from code)
         """
+        
         for idd in ids:
+            self.processedIds=[]
             self._create_normalBom(cr, uid, idd, context)
         return False
 
