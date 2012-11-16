@@ -111,6 +111,10 @@ def _modulePath():
     return os.path.dirname(__file__)
 openerpModulePath=_modulePath()
 
+def _customPath():
+    return os.path.join(os.path.basename(os.path.dirname(__file__)),'custom')
+customModulePath=_customPath()
+
 
 def BomSort(object):
     bomobject=[]
@@ -136,8 +140,13 @@ class external_pdf(render):
     def _render(self):
         return self.pdf
 
-header_file=os.path.join(openerpModulePath,"spare_parts_header.rml")
-body_file=os.path.join(openerpModulePath,"spare_parts_body.rml")
+header_file=os.path.join(customModulePath,"spare_parts_header.rml")
+if not os.path.exists(header_file):
+    header_file=os.path.join(openerpModulePath,"spare_parts_header.rml")
+
+body_file=os.path.join(customModulePath,"spare_parts_body.rml")
+if not os.path.exists(body_file):
+    body_file=os.path.join(openerpModulePath,"spare_parts_body.rml")
 
 
 class bom_structure_one_sum_custom_report(report_sxw.rml_parse):
@@ -254,7 +263,7 @@ class component_spare_parts_report(report_int):
     def getPdfComponentLayout(self,component):
         ret=[]
         for document in component.linkeddocuments:
-            if document.printout: # and document.name[0]=='L':
+            if document.printout and document.usedforspare:
                 #TODO: To Evaluate document type 
                 ret.append( StringIO.StringIO(base64.decodestring(document.printout)))
         return ret 

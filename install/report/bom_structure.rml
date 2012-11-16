@@ -156,10 +156,14 @@
             <para style="terp_default_Bold_9">[[ o.product_id.description ]]</para>
           </td>
           <td>
-            <para style="P8">[[ o.product_qty ]]</para>
+            <para style="P8">
+              <font color="white"> </font>
+            </para>
           </td>
           <td>
-            <para style="P8">[[ o.product_uom.name ]]</para>
+            <para style="P8">
+              <font color="white"> </font>
+            </para>
           </td>
           <td>
             <para style="terp_tblheader_Details_Centre">[[ o.product_id.weight_net ]]</para>
@@ -208,4 +212,3 @@
     </section>
   </story>
 </document>
-

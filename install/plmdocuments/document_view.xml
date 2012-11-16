@@ -15,6 +15,7 @@
                     <newline/>
                     <field name="parent_id"/>
                     <field name="user_id"/>
+                    <field name="usedforspare"/>
                     <newline/>
                     <field name="state"/>
                     <group col="4" colspan="2">

@@ -548,6 +548,7 @@ class plm_document(osv.osv):
 
 
     _columns = {
+                'usedforspare': fields.boolean('Used for Spare'),
                 'revisionid': fields.integer('Revision Index', required=True),
                 'writable': fields.boolean('Writable'),
                 'datas': fields.function(_data_get,method=True,fnct_inv=_data_set,string='File Content',type="binary"),
@@ -557,6 +558,7 @@ class plm_document(osv.osv):
     }    
 
     _defaults = {
+                 'usedforspare': lambda *a: False,
                  'revisionid': lambda *a: 0,
                  'writable': lambda *a: True,
                  'state': lambda *a: 'draft',
