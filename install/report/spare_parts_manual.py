@@ -112,7 +112,7 @@ def _modulePath():
 openerpModulePath=_modulePath()
 
 def _customPath():
-    return os.path.join(os.path.basename(os.path.dirname(__file__)),'custom')
+    return os.path.join(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),'custom'),'report')
 customModulePath=_customPath()
 
 

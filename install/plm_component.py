@@ -187,27 +187,32 @@ class plm_component(osv.osv):
         """
             Get Last/Requested revision of given items (by name, revision, update time)
         """
-        ids=[]
         partData, attribNames = vals
-        for partName, partRev, updateDate in partData:
+        ids=self.GetLatestIds(cr, uid, partData, context)
+        return self.read(cr, uid, list(set(ids)), attribNames)
+
+    def GetLatestIds(self,cr,uid,vals,context=None):
+        """
+            Get Last/Requested revision of given items (by name, revision, update time)
+        """
+        ids=[]
+        for partName, partRev, updateDate in vals:
             if updateDate:
-                if partRev == None:
+                if partRev == None or partRev == False:
                     partIds=self.search(cr,uid,[('engineering_code','=',partName),('write_date','>',updateDate)],order='engineering_revision',context=context)
                     if len(partIds)>0:
                         ids.append(partIds[len(partIds)-1])
                 else:
                     ids.extend(self.search(cr,uid,[('engineering_code','=',partName),('engineering_revision','=',partRev),('write_date','>',updateDate)],context=context))
             else:
-                if partRev == None:
+                if partRev == None or partRev == False:
                     partIds=self.search(cr,uid,[('engineering_code','=',partName)],order='engineering_revision',context=context)
                     if len(partIds)>0:
                         ids.append(partIds[len(partIds)-1])
                 else:
                     ids.extend(self.search(cr,uid,[('engineering_code','=',partName),('engineering_revision','=',partRev)],context=context))
-
-        return self.read(cr, uid, list(set(ids)), attribNames)
-
-
+        return list(set(ids))
+    
     def NewRevision(self,cr,uid,ids,context=None):
         """
             create a new revision of current component

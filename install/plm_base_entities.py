@@ -201,8 +201,8 @@ class plm_relation(osv.osv):
         tmpids=[int(tmp) for tmp in tmpbuf if len(tmp.strip()) > 0]
         if len(tmpids)<1:
             return prtDatas
-        setobj=self.pool.get('product.product')
-        tmpDatas=setobj.read(cr, uid, tmpids)
+        compType=self.pool.get('product.product')
+        tmpDatas=compType.read(cr, uid, tmpids)
         for tmpData in tmpDatas:
             prtDatas[str(tmpData['id'])]=tmpData
         return prtDatas
@@ -457,11 +457,13 @@ class plm_relation(osv.osv):
         """
             Return new object copied (removing SourceID)
         """
+        compType=self.pool.get('product.product')
         newId=super(plm_relation,self).copy(cr,uid,oid,defaults,context=context)
         if newId:
             newOid=self.browse(cr,uid,newId,context=context)
             for bom_line in newOid.bom_lines:
-                self.write(cr,uid,[bom_line.id],{'source_id':False,'name':bom_line.name.replace(' Copy',''),},context=None)
+                lateRevIdC=compType.GetLatestIds(cr,uid,[(bom_line.product_id.engineering_code,False,False)],context=context) # Get Latest revision of each Part
+                self.write(cr,uid,[bom_line.id],{'source_id':False,'name':bom_line.name.replace(' Copy',''),'product_id':lateRevIdC[0]},context=None)
             self.write(cr,uid,[newId],{'source_id':False,},context=None)
         return newId
 
