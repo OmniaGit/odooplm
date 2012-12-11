@@ -272,6 +272,24 @@ class plm_component(osv.osv):
             listedParts.append(part['engineering_code'])
         return retValues 
 
+    def QueryLast(self, cr, uid, request=([],[]), default=None, context=None):
+        """
+            Query to return values based on columns selected.
+        """
+        objId=False
+        expData=[]
+        queryFilter, columns = request        
+        if len(columns)<1:
+            return expData
+        if 'engineering_revision' in queryFilter:
+            del queryFilter['engineering_revision']
+        allIDs=self.search(cr,uid,queryFilter,order='engineering_revision',context=context)
+        if len(allIDs)>0:
+            objId=allIDs[0]
+        if objId:
+            expData=self.export_data(cr, uid, [objId], columns)
+        return expData
+
 ##  Menu action Methods
     def _create_normalBom(self, cr, uid, idd, context=None):
         """

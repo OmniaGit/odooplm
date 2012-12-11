@@ -420,6 +420,24 @@ class plm_document(osv.osv):
         cr.execute('delete from ir_attachment where store_fname=NULL')
         return True 
 
+    def QueryLast(self, cr, uid, request=([],[]), default=None, context=None):
+        """
+            Query to return values based on columns selected.
+        """
+        objId=False
+        expData=[]
+        queryFilter, columns = request        
+        if len(columns)<1:
+            return expData
+        if 'revisionid' in queryFilter:
+            del queryFilter['revisionid']
+        allIDs=self.search(cr,uid,queryFilter,order='revisionid',context=context)
+        if len(allIDs)>0:
+            objId=allIDs[0]
+        if objId:
+            expData=self.export_data(cr, uid, [objId], columns)
+        return expData
+
     def ischecked_in(self, cr, uid, ids, context=None):
         """
             Check if a document is checked-in 
