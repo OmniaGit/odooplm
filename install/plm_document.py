@@ -623,14 +623,19 @@ class plm_document(osv.osv):
                     if len(docIds)>0:
                         ids.append(docIds[len(docIds)-1])
                 else:
-                    ids.extend(self.search(cr,uid,[('name','=',docName),('revisionid','=',docRev),('write_date','>',updateDate)],context=context))
+                    docIds=self.search(cr,uid,[('name','=',docName),('revisionid','=',docRev),('write_date','>',updateDate)],context=context)
+                    if len(docIds)>0:
+                        ids.append(docIds)
             else:
                 if docRev == None or docRev == False:
                     docIds=self.search(cr,uid,[('name','=',docName)],order='revisionid',context=context)
                     if len(docIds)>0:
                         ids.append(docIds[len(docIds)-1])
                 else:
-                    ids.extend(self.search(cr,uid,[('name','=',docName),('revisionid','=',docRev)],context=context))
+                    docIds=self.search(cr,uid,[('name','=',docName),('revisionid','=',docRev)],context=context)
+                    if len(docIds)>0:
+                        ids.append(docIds)
+ 
 
         return list(set(ids))
 
