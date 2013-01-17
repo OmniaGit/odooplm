@@ -841,14 +841,19 @@ plm_checkout()
 
 class plm_document_relation(osv.osv):
     _name = 'plm.document.relation'
-    _columns = {'parent_id':fields.many2one('ir.attachment', 'Related parent document', ondelete='cascade'), 
+    _columns = {
+                'parent_id':fields.many2one('ir.attachment', 'Related parent document', ondelete='cascade'), 
                 'child_id':fields.many2one('ir.attachment', 'Related child document',  ondelete='cascade'),
                 'configuration':fields.char('Configuration Name',size=1024),
-                'link_kind': fields.char('Kind of Link',size=64, required=True)
+                'link_kind': fields.char('Kind of Link',size=64, required=True),
+                'createdate':fields.datetime('Date Created', readonly=True),
                }
     _defaults = {
+                 'createdate': lambda self,cr,uid,ctx:time.strftime("%Y-%m-%d %H:%M:%S"),
                  'link_kind': lambda *a: 'HiTree'
     }
+
+
     _sql_constraints = [
         ('relation_uniq', 'unique (parent_id,child_id,link_kind)', 'The Document Relation must be unique !') 
     ]
