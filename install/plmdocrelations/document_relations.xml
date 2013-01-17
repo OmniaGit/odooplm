@@ -50,7 +50,7 @@
             <field name="type">tree</field>
         	<field name="priority" eval="10"/>
             <field name="arch" type="xml">
-                <tree string="Document Relations" colors="blue:method">
+                <tree string="Document Relations">
                     <field name="parent_id" select="True"/>
                     <field name="parent_revision" select="True"/>
                     <field name="parent_state" select="True"/>
@@ -59,6 +59,7 @@
                     <field name="child_state" select="True"/>
                     <field name="configuration"/>
                     <field name="link_kind"  select="True"/>
+                    <field name="createdate"/>
                 </tree>
             </field>
         </record>
@@ -70,14 +71,14 @@
         	<field name="priority" eval="10"/>
             <field name="arch" type="xml">
 				<search string="Search on Document Relations">
-                   	<filter icon="terp-go-month" string="  Latest 7 Days  " separator="1"
-                           	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
-                          	help="Created latest 7 Days"/>
+                   	<filter icon="terp-go-month" string="  Last Week  " separator="1"
+                         	domain="[('createdate','&lt;=', (datetime.date.today()-relativedelta(weeks=1)).strftime('%%Y-%%m-%%d')),('createdate','&gt;=',(datetime.date.today()-relativedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"
+                          	help="Created last week"/>
                  	<filter icon="terp-go-month" string="  Yesterday  " separator="1"
-                         	domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
+                           	domain="[('createdate','&lt;', (datetime.date.today()).strftime('%%Y-%%m-%%d 00:00:00')),('createdate','&gt;=',(datetime.date.today()-relativedelta(days=1)).strftime('%%Y-%%m-%%d 00:00:00'))]"
                     		help="Created yesterday"/>
                 	<filter icon="terp-go-month" string="  Today  " separator="1"
-                         	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
+                          	domain="[('createdate','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d 23:59:59')),('createdate','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d 00:00:00'))]"
                          	help="Created today"/>
                    	<separator orientation="vertical"/>
                     <field name="parent_id"/>

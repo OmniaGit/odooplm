@@ -96,13 +96,13 @@
                          domain="[('createdate','&lt;=', (datetime.date.today() - relativedelta(day=31,months=1)).strftime('%%Y-%%m-%%d')),('createdate','&gt;=',(datetime.date.today() - relativedelta(day=1,months=1)).strftime('%%Y-%%m-%%d'))]"
                          help="Checked-Out in last month"/>
                 <filter icon="terp-go-month" string="  Last Week  " separator="1"
-                         domain="[('createdate','&lt;=', (datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d')),('createdate','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"
+                         domain="[('createdate','&lt;=', (datetime.date.today()-relativedelta(weeks=1)).strftime('%%Y-%%m-%%d')),('createdate','&gt;=',(datetime.date.today()-relativedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"
                          help="Checked-Out in last week"/>
                 <filter icon="terp-go-month" string="  Latest 7 Days  " separator="1"
-                         domain="[('createdate','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('createdate','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
+                         domain="[('createdate','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('createdate','&gt;=',(datetime.date.today()-relativedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
                          help="Checked-Out in last week"/>
                  <filter icon="terp-go-month" string="  Yesterday  " separator="1"
-                         domain="[('createdate','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('createdate','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
+                         domain="[('createdate','&lt;=', (datetime.date.today()-relativedelta(days=1)).strftime('%%Y-%%m-%%d')),('createdate','&gt;=',(datetime.date.today()-relativedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
                          help="Checked-Out Yesterday"/>
                  <filter icon="terp-go-month" string="  Today  " separator="1"
                          domain="[('createdate','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('createdate','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"

@@ -78,10 +78,10 @@
             <field name="arch" type="xml">
 				<search string="Search on Bill Of Material">
                    	<filter icon="terp-go-month" string="  Latest 7 Days  " separator="1"
-                           	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
+                           	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-relativedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
                           	help="Created latest 7 Days"/>
                  	<filter icon="terp-go-month" string="  Yesterday  " separator="1"
-                         	domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
+                         	domain="[('create_date','&lt;=', (datetime.date.today()-relativedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-relativedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
                     		help="Created yesterday"/>
                 	<filter icon="terp-go-month" string="  Today  " separator="1"
                          	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
