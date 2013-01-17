@@ -514,18 +514,18 @@ class plm_component(osv.osv):
                 return False
          
     def write(self, cr, uid, ids, vals, context=None, check=True):
-        checkState=('confirmed','released','undermodify','obsoleted')
-        if check:
-            for customObject in self.browse(cr, uid, ids, context=context):
-                if not customObject.engineering_writable:
-                    raise osv.except_osv(_('Edit Entity Error'), _("No changes are allowed on entity (%s)." %(customObject.name)))
-                    return False
-                if customObject.state in checkState:
-                    raise osv.except_osv(_('Edit Entity Error'), _("The active state does not allow you to make save action on entity (%s)." %(customObject.name)))
-                    return False
-                if customObject.engineering_code == False:
-                    vals['engineering_code'] = customObject.name
-                    # Force copy engineering_code to name if void
+#        checkState=('confirmed','released','undermodify','obsoleted')
+#        if check:
+#            for customObject in self.browse(cr, uid, ids, context=context):
+#                if not customObject.engineering_writable:
+##                    raise osv.except_osv(_('Edit Entity Error'), _("No changes are allowed on entity (%s)." %(customObject.name)))
+#                    return False
+#                if customObject.state in checkState:
+##                    raise osv.except_osv(_('Edit Entity Error'), _("The active state does not allow you to make save action on entity (%s)." %(customObject.name)))
+#                    return False
+#                if customObject.engineering_code == False:
+#                    vals['engineering_code'] = customObject.name
+#                    # Force copy engineering_code to name if void
         return super(plm_component,self).write(cr, uid, ids, vals, context=context)  
 
     def copy(self,cr,uid,oid,defaults={},context=None):
