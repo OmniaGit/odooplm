@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
 <data>
-    <menuitem id="plm_component_menu_view" name="Components View" parent="plm_menu" sequence="10"/>
     
+    <menuitem id="plm_component_menu_view" name="Components View" parent="plm_menu" sequence="10"/>
+
     <record model="ir.ui.view" id="plm_component_tree">
         <field name="name">plm.component</field>
         <field name="model">product.product</field>
@@ -253,14 +254,6 @@
         <field name="view_id" ref="plm_component_base_tree"/>
         <field name="view_id_search" ref="plm_component_base_search"/>
     </record>
-    
-    
-    <menuitem
-        name="Search on Engineering Parts"
-        action="action_plm_component_base"
-        id="menu_base_component"
-        parent="plm_component_menu_view"/>
-
 
     <record id="plm_component_create_normalbom" model="ir.ui.view">
         <field name="name">plm.relation.normal</field>
@@ -277,6 +270,8 @@
         </form>
         </field>
     </record>
+
+    <menuitem name="Search on Engineering Parts" action="action_plm_component_base" id="menu_base_component" parent="plm_component_menu_view"/>
 
     <act_window name="Create Normal Bom"
         res_model="product.product"

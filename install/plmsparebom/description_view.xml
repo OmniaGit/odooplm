@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
 <data>
+
+    <menuitem id="plm_menu_dictionaries" name="PLM Dictionaries" parent="plm_menu" sequence="50"/>
+
     <record model="ir.ui.view" id="view_plm_description">
         <field name="name">plm.description.view</field>
         <field name="model">plm.description</field>
@@ -73,7 +76,6 @@
         <field name="view_mode">tree,form</field>
         <field name="view_id" ref="plm_view_description_tree"/>
     </record>
-    
     
     <menuitem
         name="Descriptions"

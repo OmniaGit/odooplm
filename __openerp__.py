@@ -22,32 +22,47 @@
 {
     'name': 'Product Lifecycle Management',
     'version': '1.0',
-    'category': 'Tools',
+    'category': 'Product Lifecycle Management',
+    'sequence': 15,
+    'summary': 'PLM Connector with main CAD editors',
     'depends': ['base', 'process','board','document','product','mrp'],
     'author': 'OmniaSolutions',
-    'description': """ This is a Product Lifecycle Management system providing:
+    'description': """
+The OpenERP Product Lifecycle Management
+=========================================
+
+This application enables a group of people to intelligently and efficiently manage 3D Models and 2D Drawings.
+
+It manages fundamental revisions of Products and Documents, helps to work in Concurrent Engineering with access policies to documents.
+
+Key Features :
+--------------
     
     * Editor Integration
     * Document Management
     * Document Indexation
     * Documents Relationship
     * Engineering Bill of Materials
-    * Spare Part BoM & Report
+    * Spare Part BoM & Reports
     
     
-    Supported Editors :
+Supported Editors :
+-------------------
+   
+    * Category : CAD / Mechanical CAD
     
-    - Category : CAD / Mechanical CAD
-    * ThinkDesign 2009.3 (and above)
-    * SolidWorks 2011.1 (and above)
+        * ThinkDesign 2009.3 (and above)
+        * SolidWorks 2011 (and above)
+        * Inventor 2011 (and above)
+        
     """,
     'website': 'http://www.omniasolutions.eu',
     'images': ['images/EngineeringPart.jpeg','images/OpenComponent.jpeg','images/OpenDocument.jpeg'],
-    'init_xml': [
-        ],
-    'update_xml': [
+    'data': [
         'board_plm_view.xml',
-        'install/plmviews/plm_menu.xml',
+        'security/base_plm_security.xml',
+        'security/ir.model.access.csv',
+        'res_config_view.xml',
         'install/plmdocuments/document_view.xml',
         'install/plmdocuments/document_workflow.xml',
         'install/plmdocuments/backupdoc_view.xml',
@@ -67,16 +82,14 @@
         'install/plmmaterials/material_view.xml',
         'install/plmfinishings/finishing_sequence.xml',
         'install/plmfinishings/finishing_view.xml',
-        'security/base_plm_security.xml',
-        'security/ir.model.access.csv',
-        'security/res.groups.csv',
-        'plm_installer.xml',
         ],
-    'demo_xml': [
+    'demo': [
+        ],
+    'test': [
         ],
     'installable': True,
     'auto_install': False,
-    'active': True,
+    'application': True,
 }
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

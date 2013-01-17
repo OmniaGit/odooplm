@@ -31,5 +31,11 @@
              <field name="view_mode">form</field>
              <field name="view_id" ref="board_plm_manager_form"/>
         </record>
+
+        <menuitem id="plm_menu" name="PLM Module" icon="terp-stock" 
+            web_icon="images/PLMmodule.png"
+            web_icon_hover="images/PLMmodule-hover.png"
+            action="open_board_plm_manager"/>
+
      </data>
  </openerp>

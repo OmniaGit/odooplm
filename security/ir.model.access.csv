@@ -6,7 +6,6 @@
 "group_plm_admin","access_product_template","product_template","product.template",1,1,1,1
 "group_plm_admin","access_ir_attachment","ir_attachment","ir.attachment",1,1,1,1
 "group_plm_admin","access_mrp_bom","mrp_bom","mrp.bom",1,1,1,1
-"group_plm_admin","access_mrp_revision_bom","mrp_bom_revision","mrp.bom.revision",1,1,1,1
 "group_plm_admin","access_plm_descriptions","plm_description","plm.description",1,1,1,1
 "group_plm_admin","access_plm_finishings","plm_finishing","plm.finishing",1,1,1,1
 "group_plm_admin","access_plm_materials","plm_material","plm.material",1,1,1,1
@@ -19,7 +18,6 @@
 "group_plm_integrationuser","access_iu_product_template","product_template","product.template",1,1,1,1
 "group_plm_integrationuser","access_iu_ir_attachment","ir_attachment","ir.attachment",1,1,1,1
 "group_plm_integrationuser","access_iu_mrp_bom","mrp_bom","mrp.bom",1,1,1,1
-"group_plm_integrationuser","access_iu_mrp_revision_bom","mrp_bom_revision","mrp.bom.revision",1,1,1,1
 "group_plm_integrationuser","access_iu_plm_descriptions","plm_description","plm.description",1,0,0,0
 "group_plm_integrationuser","access_iu_plm_finishings","plm_finishing","plm.finishing",1,0,0,0
 "group_plm_integrationuser","access_iu_plm_materials","plm_material","plm.material",1,0,0,0
@@ -32,7 +30,6 @@
 "group_plm_viewuser","access_vw_product_template","product_template","product.template",1,0,0,0
 "group_plm_viewuser","access_vw_ir_attachment","ir_attachment","ir.attachment",1,0,0,0
 "group_plm_viewuser","access_vw_mrp_bom","mrp_bom","mrp.bom",1,0,0,0
-"group_plm_viewuser","access_vw_mrp_revision_bom","mrp_bom_revision","mrp.bom.revision",1,0,0,0
 "group_plm_viewuser","access_vw_plm_descriptions","plm_description","plm.description",1,0,0,0
 "group_plm_viewuser","access_vw_plm_finishings","plm_finishing","plm.finishing",1,0,0,0
 "group_plm_viewuser","access_vw_plm_materials","plm_material","plm.material",1,0,0,0

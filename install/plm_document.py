@@ -433,9 +433,9 @@ class plm_document(osv.osv):
             del queryFilter['revisionid']
         allIDs=self.search(cr,uid,queryFilter,order='revisionid',context=context)
         if len(allIDs)>0:
-            tmpData=self.export_data(cr, uid, allIDs, columns)
-            if 'datas' in tmpData:
-                expData=tmpData['datas']
+            objId=allIDs[0]
+        if objId:
+            expData=self.export_data(cr, uid, [objId], columns)
         return expData
 
     def ischecked_in(self, cr, uid, ids, context=None):

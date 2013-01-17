@@ -26,9 +26,6 @@
                         <page string="General Information">
                             <field colspan="4" name="bom_lines" nolabel="1" widget="one2many_list"/>
                         </page>
-                        <page string="Revisions" groups="base.group_extended">
-                            <field colspan="4" name="revision_ids" nolabel="1" widget="one2many_list"/>
-                        </page>
                         <page string="Properties">
                             <field name="position" select="2"/>
                             <field name="active" select="2"/>

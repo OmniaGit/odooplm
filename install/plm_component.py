@@ -287,9 +287,7 @@ class plm_component(osv.osv):
         if len(allIDs)>0:
             objId=allIDs[0]
         if objId:
-            tmpData=self.export_data(cr, uid, [objId], columns)
-            if 'datas' in tmpData:
-                expData=tmpData['datas']
+            expData=self.export_data(cr, uid, [objId], columns)
         return expData
 
 ##  Menu action Methods
@@ -300,6 +298,7 @@ class plm_component(osv.osv):
         defaults={}
         if idd in self.processedIds:
             return False
+        self.processedIds.append(idd)
         checkObj=self.browse(cr, uid, idd, context)
         if not checkObj:
             return False
@@ -313,7 +312,6 @@ class plm_component(osv.osv):
 
         if not objBoms:
             if idBoms:
-                self.processedIds.append(idd)
                 newidBom=bomType.copy(cr, uid, idBoms[0], defaults, context)
                 if newidBom:
                     bomType.write(cr,uid,[newidBom],{'name':checkObj.name,'product_id':checkObj.id,'type':'normal',},context=None)
