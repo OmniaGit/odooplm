@@ -433,9 +433,9 @@ class plm_document(osv.osv):
             del queryFilter['revisionid']
         allIDs=self.search(cr,uid,queryFilter,order='revisionid',context=context)
         if len(allIDs)>0:
-            objId=allIDs[0]
-        if objId:
-            expData=self.export_data(cr, uid, [objId], columns)
+            tmpData=self.export_data(cr, uid, allIDs, columns)
+            if 'datas' in tmpData:
+                expData=tmpData['datas']
         return expData
 
     def ischecked_in(self, cr, uid, ids, context=None):
@@ -647,7 +647,7 @@ class plm_document(osv.osv):
         listed_models=[]
         listed_documents=[]
         oid, listedFiles, selection = request        
-        if selection == None:
+        if selection == False:
             selection=1
         if selection<0:
             forceFlag=True
@@ -675,7 +675,7 @@ class plm_document(osv.osv):
         """
         forceFlag=False
         ids, listedFiles, selection = request
-        if selection == None:
+        if selection == False:
             selection=1
 
         if selection<0:
@@ -697,7 +697,7 @@ class plm_document(osv.osv):
         listed_documents=[]
         modArray=[]
         oid, listedFiles, selection = request
-        if selection == None:
+        if selection == False:
             selection=1
 
         if selection<0:
