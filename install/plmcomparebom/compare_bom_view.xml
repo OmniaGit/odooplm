@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+       <record id="plm_missing_bom_tree_view" model="ir.ui.view">
+            <field name="name">plm.missing.bom.tree</field>
+            <field name="model">plm.missing.bom</field>
+            <field name="type">tree</field>
+        	<field name="priority" eval="10"/>
+            <field name="arch" type="xml">
+                <tree colors="red:reason in ('Removed');gray:reason in ('Changed')" string="BoM Relations in Bom 2">
+                    <field name="itemnum" select="True"/>
+                    <field name="bom_idrow" select="True"/>
+                    <field name="part_id" select="True"/>
+                    <field name="revision" select="True"/>
+                    <field name="description" select="True"/>
+                    <field name="itemqty" select="True"/>
+                    <field invisible="True" name="reason"/>
+                </tree>
+            </field>
+        </record>
+
+
+       <record id="plm_adding_bom_tree_view" model="ir.ui.view">
+            <field name="name">plm.adding.bom.tree</field>
+            <field name="model">plm.adding.bom</field>
+            <field name="type">tree</field>
+            <field name="priority" eval="10"/>
+            <field name="arch" type="xml">
+                <tree colors="darkgreen:reason in ('Added');gray:reason in ('Changed')" string="BoM Relations in Bom 2">
+                    <field name="itemnum" select="True"/>
+                    <field name="bom_idrow" select="True"/>
+                    <field name="part_id" select="True"/>
+                    <field name="revision" select="True"/>
+                    <field name="description" select="True"/>
+                    <field name="itemqty" select="True"/>
+                    <field invisible="True" name="reason"/>
+                </tree>
+            </field>
+        </record>
+
+
+        <record model="ir.ui.view" id="view_plm_compare_bom">
+            <field name="name">Compare BoMs</field>
+            <field name="model">plm.compare.bom</field>
+            <field name="type">form</field>
+            <field name="priority" eval="10"/>
+            <field name="arch" type="xml">
+                <form string="Compare BoMs">
+                    <label string="This wizard will allow to compare two Bill of Materials." colspan="4"/>
+                    <group col="2" colspan="4">
+                    	<field name="bom_id1"/>
+                    	<field name="bom_id2"/>
+                    </group>
+                    <newline/>
+                    <separator colspan="4"/>
+                    <group col="2" colspan="4">
+                        <button icon='gtk-cancel' special="cancel" string="Cancel" />
+                        <button name="action_compare_Bom" string="Compare selected BoMs"
+                            colspan="1" type="object" icon="gtk-ok" />
+                    </group>
+                </form>
+            </field>
+        </record>
+
+        <act_window name="Compare BoMs"
+            res_model="plm.compare.bom"
+            src_model="mrp.bom"
+            view_mode="form"
+            target="new"
+            key2="client_action_multi"
+            id="act_plm_compare_bom"/>
+
+<!--
+           Visualization BoM Views
+-->
+
+     <record model="ir.ui.view" id="plm_visualize_diff_form">
+        <field name="name">plm.visualize.diff.form</field>
+        <field name="model">plm.compare.bom</field>
+        <field name="type">form</field>
+        <field name="priority" eval="15"/>
+        <field name="arch" type="xml">
+            <form string="Visualize BoM">
+                <group col="8" colspan="4">
+                	<field name="bom_id1" readonly="True"/>
+                	<field name="part_id1" readonly="True"/>
+               		<field name="revision1" readonly="True"/>
+               		<field name="description1" readonly="True"/>
+                	<field name="bom_id2" readonly="True"/>
+                 	<field name="part_id2" readonly="True"/>
+               		<field name="revision2" readonly="True"/>
+              		<field name="description2" readonly="True"/>
+                </group>
+                <notebook colspan="4">
+                <page string="Differences Between BoMs" groups="base.group_extended">
+                    <field colspan="2" name="anotinb" nolabel="1" widget="one2many_list" readonly="True"/>
+                    <field colspan="2" name="bnotina" nolabel="1" widget="one2many_list" readonly="True"/>
+                </page>
+                </notebook>
+            </form>
+        </field>
+     </record>
+
+     <record model="ir.ui.view" id="plm_visualize_diff_tree">
+        <field name="name">View Compare BoMs</field>
+        <field name="model">plm.compare.bom</field>
+        <field name="type">tree</field>
+        <field name="priority" eval="15"/>
+        <field name="arch" type="xml">
+            <tree string="Visualize BoM">
+                	<field name="bom_id1"/>
+                	<field name="bom_id2"/>
+                	<field name="anotinb"/>
+                	<field name="bnotina"/>
+          </tree>
+        </field>
+     </record>
+
+    <record model="ir.actions.act_window" id="action_plm_visualize_diff_tree">
+        <field name="name">View Compared BoMs</field>
+        <field name="res_model">plm.compare.bom</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="plm_visualize_diff_tree"/>
+    </record>
+
+   <menuitem
+        name="View Compare BoMs"
+        action="action_plm_visualize_diff_tree"
+        id="menu_base_compare"
+        parent="plm_component_menu_view"/>
+
+
+    </data>
+</openerp>
