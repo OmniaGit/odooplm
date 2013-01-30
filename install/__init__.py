@@ -22,6 +22,7 @@
 import plm_base_entities
 import plm_document
 import plm_component
+import plmcomparebom
 import plmdescriptions
 import plmsparebom
 import plm_extend_entities
