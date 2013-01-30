@@ -437,7 +437,7 @@ class plm_relation(osv.osv):
         """
             Evaluate net weight for assembly, based on net weight of each part  
         """
-        weight=0
+        weight=0.0
         values={}
         ancestor=None
         for obj in bomObjects:

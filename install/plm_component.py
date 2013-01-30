@@ -201,6 +201,7 @@ class plm_component(osv.osv):
                 if partRev == None or partRev == False:
                     partIds=self.search(cr,uid,[('engineering_code','=',partName),('write_date','>',updateDate)],order='engineering_revision',context=context)
                     if len(partIds)>0:
+                        partIds.sort()
                         ids.append(partIds[len(partIds)-1])
                 else:
                     ids.extend(self.search(cr,uid,[('engineering_code','=',partName),('engineering_revision','=',partRev),('write_date','>',updateDate)],context=context))
@@ -208,6 +209,7 @@ class plm_component(osv.osv):
                 if partRev == None or partRev == False:
                     partIds=self.search(cr,uid,[('engineering_code','=',partName)],order='engineering_revision',context=context)
                     if len(partIds)>0:
+                        partIds.sort()
                         ids.append(partIds[len(partIds)-1])
                 else:
                     ids.extend(self.search(cr,uid,[('engineering_code','=',partName),('engineering_revision','=',partRev)],context=context))
@@ -285,9 +287,12 @@ class plm_component(osv.osv):
             del queryFilter['engineering_revision']
         allIDs=self.search(cr,uid,queryFilter,order='engineering_revision',context=context)
         if len(allIDs)>0:
-            objId=allIDs[0]
+            allIDs.sort()
+            objId=allIDs[len(allIDs)-1]
         if objId:
-            expData=self.export_data(cr, uid, [objId], columns)
+            tmpData=self.export_data(cr, uid, [objId], columns)
+            if 'datas' in tmpData:
+                expData=tmpData['datas']
         return expData
 
 ##  Menu action Methods
@@ -298,7 +303,6 @@ class plm_component(osv.osv):
         defaults={}
         if idd in self.processedIds:
             return False
-        self.processedIds.append(idd)
         checkObj=self.browse(cr, uid, idd, context)
         if not checkObj:
             return False
@@ -312,6 +316,7 @@ class plm_component(osv.osv):
 
         if not objBoms:
             if idBoms:
+                self.processedIds.append(idd)
                 newidBom=bomType.copy(cr, uid, idBoms[0], defaults, context)
                 if newidBom:
                     bomType.write(cr,uid,[newidBom],{'name':checkObj.name,'product_id':checkObj.id,'type':'normal',},context=None)

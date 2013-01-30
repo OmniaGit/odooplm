@@ -35,21 +35,15 @@
         <field name="priority" eval="10"/>
         <field name="arch" type="xml">
 			<search string="Product">
-                   	<filter icon="terp-go-month" string="  Latest 7 Days  " separator="1"
-                           	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-relativedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
-                          	help="Created latest 7 Days"/>
-                 	<filter icon="terp-go-month" string="  Yesterday  " separator="1"
-                         	domain="[('create_date','&lt;=', (datetime.date.today()-relativedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-relativedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
+                   	<filter string="Latest 7 Days"
+                           	domain="[('create_date','&lt;=', (Datetime.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(Datetime.today()-timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
+                         	help="Created latest 7 Days"/>
+                 	<filter string="Yesterday"
+                         	domain="[('create_date','&lt;=', (Datetime.today()-timedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(Datetime.today()-timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
                     		help="Created yesterday"/>
-                	<filter icon="terp-go-month" string="  Today  " separator="1"
-                         	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
-                         	help="Created today"/>
-                   	<separator orientation="vertical"/>
-                   	<field name="name"/>
-                   	<field name="description"/>
-                   	<field name="engineering_code"/>
-                    <field name="engineering_material"/>
-                    <field name="engineering_surface"/>
+                	<filter string="Today"
+                          	domain="[('create_date','&lt;=', (Datetime.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(Datetime.today()).strftime('%%Y-%%m-%%d'))]"
+                        	help="Created today"/>
                    	<separator orientation="vertical"/>
                     <filter string="Confirmed" icon="terp-stock_symbol-selection" domain="[('state', '=', 'confirmed')]"/>
                     <filter string="Released" icon="terp-stock_symbol-selection" domain="['|',('state', '=', 'released'),('state', '=', 'undermodify')]"/>
@@ -154,21 +148,15 @@
         <field name="priority" eval="15"/>
         <field name="arch" type="xml">
 		 	<search string="Parts">
-                   	<filter icon="terp-go-month" string="  Latest 7 Days  " separator="1"
-                           	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-relativedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
+                   	<filter string="Latest 7 Days"
+                           	domain="[('create_date','&lt;=', (Datetime.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(Datetime.today()-timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
                           	help="Created latest 7 Days"/>
-                 	<filter icon="terp-go-month" string="  Yesterday  " separator="1"
-                         	domain="[('create_date','&lt;=', (datetime.date.today()-relativedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-relativedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
+                 	<filter string="Yesterday"
+                        	domain="[('create_date','&lt;=', (Datetime.today()-timedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(Datetime.today()-timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
                     		help="Created yesterday"/>
-                	<filter icon="terp-go-month" string="  Today  " separator="1"
-                         	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
+                	<filter string="Today"
+                         	domain="[('create_date','&lt;=', (Datetime.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(Datetime.today()).strftime('%%Y-%%m-%%d'))]"
                          	help="Created today"/>
-                   	<separator orientation="vertical"/>
-                   	<field name="name"/>
-                   	<field name="description"/>
-                   	<field name="engineering_code"/>
-                   	<field name="engineering_material"/>
-                   	<field name="engineering_surface"/>
                    	<separator orientation="vertical"/>
                    	<filter string="Confirmed" icon="terp-stock_symbol-selection" domain="[('state', '=', 'confirmed')]"/>
                    	<filter string="Released" icon="terp-stock_symbol-selection" domain="['|',('state', '=', 'released'),('state', '=', 'undermodify')]"/>

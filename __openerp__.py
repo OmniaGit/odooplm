@@ -73,6 +73,7 @@ Supported Editors :
         'install/plmsparebom/sparebom_view.xml',
         'install/plmsparebom/description_view.xml',
         'install/plmcomponentrelations/relations_view.xml',
+        'install/plmcomparebom/compare_bom_view.xml',
         'install/plmcheckedout/checkout_view.xml',
         'install/report/bom_structure.xml',
         'install/report/component_report.xml',

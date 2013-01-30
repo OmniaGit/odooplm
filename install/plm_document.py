@@ -71,6 +71,7 @@ class plm_document(osv.osv):
         result = []
         for objDoc in self.browse(cr, uid, ids, context=context):
             docIds=self.search(cr,uid,[('name','=',objDoc.name)],order='revisionid',context=context)
+            docIds.sort()   # Ids are not surely ordered, but revision are always in creation order.
             result.append(docIds[len(docIds)-1])
         return list(set(result))
             
@@ -234,9 +235,9 @@ class plm_document(osv.osv):
         previous_name=self.browse(cr,uid,oid,context=context).name
         if not 'name' in defaults:
             new_name='Copy of %s'%previous_name
-            l=self.search(cr,uid,[('name','=',new_name)],order='revisionid',context=context)
-            if len(l)>0:
-                new_name='%s (%s)'%(new_name,len(l)+1)
+            lsObjs=self.search(cr,uid,[('name','=',new_name)],order='revisionid',context=context)
+            if len(lsObjs)>0:
+                new_name='%s (%s)'%(new_name,len(lsObjs)+1)
             defaults['name']=new_name
         #manage copy of the file
         fname,filesize=self._manageFile(cr,uid,oid,context=context)
@@ -433,6 +434,7 @@ class plm_document(osv.osv):
             del queryFilter['revisionid']
         allIDs=self.search(cr,uid,queryFilter,order='revisionid',context=context)
         if len(allIDs)>0:
+            allIDs.sort()
             tmpData=self.export_data(cr, uid, allIDs, columns)
             if 'datas' in tmpData:
                 expData=tmpData['datas']
@@ -511,6 +513,10 @@ class plm_document(osv.osv):
         return False
 
 #   Overridden methods for this entity
+    def _get_filestore(self, cr):
+        dms_Root_Path=tools.config.get('document_path', os.path.join(tools.config['root_path'], 'filestore'))
+        return os.path.join(dms_Root_Path, cr.dbname)
+
     def write(self, cr, uid, ids, vals, context=None, check=True):
         checkState=('confirmed','released','undermodify','obsoleted')
         if check:
@@ -596,7 +602,8 @@ class plm_document(osv.osv):
             for fileName in files:
                 ids=self.search(cr,uid,[('datas_fname','=',fileName)],order='revisionid')
                 if len(ids)>0:
-                    res.append([fileName,not(self._is_checkedout_for_me(cr, uid, ids[0], context))])
+                    ids.sort()
+                    res.append([fileName,not(self._is_checkedout_for_me(cr, uid, ids[len(ids)-1], context))])
             return res
         
         if len(files)>0: # no files to process 
@@ -621,22 +628,22 @@ class plm_document(osv.osv):
                 if docRev == None or docRev == False:
                     docIds=self.search(cr,uid,[('name','=',docName),('write_date','>',updateDate)],order='revisionid',context=context)
                     if len(docIds)>0:
-                        ids.append(docIds[len(docIds)-1])
+                        ids.sort()
+                        ids.append(docIds[len(ids)-1])
                 else:
                     docIds=self.search(cr,uid,[('name','=',docName),('revisionid','=',docRev),('write_date','>',updateDate)],context=context)
                     if len(docIds)>0:
-                        ids.append(docIds)
+                        ids.extend(docIds)
             else:
                 if docRev == None or docRev == False:
                     docIds=self.search(cr,uid,[('name','=',docName)],order='revisionid',context=context)
                     if len(docIds)>0:
-                        ids.append(docIds[len(docIds)-1])
+                        ids.sort()
+                        ids.append(docIds[len(ids)-1])
                 else:
                     docIds=self.search(cr,uid,[('name','=',docName),('revisionid','=',docRev)],context=context)
                     if len(docIds)>0:
-                        ids.append(docIds)
- 
-
+                        ids.extend(docIds)
         return list(set(ids))
 
     def CheckAllFiles(self, cr, uid, request, default=None, context=None):
