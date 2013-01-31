@@ -12,6 +12,9 @@
 "group_plm_admin","access_ir_property","ir_property","ir.property",1,1,1,1
 "group_plm_admin","access_plm_backupdoc","plm_backupdoc","plm.backupdoc",1,1,1,1
 "group_plm_admin","access_iu_stock_warehouse_orderpoint","stock_warehouse_orderpoint","stock.warehouse.orderpoint",1,0,0,0
+"group_plm_admin","access_plm_missing_bom","plm_missing_bom","plm.missing.bom",1,1,1,1
+"group_plm_admin","access_plm_adding_bom","plm_adding_bom","plm.adding.bom",1,1,1,1
+"group_plm_admin","access_plm_compare_bom","plm_compare_bom","plm.compare.bom",1,1,1,1
 "group_plm_integrationuser","access_iu_plm_checkout","plm_checkout","plm.checkout",1,1,1,1
 "group_plm_integrationuser","access_iu_plm_component_document_rel","plm_component_document_rel","plm.component.document.rel",1,1,1,1
 "group_plm_integrationuser","access_iu_plm_document_relation","plm_document_relation","plm.document.relation",1,1,1,1
@@ -25,6 +28,9 @@
 "group_plm_integrationuser","access_iu_ir_property","ir_property","ir.property",1,1,1,1
 "group_plm_integrationuser","access_iu_plm_backupdoc","plm_backupdoc","plm.backupdoc",0,1,1,0
 "group_plm_integrationuser","access_iu_stock_warehouse_orderpoint","stock_warehouse_orderpoint","stock.warehouse.orderpoint",1,0,0,0
+"group_plm_integrationuser","access_iu_plm_missing_bom","plm_missing_bom","plm.missing.bom",1,1,1,1
+"group_plm_integrationuser","access_iu_plm_adding_bom","plm_adding_bom","plm.adding.bom",1,1,1,1
+"group_plm_integrationuser","access_iu_plm_compare_bom","plm_compare_bom","plm.compare.bom",1,1,1,1
 "group_plm_viewuser","access_vw_plm_checkout","plm_checkout","plm.checkout",1,0,0,0
 "group_plm_viewuser","access_vw_plm_component_document_rel","plm_component_document_rel","plm.component.document.rel",1,0,0,0
 "group_plm_viewuser","access_vw_plm_document_relation","plm_document_relation","plm.document.relation",1,0,0,0
@@ -38,3 +44,6 @@
 "group_plm_viewuser","access_vw_ir_property","ir_property","ir.property",1,0,0,0
 "group_plm_viewuser","access_vw_plm_backupdoc","plm_backupdoc","plm.backupdoc",0,0,0,0
 "group_plm_viewuser","access_iu_stock_warehouse_orderpoint","stock_warehouse_orderpoint","stock.warehouse.orderpoint",1,0,0,0
+"group_plm_viewuser","access_vw_plm_missing_bom","plm_missing_bom","plm.missing.bom",1,1,1,1
+"group_plm_viewuser","access_vw_plm_adding_bom","plm_adding_bom","plm.adding.bom",1,1,1,1
+"group_plm_viewuser","access_vw_plm_compare_bom","plm_compare_bom","plm.compare.bom",1,1,1,1

@@ -7,7 +7,7 @@
             <field name="type">tree</field>
         	<field name="priority" eval="10"/>
             <field name="arch" type="xml">
-                <tree colors="red:reason in ('Removed');gray:reason in ('Changed')" string="BoM Relations in Bom 2">
+                <tree colors="red:reason in ('Removed');darkgray:reason in ('Changed')" string="BoM Relations in Bom 2">
                     <field name="itemnum" select="True"/>
                     <field name="bom_idrow" select="True"/>
                     <field name="part_id" select="True"/>
@@ -20,13 +20,13 @@
         </record>
 
 
-       <record id="plm_adding_bom_tree_view" model="ir.ui.view">
+        <record id="plm_adding_bom_tree_view" model="ir.ui.view">
             <field name="name">plm.adding.bom.tree</field>
             <field name="model">plm.adding.bom</field>
             <field name="type">tree</field>
             <field name="priority" eval="10"/>
             <field name="arch" type="xml">
-                <tree colors="darkgreen:reason in ('Added');gray:reason in ('Changed')" string="BoM Relations in Bom 2">
+                <tree colors="darkgreen:reason in ('Added');darkgray:reason in ('Changed')" string="BoM Relations in Bom 1">
                     <field name="itemnum" select="True"/>
                     <field name="bom_idrow" select="True"/>
                     <field name="part_id" select="True"/>
@@ -92,7 +92,7 @@
               		<field name="description2" readonly="True"/>
                 </group>
                 <notebook colspan="4">
-                <page string="Differences Between BoMs" groups="base.group_extended">
+                <page string="Differences Between BoMs">
                     <field colspan="2" name="anotinb" nolabel="1" widget="one2many_list" readonly="True"/>
                     <field colspan="2" name="bnotina" nolabel="1" widget="one2many_list" readonly="True"/>
                 </page>
@@ -100,36 +100,6 @@
             </form>
         </field>
      </record>
-
-     <record model="ir.ui.view" id="plm_visualize_diff_tree">
-        <field name="name">View Compare BoMs</field>
-        <field name="model">plm.compare.bom</field>
-        <field name="type">tree</field>
-        <field name="priority" eval="15"/>
-        <field name="arch" type="xml">
-            <tree string="Visualize BoM">
-                	<field name="bom_id1"/>
-                	<field name="bom_id2"/>
-                	<field name="anotinb"/>
-                	<field name="bnotina"/>
-          </tree>
-        </field>
-     </record>
-
-    <record model="ir.actions.act_window" id="action_plm_visualize_diff_tree">
-        <field name="name">View Compared BoMs</field>
-        <field name="res_model">plm.compare.bom</field>
-        <field name="view_type">form</field>
-        <field name="view_mode">tree,form</field>
-        <field name="view_id" ref="plm_visualize_diff_tree"/>
-    </record>
-
-   <menuitem
-        name="View Compare BoMs"
-        action="action_plm_visualize_diff_tree"
-        id="menu_base_compare"
-        parent="plm_component_menu_view"/>
-
 
     </data>
 </openerp>
