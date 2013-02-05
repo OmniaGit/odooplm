@@ -35,26 +35,22 @@
         <field name="priority" eval="10"/>
         <field name="arch" type="xml">
 			<search string="Product">
-                   	<filter string="Latest 7 Days"
-                           	domain="[('create_date','&lt;=', (Datetime.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(Datetime.today()-timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
-                         	help="Created latest 7 Days"/>
-                 	<filter string="Yesterday"
-                         	domain="[('create_date','&lt;=', (Datetime.today()-timedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(Datetime.today()-timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
+                   	<filter icon="terp-go-month" string="Latest 7 Days" separator="1"
+                           	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
+                          	help="Created latest 7 Days"/>
+                 	<filter icon="terp-go-month" string="Yesterday" separator="1"
+                         	domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
                     		help="Created yesterday"/>
-                	<filter string="Today"
-                          	domain="[('create_date','&lt;=', (Datetime.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(Datetime.today()).strftime('%%Y-%%m-%%d'))]"
-                        	help="Created today"/>
+                	<filter icon="terp-go-month" string="Today" separator="1"
+                         	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
+                         	help="Created today"/>
                    	<separator orientation="vertical"/>
                     <filter string="Confirmed" icon="terp-stock_symbol-selection" domain="[('state', '=', 'confirmed')]"/>
                     <filter string="Released" icon="terp-stock_symbol-selection" domain="['|',('state', '=', 'released'),('state', '=', 'undermodify')]"/>
                     <filter string="Obsoleted" icon="terp-stock_symbol-selection" domain="[('state', '=', 'obsoleted')]"/>
 <!-- 
-                   <newline/>
-                    <group expand="0" string="Extended Filters..." groups="base.group_extended">
-                       <field name="pricelist_id" widget="selection" context="{'pricelist': self}"/>
-                   </group>
-                   <newline/>
-                   <group expand="0" string="Group by..." groups="base.group_extended">
+                   	<separator orientation="vertical"/>
+                    <group expand="0" string="Group by..." groups="base.group_extended">
                        <filter string="Category" icon="terp-stock_symbol-selection" domain="[]" context="{'group_by' : 'categ_id'}"/>
                        <separator orientation="vertical"/>
                        <filter string="Default UOM" icon="terp-mrp" domain="[]" context="{'group_by' : 'uom_id'}"/>
@@ -148,14 +144,14 @@
         <field name="priority" eval="15"/>
         <field name="arch" type="xml">
 		 	<search string="Parts">
-                   	<filter string="Latest 7 Days"
-                           	domain="[('create_date','&lt;=', (Datetime.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(Datetime.today()-timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
+                   	<filter icon="terp-go-month" string="Latest 7 Days" separator="1"
+                           	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
                           	help="Created latest 7 Days"/>
-                 	<filter string="Yesterday"
-                        	domain="[('create_date','&lt;=', (Datetime.today()-timedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(Datetime.today()-timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
+                 	<filter icon="terp-go-month" string="Yesterday" separator="1"
+                         	domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
                     		help="Created yesterday"/>
-                	<filter string="Today"
-                         	domain="[('create_date','&lt;=', (Datetime.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(Datetime.today()).strftime('%%Y-%%m-%%d'))]"
+                	<filter icon="terp-go-month" string="Today" separator="1"
+                         	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
                          	help="Created today"/>
                    	<separator orientation="vertical"/>
                    	<filter string="Confirmed" icon="terp-stock_symbol-selection" domain="[('state', '=', 'confirmed')]"/>
@@ -262,7 +258,7 @@
     <menuitem name="Search on Engineering Parts" action="action_plm_component_base" id="menu_base_component" parent="plm_component_menu_view"/>
 
     <act_window name="Create Normal Bom"
-        res_model="product.product"
+        res_model="plm.temporary"
         src_model="product.product"
         view_mode="form"
         view_id="plm_component_create_normalbom"
