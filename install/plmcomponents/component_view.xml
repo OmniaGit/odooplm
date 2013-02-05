@@ -255,8 +255,6 @@
         </field>
     </record>
 
-    <menuitem name="Search on Engineering Parts" action="action_plm_component_base" id="menu_base_component" parent="plm_component_menu_view"/>
-
     <act_window name="Create Normal Bom"
         res_model="plm.temporary"
         src_model="product.product"
@@ -265,6 +263,11 @@
         target="new"
         key2="client_action_multi"
         id="act_create_normalBom"/>
+
+    <menuitem name="Search on Engineering Parts" 
+              action="action_plm_component_base"
+              id="menu_base_component"
+              parent="plm_component_menu_view"/>
 
 </data>
 </openerp>
