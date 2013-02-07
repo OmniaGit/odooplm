@@ -245,9 +245,9 @@
         <field name="type">form</field>
         <field name="arch" type="xml">
         <form string="Creation of Normal Bom">
-            <label string="Are you sure you want to create a new Normal Bom?" colspan="4"/>
+            <label string="Are you sure you want to create a new Normal Bom?" colspan="2"/>
             <separator string="" colspan="4" />
-            <group colspan="4" col="6">
+            <group colspan="2" col="2">
             	<button icon="gtk-cancel" special="cancel" string="Cancel"/>
             	<button icon="terp-gtk-go-back-rtl" string="Create Normal Bom" name="action_create_normalBom" type="object"/>
             </group>
