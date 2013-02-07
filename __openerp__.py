@@ -44,6 +44,7 @@ Key Features :
     * Documents Relationship
     * Engineering Bill of Materials
     * Spare Part BoM & Reports
+    * Compare BoMs
     
     
 Supported Editors :
