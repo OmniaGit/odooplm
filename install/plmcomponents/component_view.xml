@@ -249,7 +249,7 @@
             <separator string="" colspan="4" />
             <group colspan="4" col="6">
             	<button icon="gtk-cancel" special="cancel" string="Cancel"/>
-            	<button icon="terp-gtk-go-back-rtl" special="cancel" string="Create Normal Bom" name="action_create_normalBom" type="object"/>
+            	<button icon="terp-gtk-go-back-rtl" string="Create Normal Bom" name="action_create_normalBom" type="object"/>
             </group>
         </form>
         </field>
