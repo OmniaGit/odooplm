@@ -52,10 +52,12 @@ class plm_compare_bom(osv.osv_memory):
     _columns = {
                 'name': fields.char('Part Number',size=64),
                 'bom_id1': fields.many2one('mrp.bom', 'BoM 1', required=True),
+                'type_id1': fields.selection([('normal','Normal BoM'),('phantom','Sets / Phantom'),('ebom','Engineering BoM'),('spbom','Spare BoM')], 'BoM Type', required=True),
                 'part_id1': fields.many2one('product.product', 'Part'),
                 'revision1': fields.related('part_id1','engineering_revision',type="integer",relation="product.template",string="Revision",store=False),
                 'description1': fields.related('part_id1','description',type="char",relation="product.template",string="Description",store=False),
                 'bom_id2': fields.many2one('mrp.bom', 'BoM 2', required=True),
+                'type_id2': fields.selection([('normal','Normal BoM'),('phantom','Sets / Phantom'),('ebom','Engineering BoM'),('spbom','Spare BoM')], 'BoM Type', required=True),
                 'part_id2': fields.many2one('product.product', 'Part'),
                 'revision2': fields.related('part_id2','engineering_revision',type="integer",relation="product.template",string="Revision",store=False),
                 'description2': fields.related('part_id2','description',type="char",relation="product.template",string="Description",store=False),
@@ -82,7 +84,7 @@ class plm_compare_bom(osv.osv_memory):
         ANotInB, BNotInA = differs
         changesInA, changesInB = changes
         
-        defaults={'name':checkObj.bom_id1.product_id.name,'part_id1':checkObj.bom_id1.product_id.id,'part_id2':checkObj.bom_id2.product_id.id}
+        defaults={'name':checkObj.bom_id1.product_id.name,'type_id1':checkObj.bom_id1.type,'part_id1':checkObj.bom_id1.product_id.id,'type_id2':checkObj.bom_id2.type,'part_id2':checkObj.bom_id2.product_id.id}
         self.write(cr, uid, ids, defaults, context={})
         
         idList1,objList1,objProd1,dictData1,AminusB = ANotInB
