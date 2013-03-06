@@ -29,7 +29,7 @@ from report.render import render
 from report.interface import report_int
 
 # NOTE : TO BE ADDED TO FINAL CONFIGURATION. NOT IN STANDARD PYTHON
-from pyPdf import PdfFileWriter, PdfFileReader
+from report.pyPdf import PdfFileWriter, PdfFileReader
 # NOTE : TO BE ADDED TO FINAL CONFIGURATION. NOT IN STANDARD PYTHON
 
 class external_pdf(render):

@@ -36,7 +36,7 @@ from report import report_sxw
 from operator import itemgetter
 
 # NOTE : TO BE ADDED TO FINAL CONFIGURATION. NOT IN STANDARD PYTHON
-from pyPdf import PdfFileWriter, PdfFileReader
+from report.pyPdf import PdfFileWriter, PdfFileReader
 # NOTE : TO BE ADDED TO FINAL CONFIGURATION. NOT IN STANDARD PYTHON
 from book_collector import BookCollector
 #constant
