@@ -12,7 +12,7 @@
                 id="report_plm_bom_structure_all"
                 string="BOM All Levels"
                 name="plm.bom.structure.all"
-                rml="OpenPLM/install/report/bom_structure.rml"
+                rml="OpenErpPLM/install/report/bom_structure.rml"
                 report_type="pdf"
                 file=""
                  />
@@ -22,7 +22,7 @@
                 id="report_plm_bom_structure_one"
                 string="BOM One Level"
                 name="plm.bom.structure.one"
-                rml="OpenPLM/install/report/bom_structure.rml"
+                rml="OpenErpPLM/install/report/bom_structure.rml"
                 report_type="pdf"
                 file=""
                  />
@@ -32,7 +32,7 @@
                 id="report_plm_bom_structure_all_sum"
                 string="BOM All Levels Summarized"
                 name="plm.bom.structure.all.sum"
-                rml="OpenPLM/install/report/bom_structure.rml"
+                rml="OpenErpPLM/install/report/bom_structure.rml"
                 report_type="pdf"
                 file=""
                  />
@@ -42,7 +42,7 @@
                 id="report_plm_bom_structure_one_sum"
                 string="BOM One Level Summarized"
                 name="plm.bom.structure.one.sum"
-                rml="OpenPLM/install/report/bom_structure.rml"
+                rml="OpenErpPLM/install/report/bom_structure.rml"
                 report_type="pdf"
                 file=""
                  />
@@ -52,7 +52,7 @@
                 id="report_plm_bom_structure_leaves"
                 string="BOM Only Leaves Summarized"
                 name="plm.bom.structure.leaves"
-                rml="OpenPLM/install/report/bom_structure.rml"
+                rml="OpenErpPLM/install/report/bom_structure.rml"
                 report_type="pdf"
                 file=""
                  />

@@ -83,7 +83,7 @@
             <form string="Visualize BoM">
                 <group col="10" colspan="4">
                 	<field name="bom_id1" readonly="True"/>
-                 	<field name="type_id1" readonly="True"/>
+                	<field name="type_id1" readonly="True"/>
                 	<field name="part_id1" readonly="True"/>
                		<field name="revision1" readonly="True"/>
                		<field name="description1" readonly="True"/>

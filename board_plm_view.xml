@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
  <openerp>
      <data>
-
         <record model="ir.ui.view" id="board_plm_manager_form">
             <field name="name">board.plm.manager.form</field>
              <field name="model">board.board</field>

@@ -47,7 +47,6 @@ class plm_temporary(osv.osv_memory):
               'domain': "[('product_id','in', ["+','.join(map(str,context['active_ids']))+"])]",
          }
     
-  
 plm_temporary()
 
 class plm_component(osv.osv):
@@ -63,7 +62,7 @@ class plm_component(osv.osv):
             self._create_spareBom(cr, uid, idd, context)
         return False
 
- #   Internal methods
+#   Internal methods
     def _create_spareBom(self, cr, uid, idd, context=None):
         """
             Create a new Spare Bom (recursive on all EBom children)

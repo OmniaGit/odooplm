@@ -107,16 +107,18 @@ class plm_document(osv.osv):
             
     def _data_get(self, cr, uid, ids, name, arg, context):
         result = {}
+        value=False
         for objDoc in self.browse(cr, uid, ids, context=context):
             if not objDoc.store_fname:
-                raise osv.except_osv(_('Stored Document Error'), _("Document %s - %s cannot be accessed" %(str(objDoc.name),str(objDoc.revisionid))))
-            filestore=os.path.join(self._get_filestore(cr), objDoc.store_fname)
-            if os.path.exists(filestore):
-                value = file(filestore, 'rb').read()
-                if len(value)>0:
-                    result[objDoc.id] = base64.encodestring(value)
-                else:
-                    result[objDoc.id] = ''
+                value=objDoc.db_datas
+                if not value or len(value)<1:
+                    raise osv.except_osv(_('Stored Document Error'), _("Document %s - %s cannot be accessed" %(str(objDoc.name),str(objDoc.revisionid))))
+            else:
+                filestore=os.path.join(self._get_filestore(cr), objDoc.store_fname)
+                if os.path.exists(filestore):
+                    value = file(filestore, 'rb').read()
+            if value and len(value)>0:
+                result[objDoc.id] = base64.encodestring(value)
             else:
                 result[objDoc.id] = ''
         return result
@@ -139,9 +141,9 @@ class plm_document(osv.osv):
                 printout=oiDocument.printout
             if oiDocument.preview:
                 preview=oiDocument.preview
-                
+            db_datas=b''                    # Clean storage field. 
             fname,filesize=self._manageFile(cr,uid,oid,binvalue=value,context=context)
-            cr.execute('update ir_attachment set store_fname=%s,file_size=%s where id=%s', (fname,filesize,oid))
+            cr.execute('update ir_attachment set store_fname=%s,file_size=%s,db_datas=%s where id=%s', (fname,filesize,db_datas,oid))
             self.pool.get('plm.backupdoc').create(cr,uid, {
                                           'userid':uid,
                                           'existingfile':fname,
@@ -235,9 +237,9 @@ class plm_document(osv.osv):
         previous_name=self.browse(cr,uid,oid,context=context).name
         if not 'name' in defaults:
             new_name='Copy of %s'%previous_name
-            lsObjs=self.search(cr,uid,[('name','=',new_name)],order='revisionid',context=context)
-            if len(lsObjs)>0:
-                new_name='%s (%s)'%(new_name,len(lsObjs)+1)
+            l=self.search(cr,uid,[('name','=',new_name)],order='revisionid',context=context)
+            if len(l)>0:
+                new_name='%s (%s)'%(new_name,len(l)+1)
             defaults['name']=new_name
         #manage copy of the file
         fname,filesize=self._manageFile(cr,uid,oid,context=context)
@@ -898,7 +900,7 @@ class plm_document_relation(osv.osv):
                     logging.error("saveChild : Unable to create a relation between documents. One of documents involved doesn't exist. Arguments(" + str(args) +") ")
                     raise Exception("saveChild: Unable to create a relation between documents. One of documents involved doesn't exist.")
             except:
-                logging.error("saveChild : Unable to create a relation. Arguments(" + str(args) +") ")
+                logging.error("saveChild : Unable to create a relation. Arguments(%s)" %(str(args)))
                 raise Exception("saveChild: Unable to create a relation.")
             
         savedItems=[]
