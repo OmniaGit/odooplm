@@ -124,7 +124,7 @@ class plm_component_document_rel(osv.osv):
                 res['document_id'],res['component_id']=args
                 self.create(cr, uid, res)
             except:
-                logging.warning("saveChild : Unable to create a link. Arguments(" + str(args) +") ")
+                logging.warning("saveChild : Unable to create a link. Arguments (%s)." %(str(args)))
                 raise Exception("saveChild: Unable to create a link.")
             
         if len(relations)<1: # no relation to save 
