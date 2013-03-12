@@ -153,8 +153,8 @@ class plm_document(osv.osv):
                                          }, context=context)
 
             return True
-        except Exception,e :
-            raise except_orm(_('Error in _data_set'), str(e))
+        except Exception,ex :
+            raise except_orm(_('Error in _data_set'), str(ex))
 
     def _explodedocs(self, cr, uid, oid, kind, listed_documents=[], recursion=True):
         result=[]
@@ -861,8 +861,6 @@ class plm_document_relation(osv.osv):
                  'createdate': lambda self,cr,uid,ctx:time.strftime("%Y-%m-%d %H:%M:%S"),
                  'link_kind': lambda *a: 'HiTree'
     }
-
-
     _sql_constraints = [
         ('relation_uniq', 'unique (parent_id,child_id,link_kind)', 'The Document Relation must be unique !') 
     ]
@@ -899,8 +897,8 @@ class plm_document_relation(osv.osv):
                 else:
                     logging.error("saveChild : Unable to create a relation between documents. One of documents involved doesn't exist. Arguments(" + str(args) +") ")
                     raise Exception("saveChild: Unable to create a relation between documents. One of documents involved doesn't exist.")
-            except:
-                logging.error("saveChild : Unable to create a relation. Arguments(%s)" %(str(args)))
+            except Exception,ex:
+                logging.error("saveChild : Unable to create a relation. Arguments (%s) Exception (%s)" %(str(args), str(ex)))
                 raise Exception("saveChild: Unable to create a relation.")
             
         savedItems=[]
