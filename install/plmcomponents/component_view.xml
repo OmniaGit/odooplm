@@ -19,7 +19,7 @@
                 <field name="engineering_writable"  />
                 <field name="engineering_material" select="True"/>
                 <field name="engineering_surface" select="True"/>
-                <field name="linkeddocuments"/>
+                <field name="linkeddocuments" invisible="True"/>
                 <field name="std_umc1"/>
                 <field name="std_value1"/>
                 <field name="std_umc2"/>
@@ -44,6 +44,9 @@
                 	<filter icon="terp-go-month" string="Today" separator="1"
                          	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
                          	help="Created today"/>
+                   	<separator orientation="vertical"/>
+	            	<field name="name"/>
+	            	<field name="description"/>
                    	<separator orientation="vertical"/>
                     <filter string="Confirmed" icon="terp-stock_symbol-selection" domain="[('state', '=', 'confirmed')]"/>
                     <filter string="Released" icon="terp-stock_symbol-selection" domain="['|',('state', '=', 'released'),('state', '=', 'undermodify')]"/>
@@ -132,7 +135,7 @@
                 <field name="engineering_writable"  />
                 <field name="engineering_material" select="True"/>
                 <field name="engineering_surface" select="True"/>
-                <field name="linkeddocuments"/>
+                <field name="linkeddocuments" invisible="True"/>
             </tree>
         </field>
     </record>  
@@ -153,6 +156,9 @@
                 	<filter icon="terp-go-month" string="Today" separator="1"
                          	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
                          	help="Created today"/>
+                   	<separator orientation="vertical"/>
+	            	<field name="name"/>
+	            	<field name="description"/>
                    	<separator orientation="vertical"/>
                    	<filter string="Confirmed" icon="terp-stock_symbol-selection" domain="[('state', '=', 'confirmed')]"/>
                    	<filter string="Released" icon="terp-stock_symbol-selection" domain="['|',('state', '=', 'released'),('state', '=', 'undermodify')]"/>
