@@ -31,6 +31,7 @@ import logging
 USED_STATES=[('draft','Draft'),('confirmed','Confirmed'),('transmitted','Transmitted'),('released','Released'),('undermodify','UnderModify'),('obsoleted','Obsoleted'),('reactivated','Reactivated')]
 
 class plm_component(osv.osv):
+    _name = 'product.template'
     _inherit = 'product.template'
     _columns = {
                 'state':fields.selection(USED_STATES,'Status',readonly="True"),
@@ -91,14 +92,16 @@ CREATE INDEX product_template_engcoderev_index
 plm_component()
 
 class plm_component_document_rel(osv.osv):
-    """
-        Document component link 
-    """
     _name = 'plm.component.document.rel'
+    _description = "Component Document Relations"
     _columns = {
                 'component_id': fields.integer('Component Linked', required=True),
                 'document_id': fields.integer('Document Linked', required=True),
     }
+
+    _sql_constraints = [
+        ('relation_unique', 'unique(component_id,document_id)', 'Component and Document relation has to be unique !'),
+    ]
 
     def SaveStructure(self, cr, uid, relations, level=0, currlevel=0):
         """
@@ -138,10 +141,11 @@ plm_component_document_rel()
 
          
 class plm_relation(osv.osv):
+    _name = 'mrp.bom'
     _inherit = 'mrp.bom'
     _columns = {
                 'create_date': fields.datetime('Date Created', readonly=True),
-                'source_id': fields.many2one('ir.attachment','name',ondelete='no action', readonly=True,help="This is the document object that declares this BoM."),
+                'source_id': fields.many2one('plm.document','name',ondelete='no action', readonly=True,help="This is the document object that declares this BoM."),
                 'type': fields.selection([('normal','Normal BoM'),('phantom','Sets / Phantom'),('ebom','Engineering BoM'),('spbom','Spare BoM')], 'BoM Type', required=True, help=
                     "Use a phantom bill of material in raw materials lines that have to be " \
                     "automatically computed in on eproduction order and not one per level." \

@@ -377,7 +377,7 @@ class plm_component(osv.osv):
             move workflow on documents having the same state of component 
         """
         docIDs=[]
-        documentType=self.pool.get('ir.attachment')
+        documentType=self.pool.get('plm.document')
         for oldObject in self.browse(cr, uid, ids, context=context):
             if (action_name!='transmit') and (action_name!='reject') and (action_name!='release'):
                 check_state=oldObject.state

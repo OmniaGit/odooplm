@@ -2,10 +2,10 @@
 <openerp>
     <data>
 
-        <report id="report_ir_attachment_pdf"
+        <report id="report_plm_document_pdf"
                 string="Print Pdf"
-                model="ir.attachment"
-                name="ir.attachment.pdf"
+                model="plm.document"
+                name="plm.document.pdf"
                 report_type="sxw"
                 file=""
                 header="False"

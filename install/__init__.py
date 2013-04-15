@@ -24,6 +24,7 @@ import plm_document
 import plm_component
 import plmcomparebom
 import plmdescriptions
+import plmdocuments
 import plmsparebom
 import plm_extend_entities
 import report

@@ -4,7 +4,7 @@
     <menuitem name="Documents View" id="plm_document_form" parent="plm_menu" sequence="11"/>
     <record model="ir.ui.view" id="view_plm_document">
         <field name="name">plm.document</field>
-        <field name="model">ir.attachment</field>
+        <field name="model">plm.document</field>
         <field name="priority" eval="1"/>
         <field name="type">form</field>
         <field name="arch" type="xml">
@@ -86,7 +86,7 @@
 
     <record model="ir.ui.view" id="plm_document_tree">
         <field name="name">plm.document</field>
-        <field name="model">ir.attachment</field>
+        <field name="model">plm.document</field>
         <field name="type">tree</field>
         <field name="priority" eval="1"/>
         <field name="arch" type="xml">
@@ -106,7 +106,7 @@
 
     <record model="ir.ui.view" id="plm_document_search">
          <field name="name">plm.document</field>
-         <field name="model">ir.attachment</field>
+         <field name="model">plm.document</field>
          <field name="type">search</field>
          <field name="priority" eval="1"/>
          <field name="arch" type="xml">
@@ -151,14 +151,14 @@
 
 
     <record model="ir.actions.act_window" id="plm_action_document_form">
-    	<field name="name">Document</field>
-    	 <field name="res_model">ir.attachment</field>
+    	<field name="name">Documents</field>
+    	 <field name="res_model">plm.document</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
     </record>
 
     <menuitem
-        name="Search on Document"
+        name="Search on Documents"
         action="plm_action_document_form"
         id="menu_document_files"
         parent="plm_document_form"/>

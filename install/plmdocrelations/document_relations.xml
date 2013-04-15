@@ -59,7 +59,7 @@
                     <field name="child_state" select="True"/>
                     <field name="configuration"/>
                     <field name="link_kind"  select="True"/>
-                    <field name="createdate" invisible="True"/>
+                    <field name="create_date" invisible="True"/>
                 </tree>
             </field>
         </record>
@@ -72,13 +72,13 @@
             <field name="arch" type="xml">
 				<search string="Search on Document Relations">
                    	<filter icon="terp-go-month" string="  Last Week  " separator="1"
-                         	domain="[('createdate','&lt;=', (datetime.date.today()-relativedelta(weeks=1)).strftime('%%Y-%%m-%%d')),('createdate','&gt;=',(datetime.date.today()-relativedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"
+                         	domain="[('create_date','&lt;=', (datetime.date.today()-relativedelta(weeks=1)).strftime('%%Y-%%m-%%d')),('createdate','&gt;=',(datetime.date.today()-relativedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"
                           	help="Created last week"/>
                  	<filter icon="terp-go-month" string="  Yesterday  " separator="1"
-                           	domain="[('createdate','&lt;', (datetime.date.today()).strftime('%%Y-%%m-%%d 00:00:00')),('createdate','&gt;=',(datetime.date.today()-relativedelta(days=1)).strftime('%%Y-%%m-%%d 00:00:00'))]"
+                           	domain="[('create_date','&lt;', (datetime.date.today()).strftime('%%Y-%%m-%%d 00:00:00')),('createdate','&gt;=',(datetime.date.today()-relativedelta(days=1)).strftime('%%Y-%%m-%%d 00:00:00'))]"
                     		help="Created yesterday"/>
                 	<filter icon="terp-go-month" string="  Today  " separator="1"
-                          	domain="[('createdate','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d 23:59:59')),('createdate','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d 00:00:00'))]"
+                          	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d 23:59:59')),('createdate','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d 00:00:00'))]"
                          	help="Created today"/>
                    	<separator orientation="vertical"/>
                     <field name="parent_id"/>

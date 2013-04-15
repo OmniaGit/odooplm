@@ -24,7 +24,8 @@ from osv import osv, fields
 
 
 class plm_document(osv.osv):
-    _inherit = 'ir.attachment'
+    _name = 'plm.document'
+    _inherit = 'plm.document'
     _columns = {
                 'linkedcomponents':fields.many2many('product.product', 'plm_component_document_rel','document_id','component_id', 'Linked Parts'),
     }    
@@ -36,9 +37,10 @@ plm_document()
 
 
 class plm_component(osv.osv):
+    _name = 'product.product'
     _inherit = 'product.product'
     _columns = {
-        	    'linkeddocuments':fields.many2many('ir.attachment', 'plm_component_document_rel','component_id','document_id', 'Linked Docs'),  
+        	    'linkeddocuments':fields.many2many('plm.document', 'plm_component_document_rel','component_id','document_id', 'Linked Docs'),  
                 'tmp_material': fields.many2one('plm.material','Raw Material', required=False, change_default=True, help="Select raw material for current product"),
 #                'tmp_treatment': fields.many2one('plm.treatment','Thermal Treatment', required=False, change_default=True, help="Select thermal treatment for current product"),
                 'tmp_surface': fields.many2one('plm.finishing','Surface Finishing', required=False, change_default=True, help="Select surface finishing for current product")
@@ -130,12 +132,12 @@ class plm_document_relation(osv.osv):
     _name = 'plm.document.relation'
     _inherit = 'plm.document.relation'
     _columns = {
-                'parent_preview': fields.related('parent_id','preview',type="binary",relation="ir.attachment",string="Preview",store=False),
-                'parent_state': fields.related('parent_id','state',type="char",relation="ir.attachment",string="Status",store=False),
-                'parent_revision': fields.related('parent_id','revisionid',type="integer",relation="ir.attachment",string="Revision",store=False),
-                'child_preview': fields.related('child_id','preview',type="binary",relation="ir.attachment",string="Preview",store=False),
-                'child_state': fields.related('child_id','state',type="char",relation="ir.attachment",string="Status",store=False),
-                'child_revision': fields.related('child_id','revisionid',type="integer",relation="ir.attachment",string="Revision",store=False),
+                'parent_preview': fields.related('parent_id','preview',type="binary",relation="plm.document",string="Preview",store=False),
+                'parent_state': fields.related('parent_id','state',type="char",relation="plm.document",string="Status",store=False),
+                'parent_revision': fields.related('parent_id','revisionid',type="integer",relation="plm.document",string="Revision",store=False),
+                'child_preview': fields.related('child_id','preview',type="binary",relation="plm.document",string="Preview",store=False),
+                'child_state': fields.related('child_id','state',type="char",relation="plm.document",string="Status",store=False),
+                'child_revision': fields.related('child_id','revisionid',type="integer",relation="plm.document",string="Revision",store=False),
               }
 plm_document_relation()
 

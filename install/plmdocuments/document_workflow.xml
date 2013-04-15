@@ -3,7 +3,7 @@
 <data>
     <record model="workflow" id="plm_document_flow">
         <field name="name">plm.document.flow</field>
-        <field name="osv">ir.attachment</field>
+        <field name="osv">plm.document</field>
         <field name="on_create">True</field>
     </record>
 
