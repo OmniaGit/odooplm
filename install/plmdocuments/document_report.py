@@ -31,6 +31,7 @@ class report_plm_document_user(osv.osv):
         'name': fields.char('Year', size=64,readonly=True),
         'month':fields.selection([('01','January'), ('02','February'), ('03','March'), ('04','April'), ('05','May'), ('06','June'),
                                   ('07','July'), ('08','August'), ('09','September'), ('10','October'), ('11','November'), ('12','December')],'Month',readonly=True),
+        'day': fields.char('Day', size=64,readonly=True),
         'user_id':fields.integer('Owner', readonly=True),
         'user':fields.char('User',size=64,readonly=True),
         'directory': fields.char('Directory',size=64,readonly=True),
@@ -49,6 +50,7 @@ class report_plm_document_user(osv.osv):
                      min(f.id) as id,
                      to_char(f.create_date, 'YYYY') as name,
                      to_char(f.create_date, 'MM') as month,
+                     to_char(f.create_date, 'DD') as day,
                      f.user_id as user_id,
                      u.login as user,
                      count(*) as nbr,
@@ -61,7 +63,7 @@ class report_plm_document_user(osv.osv):
                  FROM plm_document f
                      left join document_directory d on (f.parent_id=d.id and d.name<>'')
                      inner join res_users u on (f.user_id=u.id)
-                 group by to_char(f.create_date, 'YYYY'), to_char(f.create_date, 'MM'),d.name,f.parent_id,d.type,f.create_date,f.user_id,f.file_size,u.login,d.type,f.write_date,f.datas_fname
+                 group by to_char(f.create_date, 'YYYY'), to_char(f.create_date, 'MM'),to_char(f.create_date, 'DD'),d.name,f.parent_id,d.type,f.create_date,f.user_id,f.file_size,u.login,d.type,f.write_date,f.datas_fname
              )
         """)
 report_plm_document_user()

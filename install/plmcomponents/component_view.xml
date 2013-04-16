@@ -16,7 +16,7 @@
                 <field name="engineering_revision"/>
                 <field name="state" select="True"/>
                 <field name="description" select="True" />
-                <field name="engineering_writable"  />
+                <field name="engineering_writable" invisible="1"/>
                 <field name="engineering_material" select="True"/>
                 <field name="engineering_surface" select="True"/>
                 <field name="linkeddocuments" invisible="True"/>
@@ -132,7 +132,7 @@
                 <field name="engineering_revision"/>
                 <field name="state" select="True"/>
                 <field name="description" select="True" />
-                <field name="engineering_writable"  />
+                <field name="engineering_writable" invisible="1" />
                 <field name="engineering_material" select="True"/>
                 <field name="engineering_surface" select="True"/>
                 <field name="linkeddocuments" invisible="True"/>

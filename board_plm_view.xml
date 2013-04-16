@@ -8,13 +8,16 @@
             <field name="type">tree</field>
             <field name="arch" type="xml">
                 <tree string="Files">
-                    <field name="name" select="1"/>
-                    <field name="month" select="1"/>
+                    <field name="name" select="1" invisible="1"/>
+                    <field name="month" select="1" invisible="1"/>
                     <field name="user" select="1" invisible="1"/>
                     <field name="directory" select="1" invisible="1"/>
-                    <field name="file_size" invisible="1"/>
                     <field name="create_date" invisible="1"/>
+                    <field name="day"/>
                     <field name="datas_fname"/>
+                    <field name="file_size"/>
+                    <field name="user"/>
+                    <field name="change_date"/>
                     <field name="nbr"/>
                 </tree>
             </field>
