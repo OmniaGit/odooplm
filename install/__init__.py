@@ -26,7 +26,7 @@ import plm_extend_entities
 import plmcomparebom
 import plmdescriptions
 import plmsparebom
-import plm_documents
+import plmdocuments
 import report
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
