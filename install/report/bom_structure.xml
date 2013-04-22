@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+<!--
+       IMPORTANT : DO NOT CHANGE THIS FILE, IT WILL BE REGENERERATED AUTOMATICALLY
+-->
+
+        <report auto="True"
+                header="True"
+                model="mrp.bom"
+                id="report_plm_bom_structure_all"
+                string="BOM All Levels"
+                name="plm.bom.structure.all"
+                rml="OpenERPPLM/install/report/bom_structure.rml"
+                report_type="pdf"
+                file=""
+                 />
+        <report auto="True"
+                header="True"
+                model="mrp.bom"
+                id="report_plm_bom_structure_one"
+                string="BOM One Level"
+                name="plm.bom.structure.one"
+                rml="OpenERPPLM/install/report/bom_structure.rml"
+                report_type="pdf"
+                file=""
+                 />
+        <report auto="True"
+                header="True"
+                model="mrp.bom"
+                id="report_plm_bom_structure_all_sum"
+                string="BOM All Levels Summarized"
+                name="plm.bom.structure.all.sum"
+                rml="OpenERPPLM/install/report/bom_structure.rml"
+                report_type="pdf"
+                file=""
+                 />
+        <report auto="True"
+                header="True"
+                model="mrp.bom"
+                id="report_plm_bom_structure_one_sum"
+                string="BOM One Level Summarized"
+                name="plm.bom.structure.one.sum"
+                rml="OpenERPPLM/install/report/bom_structure.rml"
+                report_type="pdf"
+                file=""
+                 />
+        <report auto="True"
+                header="True"
+                model="mrp.bom"
+                id="report_plm_bom_structure_leaves"
+                string="BOM Only Leaves Summarized"
+                name="plm.bom.structure.leaves"
+                rml="OpenERPPLM/install/report/bom_structure.rml"
+                report_type="pdf"
+                file=""
+                 />
+<!--
+       IMPORTANT : DO NOT CHANGE THIS FILE, IT WILL BE REGENERERATED AUTOMATICALLY
+-->
+
+    </data>
+</openerp>
