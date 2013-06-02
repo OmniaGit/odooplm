@@ -136,7 +136,7 @@ class plm_component(osv.osv):
             for bom in bomid.bom_lines:
                 children=self._getChildrenBom(cr, uid, bom.product_id, level, currlevel+1, context=context)
                 bufferdata.extend(children)
-            bufferdata.append(component.id)
+                bufferdata.append(bom.product_id.id)
         result.extend(bufferdata)
         return list(set(result))
 
