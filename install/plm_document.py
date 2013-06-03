@@ -946,7 +946,7 @@ class plm_backupdoc(osv.osv):
                 'createdate':fields.datetime('Date Created', readonly=True),
                 'existingfile':fields.char('Physical Document Location',size=1024), 
                 'documentid':fields.many2one('plm.document', 'Related Document', ondelete='cascade'), 
-                'revisionid': fields.related('documentid','revisionid',type="int",relation="plm.document",string="Revision",store=False),
+                'revisionid': fields.related('documentid','revisionid',type="integer",relation="plm.document",string="Revision",store=False),
                 'printout': fields.binary('Printout Content'),
                 'preview': fields.binary('Preview Content'),
     }

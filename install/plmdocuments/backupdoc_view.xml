@@ -10,8 +10,9 @@
         <field name="type">form</field>
         <field name="arch" type="xml">
             <form string="Backup Document">
-                <group colspan="2" col="2">
+                <group colspan="4" col="4">
                     <field name="documentid" readonly="True"/>
+                    <field name="revisionid" readonly="True"/>
                     <field name="createdate" readonly="True"/>
                     <field name="userid" readonly="True"/>
                 </group>
