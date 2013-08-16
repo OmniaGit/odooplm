@@ -61,6 +61,7 @@ class component_one_custom_report(report_int):
         documents=[]
         components=componentType.browse(cr, uid, ids, context=context)
         for component in components:
+            documents.extend(component.linkeddocuments)
             idcs=componentType._getChildrenBom(cr, uid, component, 0, context=context)
             children=componentType.browse(cr, uid, idcs, context=context)
             for child in children:
@@ -83,6 +84,7 @@ class component_all_custom_report(report_int):
         documents=[]
         components=componentType.browse(cr, uid, ids, context=context)
         for component in components:
+            documents.extend(component.linkeddocuments)
             idcs=componentType._getChildrenBom(cr, uid, component, 1, context=context)
             children=componentType.browse(cr, uid, idcs, context=context)
             for child in children:
