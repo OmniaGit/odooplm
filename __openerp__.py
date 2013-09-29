@@ -28,7 +28,7 @@
     'sequence': 15,
     'summary': 'PLM Connector with main CAD editors',
     'images': ['images/EngineeringPart.jpeg','images/OpenComponent.jpeg','images/OpenDocument.jpeg'],
-    'depends': ['base', 'process','board','knowledge','product','mrp'],
+    'depends': ['base', 'process','board','document','knowledge','product','mrp'],
     'description': """
 Manage Product Lifecycle Management in OpenERP
 ==============================================
