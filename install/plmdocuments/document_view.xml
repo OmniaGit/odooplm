@@ -10,96 +10,100 @@
         <field name="arch" type="xml">
             <form string="Document"  version="7.0">
                <sheet>
-                <label for="name" class="oe_edit_only"/>
- 					<group colspan="4" col="4">
-                    <field name="name" select="1" attrs="{'readonly':[('state','!=','draft')]}"/>
-                    <field name="revisionid" readonly="True"/>
-                    <newline/>
-                    <field name="parent_id"/>
-                    <field name="user_id"/>
-                    <newline/>
-                    <group col="2" colspan="2">
-						<separator string="Spare Part" colspan="2"/>
-	                    <field name="usedforspare"/>
-                    </group>
-                    <group col="4" colspan="4">
-	                    <group col="2" colspan="2">
-							<separator string="LifeCycle" colspan="2"/>
-							<field name="state"/>
+	               <label for="name" class="oe_edit_only"/>
+	               <group colspan="4" col="4">
+	 					<group colspan="4" col="4">
+		 					<group colspan="2" col="2">
+			                    <field name="name" select="1" attrs="{'readonly':[('state','!=','draft')]}" colspan="2"/>
+			                    <field name="revisionid" readonly="True" colspan="2"/>
+			                    <newline/>
+			                    <field name="parent_id" colspan="2"/>
+			                    <field name="user_id" colspan="2"/>
+		                    </group>
+		                    <group col="2" colspan="2">
+								<separator string="Spare Part" colspan="2"/>
+			                    <field name="usedforspare" colspan="2"/>
+		                    </group>
 	                    </group>
-	                    <group col="2" colspan="2">
-							<separator string="Workflow Actions" colspan="2"/>
-	                        <button name="release" states="confirmed" string="Release Document" icon="gtk-apply"/>
-	                        <button name="correct" states="confirmed" string="Correct Document" icon="gtk-cancel"/>
-	                        <button name="confirm" states="draft" string="Confirm Document" icon="gtk-go-forward"/>
-	                    </group>
-                    </group>
-                </group>
-                <notebook col="4" colspan="4">
-                <page string="Attachment">
-                    <group col="4" colspan="4">
-                        <separator string="File Data" colspan="2"/>
-                    	<group col="4" colspan="4">
-	                        <group col="2" colspan="2" attrs="{'invisible':[('type','=','url')]}">
-	                            <field name="datas" filename="datas_fname"/>
-	                            <field name="datas_fname" select="1"/>
-	                        </group>
-	                        <group col="2" colspan="2">
-	                            <field name="url" widget="url" attrs="{'invisible':[('type','=','binary')]}"/>
-	                        	<field name="type"/>
-	                        </group>
-                        </group>
-                        <group col="4" colspan="4">
-                            <group col="2" colspan="2">
-                        		<separator string="Attached To" colspan="2"/>
-                        		<newline/>
-                       			<field name="res_id" readonly="True"/>
-                                <field name="res_model" readonly="True"/>
-                            </group>
-                            <group col="2" colspan="2">
-	                            <separator string="Related To" colspan="2"/>
-	                            <newline/>
-                                <field name="res_name" readonly="1"/>
-                             	<field name="partner_id"/>
-                           	</group>
-                        </group>
-                        <group col="4" colspan="4">
-	                        <group col="2" colspan="2">
-		                        <separator string="Created" colspan="2"/>
-	                        	<newline/>
-	                            <field name="create_uid" readonly="1"/>
-	                            <field name="create_date" readonly="1"/>
-	                        </group>
-	                        <group col="2" colspan="2">
-		                        <separator string="Modified" colspan="2"/>
-	                        	<newline/>
-	                            <field name="write_uid" readonly="1"/>
-	                            <field name="write_date" readonly="1"/>
-	                        </group>
-                        </group>
-                    </group>
-                    <group col="4" colspan="4">
-                    	<separator string="Preview" colspan="2"/>
-                    		<field
-                        		name="preview"
-                        		widget="image"
-                        		readonly="1"
-                        		nolabel="1"
-                        		colspan="2"
-                        		img_height="400"
-                        		img_width="400"/>
-                    </group>
-                </page>
-                <page string="Linked Parts">
-                    <field colspan="4" name="linkedcomponents" nolabel="1"/>
-                </page>
-                <page string="Indexed Content" groups="base.group_extended">
-                    <field name="index_content" colspan="4" nolabel="1"/>
-                </page>
-                <page string="Notes">
-                    <field colspan="4" name="description" nolabel="1"/>
-                </page>
-                </notebook>
+	                    <group col="4" colspan="4">
+		                    <group col="2" colspan="2">
+								<separator string="LifeCycle" colspan="2"/>
+								<field name="state"/>
+		                    </group>
+		                    <group col="2" colspan="2">
+								<separator string="Workflow Actions" colspan="2"/>
+		                        <button name="release" states="confirmed" string="Release Document" icon="gtk-apply"/>
+		                        <button name="correct" states="confirmed" string="Correct Document" icon="gtk-cancel"/>
+		                        <button name="confirm" states="draft" string="Confirm Document" icon="gtk-go-forward"/>
+		                    </group>
+                   		</group>
+	               	</group>
+	                <notebook col="4" colspan="4">
+	                <page string="Attachment">
+	                	<sheet>
+		                	<group col="4" colspan="4">
+		                        <separator string="File Data" colspan="2"/>
+		                    	<group col="4" colspan="4">
+			                        <group col="2" colspan="2" attrs="{'invisible':[('type','=','url')]}">
+			                            <field name="datas" filename="datas_fname"/>
+			                            <field name="datas_fname" select="1"/>
+			                        </group>
+			                        <group col="2" colspan="2">
+			                            <field name="url" widget="url" attrs="{'invisible':[('type','=','binary')]}"/>
+			                        	<field name="type"/>
+			                        </group>
+		                        </group>
+		                        <group col="4" colspan="4">
+		                            <group col="2" colspan="2">
+		                        		<separator string="Attached To" colspan="2"/>
+		                        		<newline/>
+		                       			<field name="res_id" readonly="True"/>
+		                                <field name="res_model" readonly="True"/>
+		                            </group>
+		                            <group col="2" colspan="2">
+			                            <separator string="Related To" colspan="2"/>
+			                            <newline/>
+		                                <field name="res_name" readonly="1"/>
+		                             	<field name="partner_id"/>
+		                           	</group>
+		                        </group>
+		                        <separator string="Created and Modified" colspan="4"/>
+			                        <group col="4" colspan="4">
+				                        <group col="2" colspan="2">
+				                            <field name="create_uid" readonly="1"/>
+				                            <field name="create_date" readonly="1"/>
+				                        </group>
+				                        <group col="2" colspan="2">
+				                            <field name="write_uid" readonly="1"/>
+				                            <field name="write_date" readonly="1"/>
+				                        </group>
+			                        </group>
+		                    </group>
+	                    </sheet>
+	                    <separator string="Preview" colspan="2"/>
+	                    <sheet>
+		                    <group col="4" colspan="4">
+	                    		<field
+	                        		name="preview"
+	                        		widget="image"
+	                        		readonly="1"
+	                        		nolabel="1"
+	                        		colspan="2"
+	                        		img_height="400"
+	                        		img_width="400"/>
+		                    </group>
+	                    </sheet>
+	                </page>
+	                <page string="Linked Parts">
+	                    <field colspan="4" name="linkedcomponents" nolabel="1"/>
+	                </page>
+	                <page string="Indexed Content" groups="base.group_extended">
+	                    <field name="index_content" colspan="4" nolabel="1"/>
+	                </page>
+	                <page string="Notes">
+	                    <field colspan="4" name="description" nolabel="1"/>
+	                </page>
+	                </notebook>
                 </sheet>
 				<div class="oe_chatter">
 					<field name="message_follower_ids" widget="mail_followers" modifiers="{}"/>

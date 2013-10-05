@@ -250,6 +250,8 @@ class plm_document(osv.osv):
         defaults['state']='draft'
         defaults['writable']=True
         newID=super(plm_document,self).copy(cr,uid,oid,defaults,context=context)
+        if (objId):
+            self.wf_message_post(cr, uid, [oid], body=_('Copied starting from : %s.' %previous_name))
         if docRelIds:
             # create all the document relation
             brwEnts=documentRelation.browse(cr,uid,docRelIds,context=context)
@@ -326,6 +328,7 @@ class plm_document(osv.osv):
             defaults['writable']=True
             defaults['state']='draft'
             newID=super(plm_document,self).copy(cr,uid,oldObject.id,defaults,context=context)
+            self.wf_message_post(cr, uid, [oldObject.id], body=_('Created : New Revision.'))
             break
         return (newID, defaults['revisionid']) 
     
@@ -456,6 +459,14 @@ class plm_document(osv.osv):
                 return False
         return True
  
+    def wf_message_post(self,cr,uid,ids,body='',context=None):
+        """
+            Writing messages to follower, on multiple objects
+        """
+        if not (body==''):
+            for id in ids:
+                self.message_post(cr, uid, [id], body=_(body))
+
     def action_draft(self, cr, uid, ids, *args):
         """
             release the object
@@ -463,7 +474,10 @@ class plm_document(osv.osv):
         defaults={}
         defaults['writable']=True
         defaults['state']='draft'
-        return self.write(cr, uid, ids, defaults, check=False)
+        objId = self.write(cr, uid, ids, defaults, check=False)
+        if (objId):
+            self.wf_message_post(cr, uid, ids, body=_('Status moved to: Draft.'))
+        return objId
 
     def action_confirm(self,cr,uid,ids,context=None):
         """
@@ -473,7 +487,10 @@ class plm_document(osv.osv):
         defaults['writable']=False
         defaults['state']='confirmed'
         if self.ischecked_in(cr, uid, ids,context):
-            return self.write(cr, uid, ids, defaults, context=context, check=False)
+            objId = self.write(cr, uid, ids, defaults, context=context, check=False)
+            if (objId):
+                self.wf_message_post(cr, uid, ids, body=_('Status moved to: Confirmed'))
+            return objId
         return False
     
     def action_release(self, cr, uid, ids, *args):
@@ -487,10 +504,14 @@ class plm_document(osv.osv):
                 defaults['writable']=False
                 defaults['state']='obsoleted'
                 self.write(cr, uid, [last_id], defaults, check=False)
+                self.wf_message_post(cr, uid, [last_id], body=_('Status moved to: Obsoleted.'))
         defaults['writable']=False
         defaults['state']='released'
         if self.ischecked_in(cr, uid, ids):
-            return self.write(cr, uid, ids, defaults, check=False)
+            objId = self.write(cr, uid, ids, defaults, check=False)
+            if (objId):
+                self.wf_message_post(cr, uid, ids, body=_('Status moved to: Released.'))
+            return objId
         return False
 
     def action_obsolete(self,cr,uid,ids,context=None):
@@ -501,7 +522,10 @@ class plm_document(osv.osv):
         defaults['writable']=False
         defaults['state']='obsoleted'
         if self.ischecked_in(cr, uid, ids,context):
-            return self.write(cr, uid, ids, defaults, context=context, check=False)
+            objId = self.write(cr, uid, ids, defaults, context=context, check=False)
+            if (objId):
+                self.wf_message_post(cr, uid, ids, body=_('Status moved to: Obsoleted.'))
+            return objId
         return False
 
     def action_reactivate(self,cr,uid,ids,context=None):
@@ -512,7 +536,10 @@ class plm_document(osv.osv):
         defaults['engineering_writable']=False
         defaults['state']='released'
         if self.ischecked_in(cr, uid, ids,context):
-            return self.write(cr, uid, ids, defaults, context=context, check=False)
+            objId = self.write(cr, uid, ids, defaults, context=context, check=False)
+            if (objId):
+                self.wf_message_post(cr, uid, ids, body=_('Status moved to: Released.'))
+            return objId
         return False
 
 #   Overridden methods for this entity
@@ -564,6 +591,7 @@ class plm_document(osv.osv):
             if len(existingID)>0:
                 oldObject=self.browse(cr, uid, existingID[0], context=context)
                 if oldObject.state in checkState:
+                    self.wf_message_post(cr, uid, [oldObject.id], body=_('Removed : Latest Revision.'))
                     if not self.write(cr, uid, [oldObject.id], values, context, check=False):
                         logging.warning("unlink : Unable to update state to old document ("+str(oldObject.name)+"-"+str(oldObject.revisionid)+").")
                         return False
@@ -995,7 +1023,9 @@ class plm_backupdoc(osv.osv):
         if objDoc.state=='draft' and documentType.ischecked_in(cr, uid, ids, context):
             if checkObj.existingfile != objDoc.store_fname:
                 committed=documentType.write(cr, uid, [objDoc.id], {'store_fname':checkObj.existingfile,'printout':checkObj.printout,'preview':checkObj.preview,}, context, check=False)
-                if not committed:
+                if  committed:
+                    self.wf_message_post(cr, uid, [objDoc.id], body=_('Document restored from backup.'))
+                else:
                     logging.warning("action_restore_document : Unable to restore the document ("+str(checkObj.documentid.name)+"-"+str(checkObj.documentid.revisionid)+") from backup set.")
                     raise osv.except_osv(_('Check-In Error'), _("Unable to restore the document ("+str(checkObj.documentid.name)+"-"+str(checkObj.documentid.revisionid)+") from backup set.\n Check if it's checked-in, before to proceed."))
         self.unlink(cr, uid, ids, context)

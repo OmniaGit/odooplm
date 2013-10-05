@@ -25,7 +25,7 @@ from osv import osv, fields
 
 class plm_document(osv.osv):
     _name = 'plm.document'
-    _inherit = 'plm.document'
+    _inherit = ['mail.thread','plm.document']
     _columns = {
                 'linkedcomponents':fields.many2many('product.product', 'plm_component_document_rel','document_id','component_id', 'Linked Parts'),
     }    

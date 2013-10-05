@@ -234,6 +234,7 @@ class plm_component(osv.osv):
             defaults['state']='draft'
             defaults['linkeddocuments']=[]                  # Clean attached documents for new revision object
             newID=self.copy(cr, uid, oldObject.id, defaults, context=context)
+            self.wf_message_post(cr, uid, [oldObject.id], body=_('Created : New Revision.'))
             # create a new "old revision" object
             break
         return (newID, newIndex) 
@@ -370,6 +371,7 @@ class plm_component(osv.osv):
         for idd in ids:
             self.processedIds=[]
             self._create_normalBom(cr, uid, idd, context)
+        self.wf_message_post(cr, uid, ids, body=_('Created Normal Bom.'))
         return False
 
     def _action_ondocuments(self,cr,uid,ids,action_name,context=None):
@@ -423,6 +425,14 @@ class plm_component(osv.osv):
             return False
         return True  
 
+    def wf_message_post(self,cr,uid,ids,body='',context=None):
+        """
+            Writing messages to follower, on multiple objects
+        """
+        if not (body==''):
+            for id in ids:
+                self.message_post(cr, uid, [id], body=_(body))
+        
     def action_draft(self,cr,uid,ids,context=None):
         """
             release the object
@@ -434,7 +444,10 @@ class plm_component(osv.osv):
         includeStatuses=['confirmed','transmitted']
         stopFlag,allIDs=self._get_recursive_parts(cr, uid, ids, excludeStatuses, includeStatuses)
         self._action_ondocuments(cr,uid,allIDs,'draft')
-        return self.write(cr, uid, allIDs, defaults, context=context, check=False)
+        objId=self.write(cr, uid, allIDs, defaults, context=context, check=False)
+        if (objId):
+            self.wf_message_post(cr, uid, ids, body=_('Status moved to: Draft.'))
+        return objId
 
     def action_confirm(self,cr,uid,ids,context=None):
         """
@@ -447,7 +460,10 @@ class plm_component(osv.osv):
         includeStatuses=['draft']
         stopFlag,allIDs=self._get_recursive_parts(cr, uid, ids, excludeStatuses, includeStatuses)
         self._action_ondocuments(cr,uid,allIDs,'confirm')
-        return self.write(cr, uid, allIDs, defaults, context=context, check=False)
+        objId=self.write(cr, uid, allIDs, defaults, context=context, check=False)
+        if (objId):
+            self.wf_message_post(cr, uid, ids, body=_('Status moved to: Confirmed.'))
+        return objId
 
     def action_release(self,cr,uid,ids,context=None):
         """
@@ -465,10 +481,14 @@ class plm_component(osv.osv):
                 defaults['engineering_writable']=False
                 defaults['state']='obsoleted'
                 self.write(cr,uid,[last_id],defaults ,context=context,check=False)
+                self.wf_message_post(cr, uid, [last_id], body=_('Status moved to: Obsoleted.'))
             defaults['engineering_writable']=False
             defaults['state']='released'
         self._action_ondocuments(cr,uid,allIDs,'release')
-        return self.write(cr,uid,allIDs,defaults ,context=context,check=False)
+        objId = self.write(cr,uid,allIDs,defaults ,context=context,check=False)
+        if (objId):
+            self.wf_message_post(cr, uid, ids, body=_('Status moved to: Released.'))
+        return objId
 
     def action_obsolete(self,cr,uid,ids,context=None):
         """
@@ -481,7 +501,10 @@ class plm_component(osv.osv):
         includeStatuses=['released']
         stopFlag,allIDs=self._get_recursive_parts(cr, uid, ids, excludeStatuses, includeStatuses)
         self._action_ondocuments(cr,uid,allIDs,'obsolete')
-        return self.write(cr, uid, allIDs, defaults, context=context, check=False)
+        objId = self.write(cr, uid, allIDs, defaults, context=context, check=False)
+        if (objId):
+            self.wf_message_post(cr, uid, ids, body=_('Status moved to: Obsoleted.'))
+        return objId
 
     def action_reactivate(self,cr,uid,ids,context=None):
         """
@@ -494,7 +517,10 @@ class plm_component(osv.osv):
         includeStatuses=['obsoleted']
         stopFlag,allIDs=self._get_recursive_parts(cr, uid, ids, excludeStatuses, includeStatuses)
         self._action_ondocuments(cr,uid,allIDs,'reactivate')
-        return self.write(cr, uid, allIDs, defaults, context=context, check=False)
+        objId = self.write(cr, uid, allIDs, defaults, context=context, check=False)
+        if (objId):
+            self.wf_message_post(cr, uid, ids, body=_('Status moved to: Released.'))
+        return objId
 
 #   Overridden methods for this entity
     def create(self, cr, uid, vals, context=None):
@@ -551,7 +577,10 @@ class plm_component(osv.osv):
         defaults['engineering_writable']=True
         defaults['write_date']=None
         defaults['linkeddocuments']=[]
-        return super(plm_component,self).copy(cr,uid,oid,defaults,context=context)
+        objId = super(plm_component,self).copy(cr,uid,oid,defaults,context=context)
+        if (objId):
+            self.wf_message_post(cr, uid, [oid], body=_('Copied starting from : %s.' %previous_name))
+        return objId
 
     def unlink(self, cr, uid, ids, context=None):
         values={'state':'released',}
@@ -561,6 +590,7 @@ class plm_component(osv.osv):
             if len(existingID)>0:
                 oldObject=self.browse(cr, uid, existingID[0], context=context)
                 if oldObject.state in checkState:
+                    self.wf_message_post(cr, uid, [oldObject.id], body=_('Removed : Latest Revision.'))
                     if not self.write(cr, uid, [oldObject.id], values, context, check=False):
                         logging.warning("unlink : Unable to update state to old component ("+str(oldObject.engineering_code)+"-"+str(oldObject.engineering_revision)+").")
                         return False
