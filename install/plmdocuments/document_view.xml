@@ -40,47 +40,40 @@
 	               	</group>
 	                <notebook col="4" colspan="4">
 	                <page string="Attachment">
-	                	<sheet>
-		                	<group col="4" colspan="4">
-		                        <separator string="File Data" colspan="2"/>
-		                    	<group col="4" colspan="4">
-			                        <group col="2" colspan="2" attrs="{'invisible':[('type','=','url')]}">
-			                            <field name="datas" filename="datas_fname"/>
-			                            <field name="datas_fname" select="1"/>
-			                        </group>
-			                        <group col="2" colspan="2">
-			                            <field name="url" widget="url" attrs="{'invisible':[('type','=','binary')]}"/>
-			                        	<field name="type"/>
-			                        </group>
+	                	<group col="4" colspan="4">
+	                    	<group col="4" colspan="4" string="File Data">
+		                        <group col="2" colspan="2" attrs="{'invisible':[('type','=','url')]}">
+		                            <field name="datas" filename="datas_fname" />
+		                            <field name="datas_fname" select="1"/>
 		                        </group>
-		                        <group col="4" colspan="4">
-		                            <group col="2" colspan="2">
-		                        		<separator string="Attached To" colspan="2"/>
-		                        		<newline/>
-		                       			<field name="res_id" readonly="True"/>
-		                                <field name="res_model" readonly="True"/>
-		                            </group>
-		                            <group col="2" colspan="2">
-			                            <separator string="Related To" colspan="2"/>
-			                            <newline/>
-		                                <field name="res_name" readonly="1"/>
-		                             	<field name="partner_id"/>
-		                           	</group>
+		                        <group col="2" colspan="2">
+		                            <field name="url" widget="url" attrs="{'invisible':[('type','=','binary')]}"/>
+		                        	<field name="type"/>
 		                        </group>
-		                        <separator string="Created and Modified" colspan="4"/>
-			                        <group col="4" colspan="4">
-				                        <group col="2" colspan="2">
-				                            <field name="create_uid" readonly="1"/>
-				                            <field name="create_date" readonly="1"/>
-				                        </group>
-				                        <group col="2" colspan="2">
-				                            <field name="write_uid" readonly="1"/>
-				                            <field name="write_date" readonly="1"/>
-				                        </group>
-			                        </group>
-		                    </group>
-	                    </sheet>
-	                    <separator string="Preview" colspan="2"/>
+	                        </group>
+	                        <group col="4" colspan="4" string="Created and Modified">
+		                        <group col="2" colspan="2">
+		                            <field name="create_uid" readonly="1"/>
+		                            <field name="create_date" readonly="1"/>
+		                        </group>
+		                        <group col="2" colspan="2">
+		                            <field name="write_uid" readonly="1"/>
+		                            <field name="write_date" readonly="1"/>
+		                        </group>
+	                        </group>
+                            <group col="2" colspan="2" string="Attached To">
+                        		<newline/>
+                       			<field name="res_id" readonly="True"/>
+                                <field name="res_model" readonly="True"/>
+                            </group>
+                            <group col="2" colspan="2" string="Related To">
+	                            <newline/>
+                                <field name="res_name" readonly="1"/>
+                             	<field name="partner_id"/>
+                           	</group>
+                           	<separator/>
+                        </group>
+	                    <separator string="Preview Area" colspan="2"/>
 	                    <sheet>
 		                    <group col="4" colspan="4">
 	                    		<field
