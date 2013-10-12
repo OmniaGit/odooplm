@@ -60,7 +60,12 @@ Supported Editors :
         * ThinkDesign 2009.3 (and above)
         * SolidWorks 2011 (and above)
         * Inventor 2011 (and above)
-        
+        * SolidEdge ST4 (and above)
+
+    * Category : CAE / Electrical CAD
+    
+        * SPAC 2013 (needs SDProget connector license)
+       
     """,
     'data': [
         'board_plm_view.xml',
