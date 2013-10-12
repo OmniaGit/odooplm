@@ -630,12 +630,12 @@ class plm_document(osv.osv):
 #   Overridden methods for this entity
 
     _columns = {
-                'usedforspare': fields.boolean('Used for Spare',help="Drawings marked here will be used for Spare Part Manual"),
+                'usedforspare': fields.boolean('Used for Spare',help="Drawings marked here will be used printing Spare Part Manual report."),
                 'revisionid': fields.integer('Revision Index', required=True),
                 'writable': fields.boolean('Writable'),
                 'datas': fields.function(_data_get,method=True,fnct_inv=_data_set,string='File Content',type="binary"),
-                'printout': fields.binary('Printout Content'),
-                'preview': fields.binary('Preview Content'),
+                'printout': fields.binary('Printout Content', help="Print PDF content."),
+                'preview': fields.binary('Preview Content', help="Static preview."),
                 'state':fields.selection(USED_STATES,'Status',readonly="True",required=True),
     }    
 
