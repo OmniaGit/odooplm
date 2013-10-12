@@ -73,16 +73,16 @@
         <field name="priority" eval="10"/>
         <field name="arch" type="xml">
             <notebook position="inside">
-                 <page string="Engineering Infos">
-                     <group colspan="8" col="8" string="Part Number Area">
+            	<page string="Engineering Infos">
+                	<group colspan="8" col="8" string="Part Number Area">
                          <group colspan="4" col="4">
                           	<field name="engineering_code" select="1" attrs="{'readonly':[('state','!=','draft')]}" colspan="2"/>
                           	<field name="engineering_revision" readonly="True" colspan="2"/>
                          </group>
-                     </group>
+                    </group>
                     <group col="4" colspan="4">
 	                    <group col="2" colspan="2">
-							<separator string="LifeCycle" colspan="2"/>
+							<separator string="LifeCycle Status" colspan="2"/>
 							<field name="state"/>
 	                    </group>
                      	<group col="2" colspan="2">
@@ -91,40 +91,40 @@
 	                        <button name="correct" states="confirmed" string="Correct Component" icon="gtk-cancel"/>
 	                        <button name="confirm" states="draft" string="Confirm Component" icon="gtk-go-forward"/>
                      	</group>
-                     </group>
-                     <separator colspan="4" string="Normalization Area"/>
-                     <sheet>
-	                     <group colspan="4" col="4">
-	                     	 <separator/>
-		                     <group col="2" colspan="2">
-		                         <field name="std_description" on_change="on_change_stddesc(std_description)"/>
-		                     </group>
-	                     	 <group col="4" colspan="4">
-	                         	 <separator string="Technical Infos" colspan="4"/>
-	                             <field name="std_umc1" attrs="{'readonly':[('std_umc1','=',False)]}" />
-	                             <field name="std_value1" attrs="{'readonly':[('std_umc1','=',False)]}" on_change="on_change_stdvalue(std_description, std_umc1, std_value1, std_umc2, std_value2, std_umc3, std_value3)"/>
-	                             <field name="std_umc2"  attrs="{'readonly':[('std_umc2','=',False)]}" />
-	                             <field name="std_value2" attrs="{'readonly':[('std_umc2','=',False)]}" on_change="on_change_stdvalue(std_description, std_umc1, std_value1, std_umc2, std_value2, std_umc3, std_value3)"/>
-	                             <field name="std_umc3"  attrs="{'readonly':[('std_umc3','=',False)]}" />
-	                             <field name="std_value3" attrs="{'readonly':[('std_umc3','=',False)]}" on_change="on_change_stdvalue(std_description, std_umc1, std_value1, std_umc2, std_value2, std_umc3, std_value3)"/>
-	                         </group>
-	                         <group colspan="4" col="4">
-	                         	 <separator string="Technical Specifications" colspan="4"/>
-	                             <field name="tmp_material" on_change="on_change_tmpmater(tmp_material)"/>
-	                             <field name="tmp_surface"  on_change="on_change_tmpsurface(tmp_surface)"/>
-	                         </group>
-	                     </group>
-	                     <group colspan="4" col="4">
-	                         <separator string="TitleBlock Specifications" colspan="4"/>
-	                         <field name="engineering_material"/>
-	                         <field name="engineering_surface"/>
-	                         <newline/>
-	                     </group>
-                     </sheet>
-                 </page>
-                 <page string="Linked Documents">
-                     <field name="linkeddocuments"/>
-                 </page>
+                    </group>
+                    <separator colspan="4" string="Normalization Area"/>
+                    <sheet>
+	                	<group colspan="4" col="4">
+	                    	<separator/>
+		                    <group col="2" colspan="2">
+		                        <field name="std_description" on_change="on_change_stddesc(std_description)"/>
+		                    </group>
+	                     	<group col="4" colspan="4">
+	                        	<separator string="Technical Infos" colspan="4"/>
+	                            <field name="std_umc1" attrs="{'readonly':[('std_umc1','=',False)]}" />
+	                            <field name="std_value1" attrs="{'readonly':[('std_umc1','=',False)]}" on_change="on_change_stdvalue(std_description, std_umc1, std_value1, std_umc2, std_value2, std_umc3, std_value3)"/>
+	                            <field name="std_umc2"  attrs="{'readonly':[('std_umc2','=',False)]}" />
+	                            <field name="std_value2" attrs="{'readonly':[('std_umc2','=',False)]}" on_change="on_change_stdvalue(std_description, std_umc1, std_value1, std_umc2, std_value2, std_umc3, std_value3)"/>
+	                            <field name="std_umc3"  attrs="{'readonly':[('std_umc3','=',False)]}" />
+	                            <field name="std_value3" attrs="{'readonly':[('std_umc3','=',False)]}" on_change="on_change_stdvalue(std_description, std_umc1, std_value1, std_umc2, std_value2, std_umc3, std_value3)"/>
+	                        </group>
+	                        <group colspan="4" col="4">
+	                        	<separator string="Technical Specifications" colspan="4"/>
+	                            <field name="tmp_material" on_change="on_change_tmpmater(tmp_material)"/>
+	                            <field name="tmp_surface"  on_change="on_change_tmpsurface(tmp_surface)"/>
+	                        </group>
+	                    </group>
+	                    <group colspan="4" col="4">
+	                        <separator string="TitleBlock Specifications" colspan="4"/>
+	                        <field name="engineering_material"/>
+	                        <field name="engineering_surface"/>
+	                        <newline/>
+	                    </group>
+                    </sheet>
+                </page>
+                <page string="Linked Documents">
+                    <field name="linkeddocuments"/>
+                </page>
             </notebook>
         </field>
     </record>  
@@ -196,13 +196,20 @@
                    			</group>
                     		<newline/>
                    		</group>
-         	    		<separator colspan="4" col="1" string="WorkFlow Status"/>
-                        <field name="state" colspan="2"/>
-                        <group col="4" colspan="2">
-                            <button name="release" states="confirmed" string="Release Component" icon="gtk-apply"/>
-                            <button name="correct" states="confirmed" string="Correct Component" icon="gtk-cancel"/>
-                            <button name="confirm" states="draft" string="Confirm Component" icon="gtk-go-forward"/>
-                        </group>
+         	    		<separator colspan="4" col="1" />
+	                    <group col="4" colspan="4" string="LifeCycle Area">
+		                    <group col="2" colspan="2">
+								<separator string="LifeCycle Status" colspan="2"/>
+								<field name="state"/>
+		                    </group>
+	                     	<group col="2" colspan="2">
+	     	             		<separator colspan="2" string="WorkFlow Actions"/>
+		                        <button name="release" states="confirmed" string="Release Component" icon="gtk-apply"/>
+		                        <button name="correct" states="confirmed" string="Correct Component" icon="gtk-cancel"/>
+		                        <button name="confirm" states="draft" string="Confirm Component" icon="gtk-go-forward"/>
+	                     	</group>
+	                     </group>
+        	    		<separator colspan="4" col="1" />
                 	    <group colspan="4" col="2" string="Normalization Area">
                             <separator string="Standard Description" colspan="4"/>
                             <field colspan="4" name="std_description" nolabel="1" on_change="on_change_stddesc(std_description)"/>
