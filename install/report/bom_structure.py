@@ -30,6 +30,7 @@ import os
 import time
 from report import report_sxw
 from operator import itemgetter
+from tools.translate import _
 
 
 def _moduleName():
@@ -92,6 +93,7 @@ class bom_structure_all_custom_report(report_sxw.rml_parse):
         self.localcontext.update({
             'time': time,
             'get_children':self.get_children,
+            'bom_type':self.bom_type,
         })
 
     def get_children(self, object, level=0):
@@ -123,6 +125,10 @@ class bom_structure_all_custom_report(report_sxw.rml_parse):
 
         return children
 
+    def bom_type(self, object):
+        result=dict(self.pool.get(object._model._name).fields_get(self.cr, self.uid)['type']['selection']).get(object.type,'')
+        return _(result)
+
 report_sxw.report_sxw('report.plm.bom.structure.all','mrp.bom','/'+openerpModule+'/install/report/'+thisModule+'.rml',parser=bom_structure_all_custom_report,header='internal')
 
 
@@ -132,6 +138,7 @@ class bom_structure_one_custom_report(report_sxw.rml_parse):
         self.localcontext.update({
             'time': time,
             'get_children':self.get_children,
+            'bom_type':self.bom_type,
         })
 
     def get_children(self, object, level=0):
@@ -159,6 +166,10 @@ class bom_structure_one_custom_report(report_sxw.rml_parse):
 
         return children
 
+    def bom_type(self, object):
+        result=dict(self.pool.get(object._model._name).fields_get(self.cr, self.uid)['type']['selection']).get(object.type,'')
+        return _(result)
+
 report_sxw.report_sxw('report.plm.bom.structure.one','mrp.bom','/'+openerpModule+'/install/report/'+thisModule+'.rml',parser=bom_structure_one_custom_report,header='internal')
 
 
@@ -168,6 +179,7 @@ class bom_structure_all_sum_custom_report(report_sxw.rml_parse):
         self.localcontext.update({
             'time': time,
             'get_children':self.get_children,
+            'bom_type':self.bom_type,
         })
 
     def get_children(self, object, level=0):
@@ -213,6 +225,10 @@ class bom_structure_all_sum_custom_report(report_sxw.rml_parse):
 
         return result
 
+    def bom_type(self, object):
+        result=dict(self.pool.get(object._model._name).fields_get(self.cr, self.uid)['type']['selection']).get(object.type,'')
+        return _(result)
+
 report_sxw.report_sxw('report.plm.bom.structure.all.sum','mrp.bom','/'+openerpModule+'/install/report/'+thisModule+'.rml',parser=bom_structure_all_sum_custom_report,header='internal')
 
 class bom_structure_one_sum_custom_report(report_sxw.rml_parse):
@@ -221,6 +237,7 @@ class bom_structure_one_sum_custom_report(report_sxw.rml_parse):
         self.localcontext.update({
             'time': time,
             'get_children':self.get_children,
+            'bom_type':self.bom_type,
         })
 
     def get_children(self, object, level=0):
@@ -258,6 +275,10 @@ class bom_structure_one_sum_custom_report(report_sxw.rml_parse):
 
         return result
 
+    def bom_type(self, object):
+        result=dict(self.pool.get(object._model._name).fields_get(self.cr, self.uid)['type']['selection']).get(object.type,'')
+        return _(result)
+
 report_sxw.report_sxw('report.plm.bom.structure.one.sum','mrp.bom','/'+openerpModule+'/install/report/'+thisModule+'.rml',parser=bom_structure_one_sum_custom_report,header='internal')
 
 class bom_structure_leaves_custom_report(report_sxw.rml_parse):
@@ -267,6 +288,7 @@ class bom_structure_leaves_custom_report(report_sxw.rml_parse):
         self.localcontext.update({
             'time': time,
             'get_children':self.get_children,
+            'bom_type':self.bom_type,
         })
 
     def get_children(self, object, level=0):
@@ -307,5 +329,9 @@ class bom_structure_leaves_custom_report(report_sxw.rml_parse):
         _get_rec(object,level+1,1)
 
         return result
+
+    def bom_type(self, object):
+        result=dict(self.pool.get(object._model._name).fields_get(self.cr, self.uid)['type']['selection']).get(object.type,'')
+        return _(result)
 
 report_sxw.report_sxw('report.plm.bom.structure.leaves','mrp.bom','/'+openerpModule+'/install/report/'+thisModule+'.rml',parser=bom_structure_leaves_custom_report,header='internal')

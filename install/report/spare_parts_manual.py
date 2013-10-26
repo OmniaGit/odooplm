@@ -34,6 +34,7 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle,Paragraph
 from reportlab.lib.styles import getSampleStyleSheet
 from report import report_sxw
 from operator import itemgetter
+from tools.translate import _
 
 # NOTE : TO BE ADDED TO FINAL CONFIGURATION. NOT IN STANDARD PYTHON
 from report.pyPdf import PdfFileWriter, PdfFileReader
@@ -155,6 +156,7 @@ class bom_structure_one_sum_custom_report(report_sxw.rml_parse):
         self.localcontext.update({
             'time': time,
             'get_children':self.get_children,
+            'bom_type':self.bom_type,
         })
 
     def get_children(self, object, level=0):
@@ -191,6 +193,10 @@ class bom_structure_one_sum_custom_report(report_sxw.rml_parse):
         children=_get_rec(object,level+1)
 
         return result
+
+    def bom_type(self, object):
+        result=dict(self.pool.get(object._model._name).fields_get(self.cr, self.uid)['type']['selection']).get(object.type,'')
+        return _(result)
 
 HEADER=report_sxw.report_sxw("report.spare.parts.header", 
                             "product.product", 
