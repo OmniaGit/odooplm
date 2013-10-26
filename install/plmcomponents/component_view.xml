@@ -51,6 +51,7 @@
                     <filter string="Confirmed" icon="terp-stock_symbol-selection" domain="[('state', '=', 'confirmed')]"/>
                     <filter string="Released" icon="terp-stock_symbol-selection" domain="['|',('state', '=', 'released'),('state', '=', 'undermodify')]"/>
                     <filter string="Obsoleted" icon="terp-stock_symbol-selection" domain="[('state', '=', 'obsoleted')]"/>
+                    <filter string="Latest" name="latest" icon="terp-stock_symbol-selection" domain="[('state', 'not in', ['obsoleted','undermodify'])]"/>
 <!-- 
                    	<separator orientation="vertical"/>
                     <group expand="0" string="Group by..." groups="base.group_extended">
@@ -259,6 +260,7 @@
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
         <field name="view_id" ref="plm_component_base_tree"/>
+        <field name="context">{"search_default_latest":1}</field>      
         <field name="view_id_search" ref="plm_component_base_search"/>
     </record>
 

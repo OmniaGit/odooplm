@@ -161,6 +161,7 @@
                    		<separator orientation="vertical"/>
                    		<filter string="Confirmed" icon="terp-stock_symbol-selection" domain="[('state', '=', 'confirmed')]"/>
                    		<filter string="Released" icon="terp-stock_symbol-selection" domain="['|',('state', '=', 'released'),('state', '=', 'undermodify')]"/>
+                        <filter string="Latest" name="latest" icon="terp-stock_symbol-selection" domain="[('state', 'not in', ['obsoleted','undermodify'])]"/>
                     </group>
                     <newline/>
                     <group expand="0" string="Group By...">
@@ -174,9 +175,10 @@
 
     <record model="ir.actions.act_window" id="plm_action_document_form">
     	<field name="name">Documents</field>
-    	 <field name="res_model">plm.document</field>
+     	<field name="res_model">plm.document</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
+        <field name="context">{"search_default_latest":1}</field>      
     </record>
 
     <menuitem
