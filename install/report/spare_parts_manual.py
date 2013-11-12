@@ -23,23 +23,22 @@ import StringIO
 import os
 import random
 import string
-import pooler
 import base64
 import time
-from report.render import render
-from report.interface import report_int
+
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4,cm
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle,Paragraph
 from reportlab.lib.styles import getSampleStyleSheet
-from report import report_sxw
 from operator import itemgetter
-from tools.translate import _
-
-# NOTE : TO BE ADDED TO FINAL CONFIGURATION. NOT IN STANDARD PYTHON
-from report.pyPdf import PdfFileWriter, PdfFileReader
-# NOTE : TO BE ADDED TO FINAL CONFIGURATION. NOT IN STANDARD PYTHON
 from book_collector import BookCollector
+
+from openerp.report.render import render
+from openerp.report.interface import report_int
+from openerp.report import report_sxw
+from openerp.report.pyPdf import PdfFileWriter, PdfFileReader
+from openerp import pooler
+
 #constant
 FIRST_LEVEL=0
 BOM_SHOW_FIELDS=['Position','Code','Description','Quantity']

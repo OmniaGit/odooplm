@@ -24,9 +24,11 @@ import os
 import random
 import time
 import string
-import pooler
-from report.interface import report_int
+
 from book_collector import BookCollector,packDocuments
+from openerp.report.interface import report_int
+from openerp import pooler
+
 
 class component_custom_report(report_int):
     """

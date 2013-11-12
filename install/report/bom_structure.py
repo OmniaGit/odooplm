@@ -28,9 +28,10 @@
 ##############################################################################
 import os
 import time
-from report import report_sxw
 from operator import itemgetter
-from tools.translate import _
+
+from openerp.report import report_sxw
+from openerp.tools.translate import _
 
 
 def _moduleName():

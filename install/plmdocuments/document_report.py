@@ -20,8 +20,9 @@
 ##############################################################################
 
 
-from osv import fields,osv
-import tools
+from openerp.osv import osv, fields
+from openerp.tools.translate import _
+import openerp.tools as tools
 
 class report_plm_document_user(osv.osv):
     _name = "report.plm_document.user"

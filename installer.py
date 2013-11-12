@@ -20,12 +20,13 @@
 ##############################################################################
 
 import logging
-from osv import fields, osv
-from tools import config
-
 import base64
-import addons
 import difflib
+
+from openerp.osv import osv, fields
+from openerp.tools.translate import config
+import openerp.addons as addons
+
 
 class plm_installer(osv.osv_memory):
     _name='plm.installer'

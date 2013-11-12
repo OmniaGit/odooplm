@@ -1,12 +1,10 @@
+import base64
 import StringIO
 from reportlab.pdfgen import canvas
 
-# NOTE : TO BE ADDED TO FINAL CONFIGURATION. NOT IN STANDARD PYTHON
-from report.pyPdf import PdfFileWriter, PdfFileReader
-# NOTE : TO BE ADDED TO FINAL CONFIGURATION. NOT IN STANDARD PYTHON
+from openerp.report.pyPdf import PdfFileWriter, PdfFileReader
+from openerp.report.render import render
 
-from report.render import render
-import base64
 class BookCollector(object):
     def __init__(self,jumpFirst=True,customTest=False,bottomHeight=20):
         """

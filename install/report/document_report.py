@@ -19,10 +19,12 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from report.interface   import report_int
+
 from book_collector     import BookCollector,packDocuments
 import time
-import pooler
+
+from openerp.report.interface import report_int
+from openerp import pooler
 
 class document_custom_report(report_int):
     def create(self, cr, uid, ids, datas, context=None):

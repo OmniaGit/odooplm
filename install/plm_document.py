@@ -22,15 +22,15 @@
 import random
 import string
 import base64
-import tools
 import os, stat
 import logging
-
-from tools.translate import _
-from osv import osv, fields
-from osv.orm import except_orm
 import time
 from datetime import datetime
+
+from openerp.osv import osv, fields
+from openerp.osv.orm import except_orm
+from openerp.tools.translate import _
+import openerp.tools as tools
 
 # To be adequated to plm.component class states
 USED_STATES=[('draft','Draft'),('confirmed','Confirmed'),('released','Released'),('undermodify','UnderModify'),('obsoleted','Obsoleted')]

@@ -20,9 +20,9 @@
 #
 ##############################################################################
 
-from osv import osv, fields
-from tools.translate import _
 from types import *
+from openerp.osv import osv, fields
+from openerp.tools.translate import _
 
 # Customized Automation to standardize and normalize descriptions and characteristics.
 # It will allow to insert unit of measure (or label) and values, so to allow search on parts

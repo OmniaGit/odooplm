@@ -23,13 +23,14 @@ import StringIO
 import os
 import random
 import string
-import pooler
 import base64
-from report.render import render
-from report.interface import report_int
+
+from openerp.report.render import render
+from openerp.report.interface import report_int
+from openerp import pooler
 
 # NOTE : TO BE ADDED TO FINAL CONFIGURATION. NOT IN STANDARD PYTHON
-from report.pyPdf import PdfFileWriter, PdfFileReader
+from openerp.report.pyPdf import PdfFileWriter, PdfFileReader
 # NOTE : TO BE ADDED TO FINAL CONFIGURATION. NOT IN STANDARD PYTHON
 
 class external_pdf(render):

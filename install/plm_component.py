@@ -22,10 +22,11 @@
 import os
 import time
 import types
-from tools.translate import _
-from osv import osv, fields
 from datetime import datetime
 import logging
+
+from openerp.osv import osv, fields
+from openerp.tools.translate import _
 
 #USED_STATES=[('draft','Draft'),('confirmed','Confirmed'),('released','Released'),('undermodify','UnderModify'),('obsoleted','Obsoleted')]
 #STATEFORRELEASE=['confirmed']

@@ -20,8 +20,8 @@
 #
 ##############################################################################
 import os
-from osv import osv, fields
-from tools.translate import _
+from openerp.osv import osv, fields
+from openerp.tools.translate import _
 
 def _moduleName():
     path = os.path.dirname(__file__)
