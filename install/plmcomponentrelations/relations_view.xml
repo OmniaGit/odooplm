@@ -20,7 +20,7 @@
                     <newline/>
                     <field name="product_uos" groups="product.group_uos"/>
                     <field name="product_uos_qty" groups="product.group_uos"/>
-                    <field name="routing_id" select="2" groups="base.group_extended"/>
+                    <field name="routing_id" select="2" groups="mrp.group_mrp_routings"/>
                     <field name="type" />
                     <notebook colspan="4">
                         <page string="General Information">
@@ -35,7 +35,7 @@
                             <field name="date_stop" select="2"/>
                             <field name="product_rounding"/>
                             <field name="product_efficiency"/>
-                            <field colspan="4" name="property_ids" nolabel="2" groups="base.group_extended"/>
+                            <field colspan="4" name="property_ids" nolabel="2" />
                         </page>
                     </notebook>
                 </form>
@@ -63,7 +63,7 @@
                     <field name="product_uom"/>
                     <field name="weight_net"/>
                     <field name="method"/>
-                    <field name="routing_id" groups="base.group_extended"/>
+                    <field name="routing_id" groups="mrp.group_mrp_routings"/>
                     <field name="create_date" select="True"/>
                     <field name="date_start"/>
                     <field name="date_stop"/>
@@ -93,7 +93,7 @@
                     <field name="code" string="Reference"/>
                     <field name="source_id"  string="Source Relation Document"/>
                     <newline/>
-                    <group expand="0" string="Group By..." colspan="4" col="8" groups="base.group_extended">
+                    <group expand="0" string="Group By..." colspan="4" col="8" >
                         <filter string="Product" icon="terp-accessories-archiver" domain="[]" context="{'group_by':'product_id'}"/>
                         <filter string="Default UOM" icon="terp-mrp" domain="[]" context="{'group_by' : 'product_uom'}"/>
                         <separator orientation="vertical"/>
@@ -115,16 +115,43 @@
         		<field name="name" position="before">
                     <field name="itemnum"/>
         		</field>
-        		<field name="code" position="before">
-                    <field name="description"/>
+        		<field name="name" position="replace">
+                    <field name="name" select="True"/>
         		</field>
-        		<field name="product_qty" position="before">
+                 <field name="name" position="after">
+                	<field name="engineering_revision"/>
+                    <field name="bom_id" />
+                	<field name="description" select="True"/>
+                </field>
+                <field name="code" position="replace">
+                    <field name="code" invisible="1"/>
+                </field>
+                <field name="product_id" position="replace">
+                    <field name="product_id" invisible="1"/>
+                </field>
+                <field name="code" position="after">
                     <field name="source_id" string="Source Relation Document"/>
+                </field>
+        		<field name="product_qty" position="after">
+                   <field name="weight_net"/>
+                   <field name="product_uom"/>
         		</field>
         		<field name="type" position="before">
-                    <field name="weight_net"/>
+        			<field name="create_date" select="True"/>
+         		</field>
+       			<field name="method" position="replace">
+                    <field name="method" groups="mrp.group_mrp_routings"/>
         		</field>
-           </field>
+       		    <field name="routing_id" position="replace">
+                    <field name="routing_id" groups="mrp.group_mrp_routings"/>
+        		</field>
+        		<field name="date_start" position="replace">
+                    <field name="date_start" />
+        		</field>
+        		<field name="date_stop" position="replace">
+                    <field name="date_stop" />
+        		</field>
+             </field>
         </record>
 
 	<!-- Opening views from menu -->
@@ -189,7 +216,7 @@
                          <field name="company_id" groups="base.group_multi_company"/>
                     </group>
                     <newline/>
-                    <group expand="0" string="Group By..." colspan="4" col="8" groups="base.group_extended">
+                    <group expand="0" string="Group By..." colspan="4" col="8" >
                         <filter string="Product" icon="terp-accessories-archiver" domain="[]" context="{'group_by':'product_id'}"/>
                         <filter string='Default UOM' icon="terp-mrp" domain="[]" context="{'group_by' : 'product_uom'}" />
                         <separator orientation="vertical"/>
@@ -202,28 +229,43 @@
             </field>
         </record>
 
-       <record id="mrp_bom_component_tree_view" model="ir.ui.view">
-            <field name="name">mrp.bom.component.tree</field>
+        <record id="mrp_bom_tree_view_where" model="ir.ui.view">
+            <field name="name">mrp.bom.tree.where</field>
             <field name="model">mrp.bom</field>
-            <field name="type">tree</field>
-            <field name="field_parent">child_complete_ids</field>
+            <field name="field_parent">father_complete_ids</field>
             <field name="arch" type="xml">
                 <tree string="Bill of Materials" colors="blue:method">
                     <field name="sequence" invisible="1"/>
+                    <field name="itemnum"/>
                     <field name="name" string="Component Name"/>
-                    <field name="code"/>
-                    <field name="product_id" string="Component Product"/>
-                    <field name="bom_id"/>
+                    <field name="engineering_revision" string="Revision"/>
+                    <field name="bom_id" />
+                    <field name="description"/>
+                    <field name="code" invisible="1"/>
+                    <field name="source_id" string="Source Relation Document"/>
                     <field name="product_qty"/>
                     <field name="product_uom"/>
+                    <field name="weight_net"/>
+                    <field name="create_date" select="True"/>
                     <field name="type"/>
-                    <field name="method" groups="base.group_extended"/>
-                    <field name="routing_id" groups="base.group_extended"/>
-                    <field name="date_start" groups="base.group_extended"/>
-                    <field name="date_stop" groups="base.group_extended"/>
+                    <field name="method" groups="mrp.group_mrp_routings"/>
+                    <field name="routing_id" groups="mrp.group_mrp_routings"/>
+                    <field name="date_start" />
+                    <field name="date_stop" />
                 </tree>
             </field>
         </record>
+
+        <act_window
+            id="action_product_bom_structure_where"
+            name="Product BoM Where Used Structure"
+            domain="[('product_id', '=', active_id),('bom_id','!=',False)]"
+            context="{'default_product_id': active_id}"
+            view_type="tree"
+            view_mode="tree"
+            view_id="mrp_bom_tree_view_where"
+            res_model="mrp.bom"
+            src_model="product.product"/>
 
         <act_window
             id="action_product_bom_structure"
@@ -235,6 +277,7 @@
             view_id="mrp_bom_tree_view"
             res_model="mrp.bom"
             src_model="product.product"/>
+            
 
         <act_window
             domain="[('bom_id','=',False),('product_id', '=', active_id)]"
