@@ -68,10 +68,10 @@ Supported Editors :
        
     """,
     'data': [
-        'board_plm_view.xml',
+        'install/board_plm_view.xml',
         'security/base_plm_security.xml',
         'security/ir.model.access.csv',
-        'res_config_view.xml',
+        'install/res_config_view.xml',
         'install/plmdocuments/document_view.xml',
         'install/plmdocuments/document_workflow.xml',
         'install/plmdocuments/backupdoc_view.xml',

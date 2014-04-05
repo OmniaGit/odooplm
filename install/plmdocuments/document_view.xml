@@ -9,6 +9,12 @@
         <field name="type">form</field>
         <field name="arch" type="xml">
             <form string="Document"  version="7.0">
+               <header>
+                    <button name="release" states="confirmed" string="Release Document" icon="gtk-apply" class="oe_highlight"/>
+                    <button name="correct" states="confirmed" string="Correct Document" icon="gtk-cancel"/>
+                    <button name="confirm" states="draft" string="Confirm Document" icon="gtk-go-forward" class="oe_highlight"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,released" statusbar_colors='{"released":"red","confirmed":"red","draft":"blue"}' readonly="1"/>
+               </header>
                <sheet>
 	               <label for="name" class="oe_edit_only"/>
 	               <group colspan="4" col="4">
@@ -25,18 +31,6 @@
 			                    <field name="usedforspare" colspan="2"/>
 		                    </group>
 	                    </group>
-	                    <group col="4" colspan="4">
-		                    <group col="2" colspan="2">
-								<separator string="LifeCycle" colspan="2"/>
-								<field name="state"/>
-		                    </group>
-		                    <group col="2" colspan="2">
-								<separator string="Workflow Actions" colspan="2"/>
-		                        <button name="release" states="confirmed" string="Release Document" icon="gtk-apply"/>
-		                        <button name="correct" states="confirmed" string="Correct Document" icon="gtk-cancel"/>
-		                        <button name="confirm" states="draft" string="Confirm Document" icon="gtk-go-forward"/>
-		                    </group>
-                   		</group>
 	               	</group>
 	                <notebook col="4" colspan="4">
 	                <page string="Attachment">
@@ -160,7 +154,7 @@
                         </field>
                    		<separator orientation="vertical"/>
                    		<filter string="Confirmed" icon="terp-stock_symbol-selection" domain="[('state', '=', 'confirmed')]"/>
-                   		<filter string="Released" icon="terp-stock_symbol-selection" domain="['|',('state', '=', 'released'),('state', '=', 'undermodify')]"/>
+                   		<filter string="Released" icon="terp-stock_symbol-selection" domain="[('state', 'in', ['released','undermodify'])]"/>
                         <filter string="Latest" name="latest" icon="terp-stock_symbol-selection" domain="[('state', 'not in', ['obsoleted','undermodify'])]"/>
                     </group>
                     <newline/>

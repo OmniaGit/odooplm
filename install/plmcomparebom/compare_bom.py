@@ -68,6 +68,26 @@ class plm_compare_bom(osv.osv_memory):
                  'name': 'x',
     }
 
+    def default_get(self, cr, uid, fields, context=None):
+        """ To get default values for the object.
+        @param self: The object pointer.
+        @param cr: A database cursor
+        @param uid: ID of the user currently logged in
+        @param fields: List of fields for which we want default values
+        @param context: A standard dictionary
+        @return: A dictionary which of fields with values.
+        """
+        if context is None:
+            context = {}
+        record_ids = context.get('active_ids')
+        res={}
+        if len(record_ids)>0:
+            res['bom_id1'] = record_ids[0]
+        if len(record_ids)>1:
+            res['bom_id2'] = record_ids[1]
+
+        return res
+
     def action_compare_Bom(self, cr, uid, ids, context={}):
         """
             Create a new Spare Bom if doesn't exist (action callable from views)

@@ -40,4 +40,14 @@
                 header="False"
                 />
     </data>
+    <data>
+        <report id="report_product_product_spare_parts_pdf_one"
+                string="Print Spare Parts Manual One Level"
+                model="product.product"
+                name="product.product.spare.parts.pdf.one"
+                report_type="sxw"
+                file=""
+                header="False"
+                />
+    </data>
 </openerp>

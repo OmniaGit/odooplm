@@ -213,6 +213,9 @@ class component_spare_parts_report(report_int):
         Calculates the bom structure spare parts manual
     """   
     def create(self, cr, uid, ids, datas, context=None):
+        recursion=True
+        if self._Service__name == 'report.product.product.spare.parts.pdf.one':
+            recursion=False
         self.processedObjs=[]
         self.pool = pooler.get_pool(cr.dbname)
         componentType=self.pool.get('product.product')
@@ -226,7 +229,7 @@ class component_spare_parts_report(report_int):
             self.processedObjs=[]
             buf=self.getFirstPage(cr, uid, [component.id],context)
             output.addPage(buf)
-            self.getSparePartsPdfFile(cr, uid, context, component, output, componentType, bomType)
+            self.getSparePartsPdfFile(cr, uid, context, component, output, componentType, bomType,recursion)
         if output != None:
             pdf_string = StringIO.StringIO()
             output.collector.write(pdf_string)
@@ -236,7 +239,7 @@ class component_spare_parts_report(report_int):
             return (self.obj.pdf, 'pdf')
         return (False, '')    
    
-    def getSparePartsPdfFile(self, cr, uid, context, component, output, componentTemplate, bomTemplate):
+    def getSparePartsPdfFile(self, cr, uid, context, component, output, componentTemplate, bomTemplate,recursion):
         packedObjs=[]
         packedIds=[]
         if component in self.processedObjs:
@@ -260,9 +263,10 @@ class component_spare_parts_report(report_int):
                     pageStream=StringIO.StringIO()
                     pageStream.write(stream)
                     output.addPage(pageStream)
-                    for packedObj in packedObjs:
-                        if not packedObj in self.processedObjs:
-                            self.getSparePartsPdfFile(cr,uid,context,packedObj,output,componentTemplate,bomTemplate)   
+                    if recursion:
+                        for packedObj in packedObjs:
+                            if not packedObj in self.processedObjs:
+                                self.getSparePartsPdfFile(cr,uid,context,packedObj,output,componentTemplate,bomTemplate,recursion)   
  
     def getPdfComponentLayout(self,component):
         ret=[]
@@ -281,3 +285,5 @@ class component_spare_parts_report(report_int):
 
 
 component_spare_parts_report('report.product.product.spare.parts.pdf')
+
+component_spare_parts_report('report.product.product.spare.parts.pdf.one')

@@ -88,7 +88,10 @@ class plm_document(osv.osv):
             try:
                 isCheckedOutToMe=self._is_checkedout_for_me(cr, uid, objDoc.id, context)
                 if not(objDoc.datas_fname in listfiles):
-                    value = file(os.path.join(self._get_filestore(cr), objDoc.store_fname), 'rb').read()
+                    if (not objDoc.store_fname) and (objDoc.db_datas):
+                        value = objDoc.db_datas
+                    else:
+                        value = file(os.path.join(self._get_filestore(cr), objDoc.store_fname), 'rb').read()
                     result.append((objDoc.id, objDoc.datas_fname, base64.encodestring(value), isCheckedOutToMe, timeDoc))
                 else:
                     if forceFlag:
@@ -97,13 +100,16 @@ class plm_document(osv.osv):
                         timefile=time.mktime(datetime.strptime(str(datefiles[listfiles.index(objDoc.datas_fname)]),'%Y-%m-%d %H:%M:%S').timetuple())
                         isNewer=(timeSaved-timefile)>5
                     if (isNewer and not(isCheckedOutToMe)):
-                        value = file(os.path.join(self._get_filestore(cr), objDoc.store_fname), 'rb').read()
+                        if (not objDoc.store_fname) and (objDoc.db_datas):
+                            value = objDoc.db_datas
+                        else:
+                            value = file(os.path.join(self._get_filestore(cr), objDoc.store_fname), 'rb').read()
                         result.append((objDoc.id, objDoc.datas_fname, base64.encodestring(value), isCheckedOutToMe, timeDoc))
                     else:
-                        result.append((objDoc.id,objDoc.datas_fname,None, isCheckedOutToMe, timeDoc))
+                        result.append((objDoc.id,objDoc.datas_fname,False, isCheckedOutToMe, timeDoc))
             except Exception, ex:
                 logging.error("_data_get_files : Unable to access to document ("+str(objDoc.name)+"). Error :" + str(ex))
-                result.append((objDoc.id,objDoc.datas_fname,None, True, self.getServerTime(cr, uid, ids)))
+                result.append((objDoc.id,objDoc.datas_fname,False, True, self.getServerTime(cr, uid, ids)))
         return result
             
     def _data_get(self, cr, uid, ids, name, arg, context):
@@ -223,6 +229,8 @@ class plm_document(osv.osv):
                 collectable = isNewer and not(isCheckedOutToMe)
             else:
                 collectable = True
+            if (objDoc.file_size<1) and (objDoc.datas):
+                objDoc.file_size=len(objDoc.datas)
             result.append((objDoc.id, objDoc.datas_fname, objDoc.file_size, collectable, isCheckedOutToMe, timeDoc))
         return list(set(result))
             
@@ -636,7 +644,7 @@ class plm_document(osv.osv):
                 'datas': fields.function(_data_get,method=True,fnct_inv=_data_set,string='File Content',type="binary"),
                 'printout': fields.binary('Printout Content', help="Print PDF content."),
                 'preview': fields.binary('Preview Content', help="Static preview."),
-                'state':fields.selection(USED_STATES,'Status',readonly="True",required=True),
+                'state':fields.selection(USED_STATES,'Status', help="The status of the product.", readonly="True", required=True),
     }    
 
     _defaults = {
@@ -872,6 +880,16 @@ class plm_checkout(osv.osv):
         ('documentid', 'unique (documentid)', 'The documentid must be unique !') 
     ]
 
+    def _adjustRelations(self, cr, uid, oids, userid=False):
+        docRelType=self.pool.get('plm.document.relation')
+        if userid:
+            ids=docRelType.search(cr,uid,[('child_id','in',oids),('userid','=',False)])
+        else:
+            ids=docRelType.search(cr,uid,[('child_id','in',oids)])
+        if ids:
+            values={'userid':userid,}
+            docRelType.write(cr, uid, ids, values)
+
     def create(self, cr, uid, vals, context=None):
         if context!=None and context!={}:
             return False
@@ -882,6 +900,7 @@ class plm_checkout(osv.osv):
             logging.warning("create : Unable to check-out the required document ("+str(docID.name)+"-"+str(docID.revisionid)+").")
             raise osv.except_osv(_('Check-Out Error'), _("Unable to check-out the required document ("+str(docID.name)+"-"+str(docID.revisionid)+")."))
             return False
+        self._adjustRelations(cr, uid, [docID.id], uid)
         return super(plm_checkout,self).create(cr, uid, vals, context=context)   
          
     def unlink(self, cr, uid, ids, context=None):
@@ -892,13 +911,16 @@ class plm_checkout(osv.osv):
                 return False
         documentType=self.pool.get('plm.document')
         checkObjs=self.browse(cr, uid, ids, context=context)
+        docids=[]
         for checkObj in checkObjs:
             checkObj.documentid.writable=False
             values={'writable':False,}
+            docids.append(checkObj.documentid.id)
             if not documentType.write(cr, uid, [checkObj.documentid.id], values):
                 logging.warning("unlink : Unable to check-in the document ("+str(checkObj.documentid.name)+"-"+str(checkObj.documentid.revisionid)+").\n You can't change writable flag.")
                 raise osv.except_osv(_('Check-In Error'), _("Unable to Check-In the document ("+str(checkObj.documentid.name)+"-"+str(checkObj.documentid.revisionid)+").\n You can't change writable flag."))
                 return False
+        self._adjustRelations(cr, uid, docids, False)
         return super(plm_checkout,self).unlink(cr, uid, ids, context=context)
 
 plm_checkout()
@@ -912,9 +934,11 @@ class plm_document_relation(osv.osv):
                 'configuration':fields.char('Configuration Name',size=1024),
                 'link_kind': fields.char('Kind of Link',size=64, required=True),
                 'create_date':fields.datetime('Date Created', readonly=True),
+                'userid':fields.many2one('res.users', 'CheckOut User',readonly="True"), 
                }
     _defaults = {
-                 'link_kind': lambda *a: 'HiTree'
+                 'link_kind': lambda *a: 'HiTree',
+                 'userid': lambda *a: False,
     }
     _sql_constraints = [
         ('relation_uniq', 'unique (parent_id,child_id,link_kind)', 'The Document Relation must be unique !') 

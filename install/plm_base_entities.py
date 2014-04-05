@@ -35,7 +35,7 @@ class plm_component(osv.osv):
     _name = 'product.template'
     _inherit = 'product.template'
     _columns = {
-                'state':fields.selection(USED_STATES,'Status',readonly="True"),
+                'state':fields.selection(USED_STATES,'Status', help="The status of the product.", readonly="True"),
                 'engineering_code': fields.char('Part Number',size=64),
                 'engineering_revision': fields.integer('Revision', required=True),
                 'engineering_writable': fields.boolean('Writable'),
@@ -169,6 +169,10 @@ class plm_relation(osv.osv):
         ids=self.search(cr,uid,[('product_id','=',pid),('bom_id','!=',False),('source_id','!=',False),('type','=','ebom')])
         if not ids:
             ids=self.search(cr,uid,[('product_id','=',pid),('bom_id','!=',False),('source_id','!=',False),('type','=','normal')])
+        if not ids:
+            ids=self.search(cr,uid,[('product_id','=',pid),('bom_id','!=',False),('source_id','=',False),('type','=','ebom')])
+            if not ids:
+                ids=self.search(cr,uid,[('product_id','=',pid),('bom_id','!=',False),('source_id','=',False),('type','=','normal')])
         for obj in self.browse(cr,uid,ids,context=None):
             if obj.bom_id in counted:
                 continue
@@ -186,6 +190,10 @@ class plm_relation(osv.osv):
         ids=self.search(cr,uid,[('product_id','=',pid),('bom_id','=',False),('source_id','!=',False),('type','=','ebom')])
         if not ids:
             ids=self.search(cr,uid,[('product_id','=',pid),('bom_id','=',False),('source_id','!=',False),('type','=','normal')])
+        if not ids:
+            ids=self.search(cr,uid,[('product_id','=',pid),('bom_id','=',False),('source_id','=',False),('type','=','ebom')])
+            if not ids:
+                ids=self.search(cr,uid,[('product_id','=',pid),('bom_id','=',False),('source_id','=',False),('type','=','normal')])
         for obj in self.browse(cr,uid,list(set(ids)),context=None):
             counted.append(obj)
         return list(set(counted))
@@ -288,7 +296,6 @@ class plm_relation(osv.osv):
                 self._packed.append(bom_line.product_id.id)
                 output.append([bom_line.product_id.id, innerids])
         return(output)
-    
 
     def GetExploseSum(self, cr, uid, ids, context=None):
         """
@@ -425,6 +432,8 @@ class plm_relation(osv.osv):
                 if ('product_qty' in res):
                     if(type(res['product_qty'])!=types.FloatType) or (res['product_qty']<1e-6):
                         res['product_qty']=1.0
+                if not ('product_uom' in res):
+                    res['product_uom']=1
                 return self.create(cr, uid, res)
             except:
                 logging.error("saveChild :  unable to create a relation for part (%s) with source (%d) : %s." %(name,sourceID,str(args)))

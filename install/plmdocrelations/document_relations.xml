@@ -57,6 +57,7 @@
                     <field name="child_id" select="True"/>
                     <field name="child_revision" select="True"/>
                     <field name="child_state" select="True"/>
+                    <field name="userid" select="True"/>
                     <field name="configuration"/>
                     <field name="link_kind"  select="True"/>
                     <field name="create_date" invisible="True"/>

@@ -40,69 +40,7 @@ class plm_component(osv.osv):
     }
 
 #   Internal methods
-    def _extract_data(self,cr,uid,ids,allIDs, anag_fields=False, rel_fields=False):
-        """
-            action to be executed for Transmitted state.
-            Transmit the object to ERP Metodo
-        """
-        if not anag_fields:
-            anag_fields=['name','description']
-        if not rel_fields:
-            rel_fields=['bom_id','product_id','product_qty','itemnum']
 
-        outputpath=os.environ.get('TEMP')
-        tmppws=os.environ.get('OPENPLMOUTPUTPATH')
-        if tmppws!=None and os.path.exists(tmppws):
-            outputpath=tmppws
-
-        if outputpath==None:
-            return True
-        if not os.path.exists(outputpath):
-            raise osv.except_osv(_('Export Data Error'), _("Requested writing path (%s) doesn't exist." %(outputpath)))
-            return False 
-        fname=datetime.now().isoformat(' ').replace('.','').replace(':','').replace(' ','').replace('-','')+'.csv'
-        filename=os.path.join(outputpath,fname)
-        expData=self.export_data(cr, uid, allIDs,anag_fields)
-        if not self._export_csv(filename, anag_fields, expData, True):
-            raise osv.except_osv(_('Export Data Error'), _("Writing operations on file (%s) have failed." %(filename)))
-            return False
-        bomType=self.pool.get('mrp.bom')
-        for oic in self.browse(cr, uid, ids, context=None):
-            fname=str(oic.name)+'.csv'
-            filename=os.path.join(outputpath,fname)
-            relIDs=self._getExplodedBom(cr, uid, [oic.id], 1, 0)
-            if len(relIDs)>0:
-                expData=bomType.export_data(cr, uid, relIDs,rel_fields)
-                if not self._export_csv(filename, rel_fields, expData, True):
-                    raise osv.except_osv(_('Export Data Error'), _("No Bom extraction files was generated, about entity (%s)." %(fname)))
-                    return False
-        return True
-
-    def _export_csv(self, fname, fields, result, write_title=False):
-        import csv
-        if not 'datas' in result:
-            logging.error("_export_csv : No 'datas' in result.")
-            return False
-        try:
-            fp = file(fname, 'wb+')
-            writer = csv.writer(fp)
-            if write_title:
-                writer.writerow(fields)
-            results=result['datas']
-            for datas in results:
-                row = []
-                for data in datas:
-                    if type(data)==types.StringType:
-                        row.append(data.replace('\n',' ').replace('\t',' '))
-                    else:
-                        row.append(data or '')
-                writer.writerow(row)
-            fp.close()
-            return True
-        except IOError, (errno, strerror):
-            logging.error("_export_csv : IOError : "+str(errno)+" ("+str(strerror)+").")
-            return False
-           
     def _getbyrevision(self, cr, uid, name, revision):
         result=None
         results=self.search(cr,uid,[('engineering_code','=',name),('engineering_revision','=',revision)])
