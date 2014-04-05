@@ -139,10 +139,8 @@
         		<field name="type" position="before">
         			<field name="create_date" select="True"/>
          		</field>
-       			<field name="method" position="replace">
-                    <field name="method" groups="mrp.group_mrp_routings"/>
-        		</field>
        		    <field name="routing_id" position="replace">
+                    <field name="method" groups="mrp.group_mrp_routings"/>
                     <field name="routing_id" groups="mrp.group_mrp_routings"/>
         		</field>
         		<field name="date_start" position="replace">
