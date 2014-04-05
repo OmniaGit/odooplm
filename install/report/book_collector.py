@@ -1,4 +1,4 @@
-import base64
+import os
 import StringIO
 from reportlab.pdfgen import canvas
 
