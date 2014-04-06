@@ -26,7 +26,7 @@
     'website': 'http://www.omniasolutions.eu',
     'category': 'Product Lifecycle Management',
     'sequence': 15,
-    'summary': 'PLM Connector with main CAD editors',
+    'summary': 'PLM Integration with main CAD editors',
     'images': ['images/EngineeringPart.jpeg','images/OpenComponent.jpeg','images/OpenDocument.jpeg'],
     'depends': ['base', 'process','board','document','product','mrp'],
     'description': """
