@@ -236,12 +236,8 @@ class plm_relation(osv.osv):
         if len(relids)<1:
             return relationDatas
         setobj=self.pool.get('mrp.bom')
-        tmpDatas=setobj.read(cr, uid, relids.values())
-        for tmpData in tmpDatas:
-            bufDatas[tmpData['id']]=tmpData
-
         for keyData in relids.keys():
-            relationDatas[keyData]=bufDatas[relids[keyData]]
+            relationDatas[keyData]=setobj.read(cr, uid, relids[keyData])
         return relationDatas
 
     def _bomid(self, cr, uid, pid, sid=None):
