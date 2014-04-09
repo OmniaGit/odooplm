@@ -247,12 +247,8 @@ class plm_component(osv.osv):
         if not checkObj:
             return False
         bomType=self.pool.get('mrp.bom')
-        if checkObj.engineering_revision:
-            objBoms=bomType.search(cr, uid, [('name','=',checkObj.name),('engineering_revision','=',checkObj.engineering_revision),('type','=','normal'),('bom_id','=',False)])
-            idBoms=bomType.search(cr, uid, [('name','=',checkObj.name),('engineering_revision','=',checkObj.engineering_revision),('type','=','ebom'),('bom_id','=',False)])
-        else:
-            objBoms=bomType.search(cr, uid, [('name','=',checkObj.name),('type','=','normal'),('bom_id','=',False)])
-            idBoms=bomType.search(cr, uid, [('name','=',checkObj.name),('type','=','ebom'),('bom_id','=',False)])
+        objBoms=bomType.search(cr, uid, [('product_id','=',idd),('type','=','normal'),('bom_id','=',False)])
+        idBoms=bomType.search(cr, uid, [('product_id','=',idd),('type','=','ebom'),('bom_id','=',False)])
 
         if not objBoms:
             if idBoms:
@@ -265,7 +261,7 @@ class plm_component(osv.osv):
                     for bom_line in list(set(oidBom.bom_lines) ^ set(ok_rows)):
                         bomType.unlink(cr,uid,[bom_line.id],context=None)
                     for bom_line in ok_rows:
-                        bomType.write(cr,uid,[bom_line.id],{'type':'normal','source_id':False,'name':bom_line.name.replace(' (copy)',''),'product_qty':bom_line.product_qty,},context=None)
+                        bomType.write(cr,uid,[bom_line.id],{'type':'normal','source_id':False,'name':bom_line.product_id.name,'product_qty':bom_line.product_qty,},context=None)
                         self._create_normalBom(cr, uid, bom_line.product_id.id, context)
         else:
             for bom_line in bomType.browse(cr,uid,objBoms[0],context=context).bom_lines:
