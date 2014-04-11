@@ -910,7 +910,9 @@ class plm_checkout(osv.osv):
             raise osv.except_osv(_('Check-Out Error'), _("Unable to check-out the required document ("+str(docID.name)+"-"+str(docID.revisionid)+")."))
             return False
         self._adjustRelations(cr, uid, [docID.id], uid)
-        return super(plm_checkout,self).create(cr, uid, vals, context=context)   
+        newID = super(plm_checkout,self).create(cr, uid, vals, context=context)   
+        self.wf_message_post(cr, uid, [docID.id], body=_('Checked-Out'))
+        return newID
          
     def unlink(self, cr, uid, ids, context=None):
         if context!=None and context!={}:
@@ -930,7 +932,9 @@ class plm_checkout(osv.osv):
                 raise osv.except_osv(_('Check-In Error'), _("Unable to Check-In the document ("+str(checkObj.documentid.name)+"-"+str(checkObj.documentid.revisionid)+").\n You can't change writable flag."))
                 return False
         self._adjustRelations(cr, uid, docids, False)
-        return super(plm_checkout,self).unlink(cr, uid, ids, context=context)
+        dummy = super(plm_checkout,self).unlink(cr, uid, ids, context=context)
+        self.wf_message_post(cr, uid, ids, body=_('Checked-In'))
+        return dummy
 
 plm_checkout()
 
