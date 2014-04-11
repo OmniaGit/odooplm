@@ -911,7 +911,7 @@ class plm_checkout(osv.osv):
             return False
         self._adjustRelations(cr, uid, [docID.id], uid)
         newID = super(plm_checkout,self).create(cr, uid, vals, context=context)   
-        self.wf_message_post(cr, uid, [docID.id], body=_('Checked-Out'))
+        documentType.wf_message_post(cr, uid, [docID.id], body=_('Checked-Out'))
         return newID
          
     def unlink(self, cr, uid, ids, context=None):
@@ -933,7 +933,7 @@ class plm_checkout(osv.osv):
                 return False
         self._adjustRelations(cr, uid, docids, False)
         dummy = super(plm_checkout,self).unlink(cr, uid, ids, context=context)
-        self.wf_message_post(cr, uid, ids, body=_('Checked-In'))
+        documentType.wf_message_post(cr, uid, [checkObj.documentid.id], body=_('Checked-In'))
         return dummy
 
 plm_checkout()
