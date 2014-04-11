@@ -424,6 +424,7 @@ class plm_document(osv.osv):
         """
         oid, message = request
         self.wf_message_post(cr, uid, [oid], body=_(message))
+        return False
 
     def UpdateDocuments(self, cr, uid, documents, default=None, context=None):
         """

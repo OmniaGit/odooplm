@@ -85,6 +85,7 @@ class plm_component(osv.osv):
         """
         oid, message = request
         self.wf_message_post(cr, uid, [oid], body=_(message))
+        return False
 
     def getLastTime(self, cr, uid, oid, default=None, context=None):
         return self.getUpdTime(self.browse(cr, uid, oid, context=context))
