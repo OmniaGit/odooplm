@@ -258,8 +258,8 @@ class plm_document(osv.osv):
         defaults['state']='draft'
         defaults['writable']=True
         newID=super(plm_document,self).copy(cr,uid,oid,defaults,context=context)
-        if (objId):
-            self.wf_message_post(cr, uid, [oid], body=_('Copied starting from : %s.' %previous_name))
+        if (newID):
+            self.wf_message_post(cr, uid, [newID], body=_('Copied starting from : %s.' %previous_name))
         if docRelIds:
             # create all the document relation
             brwEnts=documentRelation.browse(cr,uid,docRelIds,context=context)
