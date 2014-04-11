@@ -417,6 +417,14 @@ class plm_document(osv.osv):
             retValues.append(document)
         return retValues 
 
+
+    def RegMessage(self, cr, uid, request, default=None, context=None):
+        """
+            Registers a message for requested document
+        """
+        oid, message = request
+        self.wf_message_post(cr, uid, [oid], body=_(message))
+
     def UpdateDocuments(self, cr, uid, documents, default=None, context=None):
         """
             Save or Update Documents

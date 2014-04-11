@@ -79,6 +79,13 @@ class plm_component(osv.osv):
         result.extend(bufferdata)
         return list(set(result))
 
+    def RegMessage(self, cr, uid, request, default=None, context=None):
+        """
+            Registers a message for requested component
+        """
+        oid, message = request
+        self.wf_message_post(cr, uid, [oid], body=_(message))
+
     def getLastTime(self, cr, uid, oid, default=None, context=None):
         return self.getUpdTime(self.browse(cr, uid, oid, context=context))
 
