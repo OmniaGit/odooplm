@@ -13,7 +13,7 @@
                     <button name="release" states="confirmed" string="Release Document" icon="gtk-apply" class="oe_highlight"/>
                     <button name="correct" states="confirmed" string="Correct Document" icon="gtk-cancel"/>
                     <button name="confirm" states="draft" string="Confirm Document" icon="gtk-go-forward" class="oe_highlight"/>
-                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,released" statusbar_colors='{"released":"red","confirmed":"red","draft":"blue"}' readonly="1"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,released" statusbar_colors='{"undermodify":"red","obsoleted":"red"}' readonly="1"/>
                </header>
                <sheet>
 	               <label for="name" class="oe_edit_only"/>
