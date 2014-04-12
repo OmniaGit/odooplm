@@ -476,16 +476,16 @@ class plm_component(osv.osv):
         else:
             vals['engineering_code'] = vals['name']
         if ('name' in vals) and ('engineering_revision' in vals):
-            if vals['engineering_revision'] > 0:
-                vals['name']=vals['name'].replace(' (copy)','')
-        if len(existingIDs)>0:
-            return existingIDs[len(existingIDs)-1]           #TODO : Manage search for highest revisonid
-        else:
-            try:
-                return super(plm_component,self).create(cr, uid, vals, context=context)
-            except:
-                raise Exception(_("It has tried to create %s , %s"%(str(vals['name']),str(vals))))
-                return False
+            existObjs=self.browse(cr,uid,existingIDs,context=context)
+            if existObjs:
+                existObj=existObjs[0]
+                if vals['engineering_revision'] > existObj.engineering_revision:
+                    vals['name']=existObj.name
+        try:
+            return super(plm_component,self).create(cr, uid, vals, context=context)
+        except:
+            raise Exception(_("It has tried to create %s , %s"%(str(vals['name']),str(vals))))
+            return False
          
     def write(self, cr, uid, ids, vals, context=None, check=True):
 #        checkState=('confirmed','released','undermodify','obsoleted')
