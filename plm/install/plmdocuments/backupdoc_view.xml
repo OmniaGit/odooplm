@@ -15,6 +15,8 @@
                     <field name="revisionid" readonly="True"/>
                     <field name="createdate" readonly="True"/>
                     <field name="userid" readonly="True"/>
+                	<field name="state" select="1"/>
+                	<field name="existingfile" select="1"/>
                 </group>
                 <newline/>
                 <separator colspan="4" string="Preview"/>
@@ -56,9 +58,9 @@
                 <field name="userid">
                 	<filter icon="terp-personal" domain="[('userid','=',uid)]" help="Filter on my documents"/>
                 </field>
-              	<field name="createdate"/>
-            	<field name="existingfile"/>
-              	<field name="documentid"/>
+                <group expand="0" string="Group By...">
+                    <filter string="Create Date" icon="terp-personal" domain="[]" context="{'group_by':'createdate'}"/>
+                </group>
             </search>
      	</field>
     </record>
@@ -74,7 +76,7 @@
                 <field name="createdate" select="1"/>
                 <field name="documentid" select="1"/>
                 <field name="revisionid" select="1"/>
-                <field name="existingfile" select="1"/>
+                <field name="state" select="1"/>
             </tree>
         </field>
     </record>

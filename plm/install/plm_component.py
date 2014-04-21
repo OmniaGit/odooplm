@@ -168,21 +168,24 @@ class plm_component(osv.osv):
         """
         newID=None
         newIndex=0
-        for oldObject in self.browse(cr, uid, ids, context=context):
-            newIndex=int(oldObject.engineering_revision)+1
-            defaults={}
-            defaults['engineering_writable']=False
-            defaults['state']='undermodify'
-            self.write(cr, uid, [oldObject.id], defaults, context=context, check=False)
-            # store updated infos in "revision" object
-            defaults['name']=oldObject.name                 # copy function needs an explicit name value
-            defaults['engineering_revision']=newIndex
-            defaults['engineering_writable']=True
-            defaults['state']='draft'
-            defaults['linkeddocuments']=[]                  # Clean attached documents for new revision object
-            newID=self.copy(cr, uid, oldObject.id, defaults, context=context)
-            self.wf_message_post(cr, uid, [oldObject.id], body=_('Created : New Revision.'))
-            # create a new "old revision" object
+        for tmpObject in self.browse(cr, uid, ids, context=context):
+            latestIDs=self.GetLatestIds(cr, uid,[(tmpObject.engineering_code,tmpObject.engineering_revision,False)], context=context)
+            for oldObject in self.browse(cr, uid, latestIDs, context=context):
+                newIndex=int(oldObject.engineering_revision)+1
+                defaults={}
+                defaults['engineering_writable']=False
+                defaults['state']='undermodify'
+                self.write(cr, uid, [oldObject.id], defaults, context=context, check=False)
+                # store updated infos in "revision" object
+                defaults['name']=oldObject.name                 # copy function needs an explicit name value
+                defaults['engineering_revision']=newIndex
+                defaults['engineering_writable']=True
+                defaults['state']='draft'
+                defaults['linkeddocuments']=[]                  # Clean attached documents for new revision object
+                newID=self.copy(cr, uid, oldObject.id, defaults, context=context)
+                self.wf_message_post(cr, uid, [oldObject.id], body=_('Created : New Revision.'))
+                # create a new "old revision" object
+                break
             break
         return (newID, newIndex) 
 

@@ -52,7 +52,6 @@
                     <filter string="Released" icon="terp-stock_symbol-selection" domain="[('state', 'in', ['released','undermodify'])]"/>
                     <filter string="Obsoleted" icon="terp-stock_symbol-selection" domain="[('state', '=', 'obsoleted')]"/>
                     <filter string="Latest" name="latest" icon="terp-stock_symbol-selection" domain="[('state', 'not in', ['obsoleted','undermodify'])]"/>
-<!-- 
                    	<separator orientation="vertical"/>
                     <group expand="0" string="Group by..." groups="base.group_extended">
                        <filter string="Category" icon="terp-stock_symbol-selection" domain="[]" context="{'group_by' : 'categ_id'}"/>
@@ -61,7 +60,6 @@
                        <separator orientation="vertical"/>
                        <filter string="Type" icon="terp-stock_symbol-selection" domain="[]" context="{'group_by' : 'type'}"/>
                    </group>
--->
                 </search>
          </field>
     </record>

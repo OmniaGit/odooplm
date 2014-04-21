@@ -328,15 +328,18 @@ class plm_document(osv.osv):
             create a new revision of the document
         """
         newID=None
-        for oldObject in self.browse(cr,uid,ids,context=context):
-            self.write(cr,uid,[oldObject.id],{'state':'undermodify',} ,context=context,check=False)
-            defaults={}
-            defaults['name']=oldObject.name
-            defaults['revisionid']=int(oldObject.revisionid)+1
-            defaults['writable']=True
-            defaults['state']='draft'
-            newID=super(plm_document,self).copy(cr,uid,oldObject.id,defaults,context=context)
-            self.wf_message_post(cr, uid, [oldObject.id], body=_('Created : New Revision.'))
+        for tmpObject in self.browse(cr, uid, ids, context=context):
+            latestIDs=self.GetLatestIds(cr, uid,[(tmpObject.name,tmpObject.revisionid,False)], context=context)
+            for oldObject in self.browse(cr, uid, latestIDs, context=context):
+                self.write(cr,uid,[oldObject.id],{'state':'undermodify',} ,context=context,check=False)
+                defaults={}
+                defaults['name']=oldObject.name
+                defaults['revisionid']=int(oldObject.revisionid)+1
+                defaults['writable']=True
+                defaults['state']='draft'
+                newID=super(plm_document,self).copy(cr,uid,oldObject.id,defaults,context=context)
+                self.wf_message_post(cr, uid, [oldObject.id], body=_('Created : New Revision.'))
+                break
             break
         return (newID, defaults['revisionid']) 
     
@@ -1012,6 +1015,7 @@ class plm_backupdoc(osv.osv):
                 'existingfile':fields.char('Physical Document Location',size=1024), 
                 'documentid':fields.many2one('plm.document', 'Related Document', ondelete='cascade'), 
                 'revisionid': fields.related('documentid','revisionid',type="integer",relation="plm.document",string="Revision",store=False),
+                'state': fields.related('documentid','state',type="char",relation="plm.document",string="Status",store=False),
                 'printout': fields.binary('Printout Content'),
                 'preview': fields.binary('Preview Content'),
     }
