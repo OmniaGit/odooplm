@@ -30,7 +30,10 @@ from openerp.osv import osv, fields
 from openerp.tools.translate import _
 
 def normalize(value):
-    return unicode(str(value).replace('"','\"').replace("'",'\"').replace("%","%%").strip(), 'Latin1')
+    if type(value)==types.StringType or type(value)==types.UnicodeType:
+        return unicode(str(value).replace('"','\"').replace("'",'\"').replace("%","%%").strip(), 'Latin1')
+    else:
+        return str(value).strip()
 
 class plm_temporary(osv.osv_memory):
     _inherit = "plm.temporary"
@@ -167,7 +170,7 @@ class plm_component(osv.osv):
         operation=False
         reportStatus='Failed'
         updateDate=self.get_last_session
-        logging.debug("[TransferData] Start : %s" %(str(updateDate)))
+        logging.debug("[TransferData] Start : %r" %(updateDate))
         transfer=self.get_data_transfer
         datamap=self.get_part_data_transfer['fields']
         datatyp=self.get_part_data_transfer['types']
@@ -200,7 +203,7 @@ class plm_component(osv.osv):
             updateDate=self.set_last_session
             reportStatus='Successful'
             
-        logging.debug("[TransferData] %s End : %s" %(reportStatus,str(updateDate)))
+        logging.debug("[TransferData] %r End : %r." %(reportStatus,updateDate))
         return False
 
     def query_data(self, cr, uid, updateDate, statuses=[]):
