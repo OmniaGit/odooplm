@@ -60,7 +60,7 @@ Supported Editors :
         * ThinkDesign 2009.3 (and above)
         * SolidWorks 2011 (and above)
         * Inventor 2011 (and above)
-        * SolidEdge ST4 (and above)
+        * SolidEdge ST3 (and above)
 
     * Category : CAE / Electrical CAD
     
