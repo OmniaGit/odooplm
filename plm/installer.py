@@ -35,33 +35,33 @@ class plm_installer(osv.osv_memory):
 
     def default_get(self, cr, uid, fields, context=None):
         data=super(plm_installer, self).default_get(cr, uid, fields, context)
-        data['exe_file']='http://sourceforge.net/projects/openerpplm/files/Client/ClientIntegration/OpenErpPlm.exe/download'
+        data['exe_file']='http://sourceforge.net/projects/openerpplm/files/Client/OdooPlm(x64).exe/download'
         return data
 
     _columns={
         'name':fields.char('File name', size=34),
         'exe_name':fields.char('File name', size=128),
-        'openerpplm':fields.boolean('OpenErp PLM Plug-in', help="Product Life-Cycle Management Module."),
-        'exe_file':fields.char('OpenErp PLM File download', size=128, readonly=True, help="Product Life-Cycle Management Client file. Save this file and install this application."),
+        'plm':fields.boolean('Odoo PLM Plug-in', help="Product Life-Cycle Management Module."),
+        'exe_file':fields.char('Odoo PLM File download', size=128, readonly=True, help="Product Life-Cycle Management Client file. Save this file and install this application."),
         'description':fields.text('Description', readonly=True)
     }
 
     _defaults={
-        'openerpplm' : False,
-        'name' : 'OpenErpPlm.exe',
+        'plm' : False,
+        'name' : 'OdooPlm.exe',
         'description' : """
         To complete your installation follow these notes :
          
-        * Configure OpenErp access capabilty adding Users to the group 'PLM / Integration' before to use Clients.
+        * Configure Odoo access capabilty adding Users to the group 'PLM / Integration' before to use Clients.
         
-        * Download the OpenErp PLM Client file.
+        * Download the Odoo PLM Client file.
         * Follow these steps to install Product Life-Cycle Management Client.
-            1. Double click on OpenErp PLM Client file.
+            1. Double click on Odoo PLM Client file.
             2. Select language.
             3. Select the directory where to install integrations.
             4. Select the editor that has to be connected.
         
-        * At editor startup OpenERP PLM menu and toolbar will be automatically loaded.
+        * At editor startup Odoo PLM menu and toolbar will be automatically loaded.
         * At first time execution :
             1. Click on Login button.
             2. Insert data connection.

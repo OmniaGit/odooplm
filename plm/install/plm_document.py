@@ -420,7 +420,6 @@ class plm_document(osv.osv):
             retValues.append(document)
         return retValues 
 
-
     def RegMessage(self, cr, uid, request, default=None, context=None):
         """
             Registers a message for requested document
