@@ -90,6 +90,7 @@
                    	<separator orientation="vertical"/>
                     <field name="name"/>
                     <field name="description"/>
+                    <field name="product_id"/>
                     <field name="code" string="Reference"/>
                     <field name="source_id"  string="Source Relation Document"/>
                     <newline/>
