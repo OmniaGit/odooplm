@@ -479,16 +479,19 @@ class plm_component(osv.osv):
                 vals['engineering_code'] = vals['name']
         else:
             vals['engineering_code'] = vals['name']
-#         if ('name' in vals) and ('engineering_revision' in vals):
-#             existObjs=self.browse(cr,uid,existingIDs,context=context)
-#             if existObjs:
-#                 existObj=existObjs[0]
-#                 if vals['engineering_revision'] > existObj.engineering_revision:
-#                     vals['name']=existObj.name
-#                 else:
-#                     return existingIDs[0]#         if ('name' in vals) and ('engineering_revision' in vals):
+
         if ('name' in vals) and existingIDs:
-            return existingIDs[len(existingIDs)-1]
+            existObj=existingIDs[len(existingIDs)-1]
+            if ('engineering_revision' in vals):
+                existObjs=self.browse(cr,uid,existingIDs,context=context)
+                if existObjs:
+                    if vals['engineering_revision'] > existObj.engineering_revision:
+                        vals['name']=existObj.name
+                    else:
+                        return existObj
+            else:
+                return existObj
+            
         try:
             return super(plm_component,self).create(cr, uid, vals, context=context)
         except:
