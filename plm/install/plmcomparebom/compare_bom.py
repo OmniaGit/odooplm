@@ -182,7 +182,7 @@ class plm_compare_bom(osv.osv_memory):
         changesA=([],[],[],{},{})
         changesB=([],[],[],{},{})
  
-        fields=['name']                   # Evaluate differences
+        fields=['name','engineering_revision']                   # Evaluate differences
         boolfields=['name','itemnum','product_qty'] # Evaluate changes
 
         differs=self._differs_Bom(cr, uid, oid1, oid2, fields)
