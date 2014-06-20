@@ -214,7 +214,7 @@ class component_spare_parts_report(report_int):
     """   
     def create(self, cr, uid, ids, datas, context=None):
         recursion=True
-        if self._Service__name == 'report.product.product.spare.parts.pdf.one':
+        if self._report_int__name== 'report.product.product.spare.parts.pdf.one':
             recursion=False
         self.processedObjs=[]
         self.pool = pooler.get_pool(cr.dbname)
