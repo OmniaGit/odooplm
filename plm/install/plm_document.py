@@ -967,13 +967,12 @@ class plm_document_relation(osv.osv):
             res={}
             for relation in relations:
                 res['parent_id'],res['child_id'],res['configuration'],res['link_kind']=relation
+                link=[('link_kind','=',res['link_kind'])]
                 if (res['link_kind']=='LyTree') or (res['link_kind']=='RfTree'):
-                    to_remove=res['child_id']
-                    criteria='child_id'
+                    criteria=[('child_id','=',res['child_id'])]
                 else:
-                    to_remove=res['parent_id']
-                    criteria='parent_id'
-                ids=self.search(cr,uid,[(criteria,'=',to_remove),('link_kind','=',res['link_kind'])])
+                    criteria=[('parent_id','=',res['parent_id']),('child_id','=',res['child_id'])]
+                ids=self.search(cr,uid,criteria+link)
                 self.unlink(cr,uid,ids)
 
         def saveChild(args):
