@@ -81,7 +81,9 @@ class plm_component(osv.osv):
             sourceBomType=context['sourceBomType']
         bomType=self.pool.get('mrp.bom')
         objBoms=bomType.search(cr, uid, [('product_id','=',idd),('type','=','spbom'),('bom_id','=',False)])
-        idBoms=bomType.search(cr, uid, [('product_id','=',idd),('type','=',sourceBomType),('bom_id','=',False)])
+        idBoms=bomType.search(cr, uid, [('product_id','=',idd),('type','=','normal'),('bom_id','=',False)])
+        if not idBoms:
+            idBoms=bomType.search(cr, uid, [('product_id','=',idd),('type','=',sourceBomType),('bom_id','=',False)])
 
         defaults={}
         if not objBoms:
@@ -110,7 +112,7 @@ plm_component()
 class plm_description(osv.osv):
     _inherit = "plm.description"
     _columns = {
-                'bom_tmpl': fields.many2one('mrp.bom','Template BOM', required=False, change_default=True, help="Select a template BOM to drive Spare BOM."),
+                'bom_tmpl': fields.many2one('mrp.bom','Choose a BoM', required=False, change_default=True, help="Select a  BoM as template to drive building Spare BoM."),
     }
     _defaults = {
                  'bom_tmpl': lambda *a: False,
