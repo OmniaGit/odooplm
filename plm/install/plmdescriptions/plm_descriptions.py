@@ -32,30 +32,30 @@ class plm_description(osv.osv):
     _name = "plm.description"
     _description = "PLM Descriptions"
     _columns = {
-                'name': fields.char('Standard Description', size=128, required=True, translate=True),
-                'description': fields.char('Note to Description', size=128, translate=True),
+                'name': fields.char('Note to Description', size=128, required=True, translate=True),
+                'description': fields.char('Standard Description', size=128, translate=True),
                 'description_en': fields.char('Description English', size=128, translate=True),
-                'umc1': fields.char('UM Characteristic 1', size=32,  help="Allow to specify a unit measure or a label for the characteristic"),
-                'fmt1': fields.char('Format Characteristic 1', size=32, help="Allow to represent the measure: %s%s allow to build um and value, %s build only value, none build only value."),
-                'umc2': fields.char('UM Characteristic 2', size=32, help="Allow to specify a unit measure or a label for the characteristic"),
-                'fmt2': fields.char('Format Characteristic 2', size=32, help="Allow to represent the measure: %s%s allow to build um and value, %s build only value, none build only value."),
-                'umc3': fields.char('UM Characteristic 3', size=32, help="Allow to specify a unit measure or a label for the characteristic"),
-                'fmt3': fields.char('Format Characteristic 3', size=32, help="Allow to represent the measure: %s%s allow to build um and value, %s build only value, none build only value."),
-                'fmtend': fields.char('Format Characteristic Composed', size=32, help="Allow to represent a normalized composition of technical characteristics : %s%s allow to build values."),
-                'unitab': fields.char('Normative Rule', size=32, help="Specify normative rule (UNI, ISO, DIN...). It will be queued to build part description"),
-                'sequence': fields.integer('Sequence', help="Gives the sequence order when displaying a list of product categories."),
+                'umc1': fields.char('UM / Feature 1', size=32,  help="Allow to specify a unit measure or a label for the feature."),
+                'fmt1': fields.char('Format Feature 1', size=32, help="Allow to represent the measure: %s%s allow to build um and value, %s builds only value, none builds only value."),
+                'umc2': fields.char('UM / Feature 2', size=32, help="Allow to specify a unit measure or a label for the feature."),
+                'fmt2': fields.char('Format Feature 2', size=32, help="Allow to represent the measure: %s%s allow to build um and value, %s builds only value, none builds only value."),
+                'umc3': fields.char('UM / Feature 3', size=32, help="Allow to specify a unit measure or a label for the feature."),
+                'fmt3': fields.char('Format Feature 3', size=32, help="Allow to represent the measure: %s%s allow to build um and value, %s builds only value, none builds only value."),
+                'fmtend': fields.char('Format Feature Composed', size=32, help="Allow to represent a normalized composition of technical features : %s%s allows to build chained values."),
+                'unitab': fields.char('Normative Rule', size=32, help="Specify normative rule (UNI, ISO, DIN...). It will be queued to build the product description."),
+                'sequence': fields.integer('Sequence', help="Assign the sequence order when displaying a list of product categories."),
     }
     _defaults = {
+        'description': lambda *a: False,
         'fmt1': lambda *a: False,
         'fmt2': lambda *a: False,
         'fmt3': lambda *a: False,
         'fmtend': lambda *a: False,
         'unitab': lambda *a: False,
     }
-#    _sql_constraints = [
-#        ('name_uniq', 'unique(name)', 'Standard Description has to be unique !'),
-#    ]
-#    Meanings and usage:
+#
+#    Meanings and usage
+#
 #    umc    : field containing a string to express unit of measure of a characteristic.
 #    fmt    : field describing composition of umc with its value (when inserted in plm.compoent form)
 #    fmtend : field describing composition of umcs to compose a normalized description.
@@ -63,8 +63,8 @@ class plm_description(osv.osv):
 #    Sample :
 #
 #name,description,description_en,umc1,fmt1,umc2,fmt2,fmtend
-#ALBERO , Albero liscio , SHAFT , d. , %s %s , Lungh. , %s %s , %s x %s , 
-#VITE UNI 5739 , Vite testa esagona interamente filettata , , M , %s%s , L. , %s , %sx%s , UNI 5739
+#Albero liscio , ALBERO, SHAFT , d. , %s %s , Lungh. , %s %s , %s x %s , 
+#Vite testa esagona interamente filettata, VITE,  , M , %s%s , L. , %s , %sx%s , UNI 5739
 #
 # They will be composed like :
 #    ALBERO d. 10 x L. 200
@@ -76,12 +76,12 @@ plm_description()
 class plm_component(osv.osv):
     _inherit = 'product.product'
     _columns = {
-                'std_description': fields.many2one('plm.description','Standard Description', required=False, change_default=True, help="Select standard description for current product"),
-                'std_umc1': fields.char('UM Characteristic 1', size=32, help="Allow to specifiy a unit measure for the first charachteristic"),
+                'std_description': fields.many2one('plm.description','Standard Description', required=False, change_default=True, help="Select standard description for current product."),
+                'std_umc1': fields.char('UM / Feature 1', size=32, help="Allow to specifiy a unit measure for the first feature."),
                 'std_value1': fields.float('Value 1', help="Assign value to the first characteristic."),
-                'std_umc2': fields.char('UM Characteristic 2', size=32, help="Allow to specifiy a unit measure for the second charachteristic"),
+                'std_umc2': fields.char('UM / Feature 2', size=32, help="Allow to specifiy a unit measure for the second feature."),
                 'std_value2': fields.float('Value 2', help="Assign value to the second characteristic."),
-                'std_umc3': fields.char('UM Characteristic 3', size=32, help="Allow to specifiy a unit measure for the third charachteristic"),
+                'std_umc3': fields.char('UM / Feature 3', size=32, help="Allow to specifiy a unit measure for the third feature."),
                 'std_value3': fields.float('Value 3', help="Assign value to the second characteristic."),
     }
     _defaults = {
@@ -129,8 +129,8 @@ class plm_component(osv.osv):
         if std_description:
             thisDescription=self.pool.get('plm.description')
             thisObject=thisDescription.browse(cr, uid, std_description)
-            if thisObject.name:
-                values['description']=thisObject.name
+            if thisObject.description:
+                values['description']=thisObject.description
                 if thisObject.umc1:
                     values['std_umc1']=thisObject.umc1
                 if thisObject.umc2:
@@ -149,8 +149,8 @@ class plm_component(osv.osv):
             description3=False
             thisDescription=self.pool.get('plm.description')
             thisObject=thisDescription.browse(cr, uid, std_description)
-            if thisObject.name:
-                description=thisObject.name
+            if thisObject.description:
+                description=thisObject.description
                 if thisObject.fmtend:
                     if std_umc1 and std_value1:
                         description1=self._packvalues(thisObject.fmt1, std_umc1, std_value1)
