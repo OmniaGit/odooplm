@@ -1,41 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
 <data>
+    <menuitem id="plm_menu_dictionaries" name="PLM Dictionaries" parent="plm_menu" sequence="50"/>
+
     <record model="ir.ui.view" id="view_plm_description">
         <field name="name">plm.description.view</field>
         <field name="model">plm.description</field>
         <field name="type">form</field>
         <field name="arch" type="xml">
-            <form string="Description">
+             <form string="Description"  version="7.0">
                 <group colspan="4" col="4">
-                	<field name="name" select="1" colspan="1"/>
-                    <field name="description_en" select="1" />
-                    <newline/>
                     <separator colspan="4" string="Note to help selection"/>
-                    <field name="description" select="1" />
+                	<field name="name" select="1" colspan="1"/>
                     <field name="sequence"/>
-               		<group colspan="4" col="4" string="Normalization Area">
-                    	<newline/>
-                    	<separator colspan="4" string="Technical characteristic label and formatting"/>
-                    	<field name="umc1"/>
-                    	<field name="fmt1"/>
-                    	<newline/>
-                    	<separator colspan="4" string="Technical characteristic label and formatting"/>
-                    	<field name="umc2"/>
-                    	<field name="fmt2"/>
-                    	<newline/>
-                    	<separator colspan="4" string="Technical characteristic label and formatting"/>
-                    	<field name="umc3"/>
-                    	<field name="fmt3"/>
-                    	<newline/>
-                    	<separator colspan="4" string="Normalized characteristics formatting"/>
-                    	<field name="fmtend"/>
-                    	<newline/>
-                    	<separator colspan="4" string="Normative"/>
-                    	<field name="unitab"/>
-                    	<newline/>
-                	</group>
-                </group>
+                    <newline/>
+                    <field name="description" select="1" />
+                    <field name="description_en" select="1" />
+                    <separator/>
+  	               	<group colspan="4" col="4" string="Technical Features">
+	 	                <sheet>
+	 	                	<group colspan="4" col="4">
+		                    	<separator colspan="4" string="Technical feature label and formatting"/>
+		                    	<field name="umc1"/>
+		                    	<field name="fmt1"/>
+		                    	<newline/>
+		                    	<separator colspan="4" string="Technical feature label and formatting"/>
+		                    	<field name="umc2"/>
+		                    	<field name="fmt2"/>
+		                    	<newline/>
+		                    	<separator colspan="4" string="Technical feature label and formatting"/>
+		                    	<field name="umc3"/>
+		                    	<field name="fmt3"/>
+		                    	<newline/>
+		                	</group>
+		               		<separator colspan="4" string="Normalization Section"/>
+ 	 	                	<group colspan="4" col="4">
+	 	                		<sheet>
+			                    	<separator colspan="4" string="Normalized features formatting"/>
+			                    	<field name="fmtend"/>
+			                    	<newline/>
+			                    	<separator colspan="4" string="Normative reference"/>
+			                    	<field name="unitab"/>
+		                    	</sheet>
+		                    	<newline/>
+   	               			</group>
+ 	                    </sheet>
+  	                </group>
+               </group>
             </form>
         </field>
     </record>
