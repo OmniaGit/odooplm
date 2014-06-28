@@ -71,6 +71,7 @@ Supported Editors :
         'install/board_plm_view.xml',
         'security/base_plm_security.xml',
         'security/ir.model.access.csv',
+        'security/res.groups.csv',
         'install/res_config_view.xml',
         'install/plmdocuments/document_view.xml',
         'install/plmdocuments/document_workflow.xml',
@@ -78,6 +79,7 @@ Supported Editors :
         'install/plmdocrelations/document_relations.xml',
         'install/plmcomponents/component_view.xml',
         'install/plmcomponents/component_workflow.xml',
+        'install/plmdescriptions/description_view.xml',
         'install/plmdescriptions/description_sequence.xml',
         'install/plmsparebom/sparebom_view.xml',
         'install/plmsparebom/description_view.xml',
@@ -92,7 +94,7 @@ Supported Editors :
         'install/plmmaterials/material_view.xml',
         'install/plmfinishings/finishing_sequence.xml',
         'install/plmfinishings/finishing_view.xml',
-        ],
+       ],
     'demo': [
         ],
     'test': [
