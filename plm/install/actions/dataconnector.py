@@ -29,6 +29,20 @@ import logging
 from openerp.osv import osv, fields
 from openerp.tools.translate import _
 
+###
+# map_name : ['LangName','label Out', 'OE Lang']        '
+_LOCALLANGS = {                 
+    'french':  ['French_France','fr_FR',],
+    'italian': ['Italian_Italy','it_IT',],
+    'polish':  ['Polish_Poland','pl_PL',],
+    'svedish': ['Svedish_Svenska','sw_SE',],
+    'russian': ['Russian_Russia','ru_RU',],
+    'english': ['English USA','en_US',],
+    'spanish': ['Spanish_Spain','es_ES',],
+    'german':  ['German_Germany','de_DE',],
+}
+###
+
 def normalize(value):
     if type(value)==types.StringType or type(value)==types.UnicodeType:
         return unicode(str(value).replace('"','\"').replace("'",'\"').replace("%","%%").strip(), 'Latin1')
@@ -59,6 +73,7 @@ plm_temporary()
 
 
 class plm_component(osv.osv):
+    _name = 'product.product'
     _inherit = 'product.product'
 
 ###################################################################
@@ -78,7 +93,17 @@ class plm_component(osv.osv):
                     'name'                  : 'revname',
                     'engineering_revision'  : 'revprog',
                     'description'           : 'revdes',
-                    }
+                    },
+                'types':
+                    {
+                    'name'                  : 'char',
+                    'engineering_revision'  : 'int',
+                    'description'           : 'char',
+                    },
+                'exitorder' : ['name','engineering_revision','description',],
+                'exitTrans' : ['description',],
+                'exitLang'  : ['english','french',],
+                'exitnumber': ['engineering_revision',],
                 }
 
     @property
@@ -95,8 +120,14 @@ class plm_component(osv.osv):
                     {
                     'itemnum'               : 'relpos',
                     'product_qty'           : 'relqty',
-                    }
-                }
+                    },
+                'types':
+                    {
+                    'itemnum'               : 'int',
+                    'product_qty'           : 'float',
+                    },
+                'exitnumber': ['engineering_revision',],
+               }
 
     @property
     def get_data_transfer(self):
@@ -165,45 +196,116 @@ class plm_component(osv.osv):
         fobj.close()
         return lastDate.strftime('%Y-%m-%d %H:%M:%S')
 
+    def rectify_data(self, cr, uid, tmpDataPack={}, part_data_transfer={}):
+ 
+        if tmpDataPack.get('datas'):
+            fieldsNumeric=[]
+            fieldsTranslated=[]
+            languageNames=[]
+            indexFields={}
+            rectifiedData=[]
+            labelNames=[]
+            
+            if 'exitorder' in part_data_transfer:
+                fieldNames=part_data_transfer['exitorder']
+            else:
+                fieldNames=part_data_transfer['fields'].keys()
+            if 'exitnumber' in part_data_transfer:
+                fieldsNumeric=part_data_transfer['exitnumber']
+            if 'exitTrans' in part_data_transfer:
+                fieldsTranslated=part_data_transfer['exitTrans']
+            if 'exitLang' in part_data_transfer:
+                languageNames=part_data_transfer['exitLang']
+
+            for fieldName in fieldNames:
+                indexFields[fieldName]=fieldNames.index(fieldName)
+                labelNames.append(fieldName)
+                
+            for languageName in languageNames:
+                labelNames.append(languageName)
+                
+            for rowData in tmpDataPack['datas']:
+                rectData=[]
+                for fieldName in fieldNames:
+                    dataValue=rowData[indexFields[fieldName]]
+                    if not dataValue:
+                        if fieldName in fieldsNumeric:
+                            rectData.append(0)
+                        else:
+                            rectData.append('')
+                    else:
+                        rectData.append(dataValue)
+
+                for languageName in languageNames:
+                    for fieldTranslated in fieldsTranslated:
+                        dataValue=rowData[indexFields[fieldTranslated]]
+                        if not dataValue:
+                            rectData.append('')
+                        else:
+                            rectData.append(self.translated(cr, uid, dataValue,languageName))
+                                       
+                rectifiedData.append(rectData)
+            
+            return {'datas': rectifiedData, 'labels':labelNames}
+        
+        return tmpDataPack
+    
+    def translated(self, cr, uid, dataValue="",languageName=""):
+        
+        if languageName in _LOCALLANGS:
+            language=_LOCALLANGS[languageName][1]
+            transObj=self.pool.get('ir.translation')
+            resIds = transObj.search(cr,uid,[('src','=',dataValue),('type','=','code'),('lang','=',language)])
+            for trans in transObj.browse(cr, uid, resIds):
+                return trans.value
+
+        return ""
+
     def TransferData(self, cr, uid, ids=False, context=None):
  
         operation=False
         reportStatus='Failed'
         updateDate=self.get_last_session
-        logging.debug("[TransferData] Start : %r" %(updateDate))
+        logging.debug("[TransferData] Start : %s" %(str(updateDate)))
         transfer=self.get_data_transfer
-        datamap=self.get_part_data_transfer['fields']
-        datatyp=self.get_part_data_transfer['types']
-        fieldsListed=datamap.keys()
-        allIDs=self.query_data(cr, uid, updateDate, self.get_part_data_transfer['status'])
+        part_data_transfer=self.get_part_data_transfer
+        datamap=part_data_transfer['fields']
+        if 'exitorder' in part_data_transfer:
+            fieldsListed=part_data_transfer['exitorder']
+        else:
+            fieldsListed=datamap.keys()
+        allIDs=self.query_data(cr, uid, updateDate, part_data_transfer['status'])
         tmpData=self.export_data(cr, uid, allIDs, fieldsListed)
         if tmpData.get('datas'):
+            bom_data_transfer=self.get_bom_data_transfer
+            tmpData=self.rectify_data(cr, uid, tmpData, part_data_transfer)
             if 'db' in transfer:
                 import dbconnector
-                dataTargetTable=self.get_part_data_transfer['table']
+                dataTargetTable=part_data_transfer['table']
+                datatyp=part_data_transfer['types']
                 connection=dbconnector.get_connection(transfer['db'])
             
-                checked=dbconnector.saveParts(self,cr, uid, connection, tmpData.get('datas'), dataTargetTable, datamap,datatyp)
+                checked=dbconnector.saveParts(self,cr, uid, connection, tmpData.get('datas'), dataTargetTable, datamap, datatyp)
     
                 if checked:
-                    bomTargetTable=self.get_bom_data_transfer['table']
-                    bomdatamap=self.get_bom_data_transfer['fields']
-                    bomdatatyp=self.get_bom_data_transfer['types']
-                    parentName=self.get_bom_data_transfer['PName']
-                    childName=self.get_bom_data_transfer['CName']
-                    kindBomname=self.get_bom_data_transfer['kind']
+                    bomTargetTable=bom_data_transfer['table']
+                    bomdatamap=bom_data_transfer['fields']
+                    bomdatatyp=bom_data_transfer['types']
+                    parentName=bom_data_transfer['PName']
+                    childName=bom_data_transfer['CName']
+                    kindBomname=bom_data_transfer['kind']
                     operation=dbconnector.saveBoms(self, cr, uid, connection, checked, allIDs, dataTargetTable, datamap, datatyp, kindBomname, bomTargetTable, parentName, childName, bomdatamap, bomdatatyp)  
                      
             if 'file' in transfer:
-                bomfieldsListed=self.get_bom_data_transfer['fields'].keys()
-                kindBomname=self.get_bom_data_transfer['kind']
-                operation=self.extract_data(cr, uid, allIDs, kindBomname, fieldsListed, bomfieldsListed, transfer['file'])
+                bomfieldsListed=bom_data_transfer['fields'].keys()
+                kindBomname=bom_data_transfer['kind']
+                operation=self.extract_data(cr, uid, allIDs, kindBomname, tmpData, fieldsListed, bomfieldsListed, transfer['file'])
 
         if operation:
             updateDate=self.set_last_session
             reportStatus='Successful'
             
-        logging.debug("[TransferData] %r End : %r." %(reportStatus,updateDate))
+        logging.debug("[TransferData] %s End : %s" %(reportStatus,str(updateDate)))
         return False
 
     def query_data(self, cr, uid, updateDate, statuses=[]):
@@ -220,7 +322,7 @@ class plm_component(osv.osv):
         allIDs.extend(self.search(cr,uid,[('create_date','>',updateDate),('state','in',statusList)],order='engineering_revision'))
         return list(set(allIDs))
 
-    def extract_data(self,cr,uid,allIDs, kindBomname='normal', anag_fields=False, rel_fields=False, transferdata={}):
+    def extract_data(self,cr,uid,allIDs, kindBomname='normal', anag_Data={}, anag_fields=False, rel_fields=False, transferdata={}):
         """
             action to be executed for Transmitted state.
             Transmit the object to ERP Metodo
@@ -259,8 +361,7 @@ class plm_component(osv.osv):
             return False 
 
         filename=os.path.join(outputpath,fname)
-        expData=self.export_data(cr, uid, allIDs,anag_fields)
-        if not self.export_csv(filename, anag_fields, expData, True):
+        if not self.export_csv(filename, anag_Data['labels'], anag_Data, True):
             raise osv.except_osv(_('Export Data Error'), _("Writing operations on file (%s) have failed." %(filename)))
             return False
         
