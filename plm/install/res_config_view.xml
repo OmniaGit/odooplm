@@ -10,5 +10,38 @@
             <field name="action_id" ref="action_client_plm_menu"/>
             <field name="state">open</field>
         </record>
+        <record id="view_plm_config_settings" model="ir.ui.view">
+            <field name="name">plm settings</field>
+            <field name="model">plm.config.settings</field>
+            <field name="arch" type="xml">
+                <form string="Configure PLM Module" class= "oe_form_configuration" version="7.0">
+                    <header>
+                        <button string="Apply" type="object" name="execute" class="oe_highlight"/>
+                        or
+                        <button string="Cancel" type="object" name="cancel" class="oe_link"/>
+                    </header>
+                    <separator string="PLM Module Settings"/>
+                    <group>
+                        <label for="id" string="Service ID"/>
+                         <div>
+                             <div>
+                                <field name="plm_service_id" class="oe_inline"/>
+                                <label for="plm_service_id"/>
+                           </div>
+                       </div>
+                     </group>
+                </form>
+            </field>
+        </record>
+        <record id="action_plm_configuration" model="ir.actions.act_window">
+            <field name="name">PLM Module Settings</field>
+            <field name="res_model">plm.config.settings</field>
+             <field name="view_id" ref="view_plm_config_settings"/>
+            <field name="view_mode">form</field>
+            <field name="target">inline</field>
+        </record>
+         <menuitem id="menu_plm_config_settings" name="PLM" parent="base.menu_config"
+            sequence="10" action="action_plm_configuration"/>
+        
     </data>
 </openerp>

@@ -101,20 +101,19 @@ class plm_relation(osv.osv):
         bom_parent = bom_obj.browse(cr, uid, bom_id, context=context)
         for bom in self.browse(cr, uid, ids, context=context):
             if (bom_parent) or (bom.id == bom_id):
-                result[bom.id] = map(lambda x: x.id, bom.bom_lines)
+                result[bom.id] = map(lambda x: x.id, bom.bom_line_ids)
             else:
                 result[bom.id] = []
-            if bom.bom_lines:
+            if bom.bom_line_ids:
                 continue
-            ok = ((name=='child_complete_ids') and (bom.product_id.supply_method=='produce'))
+            ok = ((name=='child_complete_ids'))
             if (bom.type=='phantom' or ok):
-                sids = bom_obj.search(cr, uid, [('bom_id','=',False),('product_id','=',bom.product_id.id),('type','=',bom.type)])
-                # Added type to search to avoid to mix different kinds of BoM. 
+                sids = bom_obj.search(cr, uid, [('product_tmpl_id','=',bom.product_tmpl_id.id)])
                 if sids:
                     bom2 = bom_obj.browse(cr, uid, sids[0], context=context)
-                    result[bom.id] += map(lambda x: x.id, bom2.bom_lines)
-
+                    result[bom.id] += map(lambda x: x.id, bom2.bom_line_ids)
         return result
+
 
     def _father_compute(self, cr, uid, ids, name, arg, context=None):
         """ Gets father bom.
@@ -127,41 +126,41 @@ class plm_relation(osv.osv):
         @param context: A standard dictionary for contextual values
         @return:  Dictionary of values
         """
-        bom_type=''
-        result = {}
-        if context is None:
-            context = {}
-        bom_obj = self.pool.get('mrp.bom')
-        bom_lines = bom_obj.browse(cr, uid, ids, context=context)
-        for bom_line in bom_lines:
-            bom_type=bom_line.type
-            result[bom_line.id]=[]
-            if bom_line.bom_id.id:
-                if not (bom_line.bom_id.id in result[bom_line.id]):
-                    result[bom_line.id]+=[bom_line.bom_id.id]
-            else:
-                for thisId in ids:
-                    if bom_type=='':
-                        tmp_ids = bom_obj.search(cr, uid, [('bom_id','!=',False),('product_id','=',bom_line.product_id.id)])
-                    else:
-                        tmp_ids = bom_obj.search(cr, uid, [('bom_id','!=',False),('product_id','=',bom_line.product_id.id),('type','=',bom_type)])
-
-                    bom_parents = bom_obj.browse(cr, uid, tmp_ids, context=context)
-                    for bom_parent in bom_parents:
-                        if bom_parent.bom_id.id:
-                            if not(bom_parent.bom_id.id in result[bom_line.id]):
-                                result[bom_line.id]+=[bom_parent.bom_id.id]
-        return result
+        return False
+#         bom_type=''
+#         result = {}
+#         if context is None:
+#             context = {}
+#         bom_obj = self.pool.get('mrp.bom')
+#         bom_lines = bom_obj.browse(cr, uid, ids, context=context)
+#         for bom_line in bom_lines:
+#             bom_type=bom_line.type
+#             result[bom_line.id]=[]
+#             if bom_line.bom_id.id:
+#                 if not (bom_line.bom_id.id in result[bom_line.id]):
+#                     result[bom_line.id]+=[bom_line.bom_id.id]
+#             else:
+#                 for thisId in ids:
+#                     if bom_type=='':
+#                         tmp_ids = bom_obj.search(cr, uid, [('product_id','=',bom_line.product_id.id)])
+#                     else:
+#                         tmp_ids = bom_obj.search(cr, uid, [('product_id','=',bom_line.product_id.id),('type','=',bom_type)])
+# 
+#                     bom_parents = bom_obj.browse(cr, uid, tmp_ids, context=context)
+#                     for bom_parent in bom_parents:
+#                         if bom_parent.bom_id.id:
+#                             if not(bom_parent.bom_id.id in result[bom_line.id]):
+#                                 result[bom_line.id]+=[bom_parent.bom_id.id]
+#         return result
 
     _columns = {
                 'state': fields.related('product_id','state',type="char",relation="product.template",string="Status",store=False),
                 'engineering_revision': fields.related('product_id','engineering_revision',type="char",relation="product.template",string="Revision",store=False),
                 'description': fields.related('product_id','description',type="char",relation="product.template",string="Description",store=False),
-                'weight_net': fields.related('product_id','weight_net',type="float",relation="product.product",string="Weight Net",store=False),
+                'weight_net': fields.related('product_id','weight_net',type="float",relation="product.template",string="Weight Net",store=False),
                 'child_complete_ids': fields.function(_child_compute, relation='mrp.bom', method=True, string="BoM Hierarchy", type='many2many'),
                 'father_complete_ids': fields.function(_father_compute, relation='mrp.bom', method=True, string="BoM Hierarchy", type='many2many'),
                }
-    _order = 'itemnum'
 
 plm_relation()
 

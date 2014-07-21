@@ -3,6 +3,7 @@
 <data>
     <menuitem name="Component Relations View" id="plm_menu_relation" parent="plm_menu" sequence="12"/>
  
+<!--
         <record id="plm_bom_form_view" model="ir.ui.view">
             <field name="name">plm.relation.form</field>
             <field name="model">mrp.bom</field>
@@ -18,19 +19,16 @@
                     <field name="name" select="1"/>
                     <field name="code" select="1"/>
                     <newline/>
-                    <field name="product_uos" groups="product.group_uos"/>
-                    <field name="product_uos_qty" groups="product.group_uos"/>
                     <field name="routing_id" select="2" groups="mrp.group_mrp_routings"/>
                     <field name="type" />
                     <notebook colspan="4">
                         <page string="General Information">
-                            <field colspan="4" name="bom_lines" nolabel="1" widget="one2many_list"/>
+                            <field colspan="4" name="bom_line_ids" nolabel="1" widget="one2many_list"/>
                         </page>
                         <page string="Properties">
                             <field name="position" select="2"/>
                             <field name="active" select="2"/>
                             <field name="sequence"/>
-                            <field name="bom_id"/>
                             <field name="date_start" select="2"/>
                             <field name="date_stop" select="2"/>
                             <field name="product_rounding"/>
@@ -103,55 +101,33 @@
                         <separator orientation="vertical"/>
                         <filter string="Date" icon="terp-go-month" domain="[]" context="{'group_by':'date_start'}" help="Starting Date"/>
                    </group>
-                </search>            </field>
+                </search>
+			</field>
         </record>
 
-       <record id="mrp_bom_tree_view" model="ir.ui.view">
-            <field name="name">mrp.bom.tree</field>
-            <field name="model">mrp.bom</field>
-            <field name="inherit_id" ref="mrp.mrp_bom_tree_view"/>
+       <record id="plm_bom_component_tree_view" model="ir.ui.view">
+            <field name="name">mrp.bom.component.tree</field>
+            <field name="model">mrp.bom.line</field>
+            <field name="inherit_id" ref="mrp.mrp_bom_component_tree_view"/>
             <field name="type">tree</field>
         	<field name="priority" eval="15"/>
             <field name="arch" type="xml">
-        		<field name="name" position="before">
+        		<field name="product_id" position="before">
                     <field name="itemnum"/>
         		</field>
-        		<field name="name" position="replace">
-                    <field name="name" select="True"/>
-        		</field>
-                 <field name="name" position="after">
+                 <field name="product_id" position="after">
                 	<field name="engineering_revision"/>
-                    <field name="bom_id" />
                 	<field name="description" select="True"/>
-                </field>
-                <field name="code" position="replace">
-                    <field name="code" invisible="1"/>
-                </field>
-                <field name="product_id" position="replace">
-                    <field name="product_id" invisible="1"/>
-                </field>
-                <field name="code" position="after">
                     <field name="source_id" string="Source Relation Document"/>
                 </field>
         		<field name="product_qty" position="after">
-                   <field name="weight_net"/>
-                   <field name="product_uom"/>
-        		</field>
-        		<field name="type" position="before">
+                   	<field name="weight_net"/>
+        			<field name="type" />
         			<field name="create_date" select="True"/>
-         		</field>
-       		    <field name="routing_id" position="replace">
-                    <field name="method" groups="mrp.group_mrp_routings"/>
-                    <field name="routing_id" groups="mrp.group_mrp_routings"/>
-        		</field>
-        		<field name="date_start" position="replace">
-                    <field name="date_start" />
-        		</field>
-        		<field name="date_stop" position="replace">
-                    <field name="date_stop" />
-        		</field>
-             </field>
+          		</field>
+        	</field>
         </record>
+-->
 
 	<!-- Opening views from menu -->
 
@@ -159,7 +135,7 @@
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">mrp.bom</field>
         <field name="view_type">form</field>
-        <field name="domain">[('type','=','normal'),('bom_id','=',False)]</field>
+        <field name="domain">[('type','=','normal'),]</field>
         <field name="filter" eval="True"/>
     </record>
 
@@ -174,7 +150,7 @@
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">mrp.bom</field>
         <field name="view_type">form</field>
-        <field name="domain">[('type','=','ebom'),('bom_id','=',False)]</field>
+        <field name="domain">[('type','=','ebom'),]</field>
         <field name="filter" eval="True"/>
     </record>
 
@@ -189,7 +165,7 @@
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">mrp.bom</field>
         <field name="view_type">form</field>
-        <field name="domain">[('type','=','spbom'),('bom_id','=',False)]</field>
+        <field name="domain">[('type','=','spbom')]</field>
         <field name="filter" eval="True"/>
     </record>
 
@@ -228,6 +204,7 @@
             </field>
         </record>
 
+<!--
         <record id="mrp_bom_tree_view_where" model="ir.ui.view">
             <field name="name">mrp.bom.tree.where</field>
             <field name="model">mrp.bom</field>
@@ -238,7 +215,6 @@
                     <field name="itemnum"/>
                     <field name="name" string="Component Name"/>
                     <field name="engineering_revision" string="Revision"/>
-                    <field name="bom_id" />
                     <field name="description"/>
                     <field name="code" invisible="1"/>
                     <field name="source_id" string="Source Relation Document"/>
@@ -277,9 +253,10 @@
             res_model="mrp.bom"
             src_model="product.product"/>
             
+-->
 
         <act_window
-            domain="[('bom_id','=',False),('product_id', '=', active_id)]"
+            domain="[('product_tmpl_id', '=', active_id)]"
             context="{'search_default_product_id': [active_id],'default_product_id':active_id}"
             id="act_product_product_2_mrp_bom"
             name="Bill of Materials"

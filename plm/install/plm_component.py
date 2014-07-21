@@ -494,7 +494,7 @@ class plm_component(osv.osv):
             
         try:
             return super(plm_component,self).create(cr, uid, vals, context=context)
-        except:
+        except Exception ,ex:
             raise Exception(_("It has tried to create %r , %r"%(vals['name'],vals)))
             return False
 

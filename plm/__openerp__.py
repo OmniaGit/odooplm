@@ -28,7 +28,7 @@
     'sequence': 15,
     'summary': 'PLM Integration with main CAD editors',
     'images': ['images/EngineeringPart.jpeg','images/OpenComponent.jpeg','images/OpenDocument.jpeg'],
-    'depends': ['base', 'process','board','document','product','mrp'],
+    'depends': ['base','board','document','product','mrp'],
     'description': """
 Manage Product Lifecycle Management in OpenERP
 ==============================================
