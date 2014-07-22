@@ -16,45 +16,19 @@
              </field>
         </record>
      
-    <record model="ir.ui.view" id="plm_view_description_tree">
+    <record model="ir.ui.view" id="plm_spare_description_tree">
         <field name="name">plm.view.description.tree</field>
         <field name="model">plm.description</field>
+        <field name="inherit_id" ref="plm_view_description_tree"/>
         <field name="type">tree</field>
         <field name="priority" eval="1"/>
         <field name="arch" type="xml">
-        	<tree string="Descriptions">
-            		<field name="name"/>
-                   	<field name="description"/>
-                   	<field name="description_en"/>
-                   	<field name="umc1"/>
-                   	<field name="fmt1"/>
-                   	<field name="umc2"/>
-                  	<field name="fmt2"/>
-                   	<field name="umc3"/>
-                  	<field name="fmt3"/>
-                   	<field name="fmtend"/>
-                    <field name="unitab"/>
-                   	<field name="sequence"/>
-                    <field name="bom_tmpl"/>
-            </tree>
+	        <field name="sequence" position="after">
+	        	<field name="bom_tmpl"/>
+	        </field>
         </field>
     </record>
 
-    <record model="ir.actions.act_window" id="plm_action_description_form">
-        <field name="type">ir.actions.act_window</field>
-        <field name="res_model">plm.description</field>
-        <field name="view_type">form</field>
-        <field name="view_mode">tree,form</field>
-        <field name="view_id" ref="plm_view_description_tree"/>
-    </record>
-    
-    
-    <menuitem
-        name="Descriptions"
-        action="plm_action_description_form"
-        id="menu_description"
-        parent="plm_menu_dictionaries"/>
-    
 </data>
 </openerp>
 
