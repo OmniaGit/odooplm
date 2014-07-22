@@ -232,45 +232,36 @@ class plm_relation(osv.osv):
     def init(self, cr):
         self._packed=[]
 
-    def _getinbomidnullsrc(self, cr, uid, pid):
-        counted=[]
+    def _getinbom(self, cr, uid, pid, sid=False):
         bomLType=self.pool.get('mrp.bom.line')
-        ids=bomLType.search(cr,uid,[('product_id','=',pid),('bom_id','!=',False),('source_id','!=',False),('type','=','ebom')])
+        ids=bomLType.search(cr,uid,[('product_id','=',pid),('source_id','=',sid),('type','=','ebom')])
         if not ids:
-            ids=bomLType.search(cr,uid,[('product_id','=',pid),('bom_id','!=',False),('source_id','!=',False),('type','=','normal')])
-        if not ids:
-            ids=bomLType.search(cr,uid,[('product_id','=',pid),('bom_id','!=',False),('source_id','=',False),('type','=','ebom')])
+            ids=bomLType.search(cr,uid,[('product_id','=',pid),('source_id','=',sid),('type','=','normal')])
             if not ids:
-                ids=bomLType.search(cr,uid,[('product_id','=',pid),('bom_id','!=',False),('source_id','=',False),('type','=','normal')])
-        return list(set(bomLType.browse(cr,uid,ids,context=None)))
-
-    def _getinbom(self, cr, uid, pid, sid):
-        bomLType=self.pool.get('mrp.bom.line')
-        ids=bomLType.search(cr,uid,[('product_id','=',pid),('bom_id','!=',False),('source_id','=',sid),('type','=','ebom')])
-        if not ids:
-            ids=bomLType.search(cr,uid,[('product_id','=',pid),('bom_id','!=',False),('source_id','=',sid),('type','=','normal')])
-        return bomLType.browse(cr,uid,ids,context=None)
-
-    def _getbomidnullsrc(self, cr, uid, pid):
-        counted=[]
-        ids=self.search(cr,uid,[('product_tmpl_id','=',pid),('source_id','!=',False),('type','=','ebom')])
-        if not ids:
-            ids=self.search(cr,uid,[('product_tmpl_id','=',pid),('source_id','!=',False),('type','=','normal')])
-        if not ids:
-            ids=self.search(cr,uid,[('product_tmpl_id','=',pid),('source_id','=',False),('type','=','ebom')])
+                ids=bomLType.search(cr,uid,[('product_id','=',pid),('source_id','=',False),('type','=','ebom')])
             if not ids:
-                ids=self.search(cr,uid,[('product_tmpl_id','=',pid),('source_id','=',False),('type','=','normal')])
-        return list(set(self.browse(cr,uid,list(set(ids)),context=None)))
+                ids=bomLType.search(cr,uid,[('product_id','=',pid),('source_id','=',False),('type','=','normal')])
+                if not ids:
+                    ids=bomLType.search(cr,uid,[('product_id','=',pid),('type','=','ebom')])
+                if not ids:
+                    ids=bomLType.search(cr,uid,[('product_id','=',pid),('type','=','normal')])
+        return bomLType.browse(cr,uid,list(set(ids)),context=None)
 
-    def _getbomid(self, cr, uid, pid, sid):
-        ids=self._getidbom(cr, uid, pid, sid)
-        return self.browse(cr,uid,list(set(ids)),context=None)
-
-    def _getidbom(self, cr, uid, pid, sid):
+    def _getbom(self, cr, uid, pid, sid=False):
+        if sid==None:
+            sid=False
         ids=self.search(cr,uid,[('product_tmpl_id','=',pid),('source_id','=',sid),('type','=','ebom')])
         if not ids:
             ids=self.search(cr,uid,[('product_tmpl_id','=',pid),('source_id','=',sid),('type','=','normal')])
-        return list(set(ids))
+            if not ids:
+                ids=self.search(cr,uid,[('product_tmpl_id','=',pid),('source_id','=',False),('type','=','ebom')])
+                if not ids:
+                    ids=self.search(cr,uid,[('product_tmpl_id','=',pid),('source_id','=',False),('type','=','normal')])
+                    if not ids:
+                        ids=self.search(cr,uid,[('product_tmpl_id','=',pid),('type','=','ebom')])
+                        if not ids:
+                            ids=self.search(cr,uid,[('product_tmpl_id','=',pid),('type','=','normal')])
+        return self.browse(cr,uid,list(set(ids)),context=None)
 
     def _getpackdatas(self, cr, uid, relDatas):
         prtDatas={}
@@ -281,6 +272,9 @@ class plm_relation(osv.osv):
         compType=self.pool.get('product.product')
         tmpDatas=compType.read(cr, uid, tmpids)
         for tmpData in tmpDatas:
+            for keyData in tmpData.keys():
+                if tmpData[keyData]==None:
+                    del tmpData[keyData]
             prtDatas[str(tmpData['id'])]=tmpData
         return prtDatas
 
@@ -304,55 +298,42 @@ class plm_relation(osv.osv):
             relationDatas[keyData]=setobj.read(cr, uid, relids[keyData])
         return relationDatas
 
-    def _bomid(self, cr, uid, pid, sid=None):
-        if sid == None:
-            return self._getbomidnullsrc(cr, uid, pid)
-        else:
-            return self._getbomid(cr, uid, pid, sid)
-
-    def _inbomid(self, cr, uid, pid, sid=None):
-        if sid == None:
-            return self._getinbomidnullsrc(cr, uid, pid)
-        else:
-            return self._getinbom(cr, uid, pid, sid)
-
     def GetWhereUsed(self, cr, uid, ids, context=None):
         """
             Return a list of all fathers of a Part (all levels)
         """
         self._packed=[]
         relDatas=[]
-        sid=None
         if len(ids)<1:
             return None
-        
+        sid=False        
         if len(ids)>1:
             sid=ids[1]
         oid=ids[0]
         relDatas.append(oid)
-        relDatas.append(self._implodebom(cr, uid, self._inbomid(cr, uid, oid, sid)))
+        relDatas.append(self._implodebom(cr, uid, self._getinbom(cr, uid, oid, sid)))
         prtDatas=self._getpackdatas(cr, uid, relDatas)
         return (relDatas, prtDatas, self._getpackreldatas(cr, uid, relDatas, prtDatas))
     
     def GetExplose(self, cr, uid, ids, context=None):
         """
-            Return a list of all children in a Bom (all levels)
+            Returns a list of all children in a Bom (all levels)
         """
         self._packed=[]
-        relDatas=[ids[0],self._explodebom(cr, uid, self._bomid(cr, uid, ids[0]), False)]
+        relDatas=[ids[0],self._explodebom(cr, uid, self._getbom(cr, uid, ids[0]), False)]
         prtDatas=self._getpackdatas(cr, uid, relDatas)
         return (relDatas, prtDatas, self._getpackreldatas(cr, uid, relDatas, prtDatas))
 
     def _explodebom(self, cr, uid, bids, check=True):
         """
-            Explodes a bom entity  (all levels)
+            Explodes a bom entity  ( check=False : all levels, check=True : one level )
         """
         output=[]
         for bid in bids:
             for bom_line in bid.bom_line_ids:
                 if check and (bom_line.product_id.id in self._packed):
                     continue
-                innerids=self._explodebom(cr, uid, self._bomid(cr, uid, bom_line.product_id.id), check)
+                innerids=self._explodebom(cr, uid, self._getbom(cr, uid, bom_line.product_id.id), check)
                 self._packed.append(bom_line.product_id.id)
                 output.append([bom_line.product_id.id, innerids])
         return(output)
@@ -362,7 +343,7 @@ class plm_relation(osv.osv):
             Return a list of all children in a Bom taken once (all levels)
         """
         self._packed=[]
-        relDatas=[ids[0],self._explodebom(cr, uid, self._bomid(cr, uid, ids[0]), True)]
+        relDatas=[ids[0],self._explodebom(cr, uid, self._getbom(cr, uid, ids[0]), True)]
         prtDatas=self._getpackdatas(cr, uid, relDatas)
         return (relDatas, prtDatas, self._getpackreldatas(cr, uid, relDatas, prtDatas))
 
@@ -372,13 +353,14 @@ class plm_relation(osv.osv):
         """
         pids=[]
         for bomObj in bomObjs:
-            if not bomObj.product_id:
+            if not bomObj.bom_id:
                 continue
-            if bomObj.product_id.id in self._packed:
+            if bomObj.bom_id.id in self._packed:
                 continue
-            self._packed.append(bomObj.product_id.id)
-            innerids=self._implodebom(cr, uid, self._inbomid(cr, uid, bomObj.product_id.id))
-            pids.append((bomObj.product_id.id,innerids))
+            self._packed.append(bomObj.bom_id.id)
+            bomFthObj=self.browse(cr,uid,[bomObj.bom_id.id],context=None)
+            innerids=self._implodebom(cr, uid, self._getinbom(cr, uid, bomFthObj.product_tmpl_id.id))
+            pids.append((bomFthObj.product_tmpl_id.id,innerids))
         return (pids)
 
     def GetWhereUsedSum(self, cr, uid, ids, context=None):
@@ -387,15 +369,14 @@ class plm_relation(osv.osv):
         """
         self._packed=[]
         relDatas=[]
-        sid=None
         if len(ids)<1:
             return None
-        
+        sid=False
         if len(ids)>1:
             sid=ids[1]
         oid=ids[0]
         relDatas.append(oid)
-        relDatas.append(self._implodebom(cr, uid, self._inbomid(cr, uid, oid, sid)))
+        relDatas.append(self._implodebom(cr, uid, self._getinbom(cr, uid, oid, sid)))
         prtDatas=self._getpackdatas(cr, uid, relDatas)
         return (relDatas, prtDatas, self._getpackreldatas(cr, uid, relDatas, prtDatas))
 
@@ -409,7 +390,7 @@ class plm_relation(osv.osv):
             return result
         bomids=self.browse(cr, uid, ids)
         for bomid in bomids:
-            for bom in bomid.bom_lines:
+            for bom in bomid.bom_line_ids:
                 children=self.GetExplodedBom(cr, uid, [bom.id], level, currlevel+1)
                 result.extend(children)
             if len(str(bomid.bom_id))>0:
@@ -427,10 +408,10 @@ class plm_relation(osv.osv):
             if sourceID==None:
                 return None
             ids=self.search(cr,uid,[('source_id','=',sourceID)])
-            self.unlink(cr,uid,ids)
+            self.unlink(cr,uid,ids)                                     # Cleans mrp.bom
             bomLType=self.pool.get('mrp.bom.line')
             ids=bomLType.search(cr,uid,[('source_id','=',sourceID)])
-            bomLType.unlink(cr,uid,ids)
+            bomLType.unlink(cr,uid,ids)                                 # Cleans mrp.bom.line
 
 
         def toCleanRelations(parentName, relations):
@@ -448,39 +429,17 @@ class plm_relation(osv.osv):
                 toCleanRelations(childName, relations)
             return False
 
-#         def toCleanRelations(parentName, relations):
-#             """
-#                 Processes relations  
-#             """
-#             listedChildren=[]
-#             sourceID=None
-#             subRelations=[(a, b, c, d, e, f) for a, b, c, d, e, f in relations if a == parentName]
-#             if len(subRelations)<1: # no relation to save 
-#                 return None
-#             parentName, parentID, tmpChildName, tmpChildID, sourceID, tempRelArgs=subRelations[0]
-#             relids=self._getidbom(cr, uid, parentID, sourceID)
-#             self.unlink(cr,uid,relids)
-#             for rel in subRelations:
-#                 #print "Save Relation ", rel
-#                 parentName, parentID, childName, childID, sourceID, relArgs=rel
-#                 if parentName == childName:
-#                     logging.error('toCleanRelations : Father %s refers to himself' %(str(parentName)))
-#                     continue
-#                 if not (childName in listedChildren):
-#                     toCleanRelations(childName, relations)
-#                     listedChildren.append(childName)
-#             return False
-
         def toCompute(parentName, relations):
             """
                 Processes relations  
             """
+            sourceIDParent=None
             sourceID=None
             subRelations=[(a, b, c, d, e, f) for a, b, c, d, e, f in relations if a == parentName]
             if len(subRelations)<1: # no relation to save 
                 return None
-            parentName, parentID, tmpChildName, tmpChildID, sourceID, tempRelArgs=subRelations[0]
-            bomID=saveParent(parentName, parentID, sourceID, kindBom='ebom')
+            parentName, parentID, tmpChildName, tmpChildID, sourceIDParent, tempRelArgs=subRelations[0]
+            bomID=saveParent(parentName, parentID, sourceIDParent, kindBom='ebom')
             for rel in subRelations:
                 #print "Save Relation ", rel
                 parentName, parentID, childName, childID, sourceID, relArgs=rel
@@ -490,11 +449,12 @@ class plm_relation(osv.osv):
 
                 tmpBomId=saveChild(childName, childID, sourceID, bomID, kindBom='ebom', args=relArgs)
                 tmpBomId=toCompute(childName, relations)
+            self.RebaseWeight(cr, uid, parentID, sourceIDParent)
             return bomID
 
         def saveParent(name,  partID, sourceID, kindBom=None, args=None):
             """
-                save the relation 
+                Saves the relation ( parent side in mrp.bom )
             """
             try:
                 res={}
@@ -511,16 +471,14 @@ class plm_relation(osv.osv):
                 if ('product_qty' in res):
                     if(type(res['product_qty'])!=types.FloatType) or (res['product_qty']<1e-6):
                         res['product_qty']=1.0
-#                 if not ('product_uom' in res):
-#                     res['product_uom']=1
                 return self.create(cr, uid, res)
             except:
-                logging.error("saveChild :  unable to create a relation for part (%s) with source (%d) : %s." %(name,sourceID,str(args)))
-                raise AttributeError(_("saveChild :  unable to create a relation for part (%s) with source (%d) : %s." %(name,sourceID,str(sys.exc_info()))))
+                logging.error("saveParent :  unable to create a relation for part (%s) with source (%d) : %s." %(name,sourceID,str(args)))
+                raise AttributeError(_("saveParent :  unable to create a relation for part (%s) with source (%d) : %s." %(name,sourceID,str(sys.exc_info()))))
 
         def saveChild(name,  partID, sourceID, bomID=None, kindBom=None, args=None):
             """
-                save the relation 
+                Saves the relation ( child side in mrp.bom.line )
             """
             try:
                 res={}
@@ -539,8 +497,6 @@ class plm_relation(osv.osv):
                 if ('product_qty' in res):
                     if(type(res['product_qty'])!=types.FloatType) or (res['product_qty']<1e-6):
                         res['product_qty']=1.0
-#                 if not ('product_uom' in res):
-#                     res['product_uom']=1
                 return self.pool.get('mrp.bom.line').create(cr, uid, res)
             except:
                 logging.error("saveChild :  unable to create a relation for part (%s) with source (%d) : %s." %(name,sourceID,str(args)))
@@ -551,54 +507,45 @@ class plm_relation(osv.osv):
         parentName, parentID, childName, childID, sourceID, relArgs=relations[0]
         toCleanRelations(parentName, relations)
         tmpBomId=toCompute(parentName, relations)
-#         weight=self.RebaseWeight(cr, uid, self.browse(cr,uid,tmpBomId).child_complete_ids)
         return False
     
-    def RebaseWeight(self, cr, uid, bomObjects, context=None):
+    def RebaseWeight(self, cr, uid, parentID, sourceID, context=None):
         """
-            Evaluate net weight for assembly, based on net weight of each part  
+            Evaluates net weight for assembly, based on net weight of each part  
         """
         weight=0.0
         values={}
         ancestor=None
-        for obj in bomObjects:
-            ancestor=obj.bom_id.product_id
-            if obj.child_complete_ids:
-                weight+=self.RebaseWeight(cr, uid, obj.child_complete_ids)
-            else:
-                weight+=(obj.product_qty * obj.product_id.weight_net)
+        for bid in self._getbom(cr, uid, parentID, sourceID):
+            ancestor=bid.product_tmpl_id
+            for bom_line in bid.bom_line_ids:
+                weight+=(bom_line.product_qty * bom_line.product_id.product_tmpl_id.weight_net)
         if (ancestor!=None):
             values['weight_net']=weight
-            partType=self.pool.get(ancestor._table_name)
-            partType.write(cr,uid,[ancestor.id],values,check=False)
+            partType=self.pool.get(ancestor._inherit)
+            partType.write(cr,uid,[ancestor.id],values)
         return weight
+
 
 #   Overridden methods for this entity
 #     def write(self, cr, uid, ids, vals, check=True, context=None):
 #         return super(plm_relation,self).write(cr, uid, ids, vals, context=context)  
 
-#     def copy(self,cr,uid,oid,defaults={},context=None):
-#         """
-#             Return new object copied (removing SourceID)
-#         """
-#         compType=self.pool.get('product.product')
-#         newId=super(plm_relation,self).copy(cr,uid,oid,defaults,context=context)
-#         if newId:
-#             newOid=self.browse(cr,uid,newId,context=context)
-#             for bom_line in newOid.bom_line_ids:
-#                 lateRevIdC=compType.GetLatestIds(cr,uid,[(bom_line.product_id.engineering_code,False,False)],context=context) # Get Latest revision of each Part
-#                 self.write(cr,uid,[bom_line.id],{'source_id':False,'name':bom_line.product_id.name,'product_id':lateRevIdC[0]},check=False,context=None)
-#             self.write(cr,uid,[newId],{'source_id':False,},check=False,context=None)
-#         return newId
+    def copy(self,cr,uid,oid,defaults={},context=None):
+        """
+            Return new object copied (removing SourceID)
+        """
+        newId=super(plm_relation,self).copy(cr,uid,oid,defaults,context=context)
+        if newId:
+            compType=self.pool.get('product.product')
+            bomLType=self.pool.get('mrp.bom.line')
+            newOid=self.browse(cr,uid,newId,context=context)
+            for bom_line in newOid.bom_line_ids:
+                lateRevIdC=compType.GetLatestIds(cr,uid,[(bom_line.product_id.product_tmpl_id.engineering_code,False,False)],context=context) # Get Latest revision of each Part
+                bomLType.write(cr,uid,[bom_line.id],{'source_id':False,'name':bom_line.product_id.product_tmpl_id.name,'product_id':lateRevIdC[0]},context=context)
+            self.write(cr,uid,[newId],{'source_id':False,'name':newOid.product_tmpl_id.name,},context=context)
+        return newId
 
-#     def _check_product(self, cr, uid, ids, context=None):
-#         """
-#             Override original one, to allow to have multiple lines with same Part Number
-#         """
-#         return True
-#     _constraints = [
-#         (_check_product, 'BoM line product should not be same as BoM product.', ['product_id']),
-#     ]
 #   Overridden methods for this entity
 
 plm_relation()
