@@ -48,20 +48,20 @@ class plm_component(osv.osv):
             break
         return result
 
-    def _getExplodedBom(self, cr, uid, ids, level=0, currlevel=0):
-        """
-            Return a flat list of all children in a Bom ( level = 0 one level only, level = 1 all levels)
-        """
-        result=[]
-        if level==0 and currlevel>1:
-            return result
-        components=self.pool.get('product.product').browse(cr, uid, ids)
-        relType=self.pool.get('mrp.bom')
-        for component in components: 
-            for bomid in component.bom_ids:
-                children=relType.GetExplodedBom(cr, uid, [bomid.id], level, currlevel)
-                result.extend(children)
-        return result
+#     def _getExplodedBom(self, cr, uid, ids, level=0, currlevel=0):
+#         """
+#             Return a flat list of all children in a Bom ( level = 0 one level only, level = 1 all levels)
+#         """
+#         result=[]
+#         if level==0 and currlevel>1:
+#             return result
+#         components=self.pool.get('product.product').browse(cr, uid, ids)
+#         relType=self.pool.get('mrp.bom')
+#         for component in components: 
+#             for bomid in component.bom_ids:
+#                 children=relType.GetExplodedBom(cr, uid, [bomid.id], level, currlevel)
+#                 result.extend(children)
+#         return result
 
     def _getChildrenBom(self, cr, uid, component, level=0, currlevel=0, context=None):
         """
@@ -71,11 +71,11 @@ class plm_component(osv.osv):
         bufferdata=[]
         if level==0 and currlevel>1:
             return bufferdata
-        for bomid in component.bom_ids:
-            for bom in bomid.bom_lines:
-                children=self._getChildrenBom(cr, uid, bom.product_id, level, currlevel+1, context=context)
+        for bomid in component.product_tmpl_id.bom_ids:
+            for bomline in bomid.bom_line_ids:
+                children=self._getChildrenBom(cr, uid, bomline.product_id, level, currlevel+1, context=context)
                 bufferdata.extend(children)
-                bufferdata.append(bom.product_id.id)
+                bufferdata.append(bomline.product_id.id)
         result.extend(bufferdata)
         return list(set(result))
 
@@ -259,8 +259,9 @@ class plm_component(osv.osv):
         if not checkObj:
             return False
         bomType=self.pool.get('mrp.bom')
-        objBoms=bomType.search(cr, uid, [('product_id','=',idd),('type','=','normal'),('bom_id','=',False)])
-        idBoms=bomType.search(cr, uid, [('product_id','=',idd),('type','=','ebom'),('bom_id','=',False)])
+        bomLType=self.pool.get('mrp.bom.line')
+        objBoms=bomType.search(cr, uid, [('product_tmpl_id','=',idd),('type','=','normal')])
+        idBoms=bomType.search(cr, uid, [('product_tmpl_id','=',idd),('type','=','ebom')])
 
         if not objBoms:
             if idBoms:
@@ -269,14 +270,14 @@ class plm_component(osv.osv):
                 if newidBom:
                     bomType.write(cr,uid,[newidBom],{'name':checkObj.name,'product_id':checkObj.id,'type':'normal',},context=None)
                     oidBom=bomType.browse(cr,uid,newidBom,context=context)
-                    ok_rows=self._summarizeBom(cr, uid, oidBom.bom_lines)
-                    for bom_line in list(set(oidBom.bom_lines) ^ set(ok_rows)):
-                        bomType.unlink(cr,uid,[bom_line.id],context=None)
+                    ok_rows=self._summarizeBom(cr, uid, oidBom.bom_line_ids)
+                    for bom_line in list(set(oidBom.bom_line_ids) ^ set(ok_rows)):
+                        bomLType.unlink(cr,uid,[bom_line.id],context=None)
                     for bom_line in ok_rows:
-                        bomType.write(cr,uid,[bom_line.id],{'type':'normal','source_id':False,'name':bom_line.product_id.name,'product_qty':bom_line.product_qty,},context=None)
+                        bomLType.write(cr,uid,[bom_line.id],{'type':'normal','source_id':False,'name':bom_line.product_id.name,'product_qty':bom_line.product_qty,},context=None)
                         self._create_normalBom(cr, uid, bom_line.product_id.id, context)
         else:
-            for bom_line in bomType.browse(cr,uid,objBoms[0],context=context).bom_lines:
+            for bom_line in bomType.browse(cr,uid,objBoms[0],context=context).bom_line_ids:
                 self._create_normalBom(cr, uid, bom_line.product_id.id, context)
         return False
 
@@ -294,10 +295,13 @@ class plm_component(osv.osv):
 ##  Work Flow Internal Methods
     def _get_recursive_parts(self, cr, uid, ids, excludeStatuses, includeStatuses):
         """
-            release the object recursively
+           Get all ids related to current one as children
         """
         stopFlag=False
-        tobeReleasedIDs=ids
+        tobeReleasedIDs=[]
+        if not(type(ids) is types.ListType):
+            ids=[ids]
+        tobeReleasedIDs.extend(ids)
         children=[]
         for oic in self.browse(cr, uid, ids, context=None):
             children=self.browse(cr, uid, self._getChildrenBom(cr, uid, oic, 1), context=None)
@@ -338,25 +342,26 @@ class plm_component(osv.osv):
                         docIDs.append(document.id)
         if len(docIDs)>0:
             if action_name=='confirm':
-                documentType.action_confirm(cr,uid,docIDs)
+                documentType.signal_workflow(cr, uid, docIDs, action_name)
             elif action_name=='transmit':
-                documentType.action_confirm(cr,uid,docIDs)
+                documentType.signal_workflow(cr, uid, docIDs, 'confirm')
             elif action_name=='draft':
-                documentType.action_draft(cr,uid,docIDs)
+                documentType.signal_workflow(cr, uid, docIDs, 'correct')
             elif action_name=='correct':
-                documentType.action_draft(cr,uid,docIDs)
+                documentType.signal_workflow(cr, uid, docIDs, action_name)
             elif action_name=='reject':
-                documentType.action_draft(cr,uid,docIDs)
+                documentType.signal_workflow(cr, uid, docIDs, 'correct')
             elif action_name=='release':
-                documentType.action_release(cr,uid,docIDs)
+                documentType.signal_workflow(cr, uid, docIDs, action_name)
             elif action_name=='undermodify':
                 documentType.action_cancel(cr,uid,docIDs)
             elif action_name=='suspend':
                 documentType.action_suspend(cr,uid,docIDs)
             elif action_name=='reactivate':
-                documentType.action_reactivate(cr,uid,docIDs)
+                documentType.signal_workflow(cr, uid, docIDs, 'release')
+#                 documentType.action_reactivate(cr,uid,docIDs)
             elif action_name=='obsolete':
-                documentType.action_obsolete(cr,uid,docIDs)
+                documentType.signal_workflow(cr, uid, docIDs, action_name)
         return docIDs
 
     def _iswritable(self, cr, user, oid):
@@ -385,56 +390,62 @@ class plm_component(osv.osv):
             release the object
         """
         defaults={}
+        status='draft'
+        action='draft'
+        docaction='draft'
         defaults['engineering_writable']=True
-        defaults['state']='draft'
+        defaults['state']=status
         excludeStatuses=['draft','released','undermodify','obsoleted']
         includeStatuses=['confirmed','transmitted']
-        stopFlag,allIDs=self._get_recursive_parts(cr, uid, ids, excludeStatuses, includeStatuses)
-        self._action_ondocuments(cr,uid,allIDs,'draft')
-        objId=self.write(cr, uid, allIDs, defaults, context=context, check=False)
-        if (objId):
-            self.wf_message_post(cr, uid, ids, body=_('Status moved to: Draft.'))
-        return objId
+        return self._action_to_perform(cr, uid, ids, status, action, docaction, defaults, excludeStatuses, includeStatuses, context)
 
     def action_confirm(self,cr,uid,ids,context=None):
         """
             action to be executed for Draft state
         """
         defaults={}
+        status='confirmed'
+        action='confirm'
+        docaction='confirm'
         defaults['engineering_writable']=False
-        defaults['state']='confirmed'
+        defaults['state']=status
         excludeStatuses=['confirmed','transmitted','released','undermodify','obsoleted']
         includeStatuses=['draft']
-        stopFlag,allIDs=self._get_recursive_parts(cr, uid, ids, excludeStatuses, includeStatuses)
-        self._action_ondocuments(cr,uid,allIDs,'confirm')
-        objId=self.write(cr, uid, allIDs, defaults, context=context, check=False)
-        if (objId):
-            self.wf_message_post(cr, uid, ids, body=_('Status moved to: Confirmed.'))
-        return objId
+        return self._action_to_perform(cr, uid, ids, status, action, docaction, defaults, excludeStatuses, includeStatuses, context)
 
     def action_release(self,cr,uid,ids,context=None):
         """
            action to be executed for Released state
         """
+        tmpl_ids=[]
+        full_ids=[]
         defaults={}
+        prodTmplType=self.pool.get('product.template')
         excludeStatuses=['released','undermodify','obsoleted']
         includeStatuses=['confirmed']
         stopFlag,allIDs=self._get_recursive_parts(cr, uid, ids, excludeStatuses, includeStatuses)
         if len(allIDs)<1 or stopFlag:
             raise osv.except_osv(_('WorkFlow Error'), _("Part cannot be released."))
-        for oldObject in self.browse(cr, uid, allIDs, context=context):
+        allProdObjs=self.browse(cr, uid, allIDs, context=context)
+        for oldObject in allProdObjs:
             last_id=self._getbyrevision(cr, uid, oldObject.engineering_code, oldObject.engineering_revision-1)
             if last_id != None:
                 defaults['engineering_writable']=False
                 defaults['state']='obsoleted'
-                self.write(cr,uid,[last_id],defaults ,context=context,check=False)
+                prodObj=self.browse(cr, uid, [last_id], context=context)
+                prodTmplType.write(cr,uid,[prodObj.product_tmpl_id.id],defaults ,context=context,check=False)
                 self.wf_message_post(cr, uid, [last_id], body=_('Status moved to: Obsoleted.'))
             defaults['engineering_writable']=False
             defaults['state']='released'
         self._action_ondocuments(cr,uid,allIDs,'release')
-        objId = self.write(cr,uid,allIDs,defaults ,context=context,check=False)
+        for currId in allProdObjs:
+            if not(currId.id in ids):
+                tmpl_ids.append(currId.product_tmpl_id.id)
+            full_ids.append(currId.product_tmpl_id.id)
+        self.signal_workflow(cr, uid, tmpl_ids, 'release')
+        objId=self.pool.get('product.template').write(cr, uid, full_ids, defaults, context=context)
         if (objId):
-            self.wf_message_post(cr, uid, ids, body=_('Status moved to: Released.'))
+            self.wf_message_post(cr, uid, allIDs, body=_('Status moved to: Released.'))
         return objId
 
     def action_obsolete(self,cr,uid,ids,context=None):
@@ -442,34 +453,51 @@ class plm_component(osv.osv):
             obsolete the object
         """
         defaults={}
+        status='obsoleted'
+        action='obsolete'
+        docaction='obsolete'
         defaults['engineering_writable']=False
-        defaults['state']='obsoleted'
+        defaults['state']=status
         excludeStatuses=['draft','confirmed','transmitted','undermodify','obsoleted']
         includeStatuses=['released']
-        stopFlag,allIDs=self._get_recursive_parts(cr, uid, ids, excludeStatuses, includeStatuses)
-        self._action_ondocuments(cr,uid,allIDs,'obsolete')
-        objId = self.write(cr, uid, allIDs, defaults, context=context, check=False)
-        if (objId):
-            self.wf_message_post(cr, uid, ids, body=_('Status moved to: Obsoleted.'))
-        return objId
+        return self._action_to_perform(cr, uid, ids, status, action, docaction, defaults, excludeStatuses, includeStatuses, context)
 
     def action_reactivate(self,cr,uid,ids,context=None):
         """
             reactivate the object
         """
         defaults={}
+        status='released'
+        action=''
+        docaction='release'
         defaults['engineering_writable']=True
-        defaults['state']='released'
+        defaults['state']=status
         excludeStatuses=['draft','confirmed','transmitted','released','undermodify','obsoleted']
         includeStatuses=['obsoleted']
+        return self._action_to_perform(cr, uid, ids, status, action, docaction, defaults, excludeStatuses, includeStatuses, context)
+    
+#   WorkFlow common internal method to apply changes
+
+    def _action_to_perform(self, cr, uid, ids, status, action, docaction, defaults=[], excludeStatuses=[], includeStatuses=[], context=None):
+        tmpl_ids=[]
+        full_ids=[]
         stopFlag,allIDs=self._get_recursive_parts(cr, uid, ids, excludeStatuses, includeStatuses)
-        self._action_ondocuments(cr,uid,allIDs,'reactivate')
-        objId = self.write(cr, uid, allIDs, defaults, context=context, check=False)
+        self._action_ondocuments(cr,uid,allIDs,docaction)
+        for currId in self.browse(cr,uid,allIDs,context=context):
+            if not(currId.id in ids):
+                tmpl_ids.append(currId.product_tmpl_id.id)
+            full_ids.append(currId.product_tmpl_id.id)
+        if action:
+            self.signal_workflow(cr, uid, tmpl_ids, action)
+        objId=self.pool.get('product.template').write(cr, uid, full_ids, defaults, context=context)
         if (objId):
-            self.wf_message_post(cr, uid, ids, body=_('Status moved to: Released.'))
+            self.wf_message_post(cr, uid, allIDs, body=_('Status moved to: %s.' %(status)))
         return objId
+    
+#######################################################################################################################################33
 
 #   Overridden methods for this entity
+
     def create(self, cr, uid, vals, context=None):
         if not vals:
             return False
