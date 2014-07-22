@@ -29,7 +29,7 @@ from openerp.tools.translate import _
 
 
 # To be adequated to plm.document class states
-USED_STATES=[('draft','Draft'),('confirmed','Confirmed'),('transmitted','Transmitted'),('released','Released'),('undermodify','UnderModify'),('obsoleted','Obsoleted'),('reactivated','Reactivated')]
+USED_STATES=[('draft','Draft'),('confirmed','Confirmed'),('released','Released'),('undermodify','UnderModify'),('obsoleted','Obsoleted')]
 
 class plm_config_settings(osv.osv_memory):
     _name = 'plm.config.settings'
