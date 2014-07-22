@@ -28,7 +28,7 @@ import logging
 from openerp.osv import osv, fields
 from openerp.tools.translate import _
 
-#USED_STATES=[('draft','Draft'),('confirmed','Confirmed'),('released','Released'),('undermodify','UnderModify'),('obsoleted','Obsoleted')]
+USED_STATES=[('draft','Draft'),('confirmed','Confirmed'),('released','Released'),('undermodify','UnderModify'),('obsoleted','Obsoleted')]
 #STATEFORRELEASE=['confirmed']
 #STATESRELEASABLE=['confirmed','transmitted','released','undermodify','obsoleted']
 
@@ -434,7 +434,7 @@ class plm_component(osv.osv):
                 defaults['state']='obsoleted'
                 prodObj=self.browse(cr, uid, [last_id], context=context)
                 prodTmplType.write(cr,uid,[prodObj.product_tmpl_id.id],defaults ,context=context,check=False)
-                self.wf_message_post(cr, uid, [last_id], body=_('Status moved to: Obsoleted.'))
+                self.wf_message_post(cr, uid, [last_id], body=_('Status moved to: %s.' %(USED_STATES[defaults['state']])))
             defaults['engineering_writable']=False
             defaults['state']='released'
         self._action_ondocuments(cr,uid,allIDs,'release')
@@ -445,7 +445,7 @@ class plm_component(osv.osv):
         self.signal_workflow(cr, uid, tmpl_ids, 'release')
         objId=self.pool.get('product.template').write(cr, uid, full_ids, defaults, context=context)
         if (objId):
-            self.wf_message_post(cr, uid, allIDs, body=_('Status moved to: Released.'))
+            self.wf_message_post(cr, uid, allIDs, body=_('Status moved to: %s.' %(USED_STATES[defaults['state']])))
         return objId
 
     def action_obsolete(self,cr,uid,ids,context=None):
@@ -491,7 +491,7 @@ class plm_component(osv.osv):
             self.signal_workflow(cr, uid, tmpl_ids, action)
         objId=self.pool.get('product.template').write(cr, uid, full_ids, defaults, context=context)
         if (objId):
-            self.wf_message_post(cr, uid, allIDs, body=_('Status moved to: %s.' %(status)))
+            self.wf_message_post(cr, uid, allIDs, body=_('Status moved to: %s.' %(USED_STATES[defaults['state']])))
         return objId
     
 #######################################################################################################################################33
