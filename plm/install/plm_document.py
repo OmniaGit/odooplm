@@ -935,7 +935,8 @@ class plm_checkout(osv.osv):
                 return False
         self._adjustRelations(cr, uid, docids, False)
         dummy = super(plm_checkout,self).unlink(cr, uid, ids, context=context)
-        documentType.wf_message_post(cr, uid, [checkObj.documentid.id], body=_('Checked-In'))
+        if dummy:
+            documentType.wf_message_post(cr, uid, docids, body=_('Checked-In'))
         return dummy
 
 plm_checkout()
