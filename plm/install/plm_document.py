@@ -676,7 +676,7 @@ class plm_document(osv.osv):
                 return False
         return True
     
-        _columns = {
+    _columns = {
                 'usedforspare': fields.boolean('Used for Spare',help="Drawings marked here will be used printing Spare Part Manual report."),
                 'revisionid': fields.integer('Revision Index', required=True),
                 'writable': fields.boolean('Writable'),
