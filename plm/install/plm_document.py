@@ -616,39 +616,67 @@ class plm_document(osv.osv):
                         return False
         return super(plm_document,self).unlink(cr, uid, ids, context=context)
 
-    def _check_duplication(self, cr, uid, vals, ids=[], op='create'):
-        """
-            Overridden, due to revision id management, filename can be duplicated, 
-            because system has to manage several revisions of a document.
-        """
-        name = vals.get('name', False)
-        parent_id = vals.get('parent_id', False)
-        res_model = vals.get('res_model', False)
-        res_id = vals.get('res_id', 0)
+#   Overridden methods for this entity
+
+#     def _check_duplication0(self, cr, uid, vals, ids=[], op='create'):
+#         """
+#             Overridden, due to revision id management, filename can be duplicated, 
+#             because system has to manage several revisions of a document.
+#         """
+#         name = vals.get('name', False)
+#         parent_id = vals.get('parent_id', False)
+#         res_model = vals.get('res_model', False)
+#         res_id = vals.get('res_id', 0)
+#         revisionid = vals.get('revisionid', 0)
+#         if op == 'write':
+#             for thisfile in self.browse(cr, uid, ids, context=None): # FIXME fields_only
+#                 if not name:
+#                     name = thisfile.name
+#                 if not parent_id:
+#                     parent_id = thisfile.parent_id and thisfile.parent_id.id or False
+#                 if not res_model:
+#                     res_model = thisfile.res_model and thisfile.res_model or False
+#                 if not res_id:
+#                     res_id = thisfile.res_id and thisfile.res_id or 0
+#                 if not revisionid:
+#                     revisionid = thisfile.revisionid and thisfile.revisionid or 0
+#                 res = self.search(cr, uid, [('id', '<>', thisfile.id), ('name', '=', name), ('parent_id', '=', parent_id), ('res_model', '=', res_model), ('res_id', '=', res_id), ('revisionid', '=', revisionid)])
+#                 if len(res)>1:
+#                     return False
+#         if op == 'create':
+#             res = self.search(cr, uid, [('name', '=', name), ('parent_id', '=', parent_id), ('res_id', '=', res_id), ('res_model', '=', res_model), ('revisionid', '=', revisionid)])
+#             if len(res):
+#                 return False
+#         return True
+
+    def _check_duplication(self, cr, uid, vals, ids=None, op='create'):
+        SUPERUSER_ID = 1
+        name=vals.get('name',False)
+        parent_id=vals.get('parent_id',False)
+        ressource_parent_type_id=vals.get('ressource_parent_type_id',False)
+        ressource_id=vals.get('ressource_id',0)
         revisionid = vals.get('revisionid', 0)
-        if op == 'write':
-            for thisfile in self.browse(cr, uid, ids, context=None): # FIXME fields_only
+        if op=='write':
+            for directory in self.browse(cr, SUPERUSER_ID, ids):
                 if not name:
-                    name = thisfile.name
+                    name=directory.name
                 if not parent_id:
-                    parent_id = thisfile.parent_id and thisfile.parent_id.id or False
-                if not res_model:
-                    res_model = thisfile.res_model and thisfile.res_model or False
-                if not res_id:
-                    res_id = thisfile.res_id and thisfile.res_id or 0
-                if not revisionid:
-                    revisionid = thisfile.revisionid and thisfile.revisionid or 0
-                res = self.search(cr, uid, [('id', '<>', thisfile.id), ('name', '=', name), ('parent_id', '=', parent_id), ('res_model', '=', res_model), ('res_id', '=', res_id), ('revisionid', '=', revisionid)])
-                if len(res)>1:
+                    parent_id=directory.parent_id and directory.parent_id.id or False
+                # TODO fix algo
+                if not ressource_parent_type_id:
+                    ressource_parent_type_id=directory.ressource_parent_type_id and directory.ressource_parent_type_id.id or False
+                if not ressource_id:
+                    ressource_id=directory.ressource_id and directory.ressource_id or 0
+                res=self.search(cr,uid,[('id','<>',directory.id),('name','=',name),('parent_id','=',parent_id),('ressource_parent_type_id','=',ressource_parent_type_id),('ressource_id','=',ressource_id), ('revisionid', '=', revisionid)])
+                if len(res):
                     return False
-        if op == 'create':
-            res = self.search(cr, uid, [('name', '=', name), ('parent_id', '=', parent_id), ('res_id', '=', res_id), ('res_model', '=', res_model), ('revisionid', '=', revisionid)])
+        if op=='create':
+            res = self.search(cr, SUPERUSER_ID, [('name','=',name),('parent_id','=',parent_id),('ressource_parent_type_id','=',ressource_parent_type_id),('ressource_id','=',ressource_id), ('revisionid', '=', revisionid)])
             if len(res):
                 return False
         return True
-#   Overridden methods for this entity
-
-    _columns = {
+    
+        _columns = {
                 'usedforspare': fields.boolean('Used for Spare',help="Drawings marked here will be used printing Spare Part Manual report."),
                 'revisionid': fields.integer('Revision Index', required=True),
                 'writable': fields.boolean('Writable'),
@@ -966,6 +994,7 @@ class plm_document_relation(osv.osv):
         """
         def cleanStructure(relations):
             res={}
+            cleanIds=[]
             for relation in relations:
                 res['parent_id'],res['child_id'],res['configuration'],res['link_kind']=relation
                 link=[('link_kind','=',res['link_kind'])]
@@ -973,26 +1002,26 @@ class plm_document_relation(osv.osv):
                     criteria=[('child_id','=',res['child_id'])]
                 else:
                     criteria=[('parent_id','=',res['parent_id']),('child_id','=',res['child_id'])]
-                ids=self.search(cr,uid,criteria+link)
-                self.unlink(cr,uid,ids)
+                cleanIds.append(self.search(cr,uid,criteria+link))
+            self.unlink(cr,uid,list(set(cleanIds)))
 
-        def saveChild(args):
+        def saveChild(relation):
             """
                 save the relation 
             """
             try:
                 res={}
-                res['parent_id'],res['child_id'],res['configuration'],res['link_kind']=args
+                res['parent_id'],res['child_id'],res['configuration'],res['link_kind']=relation
                 if (res['parent_id']!= None) and (res['child_id']!=None):
                     if (len(str(res['parent_id']))>0) and (len(str(res['child_id']))>0):
                         if not((res['parent_id'],res['child_id']) in savedItems):
                             savedItems.append((res['parent_id'],res['child_id']))
                             self.create(cr, uid, res)
                 else:
-                    logging.error("saveChild : Unable to create a relation between documents. One of documents involved doesn't exist. Arguments(" + str(args) +") ")
+                    logging.error("saveChild : Unable to create a relation between documents. One of documents involved doesn't exist. Arguments(" + str(relation) +") ")
                     raise Exception("saveChild: Unable to create a relation between documents. One of documents involved doesn't exist.")
             except Exception,ex:
-                logging.error("saveChild : Unable to create a relation. Arguments (%s) Exception (%s)" %(str(args), str(ex)))
+                logging.error("saveChild : Unable to create a relation. Arguments (%s) Exception (%s)" %(str(relation), str(ex)))
                 raise Exception("saveChild: Unable to create a relation.")
             
         savedItems=[]
