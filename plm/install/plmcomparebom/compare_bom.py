@@ -210,6 +210,35 @@ class plm_compare_bom(osv.osv_memory):
             
         return (differs,(changesA,changesB))
 
+    def _unpackData(self, cr, uid, oid, fields=[]):
+        """
+            Create a new Normal Bom (recursive on all EBom children)
+        """
+        idList=[]
+        listData=[]
+        objList=[]
+        objProd=[]
+        dictData={}
+        if len(oid.bom_line_ids):
+            prod_names=oid.bom_line_ids[0].product_id._all_columns.keys()
+            bom_names=oid.bom_line_ids[0]._all_columns.keys()
+            for bom_line in oid.bom_line_ids:
+                idList.append(bom_line.id)
+                objList.append(bom_line)
+                objProd.append(bom_line.product_id)
+                
+                row_data={}
+                for field in fields:
+                    if field in prod_names:
+                        row_data[field]=bom_line.product_id[field]
+                    if field in bom_names:
+                        row_data[field]=bom_line[field]
+                        
+                if row_data:
+                    listData.append(row_data)
+                    dictData[bom_line.id]=row_data
+        return (idList,listData,objList,objProd,dictData)
+    
     def _differs_Bom(self, cr, uid, oid1=False, oid2=False, fields=[]):
         """
             Create a new Normal Bom (recursive on all EBom children)
@@ -218,32 +247,10 @@ class plm_compare_bom(osv.osv_memory):
         if not oid1 or not oid2 or not fields:
             return False
         bomType=self.pool.get('mrp.bom')
-        idList1=[]
-        listData1=[]
-        objList1=[]
-        objProd1=[]
-        dictData1={}
-        for bom_line in oid1.bom_lines:
-            idList1.append(bom_line.id)
-            objList1.append(bom_line)
-            objProd1.append(bom_line.product_id)
-        expdata1=bomType.export_data(cr, uid, idList1, fields)
-        if 'datas' in expdata1:
-            listData1=expdata1['datas']
-            dictData1=dict(zip(idList1,listData1))
-        idList2=[]
-        listData2=[]
-        objList2=[]
-        objProd2=[]
-        dictData2={}
-        for bom_line in oid2.bom_lines:
-            idList2.append(bom_line.id)
-            objList2.append(bom_line)
-            objProd2.append(bom_line.product_id)
-        expdata2=bomType.export_data(cr, uid, idList2, fields)
-        if 'datas' in expdata2:
-            listData2=expdata2['datas']
-            dictData2=dict(zip(idList2,listData2))
+
+        idList1,listData1,objList1,objProd1,dictData1=self._unpackData(cr, uid, oid1, fields)
+        idList2,listData2,objList2,objProd2,dictData2=self._unpackData(cr, uid, oid2, fields)
+
         index=0
         counted=len(listData1)
         AminusB={}
@@ -269,12 +276,12 @@ class plm_missing_bom(osv.osv_memory):
     _description = "BoM Missing Objects"
     _columns = {
                 'bom_id': fields.many2one('plm.compare.bom', 'BoM'),
-                'bom_idrow': fields.many2one('mrp.bom', 'BoM Line'),
+                'bom_idrow': fields.many2one('mrp.bom.line', 'BoM Line'),
                 'part_id': fields.many2one('product.product', 'Part'),
                 'revision': fields.related('part_id','engineering_revision',type="integer",relation="product.template",string="Revision",store=False),
                 'description': fields.related('part_id','description',type="char",relation="product.template",string="Description",store=False),
-                'itemnum': fields.related('bom_idrow','itemnum',type="integer",relation="mrp.bom",string="Cad Item Position",store=False),
-                'itemqty': fields.related('bom_idrow','product_qty',type="float",relation="mrp.bom",string="Quantity",store=False),
+                'itemnum': fields.related('bom_idrow','itemnum',type="integer",relation="mrp.bom.line",string="Cad Item Position",store=False),
+                'itemqty': fields.related('bom_idrow','product_qty',type="float",relation="mrp.bom.line",string="Quantity",store=False),
                 'reason': fields.char(string="Difference",size=32)
                 }
     _defaults = {
@@ -286,12 +293,12 @@ class plm_adding_bom(osv.osv_memory):
     _description = "BoM Adding Objects"
     _columns = {
                 'bom_id': fields.many2one('plm.compare.bom', 'BoM'),
-                'bom_idrow': fields.many2one('mrp.bom', 'BoM Line'),
+                'bom_idrow': fields.many2one('mrp.bom.line', 'BoM Line'),
                 'part_id': fields.many2one('product.product', 'Part'),
                 'revision': fields.related('part_id','engineering_revision',type="integer",relation="product.template",string="Revision",store=False),
                 'description': fields.related('part_id','description',type="char",relation="product.template",string="Description",store=False),
-                'itemnum': fields.related('bom_idrow','itemnum',type="integer",relation="mrp.bom",string="Cad Item Position",store=False),
-                'itemqty': fields.related('bom_idrow','product_qty',type="float",relation="mrp.bom",string="Quantity",store=False),
+                'itemnum': fields.related('bom_idrow','itemnum',type="integer",relation="mrp.bom.line",string="Cad Item Position",store=False),
+                'itemqty': fields.related('bom_idrow','product_qty',type="float",relation="mrp.bom.line",string="Quantity",store=False),
                 'reason': fields.char(string="Difference",size=32)
                 }
     _defaults = {

@@ -9,7 +9,7 @@
             <field name="arch" type="xml">
                 <tree colors="red:reason in ('Removed');darkgray:reason in ('Changed')" string="BoM Relations in Bom 2">
                     <field name="itemnum" select="True"/>
-                    <field name="bom_idrow" select="True"/>
+                    <field name="bom_idrow" invisible="True"/>
                     <field name="part_id" select="True"/>
                     <field name="revision" select="True"/>
                     <field name="description" select="True"/>
@@ -28,7 +28,7 @@
             <field name="arch" type="xml">
                 <tree colors="darkgreen:reason in ('Added');darkgray:reason in ('Changed')" string="BoM Relations in Bom 1">
                     <field name="itemnum" select="True"/>
-                    <field name="bom_idrow" select="True"/>
+                    <field name="bom_idrow" invisible="True"/>
                     <field name="part_id" select="True"/>
                     <field name="revision" select="True"/>
                     <field name="description" select="True"/>
@@ -72,7 +72,7 @@
 
 <!--
            Visualization BoM Views
--->
+
 
      <record model="ir.ui.view" id="plm_visualize_diff_form">
         <field name="name">plm.visualize.diff.form</field>
@@ -98,6 +98,43 @@
                     <field colspan="2" name="anotinb" nolabel="1" widget="one2many_list" readonly="True"/>
                     <field colspan="2" name="bnotina" nolabel="1" widget="one2many_list" readonly="True"/>
                 </page>
+                </notebook>
+            </form>
+        </field>
+     </record>
+
+-->
+
+     <record model="ir.ui.view" id="plm_visualize_diff_form">
+        <field name="name">plm.visualize.diff.form</field>
+        <field name="model">plm.compare.bom</field>
+        <field name="type">form</field>
+        <field name="priority" eval="15"/>
+        <field name="arch" type="xml">
+            <form string="Visualize BoM">
+                <group col="10" colspan="4">
+                	<field name="bom_id1" readonly="True"/>
+                	<field name="type_id1" readonly="True"/>
+                	<field name="part_id1" readonly="True"/>
+               		<field name="revision1" readonly="True"/>
+               		<field name="description1" readonly="True"/>
+                	<field name="bom_id2" readonly="True"/>
+                	<field name="type_id2" readonly="True"/>
+                 	<field name="part_id2" readonly="True"/>
+               		<field name="revision2" readonly="True"/>
+              		<field name="description2" readonly="True"/>
+                </group>
+                <notebook colspan="4">
+	                <page string="Differences Between BoMs">
+	                    <group colspan="4" col="4">
+	                        <group col="2" colspan="2">
+			                	<field colspan="2" name="anotinb" nolabel="1" widget="one2many_list" readonly="True"/>
+	                        </group>
+	                    	<group col="2" colspan="2">
+	                    		<field colspan="2" name="bnotina" nolabel="1" widget="one2many_list" readonly="True"/>
+	                		</group>
+	            		</group>
+	                </page>
                 </notebook>
             </form>
         </field>
