@@ -34,6 +34,7 @@ import openerp.tools as tools
 
 # To be adequated to plm.component class states
 USED_STATES=[('draft','Draft'),('confirmed','Confirmed'),('released','Released'),('undermodify','UnderModify'),('obsoleted','Obsoleted')]
+USEDIC_STATES=dict(USED_STATES)
 #STATEFORRELEASE=['confirmed']
 #STATESRELEASABLE=['confirmed','released','undermodify','UnderModify']
 
@@ -495,8 +496,14 @@ class plm_document(osv.osv):
         defaults['state']='draft'
         objId = self.write(cr, uid, ids, defaults, check=False)
         if (objId):
-            self.wf_message_post(cr, uid, ids, body=_('Status moved to: %s.' %(USED_STATES[defaults['state']])))
+            self.wf_message_post(cr, uid, ids, body=_('Status moved to: %s.' %(USEDIC_STATES[defaults['state']])))
         return objId
+
+    def action_correct(self, cr, uid, ids, *args):
+        """
+            release the object
+        """
+        return self.action_draft(cr, uid, ids, *args)
 
     def action_confirm(self,cr,uid,ids,context=None):
         """
@@ -508,7 +515,7 @@ class plm_document(osv.osv):
         if self.ischecked_in(cr, uid, ids,context):
             objId = self.write(cr, uid, ids, defaults, context=context, check=False)
             if (objId):
-                self.wf_message_post(cr, uid, ids, body=_('Status moved to: %s.' %(USED_STATES[defaults['state']])))
+                self.wf_message_post(cr, uid, ids, body=_('Status moved to: %s.' %(USEDIC_STATES[defaults['state']])))
             return objId
         return False
     
@@ -523,13 +530,13 @@ class plm_document(osv.osv):
                 defaults['writable']=False
                 defaults['state']='obsoleted'
                 self.write(cr, uid, [last_id], defaults, check=False)
-                self.wf_message_post(cr, uid, [last_id], body=_('Status moved to: %s.' %(USED_STATES[defaults['state']])))
+                self.wf_message_post(cr, uid, [last_id], body=_('Status moved to: %s.' %(USEDIC_STATES[defaults['state']])))
         defaults['writable']=False
         defaults['state']='released'
         if self.ischecked_in(cr, uid, ids):
             objId = self.write(cr, uid, ids, defaults, check=False)
             if (objId):
-                self.wf_message_post(cr, uid, ids, body=_('Status moved to: %s.' %(USED_STATES[defaults['state']])))
+                self.wf_message_post(cr, uid, ids, body=_('Status moved to: %s.' %(USEDIC_STATES[defaults['state']])))
             return objId
         return False
 
@@ -543,7 +550,7 @@ class plm_document(osv.osv):
         if self.ischecked_in(cr, uid, ids,context):
             objId = self.write(cr, uid, ids, defaults, context=context, check=False)
             if (objId):
-                self.wf_message_post(cr, uid, ids, body=_('Status moved to: %s.' %(USED_STATES[defaults['state']])))
+                self.wf_message_post(cr, uid, ids, body=_('Status moved to: %s.' %(USEDIC_STATES[defaults['state']])))
             return objId
         return False
 
@@ -557,7 +564,7 @@ class plm_document(osv.osv):
         if self.ischecked_in(cr, uid, ids,context):
             objId = self.write(cr, uid, ids, defaults, context=context, check=False)
             if (objId):
-                self.wf_message_post(cr, uid, ids, body=_('Status moved to:%s.' %(USED_STATES[defaults['state']])))
+                self.wf_message_post(cr, uid, ids, body=_('Status moved to:%s.' %(USEDIC_STATES[defaults['state']])))
             return objId
         return False
 

@@ -29,6 +29,7 @@ from openerp.osv import osv, fields
 from openerp.tools.translate import _
 
 USED_STATES=[('draft','Draft'),('confirmed','Confirmed'),('released','Released'),('undermodify','UnderModify'),('obsoleted','Obsoleted')]
+USEDIC_STATES=dict(USED_STATES)
 #STATEFORRELEASE=['confirmed']
 #STATESRELEASABLE=['confirmed','transmitted','released','undermodify','obsoleted']
 
@@ -122,13 +123,13 @@ class plm_component(osv.osv):
             exitValues['engineering_revision']=newEnt.engineering_revision
         return exitValues
 
-    def newVersion(self,cr,uid,ids,context=None):
-        """
-            create a new version of the component (to WorkFlow calling)
-        """
-        if self.newRevision(cr,uid,ids,context=context)!=None:
-            return True 
-        return False
+#     def newVersion(self,cr,uid,ids,context=None):
+#         """
+#             create a new version of the component (to WorkFlow calling)
+#         """
+#         if self.newRevision(cr,uid,ids,context=context)!=None:
+#             return True 
+#         return False
 
     def GetUpdated(self,cr,uid,vals,context=None):
         """
@@ -176,6 +177,7 @@ class plm_component(osv.osv):
                 defaults['engineering_writable']=False
                 defaults['state']='undermodify'
                 self.write(cr, uid, [oldObject.id], defaults, context=context, check=False)
+                self.wf_message_post(cr, uid, [oldObject.id], body=_('Status moved to: %s.' %(USEDIC_STATES[defaults['state']])))
                 # store updated infos in "revision" object
                 defaults['name']=oldObject.name                 # copy function needs an explicit name value
                 defaults['engineering_revision']=newIndex
@@ -339,7 +341,8 @@ class plm_component(osv.osv):
             for document in oldObject.linkeddocuments:
                 if document.state == check_state:
                     if not document.id in docIDs:
-                        docIDs.append(document.id)
+                        if documentType.ischecked_in(cr,uid,document.id,context):
+                            docIDs.append(document.id)
         if len(docIDs)>0:
             if action_name=='confirm':
                 documentType.signal_workflow(cr, uid, docIDs, action_name)
@@ -434,7 +437,7 @@ class plm_component(osv.osv):
                 defaults['state']='obsoleted'
                 prodObj=self.browse(cr, uid, [last_id], context=context)
                 prodTmplType.write(cr,uid,[prodObj.product_tmpl_id.id],defaults ,context=context,check=False)
-                self.wf_message_post(cr, uid, [last_id], body=_('Status moved to: %s.' %(USED_STATES[defaults['state']])))
+                self.wf_message_post(cr, uid, [last_id], body=_('Status moved to: %s.' %(USEDIC_STATES[defaults['state']])))
             defaults['engineering_writable']=False
             defaults['state']='released'
         self._action_ondocuments(cr,uid,allIDs,'release')
@@ -445,7 +448,7 @@ class plm_component(osv.osv):
         self.signal_workflow(cr, uid, tmpl_ids, 'release')
         objId=self.pool.get('product.template').write(cr, uid, full_ids, defaults, context=context)
         if (objId):
-            self.wf_message_post(cr, uid, allIDs, body=_('Status moved to: %s.' %(USED_STATES[defaults['state']])))
+            self.wf_message_post(cr, uid, allIDs, body=_('Status moved to: %s.' %(USEDIC_STATES[defaults['state']])))
         return objId
 
     def action_obsolete(self,cr,uid,ids,context=None):
@@ -491,7 +494,7 @@ class plm_component(osv.osv):
             self.signal_workflow(cr, uid, tmpl_ids, action)
         objId=self.pool.get('product.template').write(cr, uid, full_ids, defaults, context=context)
         if (objId):
-            self.wf_message_post(cr, uid, allIDs, body=_('Status moved to: %s.' %(USED_STATES[defaults['state']])))
+            self.wf_message_post(cr, uid, allIDs, body=_('Status moved to: %s.' %(USEDIC_STATES[defaults['state']])))
         return objId
     
 #######################################################################################################################################33

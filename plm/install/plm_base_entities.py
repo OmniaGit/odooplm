@@ -463,6 +463,7 @@ class plm_relation(osv.osv):
                 else:
                     res['type']='ebom'
                 res['product_tmpl_id']=partID
+                res['product_id']=partID
                 res['source_id']=sourceID
                 res['name']=name
                 if args!=None:
