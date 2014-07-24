@@ -60,7 +60,6 @@
     <paraStyle name="P6" fontName="Helvetica" fontSize="9.0" leading="11" alignment="CENTER" spaceBefore="0.0" spaceAfter="0.0"/>
     <paraStyle name="P7" fontName="Helvetica" fontSize="9.0" leading="11" alignment="CENTER" spaceBefore="0.0" spaceAfter="0.0"/>
     <paraStyle name="P8" fontName="Helvetica-Bold" fontSize="9.0" leading="11" alignment="CENTER" spaceBefore="0.0" spaceAfter="0.0"/>
-    <paraStyle name="P9" fontName="Helvetica-Bold" fontSize="9.0" leading="11" alignment="CENTER" spaceBefore="0.0" spaceAfter="0.0"/>
     <paraStyle name="Standard" fontName="Helvetica"/>
     <paraStyle name="Heading" fontName="Helvetica" fontSize="14.0" leading="17" spaceBefore="12.0" spaceAfter="6.0"/>
     <paraStyle name="Text body" fontName="Helvetica" spaceBefore="0.0" spaceAfter="6.0"/>
@@ -176,8 +175,8 @@
         </tr>
       </blockTable>
       <section>
-        <para style="terp_default_8">[[ repeatIn(get_children(o.bom_lines), 'l') ]]</para>
-        <blockTable colWidths="71.0,30.0,27.0,68.0,27.0,213.0,32.0,32.0,33.0" style="Table3">
+        <para style="terp_default_8">[[ repeatIn(get_children(o.bom_line_ids), 'l') ]]</para>
+        <blockTable colWidths="71.0,29.0,27.0,68.0,27.0,213.0,32.0,32.0,33.0" style="Table3">
           <tr>
             <td>
               <para style="terp_default_9">
