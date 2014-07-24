@@ -1009,7 +1009,7 @@ class plm_document_relation(osv.osv):
                     criteria=[('child_id','=',res['child_id'])]
                 else:
                     criteria=[('parent_id','=',res['parent_id']),('child_id','=',res['child_id'])]
-                cleanIds.append(self.search(cr,uid,criteria+link))
+                cleanIds.extend(self.search(cr,uid,criteria+link))
             self.unlink(cr,uid,list(set(cleanIds)))
 
         def saveChild(relation):
