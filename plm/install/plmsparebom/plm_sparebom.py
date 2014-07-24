@@ -80,10 +80,11 @@ class plm_component(osv.osv):
         if (type(context) is DictType) and ('sourceBomType' in context):
             sourceBomType=context['sourceBomType']
         bomType=self.pool.get('mrp.bom')
-        objBoms=bomType.search(cr, uid, [('product_id','=',idd),('type','=','spbom'),('bom_id','=',False)])
-        idBoms=bomType.search(cr, uid, [('product_id','=',idd),('type','=','normal'),('bom_id','=',False)])
+        bomLType=self.pool.get('mrp.bom.line')
+        objBoms=bomType.search(cr, uid, [('product_id','=',idd),('type','=','spbom')])
+        idBoms=bomType.search(cr, uid, [('product_id','=',idd),('type','=','normal')])
         if not idBoms:
-            idBoms=bomType.search(cr, uid, [('product_id','=',idd),('type','=',sourceBomType),('bom_id','=',False)])
+            idBoms=bomType.search(cr, uid, [('product_id','=',idd),('type','=',sourceBomType)])
 
         defaults={}
         if not objBoms:
@@ -95,11 +96,11 @@ class plm_component(osv.osv):
                 bomType.write(cr,uid,[newidBom],{'name':checkObj.name,'product_id':checkObj.id,'type':'spbom',},context=None)
                 oidBom=bomType.browse(cr,uid,newidBom,context=None)
                 
-                ok_rows=self._summarizeBom(cr, uid, oidBom.bom_lines)
-                for bom_line in list(set(oidBom.bom_lines) ^ set(ok_rows)):
-                    bomType.unlink(cr,uid,[bom_line.id],context=None)
+                ok_rows=self._summarizeBom(cr, uid, oidBom.bom_line_ids)
+                for bom_line in list(set(oidBom.bom_line_ids) ^ set(ok_rows)):
+                    bomLType.unlink(cr,uid,[bom_line.id],context=None)
                 for bom_line in ok_rows:
-                    bomType.write(cr,uid,[bom_line.id],{'type':'spbom','source_id':False,'name':bom_line.product_id.name,'product_qty':bom_line.product_qty,},context=None)
+                    bomLType.write(cr,uid,[bom_line.id],{'type':'spbom','source_id':False,'name':bom_line.product_id.name,'product_qty':bom_line.product_qty,},context=None)
                     self._create_spareBom(cr, uid, bom_line.product_id.id, context)
         else:
             for bom_line in bomType.browse(cr,uid,objBoms[0],context=context).bom_lines:
