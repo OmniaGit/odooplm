@@ -276,7 +276,7 @@ class component_spare_parts_report(report_int):
                     packedObjs.append(bom_line.product_id)
                     packedIds.append(bom_line.id)
                 if len(packedIds)>0:
-                    for pageStream in self.getPdfComponentLayout(component):
+                    for pageStream in self.getPdfComponentLayout(cr, component):
                         output.addPage(pageStream)
                     stream,typerep=BODY.create(cr, uid, [BomObject.id], data={'report_type': u'pdf'},context=context) 
                     pageStream=StringIO.StringIO()
@@ -287,7 +287,7 @@ class component_spare_parts_report(report_int):
                             if not packedObj in self.processedObjs:
                                 self.getSparePartsPdfFile(cr,uid,context,packedObj,output,componentTemplate,bomTemplate,recursion)   
  
-    def getPdfComponentLayout(self,component):
+    def getPdfComponentLayout(self, cr, component):
         ret=[]
         docRepository=self.pool.get('plm.document')._get_filestore(cr)
         for document in component.linkeddocuments:
@@ -298,7 +298,6 @@ class component_spare_parts_report(report_int):
                     value=getDocumentStream(docRepository,document)
                     if value:
                         ret.append(StringIO.StringIO(value))
-
         return ret 
     
     def getFirstPage(self,cr, uid, ids,context):
