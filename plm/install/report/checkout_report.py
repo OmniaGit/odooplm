@@ -52,7 +52,7 @@ class checkout_custom_report(report_int):
     def create(self, cr, uid, ids, datas, context=None):
         self.pool = pooler.get_pool(cr.dbname)
         checkoutType=self.pool.get('plm.checkout')
-        output = None
+        output = PdfFileWriter()
         children=[]
         packed=[]
         checkouts=checkoutType.browse(cr, uid, ids)
@@ -60,18 +60,15 @@ class checkout_custom_report(report_int):
             document=checkout.documentid
             if document.printout:
                 if not document.id in packed:   
-                    if output == None:
-                        output = PdfFileWriter()
                     input1 = PdfFileReader(StringIO.StringIO(base64.decodestring(document.printout)))
                     output.addPage(input1.getPage(0))
                     packed.append(document.id)
-        if output != None:
-            pdf_string = StringIO.StringIO()
-            output.write(pdf_string)
-            self.obj = external_pdf(pdf_string.getvalue())
-            self.obj.render()
-            pdf_string.close()
-            return (self.obj.pdf, 'pdf')
-        return (False, '')
+
+        pdf_string = StringIO.StringIO()
+        output.write(pdf_string)
+        self.obj = external_pdf(pdf_string.getvalue())
+        self.obj.render()
+        pdf_string.close()
+        return (self.obj.pdf, 'pdf')
 
 checkout_custom_report('report.plm.checkout.pdf')
