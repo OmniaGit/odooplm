@@ -159,7 +159,7 @@ class plm_component(osv.osv):
 ###################################################################
 
     @property
-    def get_last_session(self):
+    def _get_last_session(self):
         """
             Get last execution date & time as stored.
                 format => '%Y-%m-%d %H:%M:%S'
@@ -178,11 +178,11 @@ class plm_component(osv.osv):
                     pass
                 os.unlink(fileName)
         else:
-            self.set_last_session
+            self._set_last_session
         return lastDate.strftime('%Y-%m-%d %H:%M:%S')
 
     @property
-    def set_last_session(self):
+    def _set_last_session(self):
         """
             Get last execution date & time as stored.
                 format => '%Y-%m-%d %H:%M:%S'
@@ -196,7 +196,7 @@ class plm_component(osv.osv):
         fobj.close()
         return lastDate.strftime('%Y-%m-%d %H:%M:%S')
 
-    def rectify_data(self, cr, uid, tmpDataPack={}, part_data_transfer={}):
+    def _rectify_data(self, cr, uid, tmpDataPack={}, part_data_transfer={}):
  
         if tmpDataPack.get('datas'):
             fieldsNumeric=[]
@@ -217,11 +217,11 @@ class plm_component(osv.osv):
             if 'exitLang' in part_data_transfer:
                 languageNames=part_data_transfer['exitLang']
 
-            for fieldName in fieldNames:
+            for fieldName in fieldNames:                                # Sort field names to fix the exit data recordset
                 indexFields[fieldName]=fieldNames.index(fieldName)
                 labelNames.append(fieldName)
                 
-            for languageName in languageNames:
+            for languageName in languageNames:                          # Sort field names to fix the exit data recordset
                 labelNames.append(languageName)
                 
             for rowData in tmpDataPack['datas']:
@@ -242,7 +242,7 @@ class plm_component(osv.osv):
                         if not dataValue:
                             rectData.append('')
                         else:
-                            rectData.append(self.translated(cr, uid, dataValue,languageName))
+                            rectData.append(self._translate(cr, uid, dataValue,languageName))
                                        
                 rectifiedData.append(rectData)
             
@@ -250,7 +250,7 @@ class plm_component(osv.osv):
         
         return tmpDataPack
     
-    def translated(self, cr, uid, dataValue="",languageName=""):
+    def _translate(self, cr, uid, dataValue="",languageName=""):
         
         if languageName in _LOCALLANGS:
             language=_LOCALLANGS[languageName][1]
@@ -258,14 +258,15 @@ class plm_component(osv.osv):
             resIds = transObj.search(cr,uid,[('src','=',dataValue),('type','=','code'),('lang','=',language)])
             for trans in transObj.browse(cr, uid, resIds):
                 return trans.value
-
         return ""
 
     def TransferData(self, cr, uid, ids=False, context=None):
- 
+        """
+            Exposed method to execute data transfer to other systems.
+        """ 
         operation=False
         reportStatus='Failed'
-        updateDate=self.get_last_session
+        updateDate=self._get_last_session
         logging.debug("[TransferData] Start : %s" %(str(updateDate)))
         transfer=self.get_data_transfer
         part_data_transfer=self.get_part_data_transfer
@@ -274,11 +275,11 @@ class plm_component(osv.osv):
             fieldsListed=part_data_transfer['exitorder']
         else:
             fieldsListed=datamap.keys()
-        allIDs=self.query_data(cr, uid, updateDate, part_data_transfer['status'])
-        tmpData=self.export_data(cr, uid, allIDs, fieldsListed)
+        allIDs=self._query_data(cr, uid, updateDate, part_data_transfer['status'])
+        tmpData=self._exportData(cr, uid, allIDs, fieldsListed)
         if tmpData.get('datas'):
             bom_data_transfer=self.get_bom_data_transfer
-            tmpData=self.rectify_data(cr, uid, tmpData, part_data_transfer)
+            tmpData=self._rectify_data(cr, uid, tmpData, part_data_transfer)
             if 'db' in transfer:
                 import dbconnector
                 dataTargetTable=part_data_transfer['table']
@@ -299,16 +300,16 @@ class plm_component(osv.osv):
             if 'file' in transfer:
                 bomfieldsListed=bom_data_transfer['fields'].keys()
                 kindBomname=bom_data_transfer['kind']
-                operation=self.extract_data(cr, uid, allIDs, kindBomname, tmpData, fieldsListed, bomfieldsListed, transfer['file'])
+                operation=self._extract_data(cr, uid, allIDs, kindBomname, tmpData, fieldsListed, bomfieldsListed, transfer['file'])
 
         if operation:
-            updateDate=self.set_last_session
+            updateDate=self._set_last_session
             reportStatus='Successful'
             
         logging.debug("[TransferData] %s End : %s" %(reportStatus,str(updateDate)))
         return False
 
-    def query_data(self, cr, uid, updateDate, statuses=[]):
+    def _query_data(self, cr, uid, updateDate, statuses=[]):
         """
             Query to return values based on columns selected.
                 updateDate => '%Y-%m-%d %H:%M:%S'
@@ -322,7 +323,7 @@ class plm_component(osv.osv):
         allIDs.extend(self.search(cr,uid,[('create_date','>',updateDate),('state','in',statusList)],order='engineering_revision'))
         return list(set(allIDs))
 
-    def extract_data(self,cr,uid,allIDs, kindBomname='normal', anag_Data={}, anag_fields=False, rel_fields=False, transferdata={}):
+    def _extract_data(self,cr,uid,allIDs, kindBomname='normal', anag_Data={}, anag_fields=False, rel_fields=False, transferdata={}):
         """
             action to be executed for Transmitted state.
             Transmit the object to ERP Metodo
@@ -361,7 +362,7 @@ class plm_component(osv.osv):
             return False 
 
         filename=os.path.join(outputpath,fname)
-        if not self.export_csv(filename, anag_Data['labels'], anag_Data, True):
+        if not self._export_csv(filename, anag_Data['labels'], anag_Data, True):
             raise osv.except_osv(_('Export Data Error'), _("Writing operations on file (%s) have failed." %(filename)))
             return False
         
@@ -379,19 +380,19 @@ class plm_component(osv.osv):
             if dataSet:
                 expData={'datas': dataSet}
                 
-                if not self.export_csv(filename, ext_fields, expData, True):
+                if not self._export_csv(filename, ext_fields, expData, True):
                     raise osv.except_osv(_('Export Data Error'), _("No Bom extraction files was generated, about entity (%s)." %(fname)))
                     return False
         return True
 
-    def export_csv(self, fname, fields=[], result={}, write_title=False):
+    def _export_csv(self, fname, fields=[], result={}, write_title=False):
         import csv, stat
         if not ('datas' in result) or not result:
-            logging.error("export_csv : No 'datas' in result.")
+            logging.error("_export_csv : No 'datas' in result.")
             return False
 
         if not fields:
-            logging.error("export_csv : No 'fields' in result.")
+            logging.error("_export_csv : No 'fields' in result.")
             return False
         
         try:
@@ -412,8 +413,29 @@ class plm_component(osv.osv):
             os.chmod(fname, stat.S_IRWXU|stat.S_IRWXO|stat.S_IRWXG)
             return True
         except IOError, (errno, strerror):
-            logging.error("export_csv : IOError : "+str(errno)+" ("+str(strerror)+").")
+            logging.error("_export_csv : IOError : "+str(errno)+" ("+str(strerror)+").")
             return False
+
+    def _exportData(self, cr, uid, ids, fields=[]):
+        """
+            Export data about product and BoM
+        """
+        listData=[]
+        oid=self.browse(cr,uid,ids,context=None)
+        if oid:
+            if len(oid.bom_line_ids):
+                prod_names=oid.bom_line_ids[0].product_id._all_columns.keys()
+                bom_names=oid.bom_line_ids[0]._all_columns.keys()
+                for bom_line in oid.bom_line_ids:
+                    row_data={}
+                    for field in fields:
+                        if field in prod_names:
+                            row_data[field]=bom_line.product_id[field]
+                        if field in bom_names:
+                            row_data[field]=bom_line[field]
+                    if row_data:
+                        listData.append(row_data)
+        return {'datas':listData}
 
 plm_component()
 
