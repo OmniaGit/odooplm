@@ -187,24 +187,25 @@ class bom_structure_one_sum_custom_report(report_sxw.rml_parse):
             keyIndex=0
             for l in object:
                 res={}
-                if l.name in listed.keys():
-                    res=tmp_result[listed[l.name]]
+                product=l.product_id.product_tmpl_id
+                if product.name in listed.keys():
+                    res=tmp_result[listed[product.name]]
                     res['pqty']=res['pqty']+l.product_qty
-                    tmp_result[listed[l.name]]=res
+                    tmp_result[listed[product.name]]=res
                 else:
-                    res['name']=l.name
+                    res['name']=product.name
                     res['item']=l.itemnum
                     res['pname']=l.product_id.name
-                    res['pdesc']=l.product_id.description
+                    res['pdesc']=product.description
                     res['pcode']=l.product_id.default_code
-                    res['previ']=l.product_id.engineering_revision
+                    res['previ']=product.engineering_revision
                     res['pqty']=l.product_qty
                     res['uname']=l.product_uom.name
-                    res['pweight']=l.product_id.weight_net
-                    res['code']=l.code
+                    res['pweight']=product.weight_net
+                    res['code']=l.product_id.default_code
                     res['level']=level
                     tmp_result.append(res)
-                    listed[l.name]=keyIndex
+                    listed[product.name]=keyIndex
                     keyIndex+=1
             return result.extend(tmp_result)
 
@@ -263,16 +264,18 @@ class component_spare_parts_report(report_int):
         packedIds=[]
         if component in self.processedObjs:
             return
-        bomIds=bomTemplate.search(cr,uid,[('product_id','=',component.id),('type','=','spbom'),('bom_id','=',False)])
+        bomIds=bomTemplate.search(cr,uid,[('product_id','=',component.id),('type','=','spbom')])
+        if len(bomIds)<1:
+            bomIds=bomTemplate.search(cr,uid,[('product_tmpl_id','=',component.product_tmpl_id.id),('type','=','spbom')])
 #        if len(bomIds)<1:
-#            bomIds=bomTemplate.search(cr,uid,[('product_id','=',component.id),('type','=','normal'),('bom_id','=',False)])
+#            bomIds=bomTemplate.search(cr,uid,[('product_tmpl_id','=',component.id),('type','=','normal')])
 #        if len(bomIds)<1:
-#            bomIds=bomTemplate.search(cr,uid,[('product_id','=',component.id),('type','=','ebom'),('bom_id','=',False)])
+#            bomIds=bomTemplate.search(cr,uid,[('product_tmpl_id','=',component.id),('type','=','ebom')])
         if len(bomIds)>0:
             BomObject=bomTemplate.browse(cr, uid, bomIds[0], context=context)
             if BomObject:
                 self.processedObjs.append(component)
-                for bom_line in BomObject.bom_lines:
+                for bom_line in BomObject.bom_line_ids:
                     packedObjs.append(bom_line.product_id)
                     packedIds.append(bom_line.id)
                 if len(packedIds)>0:
