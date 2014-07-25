@@ -414,19 +414,15 @@ class plm_relation(osv.osv):
             bomLType.unlink(cr,uid,ids)                                 # Cleans mrp.bom.line
 
 
-        def toCleanRelations(parentName, relations):
+        def toCleanRelations(relations):
             """
                 Processes relations  
             """
-            listedChildren=[]
-            sourceID=None
-            subRelations=[(a, b, c, d, e, f) for a, b, c, d, e, f in relations if a == parentName]
-            if len(subRelations)<1: # no relation to save 
-                return None
-            parentName, parentID, tmpChildName, tmpChildID, sourceID, tempRelArgs=subRelations[0]
-            cleanStructure(sourceID)
-            for rel in subRelations:
-                toCleanRelations(childName, relations)
+            listedSource=[]
+            for parentName, parentID, tmpChildName, tmpChildID, sourceID, tempRelArgs in relations:
+                if (not(sourceID==None)) and (not(sourceID in listedSource)):
+                    cleanStructure(sourceID)
+                    listedSource.append(sourceID)
             return False
 
         def toCompute(parentName, relations):
@@ -506,7 +502,7 @@ class plm_relation(osv.osv):
         if len(relations)<1: # no relation to save 
             return False
         parentName, parentID, childName, childID, sourceID, relArgs=relations[0]
-        toCleanRelations(parentName, relations)
+        toCleanRelations(relations)
         tmpBomId=toCompute(parentName, relations)
         return False
     
