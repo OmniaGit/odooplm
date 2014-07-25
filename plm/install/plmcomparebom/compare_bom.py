@@ -212,7 +212,7 @@ class plm_compare_bom(osv.osv_memory):
 
     def _unpackData(self, cr, uid, oid, fields=[]):
         """
-            Create a new Normal Bom (recursive on all EBom children)
+            Export data about products and BoM, formatting as required to match.
         """
         idList=[]
         listData=[]
