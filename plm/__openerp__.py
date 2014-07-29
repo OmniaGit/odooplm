@@ -70,8 +70,8 @@ Supported Editors :
     'data': [
         'install/board_plm_view.xml',
         'security/base_plm_security.xml',
-        'security/ir.model.access.csv',
         'security/res.groups.csv',
+        'security/ir.model.access.csv',
         'install/res_config_view.xml',
         'install/plmdocuments/document_view.xml',
         'install/plmdocuments/document_workflow.xml',
