@@ -190,11 +190,10 @@ plm_component_document_rel()
 class plm_relation_line(osv.osv):
     _name = 'mrp.bom.line'
     _inherit = 'mrp.bom.line'
-    _order = "sequence"
     _columns = {
-                'create_date': fields.datetime('Date Created', readonly=True),
+                'create_date': fields.datetime(_('Creation Date'), readonly=True),
                 'source_id': fields.many2one('plm.document','name',ondelete='no action', readonly=True,help="This is the document object that declares this BoM."),
-                'type': fields.selection([('normal','Normal BoM'),('phantom','Sets / Phantom'),('ebom','Engineering BoM'),('spbom','Spare BoM')], 'BoM Type', required=True, help=
+                'type': fields.selection([('normal','Normal BoM'),('phantom','Sets / Phantom'),('ebom','Engineering BoM'),('spbom','Spare BoM')], _('BoM Type'), required=True, help=
                     "Use a phantom bill of material in raw materials lines that have to be " \
                     "automatically computed in on production order and not one per level." \
                     "If you put \"Phantom/Set\" at the root level of a bill of material " \
@@ -215,9 +214,9 @@ class plm_relation(osv.osv):
     _name = 'mrp.bom'
     _inherit = 'mrp.bom'
     _columns = {
-                'create_date': fields.datetime('Date Created', readonly=True),
+                'create_date': fields.datetime(_('Creation Date'), readonly=True),
                 'source_id': fields.many2one('plm.document','name',ondelete='no action', readonly=True,help="This is the document object that declares this BoM."),
-                'type': fields.selection([('normal','Normal BoM'),('phantom','Sets / Phantom'),('ebom','Engineering BoM'),('spbom','Spare BoM')], 'BoM Type', required=True, help=
+                'type': fields.selection([('normal','Normal BoM'),('phantom','Sets / Phantom'),('ebom','Engineering BoM'),('spbom','Spare BoM')], _('BoM Type'), required=True, help=
                     "Use a phantom bill of material in raw materials lines that have to be " \
                     "automatically computed in on production order and not one per level." \
                     "If you put \"Phantom/Set\" at the root level of a bill of material " \
