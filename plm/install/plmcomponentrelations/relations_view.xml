@@ -107,7 +107,31 @@
 
 -->
 
-       <record id="plm_bom_tree_view" model="ir.ui.view">
+        <record id="plm_bom_component_tree_view" model="ir.ui.view">
+            <field name="name">plm.bom.component.tree</field>
+            <field name="model">mrp.bom.line</field>
+            <field name="inherit_id" ref="mrp.mrp_bom_component_tree_view"/>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+        		<field name="product_id" position="before">
+                    <field name="itemnum"/>
+        		</field>
+                 <field name="product_id" position="after">
+	            	<field name="engineering_revision" readonly="True"/>
+	                <field name="state" readonly="True"/>
+	            	<field name="description" select="True"/>
+	                <field name="source_id" string="Source Relation Document"/>
+                </field>
+        		<field name="product_qty" position="after">
+	               	<field name="weight_net" readonly="True"/>
+	    			<field name="create_date" select="True" readonly="True"/>
+           		</field>
+            </field>
+        </record>
+
+
+
+        <record id="plm_bom_tree_view" model="ir.ui.view">
             <field name="name">plm.bom.tree</field>
             <field name="model">mrp.bom</field>
             <field name="type">tree</field>
@@ -122,57 +146,40 @@
         	</field>
         </record>
 
-       <record id="plm_bom_component_tree_view" model="ir.ui.view">
-            <field name="name">plm.bom.component.tree</field>
-            <field name="model">mrp.bom.line</field>
-            <field name="inherit_id" ref="mrp.mrp_bom_component_tree_view"/>
-            <field name="type">tree</field>
-            <field name="arch" type="xml">
-        		<field name="product_id" position="before">
-                    <field name="itemnum"/>
-        		</field>
-                 <field name="product_id" position="after">
-                	<field name="engineering_revision"/>
-                	<field name="description" select="True"/>
-                    <field name="source_id" string="Source Relation Document"/>
-                </field>
-        		<field name="product_qty" position="after">
-                   	<field name="weight_net"/>
-        			<field name="type" />
-        			<field name="create_date" select="True"/>
-          		</field>
-            </field>
-        </record>
-
-       <record id="plm_bom_form_view" model="ir.ui.view">
+        <record id="plm_bom_form_view" model="ir.ui.view">
             <field name="name">plm.bom.form</field>
             <field name="model">mrp.bom</field>
             <field name="inherit_id" ref="mrp.mrp_bom_form_view"/>
             <field name="type">form</field>
         	<field name="priority" eval="15"/>
             <field name="arch" type="xml">
-                <field name="product_id" position="after">
-                	<field name="engineering_revision"/>
-                	<field name="description" select="True"/>
-                </field>
-	            <notebook position="inside">
-	            	<xpath expr="//bom_line_ids" position="replace">
-		         		<field name="product_id" position="before">
-		                    <field name="itemnum"/>
-		        		</field>
-		                 <field name="product_id" position="after">
-		                	<field name="engineering_revision"/>
-		                	<field name="description" select="True"/>
-		                    <field name="source_id" string="Source Relation Document"/>
-		                </field>
-		        		<field name="product_qty" position="after">
-		                   	<field name="weight_net"/>
-		        			<field name="type" />
-		        			<field name="create_date" select="True"/>
-		          		</field>
-	          		</xpath>
-	            </notebook>
-         	</field>
+            	<data>
+	                <field name="product_id" position="after">
+	                	<field name="engineering_revision" readonly="True"/>
+	                	<field name="description" readonly="True"/>
+	                	<field name="weight_net" readonly="True"/>
+	                </field>
+            	</data>
+            	<data>
+	            	<xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_id']" position="before">
+		            	<field name="itemnum"/>
+	           		</xpath>
+             	</data>
+            	<data>
+	            	<xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_id']" position="after">
+		            	<field name="engineering_revision" readonly="True"/>
+		                <field name="state" readonly="True"/>
+		            	<field name="description" readonly="True"/>
+		                <field name="source_id" string="Source Relation Document"/>
+	           		</xpath>
+             	</data>
+            	<data>
+	            	<xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_qty']" position="after">
+		               	<field name="weight_net" readonly="True"/>
+		    			<field name="create_date" select="True" readonly="True"/>
+	           		</xpath>
+             	</data>
+     	</field>
         </record>
 
 
