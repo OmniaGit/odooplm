@@ -36,7 +36,7 @@ class plm_config_settings(osv.osv_memory):
     _inherit = 'res.config.settings'
         
     _columns = {
-        'plm_service_id': fields.char('Register PLM module, insert your Service ID.',size=128,  help="Insert the Service ID and register your PLM module. Ask it to OmniaSolutions."),
+       'plm_service_id': fields.char('Register PLM module, insert your Service ID.',size=128,  help="Insert the Service ID and register your PLM module. Ask it to OmniaSolutions."),
        'activated_id': fields.char('Registered PLM client',size=128,  help="Listed registered Client."),
        'active_editor':fields.char('Client Editor Name',size=128,  help="Used Editor Name"),
        'active_node':fields.char('OS machine name',size=128,  help="Editor Machine name"),
