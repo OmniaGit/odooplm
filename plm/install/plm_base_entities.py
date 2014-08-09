@@ -87,13 +87,13 @@ class plm_component(osv.osv):
     _name = 'product.template'
     _inherit = 'product.template'
     _columns = {
-                'state':fields.selection(USED_STATES,'Status', help="The status of the product.", readonly="True"),
-                'engineering_code': fields.char('Part Number',size=64),
-                'engineering_revision': fields.integer('Revision', required=True),
+                'state':fields.selection(USED_STATES,'Status', help="The status of the product in its LifeCycle.", readonly="True"),
+                'engineering_code': fields.char('Part Number',help="This is engineering reference to manage a different P/N from item Name.",size=64),
+                'engineering_revision': fields.integer('Revision', required=True,help="The revision of the product."),
                 'engineering_writable': fields.boolean('Writable'),
-                'engineering_material': fields.char('Raw Material',size=128,required=False,help="Raw material for current product"),
+                'engineering_material': fields.char('Raw Material',size=128,required=False,help="Raw material for current product, only description for titleblock."),
 #                'engineering_treatment': fields.char('Treatment',size=64,required=False,help="Thermal treatment for current product"),
-                'engineering_surface': fields.char('Surface Finishing',size=128,required=False,help="Surface finishing for current product"),
+                'engineering_surface': fields.char('Surface Finishing',size=128,required=False,help="Surface finishing for current product, only description for titleblock."),
      }   
     _defaults = {
                  'state': lambda *a: 'draft',
@@ -200,8 +200,8 @@ class plm_relation_line(osv.osv):
                     "it is considered as a set or pack: the products are replaced by the components " \
                     "between the sale order to the picking without going through the production order." \
                     "The normal BoM will generate one production order per BoM level."),
-                'itemnum': fields.integer(_('Cad Item Position')),
-                'itemlbl': fields.char(_('Cad Item Position Label'),size=64)
+                'itemnum': fields.integer(_('CAD Item Position'),help="This is the item reference position into the CAD document that declares this BoM."),
+                'itemlbl': fields.char(_('CAD Item Position Label'),size=64)
                 }
     _defaults = {
         'product_uom' : 1,
