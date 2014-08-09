@@ -154,7 +154,6 @@ class plm_relation(osv.osv):
 #         return result
 
     _columns = {
-                'source_id': fields.many2one('plm.document','name',ondelete='no action', readonly=True,help="This is the document object that declares this BoM.",string="Source Relation Document"),
                 'state': fields.related('product_id','state',type="char",relation="product.template",string="Status",store=False),
                 'engineering_revision': fields.related('product_id','engineering_revision',type="char",relation="product.template",string="Revision",store=False),
                 'description': fields.related('product_id','description',type="char",relation="product.template",string="Description",store=False),
@@ -171,7 +170,6 @@ class plm_relation_line(osv.osv):
     _order = "itemnum"
 
     _columns = {
-                'source_id': fields.many2one('plm.document','name',ondelete='no action', readonly=True,help="This is the document object that declares this BoM.",string="Source Relation Document"),
                 'state': fields.related('product_id','state',type="char",relation="product.template",string="Status",store=False),
                 'engineering_revision': fields.related('product_id','engineering_revision',type="char",relation="product.template",string="Revision",store=False),
                 'description': fields.related('product_id','description',type="char",relation="product.template",string="Description",store=False),
