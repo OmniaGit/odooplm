@@ -89,30 +89,110 @@ class plm_relation(osv.osv):
         @param context: A standard dictionary for contextual values
         @return:  Dictionary of values
         """
+        bom_type=''
         result = {}
         if context is None:
             context = {}
-        bom_obj = self.pool.get('mrp.bom')
-        bom_id = context and context.get('active_id', False) or False
-        cr.execute('select id from mrp_bom')
-        if all(bom_id != r[0] for r in cr.fetchall()):
-            ids.sort()
-            bom_id = ids[0]
-        bom_parent = bom_obj.browse(cr, uid, bom_id, context=context)
-        for bom in self.browse(cr, uid, ids, context=context):
-            if (bom_parent) or (bom.id == bom_id):
-                result[bom.id] = map(lambda x: x.id, bom.bom_line_ids)
-            else:
-                result[bom.id] = []
-            if bom.bom_line_ids:
-                continue
-            ok = ((name=='child_complete_ids'))
-            if (bom.type=='phantom' or ok):
-                sids = bom_obj.search(cr, uid, [('product_tmpl_id','=',bom.product_tmpl_id.id)])
-                if sids:
-                    bom2 = bom_obj.browse(cr, uid, sids[0], context=context)
-                    result[bom.id] += map(lambda x: x.id, bom2.bom_line_ids)
+        bom_objType = self.pool.get('mrp.bom')
+        bom_line_objType = self.pool.get('mrp.bom.line')
+        bom_objs = bom_objType.browse(cr, uid, ids, context=context)
+        for bom_obj in bom_objs:
+            bom_type=bom_obj.type
+            result[bom_obj.id]=[]
+            for thisId in ids:
+                if bom_type=='':
+                    tmp_ids = bom_line_objType.search(cr, uid, [('bom_id','=',bom_obj.id)])
+                else:
+                    tmp_ids = bom_line_objType.search(cr, uid, [('bom_id','=',bom_obj.id),('type','=',bom_type)])
+            
+                bom_children = bom_line_objType.browse(cr, uid, list(set(tmp_ids)), context=context)
+                tmp_ids = []
+                for bom_child in bom_children:
+                    if bom_type=='':
+                        tmp_ids.extend(bom_objType.search(cr, uid, [('product_tmpl_id','=',bom_child.product_id.product_tmpl_id.id)]))
+                    else:
+                        tmp_ids.extend(bom_objType.search(cr, uid, [('product_tmpl_id','=',bom_child.product_id.product_tmpl_id.id),('type','=',bom_type)]))
+                tmp_ids=list(set(tmp_ids))
+                if tmp_ids:
+                    result[bom_obj.id]+=tmp_ids
         return result
+
+#     def _child_compute(self, cr, uid, ids, name, arg, context=None):
+#         """ Gets child bom.
+#         @param self: The object pointer
+#         @param cr: The current row, from the database cursor,
+#         @param uid: The current user ID for security checks
+#         @param ids: List of selected IDs
+#         @param name: Name of the field
+#         @param arg: User defined argument
+#         @param context: A standard dictionary for contextual values
+#         @return:  Dictionary of values
+#         """
+#         result = {}
+#         if context is None:
+#             context = {}
+#         prodID = context and context.get('default_product_id', False) or False
+#         if prodID:
+#             ok = ((name=='child_complete_ids'))
+#             bom_obj = self.pool.get('mrp.bom')
+#             prod_obj = self.pool.get('product.product')
+#             for productID in prod_obj.browse(cr, uid, [prodID], context=context):
+#                 bom_ids=bom_obj.search(cr,uid,[('product_tmpl_id','=',productID.product_tmpl_id.id)])
+#                 for bom_parent in bom_obj.browse(cr, uid, bom_ids, context=context):
+#                     break
+#                 break
+# 
+#             for bom in self.browse(cr, uid, ids, context=context):
+#                 if (bom_parent) or (bom.product_tmpl_id.id == productID.product_tmpl_id.id):
+#                     result[bom.id] = map(lambda x: x.id, bom.bom_line_ids)
+#                 else:
+#                     result[bom.id] = []
+#                 if bom.bom_line_ids:
+#                     continue
+#                 if (bom.type=='phantom'):
+#                     for bom_line_id in bom.bom_line_ids:
+#                         sids = bom_obj.search(cr, uid, [('product_tmpl_id','=',bom_line_id.product_tmpl_id.id)])
+#                         for bom2 in bom_obj.browse(cr, uid, sids, context=context):
+#                             result[bom.id] += map(lambda x: x.id, bom2.bom_line_ids)
+# 
+# 
+#         return result
+
+#     def _child_compute0(self, cr, uid, ids, name, arg, context=None):
+#         """ Gets child bom.
+#         @param self: The object pointer
+#         @param cr: The current row, from the database cursor,
+#         @param uid: The current user ID for security checks
+#         @param ids: List of selected IDs
+#         @param name: Name of the field
+#         @param arg: User defined argument
+#         @param context: A standard dictionary for contextual values
+#         @return:  Dictionary of values
+#         """
+#         result = {}
+#         if context is None:
+#             context = {}
+#         bom_obj = self.pool.get('mrp.bom')
+#         bom_id = context and context.get('active_id', False) or False
+#         cr.execute('select id from mrp_bom')
+#         if all(bom_id != r[0] for r in cr.fetchall()):
+#             ids.sort()
+#             bom_id = ids[0]
+#         bom_parent = bom_obj.browse(cr, uid, bom_id, context=context)
+#         for bom in self.browse(cr, uid, ids, context=context):
+#             if (bom_parent) or (bom.id == bom_id):
+#                 result[bom.id] = []
+#             else:
+#                 result[bom.id] = map(lambda x: x.id, bom.bom_line_ids)
+#             if bom.bom_line_ids:
+#                 continue
+#             ok = ((name=='child_complete_ids'))
+#             if (bom.type=='phantom' or ok):
+#                 sids = bom_obj.search(cr, uid, [('product_tmpl_id','=',bom.product_tmpl_id.id)])
+#                 if sids:
+#                     bom2 = bom_obj.browse(cr, uid, sids[0], context=context)
+#                     result[bom.id] += map(lambda x: x.id, bom2.bom_line_ids)
+#         return result
 
 
     def _father_compute(self, cr, uid, ids, name, arg, context=None):
@@ -126,32 +206,28 @@ class plm_relation(osv.osv):
         @param context: A standard dictionary for contextual values
         @return:  Dictionary of values
         """
-        return False
-#         bom_type=''
-#         result = {}
-#         if context is None:
-#             context = {}
-#         bom_obj = self.pool.get('mrp.bom')
-#         bom_lines = bom_obj.browse(cr, uid, ids, context=context)
-#         for bom_line in bom_lines:
-#             bom_type=bom_line.type
-#             result[bom_line.id]=[]
-#             if bom_line.bom_id.id:
-#                 if not (bom_line.bom_id.id in result[bom_line.id]):
-#                     result[bom_line.id]+=[bom_line.bom_id.id]
-#             else:
-#                 for thisId in ids:
-#                     if bom_type=='':
-#                         tmp_ids = bom_obj.search(cr, uid, [('product_id','=',bom_line.product_id.id)])
-#                     else:
-#                         tmp_ids = bom_obj.search(cr, uid, [('product_id','=',bom_line.product_id.id),('type','=',bom_type)])
-# 
-#                     bom_parents = bom_obj.browse(cr, uid, tmp_ids, context=context)
-#                     for bom_parent in bom_parents:
-#                         if bom_parent.bom_id.id:
-#                             if not(bom_parent.bom_id.id in result[bom_line.id]):
-#                                 result[bom_line.id]+=[bom_parent.bom_id.id]
-#         return result
+        bom_type=''
+        result = {}
+        if context is None:
+            context = {}
+        bom_objType = self.pool.get('mrp.bom')
+        bom_line_objType = self.pool.get('mrp.bom.line')
+        bom_objs = bom_objType.browse(cr, uid, ids, context=context)
+        for bom_obj in bom_objs:
+            bom_type=bom_obj.type
+            result[bom_obj.id]=[]
+            for thisId in ids:
+                if bom_type=='':
+                    tmp_ids = bom_line_objType.search(cr, uid, [('product_id','=',bom_obj.product_id.id)])
+                else:
+                    tmp_ids = bom_line_objType.search(cr, uid, [('product_id','=',bom_obj.product_id.id),('type','=',bom_type)])
+            
+                bom_children = bom_line_objType.browse(cr, uid, list(set(tmp_ids)), context=context)
+                for bom_child in bom_children:
+                    if bom_child.bom_id.id:
+                        if not(bom_child.bom_id.id in result[bom_obj.id]):
+                            result[bom_obj.id]+=[bom_child.bom_id.id]
+        return result
 
     _columns = {
                 'state': fields.related('product_id','state',type="char",relation="product.template",string="Status",help="The status of the product in its LifeCycle.",store=False),
