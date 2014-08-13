@@ -1,111 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
 <data>
+
     <menuitem name="Component Relations View" id="plm_menu_relation" parent="plm_menu" sequence="12"/>
  
-<!--
-        <record id="plm_bom_form_view" model="ir.ui.view">
-            <field name="name">plm.relation.form</field>
-            <field name="model">mrp.bom</field>
-            <field name="type">form</field>
-        	<field name="priority" eval="10"/>
-            <field name="arch" type="xml">
-                <form string="Edit Bill of Material">
-                    <field name="product_id" on_change="onchange_product_id(product_id, name)" select="1"/>
-                    <field name="itemnum"/>
-                    <newline/>
-                    <field name="product_uom"/>
-                    <field name="product_qty"/>
-                    <field name="name" select="1"/>
-                    <field name="code" select="1"/>
-                    <newline/>
-                    <field name="routing_id" select="2" groups="mrp.group_mrp_routings"/>
-                    <field name="type" />
-                    <notebook colspan="4">
-                        <page string="General Information">
-                            <field colspan="4" name="bom_line_ids" nolabel="1" widget="one2many_list"/>
-                        </page>
-                        <page string="Properties">
-                            <field name="position" select="2"/>
-                            <field name="active" select="2"/>
-                            <field name="sequence"/>
-                            <field name="date_start" select="2"/>
-                            <field name="date_stop" select="2"/>
-                            <field name="product_rounding"/>
-                            <field name="product_efficiency"/>
-                            <field colspan="4" name="property_ids" nolabel="2" />
-                        </page>
-                    </notebook>
-                </form>
-            </field>
-        </record>
-
-        <record id="plm_bom_tree_view" model="ir.ui.view">
-            <field name="name">plm.relation.tree</field>
-            <field name="model">mrp.bom</field>
-            <field name="type">tree</field>
-            <field name="field_parent">child_complete_ids</field>
-        	<field name="priority" eval="10"/>
-            <field name="arch" type="xml">
-                <tree string="Bill of Materials" colors="blue:method">
-                    <field name="itemnum"/>
-                    <field name="name" select="True"/>
-                    <field name="description" select="True"/>
-                    <field name="code"  select="True"/>
-                    <field name="product_id"  select="True"/>
-                    <field name="engineering_revision"/>
-                    <field name="state"/>
-                    <field name="source_id" select="True" string="Source Relation Document"/>
-        			<field name="type"/>
-       				<field name="product_qty"/>
-                    <field name="product_uom"/>
-                    <field name="weight_net"/>
-                    <field name="method"/>
-                    <field name="routing_id" groups="mrp.group_mrp_routings"/>
-                    <field name="create_date" select="True"/>
-                    <field name="date_start"/>
-                    <field name="date_stop"/>
-                </tree>
-            </field>
-        </record>
-
-        <record id="plm_bom_search" model="ir.ui.view">
-            <field name="name">plm.relation.search</field>
-            <field name="model">mrp.bom</field>
-            <field name="type">search</field>
-        	<field name="priority" eval="10"/>
-            <field name="arch" type="xml">
-				<search string="Search on Bill Of Material">
-                   	<filter icon="terp-go-month" string="  Latest 7 Days  " separator="1"
-                           	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-relativedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
-                          	help="Created latest 7 Days"/>
-                 	<filter icon="terp-go-month" string="  Yesterday  " separator="1"
-                         	domain="[('create_date','&lt;=', (datetime.date.today()-relativedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-relativedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
-                    		help="Created yesterday"/>
-                	<filter icon="terp-go-month" string="  Today  " separator="1"
-                         	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
-                         	help="Created today"/>
-                   	<separator orientation="vertical"/>
-                    <field name="name"/>
-                    <field name="description"/>
-                    <field name="product_id"/>
-                    <field name="code" string="Reference"/>
-                    <field name="source_id"  string="Source Relation Document"/>
-                    <newline/>
-                    <group expand="0" string="Group By..." colspan="4" col="8" >
-                        <filter string="Product" icon="terp-accessories-archiver" domain="[]" context="{'group_by':'product_id'}"/>
-                        <filter string="Default UOM" icon="terp-mrp" domain="[]" context="{'group_by' : 'product_uom'}"/>
-                        <separator orientation="vertical"/>
-                        <filter string="Routing" icon="terp-stock_align_left_24" domain="[]" context="{'group_by':'routing_id'}"/>
-                        <filter string="Type" icon="terp-stock_symbol-selection" domain="[]" context="{'group_by' : 'type'}"/>
-                        <separator orientation="vertical"/>
-                        <filter string="Date" icon="terp-go-month" domain="[]" context="{'group_by':'date_start'}" help="Starting Date"/>
-                   </group>
-                </search>
-			</field>
-        </record>
-
--->
+<!-- View customization on MRP -->
 
         <record id="plm_bom_component_tree_view" model="ir.ui.view">
             <field name="name">plm.bom.component.tree</field>
@@ -130,7 +29,6 @@
         </record>
 
 
-
         <record id="plm_bom_tree_view" model="ir.ui.view">
             <field name="name">plm.mrp.bom.tree</field>
             <field name="model">mrp.bom</field>
@@ -145,6 +43,7 @@
           		</field>
         	</field>
         </record>
+
 
         <record id="plm_bom_form_view" model="ir.ui.view">
             <field name="name">plm.bom.form</field>
@@ -179,11 +78,11 @@
 		    			<field name="create_date" select="True" readonly="True"/>
 	           		</xpath>
              	</data>
-     	</field>
+     		</field>
         </record>
 
 
-	<!-- Opening views from menu -->
+<!-- Opening views from menu -->
 
     <record model="ir.actions.act_window" id="plm_action_normal_form">
         <field name="type">ir.actions.act_window</field>
@@ -230,7 +129,7 @@
         parent="plm_menu_relation"/>
 
 
-	<!-- Overrides standard buttons -->
+<!-- Overrides standard Search -->
 
         <record id="view_mrp_bom_filter" model="ir.ui.view">
             <field name="name">mrp.bom.select</field>
@@ -247,6 +146,7 @@
                     <newline/>
                     <group expand="0" string="Group By..." colspan="4" col="8" >
                         <filter string="Product" icon="terp-accessories-archiver" domain="[]" context="{'group_by':'product_id'}"/>
+                        <filter string="Source Relationship" icon="terp-stock_symbol-selection" domain="[]" context="{'group_by':'source_id'}"/>
                         <filter string='Default UOM' icon="terp-mrp" domain="[]" context="{'group_by' : 'product_uom'}" />
                         <separator orientation="vertical"/>
                         <filter string="Routing" icon="terp-stock_align_left_24" domain="[]" context="{'group_by':'routing_id'}"/>
@@ -258,22 +158,42 @@
             </field>
         </record>
 
-<!--
-        <act_window
-            domain="[('product_tmpl_id', '=', active_id)]"
-            context="{'search_default_product_id': [active_id],'default_product_id':active_id}"
-            id="act_product_product_2_mrp_bom"
-            name="Bill of Materials"
-            res_model="mrp.bom"
-            src_model="product.product"/>
--->
 
+<!-- Tree Structure Where Used on Product -->
+
+        <record id="mrp_part_tree_view_where" model="ir.ui.view">
+            <field name="name">mrp.part.tree.where</field>
+            <field name="model">product.product</field>
+            <field name="field_parent">father_part_ids</field>
+            <field name="arch" type="xml">
+                <tree string="Bill of Materials">
+                    <field name="product_tmpl_id" string="Component Name"/>
+                    <field name="engineering_revision" string="Revision"/>
+                    <field name="description"/>
+                </tree>
+            </field>
+        </record>
+
+        <act_window
+            id="action_product_bom_structure_where"
+            name="Product BoM Where Used Structure"
+            domain="[('product_tmpl_id', '=', active_id)]"
+            context="{'default_product_id': active_id}"
+            view_type="tree"
+            view_mode="tree"
+            view_id="mrp_part_tree_view_where"
+            res_model="product.product"
+            src_model="product.product"/>
+
+
+ <!-- Tree Structure Views on MRP -->
+ 
         <record id="mrp_bom_tree_view_where" model="ir.ui.view">
             <field name="name">mrp.bom.tree.where</field>
             <field name="model">mrp.bom</field>
             <field name="field_parent">father_complete_ids</field>
             <field name="arch" type="xml">
-                <tree string="Bill of Materials">
+                <tree string="Where Used Bill of Materials">
                     <field name="product_id" string="Component Name"/>
                     <field name="engineering_revision" string="Revision"/>
                     <field name="description"/>
@@ -287,20 +207,8 @@
             </field>
         </record>
 
-<!--
-        <act_window
-            id="action_product_bom_structure_where"
-            name="Product BoM Where Used Structure"
-            domain="[('product_id', '=', active_id)]"
-            context="{'default_product_id': active_id}"
-            view_type="tree"
-            view_mode="tree"
-            view_id="mrp_bom_tree_view_where"
-            res_model="mrp.bom"
-            src_model="product.product"/>
--->
-
-        <record id="plm_bom_tree_structure" model="ir.ui.view">
+ 
+         <record id="plm_bom_tree_structure" model="ir.ui.view">
             <field name="name">plm.bom.tree</field>
             <field name="model">mrp.bom</field>
             <field name="field_parent">child_complete_ids</field>
@@ -317,34 +225,37 @@
                 </tree>
             </field>
         </record>
+        
 
-<!--
+<!-- Tree Structure Actions on Product -->
+
         <act_window
             id="action_product_bom_structure"
             name="Product BoM Structure"
-            domain="[('product_id', '=', active_id)]"
+            domain="[('product_tmpl_id', '=', active_id)]"
             context="{'default_product_id': active_id}"
             view_type="tree"
             view_mode="tree"
             view_id="plm_bom_tree_structure"
             res_model="mrp.bom"
             src_model="product.product"/>
--->
+
+
+<!-- Tree Structure Actions on MRP -->
             
         <record id="action20" model="ir.actions.act_window">
-            <field name="name">Bill of Materials Structure Where Used</field>
+            <field name="name">Where Used Bill of Materials Structure</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">mrp.bom</field>
             <field name="domain">[('id', 'in', active_ids)]</field>
             <field name="view_type">tree</field>
             <field name="view_id" ref="mrp_bom_tree_view_where"/>
-            <field name="view_type">tree</field>
         </record>
         
         <record id="ir_BOM_structureWhere" model="ir.values">
             <field eval="'client_action_multi'" name="key2"/>
             <field eval="'mrp.bom'" name="model"/>
-            <field name="name">Bill of Materials Structure Where Used</field>
+            <field name="name">Where Used Bill of Materials Structure</field>
             <field eval="'ir.actions.act_window,'+str(action20)" name="value"/>
         </record>
         
@@ -356,7 +267,6 @@
             <field name="domain">[('id', 'in', active_ids)]</field>
             <field name="view_type">tree</field>
             <field name="view_id" ref="plm_bom_tree_structure"/>
-            <field name="view_type">tree</field>
         </record>
         
         <record id="ir_BOM_structure" model="ir.values">
@@ -365,6 +275,8 @@
             <field name="name">Bill of Materials Structure</field>
             <field eval="'ir.actions.act_window,'+str(action2)" name="value"/>
         </record>
+        
+        
 </data>
 </openerp>
 
