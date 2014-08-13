@@ -20,7 +20,14 @@
 #
 ##############################################################################
 
+import os
 from openerp.osv import osv, fields
+from openerp.tools.translate import _
+
+def _moduleName():
+    path = os.path.dirname(__file__)
+    return os.path.basename(os.path.dirname(path))
+openerpModule=_moduleName()
 
 class plm_document(osv.osv):
     _name = 'plm.document'
@@ -38,11 +45,87 @@ plm_document()
 class plm_component(osv.osv):
     _name = 'product.product'
     _inherit = 'product.product'
+    
+    def _father_part_compute(self, cr, uid, ids, name, arg, context={}):
+        """ Gets father bom.
+        @param self: The object pointer
+        @param cr: The current row, from the database cursor,
+        @param uid: The current user ID for security checks
+        @param ids: List of selected IDs
+        @param name: Name of the field
+        @param arg: User defined argument
+        @param context: A standard dictionary for contextual values
+        @return:  Dictionary of values
+        """
+        result={}
+        prod_ids=[]
+        if context is None:
+            context = {}
+        bom_line_objType = self.pool.get('mrp.bom.line')
+        prod_objs = self.browse(cr, uid, ids, context=context)
+        for prod_obj in prod_objs:
+            tmp_ids = bom_line_objType.search(cr, uid, [('product_id','=',prod_obj.id)])
+            bom_line_objs = bom_line_objType.browse(cr, uid, tmp_ids, context=context)
+            for bom_line_obj in bom_line_objs:
+                prod_ids.extend([bom_line_obj.bom_id.product_tmpl_id.id])
+            result[prod_obj.id]=list(set(prod_ids))
+        return result
+
+#     def _father_part_compute0(self, cr, uid, ids, name, arg, context={}):
+#         """ Gets father bom.
+#         @param self: The object pointer
+#         @param cr: The current row, from the database cursor,
+#         @param uid: The current user ID for security checks
+#         @param ids: List of selected IDs
+#         @param name: Name of the field
+#         @param arg: User defined argument
+#         @param context: A standard dictionary for contextual values
+#         @return:  Dictionary of values
+#         """
+#         bom_ids=[]
+#         prod_ids=[]
+#         if context is None:
+#             context = {}
+#         bom_objType = self.pool.get('mrp.bom')
+#         bom_line_objType = self.pool.get('mrp.bom.line')
+#         prod_objs = self.browse(cr, uid, ids, context=context)
+#         for prod_obj in prod_objs:
+#             tmp_ids = bom_line_objType.search(cr, uid, [('product_id','=',prod_obj.id)])
+#             bom_line_objs = bom_line_objType.browse(cr, uid, tmp_ids, context=context)
+#             for bom_line_obj in bom_line_objs:
+#                 bom_ids.extend([bom_line_obj.bom_id.id])
+#                 prod_ids.extend([bom_line_obj.bom_id.product_tmpl_id.id])
+#             break
+# 
+#         if bom_ids:
+#             bom_ids=list(set(bom_ids))
+#             data_obj = self.pool.get('ir.model.data')
+#             id3 = data_obj._get_id(cr, uid, openerpModule, 'mrp_bom_tree_view_where')
+#             if id3:
+#                 id3 = data_obj.browse(cr, uid, id3, context=context).res_id
+#     
+#             ctx={'id':bom_ids[0],'active_id':bom_ids[0],'active_ids':bom_ids, 'active_model':"mrp.bom"}
+#             return {
+#                 'domain': [('id', 'in', bom_ids)],
+#                 'name': _('Where Used Bill of Materials'),
+#                 'view_type': 'tree',
+#                 'view_mode': 'tree',
+#                 'res_model': 'mrp.bom',
+#                 'res_id': bom_ids[0],
+#                 'views': [(id3,'tree')],
+#                 prod_obj.id : prod_ids,
+#                 'type': 'ir.actions.act_window',
+#                 'context': ctx
+#              }
+# 
+#         return {}
+    
     _columns = {
         	    'linkeddocuments':fields.many2many('plm.document', 'plm_component_document_rel','component_id','document_id', 'Linked Docs'),  
                 'tmp_material': fields.many2one('plm.material','Raw Material', required=False, change_default=True, help="Select raw material for current product"),
 #                'tmp_treatment': fields.many2one('plm.treatment','Thermal Treatment', required=False, change_default=True, help="Select thermal treatment for current product"),
                 'tmp_surface': fields.many2one('plm.finishing','Surface Finishing', required=False, change_default=True, help="Select surface finishing for current product"),
+                'father_part_ids': fields.function(_father_part_compute, relation='product.product', method=True, string="BoM Hierarchy", type='many2many', store =False),
               }
 
     def on_change_tmpmater(self, cr, uid, ids, tmp_material=False):
@@ -117,84 +200,6 @@ class plm_relation(osv.osv):
                     result[bom_obj.id]+=tmp_ids
         return result
 
-#     def _child_compute(self, cr, uid, ids, name, arg, context=None):
-#         """ Gets child bom.
-#         @param self: The object pointer
-#         @param cr: The current row, from the database cursor,
-#         @param uid: The current user ID for security checks
-#         @param ids: List of selected IDs
-#         @param name: Name of the field
-#         @param arg: User defined argument
-#         @param context: A standard dictionary for contextual values
-#         @return:  Dictionary of values
-#         """
-#         result = {}
-#         if context is None:
-#             context = {}
-#         prodID = context and context.get('default_product_id', False) or False
-#         if prodID:
-#             ok = ((name=='child_complete_ids'))
-#             bom_obj = self.pool.get('mrp.bom')
-#             prod_obj = self.pool.get('product.product')
-#             for productID in prod_obj.browse(cr, uid, [prodID], context=context):
-#                 bom_ids=bom_obj.search(cr,uid,[('product_tmpl_id','=',productID.product_tmpl_id.id)])
-#                 for bom_parent in bom_obj.browse(cr, uid, bom_ids, context=context):
-#                     break
-#                 break
-# 
-#             for bom in self.browse(cr, uid, ids, context=context):
-#                 if (bom_parent) or (bom.product_tmpl_id.id == productID.product_tmpl_id.id):
-#                     result[bom.id] = map(lambda x: x.id, bom.bom_line_ids)
-#                 else:
-#                     result[bom.id] = []
-#                 if bom.bom_line_ids:
-#                     continue
-#                 if (bom.type=='phantom'):
-#                     for bom_line_id in bom.bom_line_ids:
-#                         sids = bom_obj.search(cr, uid, [('product_tmpl_id','=',bom_line_id.product_tmpl_id.id)])
-#                         for bom2 in bom_obj.browse(cr, uid, sids, context=context):
-#                             result[bom.id] += map(lambda x: x.id, bom2.bom_line_ids)
-# 
-# 
-#         return result
-
-#     def _child_compute0(self, cr, uid, ids, name, arg, context=None):
-#         """ Gets child bom.
-#         @param self: The object pointer
-#         @param cr: The current row, from the database cursor,
-#         @param uid: The current user ID for security checks
-#         @param ids: List of selected IDs
-#         @param name: Name of the field
-#         @param arg: User defined argument
-#         @param context: A standard dictionary for contextual values
-#         @return:  Dictionary of values
-#         """
-#         result = {}
-#         if context is None:
-#             context = {}
-#         bom_obj = self.pool.get('mrp.bom')
-#         bom_id = context and context.get('active_id', False) or False
-#         cr.execute('select id from mrp_bom')
-#         if all(bom_id != r[0] for r in cr.fetchall()):
-#             ids.sort()
-#             bom_id = ids[0]
-#         bom_parent = bom_obj.browse(cr, uid, bom_id, context=context)
-#         for bom in self.browse(cr, uid, ids, context=context):
-#             if (bom_parent) or (bom.id == bom_id):
-#                 result[bom.id] = []
-#             else:
-#                 result[bom.id] = map(lambda x: x.id, bom.bom_line_ids)
-#             if bom.bom_line_ids:
-#                 continue
-#             ok = ((name=='child_complete_ids'))
-#             if (bom.type=='phantom' or ok):
-#                 sids = bom_obj.search(cr, uid, [('product_tmpl_id','=',bom.product_tmpl_id.id)])
-#                 if sids:
-#                     bom2 = bom_obj.browse(cr, uid, sids[0], context=context)
-#                     result[bom.id] += map(lambda x: x.id, bom2.bom_line_ids)
-#         return result
-
-
     def _father_compute(self, cr, uid, ids, name, arg, context=None):
         """ Gets father bom.
         @param self: The object pointer
@@ -228,14 +233,14 @@ class plm_relation(osv.osv):
                         if not(bom_child.bom_id.id in result[bom_obj.id]):
                             result[bom_obj.id]+=[bom_child.bom_id.id]
         return result
-
+ 
     _columns = {
                 'state': fields.related('product_id','state',type="char",relation="product.template",string="Status",help="The status of the product in its LifeCycle.",store=False),
                 'engineering_revision': fields.related('product_id','engineering_revision',type="char",relation="product.template",string="Revision",help="The revision of the product.",store=False),
                 'description': fields.related('product_id','description',type="char",relation="product.template",string="Description",store=False),
                 'weight_net': fields.related('product_id','weight_net',type="float",relation="product.template",string="Weight Net",store=False),
-                'child_complete_ids': fields.function(_child_compute, relation='mrp.bom', method=True, string="BoM Hierarchy", type='many2many'),
-                'father_complete_ids': fields.function(_father_compute, relation='mrp.bom', method=True, string="BoM Hierarchy", type='many2many'),
+                'child_complete_ids': fields.function(_child_compute, relation='mrp.bom', method=True, string="BoM Hierarchy", type='many2many', store =False),
+                'father_complete_ids': fields.function(_father_compute, relation='mrp.bom', method=True, string="BoM Hierarchy", type='many2many', store =False),
                }
 
 plm_relation()
