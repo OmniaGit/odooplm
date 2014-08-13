@@ -71,55 +71,6 @@ class plm_component(osv.osv):
             result[prod_obj.id]=list(set(prod_ids))
         return result
 
-#     def _father_part_compute0(self, cr, uid, ids, name, arg, context={}):
-#         """ Gets father bom.
-#         @param self: The object pointer
-#         @param cr: The current row, from the database cursor,
-#         @param uid: The current user ID for security checks
-#         @param ids: List of selected IDs
-#         @param name: Name of the field
-#         @param arg: User defined argument
-#         @param context: A standard dictionary for contextual values
-#         @return:  Dictionary of values
-#         """
-#         bom_ids=[]
-#         prod_ids=[]
-#         if context is None:
-#             context = {}
-#         bom_objType = self.pool.get('mrp.bom')
-#         bom_line_objType = self.pool.get('mrp.bom.line')
-#         prod_objs = self.browse(cr, uid, ids, context=context)
-#         for prod_obj in prod_objs:
-#             tmp_ids = bom_line_objType.search(cr, uid, [('product_id','=',prod_obj.id)])
-#             bom_line_objs = bom_line_objType.browse(cr, uid, tmp_ids, context=context)
-#             for bom_line_obj in bom_line_objs:
-#                 bom_ids.extend([bom_line_obj.bom_id.id])
-#                 prod_ids.extend([bom_line_obj.bom_id.product_tmpl_id.id])
-#             break
-# 
-#         if bom_ids:
-#             bom_ids=list(set(bom_ids))
-#             data_obj = self.pool.get('ir.model.data')
-#             id3 = data_obj._get_id(cr, uid, openerpModule, 'mrp_bom_tree_view_where')
-#             if id3:
-#                 id3 = data_obj.browse(cr, uid, id3, context=context).res_id
-#     
-#             ctx={'id':bom_ids[0],'active_id':bom_ids[0],'active_ids':bom_ids, 'active_model':"mrp.bom"}
-#             return {
-#                 'domain': [('id', 'in', bom_ids)],
-#                 'name': _('Where Used Bill of Materials'),
-#                 'view_type': 'tree',
-#                 'view_mode': 'tree',
-#                 'res_model': 'mrp.bom',
-#                 'res_id': bom_ids[0],
-#                 'views': [(id3,'tree')],
-#                 prod_obj.id : prod_ids,
-#                 'type': 'ir.actions.act_window',
-#                 'context': ctx
-#              }
-# 
-#         return {}
-    
     _columns = {
         	    'linkeddocuments':fields.many2many('plm.document', 'plm_component_document_rel','component_id','document_id', 'Linked Docs'),  
                 'tmp_material': fields.many2one('plm.material','Raw Material', required=False, change_default=True, help="Select raw material for current product"),
