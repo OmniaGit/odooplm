@@ -31,10 +31,10 @@ from openerp.tools.translate import _
 # To be adequated to plm.document class states
 USED_STATES=[('draft','Draft'),('confirmed','Confirmed'),('released','Released'),('undermodify','UnderModify'),('obsoleted','Obsoleted')]
 
-class plm_config_settings(osv.osv_memory):
+class plm_config_settings(osv.osv):
     _name = 'plm.config.settings'
     _inherit = 'res.config.settings'
-        
+
     _columns = {
        'plm_service_id': fields.char('Register PLM module, insert your Service ID.',size=128,  help="Insert the Service ID and register your PLM module. Ask it to OmniaSolutions."),
        'activated_id': fields.char('Activated PLM client',size=128,  help="Listed activated Client."),
@@ -63,24 +63,25 @@ class plm_config_settings(osv.osv_memory):
         """
         defaults={}
         serviceID, activation, activeEditor, platformData, nodeId=vals
-        defaults['plm_service_id']=serviceID
-        defaults['activated_id']=activation
-        defaults['active_editor']=activeEditor
-        defaults['active_os']=platformData[0]
-        defaults['active_node']=platformData[1]
-        defaults['active_os_rel']=platformData[2]
-        defaults['active_os_ver']=platformData[3]
-        defaults['active_os_arch']=platformData[4]
-        defaults['node_id']=nodeId
-
-        partIds=self.search(cr,uid,[('plm_service_id','=',serviceID),('activated_id','=',activation)],context=context)
-
-        if partIds:
-            for partId  in partIds:
-                self.write(cr, uid, [partId], defaults, context=context)
-                return False
-        
-        self.create(cr, uid, defaults, context=context)
+        if activation:
+            defaults['plm_service_id']=serviceID
+            defaults['activated_id']=activation
+            defaults['active_editor']=activeEditor
+            defaults['active_os']=platformData[0]
+            defaults['active_node']=platformData[1]
+            defaults['active_os_rel']=platformData[2]
+            defaults['active_os_ver']=platformData[3]
+            defaults['active_os_arch']=platformData[4]
+            defaults['node_id']=nodeId
+    
+            partIds=self.search(cr,uid,[('plm_service_id','=',serviceID),('activated_id','=',activation)],context=context)
+    
+            if partIds:
+                for partId  in partIds:
+                    self.write(cr, uid, [partId], defaults, context=context)
+                    return False
+            
+            self.create(cr, uid, defaults, context=context)
         return False
    
     def GetActiveServiceId(self, cr, uid, vals, default=None, context=None):
