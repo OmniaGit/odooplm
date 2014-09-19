@@ -3,7 +3,7 @@ import base64
 import StringIO
 from reportlab.pdfgen import canvas
 
-from openerp.report.pyPdf import PdfFileWriter, PdfFileReader
+from pyPdf import PdfFileWriter, PdfFileReader
 from openerp.report.render import render
 def isPdf(fileName):
     if (os.path.splitext(fileName)[1].lower()=='.pdf'):

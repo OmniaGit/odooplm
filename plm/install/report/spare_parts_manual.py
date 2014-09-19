@@ -32,11 +32,11 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle,Paragraph
 from reportlab.lib.styles import getSampleStyleSheet
 from operator import itemgetter
 from book_collector import BookCollector
+from pyPdf import PdfFileWriter, PdfFileReader
 
 from openerp.report.render import render
 from openerp.report.interface import report_int
 from openerp.report import report_sxw
-from openerp.report.pyPdf import PdfFileWriter, PdfFileReader
 from openerp import pooler
 
 #constant

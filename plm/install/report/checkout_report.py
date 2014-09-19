@@ -29,9 +29,7 @@ from openerp.report.render import render
 from openerp.report.interface import report_int
 from openerp import pooler
 
-# NOTE : TO BE ADDED TO FINAL CONFIGURATION. NOT IN STANDARD PYTHON
-from openerp.report.pyPdf import PdfFileWriter, PdfFileReader
-# NOTE : TO BE ADDED TO FINAL CONFIGURATION. NOT IN STANDARD PYTHON
+from pyPdf import PdfFileWriter, PdfFileReader
 
 class external_pdf(render):
 
