@@ -408,7 +408,7 @@ class plm_component(osv.osv):
                         row.append(data.replace('\n',' ').replace('\t',' '))
                     else:
                         row.append(data or '')
-                writer.writerow(row)
+                writer.writerow("%r" %(row))
             fp.close()
             os.chmod(fname, stat.S_IRWXU|stat.S_IRWXO|stat.S_IRWXG)
             return True
