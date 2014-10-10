@@ -91,7 +91,7 @@
                     </group>
                     <separator colspan="4" string="Normalization Area"/>
                     <sheet>
-                        <group colspan="4" col="4">
+                        <group colspan="4" col="4" name="NMArea">
                              <separator/>
                              <group col="2" colspan="2">
                                  <field name="std_description" on_change="on_change_stddesc(std_description)"/>
@@ -105,13 +105,13 @@
                                  <field name="std_umc3"  attrs="{'readonly':[('std_umc3','=',False)]}" />
                                  <field name="std_value3" attrs="{'readonly':[('std_umc3','=',False)]}" on_change="on_change_stdvalue(std_description, std_umc1, std_value1, std_umc2, std_value2, std_umc3, std_value3)"/>
                              </group>
-                             <group colspan="4" col="4">
+                             <group colspan="4" col="4" name="TechSpec">
                                 <separator string="Technical Specifications" colspan="4"/>
                                 <field name="tmp_material" on_change="on_change_tmpmater(tmp_material)"/>
                                 <field name="tmp_surface"  on_change="on_change_tmpsurface(tmp_surface)"/>
                              </group>
                         </group>
-                        <group colspan="4" col="4">
+                        <group colspan="4" col="4" name="TBlock">
                             <separator string="TitleBlock Specifications" colspan="4"/>
                             <field name="engineering_material"/>
                             <field name="engineering_surface"/>
@@ -194,7 +194,7 @@
                    			</group>
                    		</group>
          	    		<separator colspan="4" col="1" />
-	                    <group col="4" colspan="4" string="LifeCycle Area">
+	                    <group col="4" colspan="4" string="LifeCycle Area" name="LCArea">
 		                    <group col="2" colspan="2">
 								<separator string="LifeCycle Status" colspan="2"/>
 								<field name="state"/>
@@ -207,7 +207,7 @@
 	                     	</group>
 	                     </group>
         	    		<separator colspan="4" col="1" />
-                	    <group colspan="4" col="2" string="Normalization Area">
+                	    <group colspan="4" col="2" string="Normalization Area" name="NMArea">
                             <separator string="Standard Description" colspan="4"/>
                             <field colspan="4" name="std_description" nolabel="1" on_change="on_change_stddesc(std_description)"/>
                             <newline/>
@@ -220,15 +220,17 @@
                 	    		<field name="std_umc3"  attrs="{'readonly':[('std_umc3','=',False)]}" />
                 	    		<field name="std_value3" attrs="{'readonly':[('std_umc3','=',False)]}" on_change="on_change_stdvalue(std_description, std_umc1, std_value1, std_umc2, std_value2, std_umc3, std_value3)"/>
                   	    	</group>
-                    		<group colspan="4" col="4">
+                    		<group colspan="4" col="4" name="TechSpec">
                    				<field name="tmp_material" colspan="2" on_change="on_change_tmpmater(tmp_material)"/>
                  				<field name="tmp_surface" colspan="2" on_change="on_change_tmpsurface(tmp_surface)"/>
                      		</group>
                  	    </group>
                     	<group colspan="4" col="4">
-                            <separator string="Technical Specifications" colspan="4"/>
-                   			<field name="engineering_material" colspan="2"/>
-                			<field name="engineering_surface" colspan="2"/>
+                    		<group colspan="4" col="4" name="TBlock">
+	                            <separator string="Technical Specifications" colspan="4"/>
+	                   			<field name="engineering_material" colspan="2"/>
+	                			<field name="engineering_surface" colspan="2"/>
+                     		</group>
                             <newline/>
                             <field digits="(14, 3)" name="weight_net" attrs="{'readonly':[('type','=','service')]}"/>
 	                        <group colspan="2" col="2" name="uom">
