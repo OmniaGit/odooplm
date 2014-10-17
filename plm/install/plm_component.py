@@ -504,30 +504,33 @@ class plm_component(osv.osv):
     def create(self, cr, uid, vals, context=None):
         if not vals:
             return False
-        existingIDs=self.search(cr, uid, [('name','=',vals['name'])], order = 'engineering_revision', context=context)
-        if 'engineering_code' in vals:
-            if vals['engineering_code'] == False:
-                vals['engineering_code'] = vals['name']
-        else:
-            vals['engineering_code'] = vals['name']
-
-        if ('name' in vals) and existingIDs:
-            existingID=existingIDs[len(existingIDs)-1]
-            if ('engineering_revision' in vals):
-                existObj=self.browse(cr,uid,existingID,context=context)
-                if existObj:
-                    if vals['engineering_revision'] > existObj.engineering_revision:
-                        vals['name']=existObj.name
-                    else:
-                        return existingID
+        if ('name' in vals):
+            if not vals['name']:
+                return False
+            existingIDs=self.search(cr, uid, [('name','=',vals['name'])], order = 'engineering_revision', context=context)
+            if 'engineering_code' in vals:
+                if vals['engineering_code'] == False:
+                    vals['engineering_code'] = vals['name']
             else:
-                return existingID
+                vals['engineering_code'] = vals['name']
+    
+            if existingIDs:
+                existingID=existingIDs[len(existingIDs)-1]
+                if ('engineering_revision' in vals):
+                    existObj=self.browse(cr,uid,existingID,context=context)
+                    if existObj:
+                        if vals['engineering_revision'] > existObj.engineering_revision:
+                            vals['name']=existObj.name
+                        else:
+                            return existingID
+                else:
+                    return existingID
             
-        try:
-            return super(plm_component,self).create(cr, uid, vals, context=context)
-        except Exception ,ex:
-            raise Exception(_("It has tried to create %r , %r"%(vals['name'],vals)))
-            return False
+            try:
+                return super(plm_component,self).create(cr, uid, vals, context=context)
+            except Exception ,ex:
+                raise Exception(_("It has tried to create with values : (%r)."%(vals)))
+        return False
 
     def write(self, cr, uid, ids, vals, context=None, check=True):
 #        checkState=('confirmed','released','undermodify','obsoleted')
