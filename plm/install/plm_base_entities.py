@@ -89,16 +89,7 @@ class plm_config_settings(osv.osv):
             Get all Service Ids registered.  [serviceID, activation, activeEditor, (system, node, release, version, machine, processor) ]
         """
         results=[]
-        defaults={}
         nodeId, activation, activeEditor, platformData =vals
-        defaults['activated_id']=activation
-        defaults['active_editor']=activeEditor
-        defaults['active_os']=platformData[0]
-        defaults['active_node']=platformData[1]
-        defaults['active_os_rel']=platformData[2]
-        defaults['active_os_ver']=platformData[3]
-        defaults['active_os_arch']=platformData[4]
-        defaults['node_id']=nodeId
 
         partIds=self.search(cr,uid,[('node_id','=',nodeId),('activated_id','=',activation)],context=context)
 
@@ -244,7 +235,7 @@ class plm_relation(osv.osv):
                 'source_id': fields.many2one('plm.document','name',ondelete='no action',readonly=True,help='This is the document object that declares this BoM.'),
                 'type': fields.selection([('normal','Normal BoM'),('phantom','Sets / Phantom'),('ebom','Engineering BoM'),('spbom','Spare BoM')], _('BoM Type'), required=True, help=
                     "Use a phantom bill of material in raw materials lines that have to be " \
-                    "automatically computed in on production order and not one per level." \
+                    "automatically computed on a production order and not one per level." \
                     "If you put \"Phantom/Set\" at the root level of a bill of material " \
                     "it is considered as a set or pack: the products are replaced by the components " \
                     "between the sale order to the picking without going through the production order." \
@@ -306,7 +297,6 @@ class plm_relation(osv.osv):
     def _getpackreldatas(self, cr, uid, relDatas, prtDatas):
         relids={}
         relationDatas={}
-        bufDatas={}
         tmpbuf=(((str(relDatas).replace('[','')).replace(']','')).replace('(','')).replace(')','').split(',')
         tmpids=[int(tmp) for tmp in tmpbuf if len(tmp.strip()) > 0]
         if len(tmpids)<1:
