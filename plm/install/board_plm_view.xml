@@ -43,14 +43,75 @@
             </field>
         </record>
 
-    <record model="ir.ui.view" id="view_size_month">
+<!--
+        <record id="view_report_plm_component_kanban" model="ir.ui.view">
+            <field name="name">report.plm_component</field>
+            <field name="model">report.plm_component</field>
+            <field name="arch" type="xml">
+                <kanban class="oe_background_grey" create="0">
+                    <field name="count_component_draft"/>
+                    <field name="count_component_all"/>
+                    <field name="count_component_released"/>
+                    <field name="count_component_modified"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_picking_type_gauge">
+                                <field name="rate_component_draft" widget="gauge" style="width:150px; height: 110px;" >Draft (%%)</field>
+                                <field name="rate_component_modified" widget="gauge" style="width:150px; height: 110px;">Under Modify (%%)</field>
+                                <div class="oe_gauge_labels">
+                                    <div class="oe_gauge_label_column">
+                                        <field name="count_component_all"/> All
+                                    </div>
+                                    <div class="oe_gauge_label_column">
+                                        <field name="count_component_released"/> Released
+                                    </div>
+                                </div>
+                            </div>
+                         </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <record id="view_report_component_search" model="ir.ui.view">
+            <field name="name">report.plm_component.search</field>
+            <field name="model">report.plm_component</field>
+            <field name="type">search</field>
+            <field name="arch" type="xml">
+                <search string="All users files">
+                        <group>
+                        <separator orientation="vertical"/>
+                            <filter icon="terp-go-year" string="This Year" domain="[('name','=',time.localtime()[0])]" help="All Months Files"/>
+                            <filter icon="terp-go-month" string="This Month" domain="[('month','=',time.localtime()[1])]" help="This Months Files"/>
+                        </group>
+               </search>
+            </field>
+        </record>
+-->
+
+    <record model="ir.ui.view" id="view_component_status">
+            <field name="name">report.plm_component.graph</field>
+            <field name="model">report.plm_component</field>
+            <field name="type">graph</field>
+            <field name="arch" type="xml">
+                <graph string="Component Status" type="pivot">
+                    <field name="count_component_draft" operator="+"/>
+                    <field name="count_component_confirmed" operator="+"/>
+                    <field name="count_component_released" operator="+"/>
+                    <field name="count_component_modified" operator="+"/>
+                    <field name="count_component_obsoleted" operator="+"/>
+                </graph>
+            </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_file_month">
             <field name="name">report.plm_document.user.graph</field>
             <field name="model">report.plm_document.file</field>
             <field name="type">graph</field>
             <field name="arch" type="xml">
-                <graph string="File Size by Month" type="bar">
+                <graph string="Files by Month" type="bar">
                     <field name="month"/>
-                    <field name="file_size" operator="+"/>
+                    <field name="nbr" operator="+"/>
                 </graph>
             </field>
     </record>
@@ -64,10 +125,29 @@
             <field name="search_view_id" ref="view_report_document_user_search"/>
         </record>
 
-        <record model="ir.actions.act_window" id="action_view_size_month">
-            <field name="name">File Size by Month</field>
+<!--
+        <record model="ir.actions.act_window" id="action_view_report_plm_component_kanban">
+            <field name="name">Component Status</field>
+            <field name="res_model">report.plm_component</field>
+            <field name="view_id" ref="view_report_plm_component_kanban"></field>
+            <field name="view_type">form</field>
+            <field name="view_mode">kanban,tree</field>
+            <field name="search_view_id" ref="view_report_component_search"/>
+        </record>
+-->
+
+        <record model="ir.actions.act_window" id="action_view_file_month">
+            <field name="name">Files by Month</field>
             <field name="res_model">report.plm_document.file</field>
-            <field name="view_id" ref="view_size_month"></field>
+            <field name="view_id" ref="view_file_month"></field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree</field>
+        </record>
+
+        <record model="ir.actions.act_window" id="action_view_component_status">
+            <field name="name">Component Status</field>
+            <field name="res_model">report.plm_component</field>
+            <field name="view_id" ref="view_component_status"></field>
             <field name="view_type">form</field>
             <field name="view_mode">tree</field>
         </record>
@@ -78,15 +158,20 @@
              <field name="type">form</field>
              <field name="arch" type="xml">
                 <form string="Document board">
-                     <board style="2-1" >
+                     <board style="1-1-1" >
                         <column>
                             <action string="New Documents"
                                 name="%(action_view_all_document_tree1)d"
                                 view_mode="tree,form"/>
                         </column>
                         <column>
-                            <action string="File Size by Month"
-                                name="%(action_view_size_month)d"
+                            <action string="Files by Month"
+                                name="%(action_view_file_month)d"
+                                view_mode="graph,tree"/>
+                        </column>
+                        <column>
+                            <action string="Component Status"
+                                name="%(action_view_component_status)d"
                                 view_mode="graph,tree"/>
                         </column>
                      </board>
@@ -108,6 +193,8 @@
             web_icon_hover="images/PLMmodule-hover.png"
             action="open_board_plm_manager"/>
 
+ 
+ 
 
      </data>
  </openerp>
