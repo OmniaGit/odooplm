@@ -84,8 +84,8 @@ class report_plm_files_partner(osv.osv):
                                   ('07','July'), ('08','August'), ('09','September'), ('10','October'), ('11','November'), ('12','December')],'Month',readonly=True),
      }
     def init(self, cr):
-         tools.drop_view_if_exists(cr, 'report_plm_files_partner')
-         cr.execute("""
+        tools.drop_view_if_exists(cr, 'report_plm_files_partner')
+        cr.execute("""
             CREATE VIEW report_plm_files_partner as (
                 SELECT min(f.id) AS id,
                        COUNT(*) AS nbr,
