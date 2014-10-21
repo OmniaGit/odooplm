@@ -92,15 +92,15 @@
     <record model="ir.ui.view" id="view_component_status">
             <field name="name">report.plm_component.graph</field>
             <field name="model">report.plm_component</field>
-            <field name="type">graph</field>
+            <field name="type">tree</field>
             <field name="arch" type="xml">
-                <graph string="Component Status" type="pivot">
-                    <field name="count_component_draft" operator="+"/>
-                    <field name="count_component_confirmed" operator="+"/>
-                    <field name="count_component_released" operator="+"/>
-                    <field name="count_component_modified" operator="+"/>
-                    <field name="count_component_obsoleted" operator="+"/>
-                </graph>
+                <tree string="Component Status">
+                    <field name="count_component_draft" />
+                    <field name="count_component_confirmed" />
+                    <field name="count_component_released" />
+                    <field name="count_component_modified" />
+                    <field name="count_component_obsoleted" />
+                </tree>
             </field>
     </record>
 
@@ -172,7 +172,7 @@
                         <column>
                             <action string="Component Status"
                                 name="%(action_view_component_status)d"
-                                view_mode="graph,tree"/>
+                                view_mode="tree"/>
                         </column>
                      </board>
                  </form>
