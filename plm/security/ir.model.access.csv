@@ -6,6 +6,7 @@
 "group_plm_admin","access_product_template","product_template","Product Template",1,1,1,1
 "group_plm_admin","access_ir_attachment","ir_attachment","ir.attachment",1,1,1,1
 "group_plm_admin","access_plm_document","plm_document","Email Thread",1,1,1,1
+"group_plm_admin","access_report_plm_component","report_plm_component","Component Status",1,1,1,1
 "group_plm_admin","access_report_plm_document","report_plm_document","Files details by Users",1,1,1,1
 "group_plm_admin","access_report_plm_document_file","report_plm_document_file","Files details by Directory",1,1,1,1
 "group_plm_admin","access_stock_warehouse_orderpoint","stock_warehouse_orderpoint","Minimum Inventory Rule",1,0,0,0
@@ -25,6 +26,7 @@
 "group_plm_integrationuser","access_iu_product_template","product_template","Product Template",1,1,1,1
 "group_plm_integrationuser","access_iu_ir_attachment","ir_attachment","ir.attachment",1,1,1,1
 "group_plm_integrationuser","access_iu_plm_document","plm_document","Email Thread",1,1,1,1
+"group_plm_integrationuser","access_iu_report_plm_component","report_plm_component","Component Status",1,1,1,1
 "group_plm_integrationuser","access_iu_report_plm_document","report_plm_document","Files details by Users",1,1,1,1
 "group_plm_integrationuser","access_iu_report_plm_document_file","report_plm_document_file","Files details by Directory",1,1,1,1
 "group_plm_integrationuser","access_iu_stock_warehouse_orderpoint","stock_warehouse_orderpoint","Minimum Inventory Rule",1,0,0,0
@@ -44,6 +46,7 @@
 "group_plm_viewuser","access_vw_product_template","product_template","Product Template",1,0,0,0
 "group_plm_viewuser","access_vw_ir_attachment","ir_attachment","ir.attachment",1,0,0,0
 "group_plm_viewuser","access_vw_plm_document","plm_document","Email Thread",1,0,0,0
+"group_plm_viewuser","access_vw_report_plm_componentt","report_plm_component","Component Status",1,0,0,0
 "group_plm_viewuser","access_vw_report_plm_document","report_plm_document","Files details by Users",1,0,0,0
 "group_plm_viewuser","access_vw_report_plm_document_file","report_plm_document_file","Files details by Directory",1,0,0,0
 "group_plm_viewuser","access_vw_stock_warehouse_orderpoint","stock_warehouse_orderpoint","Minimum Inventory Rule",1,0,0,0
