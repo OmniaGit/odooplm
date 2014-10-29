@@ -11,6 +11,7 @@
 "group_plm_admin","access_report_plm_document_file","report_plm_document_file","Files details by Directory",1,1,1,1
 "group_plm_admin","access_stock_warehouse_orderpoint","stock_warehouse_orderpoint","Minimum Inventory Rule",1,0,0,0
 "group_plm_admin","access_mrp_bom","mrp_bom","Bill of Material",1,1,1,1
+"group_plm_admin","access_mrp_bom_line","mrp_bom_line","mrp.bom.line",1,1,1,1
 "group_plm_admin","access_plm_descriptions","plm_description","PLM Descriptions",1,1,1,1
 "group_plm_admin","access_plm_finishings","plm_finishing","Surface Finishing",1,1,1,1
 "group_plm_admin","access_plm_materials","plm_material","PLM Materials",1,1,1,1
@@ -20,6 +21,7 @@
 "group_plm_admin","access_plm_adding_bom","plm_adding_bom","BoM Adding Objects",1,1,1,1
 "group_plm_admin","access_plm_compare_bom","plm_compare_bom","BoM Comparison",1,1,1,1
 "group_plm_admin","access_plm_config_settings","plm_config_settings","plm.config.settings",1,1,1,1
+"group_plm_admin","access_plm_email_thread","mail_thread","Email Thread",1,1,1,1
 "group_plm_integrationuser","access_iu_plm_checkout","plm_checkout","plm.checkout",1,1,1,1
 "group_plm_integrationuser","access_iu_plm_component_document_rel","plm_component_document_rel","Component Document Relations",1,1,1,1
 "group_plm_integrationuser","access_iu_plm_document_relation","plm_document_relation","plm.document.relation",1,1,1,1
@@ -32,6 +34,7 @@
 "group_plm_integrationuser","access_iu_report_plm_document_file","report_plm_document_file","Files details by Directory",1,1,1,1
 "group_plm_integrationuser","access_iu_stock_warehouse_orderpoint","stock_warehouse_orderpoint","Minimum Inventory Rule",1,0,0,0
 "group_plm_integrationuser","access_iu_mrp_bom","mrp_bom","Bill of Material",1,1,1,1
+"group_plm_integrationuser","access_iu_mrp_bom_line","mrp_bom_line","mrp.bom.line",1,1,1,1
 "group_plm_integrationuser","access_iu_plm_descriptions","plm_description","PLM Descriptions",1,0,0,0
 "group_plm_integrationuser","access_iu_plm_finishings","plm_finishing","Surface Finishing",1,0,0,0
 "group_plm_integrationuser","access_iu_plm_materials","plm_material","PLM Materials",1,0,0,0
@@ -41,6 +44,7 @@
 "group_plm_integrationuser","access_iu_plm_adding_bom","plm_adding_bom","BoM Adding Objects",1,1,1,1
 "group_plm_integrationuser","access_iu_plm_compare_bom","plm_compare_bom","BoM Comparison",1,1,1,1
 "group_plm_integrationuser","access_iu_plm_config_settings","plm_config_settings","plm.config.settings",1,1,1,0
+"group_plm_integrationuser","access_iu_plm_email_thread","mail_thread","Email Thread",1,1,1,0
 "group_plm_viewuser","access_vw_plm_checkout","plm_checkout","plm.checkout",1,0,0,0
 "group_plm_viewuser","access_vw_plm_component_document_rel","plm_component_document_rel","Component Document Relations",1,0,0,0
 "group_plm_viewuser","access_vw_plm_document_relation","plm_document_relation","plm.document.relation",1,0,0,0
@@ -53,6 +57,7 @@
 "group_plm_viewuser","access_vw_report_plm_document_file","report_plm_document_file","Files details by Directory",1,0,0,0
 "group_plm_viewuser","access_vw_stock_warehouse_orderpoint","stock_warehouse_orderpoint","Minimum Inventory Rule",1,0,0,0
 "group_plm_viewuser","access_vw_mrp_bom","mrp_bom","Bill of Material",1,0,0,0
+"group_plm_viewuser","access_vw_mrp_bom_line","mrp_bom_line","mrp.bom.line",1,0,0,0
 "group_plm_viewuser","access_vw_plm_descriptions","plm_description","PLM Descriptions",1,0,0,0
 "group_plm_viewuser","access_vw_plm_finishings","plm_finishing","Surface Finishing",1,0,0,0
 "group_plm_viewuser","access_vw_plm_materials","plm_material","PLM Materials",1,0,0,0
@@ -62,3 +67,4 @@
 "group_plm_viewuser","access_vw_plm_adding_bom","plm_adding_bom","BoM Adding Objects",1,1,1,1
 "group_plm_viewuser","access_vw_plm_compare_bom","plm_compare_bom","BoM Comparison",1,1,1,1
 "group_plm_viewuser","access_vw_plm_config_settings","plm_config_settings","plm.config.settings",1,0,0,0
+"group_plm_viewuser","access_vw_plm_email_thread","mail_thread","Email Thread",1,1,1,0
