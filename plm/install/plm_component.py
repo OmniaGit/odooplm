@@ -529,7 +529,7 @@ class plm_component(osv.osv):
             try:
                 return super(plm_component,self).create(cr, uid, vals, context=context)
             except Exception ,ex:
-                raise Exception(_("It has tried to create with values : (%r)."%(vals)))
+                raise Exception(_(" (%r). It has tried to create with values : (%r)."%(ex,vals)))
         return False
 
     def write(self, cr, uid, ids, vals, context=None, check=True):
