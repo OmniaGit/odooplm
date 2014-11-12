@@ -32,9 +32,9 @@ class plm_description(osv.osv):
     _name = "plm.description"
     _description = "PLM Descriptions"
     _columns = {
-                'name': fields.char('Note to Description', size=128, required=True, translate=True),
-                'description': fields.char('Standard Description', size=128, translate=True),
-                'description_en': fields.char('Description English', size=128, translate=True),
+                'name': fields.char('Note to Description', size=128),
+                'description': fields.char('Standard Description', size=128),
+                'description_en': fields.char('Description English', size=128),
                 'umc1': fields.char('UM / Feature 1', size=32,  help="Allow to specify a unit measure or a label for the feature."),
                 'fmt1': fields.char('Format Feature 1', size=32, help="Allow to represent the measure: %s%s allow to build um and value, %s builds only value, none builds only value."),
                 'umc2': fields.char('UM / Feature 2', size=32, help="Allow to specify a unit measure or a label for the feature."),

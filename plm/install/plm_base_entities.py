@@ -566,8 +566,8 @@ class plm_material(osv.osv):
     _name = "plm.material"
     _description = "PLM Materials"
     _columns = {
-                'name': fields.char('Designation', size=128, required=True, translate=True),
-                'description': fields.char('Description', size=128, translate=True),
+                'name': fields.char('Designation', size=128, required=True),
+                'description': fields.char('Description', size=128),
                 'sequence': fields.integer('Sequence', help="Gives the sequence order when displaying a list of product categories."),
     }
 #    _defaults = {
@@ -582,8 +582,8 @@ class plm_finishing(osv.osv):
     _name = "plm.finishing"
     _description = "Surface Finishing"
     _columns = {
-                'name': fields.char('Specification', size=128, required=True, translate=True),
-                'description': fields.char('Description', size=128, translate=True),
+                'name': fields.char('Specification', size=128, required=True),
+                'description': fields.char('Description', size=128),
                 'sequence': fields.integer('Sequence', help="Gives the sequence order when displaying a list of product categories."),
     }
 #    _defaults = {
