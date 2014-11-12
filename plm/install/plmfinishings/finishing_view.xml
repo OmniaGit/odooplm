@@ -31,6 +31,7 @@
     </record>
 
     <record model="ir.actions.act_window" id="plm_action_finishing_form">
+        <field name="name">plm.action.finishing.form</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">plm.finishing</field>
         <field name="view_type">form</field>
