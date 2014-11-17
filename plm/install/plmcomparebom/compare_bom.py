@@ -51,14 +51,14 @@ class plm_compare_bom(osv.osv_memory):
     _description = "BoM Comparison"
     _columns = {
                 'name': fields.char('Part Number',size=64),
-                'bom_id1': fields.many2one('mrp.bom', 'BoM 1', required=True),
+                'bom_id1': fields.many2one('mrp.bom', 'BoM 1', required=True, ondelete='cascade'),
                 'type_id1': fields.selection([('normal','Normal BoM'),('phantom','Sets / Phantom'),('ebom','Engineering BoM'),('spbom','Spare BoM')], 'BoM Type'),
-                'part_id1': fields.many2one('product.product', 'Part'),
+                'part_id1': fields.many2one('product.product', 'Part', ondelete='cascade'),
                 'revision1': fields.related('part_id1','engineering_revision',type="integer",relation="product.template",string="Revision",store=False),
                 'description1': fields.related('part_id1','description',type="char",relation="product.template",string="Description",store=False),
-                'bom_id2': fields.many2one('mrp.bom', 'BoM 2', required=True),
+                'bom_id2': fields.many2one('mrp.bom', 'BoM 2', required=True, ondelete='cascade'),
                 'type_id2': fields.selection([('normal','Normal BoM'),('phantom','Sets / Phantom'),('ebom','Engineering BoM'),('spbom','Spare BoM')], 'BoM Type'),
-                'part_id2': fields.many2one('product.product', 'Part'),
+                'part_id2': fields.many2one('product.product', 'Part', ondelete='cascade'),
                 'revision2': fields.related('part_id2','engineering_revision',type="integer",relation="product.template",string="Revision",store=False),
                 'description2': fields.related('part_id2','description',type="char",relation="product.template",string="Description",store=False),
                 'anotinb': fields.one2many('plm.adding.bom', 'bom_id', 'BoM Adding'),
@@ -275,9 +275,9 @@ class plm_missing_bom(osv.osv_memory):
     _name = "plm.missing.bom"
     _description = "BoM Missing Objects"
     _columns = {
-                'bom_id': fields.many2one('plm.compare.bom', 'BoM'),
-                'bom_idrow': fields.many2one('mrp.bom.line', 'BoM Line'),
-                'part_id': fields.many2one('product.product', 'Part'),
+                'bom_id': fields.many2one('plm.compare.bom', 'BoM', ondelete='cascade'),
+                'bom_idrow': fields.many2one('mrp.bom.line', 'BoM Line', ondelete='cascade'),
+                'part_id': fields.many2one('product.product', 'Part', ondelete='cascade'),
                 'revision': fields.related('part_id','engineering_revision',type="integer",relation="product.template",string="Revision",store=False),
                 'description': fields.related('part_id','description',type="char",relation="product.template",string="Description",store=False),
                 'itemnum': fields.related('bom_idrow','itemnum',type="integer",relation="mrp.bom.line",string="Cad Item Position",store=False),
@@ -292,9 +292,9 @@ class plm_adding_bom(osv.osv_memory):
     _name = "plm.adding.bom"
     _description = "BoM Adding Objects"
     _columns = {
-                'bom_id': fields.many2one('plm.compare.bom', 'BoM'),
-                'bom_idrow': fields.many2one('mrp.bom.line', 'BoM Line'),
-                'part_id': fields.many2one('product.product', 'Part'),
+                'bom_id': fields.many2one('plm.compare.bom', 'BoM', ondelete='cascade'),
+                'bom_idrow': fields.many2one('mrp.bom.line', 'BoM Line', ondelete='cascade'),
+                'part_id': fields.many2one('product.product', 'Part', ondelete='cascade'),
                 'revision': fields.related('part_id','engineering_revision',type="integer",relation="product.template",string="Revision",store=False),
                 'description': fields.related('part_id','description',type="char",relation="product.template",string="Description",store=False),
                 'itemnum': fields.related('bom_idrow','itemnum',type="integer",relation="mrp.bom.line",string="Cad Item Position",store=False),
