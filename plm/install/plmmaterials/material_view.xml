@@ -31,7 +31,7 @@
     </record>
 
     <record model="ir.actions.act_window" id="plm_action_material_form">
-        <field name="name">plm.action.material.form</field>
+        <field name="name">Materials</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">plm.material</field>
         <field name="view_type">form</field>

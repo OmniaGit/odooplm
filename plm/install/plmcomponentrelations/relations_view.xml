@@ -85,7 +85,7 @@
 <!-- Opening views from menu -->
 
     <record model="ir.actions.act_window" id="plm_action_normal_form">
-        <field name="name">plm.action.normal.form</field>
+        <field name="name">Normal BoMs</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">mrp.bom</field>
         <field name="view_type">form</field>
@@ -101,7 +101,7 @@
 
  
     <record model="ir.actions.act_window" id="plm_action_ebom_form">
-        <field name="name">plm.action.ebom.form</field>
+        <field name="name">Engineering BoMs</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">mrp.bom</field>
         <field name="view_type">form</field>
@@ -117,7 +117,7 @@
 
 
     <record model="ir.actions.act_window" id="plm_action_spare_form">
-        <field name="name">plm.action.spare.form</field>
+        <field name="name">Spare BoMs</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">mrp.bom</field>
         <field name="view_type">form</field>

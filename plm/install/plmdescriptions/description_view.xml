@@ -75,7 +75,7 @@
     </record>
 
     <record model="ir.actions.act_window" id="plm_action_description_form">
-        <field name="name">plm.action.description</field>
+        <field name="name">Descriptions</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">plm.description</field>
         <field name="view_type">form</field>
