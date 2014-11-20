@@ -103,7 +103,7 @@ class plm_component(osv.osv):
                     bomLType.write(cr,uid,[bom_line.id],{'type':'spbom','source_id':False,'name':bom_line.product_id.name,'product_qty':bom_line.product_qty,},context=None)
                     self._create_spareBom(cr, uid, bom_line.product_id.id, context)
         else:
-            for bom_line in bomType.browse(cr,uid,objBoms[0],context=context).bom_lines:
+            for bom_line in bomType.browse(cr,uid,objBoms[0],context=context).bom_line_ids:
                 self._create_spareBom(cr, uid, bom_line.product_id.id, context=context)
         return False
 
