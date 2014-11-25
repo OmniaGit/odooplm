@@ -172,15 +172,15 @@ class plm_component_document_rel(osv.osv):
             Save Document relations
         """
         def cleanStructure(relations):
-            res={}
-            latest=None
-            for relation in relations:
-                res['document_id'],res['component_id']=relation
-                if latest==res['document_id']:
+            res=[]
+            for document_id,component_id in relations:
+                latest=(document_id,component_id)
+                if latest in res:
                     continue
-                latest=res['document_id']
-                ids=self.search(cr,uid,[('document_id','=',res['document_id']),('component_id','=',res['component_id'])])
-                self.unlink(cr,uid,ids)
+                res.append(latest)
+                ids=self.search(cr,uid,[('document_id','=',document_id),('component_id','=',component_id)])
+                if ids:
+                    self.unlink(cr,uid,ids)
 
         def saveChild(args):
             """
@@ -416,16 +416,16 @@ class plm_relation(osv.osv):
         """
             Save EBom relations
         """
-        def cleanStructure(sourceID=None):
+        def cleanStructure(parentID=None,sourceID=None):
             """
                 Clean relations having sourceID
             """
-            if sourceID==None:
+            if parentID==None or sourceID==None:
                 return None
-            ids=self.search(cr,uid,[('source_id','=',sourceID)])
+            ids=self.search(cr,uid,[('product_id','=',parentID),('source_id','=',sourceID)])
             self.unlink(cr,uid,ids)                                     # Cleans mrp.bom
             bomLType=self.pool.get('mrp.bom.line')
-            ids=bomLType.search(cr,uid,[('source_id','=',sourceID)])
+            ids=bomLType.search(cr,uid,[('bom_id','=',parentID),('source_id','=',sourceID)])
             bomLType.unlink(cr,uid,ids)                                 # Cleans mrp.bom.line
 
 
@@ -436,7 +436,7 @@ class plm_relation(osv.osv):
             listedSource=[]
             for parentName, parentID, tmpChildName, tmpChildID, sourceID, tempRelArgs in relations:
                 if (not(sourceID==None)) and (not(sourceID in listedSource)):
-                    cleanStructure(sourceID)
+                    cleanStructure(parentID,sourceID)
                     listedSource.append(sourceID)
             return False
 
