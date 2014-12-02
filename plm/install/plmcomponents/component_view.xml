@@ -207,7 +207,7 @@
 	                     	</group>
 	                     </group>
         	    		<separator colspan="4" col="1" />
-                	    <group colspan="4" col="2" string="Normalization Area" name="NMArea">
+                	    <group colspan="4" col="4" string="Normalization Area" name="NMArea">
                             <separator string="Standard Description" colspan="4"/>
                             <field colspan="4" name="std_description" nolabel="1" on_change="on_change_stddesc(std_description)"/>
                             <newline/>
@@ -224,21 +224,23 @@
                    				<field name="tmp_material" colspan="2" on_change="on_change_tmpmater(tmp_material)"/>
                  				<field name="tmp_surface" colspan="2" on_change="on_change_tmpsurface(tmp_surface)"/>
                      		</group>
-                 	    </group>
-                    	<group colspan="4" col="4">
-                    		<group colspan="4" col="4" name="TBlock">
-	                            <separator string="Technical Specifications" colspan="4"/>
-	                   			<field name="engineering_material" colspan="2"/>
-	                			<field name="engineering_surface" colspan="2"/>
-                     		</group>
-                            <newline/>
-                            <field digits="(14, 3)" name="weight_net" attrs="{'readonly':[('type','=','service')]}"/>
-	                        <group colspan="2" col="2" name="uom">
+ 	                        <group colspan="2" col="2" name="Weigth">
+	                     		<separator/>
+	                            <field digits="(14, 3)" name="weight_net" attrs="{'readonly':[('type','=','service')]}"/>
+                      		</group>
+ 	                        <group colspan="2" col="2" name="uom">
 	                          	<separator string="Unit of Measure" colspan="2"/>
 	                            <field name="uom_id" on_change="onchange_uom(uom_id,uom_po_id)"/>
 	                            <field name="uom_po_id" groups="base.group_extended"/>
   	                        </group>
-                		</group>
+                 	    </group>
+                    	<group colspan="4" col="4">
+                    		<group colspan="4" col="4" name="TBlock">
+	                            <separator string="TitleBlock Informations" colspan="4"/>
+	                   			<field name="engineering_material" colspan="2"/>
+	                			<field name="engineering_surface" colspan="2"/>
+                     		</group>
+                 		</group>
                    </page>
                    <page string="Descriptions">
                         <separator string="Description"/>
