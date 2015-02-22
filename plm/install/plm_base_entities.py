@@ -473,7 +473,9 @@ class plm_relation(osv.osv):
                     res['type']=kindBom
                 else:
                     res['type']='ebom'
-                res['product_tmpl_id']=partID
+                
+                objPart=self.pool.get('product.product').browse(cr,uid,partID,context=None)
+                res['product_tmpl_id']=objPart.product_tmpl_id.id
                 res['product_id']=partID
                 res['source_id']=sourceID
                 res['name']=name
