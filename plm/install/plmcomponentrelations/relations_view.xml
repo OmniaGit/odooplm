@@ -164,6 +164,7 @@
 
 <!-- Tree Structure Where Used on Product -->
 
+<!--
         <record id="mrp_part_tree_view_where" model="ir.ui.view">
             <field name="name">mrp.part.tree.where</field>
             <field name="model">product.product</field>
@@ -187,7 +188,7 @@
             view_id="mrp_part_tree_view_where"
             res_model="product.product"
             src_model="product.product"/>
-
+-->
 
  <!-- Tree Structure Views on MRP -->
  
@@ -213,15 +214,17 @@
  
          <record id="plm_bom_tree_structure" model="ir.ui.view">
             <field name="name">plm.bom.tree</field>
-            <field name="model">mrp.bom</field>
-            <field name="field_parent">child_complete_ids</field>
+            <field name="model">mrp.bom.line</field>
+            <field name="field_parent">child_line_ids</field>
             <field name="arch" type="xml">
                 <tree string="Bill of Materials">
-                    <field name="product_tmpl_id" string="Component Name"/>
+                    <field name="itemnum" string="Position"/>
+                    <field name="product_id" string="Component Name"/>
                     <field name="engineering_revision" string="Revision"/>
                     <field name="description"/>
-                    <field name="code" invisible="1"/>
                     <field name="source_id" string="Source Relation Document"/>
+                    <field name="product_qty"/>
+                    <field name="product_uom"/>
                     <field name="weight_net"/>
                     <field name="create_date" select="True"/>
                     <field name="type"/>
@@ -232,6 +235,20 @@
 
 <!-- Tree Structure Actions on Product -->
 
+<!--
+        <record id="mrp_part_tree_view" model="ir.ui.view">
+            <field name="name">mrp.part.tree.where</field>
+            <field name="model">product.product</field>
+            <field name="field_parent">child_part_ids</field>
+            <field name="arch" type="xml">
+                <tree string="Bill of Materials">
+                    <field name="product_tmpl_id" string="Component Name"/>
+                    <field name="engineering_revision" string="Revision"/>
+                    <field name="description"/>
+                </tree>
+            </field>
+        </record>
+
         <act_window
             id="action_product_bom_structure"
             name="Product BoM Structure"
@@ -239,13 +256,13 @@
             context="{'default_product_id': active_id}"
             view_type="tree"
             view_mode="tree"
-            view_id="plm_bom_tree_structure"
-            res_model="mrp.bom"
+            view_id="mrp_part_tree_view"
+            res_model="product.product"
             src_model="product.product"/>
-
+-->
 
 <!-- Tree Structure Actions on MRP -->
-            
+ 
         <record id="action20" model="ir.actions.act_window">
             <field name="name">Where Used Bill of Materials Structure</field>
             <field name="type">ir.actions.act_window</field>
@@ -266,8 +283,8 @@
         <record id="action2" model="ir.actions.act_window">
             <field name="name">Bill of Materials Structure</field>
             <field name="type">ir.actions.act_window</field>
-            <field name="res_model">mrp.bom</field>
-            <field name="domain">[('id', 'in', active_ids)]</field>
+            <field name="res_model">mrp.bom.line</field>
+            <field name="domain">[('bom_id', 'in', active_ids)]</field>
             <field name="view_type">tree</field>
             <field name="view_id" ref="plm_bom_tree_structure"/>
         </record>
@@ -278,7 +295,6 @@
             <field name="name">Bill of Materials Structure</field>
             <field eval="'ir.actions.act_window,'+str(action2)" name="value"/>
         </record>
-        
         
 </data>
 </openerp>
