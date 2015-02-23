@@ -320,16 +320,6 @@ class plm_component(osv.osv):
         """
             Create a new Normal Bom if doesn't exist (action callable from code)
         """
-        
-        for idd in ids:
-            checkObj=self.browse(cr, uid, idd, context)
-            if not checkObj:
-                return False
-            bomType=self.pool.get('mrp.bom')
-            objBoms=bomType.search(cr, uid, [('product_tmpl_id','=',idd),('type','=','normal')])
-            if objBoms:
-                raise osv.except_osv(_('Create a new Normal Bom Error'), _("BoM for Part %r already exists." %(checkObj.name)))
-
         for idd in ids:
             self.processedIds=[]
             self._create_normalBom(cr, uid, idd, context)

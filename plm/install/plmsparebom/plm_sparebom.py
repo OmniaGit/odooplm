@@ -36,7 +36,19 @@ class plm_temporary(osv.osv_memory):
         """
         if not 'active_id' in context:
             return False
-        self.pool.get('product.product').action_create_spareBom_WF(cr, uid, context['active_ids'])
+        if not 'active_ids' in context:
+            return False
+        
+        productType=self.pool.get('product.product')
+        for idd in context['active_ids']:
+            checkObj=productType.browse(cr, uid, idd, context)
+            if not checkObj:
+                continue
+            objBoms=self.pool.get('mrp.bom').search(cr, uid, [('product_tmpl_id','=',idd),('type','=','spbom')])
+            if objBoms:
+                raise osv.except_osv(_('Creating a new Spare Bom Error.'), _("BoM for Part %r already exists." %(checkObj.name)))
+
+        productType.action_create_spareBom_WF(cr, uid, context['active_ids'])
 
         return {
               'name': _('Bill of Materials'),
