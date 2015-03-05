@@ -164,14 +164,13 @@
 
 <!-- Tree Structure Where Used on Product -->
 
-<!--
         <record id="mrp_part_tree_view_where" model="ir.ui.view">
             <field name="name">mrp.part.tree.where</field>
             <field name="model">product.product</field>
             <field name="field_parent">father_part_ids</field>
             <field name="arch" type="xml">
                 <tree string="Bill of Materials">
-                    <field name="product_tmpl_id" string="Component Name"/>
+                    <field name="name" string="Component Name"/>
                     <field name="engineering_revision" string="Revision"/>
                     <field name="description"/>
                 </tree>
@@ -181,14 +180,13 @@
         <act_window
             id="action_product_bom_structure_where"
             name="Product BoM Where Used Structure"
-            domain="[('product_tmpl_id', '=', active_id)]"
+            domain="[('id', '=', active_id)]"
             context="{'default_product_id': active_id}"
             view_type="tree"
             view_mode="tree"
             view_id="mrp_part_tree_view_where"
             res_model="product.product"
             src_model="product.product"/>
--->
 
  <!-- Tree Structure Views on MRP -->
  
@@ -233,33 +231,6 @@
         </record>
         
 
-<!-- Tree Structure Actions on Product -->
-
-<!--
-        <record id="mrp_part_tree_view" model="ir.ui.view">
-            <field name="name">mrp.part.tree.where</field>
-            <field name="model">product.product</field>
-            <field name="field_parent">child_part_ids</field>
-            <field name="arch" type="xml">
-                <tree string="Bill of Materials">
-                    <field name="product_tmpl_id" string="Component Name"/>
-                    <field name="engineering_revision" string="Revision"/>
-                    <field name="description"/>
-                </tree>
-            </field>
-        </record>
-
-        <act_window
-            id="action_product_bom_structure"
-            name="Product BoM Structure"
-            domain="[('product_tmpl_id', '=', active_id)]"
-            context="{'default_product_id': active_id}"
-            view_type="tree"
-            view_mode="tree"
-            view_id="mrp_part_tree_view"
-            res_model="product.product"
-            src_model="product.product"/>
--->
 
 <!-- Tree Structure Actions on MRP -->
  

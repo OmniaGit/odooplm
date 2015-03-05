@@ -67,46 +67,17 @@ class plm_component(osv.osv):
             tmp_ids = bom_line_objType.search(cr, uid, [('product_id','=',prod_obj.id)])
             bom_line_objs = bom_line_objType.browse(cr, uid, tmp_ids, context=context)
             for bom_line_obj in bom_line_objs:                
-                prod_ids.extend([bom_line_obj.bom_id.product_tmpl_id.id])
+                prod_ids.extend([bom_line_obj.bom_id.product_id.id])
             result[prod_obj.id]=list(set(prod_ids))
         return result
 
-    def _child_part_compute(self, cr, uid, ids, name, arg, context={}):
-        """ Gets children bom.
-        @param self: The object pointer
-        @param cr: The current row, from the database cursor,
-        @param uid: The current user ID for security checks
-        @param ids: List of selected IDs
-        @param name: Name of the field
-        @param arg: User defined argument
-        @param context: A standard dictionary for contextual values
-        @return:  Dictionary of values
-        """
-        result={}
-        prod_ids=[]
-        if context is None:
-            context = {}
-        bom_objType = self.pool.get('mrp.bom')
-        bom_line_objType = self.pool.get('mrp.bom.line')
-        prod_objs = self.browse(cr, uid, ids, context=context)
-        for prod_obj in prod_objs:
-            tmp_ids = bom_objType.search(cr, uid, [('product_id','=',prod_obj.id)])
-            bom_objs = bom_objType.browse(cr, uid, tmp_ids, context=context)
-            for bom_obj in bom_objs:
-                ok_rows=self._summarizeBom(cr, uid, bom_obj.bom_line_ids)
-                for bom_line_obj in ok_rows:
-                    prod_ids.extend([bom_line_obj.product_id.product_tmpl_id.id])
-            result[prod_obj.id]=list(set(prod_ids))
-        return result
-
-
+  
     _columns = {
         	    'linkeddocuments':fields.many2many('plm.document', 'plm_component_document_rel','component_id','document_id', 'Linked Docs'),  
                 'tmp_material': fields.many2one('plm.material','Raw Material', required=False, change_default=True, help="Select raw material for current product"),
 #                'tmp_treatment': fields.many2one('plm.treatment','Thermal Treatment', required=False, change_default=True, help="Select thermal treatment for current product"),
                 'tmp_surface': fields.many2one('plm.finishing','Surface Finishing', required=False, change_default=True, help="Select surface finishing for current product"),
                 'father_part_ids': fields.function(_father_part_compute, relation='product.product', method=True, string="BoM Hierarchy", type='many2many', store =False),
-                'child_part_ids': fields.function(_child_part_compute, relation='product.product', method=True, string="BoM Hierarchy", type='many2many', store =False),
               }
 
     def on_change_tmpmater(self, cr, uid, ids, tmp_material=False):
@@ -192,21 +163,6 @@ class plm_relation_line(osv.osv):
     _name = 'mrp.bom.line'
     _inherit = 'mrp.bom.line'
     _order = "itemnum"
-
-#     def _get_child_bom_lines(self, cr, uid, ids, field_name, arg, context=None):
-#         """If the BOM line refers to a BOM, return the ids of the child BOM lines"""
-#         bom_obj = self.pool['mrp.bom']
-#         res = {}
-#         for bom_line in self.browse(cr, uid, ids, context=context):
-#             bom_id = bom_obj._bom_find(cr, uid,
-#                 product_tmpl_id=bom_line.product_id.product_tmpl_id.id,
-#                 product_id=bom_line.product_id.id, context=context)
-#             if bom_id:
-#                 child_bom = bom_obj.browse(cr, uid, bom_id, context=context)
-#                 res[bom_line.id] = [x.id for x in child_bom.bom_line_ids]
-#             else:
-#                 res[bom_line.id] = False
-#         return res
 
     _columns = {
                 'state': fields.related('product_id','state',type="char",relation="product.template",string="Status",help="The status of the product in its LifeCycle.",store=False),
