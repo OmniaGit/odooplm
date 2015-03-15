@@ -422,7 +422,10 @@ class plm_relation(osv.osv):
             """
             if parentID==None or sourceID==None:
                 return None
-            ids=self.search(cr,uid,[('product_id','=',parentID),('source_id','=',sourceID)])
+            objPart=self.pool.get('product.product').browse(cr,uid,parentID,context=None)
+            ids=self.search(cr,uid,[('product_id','=',objPart.id),('source_id','=',sourceID)])
+            self.unlink(cr,uid,ids)                                     # Cleans mrp.bom
+            ids=self.search(cr,uid,[('product_tmpl_id','=',objPart.product_tmpl_id.id),('source_id','=',sourceID)])
             self.unlink(cr,uid,ids)                                     # Cleans mrp.bom
             bomLType=self.pool.get('mrp.bom.line')
             ids=bomLType.search(cr,uid,[('bom_id','=',parentID),('source_id','=',sourceID)])
@@ -446,21 +449,24 @@ class plm_relation(osv.osv):
             """
             sourceIDParent=None
             sourceID=None
+            bomID=False
             subRelations=[(a, b, c, d, e, f) for a, b, c, d, e, f in relations if a == parentName]
             if len(subRelations)<1: # no relation to save 
                 return None
             parentName, parentID, tmpChildName, tmpChildID, sourceIDParent, tempRelArgs=subRelations[0]
-            bomID=saveParent(parentName, parentID, sourceIDParent, kindBom='ebom')
-            for rel in subRelations:
-                #print "Save Relation ", rel
-                parentName, parentID, childName, childID, sourceID, relArgs=rel
-                if parentName == childName:
-                    logging.error('toCompute : Father (%s) refers to himself' %(str(parentName)))
-                    raise Exception('saveChild.toCompute : Father "%s" refers to himself' %(str(parentName)))
-
-                tmpBomId=saveChild(childName, childID, sourceID, bomID, kindBom='ebom', args=relArgs)
-                tmpBomId=toCompute(childName, relations)
-            self.RebaseWeight(cr, uid, parentID, sourceIDParent)
+            ids=self.search(cr,uid,[('product_id','=',parentID),('source_id','=',sourceIDParent)])
+            if not ids:
+                bomID=saveParent(parentName, parentID, sourceIDParent, kindBom='ebom')
+                for rel in subRelations:
+                    #print "Save Relation ", rel
+                    parentName, parentID, childName, childID, sourceID, relArgs=rel
+                    if parentName == childName:
+                        logging.error('toCompute : Father (%s) refers to himself' %(str(parentName)))
+                        raise Exception('saveChild.toCompute : Father "%s" refers to himself' %(str(parentName)))
+    
+                    tmpBomId=saveChild(childName, childID, sourceID, bomID, kindBom='ebom', args=relArgs)
+                    tmpBomId=toCompute(childName, relations)
+                self.RebaseWeight(cr, uid, parentID, sourceIDParent)
             return bomID
 
         def saveParent(name,  partID, sourceID, kindBom=None, args=None):
