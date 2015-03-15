@@ -262,8 +262,8 @@ class plm_component(osv.osv):
             return False
         bomType=self.pool.get('mrp.bom')
         bomLType=self.pool.get('mrp.bom.line')
-        objBoms=bomType.search(cr, uid, [('product_tmpl_id','=',idd),('type','=','normal')])
-        idBoms=bomType.search(cr, uid, [('product_tmpl_id','=',idd),('type','=','ebom')])
+        objBoms=bomType.search(cr, uid, [('product_tmpl_id','=',checkObj.product_tmpl_id.id),('type','=','normal')])
+        idBoms=bomType.search(cr, uid, [('product_tmpl_id','=',checkObj.product_tmpl_id.id),('type','=','ebom')])
 
         if not objBoms:
             if idBoms:

@@ -93,10 +93,10 @@ class plm_component(osv.osv):
             sourceBomType=context['sourceBomType']
         bomType=self.pool.get('mrp.bom')
         bomLType=self.pool.get('mrp.bom.line')
-        objBoms=bomType.search(cr, uid, [('product_id','=',idd),('type','=','spbom')])
-        idBoms=bomType.search(cr, uid, [('product_id','=',idd),('type','=','normal')])
+        objBoms=bomType.search(cr, uid, [('product_tmpl_id','=',checkObj.product_tmpl_id.id),('type','=','spbom')])
+        idBoms=bomType.search(cr, uid, [('product_tmpl_id','=',checkObj.product_tmpl_id.id),('type','=','normal')])
         if not idBoms:
-            idBoms=bomType.search(cr, uid, [('product_id','=',idd),('type','=',sourceBomType)])
+            idBoms=bomType.search(cr, uid, [('product_tmpl_id','=',checkObj.product_tmpl_id.id),('type','=',sourceBomType)])
 
         defaults={}
         if not objBoms:
