@@ -134,31 +134,34 @@
 
 <!-- Overrides standard Search -->
 
-        <record id="view_mrp_bom_filter" model="ir.ui.view">
-            <field name="name">mrp.bom.select</field>
+        <record id="view_mrp_bom_filter_inherit" model="ir.ui.view">
+            <field name="name">plm.bom.select</field>
             <field name="model">mrp.bom</field>
-           <field name="type">search</field>
+         	<field name="inherit_id" ref="mrp.view_mrp_bom_filter"/>
+            <field name="type">search</field>
             <field name="arch" type="xml">
-                <search string="Search Bill Of Material">
-                    <group col='4' colspan='4'>
-                         <field name="name"/>
-                         <field name="code" string="Reference"/>
-                         <field name="product_id"/>
-                         <field name="company_id" groups="base.group_multi_company"/>
-                    </group>
-                    <newline/>
-                    <group expand="0" string="Group By..." colspan="4" col="8" >
-                        <filter string="Product" icon="terp-accessories-archiver" domain="[]" context="{'group_by':'product_id'}"/>
-                        <filter string="Source Relationship" icon="terp-stock_symbol-selection" domain="[]" context="{'group_by':'source_id'}"/>
-                        <filter string='Default UOM' icon="terp-mrp" domain="[]" context="{'group_by' : 'product_uom'}" />
-                        <separator orientation="vertical"/>
-                        <filter string="Routing" icon="terp-stock_align_left_24" domain="[]" context="{'group_by':'routing_id'}"/>
-                        <filter string='Type' icon="terp-stock_symbol-selection" domain="[]" context="{'group_by' : 'type'}" />
-                        <separator orientation="vertical"/>
-                        <filter string="Date" icon="terp-go-month" domain="[]" context="{'group_by':'date_start'}" help="Starting Date"/>
-                   </group>
-                </search>
-            </field>
+                <field name="name" position="before">
+	               	<filter icon="terp-go-month" string="Latest 2 Weeks" separator="1"
+	                       	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"
+	                      	help="Created latest 2 Weeks"/>
+	               	<filter icon="terp-go-month" string="Latest 7 Days" separator="1"
+	                       	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
+	                      	help="Created latest 7 Days"/>
+	             	<filter icon="terp-go-month" string="Yesterday" separator="1"
+	                     	domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
+	                		help="Created yesterday"/>
+	            	<filter icon="terp-go-month" string="Today" separator="1"
+	                     	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
+	                     	help="Created today"/>
+	               	<separator orientation="vertical"/>
+        		</field>
+				<xpath expr="//group" position="after">
+					string="Group By..."
+                    <filter string="BoM Name" icon="terp-stock_symbol-selection" domain="[]" context="{'group_by':'name'}"/>
+                    <filter string="Variant Name" icon="terp-stock_symbol-selection" domain="[]" context="{'group_by':'product_id'}"/>
+                    <filter string="Source Relationship" icon="terp-stock_symbol-selection" domain="[]" context="{'group_by':'source_id'}"/>
+	            </xpath>
+	        </field>
         </record>
 
 
@@ -197,6 +200,7 @@
             <field name="arch" type="xml">
                 <tree string="Where Used Bill of Materials">
                     <field name="product_id" string="Component Name"/>
+                    <field name="name" string="BoM Name"/>
                     <field name="engineering_revision" string="Revision"/>
                     <field name="description"/>
                     <field name="source_id" string="Source Relation Document"/>

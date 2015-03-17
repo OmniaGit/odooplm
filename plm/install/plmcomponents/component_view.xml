@@ -34,36 +34,36 @@
         <field name="type">search</field>
         <field name="priority" eval="10"/>
         <field name="arch" type="xml">
-			<search string="Product">
-                   	<filter icon="terp-go-month" string="Latest 7 Days" separator="1"
-                           	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
-                          	help="Created latest 7 Days"/>
-                 	<filter icon="terp-go-month" string="Yesterday" separator="1"
-                         	domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
-                    		help="Created yesterday"/>
-                	<filter icon="terp-go-month" string="Today" separator="1"
-                         	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
-                         	help="Created today"/>
-                   	<separator orientation="vertical"/>
-	            	<field name="name"/>
-	            	<field name="description"/>
-                   	<separator orientation="vertical"/>
+			<search string="Products">
+               	<filter icon="terp-go-month" string="Latest 2 Weeks" separator="1"
+                       	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"
+                      	help="Created latest 2 Weeks"/>
+               	<filter icon="terp-go-month" string="Latest 7 Days" separator="1"
+                       	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
+                      	help="Created latest 7 Days"/>
+             	<filter icon="terp-go-month" string="Yesterday" separator="1"
+                     	domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
+                		help="Created yesterday"/>
+            	<filter icon="terp-go-month" string="Today" separator="1"
+                     	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
+                     	help="Created today"/>
+				<field name="state">
                     <filter string="Confirmed" icon="terp-stock_symbol-selection" domain="[('state', '=', 'confirmed')]"/>
                     <filter string="Released" icon="terp-stock_symbol-selection" domain="[('state', 'in', ['released','undermodify'])]"/>
                     <filter string="Obsoleted" icon="terp-stock_symbol-selection" domain="[('state', '=', 'obsoleted')]"/>
                     <filter string="Latest" name="latest" icon="terp-stock_symbol-selection" domain="[('state', 'not in', ['obsoleted','undermodify'])]"/>
-                   	<separator orientation="vertical"/>
-                    <group expand="0" string="Group by..." groups="base.group_extended">
-                       <filter string="Category" icon="terp-stock_symbol-selection" domain="[]" context="{'group_by' : 'categ_id'}"/>
-                       <separator orientation="vertical"/>
-                       <filter string="Default UOM" icon="terp-mrp" domain="[]" context="{'group_by' : 'uom_id'}"/>
-                       <separator orientation="vertical"/>
-                       <filter string="Type" icon="terp-stock_symbol-selection" domain="[]" context="{'group_by' : 'type'}"/>
-                   </group>
-                </search>
-         </field>
+				</field>
+	            <group expand="0" string="Group by..." >
+	                <filter string="Status" icon="terp-stock_symbol-selection" domain="[]" context="{'group_by' : 'state'}"/>
+	               	<group groups="base.group_extended">
+						<filter string="Category" icon="terp-stock_symbol-selection" domain="[]" context="{'group_by' : 'categ_id'}"/>
+	                   	<filter string="Default UOM" icon="terp-mrp" domain="[]" context="{'group_by' : 'uom_id'}"/>
+               			<filter string="Type" icon="terp-stock_symbol-selection" domain="[]" context="{'group_by' : 'type'}"/>
+                	</group>
+            	</group>
+        	</search>
+    	</field>
     </record>
-
 
     <record model="ir.ui.view" id="plm_component_form">
         <field name="name">plm.component</field>
@@ -92,19 +92,6 @@
                     <separator colspan="4" string="Normalization Area"/>
                     <sheet>
                         <group colspan="4" col="4" name="NMArea">
-                             <separator/>
-                             <group col="2" colspan="2">
-                                 <field name="std_description" on_change="on_change_stddesc(std_description)"/>
-                             </group>
-                             <group col="4" colspan="4">
-                             <separator string="Technical Infos" colspan="4"/>
-                                 <field name="std_umc1" attrs="{'readonly':[('std_umc1','=',False)]}" />
-                                 <field name="std_value1" attrs="{'readonly':[('std_umc1','=',False)]}" on_change="on_change_stdvalue(std_description, std_umc1, std_value1, std_umc2, std_value2, std_umc3, std_value3)"/>
-                                 <field name="std_umc2"  attrs="{'readonly':[('std_umc2','=',False)]}" />
-                                 <field name="std_value2" attrs="{'readonly':[('std_umc2','=',False)]}" on_change="on_change_stdvalue(std_description, std_umc1, std_value1, std_umc2, std_value2, std_umc3, std_value3)"/>
-                                 <field name="std_umc3"  attrs="{'readonly':[('std_umc3','=',False)]}" />
-                                 <field name="std_value3" attrs="{'readonly':[('std_umc3','=',False)]}" on_change="on_change_stdvalue(std_description, std_umc1, std_value1, std_umc2, std_value2, std_umc3, std_value3)"/>
-                             </group>
                              <group colspan="4" col="4" name="TechSpec">
                                 <separator string="Technical Specifications" colspan="4"/>
                                 <field name="tmp_material" on_change="on_change_tmpmater(tmp_material)"/>
@@ -154,25 +141,28 @@
         <field name="priority" eval="15"/>
         <field name="arch" type="xml">
 		 	<search string="Parts">
-                   	<filter icon="terp-go-month" string="Latest 7 Days" separator="1"
-                           	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
-                          	help="Created latest 7 Days"/>
-                 	<filter icon="terp-go-month" string="Yesterday" separator="1"
-                         	domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
-                    		help="Created yesterday"/>
-                	<filter icon="terp-go-month" string="Today" separator="1"
-                         	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
-                         	help="Created today"/>
-                   	<separator orientation="vertical"/>
-	            	<field name="name"/>
-	            	<field name="description"/>
-                   	<separator orientation="vertical"/>
-                   	<filter string="Confirmed" icon="terp-stock_symbol-selection" domain="[('state', '=', 'confirmed')]"/>
-                   	<filter string="Released" icon="terp-stock_symbol-selection" domain="[('state', 'in', ['released','undermodify'])]"/>
-                   	<filter string="Obsoleted" icon="terp-stock_symbol-selection" domain="[('state', '=', 'obsoleted')]"/>
-                   	<filter string="Latest" icon="terp-stock_symbol-selection" domain="[('state', 'not in', ['obsoleted','undermodify'])]"/>
-                </search>
-         </field>
+               	<filter icon="terp-go-month" string="Latest 2 Weeks" separator="1"
+                       	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"
+                      	help="Created latest 2 Weeks"/>
+               	<filter icon="terp-go-month" string="Latest 7 Days" separator="1"
+                       	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
+                      	help="Created latest 7 Days"/>
+             	<filter icon="terp-go-month" string="Yesterday" separator="1"
+                     	domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
+                		help="Created yesterday"/>
+            	<filter icon="terp-go-month" string="Today" separator="1"
+                     	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
+                     	help="Created today"/>
+               	<separator orientation="vertical"/>
+            	<field name="name"/>
+            	<field name="description"/>
+               	<separator orientation="vertical"/>
+               	<filter string="Confirmed" icon="terp-stock_symbol-selection" domain="[('state', '=', 'confirmed')]"/>
+               	<filter string="Released" icon="terp-stock_symbol-selection" domain="[('state', 'in', ['released','undermodify'])]"/>
+               	<filter string="Obsoleted" icon="terp-stock_symbol-selection" domain="[('state', '=', 'obsoleted')]"/>
+               	<filter string="Latest" icon="terp-stock_symbol-selection" domain="[('state', 'not in', ['obsoleted','undermodify'])]"/>
+        	</search>
+    	</field>
     </record>
 
     <record model="ir.ui.view" id="plm_component_base_form">
@@ -208,18 +198,6 @@
 	                     </group>
         	    		<separator colspan="4" col="1" />
                 	    <group colspan="4" col="4" string="Normalization Area" name="NMArea">
-                            <separator string="Standard Description" colspan="4"/>
-                            <field colspan="4" name="std_description" nolabel="1" on_change="on_change_stddesc(std_description)"/>
-                            <newline/>
-                            <separator string="Technical Infos" colspan="4"/>
-                            <group colspan="8" col="8">
-                 	    		<field name="std_umc1" attrs="{'readonly':[('std_umc1','=',False)]}" />
-                	    		<field name="std_value1" attrs="{'readonly':[('std_umc1','=',False)]}" on_change="on_change_stdvalue(std_description, std_umc1, std_value1, std_umc2, std_value2, std_umc3, std_value3)"/>
-                	    		<field name="std_umc2"  attrs="{'readonly':[('std_umc2','=',False)]}" />
-                	    		<field name="std_value2" attrs="{'readonly':[('std_umc2','=',False)]}" on_change="on_change_stdvalue(std_description, std_umc1, std_value1, std_umc2, std_value2, std_umc3, std_value3)"/>
-                	    		<field name="std_umc3"  attrs="{'readonly':[('std_umc3','=',False)]}" />
-                	    		<field name="std_value3" attrs="{'readonly':[('std_umc3','=',False)]}" on_change="on_change_stdvalue(std_description, std_umc1, std_value1, std_umc2, std_value2, std_umc3, std_value3)"/>
-                  	    	</group>
                     		<group colspan="4" col="4" name="TechSpec">
                    				<field name="tmp_material" colspan="2" on_change="on_change_tmpmater(tmp_material)"/>
                  				<field name="tmp_surface" colspan="2" on_change="on_change_tmpsurface(tmp_surface)"/>

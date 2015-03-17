@@ -108,13 +108,14 @@
                          domain="[('createdate','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('createdate','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
                          help="Checked-Out today"/>
                 <newline/>
-                <field name="userid">
-                	<filter icon="terp-personal" domain="[('userid','=',uid)]" help="Filter on my documents"/>
+                <field name="userid" nolabel="1">
+					<filter string="Created by me" icon="terp-personal" domain="[('userid', '=', uid)]"/>
                 </field>
-            	<field name="hostname"/>
-             	<field name="hostpws"/>
-              	<field name="documentid"/>
-              	<field name="createdate"/>
+                <group expand="0" string="Group By...">
+                    <filter string="Hostname" icon="terp-personal" domain="[]" context="{'group_by':'hostname'}"/>
+                    <filter string="Create by Month" icon="terp-personal" domain="[]" context="{'group_by':'createdate'}"/>
+                    <filter string="Creator" icon="terp-personal" domain="[]" context="{'group_by':'userid'}"/>
+                </group>
             </search>
      	</field>
     </record>

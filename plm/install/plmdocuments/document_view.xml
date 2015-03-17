@@ -121,49 +121,43 @@
     </record>
 
     <record model="ir.ui.view" id="plm_document_search">
-         <field name="name">plm.document</field>
-         <field name="model">plm.document</field>
-         <field name="type">search</field>
-         <field name="priority" eval="1"/>
-         <field name="arch" type="xml">
-			  <search string="Attachments">
-                    <group colspan="4" col="10">
-                        <filter icon="terp-go-month" string="  Last Month  " separator="1"
-                                domain="[('create_date','&lt;=', (datetime.date.today() - relativedelta(day=31,months=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today() - relativedelta(day=1,months=1)).strftime('%%Y-%%m-%%d'))]"
-                                help="Created last month"/>
-                        <filter icon="terp-go-month" string="  Last Week  " separator="1"
-                                domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"
-                                help="Created last week"/>
-                        <filter icon="terp-go-month" string="  Latest 7 Days  " separator="1"
-                                domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
-                                help="Created latest 7 Days"/>
-                 		<filter icon="terp-go-month" string="  Yesterday  " separator="1"
-                         		domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
-                         		help="Created yesterday"/>
-                		<filter icon="terp-go-month" string="  Today  " separator="1"
-                         		domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
-                         		help="Created today"/>
-                   		<separator orientation="vertical"/>
-                        <field name="name"/>
-                        <field name="datas_fname"/>
-                        <field name="create_uid">
-                            <filter icon="terp-personal" domain="[('create_uid','=',uid)]" help="Filter on documents created by me"/>
-                        </field>
-                        <field name="write_uid">
-                            <filter icon="terp-personal" domain="[('write_uid','=',uid)]" help="Filter on documents changed by me"/>
-                        </field>
-                   		<separator orientation="vertical"/>
-                   		<filter string="Confirmed" icon="terp-stock_symbol-selection" domain="[('state', '=', 'confirmed')]"/>
-                   		<filter string="Released" icon="terp-stock_symbol-selection" domain="[('state', 'in', ['released','undermodify'])]"/>
-                        <filter string="Latest" name="latest" icon="terp-stock_symbol-selection" domain="[('state', 'not in', ['obsoleted','undermodify'])]"/>
-                    </group>
-                    <newline/>
-                    <group expand="0" string="Group By...">
-                        <filter string="Owner" icon="terp-personal" domain="[]" context="{'group_by':'create_uid'}"/>
-                        <filter string="Month" help="Creation Month" icon="terp-go-month" domain="[]" context="{'group_by':'create_date'}"/>
-                    </group>
-              </search>
-         </field>
+		<field name="name">plm.document</field>
+		<field name="model">plm.document</field>
+		<field name="type">search</field>
+		<field name="priority" eval="1"/>
+		<field name="arch" type="xml">
+			<search string="Documents">
+				<filter icon="terp-go-month" string="  Last Month  " separator="1"
+				        domain="[('create_date','&lt;=', (datetime.date.today() - relativedelta(day=31,months=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today() - relativedelta(day=1,months=1)).strftime('%%Y-%%m-%%d'))]"
+				        help="Created last month"/>
+				<filter icon="terp-go-month" string="  Last Week  " separator="1"
+				        domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"
+				        help="Created last week"/>
+				<filter icon="terp-go-month" string="  Latest 7 Days  " separator="1"
+				        domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
+				        help="Created latest 7 Days"/>
+				<filter icon="terp-go-month" string="  Yesterday  " separator="1"
+				 		domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
+				 		help="Created yesterday"/>
+				<filter icon="terp-go-month" string="  Today  " separator="1"
+				 		domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
+				 		help="Created today"/>
+				<filter string="Created by me" icon="terp-personal" domain="[('create_uid', '=', uid)]"/>
+				<filter string="Changed by me" icon="terp-personal" domain="[('write_uid', '=', uid)]"/>
+				<field name="state">
+					<filter string="Confirmed" icon="terp-stock_symbol-selection" domain="[('state', '=', 'confirmed')]"/>
+					<filter string="Released" icon="terp-stock_symbol-selection" domain="[('state', 'in', ['released','undermodify'])]"/>
+					<filter string="Latest" name="latest" icon="terp-stock_symbol-selection" domain="[('state', 'not in', ['obsoleted','undermodify'])]"/>
+				</field>
+                <group expand="0" string="Group By...">
+                    <filter string="Created by" icon="terp-personal" domain="[]" context="{'group_by':'create_uid'}"/>
+                    <filter string="Changed by" icon="terp-personal" domain="[]" context="{'group_by':'write_uid'}"/>
+                    <filter string="Status" icon="terp-personal" domain="[]" context="{'group_by':'state'}"/>
+                    <filter string="Created by Month" help="Creation Month" icon="terp-go-month" domain="[]" context="{'group_by':'create_date'}"/>
+                    <filter string="Changed by Month" help="Creation Month" icon="terp-go-month" domain="[]" context="{'group_by':'write_date'}"/>
+                </group>
+			</search>
+		</field>
     </record> 
 
 

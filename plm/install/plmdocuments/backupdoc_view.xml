@@ -47,19 +47,20 @@
                          help="Checked-Out in last week"/>
                 <filter icon="terp-go-month" string="  Latest 7 Days  " separator="1"
                          domain="[('createdate','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('createdate','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
-                         help="Checked-Out in last week"/>
+                         help="Checked-Out in latest 7 days"/>
                  <filter icon="terp-go-month" string="  Yesterday  " separator="1"
                          domain="[('createdate','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('createdate','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
                          help="Checked-Out Yesterday"/>
                  <filter icon="terp-go-month" string="  Today  " separator="1"
                          domain="[('createdate','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('createdate','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
                          help="Checked-Out today"/>
-                <newline/>
-                <field name="userid">
-                	<filter icon="terp-personal" domain="[('userid','=',uid)]" help="Filter on my documents"/>
+                <field name="userid" nolabel="1">
+					<filter string="Created by me" icon="terp-personal" domain="[('userid', '=', uid)]"/>
                 </field>
                 <group expand="0" string="Group By...">
-                    <filter string="Create Date" icon="terp-personal" domain="[]" context="{'group_by':'createdate'}"/>
+                    <filter string="Document Name" icon="terp-personal" domain="[]" context="{'group_by':'documentid'}"/>
+                    <filter string="Create by Month" icon="terp-personal" domain="[]" context="{'group_by':'createdate'}"/>
+                    <filter string="Creator" icon="terp-personal" domain="[]" context="{'group_by':'userid'}"/>
                 </group>
             </search>
      	</field>
