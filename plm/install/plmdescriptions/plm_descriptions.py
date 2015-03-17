@@ -94,13 +94,21 @@ class plm_component(osv.osv):
         'std_value3': lambda *a: False,
     }
 #   Internal methods
-    def _packvalues(self,fmt,label=False,value=False,value2=False):
+    def _packfinalvalues(self,fmt,value=False,value2=False,value3=False):
         """
             Pack a string formatting it like specified in fmt
             mixing both label and value or only label.
         """
         retvalue=''
         
+        if value3:
+            if (type(value3) is FloatType):
+                svalue3="%g" %value3
+            else:
+                svalue3=value3
+        else:
+            svalue3=''
+
         if value2:
             if (type(value2) is FloatType):
                 svalue2="%g" %value2
@@ -108,19 +116,55 @@ class plm_component(osv.osv):
                 svalue2=value2
         else:
             svalue2=''
-            
+
         if value:
             if (type(value) is FloatType):
                 svalue="%g" %value
             else:
                 svalue=value
+        else:
+            svalue=''
+
+        if svalue or svalue2 or svalue3:
             cnt=fmt.count('%s')
             if cnt == 3:
-                retvalue = fmt %(label, svalue, svalue2)
+                retvalue = fmt %(svalue, svalue2, svalue3)
             if cnt == 2:
-                retvalue = fmt %(label, svalue)
+                retvalue = fmt %(svalue, svalue2)
             elif cnt == 1:
-                retvalue = fmt %svalue
+                retvalue = fmt %(svalue)
+        return retvalue
+
+    def _packvalues(self,fmt,label=False,value=False):
+        """
+            Pack a string formatting it like specified in fmt
+            mixing both label and value or only label.
+        """
+        retvalue=''
+        
+        if value:
+            if (type(value) is FloatType):
+                svalue="%g" %value
+            else:
+                svalue=value
+        else:
+            svalue=''
+
+        if label:
+            if (type(label) is FloatType):
+                slabel="%g" %label
+            else:
+                slabel=label
+        else:
+            slabel=''
+
+        if svalue:
+            cnt=fmt.count('%s')
+
+            if cnt == 2:
+                retvalue = fmt %(slabel, svalue)
+            elif cnt == 1:
+                retvalue = fmt %(svalue)
         return retvalue
 
 ##  Customized Automations
@@ -158,7 +202,7 @@ class plm_component(osv.osv):
                         description2=self._packvalues(thisObject.fmt2, std_umc2, std_value2)
                     if std_umc3 and std_value3:
                         description3=self._packvalues(thisObject.fmt3, std_umc3, std_value3)
-                    description=description+" "+self._packvalues(thisObject.fmtend, description1, description2, description3)
+                    description=description+" "+self._packfinalvalues(thisObject.fmtend, description1, description2, description3)
                 else:
                     if std_umc1 and std_value1:
                         description=description+" "+self._packvalues(thisObject.fmt1, std_umc1, std_value1)

@@ -58,18 +58,18 @@
         <field name="priority" eval="1"/>
         <field name="arch" type="xml">
         	<tree string="Descriptions">
-            		<field name="name"/>
-                   	<field name="description"/>
-                   	<field name="description_en"/>
-                   	<field name="umc1"/>
-                   	<field name="fmt1"/>
-                   	<field name="umc2"/>
-                  	<field name="fmt2"/>
-                   	<field name="umc3"/>
-                  	<field name="fmt3"/>
-                   	<field name="fmtend"/>
-                    <field name="unitab"/>
-                   	<field name="sequence"/>
+	    		<field name="name"/>
+	           	<field name="description"/>
+	           	<field name="description_en"/>
+	           	<field name="umc1"/>
+	           	<field name="fmt1"/>
+	           	<field name="umc2"/>
+	          	<field name="fmt2"/>
+	           	<field name="umc3"/>
+	          	<field name="fmt3"/>
+	           	<field name="fmtend"/>
+	            <field name="unitab"/>
+	           	<field name="sequence"/>
             </tree>
         </field>
     </record>
@@ -89,7 +89,57 @@
         action="plm_action_description_form"
         id="menu_description"
         parent="plm_menu_dictionaries"/>
+
+<!--	Product Menu Injection	-->
+
+    <record model="ir.ui.view" id="plm_component_tech_form">
+        <field name="name">plm.description.component</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="plm.plm_component_form"/>
+        <field name="type">form</field>
+        <field name="priority" eval="10"/>
+        <field name="arch" type="xml">
+			<group name="TechSpec" position="before">
+            	<group col="4" colspan="4" name="TechInfos">
+					<separator string="Standard Description" colspan="4"/>
+					<field colspan="4" name="std_description" nolabel="1" on_change="on_change_stddesc(std_description)"/>
+					<newline/>
+				    <separator string="Technical Infos" colspan="4"/>
+				    <field name="std_umc1" attrs="{'readonly':[('std_umc1','=',False)]}" />
+				    <field name="std_value1" attrs="{'readonly':[('std_umc1','=',False)]}" on_change="on_change_stdvalue(std_description, std_umc1, std_value1, std_umc2, std_value2, std_umc3, std_value3)"/>
+				    <field name="std_umc2"  attrs="{'readonly':[('std_umc2','=',False)]}" />
+				    <field name="std_value2" attrs="{'readonly':[('std_umc2','=',False)]}" on_change="on_change_stdvalue(std_description, std_umc1, std_value1, std_umc2, std_value2, std_umc3, std_value3)"/>
+				    <field name="std_umc3"  attrs="{'readonly':[('std_umc3','=',False)]}" />
+				    <field name="std_value3" attrs="{'readonly':[('std_umc3','=',False)]}" on_change="on_change_stdvalue(std_description, std_umc1, std_value1, std_umc2, std_value2, std_umc3, std_value3)"/>
+				</group>
+	        </group>
+    	</field>
+    </record>
     
+    <record model="ir.ui.view" id="plm_base_component_tech_form">
+        <field name="name">plm.description.base.component</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="plm.plm_component_base_form"/>
+        <field name="type">form</field>
+        <field name="priority" eval="10"/>
+        <field name="arch" type="xml">
+			<group name="TechSpec" position="before">
+            	<group col="4" colspan="4" name="TechInfos">
+					<separator string="Standard Description" colspan="4"/>
+					<field colspan="4" name="std_description" nolabel="1" on_change="on_change_stddesc(std_description)"/>
+					<newline/>
+				    <separator string="Technical Infos" colspan="4"/>
+				    <field name="std_umc1" attrs="{'readonly':[('std_umc1','=',False)]}" />
+				    <field name="std_value1" attrs="{'readonly':[('std_umc1','=',False)]}" on_change="on_change_stdvalue(std_description, std_umc1, std_value1, std_umc2, std_value2, std_umc3, std_value3)"/>
+				    <field name="std_umc2"  attrs="{'readonly':[('std_umc2','=',False)]}" />
+				    <field name="std_value2" attrs="{'readonly':[('std_umc2','=',False)]}" on_change="on_change_stdvalue(std_description, std_umc1, std_value1, std_umc2, std_value2, std_umc3, std_value3)"/>
+				    <field name="std_umc3"  attrs="{'readonly':[('std_umc3','=',False)]}" />
+				    <field name="std_value3" attrs="{'readonly':[('std_umc3','=',False)]}" on_change="on_change_stdvalue(std_description, std_umc1, std_value1, std_umc2, std_value2, std_umc3, std_value3)"/>
+				</group>
+	        </group>
+    	</field>
+    </record>
+
 </data>
 </openerp>
 
