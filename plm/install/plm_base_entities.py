@@ -26,6 +26,7 @@ import logging
 
 from openerp.osv import osv, fields
 from openerp.tools.translate import _
+import openerp.addons.decimal_precision as dp
 
 
 # To be adequated to plm.document class states
@@ -240,9 +241,11 @@ class plm_relation(osv.osv):
                     "it is considered as a set or pack: the products are replaced by the components " \
                     "between the sale order to the picking without going through the production order." \
                     "The normal BoM will generate one production order per BoM level."),
+                'weight_net': fields.float('Weight',digits_compute=dp.get_precision('Stock Weight'), help="The BoM net weight in Kg."),
                 }
     _defaults = {
         'product_uom' : 1,
+        'weight_net' : 0.0,
     }
 
     def init(self, cr):
@@ -453,10 +456,10 @@ class plm_relation(osv.osv):
             subRelations=[(a, b, c, d, e, f) for a, b, c, d, e, f in relations if a == parentName]
             if len(subRelations)<1: # no relation to save 
                 return None
-            parentName, parentID, tmpChildName, tmpChildID, sourceIDParent, tempRelArgs=subRelations[0]
-            ids=self.search(cr,uid,[('product_id','=',parentID),('source_id','=',sourceIDParent)])
+            parentName, parentID, tmpChildName, tmpChildID, sourceID, tempRelArgs=subRelations[0]
+            ids=self.search(cr,uid,[('product_id','=',parentID),('source_id','=',sourceID)])
             if not ids:
-                bomID=saveParent(parentName, parentID, sourceIDParent, kindBom='ebom')
+                bomID=saveParent(parentName, parentID, sourceID, kindBom='ebom')
                 for rel in subRelations:
                     #print "Save Relation ", rel
                     parentName, parentID, childName, childID, sourceID, relArgs=rel
@@ -466,7 +469,7 @@ class plm_relation(osv.osv):
     
                     tmpBomId=saveChild(childName, childID, sourceID, bomID, kindBom='ebom', args=relArgs)
                     tmpBomId=toCompute(childName, relations)
-                self.RebaseWeight(cr, uid, parentID, sourceIDParent)
+                self.RebaseProductWeight(cr, uid, bomID, self.RebaseBomWeight(cr, uid, bomID))
             return bomID
 
         def saveParent(name,  partID, sourceID, kindBom=None, args=None):
@@ -529,27 +532,56 @@ class plm_relation(osv.osv):
         tmpBomId=toCompute(parentName, relations)
         return False
     
-    def RebaseWeight(self, cr, uid, parentID, sourceID, context=None):
+    def _sumBomWeight(self, bomObj):
         """
-            Evaluates net weight for assembly, based on net weight of each part  
+            Evaluates net weight for assembly, based on BoM object
+        """
+        weight=0.0
+        for bom_line in bomObj.bom_line_ids:
+            weight+=(bom_line.product_qty * bom_line.product_id.product_tmpl_id.weight_net)
+        return weight
+
+    def RebaseWeight(self, cr, uid, parentID, sourceID=False, context=None):
+        """
+            Evaluates net weight for assembly, based on product ID
         """
         weight=0.0
         values={}
-        ancestor=None
-        for bid in self._getbom(cr, uid, parentID, sourceID):
-            ancestor=bid.product_tmpl_id
-            for bom_line in bid.bom_line_ids:
-                weight+=(bom_line.product_qty * bom_line.product_id.product_tmpl_id.weight_net)
-        if (ancestor!=None):
-            values['weight_net']=weight
-            partType=self.pool.get(ancestor._inherit)
-            partType.write(cr,uid,[ancestor.id],values)
+        if not(parentID==None) or parentID:
+            objPart=self.pool.get('product.product').browse(cr,uid,parentID,context=None)
+            for bomID in self._getbom(cr, uid, objPart.product_tmpl_id.id, sourceID):
+                weight=self._sumBomWeight(bomID)
+                values['weight_net']=weight
+                partType=self.pool.get(bomID.product_tmpl_id._inherit)
+                partType.write(cr,uid,[bomID.product_tmpl_id.id],values)
+        return weight
+
+    def RebaseProductWeight(self, cr, uid, parentBomID, weight=0.0):
+        """
+            Evaluates net weight for assembly, based on product ID
+        """
+        if not(parentBomID==None) or parentBomID:
+            bomObj=self.browse(cr,uid,parentBomID,context=None)
+            self.pool.get('product.product').write(cr,uid,[bomObj.product_id.id],{'weight_net': weight})
+
+    def RebaseBomWeight(self, cr, uid, bomID, context=None):
+        """
+            Evaluates net weight for assembly, based on BoM ID
+        """
+        weight=0.0
+        if  bomID:
+            for bomId in self.browse(cr, uid, bomID, context):
+                weight=self._sumBomWeight(bomId)
+                super(plm_relation,self).write(cr, uid, [bomId.id], {'weight_net': weight}, context=context)
         return weight
 
 
 #   Overridden methods for this entity
-#     def write(self, cr, uid, ids, vals, check=True, context=None):
-#         return super(plm_relation,self).write(cr, uid, ids, vals, context=context)  
+    def write(self, cr, uid, ids, vals, check=True, context=None):
+        ret=super(plm_relation,self).write(cr, uid, ids, vals, context=context)
+        for bomId in self.browse(cr,uid,ids,context=None):
+            self.RebaseBomWeight(cr, uid, bomId.id, context=context)
+        return ret
 
     def copy(self,cr,uid,oid,defaults={},context=None):
         """
