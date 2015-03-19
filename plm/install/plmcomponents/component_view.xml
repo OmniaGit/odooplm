@@ -204,7 +204,7 @@
                      		</group>
                     		<group colspan="4" col="4">
 	 	                        <group colspan="2" col="2" name="Weigth">
-		                     		<separator/>
+		                     		<separator string="Weight" />
 		                            <field digits="(14, 3)" name="weight_net" attrs="{'readonly':[('type','=','service')]}"/>
 	                      		</group>
 	 	                        <group colspan="2" col="2" name="uom">
