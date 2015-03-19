@@ -186,7 +186,7 @@ class plm_component(osv.osv):
                 defaults['linkeddocuments']=[]                  # Clean attached documents for new revision object
                 newID=self.copy(cr, uid, oldObject.id, defaults, context=context)
                 self.wf_message_post(cr, uid, [oldObject.id], body=_('Created : New Revision.'))
-                self.write(cr,uid,[newID],{'engineering_writable':False,'name':oldObject.name},check=False,context=None)
+                self.write(cr,uid,[newID],{'name':oldObject.name},check=False,context=None)
                 # create a new "old revision" object
                 break
             break
