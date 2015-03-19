@@ -155,7 +155,7 @@
             </para>
           </td>
           <td>
-            <para style="terp_tblheader_Details_Centre">[[ o.product_id.product_tmpl_id.weight_net ]]</para>
+            <para style="terp_tblheader_Details_Centre">[[ o.weight_net ]]</para>
           </td>
         </tr>
       </blockTable>
