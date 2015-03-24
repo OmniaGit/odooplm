@@ -213,7 +213,6 @@
             </field>
         </record>
 
- 
          <record id="plm_bom_tree_structure" model="ir.ui.view">
             <field name="name">plm.bom.tree</field>
             <field name="model">mrp.bom.line</field>

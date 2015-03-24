@@ -226,7 +226,8 @@ class plm_relation_line(osv.osv):
     }
     
     _order = 'itemnum'
-
+        
+plm_relation_line()
 
 class plm_relation(osv.osv):
     _name = 'mrp.bom'

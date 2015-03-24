@@ -58,18 +58,18 @@
         <field name="priority" eval="1"/>
         <field name="arch" type="xml">
         	<tree string="Descriptions">
-	    		<field name="name"/>
-	           	<field name="description"/>
-	           	<field name="description_en"/>
-	           	<field name="umc1"/>
-	           	<field name="fmt1"/>
-	           	<field name="umc2"/>
-	          	<field name="fmt2"/>
-	           	<field name="umc3"/>
-	          	<field name="fmt3"/>
-	           	<field name="fmtend"/>
-	            <field name="unitab"/>
-	           	<field name="sequence"/>
+            		<field name="name"/>
+                   	<field name="description"/>
+                   	<field name="description_en"/>
+                   	<field name="umc1"/>
+                   	<field name="fmt1"/>
+                   	<field name="umc2"/>
+                  	<field name="fmt2"/>
+                   	<field name="umc3"/>
+                  	<field name="fmt3"/>
+                   	<field name="fmtend"/>
+                    <field name="unitab"/>
+                   	<field name="sequence"/>
             </tree>
         </field>
     </record>
