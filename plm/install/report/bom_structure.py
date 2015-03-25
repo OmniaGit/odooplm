@@ -79,12 +79,21 @@ _createtemplate()
 ###############################################################################################################à
 
 def BomSort(myObject):
+    valid=False
     bomobject=[]
     res={}
     index=0
     for l in myObject:
         res[str(index)]=l.itemnum
         index+=1
+        if l.itemnum>0:
+            valid=True
+    if not valid:
+        res={}
+        index=0
+        for l in myObject:
+            res[str(index)]=l.product_id.product_tmpl_id.name
+            index+=1
     items = res.items()
     items.sort(key = itemgetter(1))
     for res in items:
