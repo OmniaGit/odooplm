@@ -62,7 +62,7 @@ class report_plm_document_user(osv.osv):
                      min(d.type) as type,
                      f.write_date as change_date
                  FROM plm_document f
-                     left join document_directory d on (f.parent_id=d.id and d.name<>'')
+                     left join document_directory d on (f.parent_id=d.id and d.name<>'' and f.type='binary')
                      inner join res_users u on (f.user_id=u.id)
                  group by to_char(f.create_date, 'YYYY'), to_char(f.create_date, 'MM'),to_char(f.create_date, 'DD'),d.name,f.parent_id,d.type,f.create_date,f.user_id,f.file_size,u.login,d.type,f.write_date,f.datas_fname
              )

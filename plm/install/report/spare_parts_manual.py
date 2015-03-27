@@ -259,27 +259,27 @@ class component_spare_parts_report(report_int):
             return (self.obj.pdf, 'pdf')
         return (False, '')    
    
-    def getSparePartsPdfFile(self, cr, uid, context, component, output, componentTemplate, bomTemplate,recursion):
+    def getSparePartsPdfFile(self, cr, uid, context, product, output, componentTemplate, bomTemplate,recursion):
         packedObjs=[]
         packedIds=[]
-        if component in self.processedObjs:
+        if product in self.processedObjs:
             return
-        bomIds=bomTemplate.search(cr,uid,[('product_id','=',component.id),('type','=','spbom')])
+        bomIds=bomTemplate.search(cr,uid,[('product_id','=',product.id),('type','=','spbom')])
         if len(bomIds)<1:
-            bomIds=bomTemplate.search(cr,uid,[('product_tmpl_id','=',component.product_tmpl_id.id),('type','=','spbom')])
+            bomIds=bomTemplate.search(cr,uid,[('product_tmpl_id','=',product.product_tmpl_id.id),('type','=','spbom')])
 #        if len(bomIds)<1:
-#            bomIds=bomTemplate.search(cr,uid,[('product_tmpl_id','=',component.id),('type','=','normal')])
+#            bomIds=bomTemplate.search(cr,uid,[('product_tmpl_id','=',product.id),('type','=','normal')])
 #        if len(bomIds)<1:
-#            bomIds=bomTemplate.search(cr,uid,[('product_tmpl_id','=',component.id),('type','=','ebom')])
+#            bomIds=bomTemplate.search(cr,uid,[('product_tmpl_id','=',product.id),('type','=','ebom')])
         if len(bomIds)>0:
             BomObject=bomTemplate.browse(cr, uid, bomIds[0], context=context)
             if BomObject:
-                self.processedObjs.append(component)
+                self.processedObjs.append(product)
                 for bom_line in BomObject.bom_line_ids:
                     packedObjs.append(bom_line.product_id)
                     packedIds.append(bom_line.id)
                 if len(packedIds)>0:
-                    for pageStream in self.getPdfComponentLayout(cr, component):
+                    for pageStream in self.getPdfComponentLayout(cr, product):
                         output.addPage(pageStream)
                     stream,typerep=BODY.create(cr, uid, [BomObject.id], data={'report_type': u'pdf'},context=context) 
                     pageStream=StringIO.StringIO()
@@ -294,7 +294,7 @@ class component_spare_parts_report(report_int):
         ret=[]
         docRepository=self.pool.get('plm.document')._get_filestore(cr)
         for document in component.linkeddocuments:
-            if document.usedforspare:
+            if (document.usedforspare) and (document.type=='binary'):
                 if document.printout:
                     ret.append(StringIO.StringIO(base64.decodestring(document.printout)))
                 elif isPdf(document.datas_fname):

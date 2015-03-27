@@ -101,32 +101,33 @@ def packDocuments(docRepository,documents,bookCollector):
     output3 = [] 
     output4 = []
     for document in documents:
-        if not document.id in packed:
-            Flag=False 
-            if document.printout:
-                input1 = StringIO.StringIO(base64.decodestring(document.printout))
-                Flag=True
-            elif isPdf(document.datas_fname):
-                value=getDocumentStream(docRepository,document)
-                if value:
-                    input1 = StringIO.StringIO(value)
+        if document.type=='binary':
+            if not document.id in packed:
+                Flag=False 
+                if document.printout:
+                    input1 = StringIO.StringIO(base64.decodestring(document.printout))
                     Flag=True
-            if Flag:
-                page=PdfFileReader(input1)
-                orientation,paper=paperFormat(page.getPage(0).mediaBox)
-                if(paper==0)  :
-                    output0.append(input1)
-                elif(paper==1):
-                    output1.append(input1)
-                elif(paper==2):
-                    output2.append(input1)
-                elif(paper==3):
-                    output3.append(input1)
-                elif(paper==4):
-                    output4.append(input1)
-                else: 
-                    output0.append(input1)
-                packed.append(document.id)
+                elif isPdf(document.datas_fname):
+                    value=getDocumentStream(docRepository,document)
+                    if value:
+                        input1 = StringIO.StringIO(value)
+                        Flag=True
+                if Flag:
+                    page=PdfFileReader(input1)
+                    orientation,paper=paperFormat(page.getPage(0).mediaBox)
+                    if(paper==0)  :
+                        output0.append(input1)
+                    elif(paper==1):
+                        output1.append(input1)
+                    elif(paper==2):
+                        output2.append(input1)
+                    elif(paper==3):
+                        output3.append(input1)
+                    elif(paper==4):
+                        output4.append(input1)
+                    else: 
+                        output0.append(input1)
+                    packed.append(document.id)
     for pag in output0+output1+output2+output3+output4:
         bookCollector.addPage(pag)
     if bookCollector != None:

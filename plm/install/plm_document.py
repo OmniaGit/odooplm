@@ -72,7 +72,7 @@ class plm_document(osv.osv):
     def _getlastrev(self, cr, uid, ids, context=None):
         result = []
         for objDoc in self.browse(cr, uid, ids, context=context):
-            docIds=self.search(cr,uid,[('name','=',objDoc.name)],order='revisionid',context=context)
+            docIds=self.search(cr,uid,[('name','=',objDoc.name),('type','=','binary')],order='revisionid',context=context)
             docIds.sort()   # Ids are not surely ordered, but revision are always in creation order.
             result.append(docIds[len(docIds)-1])
         return list(set(result))
@@ -84,86 +84,91 @@ class plm_document(osv.osv):
         result = []
         datefiles,listfiles=listedFiles
         for objDoc in self.browse(cr, uid, ids, context=context):
-            timeDoc=self.getLastTime(cr,uid,objDoc.id)
-            timeSaved=time.mktime(timeDoc.timetuple())
-            try:
-                isCheckedOutToMe=self._is_checkedout_for_me(cr, uid, objDoc.id, context)
-                if not(objDoc.datas_fname in listfiles):
-                    if (not objDoc.store_fname) and (objDoc.db_datas):
-                        value = objDoc.db_datas
-                    else:
-                        value = file(os.path.join(self._get_filestore(cr), objDoc.store_fname), 'rb').read()
-                    result.append((objDoc.id, objDoc.datas_fname, base64.encodestring(value), isCheckedOutToMe, timeDoc))
-                else:
-                    if forceFlag:
-                        isNewer=True
-                    else:
-                        timefile=time.mktime(datetime.strptime(str(datefiles[listfiles.index(objDoc.datas_fname)]),'%Y-%m-%d %H:%M:%S').timetuple())
-                        isNewer=(timeSaved-timefile)>5
-                    if (isNewer and not(isCheckedOutToMe)):
+            if objDoc.type=='binary':
+                timeDoc=self.getLastTime(cr,uid,objDoc.id)
+                timeSaved=time.mktime(timeDoc.timetuple())
+                try:
+                    isCheckedOutToMe=self._is_checkedout_for_me(cr, uid, objDoc.id, context)
+                    if not(objDoc.datas_fname in listfiles):
                         if (not objDoc.store_fname) and (objDoc.db_datas):
                             value = objDoc.db_datas
                         else:
                             value = file(os.path.join(self._get_filestore(cr), objDoc.store_fname), 'rb').read()
                         result.append((objDoc.id, objDoc.datas_fname, base64.encodestring(value), isCheckedOutToMe, timeDoc))
                     else:
-                        result.append((objDoc.id,objDoc.datas_fname,False, isCheckedOutToMe, timeDoc))
-            except Exception, ex:
-                logging.error("_data_get_files : Unable to access to document ("+str(objDoc.name)+"). Error :" + str(ex))
-                result.append((objDoc.id,objDoc.datas_fname,False, True, self.getServerTime(cr, uid, ids)))
+                        if forceFlag:
+                            isNewer=True
+                        else:
+                            timefile=time.mktime(datetime.strptime(str(datefiles[listfiles.index(objDoc.datas_fname)]),'%Y-%m-%d %H:%M:%S').timetuple())
+                            isNewer=(timeSaved-timefile)>5
+                        if (isNewer and not(isCheckedOutToMe)):
+                            if (not objDoc.store_fname) and (objDoc.db_datas):
+                                value = objDoc.db_datas
+                            else:
+                                value = file(os.path.join(self._get_filestore(cr), objDoc.store_fname), 'rb').read()
+                            result.append((objDoc.id, objDoc.datas_fname, base64.encodestring(value), isCheckedOutToMe, timeDoc))
+                        else:
+                            result.append((objDoc.id,objDoc.datas_fname,False, isCheckedOutToMe, timeDoc))
+                except Exception, ex:
+                    logging.error("_data_get_files : Unable to access to document ("+str(objDoc.name)+"). Error :" + str(ex))
+                    result.append((objDoc.id,objDoc.datas_fname,False, True, self.getServerTime(cr, uid, ids)))
         return result
             
     def _data_get(self, cr, uid, ids, name, arg, context):
         result = {}
         value=False
         for objDoc in self.browse(cr, uid, ids, context=context):
-            if not objDoc.store_fname:
-                value=objDoc.db_datas
-                if not value or len(value)<1:
-                    raise osv.except_osv(_('Stored Document Error'), _("Document %s - %s cannot be accessed" %(str(objDoc.name),str(objDoc.revisionid))))
-            else:
-                filestore=os.path.join(self._get_filestore(cr), objDoc.store_fname)
-                if os.path.exists(filestore):
-                    value = file(filestore, 'rb').read()
-            if value and len(value)>0:
-                result[objDoc.id] = base64.encodestring(value)
-            else:
-                result[objDoc.id] = ''
+            if objDoc.type=='binary':
+                if not objDoc.store_fname:
+                    value=objDoc.db_datas
+                    if not value or len(value)<1:
+                        raise osv.except_osv(_('Stored Document Error'), _("Document %s - %s cannot be accessed" %(str(objDoc.name),str(objDoc.revisionid))))
+                else:
+                    filestore=os.path.join(self._get_filestore(cr), objDoc.store_fname)
+                    if os.path.exists(filestore):
+                        value = file(filestore, 'rb').read()
+                if value and len(value)>0:
+                    result[objDoc.id] = base64.encodestring(value)
+                else:
+                    result[objDoc.id] = ''
         return result
 
     def _data_set(self, cr, uid, oid, name, value, args=None, context=None):
         oiDocument=self.browse(cr, uid, oid, context)
-        if not value:
-            filename = oiDocument.store_fname
+        if oiDocument.type=='binary':
+            if not value:
+                filename = oiDocument.store_fname
+                try:
+                    os.unlink(os.path.join(self._get_filestore(cr), filename))
+                except:
+                    pass
+                cr.execute('update plm_document set store_fname=NULL WHERE id=%s', (oid,) )
+                return True
+            #if (not context) or context.get('store_method','fs')=='fs':
             try:
-                os.unlink(os.path.join(self._get_filestore(cr), filename))
-            except:
-                pass
-            cr.execute('update plm_document set store_fname=NULL WHERE id=%s', (oid,) )
+                printout=False
+                preview=False
+                if oiDocument.printout:
+                    printout=oiDocument.printout
+                if oiDocument.preview:
+                    preview=oiDocument.preview
+                db_datas=b''                    # Clean storage field. 
+                fname,filesize=self._manageFile(cr,uid,oid,binvalue=value,context=context)
+                cr.execute('update plm_document set store_fname=%s,file_size=%s,db_datas=%s where id=%s', (fname,filesize,db_datas,oid))
+                self.pool.get('plm.backupdoc').create(cr,uid, {
+                                              'userid':uid,
+                                              'existingfile':fname,
+                                              'documentid':oid,
+                                              'printout': printout,
+                                              'preview': preview
+                                             }, context=context)
+    
+                return True
+            except Exception,ex :
+                raise except_orm(_('Error in _data_set'), str(ex))
+        else:
             return True
-        #if (not context) or context.get('store_method','fs')=='fs':
-        try:
-            printout=False
-            preview=False
-            if oiDocument.printout:
-                printout=oiDocument.printout
-            if oiDocument.preview:
-                preview=oiDocument.preview
-            db_datas=b''                    # Clean storage field. 
-            fname,filesize=self._manageFile(cr,uid,oid,binvalue=value,context=context)
-            cr.execute('update plm_document set store_fname=%s,file_size=%s,db_datas=%s where id=%s', (fname,filesize,db_datas,oid))
-            self.pool.get('plm.backupdoc').create(cr,uid, {
-                                          'userid':uid,
-                                          'existingfile':fname,
-                                          'documentid':oid,
-                                          'printout': printout,
-                                          'preview': preview
-                                         }, context=context)
-
-            return True
-        except Exception,ex :
-            raise except_orm(_('Error in _data_set'), str(ex))
-
+        
     def _explodedocs(self, cr, uid, oid, kind, listed_documents=[], recursion=True):
         result=[]
         if (oid in listed_documents):
@@ -218,21 +223,22 @@ class plm_document(osv.osv):
         result = []
         datefiles,listfiles=listedFiles
         for objDoc in self.browse(cr, uid, list(set(ids)), context=context):
-            timeDoc=self.getLastTime(cr,uid,objDoc.id)
-            timeSaved=time.mktime(timeDoc.timetuple())
-            isCheckedOutToMe=self._is_checkedout_for_me(cr, uid, objDoc.id, context)
-            if (objDoc.datas_fname in listfiles):
-                if forceFlag:
-                    isNewer = True
+            if objDoc.type=='binary':
+                timeDoc=self.getLastTime(cr,uid,objDoc.id)
+                timeSaved=time.mktime(timeDoc.timetuple())
+                isCheckedOutToMe=self._is_checkedout_for_me(cr, uid, objDoc.id, context)
+                if (objDoc.datas_fname in listfiles):
+                    if forceFlag:
+                        isNewer = True
+                    else:
+                        timefile=time.mktime(datetime.strptime(str(datefiles[listfiles.index(objDoc.datas_fname)]),'%Y-%m-%d %H:%M:%S').timetuple())
+                        isNewer=(timeSaved-timefile)>5
+                    collectable = isNewer and not(isCheckedOutToMe)
                 else:
-                    timefile=time.mktime(datetime.strptime(str(datefiles[listfiles.index(objDoc.datas_fname)]),'%Y-%m-%d %H:%M:%S').timetuple())
-                    isNewer=(timeSaved-timefile)>5
-                collectable = isNewer and not(isCheckedOutToMe)
-            else:
-                collectable = True
-            if (objDoc.file_size<1) and (objDoc.datas):
-                objDoc.file_size=len(objDoc.datas)
-            result.append((objDoc.id, objDoc.datas_fname, objDoc.file_size, collectable, isCheckedOutToMe, timeDoc))
+                    collectable = True
+                if (objDoc.file_size<1) and (objDoc.datas):
+                    objDoc.file_size=len(objDoc.datas)
+                result.append((objDoc.id, objDoc.datas_fname, objDoc.file_size, collectable, isCheckedOutToMe, timeDoc))
         return list(set(result))
             
     def copy(self,cr,uid,oid,defaults={},context=None):
@@ -305,6 +311,9 @@ class plm_document(osv.osv):
 
     def _iswritable(self, cr, user, oid):
         checkState=('draft')
+        if not oid.type=='binary':
+            logging.warning("_iswritable : Part ("+str(oid.engineering_code)+"-"+str(oid.engineering_revision)+") not writable as hyperlink.")
+            return False
         if not oid.engineering_writable:
             logging.warning("_iswritable : Part ("+str(oid.engineering_code)+"-"+str(oid.engineering_revision)+") not writable.")
             return False
@@ -346,7 +355,7 @@ class plm_document(osv.osv):
     
     def Clone(self, cr, uid, oid, defaults={}, context=None):
         """
-            create a new revision of the document
+            create a new copy of the document
         """
         defaults={}
         exitValues={}
@@ -444,14 +453,13 @@ class plm_document(osv.osv):
         """
             Remove faked documents
         """
-        cr.execute('delete from plm_document where store_fname=NULL')
+        cr.execute("delete from plm_document where store_fname=NULL and type='binary'")
         return True 
 
     def QueryLast(self, cr, uid, request=([],[]), default=None, context=None):
         """
             Query to return values based on columns selected.
         """
-        objId=False
         expData=[]
         queryFilter, columns = request        
         if len(columns)<1:
@@ -484,8 +492,8 @@ class plm_document(osv.osv):
             Writing messages to follower, on multiple objects
         """
         if not (body==''):
-            for id in ids:
-                self.message_post(cr, uid, [id], body=_(body))
+            for idd in ids:
+                self.message_post(cr, uid, [idd], body=_(body))
 
     def action_draft(self, cr, uid, ids, *args):
         """
@@ -498,12 +506,6 @@ class plm_document(osv.osv):
         if (objId):
             self.wf_message_post(cr, uid, ids, body=_('Status moved to: %s.' %(USEDIC_STATES[defaults['state']])))
         return objId
-
-    def action_correct(self, cr, uid, ids, *args):
-        """
-            release the object
-        """
-        return self.action_draft(cr, uid, ids, *args)
 
     def action_confirm(self,cr,uid,ids,context=None):
         """
@@ -625,37 +627,6 @@ class plm_document(osv.osv):
 
 #   Overridden methods for this entity
 
-#     def _check_duplication0(self, cr, uid, vals, ids=[], op='create'):
-#         """
-#             Overridden, due to revision id management, filename can be duplicated, 
-#             because system has to manage several revisions of a document.
-#         """
-#         name = vals.get('name', False)
-#         parent_id = vals.get('parent_id', False)
-#         res_model = vals.get('res_model', False)
-#         res_id = vals.get('res_id', 0)
-#         revisionid = vals.get('revisionid', 0)
-#         if op == 'write':
-#             for thisfile in self.browse(cr, uid, ids, context=None): # FIXME fields_only
-#                 if not name:
-#                     name = thisfile.name
-#                 if not parent_id:
-#                     parent_id = thisfile.parent_id and thisfile.parent_id.id or False
-#                 if not res_model:
-#                     res_model = thisfile.res_model and thisfile.res_model or False
-#                 if not res_id:
-#                     res_id = thisfile.res_id and thisfile.res_id or 0
-#                 if not revisionid:
-#                     revisionid = thisfile.revisionid and thisfile.revisionid or 0
-#                 res = self.search(cr, uid, [('id', '<>', thisfile.id), ('name', '=', name), ('parent_id', '=', parent_id), ('res_model', '=', res_model), ('res_id', '=', res_id), ('revisionid', '=', revisionid)])
-#                 if len(res)>1:
-#                     return False
-#         if op == 'create':
-#             res = self.search(cr, uid, [('name', '=', name), ('parent_id', '=', parent_id), ('res_id', '=', res_id), ('res_model', '=', res_model), ('revisionid', '=', revisionid)])
-#             if len(res):
-#                 return False
-#         return True
-
     def _check_duplication(self, cr, uid, vals, ids=None, op='create'):
         SUPERUSER_ID = 1
         name=vals.get('name',False)
@@ -682,7 +653,8 @@ class plm_document(osv.osv):
             if len(res):
                 return False
         return True
-    
+#   Overridden methods for this entity
+
     _columns = {
                 'usedforspare': fields.boolean('Used for Spare',help="Drawings marked here will be used printing Spare Part Manual report."),
                 'revisionid': fields.integer('Revision Index', required=True),
