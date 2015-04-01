@@ -53,6 +53,10 @@
                     <filter string="Obsoleted" icon="terp-stock_symbol-selection" domain="[('state', '=', 'obsoleted')]"/>
                     <filter string="Latest" name="latest" icon="terp-stock_symbol-selection" domain="[('state', 'not in', ['obsoleted','undermodify'])]"/>
 				</field>
+               	<separator orientation="vertical"/>
+            	<field name="name"/>
+            	<field name="description"/>
+               	<separator orientation="vertical"/>
 	            <group expand="0" string="Group by..." >
 	                <filter string="Status" icon="terp-stock_symbol-selection" domain="[]" context="{'group_by' : 'state'}"/>
 	               	<group groups="base.group_extended">
