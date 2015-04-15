@@ -105,7 +105,7 @@ class plm_component(osv.osv):
             if (not newidBom) and idBoms:
                     newidBom=bomType.copy(cr, uid, idBoms[0], defaults, context)
             if newidBom:
-                bomType.write(cr,uid,[newidBom],{'name':checkObj.name,'product_id':checkObj.id,'type':'spbom',},context=None)
+                bomType.write(cr,uid,[newidBom],{'name':checkObj.name,'product_id':checkObj.id,'type':'spbom',},check=False,context=None)
                 oidBom=bomType.browse(cr,uid,newidBom,context=None)
                 
                 ok_rows=self._summarizeBom(cr, uid, oidBom.bom_line_ids)
