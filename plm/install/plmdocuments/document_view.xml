@@ -142,8 +142,16 @@
 				<filter icon="terp-go-month" string="  Today  " separator="1"
 				 		domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
 				 		help="Created today"/>
-				<filter string="Created by me" icon="terp-personal" domain="[('create_uid', '=', uid)]"/>
-				<filter string="Changed by me" icon="terp-personal" domain="[('write_uid', '=', uid)]"/>
+           		<separator orientation="vertical"/>
+                <field name="name"/>
+                <field name="datas_fname"/>
+                <field name="create_uid">
+                    <filter icon="terp-personal" domain="[('create_uid','=',uid)]" help="Filter on documents created by me"/>
+                </field>
+                <field name="write_uid">
+                    <filter icon="terp-personal" domain="[('write_uid','=',uid)]" help="Filter on documents changed by me"/>
+                </field>
+           		<separator orientation="vertical"/>
 				<field name="state">
 					<filter string="Confirmed" icon="terp-stock_symbol-selection" domain="[('state', '=', 'confirmed')]"/>
 					<filter string="Released" icon="terp-stock_symbol-selection" domain="[('state', 'in', ['released','undermodify'])]"/>

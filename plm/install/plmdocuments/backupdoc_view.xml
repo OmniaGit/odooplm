@@ -54,6 +54,9 @@
                  <filter icon="terp-go-month" string="  Today  " separator="1"
                          domain="[('createdate','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('createdate','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
                          help="Checked-Out today"/>
+               	<separator orientation="vertical"/>
+            	<field name="documentid"/>
+               	<separator orientation="vertical"/>
                 <field name="userid" nolabel="1">
 					<filter string="Created by me" icon="terp-personal" domain="[('userid', '=', uid)]"/>
                 </field>
