@@ -99,19 +99,21 @@
         <field name="type">form</field>
         <field name="priority" eval="10"/>
         <field name="arch" type="xml">
-			<group name="TechSpec" position="before">
-            	<group col="4" colspan="4" name="TechInfos">
-					<separator string="Standard Description" colspan="4"/>
-					<field colspan="4" name="std_description" nolabel="1" on_change="on_change_stddesc(std_description)"/>
-					<newline/>
-				    <separator string="Technical Infos" colspan="4"/>
-				    <field name="std_umc1" attrs="{'readonly':[('std_umc1','=',False)]}" />
-				    <field name="std_value1" attrs="{'readonly':[('std_umc1','=',False)]}" on_change="on_change_stdvalue(std_description, std_umc1, std_value1, std_umc2, std_value2, std_umc3, std_value3)"/>
-				    <field name="std_umc2"  attrs="{'readonly':[('std_umc2','=',False)]}" />
-				    <field name="std_value2" attrs="{'readonly':[('std_umc2','=',False)]}" on_change="on_change_stdvalue(std_description, std_umc1, std_value1, std_umc2, std_value2, std_umc3, std_value3)"/>
-				    <field name="std_umc3"  attrs="{'readonly':[('std_umc3','=',False)]}" />
-				    <field name="std_value3" attrs="{'readonly':[('std_umc3','=',False)]}" on_change="on_change_stdvalue(std_description, std_umc1, std_value1, std_umc2, std_value2, std_umc3, std_value3)"/>
-				</group>
+			<group name="DescArea" colspan="4" col="4" position="replace">
+				<separator string="Standard Description" colspan="4"/>
+			    <group col="4" colspan="2">
+			        <field name="std_description" nolabel="1" on_change="on_change_stddesc(std_description)"/>
+			    </group>
+				<newline/>
+		    	<separator string="Technical Infos" colspan="4"/>
+			    <group col="4" colspan="4">
+			        <field name="std_umc1" attrs="{'readonly':[('std_umc1','=',False)]}" />
+			        <field name="std_value1" attrs="{'readonly':[('std_umc1','=',False)]}" on_change="on_change_stdvalue(std_description, std_umc1, std_value1, std_umc2, std_value2, std_umc3, std_value3)"/>
+			        <field name="std_umc2"  attrs="{'readonly':[('std_umc2','=',False)]}" />
+			        <field name="std_value2" attrs="{'readonly':[('std_umc2','=',False)]}" on_change="on_change_stdvalue(std_description, std_umc1, std_value1, std_umc2, std_value2, std_umc3, std_value3)"/>
+			        <field name="std_umc3"  attrs="{'readonly':[('std_umc3','=',False)]}" />
+			        <field name="std_value3" attrs="{'readonly':[('std_umc3','=',False)]}" on_change="on_change_stdvalue(std_description, std_umc1, std_value1, std_umc2, std_value2, std_umc3, std_value3)"/>
+			    </group>
 	        </group>
     	</field>
     </record>
@@ -123,19 +125,21 @@
         <field name="type">form</field>
         <field name="priority" eval="10"/>
         <field name="arch" type="xml">
-			<group name="TechSpec" position="before">
-            	<group col="4" colspan="4" name="TechInfos">
-					<separator string="Standard Description" colspan="4"/>
-					<field colspan="4" name="std_description" nolabel="1" on_change="on_change_stddesc(std_description)"/>
-					<newline/>
-				    <separator string="Technical Infos" colspan="4"/>
-				    <field name="std_umc1" attrs="{'readonly':[('std_umc1','=',False)]}" />
-				    <field name="std_value1" attrs="{'readonly':[('std_umc1','=',False)]}" on_change="on_change_stdvalue(std_description, std_umc1, std_value1, std_umc2, std_value2, std_umc3, std_value3)"/>
-				    <field name="std_umc2"  attrs="{'readonly':[('std_umc2','=',False)]}" />
-				    <field name="std_value2" attrs="{'readonly':[('std_umc2','=',False)]}" on_change="on_change_stdvalue(std_description, std_umc1, std_value1, std_umc2, std_value2, std_umc3, std_value3)"/>
-				    <field name="std_umc3"  attrs="{'readonly':[('std_umc3','=',False)]}" />
-				    <field name="std_value3" attrs="{'readonly':[('std_umc3','=',False)]}" on_change="on_change_stdvalue(std_description, std_umc1, std_value1, std_umc2, std_value2, std_umc3, std_value3)"/>
-				</group>
+			<group name="DescArea" colspan="4" col="4" position="replace">
+				<separator string="Standard Description" colspan="4"/>
+			    <group col="1" colspan="4">
+			        <field name="std_description" nolabel="1" on_change="on_change_stddesc(std_description)"/>
+			    </group>
+				<newline/>
+		    	<separator string="Technical Infos" colspan="4"/>
+			    <group col="4" colspan="4">
+			        <field name="std_umc1" attrs="{'readonly':[('std_umc1','=',False)]}" />
+			        <field name="std_value1" attrs="{'readonly':[('std_umc1','=',False)]}" on_change="on_change_stdvalue(std_description, std_umc1, std_value1, std_umc2, std_value2, std_umc3, std_value3)"/>
+			        <field name="std_umc2"  attrs="{'readonly':[('std_umc2','=',False)]}" />
+			        <field name="std_value2" attrs="{'readonly':[('std_umc2','=',False)]}" on_change="on_change_stdvalue(std_description, std_umc1, std_value1, std_umc2, std_value2, std_umc3, std_value3)"/>
+			        <field name="std_umc3"  attrs="{'readonly':[('std_umc3','=',False)]}" />
+			        <field name="std_value3" attrs="{'readonly':[('std_umc3','=',False)]}" on_change="on_change_stdvalue(std_description, std_umc1, std_value1, std_umc2, std_value2, std_umc3, std_value3)"/>
+			    </group>
 	        </group>
     	</field>
     </record>

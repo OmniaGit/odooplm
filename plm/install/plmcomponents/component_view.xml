@@ -96,11 +96,17 @@
                     <separator colspan="4" string="Normalization Area"/>
                     <sheet>
                         <group colspan="4" col="4" name="NMArea">
-                             <group colspan="4" col="4" name="TechSpec">
-                                <separator string="Technical Specifications" colspan="4"/>
+							<group colspan="4" col="4" name="DescArea">
+								<separator string="Standard Description" colspan="4"/>
+							    <group col="4" colspan="2">
+							        <field name="std_description" nolabel="1" on_change="on_change_stddesc(std_description)"/>
+							    </group>
+                        	</group>
+                            <group colspan="4" col="4" name="TechSpec">
+                            	<separator string="Technical Specifications" colspan="4"/>
                                 <field name="tmp_material" on_change="on_change_tmpmater(tmp_material)"/>
                                 <field name="tmp_surface"  on_change="on_change_tmpsurface(tmp_surface)"/>
-                             </group>
+                        	</group>
                         </group>
                         <group colspan="4" col="4" name="TBlock">
                             <separator string="TitleBlock Informations" colspan="4"/>
@@ -202,6 +208,12 @@
 	                     </group>
         	    		<separator colspan="4" col="1" />
                 	    <group colspan="4" col="4" string="Normalization Area" name="NMArea">
+							<group colspan="4" col="4" name="DescArea">
+								<separator string="Standard Description" colspan="4"/>
+							    <group col="1" colspan="4">
+							        <field name="std_description" nolabel="1" on_change="on_change_stddesc(std_description)"/>
+							    </group>
+                        	</group>
                     		<group colspan="4" col="4" name="TechSpec">
                    				<field name="tmp_material" colspan="2" on_change="on_change_tmpmater(tmp_material)"/>
                  				<field name="tmp_surface" colspan="2" on_change="on_change_tmpsurface(tmp_surface)"/>
