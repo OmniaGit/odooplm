@@ -44,7 +44,9 @@ _LOCALLANGS = {
 ###
 
 def normalize(value):
-    if type(value)==types.StringType or type(value)==types.UnicodeType:
+    if (type(value) is types.StringType):
+        return str(value).replace('"','\"').replace("'",'\"').replace("%","%%").strip()
+    elif (type(value) is types.UnicodeType):
         return unicode(str(value).replace('"','\"').replace("'",'\"').replace("%","%%").strip(), 'Latin1')
     else:
         return str(value).strip()
