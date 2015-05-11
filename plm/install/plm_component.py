@@ -435,7 +435,7 @@ class plm_component(osv.osv):
                 defaults['engineering_writable']=False
                 defaults['state']='obsoleted'
                 prodObj=self.browse(cr, uid, [last_id], context=context)
-                prodTmplType.write(cr,uid,[prodObj.product_tmpl_id.id],defaults ,context=context,check=False)
+                prodTmplType.write(cr,uid,[prodObj.product_tmpl_id.id],defaults ,context=context)
                 self.wf_message_post(cr, uid, [last_id], body=_('Status moved to: %s.' %(USEDIC_STATES[defaults['state']])))
             defaults['engineering_writable']=False
             defaults['state']='released'
