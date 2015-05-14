@@ -347,7 +347,7 @@ class bom_structure_leaves_custom_report(report_sxw.rml_parse):
                         for bomId in l.product_id.bom_ids:
                             if bomId.type == l.bom_id.type:
                                 if bomId.bom_line_ids:
-                                    _get_rec(bomId.bom_line_ids,level+1,l.product_qty)
+                                    _get_rec(bomId.bom_line_ids,level+1,l.product_qty*fth_qty)
                     else:
                         result.append(res)
                         listed[product.name]=self.keyIndex
