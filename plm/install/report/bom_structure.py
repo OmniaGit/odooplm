@@ -61,6 +61,7 @@ def _createtemplate():
     listout.append(('report_plm_bom_structure_all_sum','BOM All Levels Summarized','plm.bom.structure.all.sum'))
     listout.append(('report_plm_bom_structure_one_sum','BOM One Level Summarized','plm.bom.structure.one.sum'))
     listout.append(('report_plm_bom_structure_leaves','BOM Only Leaves Summarized','plm.bom.structure.leaves'))
+    listout.append(('report_plm_bom_structure_flat','BOM All Flat Summarized','plm.bom.structure.flat'))
 
     fileOut.write(u'<?xml version="1.0"?>\n<openerp>\n    <data>\n\n')
     fileOut.write(u'<!--\n       IMPORTANT : DO NOT CHANGE THIS FILE, IT WILL BE REGENERERATED AUTOMATICALLY\n-->\n\n')
@@ -364,3 +365,66 @@ class bom_structure_leaves_custom_report(report_sxw.rml_parse):
         return _(result)
 
 report_sxw.report_sxw('report.plm.bom.structure.leaves','mrp.bom','/'+openerpModule+'/install/report/'+thisModule+'.rml',parser=bom_structure_leaves_custom_report,header='internal')
+
+class bom_structure_flat_custom_report(report_sxw.rml_parse):
+    def __init__(self, cr, uid, name, context):
+        super(bom_structure_flat_custom_report, self).__init__(cr, uid, name, context=context)
+        self.keyIndex=0
+        self.localcontext.update({
+            'time': time,
+            'get_children':self.get_children,
+            'bom_type':self.bom_type,
+            'trans':_translate,
+        })
+
+    def get_children(self, myObject, level=0):
+        result=[]
+        listed={}
+        
+
+        def _get_rec(bomobject,level,fth_qty):
+            myObject=BomSort(bomobject)
+            for l in myObject:
+                res={}
+                product=l.product_id.product_tmpl_id
+                if product.name in listed.keys():
+                    res=result[listed[product.name]]
+                    res['pqty']=res['pqty']+l.product_qty*fth_qty
+                    result[listed[product.name]]=res
+                else:
+                    res['name']=product.name
+                    res['item']=l.itemnum
+                    res['pfather']=l.bom_id.product_tmpl_id.name
+                    res['pname']=product.name
+                    res['pdesc']=_(product.description)
+                    res['pcode']=l.product_id.default_code
+                    res['previ']=product.engineering_revision
+                    res['pqty']=l.product_qty*fth_qty
+                    res['uname']=l.product_uom.name
+                    res['pweight']=product.weight_net
+                    res['code']=l.product_id.default_code
+                    res['level']=level
+                    if l.product_id.bom_ids:
+                        for bomId in l.product_id.bom_ids:
+                            if bomId.type == l.bom_id.type:
+                                if bomId.bom_line_ids:
+                                    _get_rec(bomId.bom_line_ids,level+1,l.product_qty*fth_qty)
+                                result.append(res)
+                                listed[product.name]=self.keyIndex
+                                self.keyIndex+=1
+                    else:
+                        result.append(res)
+                        listed[product.name]=self.keyIndex
+                        self.keyIndex+=1
+
+            return result
+
+        _get_rec(myObject,level+1,1)
+
+        return result
+
+    def bom_type(self, myObject):
+        result=dict(self.pool.get(myObject._model._name).fields_get(self.cr, self.uid)['type']['selection']).get(myObject.type,'')
+        return _(result)
+
+report_sxw.report_sxw('report.plm.bom.structure.flat','mrp.bom','/'+openerpModule+'/install/report/'+thisModule+'.rml',parser=bom_structure_flat_custom_report,header='internal')
