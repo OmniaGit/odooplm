@@ -404,18 +404,14 @@ class bom_structure_flat_custom_report(report_sxw.rml_parse):
                     res['pweight']=product.weight_net
                     res['code']=l.product_id.default_code
                     res['level']=level
+                    result.append(res)
+                    listed[product.name]=self.keyIndex
+                    self.keyIndex+=1
                     if l.product_id.bom_ids:
                         for bomId in l.product_id.bom_ids:
                             if bomId.type == l.bom_id.type:
                                 if bomId.bom_line_ids:
                                     _get_rec(bomId.bom_line_ids,level+1,l.product_qty*fth_qty)
-                                result.append(res)
-                                listed[product.name]=self.keyIndex
-                                self.keyIndex+=1
-                    else:
-                        result.append(res)
-                        listed[product.name]=self.keyIndex
-                        self.keyIndex+=1
 
             return result
 
