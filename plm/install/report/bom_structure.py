@@ -101,6 +101,60 @@ def BomSort(myObject):
         bomobject.append(myObject[int(res[0])])
     return bomobject
 
+def SummarizeBom(bomobject, level=1, result={}, ancestorName=""):
+
+    for l in bomobject:
+        evaluate=True
+        fatherName=l.bom_id.product_id.name
+        productName=l.product_id.name
+        fatherRef="%s-%d" %(fatherName,level-1)
+        productRef="%s-%s-%d" %(ancestorName,productName,level)
+        if fatherRef in result:
+            listed=result[fatherRef]
+        else:
+            result[fatherRef]={}
+            listed={}
+            
+        if productRef in listed and listed[productRef]['father']==fatherName:
+            res=listed[productRef]
+            res['pqty']=res['pqty']+l.product_qty
+            evaluate=False
+        else:
+            res={}
+            res['product']=l.product_id
+            res['name']=l.product_id.name
+            res['ancestor']=ancestorName
+            res['father']=fatherName
+            res['pqty']=l.product_qty
+            res['level']=level
+            listed[productRef]=res
+        
+        result[fatherRef]=listed
+        if evaluate:
+            for bomId in l.product_id.bom_ids:
+                if bomId.type == l.bom_id.type:
+                    if bomId.bom_line_ids:
+                        result.update(SummarizeBom(bomId.bom_line_ids, level+1, result,fatherName))
+                        break
+
+    return result
+
+def QuantityInBom(listedBoM={}, productName=""):
+    found=[]
+    result=0.0
+    for fatherRef in listedBoM.keys():
+        if not fatherRef in found:
+            for listedName in listedBoM[fatherRef]:
+                listedline=listedBoM[fatherRef][listedName]
+                name=listedline['name']
+                if name==productName:
+                    result+=listedline['pqty'] * QuantityInBom(listedBoM, listedline['father'])    
+                    found.append("%s-%d" %(listedline['father'],listedline['level']))
+                    break
+    if not found:
+        result=1.0
+    return result
+
 class bom_structure_all_custom_report(report_sxw.rml_parse):
     def __init__(self, cr, uid, name, context):
         super(bom_structure_all_custom_report, self).__init__(cr, uid, name, context=context)
@@ -136,6 +190,7 @@ class bom_structure_all_custom_report(report_sxw.rml_parse):
                 for bomId in l.product_id.bom_ids:
                     if bomId.type == l.bom_id.type:
                         _get_rec(bomId.bom_line_ids,level+1)
+                        break
             return result
 
         children=_get_rec(myObject,level+1)
@@ -204,47 +259,49 @@ class bom_structure_all_sum_custom_report(report_sxw.rml_parse):
 
     def get_children(self, myObject, level=0):
         result=[]
+        results={}
 
-        def _get_rec(bomobject,level):
+        def _get_rec(bomobject, listedBoM, level, ancestor=""):
+            listed=[]
             myObject=BomSort(bomobject)
             tmp_result=[]
-            listed={}
-            keyIndex=0
             for l in myObject:
+                productName=l.product_id.name
+                if productName in listed:
+                    continue
                 res={}
-                product=l.product_id.product_tmpl_id
-                if product.name in listed.keys():
-                    res=tmp_result[listed[product.name]]
-                    if res['pfather']==l.bom_id.product_id.name:
-                        res['pqty']=res['pqty']+l.product_qty
-                        tmp_result[listed[product.name]]=res
-                else:
-                    res['name']=product.name
-                    res['item']=l.itemnum
-                    res['pfather']=l.bom_id.product_id.name
-                    res['pname']=product.name
-                    res['pdesc']=_(product.description)
-                    res['pcode']=l.product_id.default_code
-                    res['previ']=product.engineering_revision
-                    res['pqty']=l.product_qty
-                    res['uname']=l.product_uom.name
-                    res['pweight']=product.weight_net
-                    res['code']=l.product_id.default_code
-                    res['level']=level
-                    tmp_result.append(res)
-                    listed[product.name]=keyIndex
-                    keyIndex+=1
-                    for bomId in l.product_id.bom_ids:
-                        if bomId.type == l.bom_id.type:
-                            if bomId.bom_line_ids:
-                                buffer=_get_rec(bomId.bom_line_ids,level+1)
-                                for elem in range(0,len(buffer)):
-                                    listed['nullitem%s' %(str(keyIndex))]=keyIndex
-                                    keyIndex+=1
-                                tmp_result.extend(buffer)
+                listed.append(productName)
+                fatherName=l.bom_id.product_id.name
+                fatherRef="%s-%d" %(fatherName, level-1)
+                if fatherRef in listedBoM.keys():
+                    listedName="%s-%s-%d" %(ancestor, productName, level)
+                    if listedName in listedBoM[fatherRef]:
+                        listedline=listedBoM[fatherRef][listedName]
+                        product=listedline['product']
+                        res['name']=product.name
+                        res['item']=l.itemnum
+                        res['pfather']=fatherName
+                        res['pname']=product.name
+                        res['pdesc']=_(product.description)
+                        res['pcode']=l.product_id.default_code
+                        res['previ']=product.engineering_revision
+                        res['pqty']=listedline['pqty']
+                        res['uname']=l.product_uom.name
+                        res['pweight']=product.weight_net
+                        res['code']=l.product_id.default_code
+                        res['level']=level
+                        tmp_result.append(res)
+                        
+                        for bomId in l.product_id.bom_ids:
+                            if bomId.type == l.bom_id.type:
+                                if bomId.bom_line_ids:
+                                    buffer=_get_rec(bomId.bom_line_ids,listedBoM,level+1,fatherName)
+                                    tmp_result.extend(buffer)
+                                    break
             return tmp_result
 
-        result.extend(_get_rec(myObject,level+1))
+        results=SummarizeBom(myObject,level+1,results)
+        result.extend(_get_rec(myObject,results,level+1))
 
         return result
 
@@ -319,44 +376,53 @@ class bom_structure_leaves_custom_report(report_sxw.rml_parse):
 
     def get_children(self, myObject, level=0):
         result=[]
-        listed={}
-        
+        results={}
+        listed=[]
 
-        def _get_rec(bomobject,level,fth_qty):
+        def _get_rec(bomobject, listedBoM, listed, level, ancestor=""):
+            
             myObject=BomSort(bomobject)
+            tmp_result=[]
             for l in myObject:
+                productName=l.product_id.name
+                if productName in listed:
+                    continue
                 res={}
-                product=l.product_id.product_tmpl_id
-                if product.name in listed.keys():
-                    res=result[listed[product.name]]
-                    res['pqty']=res['pqty']+l.product_qty*fth_qty
-                    result[listed[product.name]]=res
-                else:
-                    res['name']=product.name
-                    res['item']=l.itemnum
-                    res['pfather']=l.bom_id.product_tmpl_id.name
-                    res['pname']=product.name
-                    res['pdesc']=_(product.description)
-                    res['pcode']=l.product_id.default_code
-                    res['previ']=product.engineering_revision
-                    res['pqty']=l.product_qty*fth_qty
-                    res['uname']=l.product_uom.name
-                    res['pweight']=product.weight_net
-                    res['code']=l.product_id.default_code
-                    res['level']=level
-                    if l.product_id.bom_ids:
+                listed.append(productName)
+                fatherName=l.bom_id.product_id.name
+                fatherRef="%s-%d" %(fatherName, level-1)
+                if fatherRef in listedBoM.keys():
+                    listedName="%s-%s-%d" %(ancestor, productName, level)
+                    if listedName in listedBoM[fatherRef]:
+                        listedline=listedBoM[fatherRef][listedName]
+                        product=listedline['product']
+                        productRef="%s-%d" %(product.name, level)
+                        if not productRef in listedBoM.keys():
+                            quantity=QuantityInBom(listedBoM, product.name)
+                            res['name']=product.name
+                            res['item']=l.itemnum
+                            res['pfather']=fatherName
+                            res['pname']=product.name
+                            res['pdesc']=_(product.description)
+                            res['pcode']=l.product_id.default_code
+                            res['previ']=product.engineering_revision
+                            res['pqty']=quantity
+                            res['uname']=l.product_uom.name
+                            res['pweight']=product.weight_net
+                            res['code']=l.product_id.default_code
+                            res['level']=level
+                            tmp_result.append(res)
+                        
                         for bomId in l.product_id.bom_ids:
                             if bomId.type == l.bom_id.type:
                                 if bomId.bom_line_ids:
-                                    _get_rec(bomId.bom_line_ids,level+1,l.product_qty*fth_qty)
-                    else:
-                        result.append(res)
-                        listed[product.name]=self.keyIndex
-                        self.keyIndex+=1
+                                    buffer=_get_rec(bomId.bom_line_ids,listedBoM,listed,level+1,fatherName)
+                                    tmp_result.extend(buffer)
+                                    break
+            return tmp_result
 
-            return result
-
-        _get_rec(myObject,level+1,1)
+        results=SummarizeBom(myObject,level+1,results)
+        result.extend(_get_rec(myObject,results,listed,level+1))
 
         return result
 
@@ -379,46 +445,54 @@ class bom_structure_flat_custom_report(report_sxw.rml_parse):
 
     def get_children(self, myObject, level=0):
         result=[]
-        listed={}
-        
+        results={}
+        listed=[]
 
-        def _get_rec(bomobject,level,fth_qty):
+        def _get_rec(bomobject, listedBoM, listed, level, ancestor=""):
+            
             myObject=BomSort(bomobject)
+            tmp_result=[]
             for l in myObject:
+                productName=l.product_id.name
+                if productName in listed:
+                    continue
                 res={}
-                product=l.product_id.product_tmpl_id
-                if product.name in listed.keys():
-                    res=result[listed[product.name]]
-                    res['pqty']=res['pqty']+l.product_qty*fth_qty
-                    result[listed[product.name]]=res
-                else:
-                    res['name']=product.name
-                    res['item']=l.itemnum
-                    res['pfather']=l.bom_id.product_tmpl_id.name
-                    res['pname']=product.name
-                    res['pdesc']=_(product.description)
-                    res['pcode']=l.product_id.default_code
-                    res['previ']=product.engineering_revision
-                    res['pqty']=l.product_qty*fth_qty
-                    res['uname']=l.product_uom.name
-                    res['pweight']=product.weight_net
-                    res['code']=l.product_id.default_code
-                    res['level']=level
-                    result.append(res)
-                    listed[product.name]=self.keyIndex
-                    self.keyIndex+=1
-                    if l.product_id.bom_ids:
+                listed.append(productName)
+                fatherName=l.bom_id.product_id.name
+                fatherRef="%s-%d" %(fatherName, level-1)
+                if fatherRef in listedBoM.keys():
+                    listedName="%s-%s-%d" %(ancestor, productName, level)
+                    if listedName in listedBoM[fatherRef]:
+                        listedline=listedBoM[fatherRef][listedName]
+                        product=listedline['product']
+                        quantity=QuantityInBom(listedBoM, product.name)
+                        res['name']=product.name
+                        res['item']=l.itemnum
+                        res['pfather']=fatherName
+                        res['pname']=product.name
+                        res['pdesc']=_(product.description)
+                        res['pcode']=l.product_id.default_code
+                        res['previ']=product.engineering_revision
+                        res['pqty']=quantity
+                        res['uname']=l.product_uom.name
+                        res['pweight']=product.weight_net
+                        res['code']=l.product_id.default_code
+                        res['level']=level
+                        tmp_result.append(res)
+                        
                         for bomId in l.product_id.bom_ids:
                             if bomId.type == l.bom_id.type:
                                 if bomId.bom_line_ids:
-                                    _get_rec(bomId.bom_line_ids,level+1,l.product_qty*fth_qty)
+                                    buffer=_get_rec(bomId.bom_line_ids,listedBoM,listed,level+1,fatherName)
+                                    tmp_result.extend(buffer)
+                                    break
+            return tmp_result
 
-            return result
-
-        _get_rec(myObject,level+1,1)
+        results=SummarizeBom(myObject,level+1,results)
+        result.extend(_get_rec(myObject,results,listed,level+1))
 
         return result
-
+        
     def bom_type(self, myObject):
         result=dict(self.pool.get(myObject._model._name).fields_get(self.cr, self.uid)['type']['selection']).get(myObject.type,'')
         return _(result)
