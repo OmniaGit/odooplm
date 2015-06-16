@@ -143,14 +143,12 @@ def QuantityInBom(listedBoM={}, productName=""):
     found=[]
     result=0.0
     for fatherRef in listedBoM.keys():
-        if not fatherRef in found:
-            for listedName in listedBoM[fatherRef]:
-                listedline=listedBoM[fatherRef][listedName]
-                name=listedline['name']
-                if name==productName:
-                    result+=listedline['pqty'] * QuantityInBom(listedBoM, listedline['father'])    
-                    found.append("%s-%d" %(listedline['father'],listedline['level']))
-                    break
+        for listedName in listedBoM[fatherRef]:
+            listedline=listedBoM[fatherRef][listedName]
+            if (listedline['name'] == productName) and not (listedline['father'] in found):
+                result+=listedline['pqty'] * QuantityInBom(listedBoM, listedline['father'])    
+                found.append(listedline['father'])
+                break
     if not found:
         result=1.0
     return result
