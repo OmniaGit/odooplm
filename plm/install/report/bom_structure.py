@@ -188,7 +188,6 @@ class bom_structure_all_custom_report(report_sxw.rml_parse):
                 for bomId in l.product_id.bom_ids:
                     if bomId.type == l.bom_id.type:
                         _get_rec(bomId.bom_line_ids,level+1)
-                        break
             return result
 
         children=_get_rec(myObject,level+1)
@@ -295,7 +294,6 @@ class bom_structure_all_sum_custom_report(report_sxw.rml_parse):
                                 if bomId.bom_line_ids:
                                     buffer=_get_rec(bomId.bom_line_ids,listedBoM,level+1,fatherName)
                                     tmp_result.extend(buffer)
-                                    break
             return tmp_result
 
         results=SummarizeBom(myObject,level+1,results)
@@ -416,7 +414,6 @@ class bom_structure_leaves_custom_report(report_sxw.rml_parse):
                                 if bomId.bom_line_ids:
                                     buffer=_get_rec(bomId.bom_line_ids,listedBoM,listed,level+1,fatherName)
                                     tmp_result.extend(buffer)
-                                    break
             return tmp_result
 
         results=SummarizeBom(myObject,level+1,results)
@@ -483,7 +480,6 @@ class bom_structure_flat_custom_report(report_sxw.rml_parse):
                                 if bomId.bom_line_ids:
                                     buffer=_get_rec(bomId.bom_line_ids,listedBoM,listed,level+1,fatherName)
                                     tmp_result.extend(buffer)
-                                    break
             return tmp_result
 
         results=SummarizeBom(myObject,level+1,results)
