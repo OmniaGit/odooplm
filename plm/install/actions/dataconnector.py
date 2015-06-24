@@ -229,7 +229,7 @@ class plm_component(osv.osv):
             for rowData in tmpDataPack['datas']:
                 rectData=[]
                 for fieldName in fieldNames:
-                    dataValue=rowData[indexFields[fieldName]]
+                    dataValue=rowData[fieldName]
                     if not dataValue:
                         if fieldName in fieldsNumeric:
                             rectData.append(0)
@@ -272,15 +272,15 @@ class plm_component(osv.osv):
         logging.debug("[TransferData] Start : %s" %(str(updateDate)))
         transfer=self.get_data_transfer
         part_data_transfer=self.get_part_data_transfer
+        bom_data_transfer=self.get_bom_data_transfer
         datamap=part_data_transfer['fields']
         if 'exitorder' in part_data_transfer:
             fieldsListed=part_data_transfer['exitorder']
         else:
             fieldsListed=datamap.keys()
         allIDs=self._query_data(cr, uid, updateDate, part_data_transfer['status'])
-        tmpData=self._exportData(cr, uid, allIDs, fieldsListed)
+        tmpData=self._exportData(cr, uid, allIDs, fieldsListed, bom_data_transfer['kind'])
         if tmpData.get('datas'):
-            bom_data_transfer=self.get_bom_data_transfer
             tmpData=self._rectify_data(cr, uid, tmpData, part_data_transfer)
             if 'db' in transfer:
                 import dbconnector
@@ -333,9 +333,9 @@ class plm_component(osv.osv):
         
         def getChildrenBom(component, kindName):
             for bomid in component.bom_ids:
-                if not (str(bomid.type).lower()==kindName):
+                if not (str(bomid.type).lower()==kindName.lower()):
                     continue
-                return bomid.bom_lines
+                return bomid.bom_line_ids
             return []
         
         if not anag_fields:
@@ -412,7 +412,7 @@ class plm_component(osv.osv):
                         row.append(unicode(str(data),'utf8').replace('\n',' ').replace('\t',' '))
                     else:
                         row.append(str(data) or '')
-                writer.writerow("%r" %(row))
+                writer.writerow(row)
             fp.close()
             os.chmod(fname, stat.S_IRWXU|stat.S_IRWXO|stat.S_IRWXG)
             return True
@@ -420,25 +420,34 @@ class plm_component(osv.osv):
             logging.error("_export_csv : IOError : "+str(errno)+" ("+str(strerror)+").")
             return False
 
-    def _exportData(self, cr, uid, ids, fields=[]):
+    def _exportData(self, cr, uid, ids, fields=[], bomType='normal'):
         """
             Export data about product and BoM
         """
         listData=[]
-        oid=self.browse(cr,uid,ids,context=None)
-        if oid:
-            if len(oid.bom_line_ids):
-                prod_names=oid.bom_line_ids[0].product_id._all_columns.keys()
-                bom_names=oid.bom_line_ids[0]._all_columns.keys()
-                for bom_line in oid.bom_line_ids:
-                    row_data={}
-                    for field in fields:
-                        if field in prod_names:
-                            row_data[field]=bom_line.product_id[field]
-                        if field in bom_names:
-                            row_data[field]=bom_line[field]
-                    if row_data:
-                        listData.append(row_data)
+        oids=self.browse(cr,uid,ids,context=None)
+        for oid in oids:
+            row_data={}
+            prod_names=oid._all_columns.keys()
+            for field in fields:
+                if field in prod_names:
+                    row_data[field]=oid[field]
+            if row_data:
+                listData.append(row_data)
+                
+#             for bomId in oid.bom_ids:
+#                 prod_names=bomId.bom_line_ids[0].product_id._all_columns.keys()
+#                 bom_names=bomId.bom_line_ids[0]._all_columns.keys()
+#                 if bomId.type == bomType:
+#                     for bom_line in bomId.bom_line_ids:
+#                         row_data={}
+#                         for field in fields:
+#                             if field in prod_names:
+#                                 row_data[field]=bom_line.product_id[field]
+#                             if field in bom_names:
+#                                 row_data[field]=bom_line[field]
+#                         if row_data:
+#                             listData.append(row_data)
         return {'datas':listData}
 
 plm_component()
