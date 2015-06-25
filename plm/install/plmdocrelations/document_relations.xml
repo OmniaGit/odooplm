@@ -86,10 +86,9 @@
                     <field name="child_id"/>
                     <field name="link_kind"  string="Document Relation Kind"/>
                     <newline/>
-                    <group expand="0" string="Group By..." colspan="4" col="8" groups="base.group_extended">
+                    <group expand="0" string="Group by...">
                         <filter string="Parent" icon="terp-accessories-archiver" domain="[]" context="{'group_by':'parent_id'}"/>
                         <filter string="Child" icon="terp-mrp" domain="[]" context="{'group_by' : 'child_id'}"/>
-                        <separator orientation="vertical"/>
                         <filter string="Kind" icon="terp-stock_align_left_24" domain="[]" context="{'group_by':'link_kind'}"/>
                    </group>
                 </search>
