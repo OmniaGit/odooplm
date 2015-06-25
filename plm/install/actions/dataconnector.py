@@ -435,19 +435,6 @@ class plm_component(osv.osv):
             if row_data:
                 listData.append(row_data)
                 
-#             for bomId in oid.bom_ids:
-#                 prod_names=bomId.bom_line_ids[0].product_id._all_columns.keys()
-#                 bom_names=bomId.bom_line_ids[0]._all_columns.keys()
-#                 if bomId.type == bomType:
-#                     for bom_line in bomId.bom_line_ids:
-#                         row_data={}
-#                         for field in fields:
-#                             if field in prod_names:
-#                                 row_data[field]=bom_line.product_id[field]
-#                             if field in bom_names:
-#                                 row_data[field]=bom_line[field]
-#                         if row_data:
-#                             listData.append(row_data)
         return {'datas':listData}
 
 plm_component()
