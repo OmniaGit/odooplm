@@ -159,23 +159,6 @@ class plm_relation(osv.osv):
                     return bom.id
         return bom_empty_prop
     
-    def _get_child_bom_lines(self, cr, uid, ids, field_name, arg, context=None):
-        """
-            If the BOM line refers to a BOM, return the ids of the child BOM lines
-        """
-        bom_obj = self.pool['mrp.bom']
-        res = {}
-        for bom_line in self.browse(cr, uid, ids, context=context):
-            bom_id = bom_obj._bom_find(cr, uid,
-                product_tmpl_id=bom_line.product_id.product_tmpl_id.id,
-                product_id=bom_line.product_id.id, bomType=bom_line.type, context=context)
-            if bom_id:
-                child_bom = bom_obj.browse(cr, uid, bom_id, context=context)
-                res[bom_line.id] = [x.id for x in child_bom.bom_line_ids]
-            else:
-                res[bom_line.id] = False
-        return res
-
 #######################################################################################################################################33
 
     def _father_compute(self, cr, uid, ids, name, arg, context=None):
@@ -226,11 +209,29 @@ class plm_relation_line(osv.osv):
     _inherit = 'mrp.bom.line'
     _order = "itemnum"
 
+    def _get_child_bom_lines(self, cr, uid, ids, field_name, arg, context=None):
+        """
+            If the BOM line refers to a BOM, return the ids of the child BOM lines
+        """
+        bom_obj = self.pool['mrp.bom']
+        res = {}
+        for bom_line in self.browse(cr, uid, ids, context=context):
+            bom_id = bom_obj._bom_find(cr, uid,
+                product_tmpl_id=bom_line.product_id.product_tmpl_id.id,
+                product_id=bom_line.product_id.id, bomType=bom_line.type, context=context)
+            if bom_id:
+                child_bom = bom_obj.browse(cr, uid, bom_id, context=context)
+                res[bom_line.id] = [x.id for x in child_bom.bom_line_ids]
+            else:
+                res[bom_line.id] = False
+        return res
+
     _columns = {
                 'state': fields.related('product_id','state',type="char",relation="product.template",string="Status",help="The status of the product in its LifeCycle.",store=False),
                 'engineering_revision': fields.related('product_id','engineering_revision',type="char",relation="product.template",string="Revision",help="The revision of the product.",store=False),
                 'description': fields.related('product_id','description',type="char",relation="product.template",string="Description",store=False),
                 'weight_net': fields.related('product_id','weight_net',type="float",relation="product.template",string="Weight Net",store=False),
+                'child_line_ids': fields.function(_get_child_bom_lines, relation="mrp.bom.line", string="BOM lines of the referred bom", type="one2many"),
                }
 
 plm_relation_line()
