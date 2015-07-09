@@ -925,7 +925,14 @@ class plm_checkout(osv.osv):
          
     def unlink(self, cr, uid, ids, context=None):
         if context!=None and context!={}:
-            if uid!=1:
+            res = False
+            groupType=self.pool.get('res.groups')
+            for gId in groupType.search(cr,uid,[('name','=','PLM / Administrator')],context=context):
+                for user in groupType.browse(cr, uid, gId, context).users:
+                    if uid == user.id or uid==1:
+                        res = True
+                        break
+            if not res:
                 logging.warning("unlink : Unable to Check-In the required document.\n You aren't authorized in this context.")
                 raise osv.except_osv(_('Check-In Error'), _("Unable to Check-In the required document.\n You aren't authorized in this context."))
                 return False
