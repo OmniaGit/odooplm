@@ -389,7 +389,7 @@ class plm_component(osv.osv):
                     return False
         return True
 
-    def _export_csv(self, fname, fields=[], result={}, write_title=False, delimiter=',', appendFlag):
+    def _export_csv(self, fname, fields=[], result={}, write_title=False, delimiter=',', appendFlag=False):
         import csv, stat
         if not ('datas' in result) or not result:
             logging.error("_export_csv : No 'datas' in result.")
