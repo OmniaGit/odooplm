@@ -351,11 +351,13 @@ class plm_component(osv.osv):
             exte='csv'
             fname=datetime.now().isoformat(' ').replace('.','').replace(':','').replace(' ','').replace('-','')+'.'+exte
             bomname="bom"
+            delimiter=','
         else:
             outputpath=transferdata['directory']
             exte="%s" %(str(transferdata['exte']))
             fname="%s.%s" %(str(transferdata['name']),exte)
             bomname="%s" %(str(transferdata['bomname']))
+            delimiter="%s" %(str(transferdata['separator']))
             
         if outputpath==None:
             return True
@@ -364,7 +366,7 @@ class plm_component(osv.osv):
             return False 
 
         filename=os.path.join(outputpath,fname)
-        if not self._export_csv(filename, anag_Data['labels'], anag_Data, True):
+        if not self._export_csv(filename, anag_Data['labels'], anag_Data, True, delimiter, True):
             raise osv.except_osv(_('Export Data Error'), _("Writing operations on file (%s) have failed." %(filename)))
             return False
         
@@ -382,12 +384,12 @@ class plm_component(osv.osv):
             if dataSet:
                 expData={'datas': dataSet}
                 
-                if not self._export_csv(filename, ext_fields, expData, True):
+                if not self._export_csv(filename, ext_fields, expData, True, delimiter):
                     raise osv.except_osv(_('Export Data Error'), _("No Bom extraction files was generated, about entity (%s)." %(fname)))
                     return False
         return True
 
-    def _export_csv(self, fname, fields=[], result={}, write_title=False):
+    def _export_csv(self, fname, fields=[], result={}, write_title=False, delimiter=',', appendFlag):
         import csv, stat
         if not ('datas' in result) or not result:
             logging.error("_export_csv : No 'datas' in result.")
@@ -398,8 +400,11 @@ class plm_component(osv.osv):
             return False
         
         try:
-            fp = file(fname, 'wb+')
-            writer = csv.writer(fp)
+            operational='wb+'
+            if appendFlag:
+                operational='ab+'
+            fp = file(fname, operational)
+            writer = csv.writer(fp,delimiter=delimiter)
             if write_title:
                 writer.writerow(fields)
             results=result['datas']
