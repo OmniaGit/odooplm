@@ -20,7 +20,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-import os
+import os,sys
 import types
 import cPickle as pickle
 from datetime import datetime
@@ -181,6 +181,7 @@ class plm_component(osv.osv):
                 os.unlink(fileName)
         else:
             self._set_last_session
+        return "2015-01-01 12:00:00"
         return lastDate.strftime('%Y-%m-%d %H:%M:%S')
 
     @property
@@ -266,6 +267,10 @@ class plm_component(osv.osv):
         """
             Exposed method to execute data transfer to other systems.
         """ 
+#         Reset default encoding. to allow to work fine also as service.
+        reload(sys)
+        sys.setdefaultencoding('utf-8')
+#         Reset default encoding. to allow to work fine also as service.
         operation=False
         reportStatus='Failed'
         updateDate=self._get_last_session
