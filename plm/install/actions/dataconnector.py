@@ -181,7 +181,7 @@ class plm_component(osv.osv):
                 os.unlink(fileName)
         else:
             self._set_last_session
-        return "2015-01-01 12:00:00"
+#         return "2015-01-01 12:00:00"
         return lastDate.strftime('%Y-%m-%d %H:%M:%S')
 
     @property
