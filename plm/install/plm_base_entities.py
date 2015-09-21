@@ -160,8 +160,10 @@ class plm_component_document_rel(osv.osv):
     _name = 'plm.component.document.rel'
     _description = "Component Document Relations"
     _columns = {
-                'component_id': fields.integer('Component Linked', required=True),
-                'document_id': fields.integer('Document Linked', required=True),
+                'component_id':fields.many2one('product.product', 'Linked Component', ondelete='cascade'), 
+                'document_id':fields.many2one('plm.document', 'Linked Document', ondelete='cascade'), 
+#                'component_id': fields.integer('Component Linked', required=True, ondelete='cascade'),
+#                'document_id': fields.integer('Document ', required=True, ondelete='cascade'),
     }
 
     _sql_constraints = [
