@@ -237,8 +237,10 @@ class plm_document(osv.osv):
                 else:
                     collectable = True
                 if (objDoc.file_size<1) and (objDoc.datas):
-                    objDoc.file_size=len(objDoc.datas)
-                result.append((objDoc.id, objDoc.datas_fname, objDoc.file_size, collectable, isCheckedOutToMe, timeDoc))
+                    file_size=len(objDoc.datas)
+                else:
+                    file_size=objDoc.file_size
+                result.append((objDoc.id, objDoc.datas_fname, file_size, collectable, isCheckedOutToMe, timeDoc))
         return list(set(result))
             
     def copy(self,cr,uid,oid,defaults={},context=None):
