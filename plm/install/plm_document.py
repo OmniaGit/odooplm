@@ -570,6 +570,9 @@ class plm_document(osv.osv):
             return objId
         return False
 
+    def blindwrite(self, cr, uid, ids, vals, context=None,):
+        return super(plm_document,self).write(cr, uid, ids, vals, context=context, check=False)
+
 #   Overridden methods for this entity
     def _get_filestore(self, cr):
         dms_Root_Path=tools.config.get('document_path', os.path.join(tools.config['root_path'], 'filestore'))
