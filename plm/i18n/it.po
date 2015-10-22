@@ -1773,7 +1773,7 @@ msgstr "Prodotto"
 #. module: plm
 #: model:ir.actions.act_window,name:plm.action_product_bom_structure_where
 msgid "Product BoM Where Used Structure"
-msgstr "Prodotto della BOM dove il Prodotto e' Utilizzato"
+msgstr "BOM dove il Prodotto e' tilizzato"
 
 #. module: plm
 #: help:plm.installer,exe_file:0
