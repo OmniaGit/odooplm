@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
 <data>
-    <menuitem name="Backup Documents View" id="plm_menu_backup" parent="plm_menu" sequence="15"/>
+    <menuitem name="Backup Documents View" id="plm_menu_backup" parent="plm_document_form" sequence="15"/>
 
     <record model="ir.ui.view" id="view_plm_backupdoc">
         <field name="name">plm.backupdoc</field>

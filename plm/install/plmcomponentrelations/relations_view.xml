@@ -140,7 +140,7 @@
          	<field name="inherit_id" ref="mrp.view_mrp_bom_filter"/>
             <field name="type">search</field>
             <field name="arch" type="xml">
-                <field name="name" position="before">
+                <field name="code" position="before">
 	               	<filter icon="terp-go-month" string="Latest 2 Weeks" separator="1"
 	                       	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"
 	                      	help="Created latest 2 Weeks"/>
@@ -157,7 +157,7 @@
         		</field>
 				<xpath expr="//group" position="after">
 					string="Group By..."
-                    <filter string="BoM Name" icon="terp-stock_symbol-selection" domain="[]" context="{'group_by':'name'}"/>
+                    <filter string="BoM Name" icon="terp-stock_symbol-selection" domain="[]" context="{'group_by':'code'}"/>
                     <filter string="Variant Name" icon="terp-stock_symbol-selection" domain="[]" context="{'group_by':'product_id'}"/>
                     <filter string="Source Relationship" icon="terp-stock_symbol-selection" domain="[]" context="{'group_by':'source_id'}"/>
 	            </xpath>
@@ -200,7 +200,7 @@
             <field name="arch" type="xml">
                 <tree string="Where Used Bill of Materials">
                     <field name="product_id" string="Component Name"/>
-                    <field name="name" string="BoM Name"/>
+                    <field name="code" string="BoM Name"/>
                     <field name="engineering_revision" string="Revision"/>
                     <field name="description"/>
                     <field name="source_id" string="Source Relation Document"/>

@@ -24,29 +24,27 @@ import sys
 import types
 import logging
 
-from openerp.osv import osv, fields
-from openerp.tools.translate import _
 import openerp.addons.decimal_precision as dp
-
+from openerp        import models, fields, api, SUPERUSER_ID, _, osv
+_logger         =   logging.getLogger(__name__)
 
 # To be adequated to plm.document class states
 USED_STATES=[('draft','Draft'),('confirmed','Confirmed'),('released','Released'),('undermodify','UnderModify'),('obsoleted','Obsoleted')]
 
-class plm_config_settings(osv.osv):
+class plm_config_settings(models.Model):
     _name = 'plm.config.settings'
     _inherit = 'res.config.settings'
 
-    _columns = {
-       'plm_service_id': fields.char('Register PLM module, insert your Service ID.',size=128,  help="Insert the Service ID and register your PLM module. Ask it to OmniaSolutions."),
-       'activated_id': fields.char('Activated PLM client',size=128,  help="Listed activated Client."),
-       'active_editor':fields.char('Client Editor Name',size=128,  help="Used Editor Name"),
-       'active_node':fields.char('OS machine name',size=128,  help="Editor Machine name"),
-       'active_os':fields.char('OS name',size=128,  help="Editor OS name"),
-       'active_os_rel':fields.char('OS release',size=128,  help="Editor OS release"),
-       'active_os_ver':fields.char('OS version',size=128,  help="Editor OS version"),
-       'active_os_arch':fields.char('OS architecture',size=128,  help="Editor OS architecture"),
-       'node_id':fields.char('Registered PLM client',size=128,  help="Listed registered Client."),
-    }
+    plm_service_id  =   fields.Char(_('Register PLM module, insert your Service ID.'),  size=128,  help=_("Insert the Service ID and register your PLM module. Ask it to OmniaSolutions."))
+    activated_id    =   fields.Char(_('Activated PLM client'),                          size=128,  help="Listed activated Client.")
+    active_editor   =   fields.Char(_('Client Editor Name'),                            size=128,  help="Used Editor Name")
+    active_node     =   fields.Char(_('OS machine name'),                               size=128,  help="Editor Machine name")
+    active_os       =   fields.Char(_('OS name'),                                       size=128,  help="Editor OS name")
+    active_os_rel   =   fields.Char(_('OS release'),                                    size=128,  help="Editor OS release")
+    active_os_ver   =   fields.Char(_('OS version'),                                    size=128,  help="Editor OS version")
+    active_os_arch  =   fields.Char(_('OS architecture'),                               size=128,  help="Editor OS architecture")
+    node_id         =   fields.Char(_('Registered PLM client'),                         size=128,  help="Listed registered Client.")
+
  
     def GetServiceIds(self, cr, uid, oids, default=None, context=None):
         """
@@ -101,26 +99,28 @@ class plm_config_settings(osv.osv):
 
 plm_config_settings()
     
-class plm_component(osv.osv):
+class plm_component(models.Model):
     _name = 'product.template'
     _inherit = 'product.template'
-    _columns = {
-                'state':fields.selection(USED_STATES,'Status', help="The status of the product in its LifeCycle.", readonly="True"),
-                'engineering_code': fields.char('Part Number',help="This is engineering reference to manage a different P/N from item Name.",size=64),
-                'engineering_revision': fields.integer('Revision', required=True,help="The revision of the product."),
-                'engineering_writable': fields.boolean('Writable'),
-                'engineering_material': fields.char('Raw Material',size=128,required=False,help="Raw material for current product, only description for titleblock."),
-#                'engineering_treatment': fields.char('Treatment',size=64,required=False,help="Thermal treatment for current product"),
-                'engineering_surface': fields.char('Surface Finishing',size=128,required=False,help="Surface finishing for current product, only description for titleblock."),
-     }   
+    
+    state                   =   fields.Selection    (USED_STATES,_('Status'), help=_("The status of the product in its LifeCycle."), readonly="True")
+    engineering_code        =   fields.Char         (_('Part Number'),help=_("This is engineering reference to manage a different P/N from item Name."),size=64)
+    engineering_revision    =   fields.Integer      (_('Revision'), required=True,help=_("The revision of the product."))
+    engineering_writable    =   fields.Boolean      (_('Writable'))
+    engineering_material    =   fields.Char         (_('Raw Material'),size=128,required=False,help=_("Raw material for current product, only description for titleblock."))
+    #engineering_treatment    =    fields.Char        (_('Treatment'),size=64,required=False,help=_("Thermal treatment for current product"))
+    engineering_surface     =   fields.Char         (_('Surface Finishing'),size=128,required=False,help=_("Surface finishing for current product, only description for titleblock."))
+
     _defaults = {
                  'state': lambda *a: 'draft',
-                 'engineering_revision': lambda self,cr,uid,ctx:0,
-                 'engineering_writable': lambda *a: True,
+                 #'engineering_revision': lambda self,ctx:0,
+                 #'engineering_writable': lambda *a: True,
+                 'engineering_revision':0,
+                 'engineering_writable': True,
                  'type': 'product',
                  'standard_price': 0,
                  'volume':0,
-                 'weight_net':0,
+                 'weight':0,
                  'cost_method':0,
                  'sale_ok':0,
                  'state':'draft',
@@ -156,15 +156,12 @@ CREATE INDEX product_template_engcoderev_index
 
 plm_component()
 
-class plm_component_document_rel(osv.osv):
+class plm_component_document_rel(models.Model):
     _name = 'plm.component.document.rel'
     _description = "Component Document Relations"
-    _columns = {
-                'component_id':fields.many2one('product.product', 'Linked Component', ondelete='cascade'), 
-                'document_id':fields.many2one('plm.document', 'Linked Document', ondelete='cascade'), 
-#                'component_id': fields.integer('Component Linked', required=True, ondelete='cascade'),
-#                'document_id': fields.integer('Document ', required=True, ondelete='cascade'),
-    }
+    
+    component_id    =   fields.Many2one('product.product', _('Linked Component'), ondelete='cascade')
+    document_id     =   fields.Many2one('plm.document', _('Linked Document'), ondelete='cascade')
 
     _sql_constraints = [
         ('relation_unique', 'unique(component_id,document_id)', 'Component and Document relation has to be unique !'),
@@ -207,22 +204,22 @@ class plm_component_document_rel(osv.osv):
 plm_component_document_rel()
 
          
-class plm_relation_line(osv.osv):
+class plm_relation_line(models.Model):
     _name = 'mrp.bom.line'
     _inherit = 'mrp.bom.line'
-    _columns = {
-                'create_date': fields.datetime(_('Creation Date'), readonly=True),
-                'source_id': fields.many2one('plm.document','name',ondelete='no action', readonly=True,help="This is the document object that declares this BoM."),
-                'type': fields.selection([('normal','Normal BoM'),('phantom','Sets / Phantom'),('ebom','Engineering BoM'),('spbom','Spare BoM')], _('BoM Type'), required=True, help=
-                    "Use a phantom bill of material in raw materials lines that have to be " \
-                    "automatically computed in on production order and not one per level." \
-                    "If you put \"Phantom/Set\" at the root level of a bill of material " \
-                    "it is considered as a set or pack: the products are replaced by the components " \
-                    "between the sale order to the picking without going through the production order." \
-                    "The normal BoM will generate one production order per BoM level."),
-                'itemnum': fields.integer(_('CAD Item Position'),help="This is the item reference position into the CAD document that declares this BoM."),
-                'itemlbl': fields.char(_('CAD Item Position Label'),size=64)
-                }
+    
+    create_date     = fields.Datetime(_('Creation Date'), readonly=True)
+    source_id       = fields.Many2one('plm.document','name',ondelete='no action', readonly=True,help=_("This is the document object that declares this BoM."))
+    type            = fields.Selection([('normal',_('Normal BoM')),('phantom',_('Sets / Phantom')),('ebom',_('Engineering BoM')),('spbom',_('Spare BoM'))], _('BoM Type'), required=True, help=
+        _("Use a phantom bill of material in raw materials lines that have to be " \
+        "automatically computed in on production order and not one per level." \
+        "If you put \"Phantom/Set\" at the root level of a bill of material " \
+        "it is considered as a set or pack: the products are replaced by the components " \
+        "between the sale order to the picking without going through the production order." \
+        "The normal BoM will generate one production order per BoM level."))
+    itemnum         = fields.Integer(_('CAD Item Position'),help=_("This is the item reference position into the CAD document that declares this BoM."))
+    itemlbl         = fields.Char(_('CAD Item Position Label'),size=64)
+                
     _defaults = {
         'product_uom' : 1,
     }
@@ -231,21 +228,21 @@ class plm_relation_line(osv.osv):
         
 plm_relation_line()
 
-class plm_relation(osv.osv):
+class plm_relation(models.Model):
     _name = 'mrp.bom'
     _inherit = 'mrp.bom'
-    _columns = {
-                'create_date': fields.datetime(_('Creation Date'), readonly=True),
-                'source_id': fields.many2one('plm.document','name',ondelete='no action',readonly=True,help='This is the document object that declares this BoM.'),
-                'type': fields.selection([('normal','Normal BoM'),('phantom','Sets / Phantom'),('ebom','Engineering BoM'),('spbom','Spare BoM')], _('BoM Type'), required=True, help=
-                    "Use a phantom bill of material in raw materials lines that have to be " \
+
+    create_date      =   fields.Datetime(_('Creation Date'), readonly=True)
+    source_id        =   fields.Many2one('plm.document','name',ondelete='no action',readonly=True,help=_('This is the document object that declares this BoM.'))
+    type             =   fields.Selection([('normal',_('Normal BoM')),('phantom',_('Sets / Phantom')),('ebom',_('Engineering BoM')),('spbom',_('Spare BoM'))], _('BoM Type'), required=True, help=
+                    _("Use a phantom bill of material in raw materials lines that have to be " \
                     "automatically computed on a production order and not one per level." \
                     "If you put \"Phantom/Set\" at the root level of a bill of material " \
                     "it is considered as a set or pack: the products are replaced by the components " \
                     "between the sale order to the picking without going through the production order." \
-                    "The normal BoM will generate one production order per BoM level."),
-                'weight_net': fields.float('Weight',digits_compute=dp.get_precision('Stock Weight'), help="The BoM net weight in Kg."),
-                }
+                    "the normal bom will generate one production order per bom level."))
+    weight_net      =   fields.Float('Weight',digits_compute=dp.get_precision(_('Stock Weight')), help=_("The BoM net weight in Kg."))
+
     _defaults = {
         'product_uom' : 1,
         'weight_net' : 0.0,
@@ -541,7 +538,7 @@ class plm_relation(osv.osv):
         """
         weight=0.0
         for bom_line in bomObj.bom_line_ids:
-            weight+=(bom_line.product_qty * bom_line.product_id.product_tmpl_id.weight_net)
+            weight+=(bom_line.product_qty * bom_line.product_id.product_tmpl_id.weight)
         return weight
 
     def RebaseWeight(self, cr, uid, parentID, sourceID=False, context=None):
@@ -554,7 +551,7 @@ class plm_relation(osv.osv):
             objPart=self.pool.get('product.product').browse(cr,uid,parentID,context=None)
             for bomID in self._getbom(cr, uid, objPart.product_tmpl_id.id, sourceID):
                 weight=self._sumBomWeight(bomID)
-                values['weight_net']=weight
+                values['weight']=weight
                 partType=self.pool.get(bomID.product_tmpl_id._inherit)
                 partType.write(cr,uid,[bomID.product_tmpl_id.id],values)
         return weight
@@ -565,7 +562,7 @@ class plm_relation(osv.osv):
         """
         if not(parentBomID==None) or parentBomID:
             bomObj=self.browse(cr,uid,parentBomID,context=None)
-            self.pool.get('product.product').write(cr,uid,[bomObj.product_id.id],{'weight_net': weight})
+            self.pool.get('product.product').write(cr,uid,[bomObj.product_id.id],{'weight': weight})
 
     def RebaseBomWeight(self, cr, uid, bomID, context=None):
         """
@@ -605,14 +602,14 @@ class plm_relation(osv.osv):
 
 plm_relation()
 
-class plm_material(osv.osv):
+class plm_material(models.Model):
     _name = "plm.material"
     _description = "PLM Materials"
-    _columns = {
-                'name': fields.char('Designation', size=128, required=True),
-                'description': fields.char('Description', size=128),
-                'sequence': fields.integer('Sequence', help="Gives the sequence order when displaying a list of product categories."),
-    }
+
+    name            =   fields.Char(_('Designation'), size=128, required=True)
+    description     =   fields.Char(_('Description'), size=128)
+    sequence        =   fields.Integer(_('Sequence'), help=_("Gives the sequence order when displaying a list of product categories."))
+
 #    _defaults = {
 #        'name': lambda obj, cr, uid, context: obj.pool.get('ir.sequence').get(cr, uid, 'plm.material'),
 #    }
@@ -621,14 +618,14 @@ class plm_material(osv.osv):
     ]
 plm_material()
 
-class plm_finishing(osv.osv):
+class plm_finishing(models.Model):
     _name = "plm.finishing"
     _description = "Surface Finishing"
-    _columns = {
-                'name': fields.char('Specification', size=128, required=True),
-                'description': fields.char('Description', size=128),
-                'sequence': fields.integer('Sequence', help="Gives the sequence order when displaying a list of product categories."),
-    }
+
+    name            =   fields.Char(_('Specification'), size=128, required=True)
+    description     =   fields.Char(_('Description'), size=128)
+    sequence        =   fields.Integer(_('Sequence'), help=_("Gives the sequence order when displaying a list of product categories."))
+
 #    _defaults = {
 #        'name': lambda obj, cr, uid, context: obj.pool.get('ir.sequence').get(cr, uid, 'plm.finishing'),
 #    }
@@ -638,12 +635,12 @@ class plm_finishing(osv.osv):
 plm_finishing()
 
 
-class plm_temporary(osv.osv_memory):
+class plm_temporary(osv.osv.osv_memory):
     _name = "plm.temporary"
     _description = "Temporary Class"
-    _columns = {
-                'name': fields.char('Temp', size=128),
-    }
+
+    name    =   fields.Char(_('Temp'), size=128)
+
 
     def action_create_normalBom(self, cr, uid, ids, context=None):
         """

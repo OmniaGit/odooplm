@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
 <data>
-    <menuitem name="Checked-Out Documents View" id="plm_menu_checkout" parent="plm_menu" sequence="13"/>
+    <menuitem name="Checked-Out Documents View" id="plm_menu_checkout" parent="plm_document_form" sequence="13"/>
 
 <!--
     <record model="ir.ui.view" id="view_plm_checkout">

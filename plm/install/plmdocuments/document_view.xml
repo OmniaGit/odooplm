@@ -23,8 +23,7 @@
 			                    <field name="name" select="1" attrs="{'readonly':[('state','!=','draft')]}" colspan="2"/>
 			                    <field name="revisionid" readonly="True" colspan="2"/>
 			                    <newline/>
-			                    <field name="parent_id" colspan="2"/>
-			                    <field name="user_id" colspan="2"/>
+			                    <!--<field name="user_id" colspan="2"/> deprecated -->
 		                    </group>
 		                    <group col="2" colspan="2">
 								<separator string="Spare Part" colspan="2"/>
@@ -63,7 +62,6 @@
                             <group col="2" colspan="2" string="Related To">
 	                            <newline/>
                                 <field name="res_name" readonly="1"/>
-                             	<field name="partner_id"/>
                            	</group>
                            	<separator/>
                         </group>
@@ -110,7 +108,6 @@
                 <field name="name" select="True"/>
                 <field name="revisionid" select="True"/>
                 <field name="state" select="True"/>
-                <field name="parent_id"/>
                 <field name="datas_fname" select="True"/>
                 <field name="create_uid" select="True"/>
                 <field name="create_date" select="True"/>

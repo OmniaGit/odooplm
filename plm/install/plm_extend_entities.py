@@ -22,31 +22,32 @@
 
 import os
 import time
-from openerp.osv import osv, fields
-from openerp.tools.translate import _
-from openerp.tools import DEFAULT_SERVER_DATE_FORMAT
+from openerp.tools  import DEFAULT_SERVER_DATE_FORMAT
+from openerp        import models, fields, api, SUPERUSER_ID, _, osv
+import logging
+_logger = logging.getLogger(__name__)
 
 def _moduleName():
     path = os.path.dirname(__file__)
     return os.path.basename(os.path.dirname(path))
 openerpModule=_moduleName()
 
-class plm_document(osv.osv):
-    _name = 'plm.document'
-    _inherit = ['mail.thread','plm.document']
-    _columns = {
-                'linkedcomponents':fields.many2many('product.product', 'plm_component_document_rel','document_id','component_id', 'Linked Parts'),
-    }    
-    _defaults = {
-                 'state': lambda *a: 'draft',
-                 'res_id': lambda *a: False,
-    }    
+class plm_document(models.Model):
+    _name               = 'plm.document'
+    _inherit            = ['mail.thread','plm.document']
+    
+    linkedcomponents    = fields.Many2many('product.product', 'plm_component_document_rel','document_id','component_id', _('Linked Parts'))
+    
+    _defaults           = {
+                             'state': lambda *a: 'draft',
+                             'res_id': lambda *a: False,
+                             }    
 plm_document()
 
 
-class plm_component(osv.osv):
-    _name = 'product.product'
-    _inherit = 'product.product'
+class plm_component(models.Model):
+    _name       = 'product.product'
+    _inherit    = 'product.product'
     
     def _father_part_compute(self, cr, uid, ids, name, arg, context={}):
         """ Gets father bom.
@@ -73,14 +74,11 @@ class plm_component(osv.osv):
             result[prod_obj.id]=list(set(prod_ids))
         return result
 
-  
-    _columns = {
-        	    'linkeddocuments':fields.many2many('plm.document', 'plm_component_document_rel','component_id','document_id', 'Linked Docs'),  
-                'tmp_material': fields.many2one('plm.material','Raw Material', required=False, change_default=True, help="Select raw material for current product"),
-#                'tmp_treatment': fields.many2one('plm.treatment','Thermal Treatment', required=False, change_default=True, help="Select thermal treatment for current product"),
-                'tmp_surface': fields.many2one('plm.finishing','Surface Finishing', required=False, change_default=True, help="Select surface finishing for current product"),
-                'father_part_ids': fields.function(_father_part_compute, relation='product.product', method=True, string="BoM Hierarchy", type='many2many', store =False),
-              }
+    linkeddocuments = fields.Many2many  ('plm.document', 'plm_component_document_rel','component_id','document_id', _('Linked Docs'))  
+    tmp_material    = fields.Many2one   ('plm.material',_('Raw Material'), required=False, change_default=True, help=_("Select raw material for current product"))
+    #tmp_treatment   = fields.Many2one('plm.treatment',_('Thermal Treatment'), required=False, change_default=True, help=_("Select thermal treatment for current product"))
+    tmp_surface     = fields.Many2one   ('plm.finishing',_('Surface Finishing'), required=False, change_default=True, help=_("Select surface finishing for current product"))
+    father_part_ids = fields.Many2many  ('product.product', compute = _father_part_compute, method=True, string=_("BoM Hierarchy"), store =False)
 
     def on_change_tmpmater(self, cr, uid, ids, tmp_material=False):
         values={'engineering_material':''}
@@ -111,9 +109,9 @@ class plm_component(osv.osv):
 plm_component()
 
 
-class plm_relation(osv.osv):
-    _name = 'mrp.bom'
-    _inherit = 'mrp.bom'
+class plm_relation(models.Model):
+    _name       = 'mrp.bom'
+    _inherit    = 'mrp.bom'
 
 #######################################################################################################################################33
 
@@ -195,19 +193,17 @@ class plm_relation(osv.osv):
                             result[bom_obj.id]+=[bom_child.bom_id.id]
         return result
  
-    _columns = {
-                'state': fields.related('product_id','state',type="char",relation="product.template",string="Status",help="The status of the product in its LifeCycle.",store=False),
-                'engineering_revision': fields.related('product_id','engineering_revision',type="char",relation="product.template",string="Revision",help="The revision of the product.",store=False),
-                'description': fields.related('product_id','description',type="char",relation="product.template",string="Description",store=False),
-                'father_complete_ids': fields.function(_father_compute, relation='mrp.bom', method=True, string="BoM Hierarchy", type='many2many', store =False),
-               }
+    state                   = fields.Selection  (related="product_id.state",            string=_("Status"),     help=_("The status of the product in its LifeCycle."),  store=False)
+    engineering_revision    = fields.Char       (related="product_id.engineering_code", string=_("Revision"),   help=_("The revision of the product."),                 store=False)
+    description             = fields.Text       (related="product_id.description",      string=_("Description"),                                                        store=False)
+    father_complete_ids     = fields.Many2many  ('mrp.bom', compute=_father_compute,    method=True,            string=_("BoM Hierarchy"),                  store=False)
 
 plm_relation()
 
-class plm_relation_line(osv.osv):
-    _name = 'mrp.bom.line'
-    _inherit = 'mrp.bom.line'
-    _order = "itemnum"
+class plm_relation_line(models.Model):
+    _name       = 'mrp.bom.line'
+    _inherit    = 'mrp.bom.line'
+    _order      = "itemnum"
 
     def _get_child_bom_lines(self, cr, uid, ids, field_name, arg, context=None):
         """
@@ -226,26 +222,25 @@ class plm_relation_line(osv.osv):
                 res[bom_line.id] = False
         return res
 
-    _columns = {
-                'state': fields.related('product_id','state',type="char",relation="product.template",string="Status",help="The status of the product in its LifeCycle.",store=False),
-                'engineering_revision': fields.related('product_id','engineering_revision',type="char",relation="product.template",string="Revision",help="The revision of the product.",store=False),
-                'description': fields.related('product_id','description',type="char",relation="product.template",string="Description",store=False),
-                'weight_net': fields.related('product_id','weight_net',type="float",relation="product.template",string="Weight Net",store=False),
-                'child_line_ids': fields.function(_get_child_bom_lines, relation="mrp.bom.line", string="BOM lines of the referred bom", type="one2many"),
-               }
+    state                   =   fields.Selection    (related="product_id.state",                string=_("Status"),     help=_("The status of the product in its LifeCycle."),  store=False)
+    engineering_revision    =   fields.Integer      (related="product_id.engineering_revision", string=_("Revision"),   help=_("The revision of the product."),                 store=False)
+    description             =   fields.Text         (related="product_id.description",          string=_("Description"),                                                        store=False)
+    weight_net              =   fields.Float        (related="product_id.weight",               string=_("Weight Net"),                                                         store=False)
+    child_line_ids          =   fields.One2many     ("mrp.bom.line",compute=_get_child_bom_lines,string=_("BOM lines of the referred bom"))
+
 
 plm_relation_line()
 
-class plm_document_relation(osv.osv):
-    _name = 'plm.document.relation'
-    _inherit = 'plm.document.relation'
-    _columns = {
-                'parent_preview': fields.related('parent_id','preview',type="binary",relation="plm.document",string="Preview",store=False),
-                'parent_state': fields.related('parent_id','state',type="char",relation="plm.document",string="Status",store=False),
-                'parent_revision': fields.related('parent_id','revisionid',type="integer",relation="plm.document",string="Revision",store=False),
-                'child_preview': fields.related('child_id','preview',type="binary",relation="plm.document",string="Preview",store=False),
-                'child_state': fields.related('child_id','state',type="char",relation="plm.document",string="Status",store=False),
-                'child_revision': fields.related('child_id','revisionid',type="integer",relation="plm.document",string="Revision",store=False),
-              }
+class plm_document_relation(models.Model):
+    _name           =   'plm.document.relation'
+    _inherit        =   'plm.document.relation'
+    
+    parent_preview  =   fields.Binary   (related="parent_id.preview",       string=_("Preview"),    store=False)
+    parent_state    =   fields.Selection(related="parent_id.state",         string=_("Status"),     store=False)
+    parent_revision =   fields.Integer  (related="parent_id.revisionid",    string=_("Revision"),   store=False)
+    child_preview   =   fields.Binary   (related="child_id.preview",        string=_("Preview"),    store=False)
+    child_state     =   fields.Selection(related="child_id.state",          string=_("Status"),     store=False)
+    child_revision  =   fields.Integer  (related="child_id.revisionid",     string=_("Revision"),   store=False)
+
 plm_document_relation()
 

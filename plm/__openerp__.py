@@ -68,32 +68,45 @@ Supported Editors :
        
     """,
     'data': [
-        'install/board_plm_view.xml',
-        'security/base_plm_security.xml',
-        'security/res.groups.csv',
-        'security/ir.model.access.csv',
-        'install/res_config_view.xml',
-        'install/plmdocuments/document_view.xml',
-        'install/plmdocuments/document_workflow.xml',
-        'install/plmdocuments/backupdoc_view.xml',
-        'install/plmdocrelations/document_relations.xml',
-        'install/plmcomponents/component_view.xml',
-        'install/plmcomponents/component_workflow.xml',
-        'install/plmdescriptions/description_view.xml',
-        'install/plmdescriptions/description_sequence.xml',
-        'install/plmsparebom/sparebom_view.xml',
-        'install/plmsparebom/description_view.xml',
-        'install/plmcomponentrelations/relations_view.xml',
-        'install/plmcomparebom/compare_bom_view.xml',
-        'install/plmcheckedout/checkout_view.xml',
-        'install/report/bom_structure.xml',
-        'install/report/component_report.xml',
-        'install/report/document_report.xml',
-        'install/report/checkout_report.xml',
-        'install/plmmaterials/material_sequence.xml',
-        'install/plmmaterials/material_view.xml',
-        'install/plmfinishings/finishing_sequence.xml',
-        'install/plmfinishings/finishing_view.xml',
+            'install/board_plm_view.xml',
+            'install/res_config_view.xml',
+            
+            'install/plmdocuments/document_view.xml',
+            'install/plmdocuments/backupdoc_view.xml',
+            'install/plmdocrelations/document_relations.xml',
+            
+            'install/plmcomponents/component_view.xml',
+            'install/plmcomponentrelations/relations_view.xml',
+            
+            'install/plmdescriptions/description_view.xml',
+            'install/plmsparebom/sparebom_view.xml',
+            'install/plmsparebom/description_view.xml',
+            #'install/plmcomparebom/compare_bom_view.xml',
+            'install/plmcheckedout/checkout_view.xml',
+            'install/plmmaterials/material_view.xml',
+            'install/plmfinishings/finishing_view.xml',
+            
+            'install/plm_dashboard.xml',
+        
+        #sequence
+            'install/plmdescriptions/description_sequence.xml',
+            'install/plmmaterials/material_sequence.xml',
+            'install/plmfinishings/finishing_sequence.xml',
+        
+        #report
+            #'install/report/component_report.xml',
+            #'install/report/document_report.xml',
+            #'install/report/checkout_report.xml',
+            'install/report/bom_structure.xml',
+        
+        #workflow
+            'install/plmdocuments/document_workflow.xml',
+            'install/plmcomponents/component_workflow.xml',
+        
+        #security
+            'security/base_plm_security.xml',
+            #'security/res.groups.csv',
+            #'security/ir.model.access.csv',
        ],
     'demo': [
         ],

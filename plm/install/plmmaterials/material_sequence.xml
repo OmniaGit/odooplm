@@ -2,10 +2,6 @@
 <openerp>
     <data noupdate="1">
         <!-- Sequences for plm.material --> 
-        <record id="seq_type_plm_material" model="ir.sequence.type">
-            <field name="name">PLM Material Sequence Type</field>
-            <field name="code">plm.material</field>
-        </record>
         <record id="seq_plm_material" model="ir.sequence">
             <field name="name">PLM Material Sequence</field>
             <field name="code">plm.material</field>

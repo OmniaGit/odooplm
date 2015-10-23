@@ -23,14 +23,17 @@ import random
 import string
 import base64
 import os, stat
-import logging
 import time
 from datetime import datetime
 
-from openerp.osv import osv, fields
 from openerp.osv.orm import except_orm
-from openerp.tools.translate import _
 import openerp.tools as tools
+
+from openerp.osv import fields as oldFields
+from openerp        import models, fields, api, SUPERUSER_ID, _, osv
+import logging
+_logger = logging.getLogger(__name__)
+
 
 # To be adequated to plm.component class states
 USED_STATES=[('draft','Draft'),('confirmed','Confirmed'),('released','Released'),('undermodify','UnderModify'),('obsoleted','Obsoleted')]
@@ -49,11 +52,14 @@ def create_directory(path):
     os.makedirs(path)
     return dir_name
 
-class plm_document(osv.osv):
+class plm_document(models.Model):
     _name = 'plm.document'
     _table = 'plm_document'
     _inherit = 'ir.attachment'
 
+    def create(self, cr, uid, vals, context={}):
+        return super(plm_document,self).create(cr, uid, vals, context)
+        
     def _is_checkedout_for_me(self, cr, uid, oid, context=None):
         """
             Get if given document (or its latest revision) is checked-out for the requesting user
@@ -122,7 +128,7 @@ class plm_document(osv.osv):
                 if not objDoc.store_fname:
                     value=objDoc.db_datas
                     if not value or len(value)<1:
-                        raise osv.except_osv(_('Stored Document Error'), _("Document %s - %s cannot be accessed" %(str(objDoc.name),str(objDoc.revisionid))))
+                        raise osv.osv.except_osv(_('Stored Document Error'), _("Document %s - %s cannot be accessed" %(str(objDoc.name),str(objDoc.revisionid))))
                 else:
                     filestore=os.path.join(self._get_filestore(cr), objDoc.store_fname)
                     if os.path.exists(filestore):
@@ -237,10 +243,8 @@ class plm_document(osv.osv):
                 else:
                     collectable = True
                 if (objDoc.file_size<1) and (objDoc.datas):
-                    file_size=len(objDoc.datas)
-                else:
-                    file_size=objDoc.file_size
-                result.append((objDoc.id, objDoc.datas_fname, file_size, collectable, isCheckedOutToMe, timeDoc))
+                    objDoc.file_size=len(objDoc.datas)
+                result.append((objDoc.id, objDoc.datas_fname, objDoc.file_size, collectable, isCheckedOutToMe, timeDoc))
         return list(set(result))
             
     def copy(self,cr,uid,oid,defaults={},context=None):
@@ -572,40 +576,37 @@ class plm_document(osv.osv):
             return objId
         return False
 
-    def blindwrite(self, cr, uid, ids, vals, context=None,):
-        return super(plm_document,self).write(cr, uid, ids, vals, context=context, check=False)
-
 #   Overridden methods for this entity
     def _get_filestore(self, cr):
         dms_Root_Path=tools.config.get('document_path', os.path.join(tools.config['root_path'], 'filestore'))
         return os.path.join(dms_Root_Path, cr.dbname)
 
-    def search(self, cr, uid, args, offset=0, limit=None, order=None, context=None, count=False):
-        # Grab ids, bypassing 'count'
-        ids = osv.osv.search(self,cr, uid, args, offset=offset, limit=limit, order=order, context=context, count=False)
-        if not ids:
-            return 0 if count else []
-
-        # Filter out documents that are in directories that the user is not allowed to read.
-        # Must use pure SQL to avoid access rules exceptions (we want to remove the records,
-        # not fail), and the records have been filtered in parent's search() anyway.
-        cr.execute('SELECT id, parent_id from plm_document WHERE id in %s', (tuple(ids),))
-
-        # cont a dict of parent -> attach
-        parents = {}
-        for attach_id, attach_parent in cr.fetchall():
-            parents.setdefault(attach_parent, []).append(attach_id)
-        parent_ids = parents.keys()
-
-        # filter parents
-        visible_parent_ids = self.pool.get('document.directory').search(cr, uid, [('id', 'in', list(parent_ids))])
-
-        # null parents means allowed
-        ids = parents.get(None,[])
-        for parent_id in visible_parent_ids:
-            ids.extend(parents[parent_id])
-
-        return len(ids) if count else ids
+#     def search(self, cr, uid, args, offset=0, limit=None, order=None, context=None, count=False):
+#         # Grab ids, bypassing 'count'
+#         ids = osv.osv.osv.search(self,cr, uid, args, offset=offset, limit=limit, order=order, context=context, count=False)
+#         if not ids:
+#             return 0 if count else []
+# 
+#         # Filter out documents that are in directories that the user is not allowed to read.
+#         # Must use pure SQL to avoid access rules exceptions (we want to remove the records,
+#         # not fail), and the records have been filtered in parent's search() anyway.
+#         cr.execute('SELECT id, parent_id from plm_document WHERE id in %s', (tuple(ids),))
+# 
+#         # cont a dict of parent -> attach
+#         parents = {}
+#         for attach_id, attach_parent in cr.fetchall():
+#             parents.setdefault(attach_parent, []).append(attach_id)
+#         parent_ids = parents.keys()
+# 
+#         # filter parents
+#         visible_parent_ids = self.pool.get('document.directory').search(cr, uid, [('id', 'in', list(parent_ids))])
+# 
+#         # null parents means allowed
+#         ids = parents.get(None,[])
+#         for parent_id in visible_parent_ids:
+#             ids.extend(parents[parent_id])
+# 
+#         return len(ids) if count else ids
 
     def write(self, cr, uid, ids, vals, context=None, check=True):
         checkState=('confirmed','released','undermodify','obsoleted')
@@ -660,21 +661,22 @@ class plm_document(osv.osv):
         return True
 #   Overridden methods for this entity
 
-    _columns = {
-                'usedforspare': fields.boolean('Used for Spare',help="Drawings marked here will be used printing Spare Part Manual report."),
-                'revisionid': fields.integer('Revision Index', required=True),
-                'writable': fields.boolean('Writable'),
-                'datas': fields.function(_data_get,method=True,fnct_inv=_data_set,string='File Content',type="binary"),
-                'printout': fields.binary('Printout Content', help="Print PDF content."),
-                'preview': fields.binary('Preview Content', help="Static preview."),
-                'state':fields.selection(USED_STATES,'Status', help="The status of the product.", readonly="True", required=True),
-    }    
+    usedforspare    =   fields.Boolean  (_('Used for Spare'),help="Drawings marked here will be used printing Spare Part Manual report.")
+    revisionid      =   fields.Integer  (_('Revision Index'), required=True)
+    writable        =   fields.Boolean  (_('Writable'))
+    #datas           =   fields.Binary   (fnct_inv=_data_set,compute=_data_get,method=True,string=_('File Content'))
+    printout        =   fields.Binary   (_('Printout Content'), help=_("Print PDF content."))
+    preview         =   fields.Binary   (_('Preview Content'), help=_("Static preview."))
+    state           =   fields.Selection(USED_STATES,_('Status'), help=_("The status of the product."), readonly="True", required=True)
 
+    _columns = {
+                'datas': oldFields.function(_data_get,method=True,fnct_inv=_data_set,string='File Content',type="binary"),
+                }
     _defaults = {
-                 'usedforspare': lambda *a: False,
-                 'revisionid': lambda *a: 0,
-                 'writable': lambda *a: True,
-                 'state': lambda *a: 'draft',
+                 'usedforspare' : lambda *a: False,
+                 'revisionid'   : lambda *a: 0,
+                 'writable'     : lambda *a: True,
+                 'state'        : lambda *a: 'draft',
     }
 
     _sql_constraints = [
@@ -887,17 +889,17 @@ class plm_document(osv.osv):
 plm_document()
 
 
-class plm_checkout(osv.osv):
+class plm_checkout(models.Model):
     _name = 'plm.checkout'
-    _columns = {
-                'userid':fields.many2one('res.users', 'Related User', ondelete='cascade'), 
-                'hostname':fields.char('hostname',size=64), 
-                'hostpws':fields.char('PWS Directory',size=1024), 
-                'documentid':fields.many2one('plm.document', 'Related Document', ondelete='cascade'), 
-                'createdate':fields.datetime('Date Created', readonly=True)
-    }
+    
+    userid      =   fields.Many2one ('res.users', _('Related User'), ondelete='cascade')
+    hostname    =   fields.Char     (_('hostname'),size=64)
+    hostpws     =   fields.Char     (_('PWS Directory'),size=1024)
+    documentid  =   fields.Many2one ('plm.document', _('Related Document'), ondelete='cascade')
+    createdate  =   fields.Datetime (_('Date Created'), readonly=True)
+
     _defaults = {
-        'createdate': lambda self,cr,uid,ctx:time.strftime("%Y-%m-%d %H:%M:%S")
+        'create_date': lambda self,ctx:time.strftime("%Y-%m-%d %H:%M:%S")
     }
     _sql_constraints = [
         ('documentid', 'unique (documentid)', 'The documentid must be unique !') 
@@ -961,16 +963,16 @@ class plm_checkout(osv.osv):
 plm_checkout()
 
 
-class plm_document_relation(osv.osv):
+class plm_document_relation(models.Model):
     _name = 'plm.document.relation'
-    _columns = {
-                'parent_id':fields.many2one('plm.document', 'Related parent document', ondelete='cascade'), 
-                'child_id':fields.many2one('plm.document', 'Related child document',  ondelete='cascade'),
-                'configuration':fields.char('Configuration Name',size=1024),
-                'link_kind': fields.char('Kind of Link',size=64, required=True),
-                'create_date':fields.datetime('Date Created', readonly=True),
-                'userid':fields.many2one('res.users', 'CheckOut User',readonly="True"), 
-               }
+    
+    parent_id       =   fields.Many2one ('plm.document', _('Related parent document'), ondelete='cascade')
+    child_id        =   fields.Many2one ('plm.document', _('Related child document'),  ondelete='cascade')
+    configuration   =   fields.Char     (_('Configuration Name'),size=1024)
+    link_kind       =   fields.Char     (_('Kind of Link'),size=64, required=True)
+    create_date     =   fields.Datetime (_('Date Created'), readonly=True)
+    userid          =   fields.Many2one ('res.users', _('CheckOut User'),readonly="True")
+    
     _defaults = {
                  'link_kind': lambda *a: 'HiTree',
                  'userid': lambda *a: False,
@@ -1026,20 +1028,21 @@ class plm_document_relation(osv.osv):
 plm_document_relation()
 
 
-class plm_backupdoc(osv.osv):
+class plm_backupdoc(models.Model):
     _name = 'plm.backupdoc'
-    _columns = {
-                'userid':fields.many2one('res.users', 'Related User', ondelete='cascade'), 
-                'createdate':fields.datetime('Date Created', readonly=True),
-                'existingfile':fields.char('Physical Document Location',size=1024), 
-                'documentid':fields.many2one('plm.document', 'Related Document', ondelete='cascade'), 
-                'revisionid': fields.related('documentid','revisionid',type="integer",relation="plm.document",string="Revision",store=False),
-                'state': fields.related('documentid','state',type="char",relation="plm.document",string="Status",store=False),
-                'printout': fields.binary('Printout Content'),
-                'preview': fields.binary('Preview Content'),
-    }
+    
+    
+    userid          =   fields.Many2one ('res.users', _('Related User'), ondelete='cascade')
+    createdate      =   fields.Datetime (_('Date Created'), readonly=True)
+    existingfile    =   fields.Char     (_('Physical Document Location'),size=1024)
+    documentid      =   fields.Many2one ('plm.document', _('Related Document'), ondelete='cascade')
+    revisionid      =   fields.Integer  ( related="documentid.revisionid",string=_("Revision"),store=False)
+    state           =   fields.Selection( related="documentid.state",string=_("Status"),store=False)
+    printout        =   fields.Binary   (_('Printout Content'))
+    preview         =   fields.Binary   (_('Preview Content'))
+    
     _defaults = {
-        'createdate': lambda self,cr,uid,ctx:time.strftime("%Y-%m-%d %H:%M:%S")
+        'create_date': lambda self,ctx:time.strftime("%Y-%m-%d %H:%M:%S")
     }
         
     def unlink(self, cr, uid, ids, context=None):

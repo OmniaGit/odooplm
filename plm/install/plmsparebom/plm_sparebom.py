@@ -21,13 +21,13 @@
 ##############################################################################
 
 from types import *
-
-from openerp.osv import osv, fields
-from openerp.tools.translate import _
+import logging
+from openerp        import models, fields, api, SUPERUSER_ID, _, osv
+_logger         =   logging.getLogger(__name__)
 
 RETDMESSAGE=''
 
-class plm_temporary(osv.osv_memory):
+class plm_temporary(osv.osv.osv_memory):
     _inherit = "plm.temporary"
 ##  Specialized Actions callable interactively
     def action_create_spareBom(self, cr, uid, ids, context=None):
@@ -61,7 +61,7 @@ class plm_temporary(osv.osv_memory):
     
 plm_temporary()
 
-class plm_component(osv.osv):
+class plm_component(models.Model):
     _inherit = 'product.product'
 
 #  Work Flow Actions
@@ -122,11 +122,11 @@ class plm_component(osv.osv):
 plm_component()
 
 
-class plm_description(osv.osv):
+class plm_description(models.Model):
     _inherit = "plm.description"
-    _columns = {
-                'bom_tmpl': fields.many2one('mrp.bom','Choose a BoM', required=False, change_default=True, help="Select a  BoM as template to drive building Spare BoM."),
-    }
+
+    bom_tmpl    =   fields.Many2one('mrp.bom',_('Choose a BoM'), required=False, change_default=True, help=_("Select a  BoM as template to drive building Spare BoM."))
+
     _defaults = {
                  'bom_tmpl': lambda *a: False,
     }

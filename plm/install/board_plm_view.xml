@@ -1,7 +1,8 @@
 <?xml version="1.0"?>
  <openerp>
      <data>
- 
+     	
+ <!--
         <record model="ir.ui.view" id="view_document_user_tree">
             <field name="name">report.plm_document.user.tree</field>
             <field name="model">report.plm_document.user</field>
@@ -131,11 +132,30 @@
              <field name="view_mode">form</field>
              <field name="view_id" ref="board_plm_manager_form"/>
         </record>
-
+-->
         <menuitem id="plm_menu" name="PLM Module" icon="terp-stock" 
-            web_icon="images/PLMmodule.png"
+            web_icon="plm,images/PLMmodule-hover.png"
             web_icon_hover="images/PLMmodule-hover.png"
-            action="open_board_plm_manager"/>
+        />            <!--action="open_board_plm_manager"-->
 
+        <record id="plm_dashboard_action" model="ir.actions.act_window">
+            <field name="name">Components</field>
+            <field name="res_model">product.product</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">kanban,form</field>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Click to create a new Component.
+              </p>
+            </field>
+        </record>
+<!--
+        <menuitem
+            action="plm_dashboard_action"
+            id="plm_dashboard_menu"
+            parent="plm.plm_menu" sequence="0"
+            name="Dashboard"/>
+-->
      </data>
  </openerp>

@@ -181,7 +181,7 @@ class bom_structure_all_custom_report(report_sxw.rml_parse):
                 res['previ']=product.engineering_revision
                 res['pqty']=l.product_qty
                 res['uname']=l.product_uom.name
-                res['pweight']=product.weight_net
+                res['pweight']=product.weight
                 res['code']=l.product_id.default_code
                 res['level']=level
                 result.append(res)
@@ -227,7 +227,7 @@ class bom_structure_one_custom_report(report_sxw.rml_parse):
                 res['previ']=product.engineering_revision
                 res['pqty']=l.product_qty
                 res['uname']=l.product_uom.name
-                res['pweight']=product.weight_net
+                res['pweight']=product.weight
                 res['code']=l.product_id.default_code
                 res['level']=level
                 result.append(res)
@@ -284,7 +284,7 @@ class bom_structure_all_sum_custom_report(report_sxw.rml_parse):
                         res['previ']=product.engineering_revision
                         res['pqty']=listedline['pqty']
                         res['uname']=l.product_uom.name
-                        res['pweight']=product.weight_net
+                        res['pweight']=product.weight
                         res['code']=l.product_id.default_code
                         res['level']=level
                         tmp_result.append(res)
@@ -341,7 +341,7 @@ class bom_structure_one_sum_custom_report(report_sxw.rml_parse):
                     res['previ']=product.engineering_revision
                     res['pqty']=l.product_qty
                     res['uname']=l.product_uom.name
-                    res['pweight']=product.weight_net
+                    res['pweight']=product.weight
                     res['code']=l.product_id.default_code
                     res['level']=level
                     tmp_result.append(res)
@@ -404,7 +404,7 @@ class bom_structure_leaves_custom_report(report_sxw.rml_parse):
                             res['previ']=product.engineering_revision
                             res['pqty']=quantity
                             res['uname']=l.product_uom.name
-                            res['pweight']=product.weight_net
+                            res['pweight']=product.weight
                             res['code']=l.product_id.default_code
                             res['level']=level
                             tmp_result.append(res)
@@ -470,7 +470,7 @@ class bom_structure_flat_custom_report(report_sxw.rml_parse):
                         res['previ']=product.engineering_revision
                         res['pqty']=quantity
                         res['uname']=l.product_uom.name
-                        res['pweight']=product.weight_net
+                        res['pweight']=product.weight
                         res['code']=l.product_id.default_code
                         res['level']=level
                         tmp_result.append(res)

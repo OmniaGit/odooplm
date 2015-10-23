@@ -183,7 +183,7 @@
         <field name="arch" type="xml">
              <form string="Engineering Product">
                  <group colspan="4" col="2">
-                      <field name="name" on_change="on_change_name(name,engineering_code)" attrs="{'readonly':[('state','!=','draft')]}" />
+                      <field name="name" on_change="on_change_name(name,engineering_code)"/>
                  </group>
                  <notebook colspan="4">
                		<page string="Engineering Infos">
@@ -221,7 +221,7 @@
                     		<group colspan="4" col="4">
 	 	                        <group colspan="2" col="2" name="Weigth">
 		                     		<separator string="Weight" />
-		                            <field digits="(14, 3)" name="weight_net" attrs="{'readonly':[('type','=','service')]}"/>
+		                            <field digits="(14, 3)" name="weight" attrs="{'readonly':[('type','=','service')]}"/>
 	                      		</group>
 	 	                        <group colspan="2" col="2" name="uom">
 		                          	<separator string="Unit of Measure" colspan="2"/>

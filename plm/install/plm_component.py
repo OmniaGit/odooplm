@@ -19,26 +19,25 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-import os
-import time
-import types
-from datetime import datetime
-import logging
+import types,logging
+from datetime       import datetime
+from openerp        import models, fields, api, SUPERUSER_ID, _, osv
+_logger         =   logging.getLogger(__name__)
 
-from openerp.osv import osv, fields
-from openerp.tools.translate import _
-
-USED_STATES=[('draft','Draft'),('confirmed','Confirmed'),('released','Released'),('undermodify','UnderModify'),('obsoleted','Obsoleted')]
-USEDIC_STATES=dict(USED_STATES)
+USED_STATES     =   [('draft','Draft'),
+                     ('confirmed','Confirmed'),
+                     ('released','Released'),
+                     ('undermodify','UnderModify'),
+                     ('obsoleted','Obsoleted')]
+USEDIC_STATES   =   dict(USED_STATES)
 #STATEFORRELEASE=['confirmed']
 #STATESRELEASABLE=['confirmed','transmitted','released','undermodify','obsoleted']
 
-class plm_component(osv.osv):
+class plm_component(models.Model):
     _inherit = 'product.product'
-    _columns = {
-                'create_date': fields.datetime('Date Created', readonly=True),
-                'write_date': fields.datetime('Date Modified', readonly=True),
-    }
+    
+    create_date     =   fields.Datetime('Date Created',     readonly=True)
+    write_date      =   fields.Datetime('Date Modified',    readonly=True)
 
 #   Internal methods
 

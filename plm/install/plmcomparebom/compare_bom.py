@@ -20,8 +20,9 @@
 #
 ##############################################################################
 import os
-from openerp.osv import osv, fields
-from openerp.tools.translate import _
+import logging
+from openerp        import models, fields, api, SUPERUSER_ID, _, osv
+_logger         =   logging.getLogger(__name__)
 
 def _moduleName():
     path = os.path.dirname(__file__)
@@ -46,24 +47,32 @@ BOM_SHOW_FIELDS=['Position','Code','Description','Quantity']
 ###############################################################################################################
 
 
-class plm_compare_bom(osv.osv_memory):
+class plm_compare_bom(osv.osv.osv_memory):
     _name = "plm.compare.bom"
     _description = "BoM Comparison"
-    _columns = {
-                'name': fields.char('Part Number',size=64),
-                'bom_id1': fields.many2one('mrp.bom', 'BoM 1', required=True, ondelete='cascade'),
-                'type_id1': fields.selection([('normal','Normal BoM'),('phantom','Sets / Phantom'),('ebom','Engineering BoM'),('spbom','Spare BoM')], 'BoM Type'),
-                'part_id1': fields.many2one('product.product', 'Part', ondelete='cascade'),
-                'revision1': fields.related('part_id1','engineering_revision',type="integer",relation="product.template",string="Revision",store=False),
-                'description1': fields.related('part_id1','description',type="char",relation="product.template",string="Description",store=False),
-                'bom_id2': fields.many2one('mrp.bom', 'BoM 2', required=True, ondelete='cascade'),
-                'type_id2': fields.selection([('normal','Normal BoM'),('phantom','Sets / Phantom'),('ebom','Engineering BoM'),('spbom','Spare BoM')], 'BoM Type'),
-                'part_id2': fields.many2one('product.product', 'Part', ondelete='cascade'),
-                'revision2': fields.related('part_id2','engineering_revision',type="integer",relation="product.template",string="Revision",store=False),
-                'description2': fields.related('part_id2','description',type="char",relation="product.template",string="Description",store=False),
-                'anotinb': fields.one2many('plm.adding.bom', 'bom_id', 'BoM Adding'),
-                'bnotina': fields.one2many('plm.missing.bom', 'bom_id', 'BoM Missing'),
-               }
+    
+    name          =   fields.Char       ('Part Number',         size=64)
+    bom_id1       =   fields.Many2one   ('mrp.bom',             'BoM 1',    required=True, ondelete='cascade')
+    type_id1      =   fields.Selection  ([('normal','Normal BoM'),
+                                          ('phantom','Sets / Phantom'),
+                                          ('ebom','Engineering BoM'),
+                                          ('spbom','Spare BoM')], 
+                                         'BoM Type')
+    part_id1      =   fields.Many2one   ('product.product',                             'Part',                     ondelete='cascade')
+    revision1     =   fields.Integer    (related="part_id1.engineering_revision",       string=_("Revision"),       store=False)
+    description1  =   fields.Text       (related="part_id1.description",                string=_("Description"),    store=False)
+    bom_id2       =   fields.Many2one   ('mrp.bom', 'BoM 2',                            required=True,              ondelete='cascade')
+    type_id2      =   fields.Selection  ([('normal','Normal BoM'),
+                                          ('phantom','Sets / Phantom'),
+                                          ('ebom','Engineering BoM'),
+                                          ('spbom','Spare BoM')], 
+                                         'BoM Type')
+    part_id2      =   fields.Many2one   ('product.product',                             'Part',                     ondelete='cascade')
+    revision2     =   fields.Integer    (related="part_id2.engineering_revision",       string="Revision",          store=False)
+    description2  =   fields.Text       (related="part_id2.description",                string="Description",       store=False)
+    anotinb       =   fields.One2many   ('plm.adding.bom',                              'bom_id',                   'BoM Adding')
+    bnotina       =   fields.One2many   ('plm.missing.bom',                             'bom_id',                   'BoM Missing')
+    
     _defaults = {
                  'name': 'x',
     }
@@ -271,36 +280,36 @@ class plm_compare_bom(osv.osv_memory):
 
 plm_compare_bom()
 
-class plm_missing_bom(osv.osv_memory):
+class plm_missing_bom(osv.osv.osv_memory):
     _name = "plm.missing.bom"
     _description = "BoM Missing Objects"
-    _columns = {
-                'bom_id': fields.many2one('plm.compare.bom', 'BoM', ondelete='cascade'),
-                'bom_idrow': fields.many2one('mrp.bom.line', 'BoM Line', ondelete='cascade'),
-                'part_id': fields.many2one('product.product', 'Part', ondelete='cascade'),
-                'revision': fields.related('part_id','engineering_revision',type="integer",relation="product.template",string="Revision",store=False),
-                'description': fields.related('part_id','description',type="char",relation="product.template",string="Description",store=False),
-                'itemnum': fields.related('bom_idrow','itemnum',type="integer",relation="mrp.bom.line",string="Cad Item Position",store=False),
-                'itemqty': fields.related('bom_idrow','product_qty',type="float",relation="mrp.bom.line",string="Quantity",store=False),
-                'reason': fields.char(string="Difference",size=32)
-                }
+    
+    bom_id      =   fields.Many2one ('plm.compare.bom', _('BoM'),           ondelete='cascade')
+    bom_idrow   =   fields.Many2one ('mrp.bom.line',    _('BoM Line'),      ondelete='cascade')
+    part_id     =   fields.Many2one ('product.product', _('Part'),          ondelete='cascade')
+    revision    =   fields.Integer  (related="part_id.engineering_revision",string=_("Revision"),           store=False)
+    description =   fields.Text     (related="part_id.description",         string=_("Description"),        store=False)
+    itemnum     =   fields.Integer  (related="bom_idrow.itemnum",           string=_("Cad Item Position"),  store=False)
+    itemqty     =   fields.Float    (related="bom_idrow.product_qty",       string=_("Quantity"),           store=False)
+    reason      =   fields.Char     (string=_("Difference"),                size=32)
+    
     _defaults = {
     }
 plm_missing_bom()
 
-class plm_adding_bom(osv.osv_memory):
+class plm_adding_bom(osv.osv.osv_memory):
     _name = "plm.adding.bom"
     _description = "BoM Adding Objects"
-    _columns = {
-                'bom_id': fields.many2one('plm.compare.bom', 'BoM', ondelete='cascade'),
-                'bom_idrow': fields.many2one('mrp.bom.line', 'BoM Line', ondelete='cascade'),
-                'part_id': fields.many2one('product.product', 'Part', ondelete='cascade'),
-                'revision': fields.related('part_id','engineering_revision',type="integer",relation="product.template",string="Revision",store=False),
-                'description': fields.related('part_id','description',type="char",relation="product.template",string="Description",store=False),
-                'itemnum': fields.related('bom_idrow','itemnum',type="integer",relation="mrp.bom.line",string="Cad Item Position",store=False),
-                'itemqty': fields.related('bom_idrow','product_qty',type="float",relation="mrp.bom.line",string="Quantity",store=False),
-                'reason': fields.char(string="Difference",size=32)
-                }
+    
+    bom_id          =   fields.Many2one ('plm.compare.bom', _('BoM'),      ondelete='cascade')
+    bom_idrow       =   fields.Many2one ('mrp.bom.line',    _('BoM Line'), ondelete='cascade')
+    part_id         =   fields.Many2one ('product.product', _('Part'),     ondelete='cascade')
+    revision        =   fields.Integer  (related="part_id.engineering_revision",    string=_("Revision"),          store=False)
+    description     =   fields.Text     (related="part_id.description",             string=_("Description"),       store=False)
+    itemnum         =   fields.Integer  (related="bom_idrow.itemnum",               string=_("Cad Item Position"), store=False)
+    itemqty         =   fields.Float    (related="bom_idrow.product_qty",           string=_("Quantity"),          store=False)
+    reason          =   fields.Char     (string=_("Difference"),                    size=32)
+
     _defaults = {
     }
 plm_adding_bom()

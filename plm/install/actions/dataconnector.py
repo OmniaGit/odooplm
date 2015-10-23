@@ -26,8 +26,8 @@ import cPickle as pickle
 from datetime import datetime
 
 import logging
-from openerp.osv import osv, fields
-from openerp.tools.translate import _
+from openerp        import models, fields, api, SUPERUSER_ID, _, osv
+_logger         =   logging.getLogger(__name__)
 
 ###
 # map_name : ['LangName','label Out', 'OE Lang']        '
@@ -51,7 +51,7 @@ def normalize(value):
     else:
         return str(value).strip()
 
-class plm_temporary(osv.osv_memory):
+class plm_temporary(osv.osv.osv_memory):
     _inherit = "plm.temporary"
 ##  Specialized Actions callable interactively
     def action_transferData(self, cr, uid, ids, context=None):
@@ -74,7 +74,7 @@ class plm_temporary(osv.osv_memory):
 plm_temporary()
 
 
-class plm_component(osv.osv):
+class plm_component(models.Model):
     _name = 'product.product'
     _inherit = 'product.product'
 

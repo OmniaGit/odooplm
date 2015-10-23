@@ -2,10 +2,7 @@
 <openerp>
     <data noupdate="1">
         <!-- Sequences for plm.finishing --> 
-        <record id="seq_type_plm_finishing" model="ir.sequence.type">
-            <field name="name">PLM Finishing Sequence Type</field>
-            <field name="code">plm.finishing</field>
-        </record>
+
         <record id="seq_plm_finishing" model="ir.sequence">
             <field name="name">PLM Finishing Sequence</field>
             <field name="code">plm.finishing</field>
