@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
 <data>
-    <menuitem id="plm_menu_dictionaries" name="PLM Configuration" parent="plm_menu" sequence="50"/>
+    <menuitem id="plm_menu_dictionaries" name="Configuration" parent="plm_menu" sequence="50"/>
 
     <record model="ir.ui.view" id="view_plm_description">
         <field name="name">plm.description.view</field>

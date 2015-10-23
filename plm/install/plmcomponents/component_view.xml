@@ -2,7 +2,7 @@
 <openerp>
 <data>
     
-    <menuitem id="plm_component_menu_view" name="Components View" parent="plm_menu" sequence="10"/>
+    <menuitem id="plm_component_menu_view" name="Components" parent="plm_menu" sequence="10"/>
 
     <record model="ir.ui.view" id="plm_component_tree">
         <field name="name">plm.component</field>

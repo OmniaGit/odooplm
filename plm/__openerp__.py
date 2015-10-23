@@ -86,7 +86,7 @@ Supported Editors :
             'install/plmmaterials/material_view.xml',
             'install/plmfinishings/finishing_view.xml',
             
-            'install/plm_dashboard.xml',
+            #'install/plm_dashboard.xml',
         
         #sequence
             'install/plmdescriptions/description_sequence.xml',
