@@ -133,7 +133,7 @@
              <field name="view_id" ref="board_plm_manager_form"/>
         </record>
 -->
-        <menuitem id="plm_menu" name="PLM Module" icon="terp-stock" 
+        <menuitem id="plm_menu" name="PLM" icon="terp-stock" 
             web_icon="plm,images/PLMmodule-hover.png"
             web_icon_hover="images/PLMmodule-hover.png"
         />            <!--action="open_board_plm_manager"-->
