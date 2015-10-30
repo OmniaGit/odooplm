@@ -90,6 +90,8 @@ class plm_component(models.Model):
         return {
                 'table' : 'PARTS',                          # Used with 'db' transfer
                 'status': ['released',],
+                'fixed' : True,                             # Uses fixded format (specify lenghts)
+                'append' : True,                            # append to existing transfer files (only for part data)
                 'fields':
                     {
                     'name'                  : 'revname',
@@ -101,6 +103,12 @@ class plm_component(models.Model):
                     'name'                  : 'char',
                     'engineering_revision'  : 'int',
                     'description'           : 'char',
+                    },
+               'lengths':
+                    {
+                    'name'                  : 10,
+                    'engineering_revision'  : 2,
+                    'description'           : 40,
                     },
                 'exitorder' : ['name','engineering_revision','description',],
                 'exitTrans' : ['description',],
@@ -118,6 +126,7 @@ class plm_component(models.Model):
                 'table': 'BOMS',                           # Destination table name. Used with 'db' transfer
                 'PName': 'parent',                         # Parent column name.     Used with 'db' transfer
                 'CName': 'child',                          # Child column name.      Used with 'db' transfer
+                'fixed' : True,                            # Uses fixded format (specify lenghts)
                 'fields':
                     {
                     'itemnum'               : 'relpos',
@@ -127,6 +136,13 @@ class plm_component(models.Model):
                     {
                     'itemnum'               : 'int',
                     'product_qty'           : 'float',
+                    },
+                'lengths':
+                    {
+                    'parent'                : 10,           # To be considered also if not mapped explicitely
+                    'child'                 : 10,           # To be considered also if not mapped explicitely
+                    'itemnum'               : 2,
+                    'product_qty'           : 5,
                     },
                 'exitnumber': ['engineering_revision',],
                }
@@ -272,6 +288,8 @@ class plm_component(models.Model):
         sys.setdefaultencoding('utf-8')
 #         Reset default encoding. to allow to work fine also as service.
         operation=False
+        fixedformat=False
+        queueFiles=False
         reportStatus='Failed'
         updateDate=self._get_last_session
         logging.debug("[TransferData] Start : %s" %(str(updateDate)))
@@ -279,8 +297,16 @@ class plm_component(models.Model):
         part_data_transfer=self.get_part_data_transfer
         bom_data_transfer=self.get_bom_data_transfer
         datamap=part_data_transfer['fields']
+        if 'fixed' in part_data_transfer:
+            fixedformat=part_data_transfer['fixed']            
+            if 'lengths' in part_data_transfer:
+                partfieldsLength=part_data_transfer['lengths']
+            else:
+                partfieldsLength=False
         if 'exitorder' in part_data_transfer:
             fieldsListed=part_data_transfer['exitorder']
+        if 'append' in part_data_transfer:
+            queueFiles=part_data_transfer['append']
         else:
             fieldsListed=datamap.keys()
         allIDs=self._query_data(cr, uid, updateDate, part_data_transfer['status'])
@@ -306,8 +332,12 @@ class plm_component(models.Model):
                      
             if 'file' in transfer:
                 bomfieldsListed=bom_data_transfer['fields'].keys()
+                if 'lengths' in bom_data_transfer:
+                    bomfieldsLength=bom_data_transfer['lengths']
+                else:
+                    bomfieldsLength=False
                 kindBomname=bom_data_transfer['kind']
-                operation=self._extract_data(cr, uid, allIDs, kindBomname, tmpData, fieldsListed, bomfieldsListed, transfer['file'])
+                operation=self._extract_data(cr, uid, allIDs, queueFiles, fixedformat, kindBomname, tmpData, fieldsListed, bomfieldsListed, transfer['file'],partLengths=partfieldsLength,bomLengths=bomfieldsLength)
 
         if operation:
             updateDate=self._set_last_session
@@ -330,7 +360,7 @@ class plm_component(models.Model):
         allIDs.extend(self.search(cr,uid,[('create_date','>',updateDate),('state','in',statusList)],order='engineering_revision'))
         return list(set(allIDs))
 
-    def _extract_data(self,cr,uid,allIDs, kindBomname='normal', anag_Data={}, anag_fields=False, rel_fields=False, transferdata={}):
+    def _extract_data(self,cr,uid,allIDs, queueFiles, fixedformat, kindBomname='normal', anag_Data={}, anag_fields=False, rel_fields=False, transferdata={},partLengths={},bomLengths={}):
         """
             action to be executed for Transmitted state.
             Transmit the object to ERP Metodo
@@ -371,9 +401,14 @@ class plm_component(models.Model):
             return False 
 
         filename=os.path.join(outputpath,fname)
-        if not self._export_csv(filename, anag_Data['labels'], anag_Data, True, delimiter, True):
-            raise osv.except_osv(_('Export Data Error'), _("Writing operations on file (%s) have failed." %(filename)))
-            return False
+        if fixedformat and (partLengths and bomLengths):
+            if not self._export_fixed(filename, anag_Data['labels'], anag_Data, False, partLengths, bomLengths,queueFiles):
+                raise osv.except_osv(_('Export Data Error'), _("No Bom extraction files was generated, about entity (%s)." %(fname)))
+                return False
+        else:
+            if not self._export_csv(filename, anag_Data['labels'], anag_Data, True, delimiter, queueFiles):
+                raise osv.except_osv(_('Export Data Error'), _("Writing operations on file (%s) have failed." %(filename)))
+                return False
         
         ext_fields=['parent','child']
         ext_fields.extend(rel_fields)
@@ -389,10 +424,68 @@ class plm_component(models.Model):
             if dataSet:
                 expData={'datas': dataSet}
                 
-                if not self._export_csv(filename, ext_fields, expData, True, delimiter):
-                    raise osv.except_osv(_('Export Data Error'), _("No Bom extraction files was generated, about entity (%s)." %(fname)))
-                    return False
+                if fixedformat and (partLengths and bomLengths):
+                    if not self._export_fixed(filename, ext_fields, expData, False, partLengths, bomLengths):
+                        raise osv.except_osv(_('Export Data Error'), _("No Bom extraction files was generated, about entity (%s)." %(fname)))
+                        return False
+                else:
+                    if not self._export_csv(filename, ext_fields, expData, True, delimiter, False):
+                        raise osv.except_osv(_('Export Data Error'), _("No Bom extraction files was generated, about entity (%s)." %(fname)))
+                        return False
         return True
+
+    def _export_fixed(self, fname, fields=[], result={}, write_title=False, partLengths={}, bomLengths={}, appendFlag=False):
+        import csv, stat
+        if not ('datas' in result) or not result:
+            logging.error("_export_csv : No 'datas' in result.")
+            return False
+
+        if not fields:
+            logging.error("_export_csv : No 'fields' in result.")
+            return False
+        
+        try:
+            existsFile=False
+            if os.path.exists(fname):
+                existsFile=True
+            operational='wb+'
+            if appendFlag:
+                operational='ab+'
+            fp = file(fname, operational)
+#             if write_title:
+#                 if not appendFlag:
+#                     writer.writerow(fields)
+#                 else:
+#                     if not existsFile:
+#                         writer.writerow(fields)
+            results=result['datas']
+            for datas in results:
+                row = ""
+                count=0
+                for data in datas:
+                    fieldLen=-1
+                    if (type(data) is types.StringType):
+                        value=str(data).replace('\n',' ').replace('\t','').strip()
+                    if (type(data) is types.UnicodeType):
+                        value=data.decode('utf8','ignore').replace('\n','').replace('\t','').strip()
+                    else:
+                        value=(str(data).strip() or '')
+                    fieldName=fields[count]
+                    if fieldName in partLengths.keys():
+                        fieldLen=partLengths[fieldName]
+                    elif fieldName in bomLengths.keys():
+                        fieldLen=bomLengths[fieldName]                        
+                    if (fieldLen<0):
+                        continue
+                    row +=value.ljust(fieldLen)[:fieldLen]
+                    count+=1
+                fp.write(row+'\n')
+            fp.close()
+            os.chmod(fname, stat.S_IRWXU|stat.S_IRWXO|stat.S_IRWXG)
+            return True
+        except IOError, (errno, strerror):
+            logging.error("_export_csv : IOError : "+str(errno)+" ("+str(strerror)+").")
+            return False
 
     def _export_csv(self, fname, fields=[], result={}, write_title=False, delimiter=',', appendFlag=False):
         import csv, stat
@@ -424,11 +517,11 @@ class plm_component(models.Model):
                 row = []
                 for data in datas:
                     if (type(data) is types.StringType):
-                        row.append(str(data).replace('\n',' ').replace('\t',' '))
+                        row.append(str(data).replace('\n','').replace('\t','').strip())
                     if (type(data) is types.UnicodeType):
-                        row.append(data.decode('utf8','ignore').replace('\n',' ').replace('\t',' '))
+                        row.append(data.decode('utf8','ignore').replace('\n','').replace('\t','').strip())
                     else:
-                        row.append(str(data) or '')
+                        row.append(str(data).strip() or '')
                 writer.writerow(row)
             fp.close()
             os.chmod(fname, stat.S_IRWXU|stat.S_IRWXO|stat.S_IRWXG)
