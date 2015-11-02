@@ -1,5 +1,12 @@
 .image_component_kanban{
-  width:100px;
-  border: 3px solid rgb(102, 96, 96);
+  width:70px;
+  border: 3px solid #893b74;
   border-radius: 7px;
+}
+.a_preview{
+	padding: 5px;
+}
+div.state_style{
+	display: -webkit-box;
+	padding-top: 15px;
 }

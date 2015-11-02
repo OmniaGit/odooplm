@@ -7,6 +7,7 @@
                 <link rel="stylesheet" href="/account/static/src/css/account.css"/>
                 <link rel="stylesheet" href="/account/static/src/less/account_reconciliation.less"/>
                 <link rel="stylesheet" href="/account/static/src/less/account_journal_dashboard.less"/>
+                <link rel="stylesheet" href="/web_kanban/static/src/less/kanban_dashboard.less"/>
                 <link rel="stylesheet" href="/plm/static/src/css/component_kanban.css"/>
             </xpath>
         </template>

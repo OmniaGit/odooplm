@@ -8,32 +8,8 @@ class ComponentDashboard(models.Model):
     @api.one
     def _kanban_dashboard(self):
         self.kanban_dashboard = json.dumps(self.get_bom_dashboard_datas())
-
-    @api.one
-    def _kanban_dashboard_graph(self):
-        datas = [{'type': 'past', 'value': 0.0, 'label': u'Past'}, {'type': 'past', 'value': 0.0, 'label': u'18-24 Oct'}, {'type': 'future', 'value': 55.0, 'label': u'This Week'}, {'type': 'future', 'value': 0.0, 'label': u'1-7 Nov'}, {'type': 'future', 'value': 0.0, 'label': u'8-14 Nov'}, {'type': 'future', 'value': 0.0, 'label': u'Future'}]
-        return [{'values':datas}]
-
-    @api.one
-    def _kanban_dashboard_preview(self):
-        self.kanban_dashboard_preview = json.dumps(self.get_previews())
         
     kanban_dashboard = fields.Text(compute='_kanban_dashboard')
-    kanban_dashboard_preview = fields.Text(compute='_kanban_dashboard_preview')
-    kanban_dashboard_graph = fields.Text(compute='_kanban_dashboard_graph')
-    show_on_dashboard = fields.Boolean(string='Show journal on dashboard', help="Whether this journal should be displayed on the dashboard or not", default=True)
-
-    @api.multi
-    def get_previews(self):
-        outList = []
-        outDict = {'linkedDocs':[]}
-        if self.ids:
-            relateddocs = self.get_related_docs()
-            for reldoc in relateddocs:
-                outList.append(reldoc.id)
-            if outList:
-                outDict['linkedDocs'] = outList
-        return outDict
         
     @api.multi
     def get_bom_dashboard_datas(self):
