@@ -188,7 +188,7 @@
                                    		- <field name="revisionid"/> 
                                    	</strong>
                                    <strong> 
-                                   		- <field name="state"/> 
+                                   		<field name="state"/>
                                    	</strong>	
                                    	<div name="tags"/> 
                                    	<field name="description"/> 

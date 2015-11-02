@@ -21,7 +21,6 @@ class ComponentDashboard(models.Model):
     kanban_dashboard = fields.Text(compute='_kanban_dashboard')
     kanban_dashboard_preview = fields.Text(compute='_kanban_dashboard_preview')
     kanban_dashboard_graph = fields.Text(compute='_kanban_dashboard_graph')
-    show_on_dashboard = fields.Boolean(string='Show journal on dashboard', help="Whether this journal should be displayed on the dashboard or not", default=True)
 
     @api.multi
     def get_previews(self):
@@ -34,7 +33,7 @@ class ComponentDashboard(models.Model):
             if outList:
                 outDict['linkedDocs'] = outList
         return outDict
-        
+
     @api.multi
     def get_bom_dashboard_datas(self):
         number_documents = 0
