@@ -25,6 +25,31 @@ import logging
 from openerp        import models, fields, api, SUPERUSER_ID, _, osv
 _logger         =   logging.getLogger(__name__)
 
+class report_plm_document_file(models.Model):
+    _name = "report.plm_document.file"
+    _description = "Files details by Directory"
+    _auto = False
+
+    file_size   =   fields.Integer(_('File Size'), readonly=True)
+    nbr         =   fields.Integer(_('# of Files'), readonly=True)
+    month       =   fields.Char(_('Month'), size=24,readonly=True)
+
+    _order = "month"
+    def init(self, cr):
+        tools.drop_view_if_exists(cr, 'report_plm_document_file')
+        cr.execute("""
+            create or replace view report_plm_document_file as (
+                select min(f.id) as id,
+                       count(*) as nbr,
+                       min(EXTRACT(MONTH FROM f.create_date)||'-'||to_char(f.create_date,'Month')) as month,
+                       sum(f.file_size) as file_size
+                from plm_document f
+                group by EXTRACT(MONTH FROM f.create_date)
+             )
+        """)
+
+report_plm_document_file()
+
 class report_plm_document_user(models.Model):
     _name = "report.plm_document.user"
     _description = "Files details by Users"
@@ -45,6 +70,7 @@ class report_plm_document_user(models.Model):
     type            =   fields.Char(_('Directory Type'),size=64,readonly=True)
 
 #     def init(self, cr):
+#         pass
 #         tools.drop_view_if_exists(cr, 'report_plm_document_user')
 #         cr.execute("""
 #             CREATE OR REPLACE VIEW report_plm_document_user as (
@@ -103,30 +129,7 @@ class report_plm_files_partner(models.Model):
 #          """)
 report_plm_files_partner()
 
-class report_plm_document_file(models.Model):
-    _name = "report.plm_document.file"
-    _description = "Files details by Directory"
-    _auto = False
 
-    file_size   =   fields.Integer(_('File Size'), readonly=True)
-    nbr         =   fields.Integer(_('# of Files'), readonly=True)
-    month       =   fields.Char(_('Month'), size=24,readonly=True)
-
-    _order = "month"
-    def init(self, cr):
-        tools.drop_view_if_exists(cr, 'report_plm_document_file')
-        cr.execute("""
-            create or replace view report_plm_document_file as (
-                select min(f.id) as id,
-                       count(*) as nbr,
-                       min(EXTRACT(MONTH FROM f.create_date)||'-'||to_char(f.create_date,'Month')) as month,
-                       sum(f.file_size) as file_size
-                from plm_document f
-                group by EXTRACT(MONTH FROM f.create_date)
-             )
-        """)
-
-report_plm_document_file()
 
 class report_plm_document_wall(models.Model):
     _name = "report.plm_document.wall"

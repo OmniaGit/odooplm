@@ -97,3 +97,4 @@ class component_all_custom_report(report_int):
         return packDocuments(docRepository,list(set(documents)),output)
 
 component_all_custom_report('report.all.product.product.pdf')
+#component_all_custom_report('report_all_product_product')

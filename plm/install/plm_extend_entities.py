@@ -49,7 +49,8 @@ class plm_component(models.Model):
     _name       = 'product.product'
     _inherit    = 'product.product'
     
-    def _father_part_compute(self, cr, uid, ids, name, arg, context={}):
+    @api.multi
+    def _father_part_compute(self, name='', arg={}):
         """ Gets father bom.
         @param self: The object pointer
         @param cr: The current row, from the database cursor,
@@ -62,13 +63,11 @@ class plm_component(models.Model):
         """
         result={}
         prod_ids=[]
-        if context is None:
-            context = {}
-        bom_line_objType = self.pool.get('mrp.bom.line')
-        prod_objs = self.browse(cr, uid, ids, context=context)
+        bom_line_objType = self.env['mrp.bom.line']
+        prod_objs = self.browse()
         for prod_obj in prod_objs:
-            tmp_ids = bom_line_objType.search(cr, uid, [('product_id','=',prod_obj.id)])
-            bom_line_objs = bom_line_objType.browse(cr, uid, tmp_ids, context=context)
+            tmp_ids = bom_line_objType.search([('product_id','=',prod_obj.id)])
+            bom_line_objs = bom_line_objType.browse(tmp_ids)
             for bom_line_obj in bom_line_objs:                
                 prod_ids.extend([bom_line_obj.bom_id.product_id.id])
             result[prod_obj.id]=list(set(prod_ids))

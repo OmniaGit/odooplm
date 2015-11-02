@@ -1,0 +1,186 @@
+<odoo>
+    
+	<record id="plm_dashboard_kanban" model="ir.ui.view">
+        <field name="name">plm.dashboard.kanban</field>
+        <field name="model">product.product</field>
+        <field name="arch" type="xml">
+            <kanban class="oe_background_grey o_kanban_dashboard o_account_kanban" create="0">
+                <field name="name"/>
+                <field name="engineering_code"/>
+                <field name="engineering_revision"/>
+                <field name="description"/>
+                <field name="engineering_writable"/>
+                <field name="engineering_material"/>
+                <field name="engineering_surface"/> 
+                <field name="state"/>
+                <field name="linkeddocuments"/>
+				<field name="father_part_ids" /> 
+                <field name="show_on_dashboard"/>
+                <field name="kanban_dashboard"/>
+	                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="#{kanban_color(0)}">
+	                    	<t t-value="JSON.parse(record.kanban_dashboard.raw_value)" t-set="dashboard"/>
+		                    <t t-call="ComponentTop"/>
+		                    <div class="container o_kanban_card_content o_visible"> 
+	                            <div class="row">
+	                                <t t-call="ComponentInfo"/>
+	                            </div>
+	                            <div class="row">
+	                            	<p>sono qui</p>
+	                            	<t t-esc="linkeddocuments"/>
+	                            	<t t-call="Previews"/>
+	                            </div>
+	                            <!-- <t t-call="ComponentBodyGraph"/> -->  <!-- Commented for not working, see accounting widget -->
+	                            
+		                    </div>
+							<div class="container o_kanban_card_manage_pane o_invisible">
+                                <t t-call="ComponentManage"/>
+                            </div>
+                        </div>
+                    </t>
+                    
+                    <t t-name="ComponentTop">
+                        <div class="o_kanban_card_header">
+                            <div class="o_kanban_card_header_title">
+                                <div class="o_primary">
+                                    <a type="object" name="open_action"><field name="name"/></a>
+                                </div>
+	                                <div class="o_secondary" t-att-title="dashboard.number_boms">
+	                                    <field name="description"/>
+	                                </div>
+                            </div>
+                            <div class="o_kanban_manage_button_section">
+                                <a class="o_kanban_manage_toggle_button" href="#">More <i class="fa fa-caret-down"/></a>
+                            </div>
+                        </div>
+                    </t>
+                    
+                    <t t-name="ComponentInfo">
+                        <div class="col-xs-6 o_kanban_primary_left">
+                                <div>
+                                    <button type="object" name="create_component" class="btn btn-primary btn-sm">New Component</button>
+                                </div>
+                        </div>
+                        <div class="col-xs-6 o_kanban_primary_right">
+                            <div class="row">
+                            	<div class="col-xs-6">
+                                    <a type="object" name="open_related_docs_action" >
+                                        <span title="Number Related Documents"><t t-esc="dashboard.number_documents"/> Docs</span>
+                                    </a>
+                                    <a type="object" name="open_related_boms_action" >
+                                        <span title="Number Related Boms"><t t-esc="dashboard.number_boms"/> Boms</span>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-6">
+                                    <span title="Number Related Documents">Docs</span>
+                                </div>
+                                <div class="col-xs-6 text-right">
+                                    <span><t t-esc="dashboard.number_documents"/></span>
+                                </div>
+                            </div>
+                            <div class="row" name="latest_statement">
+                                <div class="col-xs-6">
+                                    <span title="Number Related Boms">Boms</span>
+                                </div>
+                                <div class="col-xs-6 text-right">
+                                    <span><t t-esc="dashboard.number_boms"/></span>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                    
+                    <t t-name="ComponentManage"> 
+                    	<div class="row">
+	                        <div class="col-xs-4 o_kanban_card_manage_section o_kanban_manage_view" >
+	                            <div class="o_kanban_card_manage_title">
+	                                <span>View</span>
+	                            </div>
+	                            <div>
+	                                <a type="object" name="open_normal_bom">
+	                                    <t>Normal Boms</t>
+	                                </a>
+	                                <a type="object" name="open_engin_bom">
+	                                    <t>Engineering Boms</t>
+	                                </a>
+	                                <a type="object" name="open_spare_bom">
+	                                    <t>Spare Boms</t>
+	                                </a>
+	                            </div>
+	                        </div>
+	                        <div class="col-xs-4 o_kanban_card_manage_section o_kanban_manage_view">
+	                            <div class="o_kanban_card_manage_title">
+	                                <span>New</span>
+	                            </div>
+	                            <div>
+	                                <a type="object" name="create_normal_bom">
+	                                    <t>Normal Bom</t>
+	                                </a>
+	                                <a type="object" name="create_spare_bom">
+	                                    <t>Spare Bom</t>
+	                                </a>
+	                            </div>
+	                        </div>
+	                        <div class="col-xs-4 o_kanban_card_manage_section o_kanban_manage_view" >
+	                            <div class="o_kanban_card_manage_title">
+	                                <span>Report</span>
+	                            </div>
+	                            <div>
+	                                <a type="action" title="Print Bom All Levels PDF Drawings" name="%(plm.report_all_product_product_pdf)d">
+	                                    <t>Print Bom All Levels PDF Drawings</t>
+	                                </a>
+	                                <a type="action" title="Print Bom One Level PDF Drawings" name="%(plm.report_one_product_product_pdf)d">
+	                                    <t>Print Bom One Level PDF Drawings</t>
+	                                </a>
+	                                <a type="action" title="Print Attached PDF Drawings" name="%(plm.report_product_product_pdf)d">
+	                                    <t>Print Attached PDF Drawings</t>
+	                                </a>
+	                                <a type="action" title="Print Spare Parts Manual" name="%(plm.report_product_product_spare_parts_pdf)d">
+	                                    <t>Print Spare Parts Manual</t>
+	                                </a>
+	                                <a type="action" title="Print Spare Parts Manual One Level" name="%(plm.report_product_product_spare_parts_pdf_one)d">
+	                                    <t>Print Spare Parts Manual One Level</t>
+	                                </a>
+	                            </div>
+	                        </div>
+	                        <div class="col-xs-4 o_kanban_card_manage_section o_kanban_manage_view" style="min-width: 250px;">
+	                            <div class="o_kanban_card_manage_title">
+	                                <span>Action</span>
+	                            </div>
+	                            <div>
+	                                <a type="action" title="Product BoM Where Used Structure" name="%(action_product_bom_structure_where)d">
+	                                    <t>Product BoM Where Used Structure</t>
+	                                </a>
+	                            </div>
+	                        </div>
+                        </div>
+                        <div class="row o_kanban_card_settings">
+                            <div class="col-xs-6">
+                                <a type="object" name="toggle_favorite"><i t-attf-class="fa o_dashboard_star #{record.show_on_dashboard.raw_value ? 'fa-star' : 'fa-star-o'}" title="Click to add/remove from favorite"/> Favorite</a>
+                            </div>
+                            <div class="col-xs-6 text-right">
+                                <a t-if="widget.editable" type="edit">Settings</a>
+                            </div>
+                        </div>
+                    </t>
+                    <t t-name="ComponentBodyGraph">
+                        <div class="o_kanban_graph_section">
+                            <field name="kanban_dashboard_graph" t-att-graph_type="_.contains(['cash','bank'],name) ? 'line' : 'bar'" widget="dashboard_graph"/>
+                        </div>
+                    </t>
+                    
+                    <t t-name="Previews">
+                    	<p>quo</p>
+            			<t t-foreach="record.linkeddocuments" t-as="document">
+            				<p>qua</p>
+            				<t t-esc="document.preview"/>
+            			</t>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+</odoo>

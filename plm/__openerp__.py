@@ -68,7 +68,8 @@ Supported Editors :
        
     """,
     'data': [
-            'install/board_plm_view.xml',
+             'install/import_stylesheet.xml',
+             'install/board_plm_view.xml',
             'install/res_config_view.xml',
             
             'install/plmdocuments/document_view.xml',
@@ -86,7 +87,6 @@ Supported Editors :
             'install/plmmaterials/material_view.xml',
             'install/plmfinishings/finishing_view.xml',
             
-            #'install/plm_dashboard.xml',
         
         #sequence
             'install/plmdescriptions/description_sequence.xml',
@@ -94,10 +94,15 @@ Supported Editors :
             'install/plmfinishings/finishing_sequence.xml',
         
         #report
-            #'install/report/component_report.xml',
+            'install/report/component_report.xml',
+            #'install/newreports/report_all_product_product.xml'
+            #'install/newreports/report_data.xml'
+            
             #'install/report/document_report.xml',
             #'install/report/checkout_report.xml',
             'install/report/bom_structure.xml',
+            
+            'install/plm_component_kanban.xml',
         
         #workflow
             'install/plmdocuments/document_workflow.xml',
