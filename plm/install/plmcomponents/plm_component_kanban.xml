@@ -1,7 +1,7 @@
 <odoo>
     
-	<record id="plm_dashboard_kanban" model="ir.ui.view">
-        <field name="name">plm.dashboard.kanban</field>
+	<record id="plm_component_kanban" model="ir.ui.view">
+        <field name="name">plm.component.kanban</field>
         <field name="model">product.product</field>
         <field name="arch" type="xml">
             <kanban class="oe_background_grey o_kanban_dashboard o_account_kanban" create="0">
@@ -17,22 +17,21 @@
 				<field name="father_part_ids" /> 
                 <field name="show_on_dashboard"/>
                 <field name="kanban_dashboard"/>
-	                <templates>
+                <field name="kanban_dashboard_preview"/>
+	            <templates>
                     <t t-name="kanban-box">
                         <div t-attf-class="#{kanban_color(0)}">
 	                    	<t t-value="JSON.parse(record.kanban_dashboard.raw_value)" t-set="dashboard"/>
+	                    	<t t-value="JSON.parse(record.kanban_dashboard_preview.raw_value)" t-set="dashboard_previews"/>
 		                    <t t-call="ComponentTop"/>
 		                    <div class="container o_kanban_card_content o_visible"> 
 	                            <div class="row">
 	                                <t t-call="ComponentInfo"/>
 	                            </div>
 	                            <div class="row">
-	                            	<p>sono qui</p>
-	                            	<t t-esc="linkeddocuments"/>
 	                            	<t t-call="Previews"/>
 	                            </div>
 	                            <!-- <t t-call="ComponentBodyGraph"/> -->  <!-- Commented for not working, see accounting widget -->
-	                            
 		                    </div>
 							<div class="container o_kanban_card_manage_pane o_invisible">
                                 <t t-call="ComponentManage"/>
@@ -172,11 +171,13 @@
                     </t>
                     
                     <t t-name="Previews">
-                    	<p>quo</p>
-            			<t t-foreach="record.linkeddocuments" t-as="document">
-            				<p>qua</p>
-            				<t t-esc="document.preview"/>
+                    	<div style="display: -webkit-inline-box;">
+            			<t t-foreach="dashboard_previews.linkedDocs" t-as="documentId">
+                            <a type="object" name="openDocument" >
+                                <img t-att-src="kanban_image('plm.document', 'preview', documentId)" class="img-responsive image_component_kanban" style="width:100px;"/>
+                            </a>
             			</t>
+            			</div>
                     </t>
                 </templates>
             </kanban>
