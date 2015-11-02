@@ -102,7 +102,7 @@ Supported Editors :
             #'install/report/checkout_report.xml',
             'install/report/bom_structure.xml',
             
-            'install/plm_component_kanban.xml',
+            'install/plmcomponents/plm_component_kanban.xml',
         
         #workflow
             'install/plmdocuments/document_workflow.xml',
