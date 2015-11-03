@@ -124,7 +124,7 @@ class ComponentDashboard(models.Model):
     
     @api.multi
     def openDocument(self):
-        pass
+        print 'Open document'
         
     @api.multi
     def report_components(self):

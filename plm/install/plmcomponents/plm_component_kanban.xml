@@ -18,7 +18,7 @@
                 <field name="kanban_dashboard"/>
 	            <templates>
                     <t t-name="kanban-box">
-                        <div t-attf-class="#{kanban_color(0)}">
+                        <div t-attf-class="#{kanban_color(0)}" style="max-height: 340px;">
                         	<t t-value="record.state.raw_value" t-set="stateToUse"/>
 	                    	<t t-value="JSON.parse(record.kanban_dashboard.raw_value)" t-set="dashboard"/>
 		                    <t t-call="ComponentTop"/>
@@ -30,7 +30,7 @@
 	                            	<t t-call="Previews"/>
 	                            </div>
 		                    </div>
-							<div class="container o_kanban_view o_kanban_card_manage_pane o_invisible">
+							<div class="container o_kanban_view o_kanban_card_manage_pane o_invisible" style="position: absolute;">
                                 <t t-call="ComponentManage"/>
                             </div>
                         </div>
@@ -42,11 +42,8 @@
                                 <div class="o_primary">
                                     <a type="object" name="open_action"><field name="name"/></a>
                                 </div>
-                                <div class="o_secondary" t-att-title="dashboard.number_boms">
-                                    <field name="description"/>
-                                </div>
                                 <div class="o_secondary">
-                                    <span title="Revision Number">Revision Number:  <field name="engineering_revision"/></span>
+                                    <span title="Revision Number">Engineering revision:  <field name="engineering_revision"/></span>
                                 </div>
                             </div>
                             <div style="display: flex;">
@@ -109,7 +106,7 @@
                     
                     <t t-name="ComponentManage"> 
                     	<div class="row">
-	                        <div class="col-xs-4 o_kanban_card_manage_section o_kanban_manage_view" >
+	                        <div class="col-xs-4 o_kanban_card_manage_section o_kanban_manage_view more_containers" style="width: 130px;">
 	                            <div class="o_kanban_card_manage_title">
 	                                <span>View</span>
 	                            </div>
@@ -125,7 +122,7 @@
 	                                </a>
 	                            </div>
 	                        </div>
-	                        <div class="col-xs-4 o_kanban_card_manage_section o_kanban_manage_view">
+	                        <div class="col-xs-4 o_kanban_card_manage_section o_kanban_manage_view more_containers" style="width: 100px;">
 	                            <div class="o_kanban_card_manage_title">
 	                                <span>New</span>
 	                            </div>
@@ -138,7 +135,7 @@
 	                                </a>
 	                            </div>
 	                        </div>
-	                        <div class="col-xs-4 o_kanban_card_manage_section o_kanban_manage_view" >
+	                        <div class="col-xs-4 o_kanban_card_manage_section o_kanban_manage_view more_containers" style="width: 230px;">
 	                            <div class="o_kanban_card_manage_title">
 	                                <span>Report</span>
 	                            </div>
@@ -160,7 +157,7 @@
 	                                </a>
 	                            </div>
 	                        </div>
-	                        <div class="col-xs-4 o_kanban_card_manage_section o_kanban_manage_view" style="min-width: 250px;">
+	                        <div class="col-xs-4 o_kanban_card_manage_section o_kanban_manage_view more_containers" style="min-width: 250px;">
 	                            <div class="o_kanban_card_manage_title">
 	                                <span>Action</span>
 	                            </div>
@@ -170,11 +167,6 @@
 	                                </a>
 	                            </div>
 	                        </div>
-                        </div>
-                        <div class="row o_kanban_card_settings">
-                            <div class="col-xs-6 text-right">
-                                <a t-if="widget.editable" type="edit">Settings</a>
-                            </div>
                         </div>
                     </t>
                     
