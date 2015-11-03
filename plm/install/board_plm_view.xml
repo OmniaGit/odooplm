@@ -64,7 +64,7 @@
             <field name="view_mode">tree</field>
         </record>
 
- <!--
+ 
  	    <record model="ir.actions.act_window" id="action_view_documents_custom">
             <field name="name">Component Status</field>
             <field name="res_model">plm.document</field>
@@ -74,7 +74,7 @@
             <field name="context">{'group_by': ['create_date','create_uid']}</field>
             <field name="search_view_id" ref="plm.plm_document_search"/>
         </record>
-     
+        
  	    <record model="ir.actions.act_window" id="action_view_checkout_custom">
             <field name="name">Component Status</field>
             <field name="res_model">plm.checkout</field>
@@ -84,7 +84,7 @@
             <field name="context">{'group_by': ['create_date','create_uid']}</field>
             <field name="search_view_id" ref="plm.plm_checkout_search"/>
         </record>
-       -->    
+        
         <record model="ir.ui.view" id="board_plm_manager_form">
             <field name="name">board.plm.manager.form</field>
              <field name="model">board.board</field>
@@ -94,11 +94,15 @@
                      <board style="1-1" >
 
                      	<column>
-
+                            <action string="Documents"
+                                name="%(action_view_documents_custom)d"
+                                view_mode="tree,form"/>
                             <action string="Component Status"
                                 name="%(action_view_component_status)d"
                                 view_mode="tree"/>
-
+                            <action string="Checked Out Documents"
+                                name="%(action_view_checkout_custom)d"
+                                view_mode="tree,form"/>
 
                         </column>
                      	<column>
