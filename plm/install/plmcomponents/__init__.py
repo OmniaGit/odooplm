@@ -19,3 +19,4 @@
 #
 ##############################################################################
 import component_report
+import plm_component_kanban
