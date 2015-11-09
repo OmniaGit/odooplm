@@ -576,6 +576,13 @@ class plm_document(models.Model):
             return objId
         return False
 
+    def blindwrite(self, cr, uid, ids, vals, context=None):
+        """
+            blind write for xml-rpc call for recovering porpouse
+            DO NOT USE FOR COMMON USE !!!!
+        """
+        return self.write(cr, uid, ids, vals, context=context, check=False)
+
 #   Overridden methods for this entity
     def _get_filestore(self, cr):
         dms_Root_Path=tools.config.get('document_path', os.path.join(tools.config['root_path'], 'filestore'))
