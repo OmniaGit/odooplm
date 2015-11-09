@@ -24,3 +24,8 @@ import document_report
 import checkout_report
 import bom_structure
 import spare_parts_manual
+
+
+
+
+#import new_reports   # To Delete when reports are working
