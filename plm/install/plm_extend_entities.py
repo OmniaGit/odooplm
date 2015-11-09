@@ -204,19 +204,25 @@ class plm_relation_line(models.Model):
     _inherit    = 'mrp.bom.line'
     _order      = "itemnum"
 
-    def _get_child_bom_lines(self, cr, uid, ids, field_name, arg, context=None):
+    @api.one
+    def _get_child_bom_lines(self):
         """
             If the BOM line refers to a BOM, return the ids of the child BOM lines
         """
         bom_obj = self.pool['mrp.bom']
         res = {}
-        for bom_line in self.browse(cr, uid, ids, context=context):
-            bom_id = bom_obj._bom_find(cr, uid,
-                product_tmpl_id=bom_line.product_id.product_tmpl_id.id,
-                product_id=bom_line.product_id.id, bomType=bom_line.type, context=context)
+        for bom_line in self.browse(self.ids):
+            bom_id = bom_obj._bom_find(
+                                        self.env.cr,
+                                        self.env.uid,
+                                        product_tmpl_id=bom_line.product_id.product_tmpl_id.id,
+                                        product_id=bom_line.product_id.id, 
+                                        bomType=bom_line.type)
             if bom_id:
-                child_bom = bom_obj.browse(cr, uid, bom_id, context=context)
-                res[bom_line.id] = [x.id for x in child_bom.bom_line_ids]
+                child_bom = bom_obj.browse(self.env.cr, self.env.uid, bom_id)
+                for childBomLine in child_bom.bom_line_ids:
+                    res[childBomLine.id]=childBomLine._get_child_bom_lines()
+                res[bom_line.id] = [x.id for x in child_bom.bom_line_ids] #child_bom.bom_line_ids[0]._get_child_bom_lines()
             else:
                 res[bom_line.id] = False
         return res

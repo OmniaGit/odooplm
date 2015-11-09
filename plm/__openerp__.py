@@ -82,7 +82,7 @@ Supported Editors :
             'install/plmdescriptions/description_view.xml',
             'install/plmsparebom/sparebom_view.xml',
             'install/plmsparebom/description_view.xml',
-            #'install/plmcomparebom/compare_bom_view.xml',
+            'install/plmcomparebom/compare_bom_view.xml',
             'install/plmcheckedout/checkout_view.xml',
             'install/plmmaterials/material_view.xml',
             'install/plmfinishings/finishing_view.xml',
@@ -95,8 +95,6 @@ Supported Editors :
         
         #report
             'install/report/component_report.xml',
-            #'install/newreports/report_all_product_product.xml'
-            #'install/newreports/report_data.xml'
             
             #'install/report/document_report.xml',
             #'install/report/checkout_report.xml',
@@ -112,6 +110,7 @@ Supported Editors :
             'security/base_plm_security.xml',
             #'security/res.groups.csv',
             #'security/ir.model.access.csv',
+
        ],
     'demo': [
         ],
