@@ -82,7 +82,7 @@ class ComponentDashboard(models.Model):
         boms = self.get_related_boms()
         domain = [('id','in',boms.ids),('type','=','spbom')]
         return self.common_open('Related Boms', 'mrp.bom', 'tree,form', 'form',  boms.ids, self.env.context, domain)
-        
+
     @api.multi
     def open_new_component(self):
         print 'Open New Component'
@@ -90,11 +90,10 @@ class ComponentDashboard(models.Model):
 
     @api.multi
     def open_related_docs_action(self):
-        print 'Open Related Docs'
         docs = self.get_related_docs()
-        domain = [('id','in',docs.ids)]
+        domain = [('id', 'in', docs.ids)]
         return self.common_open('Related Documents', 'plm.document', 'tree,form', 'form', docs.ids, self.env.context, domain)
-        
+
     @api.multi
     def open_related_boms_action(self):
         print 'Open Related Boms'
@@ -111,28 +110,27 @@ class ComponentDashboard(models.Model):
         if docIds:
             context.update({'default_product_tmpl_id':self.product_tmpl_id.id})
         return self.common_open('Related Boms', 'mrp.bom', 'form', 'form',  False, context)
-        
+
     @api.multi
     def create_spare_bom(self):
-        print 'Open Spare Boms'
         context = self.env.context.copy()
         context.update({'default_type':'spbom'})
         docIds = self.get_related_docs()
         if docIds:
             context.update({'default_product_tmpl_id':self.product_tmpl_id.id})
         return self.common_open('Related Boms', 'mrp.bom', 'form', 'form',  False, context)
-    
+
     @api.multi
     def openDocument(self):
         print 'Open document'
-        
+
     @api.multi
     def report_components(self):
         pass
-        
+
     def computePrevious(self, linkeddocs):
         print 'here'
         print linkeddocs
         pass
-    
+
 ComponentDashboard()

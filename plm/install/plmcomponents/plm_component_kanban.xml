@@ -173,7 +173,7 @@
                     <t t-name="Previews">
                     	<div style="display: -webkit-inline-box;">
             			<t t-foreach="record.linkeddocuments.raw_value" t-as="documentId">
-                            <a type="object" name="openDocument" class="a_preview">
+                            <a type="object" name="openDocument" class="a_preview" context="{'documentID': ${documentId}}">
                                 <img t-att-src="kanban_image('plm.document', 'preview', documentId)" class="img-responsive image_component_kanban"/>
                             </a>
             			</t>
