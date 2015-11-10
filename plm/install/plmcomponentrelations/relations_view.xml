@@ -187,7 +187,8 @@
             context="{'default_product_id': active_id}"
             view_type="tree"
             view_id="mrp_part_tree_view_where"
-            res_model="product.product"/>
+            res_model="product.product"
+            src_model="product.product"/>	<!-- Do not remove src_model. It is used to get action only in component form -->
 			
  <!-- Tree Structure Views on MRP -->
  
