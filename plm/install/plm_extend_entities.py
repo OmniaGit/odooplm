@@ -61,14 +61,14 @@ class plm_component(models.Model):
         @param context: A standard dictionary for contextual values
         @return:  Dictionary of values
         """
-        prod_ids=[]
         bom_line_objType = self.env['mrp.bom.line']
         prod_objs = self.browse(self.ids)
         for prod_obj in prod_objs:
+            prod_ids=[]
             bom_line_objs = bom_line_objType.search([('product_id','=',prod_obj.id)])
             for bom_line_obj in bom_line_objs:                
                 prod_ids.extend([bom_line_obj.bom_id.product_id.id])
-        self.father_part_ids = self.env['product.product'].browse(list(set(prod_ids)))
+            prod_obj.father_part_ids = self.env['product.product'].browse(list(set(prod_ids)))
 
     linkeddocuments = fields.Many2many  ('plm.document', 'plm_component_document_rel','component_id','document_id', _('Linked Docs'))  
     tmp_material    = fields.Many2one   ('plm.material',_('Raw Material'), required=False, change_default=True, help=_("Select raw material for current product"))
