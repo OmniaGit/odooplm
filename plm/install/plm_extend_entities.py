@@ -198,23 +198,19 @@ class plm_relation_line(models.Model):
         """
             If the BOM line refers to a BOM, return the ids of the child BOM lines
         """
-        bom_obj = self.pool['mrp.bom']
-        res = {}
-        for bom_line in self.browse(self.ids):
+        bom_obj = self.env['mrp.bom']
+        for bom_line in self:
             bom_id = bom_obj._bom_find(
-                                        self.env.cr,
-                                        self.env.uid,
                                         product_tmpl_id=bom_line.product_id.product_tmpl_id.id,
                                         product_id=bom_line.product_id.id, 
                                         bomType=bom_line.type)
             if bom_id:
-                child_bom = bom_obj.browse(self.env.cr, self.env.uid, bom_id)
+                child_bom = bom_obj.browse(bom_id)
                 for childBomLine in child_bom.bom_line_ids:
-                    res[childBomLine.id]=childBomLine._get_child_bom_lines()
-                res[bom_line.id] = [x.id for x in child_bom.bom_line_ids] #child_bom.bom_line_ids[0]._get_child_bom_lines()
+                    childBomLine._get_child_bom_lines()
+                self.child_line_ids = [x.id for x in child_bom.bom_line_ids]
             else:
-                res[bom_line.id] = False
-        return res
+                self.child_line_ids = False
 
     state                   =   fields.Selection    (related="product_id.state",                string=_("Status"),     help=_("The status of the product in its LifeCycle."),  store=False)
     engineering_revision    =   fields.Integer      (related="product_id.engineering_revision", string=_("Revision"),   help=_("The revision of the product."),                 store=False)
