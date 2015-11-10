@@ -61,23 +61,20 @@ class plm_component(models.Model):
         @param context: A standard dictionary for contextual values
         @return:  Dictionary of values
         """
-        result={}
         prod_ids=[]
         bom_line_objType = self.env['mrp.bom.line']
-        prod_objs = self.browse()
+        prod_objs = self.browse(self.ids)
         for prod_obj in prod_objs:
-            tmp_ids = bom_line_objType.search([('product_id','=',prod_obj.id)])
-            bom_line_objs = bom_line_objType.browse(tmp_ids)
+            bom_line_objs = bom_line_objType.search([('product_id','=',prod_obj.id)])
             for bom_line_obj in bom_line_objs:                
                 prod_ids.extend([bom_line_obj.bom_id.product_id.id])
-            result[prod_obj.id]=list(set(prod_ids))
-        return result
+        self.father_part_ids = self.env['product.product'].browse(list(set(prod_ids)))
 
     linkeddocuments = fields.Many2many  ('plm.document', 'plm_component_document_rel','component_id','document_id', _('Linked Docs'))  
     tmp_material    = fields.Many2one   ('plm.material',_('Raw Material'), required=False, change_default=True, help=_("Select raw material for current product"))
     #tmp_treatment   = fields.Many2one('plm.treatment',_('Thermal Treatment'), required=False, change_default=True, help=_("Select thermal treatment for current product"))
     tmp_surface     = fields.Many2one   ('plm.finishing',_('Surface Finishing'), required=False, change_default=True, help=_("Select surface finishing for current product"))
-    father_part_ids = fields.Many2many  ('product.product', compute = _father_part_compute, method=True, string=_("BoM Hierarchy"), store =False)
+    father_part_ids = fields.Many2many  ('product.product', compute = _father_part_compute, string=_("BoM Hierarchy"), store =False)
 
     def on_change_tmpmater(self, cr, uid, ids, tmp_material=False):
         values={'engineering_material':''}
