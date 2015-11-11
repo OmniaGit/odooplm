@@ -145,13 +145,17 @@
 	        name="Search on Documents"
 	        action="plm.plm_action_document_form"
 	        id="menu_document_files"
-	        parent="plm.plm_document_form" />
+	        parent="plm.plm_document_form" 
+	    	sequence="10" 
+	    />
 	    
 	    <menuitem
 	        name="Search on Checked-Out Documents"
 	        action="plm.action_plm_checkout"
 	        id="menu_checkout"
-	        parent="plm.plm_document_form" />
+	        parent="plm.plm_document_form" 
+	    	sequence="12"
+	    />
     
 	</data>
  </openerp>

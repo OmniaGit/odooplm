@@ -99,7 +99,9 @@
         name="Search on Backup Data Set"
         action="action_plm_backupdoc"
         id="menu_backupdoc"
-        parent="plm_document_form"/>
+        parent="plm_document_form"
+        sequence="13"
+    />
  
  
     <record id="restore_document_button_view" model="ir.ui.view">
