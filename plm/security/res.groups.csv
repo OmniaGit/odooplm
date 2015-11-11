@@ -1,4 +1,3 @@
-"id","implied_ids/id"
-"group_plm_admin","base.group_document_user,stock.group_stock_user"
-"group_plm_integrationuser","base.group_document_user,stock.group_stock_user,mrp.group_mrp_user"
-"group_plm_viewuser","base.group_document_user"
+id;implied_ids/id
+group_plm_admin;stock.group_stock_user
+group_plm_integrationuser;stock.group_stock_user,mrp.group_mrp_user

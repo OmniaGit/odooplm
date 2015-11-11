@@ -68,6 +68,7 @@ Supported Editors :
        
     """,
     'data': [
+             'security/base_plm_security.xml',
             'install/import_stylesheet.xml',
             'install/plmdocuments/document_view.xml',
             'install/plmcheckedout/checkout_view.xml',
@@ -108,9 +109,9 @@ Supported Editors :
             'install/plmcomponents/component_workflow.xml',
             
             #security
-            'security/base_plm_security.xml',
-            #'security/res.groups.csv',
-            #'security/ir.model.access.csv',
+            
+            'security/res.groups.csv',
+            'security/ir.model.access.csv',
 
        ],
     'demo': [

@@ -101,6 +101,7 @@
         id="menu_backupdoc"
         parent="plm_document_form"
         sequence="13"
+    	groups="plm.group_plm_admin" 
     />
  
  
