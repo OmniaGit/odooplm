@@ -20,6 +20,7 @@
 	                <field name="state" readonly="True"/>
 	            	<field name="description" select="True"/>
 	                <field name="source_id" string="Source Relation Document"/>
+ 	            	<field name="type" />
                 </field>
         		<field name="product_qty" position="after">
 	               	<field name="weight_net" readonly="True"/>
@@ -39,6 +40,7 @@
                 	<field name="engineering_revision"/>
                 	<field name="description" select="True"/>
                     <field name="source_id" string="Source Relation Document"/>
+  	            	<field name="type" />
                    	<field name="weight_net"/>
           		</field>
         	</field>
@@ -70,6 +72,7 @@
 		                <field name="state" readonly="True"/>
 		            	<field name="description" readonly="True"/>
 		                <field name="source_id" string="Source Relation Document"/>
+ 	            		<field name="type" />
 	           		</xpath>
              	</data>
             	<data>
