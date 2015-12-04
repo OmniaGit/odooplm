@@ -356,9 +356,9 @@ class plm_component(models.Model):
             statusList=['released']
         else:
             statusList=statuses
-            
-        allIDs=self.search(cr,uid,[('write_date','>',updateDate),('state','in',statusList)],order='engineering_revision')
-        allIDs.extend(self.search(cr,uid,[('create_date','>',updateDate),('state','in',statusList)],order='engineering_revision'))
+        objTempl=self.pool.get('product.template')           
+        allIDs=objTempl.search(cr,uid,[('write_date','>',updateDate),('state','in',statusList)],order='engineering_revision')
+        allIDs.extend(objTempl.search(cr,uid,[('create_date','>',updateDate),('state','in',statusList)],order='engineering_revision'))
         return list(set(allIDs))
 
     def _extract_data(self,cr,uid,allIDs, queueFiles, fixedformat, kindBomname='normal', anag_Data={}, anag_fields=False, rel_fields=False, transferdata={},partLengths={},bomLengths={}):
