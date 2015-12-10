@@ -527,6 +527,9 @@ class plm_component(models.Model):
             try:
                 return super(plm_component,self).create(cr, uid, vals, context=context)
             except Exception ,ex:
+                import psycopg2
+                if isinstance(ex,psycopg2.IntegrityError):
+                    raise ex
                 raise Exception(" (%r). It has tried to create with values : (%r)."%(ex,vals))
         return False
 
