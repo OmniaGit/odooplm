@@ -27,7 +27,7 @@ class ComponentDashboard(models.Model):
 
     @api.multi
     def get_related_boms(self):
-        return self.env['mrp.bom'].search([('product_tmpl_id','=',self.ids[0])])
+        return self.env['mrp.bom'].search([('product_tmpl_id','=',self.product_tmpl_id.id)])
 
     @api.multi
     def get_related_docs(self):
@@ -123,16 +123,9 @@ class ComponentDashboard(models.Model):
         return self.common_open('Related Boms', 'mrp.bom', 'form', 'form',  False, context)
     
     @api.multi
-    def openDocument(self):
+    def openDocument(self, vals=False):
         print 'Open document'
-        
-    @api.multi
-    def report_components(self):
-        pass
-        
-    def computePrevious(self, linkeddocs):
-        print 'here'
-        print linkeddocs
-        pass
+        print 'Context: %s'%(self.env.context)
+        print 'Vals: ',vals
     
 ComponentDashboard()
