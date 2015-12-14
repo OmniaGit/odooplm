@@ -169,6 +169,7 @@ class plm_component(models.Model):
                     'name'                  : 'transfer',
                     'bomname'               : 'transferbom',
                     'directory'             : '/tmp',
+                    'textquoted'            : False,
                     }
                 }
 
@@ -257,7 +258,7 @@ class plm_component(models.Model):
 
                 for languageName in languageNames:
                     for fieldTranslated in fieldsTranslated:
-                        dataValue=rowData[indexFields[fieldTranslated]]
+                        dataValue=rowData[fieldTranslated]
                         if not dataValue:
                             rectData.append('')
                         else:
@@ -289,7 +290,9 @@ class plm_component(models.Model):
 #         Reset default encoding. to allow to work fine also as service.
         operation=False
         fixedformat=False
-        queueFiles=False
+        queueFiles={'anagrafica':False, 'distinte':False}
+        partfieldsLength=False
+        bomfieldsLength=False
         reportStatus='Failed'
         updateDate=self._get_last_session
         logging.debug("[TransferData] Start : %s" %(str(updateDate)))
@@ -301,12 +304,12 @@ class plm_component(models.Model):
             fixedformat=part_data_transfer['fixed']            
             if 'lengths' in part_data_transfer:
                 partfieldsLength=part_data_transfer['lengths']
-            else:
-                partfieldsLength=False
         if 'exitorder' in part_data_transfer:
             fieldsListed=part_data_transfer['exitorder']
         if 'append' in part_data_transfer:
-            queueFiles=part_data_transfer['append']
+            queueFiles['anagrafica']=part_data_transfer['append']
+        if 'append' in bom_data_transfer:
+            queueFiles['distinte']=part_data_transfer['append']
         else:
             fieldsListed=datamap.keys()
         allIDs=self._query_data(cr, uid, updateDate, part_data_transfer['status'])
@@ -334,8 +337,6 @@ class plm_component(models.Model):
                 bomfieldsListed=bom_data_transfer['fields'].keys()
                 if 'lengths' in bom_data_transfer:
                     bomfieldsLength=bom_data_transfer['lengths']
-                else:
-                    bomfieldsLength=False
                 kindBomname=bom_data_transfer['kind']
                 operation=self._extract_data(cr, uid, allIDs, queueFiles, fixedformat, kindBomname, tmpData, fieldsListed, bomfieldsListed, transfer['file'],partLengths=partfieldsLength,bomLengths=bomfieldsLength)
 
@@ -355,9 +356,9 @@ class plm_component(models.Model):
             statusList=['released']
         else:
             statusList=statuses
-            
-        allIDs=self.search(cr,uid,[('write_date','>',updateDate),('state','in',statusList)],order='engineering_revision')
-        allIDs.extend(self.search(cr,uid,[('create_date','>',updateDate),('state','in',statusList)],order='engineering_revision'))
+        objTempl=self.pool.get('product.template')           
+        allIDs=objTempl.search(cr,uid,[('write_date','>',updateDate),('state','in',statusList)],order='engineering_revision')
+        allIDs.extend(objTempl.search(cr,uid,[('create_date','>',updateDate),('state','in',statusList)],order='engineering_revision'))
         return list(set(allIDs))
 
     def _extract_data(self,cr,uid,allIDs, queueFiles, fixedformat, kindBomname='normal', anag_Data={}, anag_fields=False, rel_fields=False, transferdata={},partLengths={},bomLengths={}):
@@ -373,6 +374,8 @@ class plm_component(models.Model):
                 return bomid.bom_line_ids
             return []
         
+        delimiter=','
+        textQuoted=False
         if not anag_fields:
             anag_fields=['name','description']
         if not rel_fields:
@@ -386,13 +389,15 @@ class plm_component(models.Model):
             exte='csv'
             fname=datetime.now().isoformat(' ').replace('.','').replace(':','').replace(' ','').replace('-','')+'.'+exte
             bomname="bom"
-            delimiter=','
         else:
             outputpath=transferdata['directory']
             exte="%s" %(str(transferdata['exte']))
             fname="%s.%s" %(str(transferdata['name']),exte)
             bomname="%s" %(str(transferdata['bomname']))
-            delimiter="%s" %(str(transferdata['separator']))
+            if 'separator' in transferdata:
+                delimiter="%s" %(str(transferdata['separator']))
+            if 'textquoted' in transferdata:
+                textQuoted=transferdata['textquoted']
             
         if outputpath==None:
             return True
@@ -402,11 +407,11 @@ class plm_component(models.Model):
 
         filename=os.path.join(outputpath,fname)
         if fixedformat and (partLengths and bomLengths):
-            if not self._export_fixed(filename, anag_Data['labels'], anag_Data, False, partLengths, bomLengths,queueFiles):
+            if not self._export_fixed(filename, anag_Data['labels'], anag_Data, False, partLengths, bomLengths,queueFiles['anagrafica']):
                 raise osv.except_osv(_('Export Data Error'), _("No Bom extraction files was generated, about entity (%s)." %(fname)))
                 return False
         else:
-            if not self._export_csv(filename, anag_Data['labels'], anag_Data, True, delimiter, queueFiles):
+            if not self._export_csv(filename, anag_Data['labels'], anag_Data, True, delimiter, textQuoted, queueFiles['anagrafica']):
                 raise osv.except_osv(_('Export Data Error'), _("Writing operations on file (%s) have failed." %(filename)))
                 return False
         
@@ -414,7 +419,10 @@ class plm_component(models.Model):
         ext_fields.extend(rel_fields)
         for oic in self.browse(cr, uid, allIDs, context=None):
             dataSet=[]
-            fname="%s-%s.%s" %(bomname,str(oic.name),exte)
+            if not queueFiles['distinte']:
+                fname="%s-%s.%s" %(bomname,str(oic.name),exte)
+            else:
+                fname="%s.%s" %(bomname,exte)
             filename=os.path.join(outputpath,fname)
             for oirel in getChildrenBom(oic, kindBomname):
                 rowData=[oic.name,oirel.product_id.name]
@@ -429,7 +437,7 @@ class plm_component(models.Model):
                         raise osv.except_osv(_('Export Data Error'), _("No Bom extraction files was generated, about entity (%s)." %(fname)))
                         return False
                 else:
-                    if not self._export_csv(filename, ext_fields, expData, True, delimiter, False):
+                    if not self._export_csv(filename, ext_fields, expData, True, delimiter, textQuoted, queueFiles['distinte']):
                         raise osv.except_osv(_('Export Data Error'), _("No Bom extraction files was generated, about entity (%s)." %(fname)))
                         return False
         return True
@@ -452,12 +460,6 @@ class plm_component(models.Model):
             if appendFlag:
                 operational='ab+'
             fp = file(fname, operational)
-#             if write_title:
-#                 if not appendFlag:
-#                     writer.writerow(fields)
-#                 else:
-#                     if not existsFile:
-#                         writer.writerow(fields)
             results=result['datas']
             for datas in results:
                 row = ""
@@ -487,7 +489,7 @@ class plm_component(models.Model):
             logging.error("_export_csv : IOError : "+str(errno)+" ("+str(strerror)+").")
             return False
 
-    def _export_csv(self, fname, fields=[], result={}, write_title=False, delimiter=',', appendFlag=False):
+    def _export_csv(self, fname, fields=[], result={}, write_title=False, delimiter=',', textQuoted=False, appendFlag=False):
         import csv, stat
         if not ('datas' in result) or not result:
             logging.error("_export_csv : No 'datas' in result.")
@@ -498,14 +500,17 @@ class plm_component(models.Model):
             return False
         
         try:
+            quoting=csv.QUOTE_MINIMAL
             existsFile=False
             if os.path.exists(fname):
                 existsFile=True
             operational='wb+'
             if appendFlag:
                 operational='ab+'
+            if textQuoted:
+                quoting=csv.QUOTE_NONNUMERIC
             fp = file(fname, operational)
-            writer = csv.writer(fp,delimiter=delimiter)
+            writer = csv.writer(fp,delimiter=delimiter,quoting=quoting)
             if write_title:
                 if not appendFlag:
                     writer.writerow(fields)
@@ -518,8 +523,12 @@ class plm_component(models.Model):
                 for data in datas:
                     if (type(data) is types.StringType):
                         row.append(str(data).replace('\n','').replace('\t','').strip())
-                    if (type(data) is types.UnicodeType):
+                    elif (type(data) is types.UnicodeType):
                         row.append(data.decode('utf8','ignore').replace('\n','').replace('\t','').strip())
+                    elif (type(data) is types.IntType) or (type(data) is types.LongType):
+                         row.append(int(str(data).strip() or 0))
+                    elif (type(data) is types.FloatType):
+                         row.append(float(str(data).strip() or 0.0))
                     else:
                         row.append(str(data).strip() or '')
                 writer.writerow(row)

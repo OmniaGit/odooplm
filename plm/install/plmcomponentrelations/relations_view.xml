@@ -20,6 +20,7 @@
 	                <field name="state" readonly="True"/>
 	            	<field name="description" select="True"/>
 	                <field name="source_id" string="Source Relation Document"/>
+ 	            	<field name="type" />
                 </field>
         		<field name="product_qty" position="after">
 	               	<field name="weight_net" readonly="True"/>
@@ -39,6 +40,7 @@
                 	<field name="engineering_revision"/>
                 	<field name="description" select="True"/>
                     <field name="source_id" string="Source Relation Document"/>
+  	            	<field name="type" />
                    	<field name="weight_net"/>
           		</field>
         	</field>
@@ -70,6 +72,7 @@
 		                <field name="state" readonly="True"/>
 		            	<field name="description" readonly="True"/>
 		                <field name="source_id" string="Source Relation Document"/>
+ 	            		<field name="type" />
 	           		</xpath>
              	</data>
             	<data>
@@ -183,14 +186,13 @@
         <act_window
             id="action_product_bom_structure_where"
             name="Product BoM Where Used Structure"
-            domain="[('id', '=', active_id)]"
+            domain="[('id','in',active_ids)]" 
             context="{'default_product_id': active_id}"
             view_type="tree"
-            view_mode="tree"
             view_id="mrp_part_tree_view_where"
             res_model="product.product"
-            src_model="product.product"/>
-
+            src_model="product.product"/>	<!-- Do not remove src_model. It is used to get action only in component form -->
+			
  <!-- Tree Structure Views on MRP -->
  
         <record id="mrp_bom_tree_view_where" model="ir.ui.view">

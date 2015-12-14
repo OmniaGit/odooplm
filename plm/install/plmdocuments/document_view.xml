@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
 <data>
-    <menuitem name="Documents" id="plm_document_form" parent="plm_menu" sequence="11"/>
+    
     <record model="ir.ui.view" id="view_plm_document">
         <field name="name">plm.document</field>
         <field name="model">plm.document</field>
@@ -10,9 +10,9 @@
         <field name="arch" type="xml">
             <form string="Document"  version="7.0">
                <header>
-                    <button name="release" states="confirmed" string="Release Document" icon="gtk-apply" class="oe_highlight"/>
+                    <button name="release" states="confirmed" string="Release Document" icon="gtk-apply" class="oe_highlight"  attrs="{'invisible': ['|',('is_checkout','=',True)]}"/>
                     <button name="correct" states="confirmed" string="Correct Document" icon="gtk-cancel"/>
-                    <button name="confirm" states="draft" string="Confirm Document" icon="gtk-go-forward" class="oe_highlight"/>
+                    <button name="confirm" states="draft" string="Confirm Document" icon="gtk-go-forward" class="oe_highlight"  attrs="{'invisible': ['|',('is_checkout','=',True)]}"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,released" statusbar_colors='{"undermodify":"red","obsoleted":"red"}' readonly="1"/>
                </header>
                <sheet>
@@ -50,6 +50,10 @@
 			                            <field name="write_uid" readonly="1"/>
 			                            <field name="write_date" readonly="1"/>	
 			                    	</group>
+		                        	<group col="2" colspan="2">
+		                        		<field name="checkout_user" colspan="2"/>
+		                        		<field name="is_checkout" colspan="2"/>
+		                        	</group>
 			                     </group>
 		                    </group>
 		               	</group>
@@ -208,11 +212,6 @@
         <field name="context">{"search_default_latest":1}</field>      
     </record>
 
-    <menuitem
-        name="Search on Documents"
-        action="plm_action_document_form"
-        id="menu_document_files"
-        parent="plm_document_form"/>
 
 </data>
 </openerp>

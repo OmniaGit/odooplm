@@ -242,8 +242,13 @@ class plm_document(models.Model):
                     collectable = isNewer and not(isCheckedOutToMe)
                 else:
                     collectable = True
-                if (objDoc.file_size<1) and (objDoc.datas):
-                    objDoc.file_size=len(objDoc.datas)
+                objDatas = False
+                try:
+                    objDatas = objDoc.datas
+                except Exception,ex:
+                    logging.error('Document with "id": %s  and "name": %s may contains no data!!         Exception: %s' % (objDoc.id, objDoc.name, ex))
+                if (objDoc.file_size<1) and objDatas:
+                    objDoc.file_size=len(objDatas)
                 result.append((objDoc.id, objDoc.datas_fname, objDoc.file_size, collectable, isCheckedOutToMe, timeDoc))
         return list(set(result))
             
@@ -668,6 +673,22 @@ class plm_document(models.Model):
         return True
 #   Overridden methods for this entity
 
+    @api.one
+    def _get_checkout_state(self):
+        chechRes = self.getCheckedOut(self.id, None)
+        if chechRes:
+            self.checkout_user = str(chechRes[2])
+        else:
+            self.checkout_user = ''
+        
+    @api.one
+    def _is_checkout(self):
+        chechRes = self.getCheckedOut(self.id, None)
+        if chechRes:
+            self.is_checkout = True
+        else:
+            self.is_checkout = False
+    
     usedforspare    =   fields.Boolean  (_('Used for Spare'),help="Drawings marked here will be used printing Spare Part Manual report.")
     revisionid      =   fields.Integer  (_('Revision Index'), required=True)
     writable        =   fields.Boolean  (_('Writable'))
@@ -675,9 +696,13 @@ class plm_document(models.Model):
     printout        =   fields.Binary   (_('Printout Content'), help=_("Print PDF content."))
     preview         =   fields.Binary   (_('Preview Content'), help=_("Static preview."))
     state           =   fields.Selection(USED_STATES,_('Status'), help=_("The status of the product."), readonly="True", required=True)
+    checkout_user   =   fields.Char(string=_("Checked-Out to"), compute=_get_checkout_state)
+    is_checkout     =   fields.Boolean(_('Is Checked-Out'), compute=_is_checkout, store=False)
 
     _columns = {
                 'datas': oldFields.function(_data_get,method=True,fnct_inv=_data_set,string='File Content',type="binary"),
+                #'checkout_user':fields.function(_get_checkout_state, type='char', string="Checked-Out to"),
+                #'is_checkout':fields.function(_is_checkout, type='boolean', string="Is Checked-Out", store=False)
                 }
     _defaults = {
                  'usedforspare' : lambda *a: False,

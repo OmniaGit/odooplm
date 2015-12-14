@@ -61,23 +61,20 @@ class plm_component(models.Model):
         @param context: A standard dictionary for contextual values
         @return:  Dictionary of values
         """
-        result={}
-        prod_ids=[]
         bom_line_objType = self.env['mrp.bom.line']
-        prod_objs = self.browse()
+        prod_objs = self.browse(self.ids)
         for prod_obj in prod_objs:
-            tmp_ids = bom_line_objType.search([('product_id','=',prod_obj.id)])
-            bom_line_objs = bom_line_objType.browse(tmp_ids)
+            prod_ids=[]
+            bom_line_objs = bom_line_objType.search([('product_id','=',prod_obj.id)])
             for bom_line_obj in bom_line_objs:                
                 prod_ids.extend([bom_line_obj.bom_id.product_id.id])
-            result[prod_obj.id]=list(set(prod_ids))
-        return result
+            prod_obj.father_part_ids = self.env['product.product'].browse(list(set(prod_ids)))
 
     linkeddocuments = fields.Many2many  ('plm.document', 'plm_component_document_rel','component_id','document_id', _('Linked Docs'))  
     tmp_material    = fields.Many2one   ('plm.material',_('Raw Material'), required=False, change_default=True, help=_("Select raw material for current product"))
     #tmp_treatment   = fields.Many2one('plm.treatment',_('Thermal Treatment'), required=False, change_default=True, help=_("Select thermal treatment for current product"))
     tmp_surface     = fields.Many2one   ('plm.finishing',_('Surface Finishing'), required=False, change_default=True, help=_("Select surface finishing for current product"))
-    father_part_ids = fields.Many2many  ('product.product', compute = _father_part_compute, method=True, string=_("BoM Hierarchy"), store =False)
+    father_part_ids = fields.Many2many  ('product.product', compute = _father_part_compute, string=_("BoM Hierarchy"), store =False)
 
     def on_change_tmpmater(self, cr, uid, ids, tmp_material=False):
         values={'engineering_material':''}
@@ -157,8 +154,8 @@ class plm_relation(models.Model):
         return bom_empty_prop
     
 #######################################################################################################################################33
-
-    def _father_compute(self, cr, uid, ids, name, arg, context=None):
+    @api.multi
+    def _father_compute(self, name='', arg={}):
         """ Gets father bom.
         @param self: The object pointer
         @param cr: The current row, from the database cursor,
@@ -170,32 +167,24 @@ class plm_relation(models.Model):
         @return:  Dictionary of values
         """
         bom_type=''
-        result = {}
-        if context is None:
-            context = {}
-        bom_objType = self.pool.get('mrp.bom')
-        bom_line_objType = self.pool.get('mrp.bom.line')
-        bom_objs = bom_objType.browse(cr, uid, ids, context=context)
-        for bom_obj in bom_objs:
+        bom_line_objType = self.env['mrp.bom.line']
+        for bom_obj in self:
+            result = []
             bom_type=bom_obj.type
-            result[bom_obj.id]=[]
-            for thisId in ids:
-                if bom_type=='':
-                    tmp_ids = bom_line_objType.search(cr, uid, [('product_id','=',bom_obj.product_id.id)])
-                else:
-                    tmp_ids = bom_line_objType.search(cr, uid, [('product_id','=',bom_obj.product_id.id),('type','=',bom_type)])
-            
-                bom_children = bom_line_objType.browse(cr, uid, list(set(tmp_ids)), context=context)
-                for bom_child in bom_children:
-                    if bom_child.bom_id.id:
-                        if not(bom_child.bom_id.id in result[bom_obj.id]):
-                            result[bom_obj.id]+=[bom_child.bom_id.id]
-        return result
+            if bom_type=='':
+                bom_children = bom_line_objType.search([('product_id','=',bom_obj.product_id.id)])
+            else:
+                bom_children = bom_line_objType.search([('product_id','=',bom_obj.product_id.id),('type','=',bom_type)])
+            for bom_child in bom_children:
+                if bom_child.bom_id.id:
+                    if not(bom_child.bom_id.id in result):
+                        result.extend([bom_child.bom_id.id])
+            bom_obj.father_complete_ids = self.env['mrp.bom'].browse(list(set(result)))
  
     state                   = fields.Selection  (related="product_id.state",            string=_("Status"),     help=_("The status of the product in its LifeCycle."),  store=False)
     engineering_revision    = fields.Char       (related="product_id.engineering_code", string=_("Revision"),   help=_("The revision of the product."),                 store=False)
     description             = fields.Text       (related="product_id.description",      string=_("Description"),                                                        store=False)
-    father_complete_ids     = fields.Many2many  ('mrp.bom', compute=_father_compute,    method=True,            string=_("BoM Hierarchy"),                  store=False)
+    father_complete_ids     = fields.Many2many  ('mrp.bom', compute=_father_compute,    string=_("BoM Hierarchy"),                  store=False)
 
 plm_relation()
 
@@ -209,23 +198,19 @@ class plm_relation_line(models.Model):
         """
             If the BOM line refers to a BOM, return the ids of the child BOM lines
         """
-        bom_obj = self.pool['mrp.bom']
-        res = {}
-        for bom_line in self.browse(self.ids):
+        bom_obj = self.env['mrp.bom']
+        for bom_line in self:
             bom_id = bom_obj._bom_find(
-                                        self.env.cr,
-                                        self.env.uid,
                                         product_tmpl_id=bom_line.product_id.product_tmpl_id.id,
                                         product_id=bom_line.product_id.id, 
                                         bomType=bom_line.type)
             if bom_id:
-                child_bom = bom_obj.browse(self.env.cr, self.env.uid, bom_id)
+                child_bom = bom_obj.browse(bom_id)
                 for childBomLine in child_bom.bom_line_ids:
-                    res[childBomLine.id]=childBomLine._get_child_bom_lines()
-                res[bom_line.id] = [x.id for x in child_bom.bom_line_ids] #child_bom.bom_line_ids[0]._get_child_bom_lines()
+                    childBomLine._get_child_bom_lines()
+                self.child_line_ids = [x.id for x in child_bom.bom_line_ids]
             else:
-                res[bom_line.id] = False
-        return res
+                self.child_line_ids = False
 
     state                   =   fields.Selection    (related="product_id.state",                string=_("Status"),     help=_("The status of the product in its LifeCycle."),  store=False)
     engineering_revision    =   fields.Integer      (related="product_id.engineering_revision", string=_("Revision"),   help=_("The revision of the product."),                 store=False)

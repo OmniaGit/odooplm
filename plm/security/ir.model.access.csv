@@ -68,3 +68,4 @@
 "group_plm_viewuser","access_vw_plm_compare_bom","plm_compare_bom","BoM Comparison",1,1,1,1
 "group_plm_viewuser","access_vw_plm_config_settings","plm_config_settings","plm.config.settings",1,0,0,0
 "group_plm_viewuser","access_vw_plm_email_thread","mail_thread","Email Thread",1,1,1,0
+"group_plm_viewuser","access_vw_plm_stock_move","stock.move","Stock Move",1,0,0,0

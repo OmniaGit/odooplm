@@ -138,6 +138,24 @@
             id="plm_dashboard_menu" 
             parent="plm.plm_menu" sequence="1"
             name="Dashboard"/>
-        	        
-	     </data>
+
+		<menuitem name="Documents" id="plm_document_form" parent="plm_menu" sequence="11"/>
+		
+	    <menuitem
+	        name="Search on Documents"
+	        action="plm.plm_action_document_form"
+	        id="menu_document_files"
+	        parent="plm.plm_document_form" 
+	    	sequence="10" 
+	    />
+	    
+	    <menuitem
+	        name="Search on Checked-Out Documents"
+	        action="plm.action_plm_checkout"
+	        id="menu_checkout"
+	        parent="plm.plm_document_form" 
+	    	sequence="12"
+	    />
+    
+	</data>
  </openerp>

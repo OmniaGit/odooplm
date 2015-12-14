@@ -152,11 +152,7 @@
         <field name="search_view_id" ref="plm_checkout_search"/>
     </record>
 
-    <menuitem
-        name="Search on Checked-Out Documents"
-        action="action_plm_checkout"
-        id="menu_checkout"
-        parent="plm_document_form"/>
+
 
 </data>
 </openerp>
