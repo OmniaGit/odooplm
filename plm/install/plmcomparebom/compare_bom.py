@@ -51,27 +51,27 @@ class plm_compare_bom(osv.osv.osv_memory):
     _name = "plm.compare.bom"
     _description = "BoM Comparison"
     
-    name          =   fields.Char       ('Part Number',         size=64)
-    bom_id1       =   fields.Many2one   ('mrp.bom',             'BoM 1',    required=True, ondelete='cascade')
-    type_id1      =   fields.Selection  ([('normal','Normal BoM'),
-                                          ('phantom','Sets / Phantom'),
-                                          ('ebom','Engineering BoM'),
-                                          ('spbom','Spare BoM')], 
-                                         'BoM Type')
+    name          =   fields.Char       (_('Part Number'),         size=64)
+    bom_id1       =   fields.Many2one   ('mrp.bom',             _('BoM 1'),    required=True, ondelete='cascade')
+    type_id1      =   fields.Selection  ([('normal',_('Normal BoM')),
+                                          ('phantom',_('Sets / Phantom')),
+                                          ('ebom',_('Engineering BoM')),
+                                          ('spbom',_('Spare BoM'))], 
+                                         _('BoM Type'))
     part_id1      =   fields.Many2one   ('product.product',                             'Part',                     ondelete='cascade')
     revision1     =   fields.Integer    (related="part_id1.engineering_revision",       string=_("Revision"),       store=False)
     description1  =   fields.Text       (related="part_id1.description",                string=_("Description"),    store=False)
-    bom_id2       =   fields.Many2one   ('mrp.bom', 'BoM 2',                            required=True,              ondelete='cascade')
-    type_id2      =   fields.Selection  ([('normal','Normal BoM'),
-                                          ('phantom','Sets / Phantom'),
-                                          ('ebom','Engineering BoM'),
-                                          ('spbom','Spare BoM')], 
-                                         'BoM Type')
+    bom_id2       =   fields.Many2one   ('mrp.bom', _('BoM 2'),                            required=True,              ondelete='cascade')
+    type_id2      =   fields.Selection  ([('normal',_('Normal BoM')),
+                                          ('phantom',_('Sets / Phantom')),
+                                          ('ebom',_('Engineering BoM')),
+                                          ('spbom',_('Spare BoM'))], 
+                                         _('BoM Type'))
     part_id2      =   fields.Many2one   ('product.product',                             'Part',                     ondelete='cascade')
-    revision2     =   fields.Integer    (related="part_id2.engineering_revision",       string="Revision",          store=False)
-    description2  =   fields.Text       (related="part_id2.description",                string="Description",       store=False)
-    anotinb       =   fields.One2many   ('plm.adding.bom',                              'bom_id',                   'BoM Adding')
-    bnotina       =   fields.One2many   ('plm.missing.bom',                             'bom_id',                   'BoM Missing')
+    revision2     =   fields.Integer    (related="part_id2.engineering_revision",       string=_("Revision"),          store=False)
+    description2  =   fields.Text       (related="part_id2.description",                string=_("Description"),       store=False)
+    anotinb       =   fields.One2many   ('plm.adding.bom',                              'bom_id',                   _('BoM Adding'))
+    bnotina       =   fields.One2many   ('plm.missing.bom',                             'bom_id',                   _('BoM Missing'))
     
     _defaults = {
                  'name': 'x',

@@ -55,52 +55,52 @@ class ComponentDashboard(models.Model):
     @api.multi
     def open_action(self):
         print 'Pressed open action'
-        return self.common_open('New Component', 'product.product', 'form', 'form', self.ids[0], self.env.context)
+        return self.common_open(_('New Component'), 'product.product', 'form', 'form', self.ids[0], self.env.context)
     
     @api.multi
     def create_component(self):
         print 'New Component'
-        return self.common_open('New Component', 'product.product', 'form', 'form', False, self.env.context)
+        return self.common_open(_('New Component'), 'product.product', 'form', 'form', False, self.env.context)
 
     @api.multi
     def open_normal_bom(self):
         print 'Open Normal Boms'
         boms = self.get_related_boms()
         domain = [('id','in',boms.ids),('type','=','normal')]
-        return self.common_open('Related Boms', 'mrp.bom', 'tree,form', 'form',  boms.ids, self.env.context, domain)
+        return self.common_open(_('Related Boms'), 'mrp.bom', 'tree,form', 'form',  boms.ids, self.env.context, domain)
         
     @api.multi
     def open_engin_bom(self):
         print 'Open Engineering Boms'
         boms = self.get_related_boms()
         domain = [('id','in',boms.ids),('type','=','ebom')]
-        return self.common_open('Related Boms', 'mrp.bom', 'tree,form', 'form',  boms.ids, self.env.context, domain)
+        return self.common_open(_('Related Boms'), 'mrp.bom', 'tree,form', 'form',  boms.ids, self.env.context, domain)
         
     @api.multi
     def open_spare_bom(self):
         print 'Open Spare Boms'
         boms = self.get_related_boms()
         domain = [('id','in',boms.ids),('type','=','spbom')]
-        return self.common_open('Related Boms', 'mrp.bom', 'tree,form', 'form',  boms.ids, self.env.context, domain)
+        return self.common_open(_('Related Boms'), 'mrp.bom', 'tree,form', 'form',  boms.ids, self.env.context, domain)
         
     @api.multi
     def open_new_component(self):
         print 'Open New Component'
-        return self.common_open('New Component', 'product.product', 'form', 'form', False, self.env.context)
+        return self.common_open(_('New Component'), 'product.product', 'form', 'form', False, self.env.context)
 
     @api.multi
     def open_related_docs_action(self):
         print 'Open Related Docs'
         docs = self.get_related_docs()
         domain = [('id','in',docs.ids)]
-        return self.common_open('Related Documents', 'plm.document', 'tree,form', 'form', docs.ids, self.env.context, domain)
+        return self.common_open(_('Related Documents'), 'plm.document', 'tree,form', 'form', docs.ids, self.env.context, domain)
         
     @api.multi
     def open_related_boms_action(self):
         print 'Open Related Boms'
         boms = self.get_related_boms()
         domain = [('id','in',boms.ids)]
-        return self.common_open('Related Boms', 'mrp.bom', 'tree,form', 'form',  boms.ids, self.env.context, domain)
+        return self.common_open(_('Related Boms'), 'mrp.bom', 'tree,form', 'form',  boms.ids, self.env.context, domain)
 
     @api.multi
     def create_normal_bom(self):
@@ -110,7 +110,7 @@ class ComponentDashboard(models.Model):
         docIds = self.get_related_docs()
         if docIds:
             context.update({'default_product_tmpl_id':self.product_tmpl_id.id})
-        return self.common_open('Related Boms', 'mrp.bom', 'form', 'form',  False, context)
+        return self.common_open(_('Related Boms'), 'mrp.bom', 'form', 'form',  False, context)
         
     @api.multi
     def create_spare_bom(self):
@@ -120,7 +120,7 @@ class ComponentDashboard(models.Model):
         docIds = self.get_related_docs()
         if docIds:
             context.update({'default_product_tmpl_id':self.product_tmpl_id.id})
-        return self.common_open('Related Boms', 'mrp.bom', 'form', 'form',  False, context)
+        return self.common_open(_('Related Boms'), 'mrp.bom', 'form', 'form',  False, context)
     
     @api.multi
     def openDocument(self, vals=False):
