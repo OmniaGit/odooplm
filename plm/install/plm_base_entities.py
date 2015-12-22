@@ -29,21 +29,21 @@ from openerp        import models, fields, api, SUPERUSER_ID, _, osv
 _logger         =   logging.getLogger(__name__)
 
 # To be adequated to plm.document class states
-USED_STATES=[('draft','Draft'),('confirmed','Confirmed'),('released','Released'),('undermodify','UnderModify'),('obsoleted','Obsoleted')]
+USED_STATES=[('draft',_('Draft')),('confirmed',_('Confirmed')),('released',_('Released')),('undermodify',_('UnderModify')),('obsoleted',_('Obsoleted'))]
 
 class plm_config_settings(models.Model):
     _name = 'plm.config.settings'
     _inherit = 'res.config.settings'
 
     plm_service_id  =   fields.Char(_('Register PLM module, insert your Service ID.'),  size=128,  help=_("Insert the Service ID and register your PLM module. Ask it to OmniaSolutions."))
-    activated_id    =   fields.Char(_('Activated PLM client'),                          size=128,  help="Listed activated Client.")
-    active_editor   =   fields.Char(_('Client Editor Name'),                            size=128,  help="Used Editor Name")
-    active_node     =   fields.Char(_('OS machine name'),                               size=128,  help="Editor Machine name")
-    active_os       =   fields.Char(_('OS name'),                                       size=128,  help="Editor OS name")
-    active_os_rel   =   fields.Char(_('OS release'),                                    size=128,  help="Editor OS release")
-    active_os_ver   =   fields.Char(_('OS version'),                                    size=128,  help="Editor OS version")
-    active_os_arch  =   fields.Char(_('OS architecture'),                               size=128,  help="Editor OS architecture")
-    node_id         =   fields.Char(_('Registered PLM client'),                         size=128,  help="Listed registered Client.")
+    activated_id    =   fields.Char(_('Activated PLM client'),                          size=128,  help=_("Listed activated Client."))
+    active_editor   =   fields.Char(_('Client Editor Name'),                            size=128,  help=_("Used Editor Name"))
+    active_node     =   fields.Char(_('OS machine name'),                               size=128,  help=_("Editor Machine name"))
+    active_os       =   fields.Char(_('OS name'),                                       size=128,  help=_("Editor OS name"))
+    active_os_rel   =   fields.Char(_('OS release'),                                    size=128,  help=_("Editor OS release"))
+    active_os_ver   =   fields.Char(_('OS version'),                                    size=128,  help=_("Editor OS version"))
+    active_os_arch  =   fields.Char(_('OS architecture'),                               size=128,  help=_("Editor OS architecture"))
+    node_id         =   fields.Char(_('Registered PLM client'),                         size=128,  help=_("Listed registered Client."))
 
  
     def GetServiceIds(self, cr, uid, oids, default=None, context=None):
@@ -128,7 +128,7 @@ class plm_component(models.Model):
                  'cost_method':'standard',
     }
     _sql_constraints = [
-        ('partnumber_uniq', 'unique (engineering_code,engineering_revision)', 'Part Number has to be unique!')
+        ('partnumber_uniq', 'unique (engineering_code,engineering_revision)', _('Part Number has to be unique!'))
     ]
     
     def init(self, cr):
@@ -164,7 +164,7 @@ class plm_component_document_rel(models.Model):
     document_id     =   fields.Many2one('plm.document', _('Linked Document'), ondelete='cascade')
 
     _sql_constraints = [
-        ('relation_unique', 'unique(component_id,document_id)', 'Component and Document relation has to be unique !'),
+        ('relation_unique', 'unique(component_id,document_id)', _('Component and Document relation has to be unique !')),
     ]
 
     def SaveStructure(self, cr, uid, relations, level=0, currlevel=0):
@@ -192,7 +192,7 @@ class plm_component_document_rel(models.Model):
                 self.create(cr, uid, res)
             except:
                 logging.warning("saveChild : Unable to create a link. Arguments (%s)." %(str(args)))
-                raise Exception("saveChild: Unable to create a link.")
+                raise Exception(_("saveChild: Unable to create a link."))
             
         if len(relations)<1: # no relation to save 
             return False
@@ -465,7 +465,7 @@ class plm_relation(models.Model):
                     parentName, parentID, childName, childID, sourceID, relArgs=rel
                     if parentName == childName:
                         logging.error('toCompute : Father (%s) refers to himself' %(str(parentName)))
-                        raise Exception('saveChild.toCompute : Father "%s" refers to himself' %(str(parentName)))
+                        raise Exception(_('saveChild.toCompute : Father "%s" refers to himself' %(str(parentName))))
     
                     tmpBomId=saveChild(childName, childID, sourceID, bomID, kindBom='ebom', args=relArgs)
                     tmpBomId=toCompute(childName, relations)
@@ -614,7 +614,7 @@ class plm_material(models.Model):
 #        'name': lambda obj, cr, uid, context: obj.pool.get('ir.sequence').get(cr, uid, 'plm.material'),
 #    }
     _sql_constraints = [
-        ('name_uniq', 'unique(name)', 'Raw Material has to be unique !'),
+        ('name_uniq', 'unique(name)', _('Raw Material has to be unique !')),
     ]
 plm_material()
 
@@ -630,7 +630,7 @@ class plm_finishing(models.Model):
 #        'name': lambda obj, cr, uid, context: obj.pool.get('ir.sequence').get(cr, uid, 'plm.finishing'),
 #    }
     _sql_constraints = [
-        ('name_uniq', 'unique(name)', 'Raw Material has to be unique !'),
+        ('name_uniq', 'unique(name)', _('Raw Material has to be unique !')),
     ]
 plm_finishing()
 

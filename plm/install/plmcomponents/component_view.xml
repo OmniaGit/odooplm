@@ -89,8 +89,8 @@
                 <page string="Engineering Infos">
                     <group colspan="4" col="4" string="Part Number Area">
                         <group colspan="4" col="4" name="PNArea">
-                            <field name="engineering_code" select="1" attrs="{'readonly':[('state','!=','draft')]}" colspan="2"/>
-                            <field name="engineering_revision" readonly="True" colspan="2"/>
+                            <field name="engineering_code" 		select="1" 		attrs="{'readonly':[('state','!=','draft')]}" colspan="2"/>
+                            <field name="engineering_revision" 	readonly="True" colspan="2"/>
                         </group>
                     </group>
                     <separator colspan="4" string="Normalization Area"/>
@@ -99,19 +99,19 @@
 							<group colspan="4" col="4" name="DescArea">
 								<separator string="Standard Description" colspan="4"/>
 							    <group col="4" colspan="2">
-							        <field name="std_description" nolabel="1" on_change="on_change_stddesc(std_description)"/>
+							        <field name="std_description" nolabel="1" on_change="on_change_stddesc(std_description)" attrs="{'readonly':[('state','=','released')]}"/>
 							    </group>
                         	</group>
                             <group colspan="4" col="4" name="TechSpec">
                             	<separator string="Technical Specifications" colspan="4"/>
-                                <field name="tmp_material" on_change="on_change_tmpmater(tmp_material)"/>
-                                <field name="tmp_surface"  on_change="on_change_tmpsurface(tmp_surface)"/>
+                                <field name="tmp_material" attrs="{'readonly':[('state','=','released')]}" on_change="on_change_tmpmater(tmp_material)"/>
+                                <field name="tmp_surface"  attrs="{'readonly':[('state','=','released')]}" on_change="on_change_tmpsurface(tmp_surface)"/>
                         	</group>
                         </group>
                         <group colspan="4" col="4" name="TBlock">
                             <separator string="TitleBlock Informations" colspan="4"/>
-                            <field name="engineering_material"/>
-                            <field name="engineering_surface"/>
+                            <field name="engineering_material" attrs="{'readonly':[('state','=','released')]}"/>
+                            <field name="engineering_surface" attrs="{'readonly':[('state','=','released')]}"/>
                             <newline/>
                         </group>
                     </sheet>
@@ -183,14 +183,14 @@
         <field name="arch" type="xml">
              <form string="Engineering Product">
                  <group colspan="4" col="2">
-                      <field name="name" on_change="on_change_name(name,engineering_code)"/>
+                      <field name="name" on_change="on_change_name(name,engineering_code)" attrs="{'readonly':[('state','=','released')]}"/>
                  </group>
                  <notebook colspan="4">
                		<page string="Engineering Infos">
                    		<group colspan="4" col="4" string="Part Number Area" name="PNArea">
                      		<group colspan="4" col="4">
-                      			<field name="engineering_code" select="1" attrs="{'readonly':[('state','!=','draft')]}" colspan="2"/>
-                       			<field name="engineering_revision" readonly="True" colspan="2"/>
+                      			<field name="engineering_code" 		select="1" 		attrs="{'readonly':[('state','!=','draft')]}" colspan="2"/>
+                       			<field name="engineering_revision" 	readonly="True" colspan="2"/>
                    			</group>
                    		</group>
          	    		<separator colspan="4" col="1" />
@@ -211,40 +211,40 @@
 							<group colspan="4" col="4" name="DescArea">
 								<separator string="Standard Description" colspan="4"/>
 							    <group col="1" colspan="4">
-							        <field name="std_description" nolabel="1" on_change="on_change_stddesc(std_description)"/>
+							        <field name="std_description" attrs="{'readonly':[('state','=','released')]}" nolabel="1" on_change="on_change_stddesc(std_description)"/>
 							    </group>
                         	</group>
                     		<group colspan="4" col="4" name="TechSpec">
-                   				<field name="tmp_material" colspan="2" on_change="on_change_tmpmater(tmp_material)"/>
-                 				<field name="tmp_surface" colspan="2" on_change="on_change_tmpsurface(tmp_surface)"/>
+                   				<field name="tmp_material" 	attrs="{'readonly':[('state','=','released')]}" colspan="2" on_change="on_change_tmpmater(tmp_material)"/>
+                 				<field name="tmp_surface" 	attrs="{'readonly':[('state','=','released')]}" colspan="2" on_change="on_change_tmpsurface(tmp_surface)"/>
                      		</group>
                     		<group colspan="4" col="4">
 	 	                        <group colspan="2" col="2" name="Weigth">
 		                     		<separator string="Weight" />
-		                            <field digits="(14, 3)" name="weight" attrs="{'readonly':[('type','=','service')]}"/>
+		                            <field digits="(14, 3)" name="weight" attrs="{'readonly':[('type','=','service'),('state','=','released')]}"/>
 	                      		</group>
 	 	                        <group colspan="2" col="2" name="uom">
 		                          	<separator string="Unit of Measure" colspan="2"/>
-		                            <field name="uom_id" on_change="onchange_uom(uom_id,uom_po_id)"/>
-		                            <field name="uom_po_id" groups="base.group_extended"/>
+		                            <field name="uom_id" 	attrs="{'readonly':[('state','=','released')]}" on_change="onchange_uom(uom_id,uom_po_id)"/>
+		                            <field name="uom_po_id" attrs="{'readonly':[('state','=','released')]}" groups="base.group_extended"/>
 	  	                        </group>
   	                        </group>
                  	    </group>
                     	<group colspan="4" col="4">
                     		<group colspan="4" col="4" name="TBlock">
 	                            <separator string="TitleBlock Informations" colspan="4"/>
-	                   			<field name="engineering_material" colspan="2"/>
-	                			<field name="engineering_surface" colspan="2"/>
+	                   			<field name="engineering_material" 	attrs="{'readonly':[('state','=','released')]}" colspan="2"/>
+                				<field name="engineering_surface" 	attrs="{'readonly':[('state','=','released')]}" colspan="2"/>
                      		</group>
                  		</group>
                    </page>
                    <page string="Descriptions">
                         <separator string="Description"/>
-                        <field colspan="4" name="description" nolabel="1"/>
+                        <field colspan="4" name="description" 			nolabel="1"/>
                         <separator string="Sale Description"/>
-                        <field colspan="4" name="description_sale" nolabel="1"/>
+                        <field colspan="4" name="description_sale" 		nolabel="1"/>
                         <separator string="Purchase Description"/>
-                        <field colspan="4" name="description_purchase" nolabel="1"/>
+                        <field colspan="4" name="description_purchase" 	nolabel="1"/>
                    </page>
                    <page string="Linked Documents">
                         <field name="linkeddocuments"/>

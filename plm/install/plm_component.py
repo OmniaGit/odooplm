@@ -35,9 +35,9 @@ USEDIC_STATES   =   dict(USED_STATES)
 
 class plm_component(models.Model):
     _inherit = 'product.product'
+    create_date     =   fields.Datetime(_('Date Created'),     readonly=True)
+    write_date      =   fields.Datetime(_('Date Modified'),    readonly=True)
 
-    create_date     =   fields.Datetime('Date Created',     readonly=True)
-    write_date      =   fields.Datetime('Date Modified',    readonly=True)
 
 #   Internal methods
 

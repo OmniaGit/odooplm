@@ -689,7 +689,7 @@ class plm_document(models.Model):
         else:
             self.is_checkout = False
     
-    usedforspare    =   fields.Boolean  (_('Used for Spare'),help="Drawings marked here will be used printing Spare Part Manual report.")
+    usedforspare    =   fields.Boolean  (_('Used for Spare'),help=_("Drawings marked here will be used printing Spare Part Manual report."))
     revisionid      =   fields.Integer  (_('Revision Index'), required=True)
     writable        =   fields.Boolean  (_('Writable'))
     #datas           =   fields.Binary   (fnct_inv=_data_set,compute=_data_get,method=True,string=_('File Content'))
@@ -700,7 +700,7 @@ class plm_document(models.Model):
     is_checkout     =   fields.Boolean(_('Is Checked-Out'), compute=_is_checkout, store=False)
 
     _columns = {
-                'datas': oldFields.function(_data_get,method=True,fnct_inv=_data_set,string='File Content',type="binary"),
+                'datas': oldFields.function(_data_get,method=True,fnct_inv=_data_set,string=_('File Content'),type="binary"),
                 #'checkout_user':fields.function(_get_checkout_state, type='char', string="Checked-Out to"),
                 #'is_checkout':fields.function(_is_checkout, type='boolean', string="Is Checked-Out", store=False)
                 }
@@ -934,7 +934,7 @@ class plm_checkout(models.Model):
         'create_date': lambda self,ctx:time.strftime("%Y-%m-%d %H:%M:%S")
     }
     _sql_constraints = [
-        ('documentid', 'unique (documentid)', 'The documentid must be unique !') 
+        ('documentid', 'unique (documentid)', _('The documentid must be unique !'))
     ]
 
     def _adjustRelations(self, cr, uid, oids, userid=False):
@@ -1010,7 +1010,7 @@ class plm_document_relation(models.Model):
                  'userid': lambda *a: False,
     }
     _sql_constraints = [
-        ('relation_uniq', 'unique (parent_id,child_id,link_kind)', 'The Document Relation must be unique !') 
+        ('relation_uniq', 'unique (parent_id,child_id,link_kind)', _('The Document Relation must be unique !')) 
     ]
 
     def SaveStructure(self, cr, uid, relations, level=0, currlevel=0):
@@ -1044,10 +1044,10 @@ class plm_document_relation(models.Model):
                             self.create(cr, uid, res)
                 else:
                     logging.error("saveChild : Unable to create a relation between documents. One of documents involved doesn't exist. Arguments(" + str(relation) +") ")
-                    raise Exception("saveChild: Unable to create a relation between documents. One of documents involved doesn't exist.")
+                    raise Exception(_("saveChild: Unable to create a relation between documents. One of documents involved doesn't exist."))
             except Exception,ex:
                 logging.error("saveChild : Unable to create a relation. Arguments (%s) Exception (%s)" %(str(relation), str(ex)))
-                raise Exception("saveChild: Unable to create a relation.")
+                raise Exception(_("saveChild: Unable to create a relation."))
             
         savedItems=[]
         if len(relations)<1: # no relation to save 
