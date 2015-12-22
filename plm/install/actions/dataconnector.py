@@ -58,7 +58,7 @@ class plm_temporary(osv.osv.osv_memory):
         """
             Call for Transfer Data method
         """
-        if not 'active_id' in context:
+        if 'active_id' not in context:
             return False
         self.pool.get('product.product').TransferData(cr, uid)
         return False
@@ -70,7 +70,7 @@ class plm_temporary(osv.osv.osv_memory):
 #               'type': 'ir.actions.act_window',
 #               'domain': "[]",
 #          }
-    
+
 plm_temporary()
 
 

@@ -48,7 +48,7 @@ plm_document()
 class plm_component(models.Model):
     _name       = 'product.product'
     _inherit    = 'product.product'
-    
+
     @api.multi
     def _father_part_compute(self, name='', arg={}):
         """ Gets father bom.

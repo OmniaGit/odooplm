@@ -35,7 +35,7 @@ USEDIC_STATES   =   dict(USED_STATES)
 
 class plm_component(models.Model):
     _inherit = 'product.product'
-    
+
     create_date     =   fields.Datetime('Date Created',     readonly=True)
     write_date      =   fields.Datetime('Date Modified',    readonly=True)
 
@@ -67,7 +67,7 @@ class plm_component(models.Model):
         """
             Return a flat list of each child, listed once, in a Bom ( level = 0 one level only, level = 1 all levels)
         """
-        result=[]
+        result = []
         bufferdata=[]
         if level==0 and currlevel>1:
             return bufferdata
