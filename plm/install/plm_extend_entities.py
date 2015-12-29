@@ -77,31 +77,31 @@ class plm_component(models.Model):
     father_part_ids = fields.Many2many  ('product.product', compute = _father_part_compute, string=_("BoM Hierarchy"), store =False)
 
     def on_change_tmpmater(self, cr, uid, ids, tmp_material=False):
-        values={'engineering_material':''}
+        values = {'engineering_material': ''}
         if tmp_material:
-            thisMaterial=self.pool.get('plm.material')
-            thisObject=thisMaterial.browse(cr, uid, tmp_material)
+            thisMaterial = self.pool.get('plm.material')
+            thisObject = thisMaterial.browse(cr, uid, tmp_material)
             if thisObject.name:
-                values['engineering_material']=thisObject.name
-        return {'value': {'engineering_material':str(values['engineering_material'])}}
+                values['engineering_material'] = unicode(thisObject.name)
+        return {'value': values}
 
     def on_change_tmptreatment(self, cr, uid, ids, tmp_treatment=False):
-        values={'engineering_treatment':''}
+        values = {'engineering_treatment': ''}
         if tmp_treatment:
-            thisTreatment=self.pool.get('plm.treatment')
-            thisObject=thisTreatment.browse(cr, uid, tmp_treatment)
+            thisTreatment = self.pool.get('plm.treatment')
+            thisObject = thisTreatment.browse(cr, uid, tmp_treatment)
             if thisObject.name:
-                values['engineering_treatment']=thisObject.name
-        return {'value': {'engineering_treatment':str(values['engineering_treatment'])}}
+                values['engineering_treatment'] = unicode(thisObject.name)
+        return {'value': values}
 
     def on_change_tmpsurface(self, cr, uid, ids, tmp_surface=False):
-        values={'engineering_surface':''}
+        values = {'engineering_surface': ''}
         if tmp_surface:
-            thisSurface=self.pool.get('plm.finishing')
-            thisObject=thisSurface.browse(cr, uid, tmp_surface)
+            thisSurface = self.pool.get('plm.finishing')
+            thisObject = thisSurface.browse(cr, uid, tmp_surface)
             if thisObject.name:
-                values['engineering_surface']=thisObject.name
-        return {'value': {'engineering_surface':str(values['engineering_surface'])}}
+                values['engineering_surface'] = unicode(thisObject.name)
+        return {'value': values}
 plm_component()
 
 
