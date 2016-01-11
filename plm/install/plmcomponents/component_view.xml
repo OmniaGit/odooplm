@@ -199,12 +199,6 @@
 								<separator string="LifeCycle Status" colspan="2"/>
 								<field name="state"/>
 		                    </group>
-	                     	<group col="2" colspan="2">
-	     	             		<separator colspan="2" string="WorkFlow Actions"/>
-		                        <button name="release" states="confirmed" string="Release Component" icon="gtk-apply"/>
-		                        <button name="correct" states="confirmed" string="Correct Component" icon="gtk-cancel"/>
-		                        <button name="confirm" states="draft" string="Confirm Component" icon="gtk-go-forward"/>
-	                     	</group>
 	                     </group>
         	    		<separator colspan="4" col="1" />
                 	    <group colspan="4" col="4" string="Normalization Area" name="NMArea">
