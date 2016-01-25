@@ -10,9 +10,22 @@
         <field name="arch" type="xml">
             <form string="Document"  version="7.0">
                <header>
-                    <button name="release" states="confirmed" string="Release Document" icon="gtk-apply" class="oe_highlight"  attrs="{'invisible': ['|',('is_checkout','=',True)]}"/>
-                    <button name="correct" states="confirmed" string="Correct Document" icon="gtk-cancel"/>
-                    <button name="confirm" states="draft" string="Confirm Document" icon="gtk-go-forward" class="oe_highlight"  attrs="{'invisible': ['|',('is_checkout','=',True)]}"/>
+                    <button name="release" 
+                    		states="confirmed" 
+                    		string="Release Document" 
+                    		icon="gtk-apply" 
+                    		class="oe_highlight"  
+                    		attrs="{'invisible': ['|',('is_checkout','=',True)]}" />
+                    <button name="correct" 
+                    		states="confirmed" 
+                    		string="Correct Document" 
+                    		icon="gtk-cancel"/>
+                    <button name="confirm" 
+                    		states="draft" 
+                    		string="Confirm Document" 
+                    		icon="gtk-go-forward" 
+                    		class="oe_highlight"  
+                    		attrs="{'invisible': ['|',('is_checkout','=',True)]}" />
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,released" statusbar_colors='{"undermodify":"red","obsoleted":"red"}' readonly="1"/>
                </header>
                <sheet>
@@ -27,14 +40,14 @@
 	               </group>
 	               <group colspan="4" col="4" name="DocData">
 		               <group col="4" colspan="1">
-		                    		<field
-		                        		name="preview"
-		                        		widget="image"
-		                        		readonly="1"
-		                        		nolabel="1"
-		                        		colspan="2"
-		                        		img_height="400"
-		                        		img_width="400"/>
+                    		<field 
+                        		name="preview"
+                        		widget="image"
+                        		readonly="1"
+                        		nolabel="1"
+                        		colspan="2"
+                        		img_height="400"
+                        		img_width="400"/>
 			           </group>
 		               <group colspan="2" col="2" name="DocData">
 		 					<group colspan="4" col="4">
@@ -75,7 +88,7 @@
                             <group col="2" colspan="2" string="Attached To">
                         		<newline/>
                        			<field name="res_id" readonly="True"/>
-                                <field name="res_model" readonly="True"/>
+                                <field name="res_model" readonly="True" />
                             </group>
                             <group col="2" colspan="2" string="Related To">
 	                            <newline/>
@@ -110,14 +123,14 @@
         <field name="priority" eval="1"/>
         <field name="arch" type="xml">
 			<tree string="Documents">
-                <field name="name" select="True"/>
-                <field name="revisionid" select="True"/>
-                <field name="state" select="True"/>
-                <field name="datas_fname" select="True"/>
-                <field name="create_uid" select="True"/>
-                <field name="create_date" select="True"/>
-                <field name="write_uid" select="True"/>
-                <field name="write_date" select="True"/>
+                <field name="name" 			select="True"/>
+                <field name="revisionid" 	select="True"/>
+                <field name="state" 		select="True"/>
+                <field name="datas_fname" 	select="True"/>
+                <field name="create_uid" 	select="True"/>
+                <field name="create_date" 	select="True"/>
+                <field name="write_uid" 	select="True"/>
+                <field name="write_date" 	select="True"/>
          	</tree>
          </field>
     </record>

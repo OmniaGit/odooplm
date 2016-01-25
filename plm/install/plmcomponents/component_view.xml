@@ -215,18 +215,19 @@
         <field name="priority" eval="6"/>
         <field name="arch" type="xml">
              <form string="Engineering Product">
+             
              	<header>
 	                <button name="release" states="confirmed" string="Release Component" type="workflow" icon="gtk-apply" class="oe_highlight"/>
 	                <button name="correct" states="confirmed" string="Correct Component" type="workflow" icon="gtk-cancel" />
 	                <button name="confirm" states="draft" string="Confirm Component" type="workflow" icon="gtk-go-forward" class="oe_highlight"/>
 	                <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,released" statusbar_colors='{"undermodify":"red","obsoleted":"red"}' />
 	            </header>
-             <sheet>	
+             		<sheet>
                 <div name="button_box" class="oe_button_box">
                     <button class="oe_stat_button" name="product_template_open" type="object" string="Engineering Infos"
-                        icon="fa-gears"> 
-                    </button>
-                </div>
+                        icon="fa-gears">  
+                    </button> 
+                </div> 
                  <group colspan="6" col="2">
                       <field name="name" on_change="on_change_name(name,engineering_code)" attrs="{'readonly':[('state','=','released')]}"/>
                  </group>
@@ -241,7 +242,7 @@
            			</group>
            		</group>
 
-	    		<notebook>
+	    		<notebook colspan="6" col="6">
 	    			<page string="Technical Infos">
 	            		<group colspan="4" col="4" name="TechnicalInfos">
 	           				<field name="tmp_material" 	attrs="{'readonly':[('state','=','released')]}" on_change="on_change_tmpmater(tmp_material)"/>
@@ -271,8 +272,8 @@
 	               			<field name="linkeddocuments" nolabel="1"/>
         				</group>	
 	    			</page>	
-	    		</notebook>
-               </sheet> 
+	    		</notebook> 
+	    		</sheet>	
             </form>
         </field>
     </record>
