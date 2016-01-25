@@ -334,77 +334,77 @@ class plm_document(models.Model):
         if oid.engineering_code == False:
             logging.warning("_iswritable : Part ("+str(oid.name)+"-"+str(oid.engineering_revision)+") without Engineering P/N.")
             return False
-        return True  
-    
-    def newVersion(self,cr,uid,ids,context=None):
+        return True
+
+    def newVersion(self, cr, uid, ids, context=None):
         """
             create a new version of the document (to WorkFlow calling)
         """
-        if self.newRevision(cr,uid,ids,context=context)!=None:
-            return True 
-        return False 
+        if self.newRevision(cr, uid, ids, context=context) is not None:
+            return True
+        return False
 
-    def NewRevision(self,cr,uid,ids,context=None):
+    def NewRevision(self, cr, uid, ids, context=None):
         """
             create a new revision of the document
         """
-        newID=None
+        newID = None
         for tmpObject in self.browse(cr, uid, ids, context=context):
-            latestIDs=self.GetLatestIds(cr, uid,[(tmpObject.name,tmpObject.revisionid,False)], context=context)
+            latestIDs = self.GetLatestIds(cr, uid, [(tmpObject.name, tmpObject.revisionid, False)], context=context)
             for oldObject in self.browse(cr, uid, latestIDs, context=context):
-                self.write(cr,uid,[oldObject.id],{'state':'undermodify',} ,context=context,check=False)
-                defaults={}
-                defaults['name']=oldObject.name
-                defaults['revisionid']=int(oldObject.revisionid)+1
-                defaults['writable']=True
-                defaults['state']='draft'
-                newID=super(plm_document,self).copy(cr,uid,oldObject.id,defaults,context=context)
+                self.write(cr, uid, [oldObject.id], {'state': 'undermodify'}, context=context, check=False)
+                defaults                = {}
+                defaults['name']        = oldObject.name
+                defaults['revisionid']  = int(oldObject.revisionid) + 1
+                defaults['writable']    = True
+                defaults['state']       = 'draft'
+                newID = super(plm_document, self).copy(cr, uid, oldObject.id, defaults, context=context)
                 self.wf_message_post(cr, uid, [oldObject.id], body=_('Created : New Revision.'))
                 break
             break
-        return (newID, defaults['revisionid']) 
-    
+        return (newID, defaults['revisionid'])
+
     def Clone(self, cr, uid, oid, defaults={}, context=None):
         """
             create a new copy of the document
         """
-        defaults={}
-        exitValues={}
-        newID=self.copy(cr,uid,oid,defaults,context)
-        if newID != None:
-            newEnt=self.browse(cr,uid,newID,context=context)
-            exitValues['_id']=newID
-            exitValues['name']=newEnt.name
-            exitValues['revisionid']=newEnt.revisionid
+        defaults    = {}
+        exitValues  = {}
+        newID       = self.copy(cr, uid, oid, defaults, context)
+        if newID is not None:
+            newEnt = self.browse(cr, uid, newID, context=context)
+            exitValues['_id']           = newID
+            exitValues['name']          = newEnt.name
+            exitValues['revisionid']    = newEnt.revisionid
         return exitValues
-    
+
     def CheckSaveUpdate(self, cr, uid, documents, default=None, context=None):
         """
             Save or Update Documents
         """
-        retValues=[]
+        retValues = []
         for document in documents:
-            hasSaved=False
+            hasSaved = False
             if not ('name' in document) or (not 'revisionid' in document):
-                document['documentID']=False
-                document['hasSaved']=hasSaved
+                document['documentID']  = False
+                document['hasSaved']    = hasSaved
                 continue
-            existingID=self.search(cr,uid,[
-                                           ('name','=',document['name'])
-                                          ,('revisionid','=',document['revisionid'])],order='revisionid')
+            existingID = self.search(cr, uid, [
+                                           ('name', '=', document['name']),
+                                           ('revisionid', '=', document['revisionid'])], order='revisionid')
             if not existingID:
-                hasSaved=True
+                hasSaved = True
             else:
-                existingID=existingID[0]
-                objDocument=self.browse(cr, uid, existingID, context=context)
+                existingID  = existingID[0]
+                objDocument = self.browse(cr, uid, existingID, context=context)
 #               logging.info("CheckSaveUpdate : time db : %s time file : %s" %(str(self.getLastTime(cr,uid,existingID).strftime('%Y-%m-%d %H:%M:%S')), str(document['lastupdate'])))
-                if self.getLastTime(cr,uid,existingID)<datetime.strptime(str(document['lastupdate']),'%Y-%m-%d %H:%M:%S'):
+                if self.getLastTime(cr, uid, existingID) < datetime.strptime(str(document['lastupdate']), '%Y-%m-%d %H:%M:%S'):
                     if objDocument.writable:
-                        hasSaved=True
-            document['documentID']=existingID
-            document['hasSaved']=hasSaved
+                        hasSaved = True
+            document['documentID'] = existingID
+            document['hasSaved'] = hasSaved
             retValues.append(document)
-        return retValues 
+        return retValues
 
     def SaveOrUpdate(self, cr, uid, documents, default=None, context=None):
         """
