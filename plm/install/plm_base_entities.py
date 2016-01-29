@@ -337,9 +337,10 @@ class plm_relation(models.Model):
         """
             Returns a list of all children in a Bom (all levels)
         """
-        self._packed=[]
-        relDatas=[ids[0],self._explodebom(cr, uid, self._getbom(cr, uid, ids[0]), False)]
-        prtDatas=self._getpackdatas(cr, uid, relDatas)
+        self._packed = []
+        # get all ids of the children product in structured way like [[id,childids]]
+        relDatas = [ids[0],self._explodebom(cr, uid, self._getbom(cr, uid, ids[0]), False)]
+        prtDatas = self._getpackdatas(cr, uid, relDatas)
         return (relDatas, prtDatas, self._getpackreldatas(cr, uid, relDatas, prtDatas))
 
     def _explodebom(self, cr, uid, bids, check=True):

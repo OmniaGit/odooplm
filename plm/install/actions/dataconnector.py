@@ -20,40 +20,43 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-import os,sys
+import os
+import sys
 import types
 import cPickle as pickle
 from datetime import datetime
 
 import logging
-from openerp        import models, fields, api, SUPERUSER_ID, _, osv
-_logger         =   logging.getLogger(__name__)
+from openerp import models, fields, api, SUPERUSER_ID, _, osv
+_logger = logging.getLogger(__name__)
 
 ###
 # map_name : ['LangName','label Out', 'OE Lang']        '
-_LOCALLANGS = {                 
-    'french':  ['French_France','fr_FR',],
-    'italian': ['Italian_Italy','it_IT',],
-    'polish':  ['Polish_Poland','pl_PL',],
-    'svedish': ['Svedish_Svenska','sw_SE',],
-    'russian': ['Russian_Russia','ru_RU',],
-    'english': ['English USA','en_US',],
-    'spanish': ['Spanish_Spain','es_ES',],
-    'german':  ['German_Germany','de_DE',],
-}
+_LOCALLANGS = {'french': ['French_France', 'fr_FR', ],
+               'italian': ['Italian_Italy', 'it_IT', ],
+               'polish': ['Polish_Poland', 'pl_PL', ],
+               'svedish': ['Svedish_Svenska', 'sw_SE', ],
+               'russian': ['Russian_Russia', 'ru_RU', ],
+               'english': ['English USA', 'en_US', ],
+               'spanish': ['Spanish_Spain', 'es_ES', ],
+               'german': ['German_Germany', 'de_DE', ],
+               }
 ###
+
 
 def normalize(value):
     if (type(value) is types.StringType):
-        return str(value).replace('"','\"').replace("'",'\"').replace("%","%%").strip()
+        return str(value).replace('"', '\"').replace("'", '\"').replace("%", "%%").strip()
     elif (type(value) is types.UnicodeType):
-        return unicode(str(value).replace('"','\"').replace("'",'\"').replace("%","%%").strip(), 'Latin1')
+        return unicode(str(value).replace('"', '\"').replace("'", '\"').replace("%", "%%").strip(), 'Latin1')
     else:
         return str(value).strip()
 
+
 class plm_temporary(osv.osv.osv_memory):
     _inherit = "plm.temporary"
-##  Specialized Actions callable interactively
+# Specialized Actions callable interactively
+
     def action_transferData(self, cr, uid, ids, context=None):
         """
             Call for Transfer Data method
@@ -88,33 +91,36 @@ class plm_component(models.Model):
             Map OpenErp vs. destination Part data transfer fields
         """
         return {
-                'table' : 'PARTS',                          # Used with 'db' transfer
-                'status': ['released',],
-                'fixed' : True,                             # Uses fixded format (specify lenghts)
-                'append' : True,                            # append to existing transfer files (only for part data)
-                'fields':
-                    {
-                    'name'                  : 'revname',
-                    'engineering_revision'  : 'revprog',
-                    'description'           : 'revdes',
-                    },
-                'types':
-                    {
-                    'name'                  : 'char',
-                    'engineering_revision'  : 'int',
-                    'description'           : 'char',
-                    },
-               'lengths':
-                    {
-                    'name'                  : 10,
-                    'engineering_revision'  : 2,
-                    'description'           : 40,
-                    },
-                'exitorder' : ['name','engineering_revision','description',],
-                'exitTrans' : ['description',],
-                'exitLang'  : ['english','french',],
-                'exitnumber': ['engineering_revision',],
-                }
+            # Used with 'db' transfer
+            'table': 'PARTS',
+            'status': ['released', ],
+            # Uses fixded format (specify lenghts)
+            'fixed': True,
+            # append to existing transfer files (only for part data)
+            'append': True,
+            'fields':
+            {
+                'name': 'revname',
+                'engineering_revision': 'revprog',
+                'description': 'revdes',
+            },
+            'types':
+            {
+                'name': 'char',
+                'engineering_revision': 'int',
+                'description': 'char',
+            },
+            'lengths':
+            {
+                'name': 10,
+                'engineering_revision': 2,
+                'description': 40,
+            },
+                'exitorder': ['name', 'engineering_revision', 'description', ],
+                'exitTrans': ['description', ],
+                'exitLang': ['english', 'french', ],
+                'exitnumber': ['engineering_revision', ],
+        }
 
     @property
     def get_bom_data_transfer(self):
@@ -122,30 +128,36 @@ class plm_component(models.Model):
             Map OpenErp vs. destination BoM data transfer fields
         """
         return {
-                'kind' : 'normal',                         # Bom type name to export
-                'table': 'BOMS',                           # Destination table name. Used with 'db' transfer
-                'PName': 'parent',                         # Parent column name.     Used with 'db' transfer
-                'CName': 'child',                          # Child column name.      Used with 'db' transfer
-                'fixed' : True,                            # Uses fixded format (specify lenghts)
-                'fields':
+            'kind': 'normal',                         # Bom type name to export
+            # Destination table name. Used with 'db' transfer
+            'table': 'BOMS',
+            # Parent column name.     Used with 'db' transfer
+            'PName': 'parent',
+            # Child column name.      Used with 'db' transfer
+            'CName': 'child',
+            # Uses fixded format (specify lenghts)
+            'fixed': True,
+            'fields':
                     {
-                    'itemnum'               : 'relpos',
-                    'product_qty'           : 'relqty',
+                        'itemnum': 'relpos',
+                        'product_qty': 'relqty',
                     },
                 'types':
                     {
-                    'itemnum'               : 'int',
-                    'product_qty'           : 'float',
+                        'itemnum': 'int',
+                        'product_qty': 'float',
                     },
                 'lengths':
                     {
-                    'parent'                : 10,           # To be considered also if not mapped explicitely
-                    'child'                 : 10,           # To be considered also if not mapped explicitely
-                    'itemnum'               : 2,
-                    'product_qty'           : 5,
+                        # To be considered also if not mapped explicitely
+                        'parent': 10,
+                        # To be considered also if not mapped explicitely
+                        'child': 10,
+                        'itemnum': 2,
+                        'product_qty': 5,
                     },
-                'exitnumber': ['engineering_revision',],
-               }
+                'exitnumber': ['engineering_revision', ],
+        }
 
     @property
     def get_data_transfer(self):
@@ -153,25 +165,25 @@ class plm_component(models.Model):
             Map OpenErp vs. destination Connection DB data transfer values
         """
         return {
-                'db':
-                    {
-                    'protocol'              : 'mssql+pymssql',
-                    'user'                  : 'dbamkro',
-                    'password'              : 'dbamkro',
-                    'host'                  : 'SQL2K8\SQLEXPRESS',
-                    'database'              : 'Makro',
-                    },
-                
+            'db':
+            {
+                'protocol': 'mssql+pymssql',
+                'user': 'dbamkro',
+                        'password': 'dbamkro',
+                        'host': 'SQL2K8\SQLEXPRESS',
+                        'database': 'Makro',
+            },
+
                 'file':
                     {
-                    'exte'                  : 'csv',
-                    'separator'             : ',',
-                    'name'                  : 'transfer',
-                    'bomname'               : 'transferbom',
-                    'directory'             : '/tmp',
-                    'textquoted'            : False,
-                    }
-                }
+                        'exte': 'csv',
+                        'separator': ',',
+                        'name': 'transfer',
+                        'bomname': 'transferbom',
+                        'directory': '/tmp',
+                        'textquoted': False,
+            }
+        }
 
 ###################################################################
 #   Override these properties to configure TransferData process.  #
@@ -183,12 +195,12 @@ class plm_component(models.Model):
             Get last execution date & time as stored.
                 format => '%Y-%m-%d %H:%M:%S'
         """
-        lastDate=datetime.now()
-        fileName=os.path.join(os.environ.get('HOME'),'ttsession.time')
+        lastDate = datetime.now()
+        fileName = os.path.join(os.environ.get('HOME'), 'ttsession.time')
         if os.path.exists(fileName):
             try:
-                fobj=open(fileName)
-                lastDate=pickle.load(fobj)
+                fobj = open(fileName)
+                lastDate = pickle.load(fobj)
                 fobj.close()
             except:
                 try:
@@ -207,47 +219,49 @@ class plm_component(models.Model):
             Get last execution date & time as stored.
                 format => '%Y-%m-%d %H:%M:%S'
         """
-        lastDate=datetime.now()
-        fileName=os.path.join(os.environ.get('HOME'),'ttsession.time')
+        lastDate = datetime.now()
+        fileName = os.path.join(os.environ.get('HOME'), 'ttsession.time')
         if os.path.exists(fileName):
             os.unlink(fileName)
-        fobj=open(fileName,'w')
-        pickle.dump(lastDate,fobj)
+        fobj = open(fileName, 'w')
+        pickle.dump(lastDate, fobj)
         fobj.close()
         return lastDate.strftime('%Y-%m-%d %H:%M:%S')
 
     def _rectify_data(self, cr, uid, tmpDataPack={}, part_data_transfer={}):
- 
-        if tmpDataPack.get('datas'):
-            fieldsNumeric=[]
-            fieldsTranslated=[]
-            languageNames=[]
-            indexFields={}
-            rectifiedData=[]
-            labelNames=[]
-            
-            if 'exitorder' in part_data_transfer:
-                fieldNames=part_data_transfer['exitorder']
-            else:
-                fieldNames=part_data_transfer['fields'].keys()
-            if 'exitnumber' in part_data_transfer:
-                fieldsNumeric=part_data_transfer['exitnumber']
-            if 'exitTrans' in part_data_transfer:
-                fieldsTranslated=part_data_transfer['exitTrans']
-            if 'exitLang' in part_data_transfer:
-                languageNames=part_data_transfer['exitLang']
 
-            for fieldName in fieldNames:                                # Sort field names to fix the exit data recordset
-                indexFields[fieldName]=fieldNames.index(fieldName)
+        if tmpDataPack.get('datas'):
+            fieldsNumeric = []
+            fieldsTranslated = []
+            languageNames = []
+            indexFields = {}
+            rectifiedData = []
+            labelNames = []
+
+            if 'exitorder' in part_data_transfer:
+                fieldNames = part_data_transfer['exitorder']
+            else:
+                fieldNames = part_data_transfer['fields'].keys()
+            if 'exitnumber' in part_data_transfer:
+                fieldsNumeric = part_data_transfer['exitnumber']
+            if 'exitTrans' in part_data_transfer:
+                fieldsTranslated = part_data_transfer['exitTrans']
+            if 'exitLang' in part_data_transfer:
+                languageNames = part_data_transfer['exitLang']
+
+            # Sort field names to fix the exit data recordset
+            for fieldName in fieldNames:
+                indexFields[fieldName] = fieldNames.index(fieldName)
                 labelNames.append(fieldName)
-                
-            for languageName in languageNames:                          # Sort field names to fix the exit data recordset
+
+            # Sort field names to fix the exit data recordset
+            for languageName in languageNames:
                 labelNames.append(languageName)
-                
+
             for rowData in tmpDataPack['datas']:
-                rectData=[]
+                rectData = []
                 for fieldName in fieldNames:
-                    dataValue=rowData[fieldName]
+                    dataValue = rowData[fieldName]
                     if not dataValue:
                         if fieldName in fieldsNumeric:
                             rectData.append(0)
@@ -258,24 +272,26 @@ class plm_component(models.Model):
 
                 for languageName in languageNames:
                     for fieldTranslated in fieldsTranslated:
-                        dataValue=rowData[fieldTranslated]
+                        dataValue = rowData[fieldTranslated]
                         if not dataValue:
                             rectData.append('')
                         else:
-                            rectData.append(self._translate(cr, uid, dataValue,languageName))
-                                       
+                            rectData.append(
+                                self._translate(cr, uid, dataValue, languageName))
+
                 rectifiedData.append(rectData)
-            
-            return {'datas': rectifiedData, 'labels':labelNames}
-        
+
+            return {'datas': rectifiedData, 'labels': labelNames}
+
         return tmpDataPack
-    
-    def _translate(self, cr, uid, dataValue="",languageName=""):
-        
+
+    def _translate(self, cr, uid, dataValue="", languageName=""):
+
         if languageName in _LOCALLANGS:
-            language=_LOCALLANGS[languageName][1]
-            transObj=self.pool.get('ir.translation')
-            resIds = transObj.search(cr,uid,[('src','=',dataValue),('type','=','code'),('lang','=',language)])
+            language = _LOCALLANGS[languageName][1]
+            transObj = self.pool.get('ir.translation')
+            resIds = transObj.search(
+                cr, uid, [('src', '=', dataValue), ('type', '=', 'code'), ('lang', '=', language)])
             for trans in transObj.browse(cr, uid, resIds):
                 return trans.value
         return ""
@@ -283,68 +299,74 @@ class plm_component(models.Model):
     def TransferData(self, cr, uid, ids=False, context=None):
         """
             Exposed method to execute data transfer to other systems.
-        """ 
+        """
 #         Reset default encoding. to allow to work fine also as service.
         reload(sys)
         sys.setdefaultencoding('utf-8')
 #         Reset default encoding. to allow to work fine also as service.
-        operation=False
-        fixedformat=False
-        queueFiles={'anagrafica':False, 'distinte':False}
-        partfieldsLength=False
-        bomfieldsLength=False
-        reportStatus='Failed'
-        updateDate=self._get_last_session
-        logging.debug("[TransferData] Start : %s" %(str(updateDate)))
-        transfer=self.get_data_transfer
-        part_data_transfer=self.get_part_data_transfer
-        bom_data_transfer=self.get_bom_data_transfer
-        datamap=part_data_transfer['fields']
+        operation = False
+        fixedformat = False
+        queueFiles = {'anagrafica': False, 'distinte': False}
+        partfieldsLength = False
+        bomfieldsLength = False
+        reportStatus = 'Failed'
+        updateDate = self._get_last_session
+        logging.debug("[TransferData] Start : %s" % (str(updateDate)))
+        transfer = self.get_data_transfer
+        part_data_transfer = self.get_part_data_transfer
+        bom_data_transfer = self.get_bom_data_transfer
+        datamap = part_data_transfer['fields']
         if 'fixed' in part_data_transfer:
-            fixedformat=part_data_transfer['fixed']            
+            fixedformat = part_data_transfer['fixed']
             if 'lengths' in part_data_transfer:
-                partfieldsLength=part_data_transfer['lengths']
+                partfieldsLength = part_data_transfer['lengths']
         if 'exitorder' in part_data_transfer:
-            fieldsListed=part_data_transfer['exitorder']
+            fieldsListed = part_data_transfer['exitorder']
         if 'append' in part_data_transfer:
-            queueFiles['anagrafica']=part_data_transfer['append']
+            queueFiles['anagrafica'] = part_data_transfer['append']
         if 'append' in bom_data_transfer:
-            queueFiles['distinte']=part_data_transfer['append']
+            queueFiles['distinte'] = part_data_transfer['append']
         else:
-            fieldsListed=datamap.keys()
-        allIDs=self._query_data(cr, uid, updateDate, part_data_transfer['status'])
-        tmpData=self._exportData(cr, uid, allIDs, fieldsListed, bom_data_transfer['kind'])
+            fieldsListed = datamap.keys()
+        allIDs = self._query_data(
+            cr, uid, updateDate, part_data_transfer['status'])
+        tmpData = self._exportData(
+            cr, uid, allIDs, fieldsListed, bom_data_transfer['kind'])
         if tmpData.get('datas'):
-            tmpData=self._rectify_data(cr, uid, tmpData, part_data_transfer)
+            tmpData = self._rectify_data(cr, uid, tmpData, part_data_transfer)
             if 'db' in transfer:
                 import dbconnector
-                dataTargetTable=part_data_transfer['table']
-                datatyp=part_data_transfer['types']
-                connection=dbconnector.get_connection(transfer['db'])
-            
-                checked=dbconnector.saveParts(self,cr, uid, connection, tmpData.get('datas'), dataTargetTable, datamap, datatyp)
-    
+                dataTargetTable = part_data_transfer['table']
+                datatyp = part_data_transfer['types']
+                connection = dbconnector.get_connection(transfer['db'])
+
+                checked = dbconnector.saveParts(self, cr, uid, connection, tmpData.get(
+                    'datas'), dataTargetTable, datamap, datatyp)
+
                 if checked:
-                    bomTargetTable=bom_data_transfer['table']
-                    bomdatamap=bom_data_transfer['fields']
-                    bomdatatyp=bom_data_transfer['types']
-                    parentName=bom_data_transfer['PName']
-                    childName=bom_data_transfer['CName']
-                    kindBomname=bom_data_transfer['kind']
-                    operation=dbconnector.saveBoms(self, cr, uid, connection, checked, allIDs, dataTargetTable, datamap, datatyp, kindBomname, bomTargetTable, parentName, childName, bomdatamap, bomdatatyp)  
-                     
+                    bomTargetTable = bom_data_transfer['table']
+                    bomdatamap = bom_data_transfer['fields']
+                    bomdatatyp = bom_data_transfer['types']
+                    parentName = bom_data_transfer['PName']
+                    childName = bom_data_transfer['CName']
+                    kindBomname = bom_data_transfer['kind']
+                    operation = dbconnector.saveBoms(self, cr, uid, connection, checked, allIDs, dataTargetTable,
+                                                     datamap, datatyp, kindBomname, bomTargetTable, parentName, childName, bomdatamap, bomdatatyp)
+
             if 'file' in transfer:
-                bomfieldsListed=bom_data_transfer['fields'].keys()
+                bomfieldsListed = bom_data_transfer['fields'].keys()
                 if 'lengths' in bom_data_transfer:
-                    bomfieldsLength=bom_data_transfer['lengths']
-                kindBomname=bom_data_transfer['kind']
-                operation=self._extract_data(cr, uid, allIDs, queueFiles, fixedformat, kindBomname, tmpData, fieldsListed, bomfieldsListed, transfer['file'],partLengths=partfieldsLength,bomLengths=bomfieldsLength)
+                    bomfieldsLength = bom_data_transfer['lengths']
+                kindBomname = bom_data_transfer['kind']
+                operation = self._extract_data(cr, uid, allIDs, queueFiles, fixedformat, kindBomname, tmpData, fieldsListed, bomfieldsListed, transfer[
+                                               'file'], partLengths=partfieldsLength, bomLengths=bomfieldsLength)
 
         if operation:
-            updateDate=self._set_last_session
-            reportStatus='Successful'
-            
-        logging.debug("[TransferData] %s End : %s" %(reportStatus,str(updateDate)))
+            updateDate = self._set_last_session
+            reportStatus = 'Successful'
+
+        logging.debug("[TransferData] %s End : %s" %
+                      (reportStatus, str(updateDate)))
         return False
 
     def _query_data(self, cr, uid, updateDate, statuses=[]):
@@ -353,97 +375,106 @@ class plm_component(models.Model):
                 updateDate => '%Y-%m-%d %H:%M:%S'
         """
         if not statuses:
-            statusList=['released']
+            statusList = ['released']
         else:
-            statusList=statuses
-        objTempl=self.pool.get('product.template')           
-        allIDs=objTempl.search(cr,uid,[('write_date','>',updateDate),('state','in',statusList)],order='engineering_revision')
-        allIDs.extend(objTempl.search(cr,uid,[('create_date','>',updateDate),('state','in',statusList)],order='engineering_revision'))
+            statusList = statuses
+        objTempl = self.pool.get('product.template')
+        allIDs = objTempl.search(cr, uid, [(
+            'write_date', '>', updateDate), ('state', 'in', statusList)], order='engineering_revision')
+        allIDs.extend(objTempl.search(cr, uid, [
+                      ('create_date', '>', updateDate), ('state', 'in', statusList)], order='engineering_revision'))
         return list(set(allIDs))
 
-    def _extract_data(self,cr,uid,allIDs, queueFiles, fixedformat, kindBomname='normal', anag_Data={}, anag_fields=False, rel_fields=False, transferdata={},partLengths={},bomLengths={}):
+    def _extract_data(self, cr, uid, allIDs, queueFiles, fixedformat, kindBomname='normal', anag_Data={}, anag_fields=False, rel_fields=False, transferdata={}, partLengths={}, bomLengths={}):
         """
             action to be executed for Transmitted state.
             Transmit the object to ERP Metodo
         """
-        
+
         def getChildrenBom(component, kindName):
             for bomid in component.bom_ids:
-                if not (str(bomid.type).lower()==kindName.lower()):
+                if not (str(bomid.type).lower() == kindName.lower()):
                     continue
                 return bomid.bom_line_ids
             return []
-        
-        delimiter=','
-        textQuoted=False
+
+        delimiter = ','
+        textQuoted = False
         if not anag_fields:
-            anag_fields=['name','description']
+            anag_fields = ['name', 'description']
         if not rel_fields:
-            rel_fields=['bom_id','product_id','product_qty','itemnum']
+            rel_fields = ['bom_id', 'product_id', 'product_qty', 'itemnum']
 
         if not transferdata:
-            outputpath=os.environ.get('TEMP')
-            tmppws=os.environ.get('OPENPLMOUTPUTPATH')
-            if tmppws!=None and os.path.exists(tmppws):
-                outputpath=tmppws
-            exte='csv'
-            fname=datetime.now().isoformat(' ').replace('.','').replace(':','').replace(' ','').replace('-','')+'.'+exte
-            bomname="bom"
+            outputpath = os.environ.get('TEMP')
+            tmppws = os.environ.get('OPENPLMOUTPUTPATH')
+            if tmppws != None and os.path.exists(tmppws):
+                outputpath = tmppws
+            exte = 'csv'
+            fname = datetime.now().isoformat(' ').replace('.', '').replace(
+                ':', '').replace(' ', '').replace('-', '') + '.' + exte
+            bomname = "bom"
         else:
-            outputpath=transferdata['directory']
-            exte="%s" %(str(transferdata['exte']))
-            fname="%s.%s" %(str(transferdata['name']),exte)
-            bomname="%s" %(str(transferdata['bomname']))
+            outputpath = transferdata['directory']
+            exte = "%s" % (str(transferdata['exte']))
+            fname = "%s.%s" % (str(transferdata['name']), exte)
+            bomname = "%s" % (str(transferdata['bomname']))
             if 'separator' in transferdata:
-                delimiter="%s" %(str(transferdata['separator']))
+                delimiter = "%s" % (str(transferdata['separator']))
             if 'textquoted' in transferdata:
-                textQuoted=transferdata['textquoted']
-            
-        if outputpath==None:
+                textQuoted = transferdata['textquoted']
+
+        if outputpath == None:
             return True
         if not os.path.exists(outputpath):
-            raise osv.except_osv(_('Export Data Error'), _("Requested writing path (%s) doesn't exist." %(outputpath)))
-            return False 
+            raise osv.except_osv(_('Export Data Error'), _(
+                "Requested writing path (%s) doesn't exist." % (outputpath)))
+            return False
 
-        filename=os.path.join(outputpath,fname)
+        filename = os.path.join(outputpath, fname)
         if fixedformat and (partLengths and bomLengths):
-            if not self._export_fixed(filename, anag_Data['labels'], anag_Data, False, partLengths, bomLengths,queueFiles['anagrafica']):
-                raise osv.except_osv(_('Export Data Error'), _("No Bom extraction files was generated, about entity (%s)." %(fname)))
+            if not self._export_fixed(filename, anag_Data['labels'], anag_Data, False, partLengths, bomLengths, queueFiles['anagrafica']):
+                raise osv.except_osv(_('Export Data Error'), _(
+                    "No Bom extraction files was generated, about entity (%s)." % (fname)))
                 return False
         else:
             if not self._export_csv(filename, anag_Data['labels'], anag_Data, True, delimiter, textQuoted, queueFiles['anagrafica']):
-                raise osv.except_osv(_('Export Data Error'), _("Writing operations on file (%s) have failed." %(filename)))
+                raise osv.except_osv(_('Export Data Error'), _(
+                    "Writing operations on file (%s) have failed." % (filename)))
                 return False
-        
-        ext_fields=['parent','child']
+
+        ext_fields = ['parent', 'child']
         ext_fields.extend(rel_fields)
         for oic in self.browse(cr, uid, allIDs, context=None):
-            dataSet=[]
+            dataSet = []
             if not queueFiles['distinte']:
-                fname="%s-%s.%s" %(bomname,str(oic.name),exte)
+                fname = "%s-%s.%s" % (bomname, str(oic.name), exte)
             else:
-                fname="%s.%s" %(bomname,exte)
-            filename=os.path.join(outputpath,fname)
+                fname = "%s.%s" % (bomname, exte)
+            filename = os.path.join(outputpath, fname)
             for oirel in getChildrenBom(oic, kindBomname):
-                rowData=[oic.name,oirel.product_id.name]
+                rowData = [oic.name, oirel.product_id.name]
                 for rel_field in rel_fields:
-                    rowData.append(eval('oirel.%s' %(rel_field)))
+                    rowData.append(eval('oirel.%s' % (rel_field)))
                 dataSet.append(rowData)
             if dataSet:
-                expData={'datas': dataSet}
-                
+                expData = {'datas': dataSet}
+
                 if fixedformat and (partLengths and bomLengths):
                     if not self._export_fixed(filename, ext_fields, expData, False, partLengths, bomLengths):
-                        raise osv.except_osv(_('Export Data Error'), _("No Bom extraction files was generated, about entity (%s)." %(fname)))
+                        raise osv.except_osv(_('Export Data Error'), _(
+                            "No Bom extraction files was generated, about entity (%s)." % (fname)))
                         return False
                 else:
                     if not self._export_csv(filename, ext_fields, expData, True, delimiter, textQuoted, queueFiles['distinte']):
-                        raise osv.except_osv(_('Export Data Error'), _("No Bom extraction files was generated, about entity (%s)." %(fname)))
+                        raise osv.except_osv(_('Export Data Error'), _(
+                            "No Bom extraction files was generated, about entity (%s)." % (fname)))
                         return False
         return True
 
     def _export_fixed(self, fname, fields=[], result={}, write_title=False, partLengths={}, bomLengths={}, appendFlag=False):
-        import csv, stat
+        import csv
+        import stat
         if not ('datas' in result) or not result:
             logging.error("_export_csv : No 'datas' in result.")
             return False
@@ -451,46 +482,50 @@ class plm_component(models.Model):
         if not fields:
             logging.error("_export_csv : No 'fields' in result.")
             return False
-        
+
         try:
-            existsFile=False
+            existsFile = False
             if os.path.exists(fname):
-                existsFile=True
-            operational='wb+'
+                existsFile = True
+            operational = 'wb+'
             if appendFlag:
-                operational='ab+'
+                operational = 'ab+'
             fp = file(fname, operational)
-            results=result['datas']
+            results = result['datas']
             for datas in results:
                 row = ""
-                count=0
+                count = 0
                 for data in datas:
-                    fieldLen=-1
+                    fieldLen = -1
                     if (type(data) is types.StringType):
-                        value=str(data).replace('\n',' ').replace('\t','').strip()
+                        value = str(data).replace(
+                            '\n', ' ').replace('\t', '').strip()
                     if (type(data) is types.UnicodeType):
-                        value=data.decode('utf8','ignore').replace('\n','').replace('\t','').strip()
+                        value = data.decode('utf8', 'ignore').replace(
+                            '\n', '').replace('\t', '').strip()
                     else:
-                        value=(str(data).strip() or '')
-                    fieldName=fields[count]
+                        value = (str(data).strip() or '')
+                    fieldName = fields[count]
                     if fieldName in partLengths.keys():
-                        fieldLen=partLengths[fieldName]
+                        fieldLen = partLengths[fieldName]
                     elif fieldName in bomLengths.keys():
-                        fieldLen=bomLengths[fieldName]                        
-                    if (fieldLen<0):
+                        fieldLen = bomLengths[fieldName]
+                    if (fieldLen < 0):
                         continue
-                    row +=value.ljust(fieldLen)[:fieldLen]
-                    count+=1
-                fp.write(row+'\n')
+                    row += value.ljust(fieldLen)[:fieldLen]
+                    count += 1
+                fp.write(row + '\n')
             fp.close()
-            os.chmod(fname, stat.S_IRWXU|stat.S_IRWXO|stat.S_IRWXG)
+            os.chmod(fname, stat.S_IRWXU | stat.S_IRWXO | stat.S_IRWXG)
             return True
         except IOError, (errno, strerror):
-            logging.error("_export_csv : IOError : "+str(errno)+" ("+str(strerror)+").")
+            logging.error(
+                "_export_csv : IOError : " + str(errno) + " (" + str(strerror) + ").")
             return False
 
     def _export_csv(self, fname, fields=[], result={}, write_title=False, delimiter=',', textQuoted=False, appendFlag=False):
-        import csv, stat
+        import csv
+        import stat
         if not ('datas' in result) or not result:
             logging.error("_export_csv : No 'datas' in result.")
             return False
@@ -498,64 +533,65 @@ class plm_component(models.Model):
         if not fields:
             logging.error("_export_csv : No 'fields' in result.")
             return False
-        
+
         try:
-            quoting=csv.QUOTE_MINIMAL
-            existsFile=False
+            quoting = csv.QUOTE_MINIMAL
+            existsFile = False
             if os.path.exists(fname):
-                existsFile=True
-            operational='wb+'
+                existsFile = True
+            operational = 'wb+'
             if appendFlag:
-                operational='ab+'
+                operational = 'ab+'
             if textQuoted:
-                quoting=csv.QUOTE_NONNUMERIC
+                quoting = csv.QUOTE_NONNUMERIC
             fp = file(fname, operational)
-            writer = csv.writer(fp,delimiter=delimiter,quoting=quoting)
+            writer = csv.writer(fp, delimiter=delimiter, quoting=quoting)
             if write_title:
                 if not appendFlag:
                     writer.writerow(fields)
                 else:
                     if not existsFile:
                         writer.writerow(fields)
-            results=result['datas']
+            results = result['datas']
             for datas in results:
                 row = []
                 for data in datas:
                     if (type(data) is types.StringType):
-                        row.append(str(data).replace('\n','').replace('\t','').strip())
+                        row.append(
+                            str(data).replace('\n', '').replace('\t', '').strip())
                     elif (type(data) is types.UnicodeType):
-                        row.append(data.decode('utf8','ignore').replace('\n','').replace('\t','').strip())
+                        row.append(
+                            data.decode('utf8', 'ignore').replace('\n', '').replace('\t', '').strip())
                     elif (type(data) is types.IntType) or (type(data) is types.LongType):
-                         row.append(int(str(data).strip() or 0))
+                        row.append(int(str(data).strip() or 0))
                     elif (type(data) is types.FloatType):
-                         row.append(float(str(data).strip() or 0.0))
+                        row.append(float(str(data).strip() or 0.0))
                     else:
                         row.append(str(data).strip() or '')
                 writer.writerow(row)
             fp.close()
-            os.chmod(fname, stat.S_IRWXU|stat.S_IRWXO|stat.S_IRWXG)
+            os.chmod(fname, stat.S_IRWXU | stat.S_IRWXO | stat.S_IRWXG)
             return True
         except IOError, (errno, strerror):
-            logging.error("_export_csv : IOError : "+str(errno)+" ("+str(strerror)+").")
+            logging.error(
+                "_export_csv : IOError : " + str(errno) + " (" + str(strerror) + ").")
             return False
 
     def _exportData(self, cr, uid, ids, fields=[], bomType='normal'):
         """
             Export data about product and BoM
         """
-        listData=[]
-        oids=self.browse(cr,uid,ids,context=None)
+        listData = []
+        oids = self.browse(cr, uid, ids, context=None)
         for oid in oids:
-            row_data={}
-            prod_names=oid._all_columns.keys()
+            row_data = {}
+            prod_names = oid._all_columns.keys()
             for field in fields:
                 if field in prod_names:
-                    row_data[field]=oid[field]
+                    row_data[field] = oid[field]
             if row_data:
                 listData.append(row_data)
-                
-        return {'datas':listData}
+
+        return {'datas': listData}
 
 plm_component()
-
-

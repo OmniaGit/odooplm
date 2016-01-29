@@ -587,4 +587,33 @@ class plm_component(models.Model):
 
 #   Overridden methods for this entity
 
+    def translateForClient(self, cr, uid, values=[], forcedLang='', context={}):
+        '''
+            Get values attribute in this format:
+            values = [{'field1':value1,'field2':value2,...}]     only one element in the list!!!
+            and return computed values due to language
+            
+            Get also forcedLang attribute in this format:
+            forcedLang = 'en_US'
+            if is not set it takes language from user
+        '''
+        language = forcedLang
+        if not forcedLang:
+            resDict = self.pool.get('res.users').read(cr, uid, uid, ['lang'])
+            language = resDict.get('lang','')
+        if values:
+            values = values[0]
+        if language and values:
+            toRead = filter(lambda x: type(x) in [str, unicode] and x,values.values()) # Where computed only string and not null string values (for performance improvement)
+            toRead = list(set(toRead))                                                 # Remove duplicates
+            for fieldName, valueToTranslate in values.items():
+                if valueToTranslate not in toRead:
+                    continue
+                translationObj = self.pool.get('ir.translation')
+                resIds = translationObj.search(cr, uid, [('lang','=',language),('src','=',valueToTranslate)])
+                if resIds:
+                    readDict = translationObj.read(cr, uid, resIds[0], ['value'])
+                    values[fieldName] = readDict.get('value','')
+        return values
+    
 plm_component()

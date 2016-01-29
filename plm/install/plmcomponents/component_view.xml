@@ -100,7 +100,7 @@
 								<separator string="Standard Description" colspan="4"/>
 							    <group col="4" colspan="2">
 							        <field name="std_description" nolabel="1" on_change="on_change_stddesc(std_description)" attrs="{'readonly':[('state','=','released')]}"/>
-							    </group>
+							     </group>
                         	</group>
                             <group colspan="4" col="4" name="TechSpec">
                             	<separator string="Technical Specifications" colspan="4"/>
@@ -205,7 +205,7 @@
 							<group colspan="4" col="4" name="DescArea">
 								<separator string="Standard Description" colspan="4"/>
 							    <group col="1" colspan="4">
-							        <field name="std_description" attrs="{'readonly':[('state','=','released')]}" nolabel="1" on_change="on_change_stddesc(std_description)"/>
+							        <field name="std_description" 	attrs="{'readonly':[('state','=','released')]}" nolabel="1" on_change="on_change_stddesc(std_description)"/>
 							    </group>
                         	</group>
                     		<group colspan="4" col="4" name="TechSpec">
