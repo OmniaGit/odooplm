@@ -19,10 +19,11 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-import types,logging
-from datetime       import datetime
-from openerp        import models, fields, api, SUPERUSER_ID, _, osv
-_logger         =   logging.getLogger(__name__)
+import types
+import logging
+from datetime import datetime
+from openerp import models, fields, api, SUPERUSER_ID, _, osv
+_logger = logging.getLogger(__name__)
 
 USED_STATES     =   [('draft','Draft'),
                      ('confirmed','Confirmed'),
@@ -37,10 +38,7 @@ class plm_component(models.Model):
     _inherit = 'product.product'
     create_date     =   fields.Datetime(_('Date Created'),     readonly=True)
     write_date      =   fields.Datetime(_('Date Modified'),    readonly=True)
-
-
 #   Internal methods
-
     def _getbyrevision(self, cr, uid, name, revision):
         result=None
         results=self.search(cr,uid,[('engineering_code','=',name),('engineering_revision','=',revision)])
@@ -48,6 +46,23 @@ class plm_component(models.Model):
             break
         return result
 
+    @api.multi
+    def product_template_open(self):
+        product_id = self.product_tmpl_id.id
+        mod_obj = self.env['ir.model.data']
+        search_res = mod_obj.get_object_reference('plm', 'product_template_form_view_plm_custom')
+        form_id = search_res and search_res[1] or False
+        if product_id and form_id:
+            return {
+                'type': 'ir.actions.act_window',
+                'name': _('Product Engineering'),
+                'view_type': 'form',
+                'view_mode': 'form',
+                'res_model': 'product.template',
+                'res_id': product_id,
+                'views': [(form_id, 'form')],
+            }
+            
 #     def _getExplodedBom(self, cr, uid, ids, level=0, currlevel=0):
 #         """
 #             Return a flat list of all children in a Bom ( level = 0 one level only, level = 1 all levels)

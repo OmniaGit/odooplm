@@ -1,129 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
 <data>
-    
-    <menuitem id="plm_component_menu_view" name="Components" parent="plm_menu" sequence="10"/>
 
-    <record model="ir.ui.view" id="plm_component_tree">
-        <field name="name">plm.component</field>
-        <field name="model">product.product</field>
-        <field name="type">tree</field>
-        <field name="priority" eval="10"/>
-        <field name="arch" type="xml">
-            <tree string="Parts">
-                <field name="name" select="True"/>
-                <field name="engineering_code" select="True" />
-                <field name="engineering_revision"/>
-                <field name="state" select="True"/>
-                <field name="description" select="True" />
-                <field name="engineering_writable" invisible="1"/>
-                <field name="engineering_material" select="True"/>
-                <field name="engineering_surface" select="True"/>
-                <field name="linkeddocuments" invisible="True"/>
-                <field name="std_umc1"/>
-                <field name="std_value1"/>
-                <field name="std_umc2"/>
-                <field name="std_value2"/>
-            </tree>
-        </field>
-    </record>
-
-    <record model="ir.ui.view" id="plm_component_search">
-        <field name="name">plm.component</field>
-        <field name="model">product.product</field>
-        <field name="type">search</field>
-        <field name="priority" eval="10"/>
-        <field name="arch" type="xml">
-			<search string="Products">
-               	<filter icon="terp-go-month" string="Latest 2 Weeks" separator="1"
-                       	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"
-                      	help="Created latest 2 Weeks"/>
-               	<filter icon="terp-go-month" string="Latest 7 Days" separator="1"
-                       	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
-                      	help="Created latest 7 Days"/>
-             	<filter icon="terp-go-month" string="Yesterday" separator="1"
-                     	domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
-                		help="Created yesterday"/>
-            	<filter icon="terp-go-month" string="Today" separator="1"
-                     	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
-                     	help="Created today"/>
-				<field name="state">
-                    <filter string="Confirmed" icon="terp-stock_symbol-selection" domain="[('state', '=', 'confirmed')]"/>
-                    <filter string="Released" icon="terp-stock_symbol-selection" domain="[('state', 'in', ['released','undermodify'])]"/>
-                    <filter string="Obsoleted" icon="terp-stock_symbol-selection" domain="[('state', '=', 'obsoleted')]"/>
-                    <filter string="Latest" name="latest" icon="terp-stock_symbol-selection" domain="[('state', 'not in', ['obsoleted','undermodify'])]"/>
-				</field>
-               	<separator orientation="vertical"/>
-            	<field name="name"/>
-            	<field name="description"/>
-               	<separator orientation="vertical"/>
-	            <group expand="0" string="Group by..." >
-	                <filter string="Status" icon="terp-stock_symbol-selection" domain="[]" context="{'group_by' : 'state'}"/>
-	               	<group groups="base.group_extended">
-						<filter string="Category" icon="terp-stock_symbol-selection" domain="[]" context="{'group_by' : 'categ_id'}"/>
-	                   	<filter string="Default UOM" icon="terp-mrp" domain="[]" context="{'group_by' : 'uom_id'}"/>
-               			<filter string="Type" icon="terp-stock_symbol-selection" domain="[]" context="{'group_by' : 'type'}"/>
-                	</group>
-            	</group>
-        	</search>
-    	</field>
-    </record>
-
-    <record model="ir.ui.view" id="plm_component_form">
-        <field name="name">plm.component</field>
-        <field name="model">product.product</field>
-        <field name="inherit_id" ref="product.product_normal_form_view"/>
+    <record id="plm_component_create_normalbom" model="ir.ui.view">
+        <field name="name">plm.relation.normal</field>
+        <field name="model">plm.temporary</field>
         <field name="type">form</field>
-        <field name="priority" eval="10"/>
         <field name="arch" type="xml">
-			<xpath expr="//sheet" position="before">
-             	<header>
-	                <button name="release" states="confirmed" string="Release Component" type="workflow" icon="gtk-apply" class="oe_highlight"/>
-	                <button name="correct" states="confirmed" string="Correct Component" type="workflow" icon="gtk-cancel" />
-	                <button name="confirm" states="draft" string="Confirm Component" type="workflow" icon="gtk-go-forward" class="oe_highlight"/>
-	                <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,released" statusbar_colors='{"undermodify":"red","obsoleted":"red"}' />
-	            </header>
-            </xpath>
-            
-            <notebook position="inside">
-                <page string="Engineering Infos">
-                    <group colspan="4" col="4" string="Part Number Area">
-                        <group colspan="4" col="4" name="PNArea">
-                            <field name="engineering_code" 		select="1" 		attrs="{'readonly':[('state','!=','draft')]}" colspan="2"/>
-                            <field name="engineering_revision" 	readonly="True" colspan="2"/>
-                        </group>
-                    </group>
-                    <separator colspan="4" string="Normalization Area"/>
-                    <sheet>
-                        <group colspan="4" col="4" name="NMArea">
-							<group colspan="4" col="4" name="DescArea">
-								<separator string="Standard Description" colspan="4"/>
-							    <group col="4" colspan="2">
-							        <field name="std_description" nolabel="1" on_change="on_change_stddesc(std_description)" attrs="{'readonly':[('state','=','released')]}"/>
-							     </group>
-                        	</group>
-                            <group colspan="4" col="4" name="TechSpec">
-                            	<separator string="Technical Specifications" colspan="4"/>
-                                <field name="tmp_material" attrs="{'readonly':[('state','=','released')]}" on_change="on_change_tmpmater(tmp_material)"/>
-                                <field name="tmp_surface"  attrs="{'readonly':[('state','=','released')]}" on_change="on_change_tmpsurface(tmp_surface)"/>
-                        	</group>
-                        </group>
-                        <group colspan="4" col="4" name="TBlock">
-                            <separator string="TitleBlock Informations" colspan="4"/>
-                            <field name="engineering_material" attrs="{'readonly':[('state','=','released')]}"/>
-                            <field name="engineering_surface" attrs="{'readonly':[('state','=','released')]}"/>
-                            <newline/>
-                        </group>
-                    </sheet>
-                </page>
-                <page string="Linked Documents">
-                    <field name="linkeddocuments"/>
-                </page>
-            </notebook>
+        <form string="Creation of Normal Bom">
+            <label string="Are you sure you want to create a new Normal Bom?" colspan="2"/>
+            <separator string="" colspan="4" />
+            <group colspan="2" col="2">
+            	<button icon="gtk-cancel" special="cancel" string="Cancel"/>
+            	<button icon="terp-gtk-go-back-rtl" string="Create Normal Bom" name="action_create_normalBom" type="object"/>
+            </group>
+        </form>
         </field>
     </record>
 
+    <act_window name="Create Normal Bom"
+        res_model="plm.temporary"
+        src_model="product.product"
+        view_mode="form"
+        view_id="plm_component_create_normalbom"
+        target="new"
+        key2="client_action_multi"
+        id="act_create_normalBom"/>
 
+        
     <record model="ir.ui.view" id="plm_component_base_tree">
         <field name="name">plm.base.component</field>
         <field name="model">product.product</field>
@@ -179,75 +83,72 @@
         <field name="name">plm.base.component</field>
         <field name="model">product.product</field>
         <field name="type">form</field>
-        <field name="priority" eval="15"/>
+        <field name="priority" eval="6"/>
         <field name="arch" type="xml">
              <form string="Engineering Product">
-                 <group colspan="4" col="2">
-                      <field name="name" on_change="on_change_name(name,engineering_code)" attrs="{'readonly':[('state','=','released')]}"/>
+             
+             	<header>
+	                <button name="release" states="confirmed" 	string="Release Component" type="workflow" icon="gtk-apply" 		class="oe_highlight"/>
+	                <button name="correct" states="confirmed" 	string="Correct Component" type="workflow" icon="gtk-cancel" />
+	                <button name="confirm" states="draft" 		string="Confirm Component" type="workflow" icon="gtk-go-forward" 	class="oe_highlight"/>
+	                <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,released" statusbar_colors='{"undermodify":"red","obsoleted":"red"}' />
+	            </header>
+             		<sheet>
+                <div name="button_box" class="oe_button_box">
+                    <button class="oe_stat_button" name="product_template_open" type="object" string="Engineering Infos"
+                        icon="fa-gears">  
+                    </button> 
+                </div> 
+                 <group colspan="6" col="2">
+                      <field name="name" on_change="on_change_name(name,engineering_code)" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
                  </group>
-                 <notebook colspan="4">
-               		<page string="Engineering Infos">
-                   		<group colspan="4" col="4" string="Part Number Area" name="PNArea">
-                     		<group colspan="4" col="4">
-                      			<field name="engineering_code" 		select="1" 		attrs="{'readonly':[('state','!=','draft')]}" colspan="2"/>
-                       			<field name="engineering_revision" 	readonly="True" colspan="2"/>
-                   			</group>
-                   		</group>
-         	    		<separator colspan="4" col="1" />
-	                    <group col="4" colspan="4" string="LifeCycle Area" name="LCArea">
-		                    <group col="2" colspan="2">
-								<separator string="LifeCycle Status" colspan="2"/>
-								<field name="state"/>
-		                    </group>
-	                     </group>
-        	    		<separator colspan="4" col="1" />
-                	    <group colspan="4" col="4" string="Normalization Area" name="NMArea">
-							<group colspan="4" col="4" name="DescArea">
-								<separator string="Standard Description" colspan="4"/>
-							    <group col="1" colspan="4">
-							        <field name="std_description" 	attrs="{'readonly':[('state','=','released')]}" nolabel="1" on_change="on_change_stddesc(std_description)"/>
-							    </group>
-                        	</group>
-                    		<group colspan="4" col="4" name="TechSpec">
-                   				<field name="tmp_material" 	attrs="{'readonly':[('state','=','released')]}" colspan="2" on_change="on_change_tmpmater(tmp_material)"/>
-                 				<field name="tmp_surface" 	attrs="{'readonly':[('state','=','released')]}" colspan="2" on_change="on_change_tmpsurface(tmp_surface)"/>
-                     		</group>
-                    		<group colspan="4" col="4">
-	 	                        <group colspan="2" col="2" name="Weigth">
-		                     		<separator string="Weight" />
-		                            <field digits="(14, 3)" name="weight" attrs="{'readonly':[('type','=','service'),('state','=','released')]}"/>
-	                      		</group>
-	 	                        <group colspan="2" col="2" name="uom">
-		                          	<separator string="Unit of Measure" colspan="2"/>
-		                            <field name="uom_id" 	attrs="{'readonly':[('state','=','released')]}" on_change="onchange_uom(uom_id,uom_po_id)"/>
-		                            <field name="uom_po_id" attrs="{'readonly':[('state','=','released')]}" groups="base.group_extended"/>
-	  	                        </group>
-  	                        </group>
-                 	    </group>
-                    	<group colspan="4" col="4">
-                    		<group colspan="4" col="4" name="TBlock">
-	                            <separator string="TitleBlock Informations" colspan="4"/>
-	                   			<field name="engineering_material" 	attrs="{'readonly':[('state','=','released')]}" colspan="2"/>
-                				<field name="engineering_surface" 	attrs="{'readonly':[('state','=','released')]}" colspan="2"/>
-                     		</group>
-                 		</group>
-                   </page>
-                   <page string="Descriptions">
-                        <separator string="Description"/>
-                        <field colspan="4" name="description" 			nolabel="1"/>
-                        <separator string="Sale Description"/>
-                        <field colspan="4" name="description_sale" 		nolabel="1"/>
-                        <separator string="Purchase Description"/>
-                        <field colspan="4" name="description_purchase" 	nolabel="1"/>
-                   </page>
-                   <page string="Linked Documents">
-                        <field name="linkeddocuments"/>
-                   </page>
-                </notebook>
+           		<group colspan="6" col="6" sname="PNArea">
+             		<group colspan="6" col="6">
+              			<field name="engineering_code" 		colspan="4" 			attrs="{'readonly':[('state','!=','draft')]}" 				select="1"/>
+               			<field name="engineering_revision" 	colspan="2"				readonly="True" 											/>
+               			<field name="std_description" 		colspan="4"				attrs="{'readonly':[('state','in',['released','obsoleted'])]}" on_change="on_change_stddesc(std_description)" /> 	
+               			<field name="state" 				colspan="2" 			readonly="True"/>	
+               			<label for="description" 			colspan="6"/>
+               			<field name="description" 			colspan="6" 			attrs="{'readonly':[('state','in',['released','obsoleted'])]}" nolabel="1" />
+           			</group>
+           		</group>
+
+	    		<notebook colspan="6" col="6">
+	    			<page string="Technical Infos">
+	            		<group colspan="4" col="4" name="TechnicalInfos">
+	           				<field name="tmp_material" 	attrs="{'readonly':[('state','in',['released','obsoleted'])]}" on_change="on_change_tmpmater(tmp_material)"/>
+	         				<field name="tmp_surface" 	attrs="{'readonly':[('state','in',['released','obsoleted'])]}" on_change="on_change_tmpsurface(tmp_surface)"/>
+	             			<field digits="(14, 3)"  	attrs="{'readonly':[('state','in',['released','obsoleted'])]}" name="weight"/>
+	             			<field name="uom_id" 		attrs="{'readonly':[('state','in',['released','obsoleted'])]}" on_change="onchange_uom(uom_id,uom_po_id)"/>
+                            <field name="uom_po_id" 	attrs="{'readonly':[('state','in',['released','obsoleted'])]}" groups="base.group_extended"/>
+	         			</group>
+					    <group col="4" colspan="4">
+					        <field name="std_umc1" 		attrs="{'readonly':[('std_umc1','=',False),('state','in',['released','obsoleted'])]}" />
+					        <field name="std_value1" 	attrs="{'readonly':[('std_umc1','=',False),('state','in',['released','obsoleted'])]}" on_change="on_change_stdvalue(std_description, std_umc1, std_value1, std_umc2, std_value2, std_umc3, std_value3)"/>
+					        <field name="std_umc2"  	attrs="{'readonly':[('std_umc2','=',False),('state','in',['released','obsoleted'])]}" />
+					        <field name="std_value2" 	attrs="{'readonly':[('std_umc2','=',False),('state','in',['released','obsoleted'])]}" on_change="on_change_stdvalue(std_description, std_umc1, std_value1, std_umc2, std_value2, std_umc3, std_value3)"/>
+					        <field name="std_umc3"  	attrs="{'readonly':[('std_umc3','=',False),('state','in',['released','obsoleted'])]}" />
+					        <field name="std_value3" 	attrs="{'readonly':[('std_umc3','=',False),('state','in',['released','obsoleted'])]}" on_change="on_change_stdvalue(std_description, std_umc1, std_value1, std_umc2, std_value2, std_umc3, std_value3)"/>
+					    </group>
+	    			</page>
+	    			<page string="TitleBlock Informations"> 
+	    				<group>
+	               			<field name="engineering_material" 	attrs="{'readonly':[('state','in',['released','obsoleted'])]}" colspan="2"/>
+	        				<field name="engineering_surface" 	attrs="{'readonly':[('state','in',['released','obsoleted'])]}" colspan="2"/> 
+	        			</group>		
+	    			</page>	
+	    			<page string="Linked Documents"> 
+	    				<group>	
+	               			<field name="linkeddocuments" 		attrs="{'readonly':[('state','in',['released','obsoleted'])]}" nolabel="1"/>
+        				</group>	
+	    			</page>	
+	    		</notebook> 
+	    		</sheet>	
             </form>
         </field>
     </record>
-    
+
+        							
     <record model="ir.actions.act_window" id="action_plm_component_base">
         <field name="name">Engineering Parts</field>
         <field name="res_model">product.product</field>
@@ -257,36 +158,33 @@
         <field name="context">{"search_default_latest":1}</field>      
         <field name="view_id_search" ref="plm_component_base_search"/>
     </record>
-
-    <record id="plm_component_create_normalbom" model="ir.ui.view">
-        <field name="name">plm.relation.normal</field>
-        <field name="model">plm.temporary</field>
-        <field name="type">form</field>
-        <field name="arch" type="xml">
-        <form string="Creation of Normal Bom">
-            <label string="Are you sure you want to create a new Normal Bom?" colspan="2"/>
-            <separator string="" colspan="4" />
-            <group colspan="2" col="2">
-            	<button icon="gtk-cancel" special="cancel" string="Cancel"/>
-            	<button icon="terp-gtk-go-back-rtl" string="Create Normal Bom" name="action_create_normalBom" type="object"/>
-            </group>
-        </form>
-        </field>
-    </record>
-
-    <act_window name="Create Normal Bom"
-        res_model="plm.temporary"
-        src_model="product.product"
-        view_mode="form"
-        view_id="plm_component_create_normalbom"
-        target="new"
-        key2="client_action_multi"
-        id="act_create_normalBom"/>
-
-    <menuitem name="Search on Engineering Parts" 
-              action="action_plm_component_base"
-              id="menu_base_component"
-              parent="plm_component_menu_view"/>
+    
+	<menuitem 	id		="plm_component_menu_view" 
+				name	="Components" 
+				parent	="plm.plm_menu" 
+				sequence="10"/>
+        	
+    <menuitem 	id		="menu_base_component"
+    			name	="Search on Engineering Parts" 
+    			parent	="plm.plm_component_menu_view"
+              	action	="action_plm_component_base" />
+    
+              	
+    <!-- Product Template Overload -->
+    
+        <record id="product_template_form_view_plm_custom" model="ir.ui.view">
+            <field name="name">product.template.plm.custom</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_only_form_view"/>
+            <field name="priority" eval="3"/>
+            <field name="arch" type="xml">
+                <div name="button_box" position="inside">
+                    <button class="oe_stat_button" name="engineering_products_open" type="object" string="Engineering Infos"
+                        icon="fa-gears"> 
+                    </button>
+                </div>
+            </field>
+        </record>
 
 </data>
 </openerp>

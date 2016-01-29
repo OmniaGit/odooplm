@@ -59,7 +59,7 @@ class checkout_custom_report(report_int):
             if document.printout:
                 if not document.id in packed:   
                     input1 = PdfFileReader(StringIO.StringIO(base64.decodestring(document.printout)))
-                    output.addPage(input1.getPage(0))
+                    output.addPage(input1.getPage(0),document.state)
                     packed.append(document.id)
 
         pdf_string = StringIO.StringIO()

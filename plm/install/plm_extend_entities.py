@@ -69,7 +69,7 @@ class plm_component(models.Model):
             for bom_line_obj in bom_line_objs:                
                 prod_ids.extend([bom_line_obj.bom_id.product_id.id])
             prod_obj.father_part_ids = self.env['product.product'].browse(list(set(prod_ids)))
-
+    
     linkeddocuments = fields.Many2many  ('plm.document', 'plm_component_document_rel','component_id','document_id', _('Linked Docs'))  
     tmp_material    = fields.Many2one   ('plm.material',_('Raw Material'), required=False, change_default=True, help=_("Select raw material for current product"))
     #tmp_treatment   = fields.Many2one('plm.treatment',_('Thermal Treatment'), required=False, change_default=True, help=_("Select thermal treatment for current product"))
