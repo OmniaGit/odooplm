@@ -175,52 +175,52 @@ class plm_document(models.Model):
         else:
             return True
         
-    def _explodedocs(self, cr, uid, oid, kind, listed_documents=[], recursion=True):
-        result=[]
-        if (oid in listed_documents):
-            return result
-        documentRelation=self.pool.get('plm.document.relation')
-        docRelIds=documentRelation.search(cr,uid,[('parent_id', '=',oid),('link_kind', '=',kind)])
-        if len(docRelIds)==0:
-            return result
-        children=documentRelation.browse(cr,uid,docRelIds)
-        for child in children:
-            if recursion:
-                listed_documents.append(oid)
-                result.extend(self._explodedocs(cr, uid, child.child_id.id, kind, listed_documents,recursion))
-            result.append(child.child_id.id)
+    def _explodedocs(self, cr, uid, oid, kinds, listed_documents=[], recursion=True):
+        result = []
+        documentRelation = self.pool.get('plm.document.relation')
+
+        def getAllDocumentChildId(fromID, kinds):
+            docRelIds = documentRelation.search(cr, uid, [('parent_id', '=', fromID), ('link_kind', 'in', kinds)])
+            children = documentRelation.browse(cr, uid, docRelIds)
+            for child in children:
+                idToAdd = child.child_id.id
+                if idToAdd not in result:
+                    result.append(idToAdd)
+                    if recursion:
+                        getAllDocumentChildId(idToAdd, kinds)
+        getAllDocumentChildId(oid, kinds)
         return result
 
-    def _relateddocs(self, cr, uid, oid, kind, listed_documents=[], recursion=True):
+    def _relateddocs(self, cr, uid, oid, kinds, listed_documents=[], recursion=True):
         result=[]
         if (oid in listed_documents):
             return result
         documentRelation=self.pool.get('plm.document.relation')
-        docRelIds=documentRelation.search(cr,uid,[('child_id', '=',oid),('link_kind', '=',kind)])
+        docRelIds=documentRelation.search(cr,uid,[('child_id', '=',oid),('link_kind', 'in',kinds)])
         if len(docRelIds)==0:
             return result
         children=documentRelation.browse(cr,uid,docRelIds)
         for child in children:
             if recursion:
                 listed_documents.append(oid)
-                result.extend(self._relateddocs(cr, uid, child.parent_id.id, kind, listed_documents, recursion))
-            if child.parent_id.id:
+                result.extend(self._relateddocs(cr, uid, child.parent_id.id, kinds, listed_documents, recursion))
+            if child.parent_id:
                 result.append(child.parent_id.id)
         return list(set(result))
 
-    def _relatedbydocs(self, cr, uid, oid, kind, listed_documents=[], recursion=True):
+    def _relatedbydocs(self, cr, uid, oid, kinds, listed_documents=[], recursion=True):
         result=[]
         if (oid in listed_documents):
             return result
         documentRelation=self.pool.get('plm.document.relation')
-        docRelIds=documentRelation.search(cr,uid,[('parent_id', '=',oid),('link_kind', '=',kind)])
+        docRelIds=documentRelation.search(cr,uid,[('parent_id', '=',oid),('link_kind', 'in',kinds)])
         if len(docRelIds)==0:
             return result
         children=documentRelation.browse(cr,uid,docRelIds)
         for child in children:
             if recursion:
                 listed_documents.append(oid)
-                result.extend(self._relatedbydocs(cr, uid, child.child_id.id, kind, listed_documents, recursion))
+                result.extend(self._relatedbydocs(cr, uid, child.child_id.id, kinds, listed_documents, recursion))
             if child.child_id.id:
                 result.append(child.child_id.id)
         return list(set(result))
@@ -247,9 +247,11 @@ class plm_document(models.Model):
                     objDatas = objDoc.datas
                 except Exception,ex:
                     logging.error('Document with "id": %s  and "name": %s may contains no data!!         Exception: %s' % (objDoc.id, objDoc.name, ex))
-                if (objDoc.file_size<1) and objDatas:
-                    objDoc.file_size=len(objDatas)
-                result.append((objDoc.id, objDoc.datas_fname, objDoc.file_size, collectable, isCheckedOutToMe, timeDoc))
+                if (objDoc.file_size<1) and (objDatas):
+                    file_size=len(objDoc.datas)
+                else:
+                    file_size=objDoc.file_size
+                result.append((objDoc.id, objDoc.datas_fname, file_size, collectable, isCheckedOutToMe, timeDoc))
         return list(set(result))
             
     def copy(self,cr,uid,oid,defaults={},context=None):
@@ -334,77 +336,77 @@ class plm_document(models.Model):
         if oid.engineering_code == False:
             logging.warning("_iswritable : Part ("+str(oid.name)+"-"+str(oid.engineering_revision)+") without Engineering P/N.")
             return False
-        return True  
-    
-    def newVersion(self,cr,uid,ids,context=None):
+        return True
+
+    def newVersion(self, cr, uid, ids, context=None):
         """
             create a new version of the document (to WorkFlow calling)
         """
-        if self.newRevision(cr,uid,ids,context=context)!=None:
-            return True 
-        return False 
+        if self.newRevision(cr, uid, ids, context=context) is not None:
+            return True
+        return False
 
-    def NewRevision(self,cr,uid,ids,context=None):
+    def NewRevision(self, cr, uid, ids, context=None):
         """
             create a new revision of the document
         """
-        newID=None
+        newID = None
         for tmpObject in self.browse(cr, uid, ids, context=context):
-            latestIDs=self.GetLatestIds(cr, uid,[(tmpObject.name,tmpObject.revisionid,False)], context=context)
+            latestIDs = self.GetLatestIds(cr, uid, [(tmpObject.name, tmpObject.revisionid, False)], context=context)
             for oldObject in self.browse(cr, uid, latestIDs, context=context):
-                self.write(cr,uid,[oldObject.id],{'state':'undermodify',} ,context=context,check=False)
-                defaults={}
-                defaults['name']=oldObject.name
-                defaults['revisionid']=int(oldObject.revisionid)+1
-                defaults['writable']=True
-                defaults['state']='draft'
-                newID=super(plm_document,self).copy(cr,uid,oldObject.id,defaults,context=context)
+                self.write(cr, uid, [oldObject.id], {'state': 'undermodify'}, context=context, check=False)
+                defaults                = {}
+                defaults['name']        = oldObject.name
+                defaults['revisionid']  = int(oldObject.revisionid) + 1
+                defaults['writable']    = True
+                defaults['state']       = 'draft'
+                newID = super(plm_document, self).copy(cr, uid, oldObject.id, defaults, context=context)
                 self.wf_message_post(cr, uid, [oldObject.id], body=_('Created : New Revision.'))
                 break
             break
-        return (newID, defaults['revisionid']) 
-    
+        return (newID, defaults['revisionid'])
+
     def Clone(self, cr, uid, oid, defaults={}, context=None):
         """
             create a new copy of the document
         """
-        defaults={}
-        exitValues={}
-        newID=self.copy(cr,uid,oid,defaults,context)
-        if newID != None:
-            newEnt=self.browse(cr,uid,newID,context=context)
-            exitValues['_id']=newID
-            exitValues['name']=newEnt.name
-            exitValues['revisionid']=newEnt.revisionid
+        defaults    = {}
+        exitValues  = {}
+        newID       = self.copy(cr, uid, oid, defaults, context)
+        if newID is not None:
+            newEnt = self.browse(cr, uid, newID, context=context)
+            exitValues['_id']           = newID
+            exitValues['name']          = newEnt.name
+            exitValues['revisionid']    = newEnt.revisionid
         return exitValues
-    
+
     def CheckSaveUpdate(self, cr, uid, documents, default=None, context=None):
         """
             Save or Update Documents
         """
-        retValues=[]
+        retValues = []
         for document in documents:
-            hasSaved=False
+            hasSaved = False
             if not ('name' in document) or (not 'revisionid' in document):
-                document['documentID']=False
-                document['hasSaved']=hasSaved
+                document['documentID']  = False
+                document['hasSaved']    = hasSaved
                 continue
-            existingID=self.search(cr,uid,[
-                                           ('name','=',document['name'])
-                                          ,('revisionid','=',document['revisionid'])],order='revisionid')
+            existingID = self.search(cr, uid, [
+                                           ('name', '=', document['name']),
+                                           ('revisionid', '=', document['revisionid'])], order='revisionid')
             if not existingID:
-                hasSaved=True
+                hasSaved = True
             else:
-                existingID=existingID[0]
-                objDocument=self.browse(cr, uid, existingID, context=context)
+                existingID  = existingID[0]
+                objDocument = self.browse(cr, uid, existingID, context=context)
 #               logging.info("CheckSaveUpdate : time db : %s time file : %s" %(str(self.getLastTime(cr,uid,existingID).strftime('%Y-%m-%d %H:%M:%S')), str(document['lastupdate'])))
-                if self.getLastTime(cr,uid,existingID)<datetime.strptime(str(document['lastupdate']),'%Y-%m-%d %H:%M:%S'):
+                if self.getLastTime(cr, uid, existingID) < datetime.strptime(str(document['lastupdate']), '%Y-%m-%d %H:%M:%S'):
                     if objDocument.writable:
-                        hasSaved=True
-            document['documentID']=existingID
-            document['hasSaved']=hasSaved
+                        hasSaved = True
+            document['documentID'] = existingID
+            document['hasSaved'] = hasSaved
             retValues.append(document)
-        return retValues 
+        return retValues
 
     def SaveOrUpdate(self, cr, uid, documents, default=None, context=None):
         """
@@ -773,31 +775,25 @@ class plm_document(models.Model):
         """
             Evaluate documents to return
         """
-        forceFlag=False
-        listed_models=[]
-        listed_documents=[]
-        oid, listedFiles, selection = request        
-        if selection == False:
-            selection=1
-        if selection<0:
-            forceFlag=True
-            selection=selection*(-1)
-
-        kind='LyTree'   # Get relations due to layout connected
-        docArray=self._relateddocs(cr, uid, oid, kind, listed_documents)
-
-        kind='HiTree'   # Get Hierarchical tree relations due to children
-        modArray=self._explodedocs(cr, uid, oid, kind, listed_models)
-        for item in docArray:
-            if item not in modArray:
-                modArray.append(item)
-        docArray=modArray  
+        forceFlag = False
+        listed_models = []
+        listed_documents = []
+        outIds = []
+        oid, listedFiles, selection = request
+        outIds.append(oid)
+        if selection is False:
+            selection = 1
+        if selection < 0:
+            forceFlag = True
+            selection = selection * (-1)
+        # Get relations due to layout connected
+        docArray = self._relateddocs(cr, uid, oid, ['LyTree'], listed_documents)
+        # Get Hierarchical tree relations due to children
+        modArray = self._explodedocs(cr, uid, oid, ['HiTree'], listed_models)
+        outIds = list(set(outIds + modArray + docArray))
         if selection == 2:
-            docArray=self._getlastrev(cr, uid, docArray, context)
-        
-        if not oid in docArray:
-            docArray.append(oid)     # Add requested document to package
-        return self._data_check_files(cr, uid, docArray, listedFiles, forceFlag, context)
+            outIds = self._getlastrev(cr, uid, outIds, context)
+        return self._data_check_files(cr, uid, outIds, listedFiles, forceFlag, context)
 
     def GetSomeFiles(self, cr, uid, request, default=None, context=None):
         """
@@ -835,18 +831,18 @@ class plm_document(models.Model):
             selection=selection*(-1)
 
         kind='HiTree'                   # Get Hierarchical tree relations due to children
-        docArray=self._explodedocs(cr, uid, oid, kind, listed_models)
+        docArray=self._explodedocs(cr, uid, oid, [kind], listed_models)
         
         if not oid in docArray:
             docArray.append(oid)        # Add requested document to package
                 
         for item in docArray:
-            kind='LyTree'               # Get relations due to layout connected
-            modArray.extend(self._relateddocs(cr, uid, item, kind, listed_documents))
-            modArray.extend(self._explodedocs(cr, uid, item, kind, listed_documents))
-            kind='RfTree'               # Get relations due to referred connected
-            modArray.extend(self._relateddocs(cr, uid, item, kind, listed_documents))
-            modArray.extend(self._explodedocs(cr, uid, item, kind, listed_documents))
+            kinds=['LyTree','RfTree']               # Get relations due to layout connected
+            modArray.extend(self._relateddocs(cr, uid, item, kinds, listed_documents))
+            modArray.extend(self._explodedocs(cr, uid, item, kinds, listed_documents))
+#             kind='RfTree'               # Get relations due to referred connected
+#             modArray.extend(self._relateddocs(cr, uid, item, kind, listed_documents))
+#             modArray.extend(self._explodedocs(cr, uid, item, kind, listed_documents))
 
         modArray.extend(docArray)
         docArray=list(set(modArray))    # Get unique documents object IDs
@@ -866,17 +862,17 @@ class plm_document(models.Model):
         listed_documents=[]
         read_docs=[]
         for oid in ids:
-            kind='RfTree'   # Get relations due to referred models
-            read_docs.extend(self._relateddocs(cr, uid, oid, kind, listed_documents, False))
-            read_docs.extend(self._relatedbydocs(cr, uid, oid, kind, listed_documents, False))
+            kinds=['RfTree','LyTree']   # Get relations due to referred models
+            read_docs.extend(self._relateddocs(cr, uid, oid, kinds, listed_documents, False))
+            read_docs.extend(self._relatedbydocs(cr, uid, oid, kinds, listed_documents, False))
 
-            kind='LyTree'   # Get relations due to layout connected
-            read_docs.extend(self._relateddocs(cr, uid, oid, kind, listed_documents, False))
-            read_docs.extend(self._relatedbydocs(cr, uid, oid, kind, listed_documents, False))
+#             kind='LyTree'   # Get relations due to layout connected
+#             read_docs.extend(self._relateddocs(cr, uid, oid, kind, listed_documents, False))
+#             read_docs.extend(self._relatedbydocs(cr, uid, oid, kind, listed_documents, False))
        
         documents=self.browse(cr, uid, read_docs, context=context)
         for document in documents:
-            related_documents.append([document.id,document.name,document.preview])
+            related_documents.append([document.id,document.name,''])    # The third parameter is set as '' to compatibility rule
         return related_documents
 
     def getServerTime(self, cr, uid, oid, default=None, context=None):

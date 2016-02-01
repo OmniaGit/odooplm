@@ -111,6 +111,27 @@ class plm_component(models.Model):
     #engineering_treatment    =    fields.Char        (_('Treatment'),size=64,required=False,help=_("Thermal treatment for current product"))
     engineering_surface     =   fields.Char         (_('Surface Finishing'),size=128,required=False,help=_("Surface finishing for current product, only description for titleblock."))
 
+#   Internal methods
+    @api.multi
+    def engineering_products_open(self):
+        product_id = False
+        relatedProductBrwsList = self.env['product.product'].search([('product_tmpl_id','=',self.id)])
+        for relatedProductBrws in relatedProductBrwsList:
+            product_id = relatedProductBrws.id
+        mod_obj = self.env['ir.model.data']
+        search_res = mod_obj.get_object_reference('plm', 'plm_component_base_form')
+        form_id = search_res and search_res[1] or False
+        if product_id and form_id:
+            return {
+                'type': 'ir.actions.act_window',
+                'name': _('Product Engineering'),
+                'view_type': 'form',
+                'view_mode': 'form',
+                'res_model': 'product.product',
+                'res_id': product_id,
+                'views': [(form_id, 'form')],
+            }
+    
     _defaults = {
                  'state': lambda *a: 'draft',
                  #'engineering_revision': lambda self,ctx:0,
@@ -337,9 +358,10 @@ class plm_relation(models.Model):
         """
             Returns a list of all children in a Bom (all levels)
         """
-        self._packed=[]
-        relDatas=[ids[0],self._explodebom(cr, uid, self._getbom(cr, uid, ids[0]), False)]
-        prtDatas=self._getpackdatas(cr, uid, relDatas)
+        self._packed = []
+        # get all ids of the children product in structured way like [[id,childids]]
+        relDatas = [ids[0],self._explodebom(cr, uid, self._getbom(cr, uid, ids[0]), False)]
+        prtDatas = self._getpackdatas(cr, uid, relDatas)
         return (relDatas, prtDatas, self._getpackreldatas(cr, uid, relDatas, prtDatas))
 
     def _explodebom(self, cr, uid, bids, check=True):

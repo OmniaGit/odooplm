@@ -10,9 +10,22 @@
         <field name="arch" type="xml">
             <form string="Document"  version="7.0">
                <header>
-                    <button name="release" states="confirmed" string="Release Document" icon="gtk-apply" class="oe_highlight"  attrs="{'invisible': ['|',('is_checkout','=',True)]}"/>
-                    <button name="correct" states="confirmed" string="Correct Document" icon="gtk-cancel"/>
-                    <button name="confirm" states="draft" string="Confirm Document" icon="gtk-go-forward" class="oe_highlight"  attrs="{'invisible': ['|',('is_checkout','=',True)]}"/>
+                    <button name="release" 
+                    		states="confirmed" 
+                    		string="Release Document" 
+                    		icon="gtk-apply" 
+                    		class="oe_highlight"  
+                    		attrs="{'invisible': ['|',('is_checkout','=',True)]}" />
+                    <button name="correct" 
+                    		states="confirmed" 
+                    		string="Correct Document" 
+                    		icon="gtk-cancel"/>
+                    <button name="confirm" 
+                    		states="draft" 
+                    		string="Confirm Document" 
+                    		icon="gtk-go-forward" 
+                    		class="oe_highlight"  
+                    		attrs="{'invisible': ['|',('is_checkout','=',True)]}" />
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,released" statusbar_colors='{"undermodify":"red","obsoleted":"red"}' readonly="1"/>
                </header>
                <sheet>
@@ -27,32 +40,32 @@
 	               </group>
 	               <group colspan="4" col="4" name="DocData">
 		               <group col="4" colspan="1">
-		                    		<field
-		                        		name="preview"
-		                        		widget="image"
-		                        		readonly="1"
-		                        		nolabel="1"
-		                        		colspan="2"
-		                        		img_height="400"
-		                        		img_width="400"/>
+                    		<field 
+                        		name="preview"
+                        		widget="image"
+                        		readonly="1"
+                        		nolabel="1"
+                        		colspan="2"
+                        		img_height="400"
+                        		img_width="400"/>
 			           </group>
 		               <group colspan="2" col="2" name="DocData">
 		 					<group colspan="4" col="4">
 			 					<group colspan="2" col="2">
 				                    <newline/>
-				                    <separator string="Spare Part" colspan="2"/>
-				                    <field name="usedforspare" colspan="2"/>
+				                    <separator string="Spare Part" 	colspan="2"/>
+				                    <field name="usedforspare" 		colspan="2"	attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
 				                    <newline/>
 				                    <group col="4" colspan="4" string="Created and Modified" name="DocUser">
-					                    <field name="create_uid" readonly="1"/>
-			                            <field name="create_date" readonly="1"/>
+					                    <field name="create_uid" 	readonly="1"/>
+			                            <field name="create_date" 	readonly="1"/>
 			                            <newline/>	
-			                            <field name="write_uid" readonly="1"/>
-			                            <field name="write_date" readonly="1"/>	
+			                            <field name="write_uid" 	readonly="1"/>
+			                            <field name="write_date" 	readonly="1"/>	
 			                    	</group>
 		                        	<group col="2" colspan="2">
 		                        		<field name="checkout_user" colspan="2"/>
-		                        		<field name="is_checkout" colspan="2"/>
+		                        		<field name="is_checkout" 	colspan="2"/>
 		                        	</group>
 			                     </group>
 		                    </group>
@@ -63,35 +76,35 @@
 	                	<group col="4" colspan="4" name="Attachment">
 	                		<group col="4" colspan="2" string="File Data" name="FileData">
 		                        <group col="2" colspan="2" attrs="{'invisible':[('type','=','url')]}">
-		                            <field name="datas" filename="datas_fname" />
-		                            <field name="datas_fname" select="1"/>
+		                            <field name="datas" filename="datas_fname" 	attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+		                            <field name="datas_fname" select="1"		attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
 		                        </group>
 		                        <group col="2" colspan="2">
-		                            <field name="url" widget="url" attrs="{'invisible':[('type','=','binary')]}"/>
-		                        	<field name="type"/>
+		                            <field name="url" widget="url" 				attrs="{'invisible':[('type','=','binary')],'readonly':[('state','in',['released','obsoleted'])]}"/>
+		                        	<field name="type"							attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
 		                        </group>
 	                        </group>
 
                             <group col="2" colspan="2" string="Attached To">
                         		<newline/>
-                       			<field name="res_id" readonly="True"/>
-                                <field name="res_model" readonly="True"/>
+                       			<field name="res_id" 	readonly="True"/>
+                                <field name="res_model" readonly="True" />
                             </group>
                             <group col="2" colspan="2" string="Related To">
 	                            <newline/>
-                                <field name="res_name" readonly="1"/>
+                                <field name="res_name" 	readonly="1"/>
                            	</group>
                            	<separator/>
                         </group>
 	                </page>
 	                <page string="Linked Parts">
-	                    <field colspan="4" name="linkedcomponents" nolabel="1"/>
+	                    <field colspan="4" name="linkedcomponents" nolabel="1"	attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
 	                </page>
 	                <page string="Indexed Content" groups="base.group_extended">
-	                    <field name="index_content" colspan="4" nolabel="1"/>
+	                    <field name="index_content" colspan="4" nolabel="1"		attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
 	                </page>
 	                <page string="Notes">
-	                    <field colspan="4" name="description" nolabel="1"/>
+	                    <field colspan="4" name="description" nolabel="1"		attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
 	                </page>
 	                </notebook>
                 </sheet>
@@ -110,14 +123,14 @@
         <field name="priority" eval="1"/>
         <field name="arch" type="xml">
 			<tree string="Documents">
-                <field name="name" select="True"/>
-                <field name="revisionid" select="True"/>
-                <field name="state" select="True"/>
-                <field name="datas_fname" select="True"/>
-                <field name="create_uid" select="True"/>
-                <field name="create_date" select="True"/>
-                <field name="write_uid" select="True"/>
-                <field name="write_date" select="True"/>
+                <field name="name" 			select="True"/>
+                <field name="revisionid" 	select="True"/>
+                <field name="state" 		select="True"/>
+                <field name="datas_fname" 	select="True"/>
+                <field name="create_uid" 	select="True"/>
+                <field name="create_date" 	select="True"/>
+                <field name="write_uid" 	select="True"/>
+                <field name="write_date" 	select="True"/>
          	</tree>
          </field>
     </record>

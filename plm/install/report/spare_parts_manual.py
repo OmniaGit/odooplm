@@ -248,7 +248,7 @@ class component_spare_parts_report(report_int):
         for component in components:
             self.processedObjs=[]
             buf=self.getFirstPage(cr, uid, [component.id],context)
-            output.addPage(buf)
+            output.addPage((buf,''))
             self.getSparePartsPdfFile(cr, uid, context, component, output, componentType, bomType,recursion)
         if output != None:
             pdf_string = StringIO.StringIO()
@@ -280,11 +280,11 @@ class component_spare_parts_report(report_int):
                     packedIds.append(bom_line.id)
                 if len(packedIds)>0:
                     for pageStream in self.getPdfComponentLayout(cr, product):
-                        output.addPage(pageStream)
+                        output.addPage((pageStream,''))
                     stream,typerep=BODY.create(cr, uid, [BomObject.id], data={'report_type': u'pdf'},context=context) 
                     pageStream=StringIO.StringIO()
                     pageStream.write(stream)
-                    output.addPage(pageStream)
+                    output.addPage((pageStream,''))
                     if recursion:
                         for packedObj in packedObjs:
                             if not packedObj in self.processedObjs:
