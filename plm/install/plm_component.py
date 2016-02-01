@@ -116,7 +116,7 @@ class plm_component(models.Model):
         if name:
             results=self.search(cr,uid,[('name','=',name)])
             if len(results) > 0:
-                raise osv.except_osv(_('Update Part Warning'), _("Part %s already exists.\nClose with OK to reuse, with Cancel to discharge." %(name)))
+                raise osv.osv.except_osv(_('Update Part Warning'), _("Part %s already exists.\nClose with OK to reuse, with Cancel to discharge." %(name)))
             if not engineering_code:
                 return {'value': {'engineering_code': name}}            
         return {}
