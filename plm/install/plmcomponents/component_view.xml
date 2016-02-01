@@ -95,7 +95,7 @@
 	            </header>
              		<sheet>
                 <div name="button_box" class="oe_button_box">
-                    <button class="oe_stat_button" name="product_template_open" type="object" string="Engineering Infos"
+                    <button class="oe_stat_button" name="product_template_open" type="object" string="Product Infos"
                         icon="fa-gears">  
                     </button> 
                 </div> 
@@ -107,7 +107,7 @@
               			<field name="engineering_code" 		colspan="4" 			attrs="{'readonly':[('state','!=','draft')]}" 				select="1"/>
                			<field name="engineering_revision" 	colspan="2"				readonly="True" 											/>
                			<field name="std_description" 		colspan="4"				attrs="{'readonly':[('state','in',['released','obsoleted'])]}" on_change="on_change_stddesc(std_description)" /> 	
-               			<field name="state" 				colspan="2" 			attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>	
+               			<field name="state" 				colspan="2" 			readonly="True"/>	
                			<label for="description" 			colspan="6"/>
                			<field name="description" 			colspan="6" 			attrs="{'readonly':[('state','in',['released','obsoleted'])]}" nolabel="1" />
            			</group>
@@ -121,7 +121,6 @@
 	             			<field digits="(14, 3)"  	attrs="{'readonly':[('state','in',['released','obsoleted'])]}" name="weight"/>
 	             			<field name="uom_id" 		attrs="{'readonly':[('state','in',['released','obsoleted'])]}" on_change="onchange_uom(uom_id,uom_po_id)"/>
                             <field name="uom_po_id" 	attrs="{'readonly':[('state','in',['released','obsoleted'])]}" groups="base.group_extended"/>
-                            
 	         			</group>
 					    <group col="4" colspan="4">
 					        <field name="std_umc1" 		attrs="{'readonly':[('std_umc1','=',False),('state','in',['released','obsoleted'])]}" />
