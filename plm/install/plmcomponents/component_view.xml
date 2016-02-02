@@ -87,6 +87,7 @@
         <field name="arch" type="xml">
              <form string="Engineering Product">
              
+             	<field name="type" invisible="1"/>	
              	<header>
 	                <button name="release" states="confirmed" 	string="Release Component" type="workflow" icon="gtk-apply" 		class="oe_highlight"/>
 	                <button name="correct" states="confirmed" 	string="Correct Component" type="workflow" icon="gtk-cancel" />
@@ -94,7 +95,15 @@
 	                <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,released" statusbar_colors='{"undermodify":"red","obsoleted":"red"}' />
 	            </header>
                 <div name="button_box" class="oe_button_box">
-                    <button class="oe_stat_button" name="product_template_open" type="object" string="Engineering Infos"
+ 					<button class="oe_stat_button" name="%(mrp.template_open_bom)d" type="action"
+                        attrs="{'invisible':[('type', 'not in', ['product', 'consu'])]}" icon="fa-flask">
+                        <field string="Bill of Materials" name="bom_count" widget="statinfo" />
+                    </button>
+                    <button class="oe_stat_button" name="action_view_mos" type="object"
+                        attrs="{'invisible':[('type', 'not in', ['product', 'consu'])]}" icon="fa-list-alt">
+                        <field string="Manufacturing" name="mo_count" widget="statinfo" />
+                    </button>
+                    <button class="oe_stat_button" name="product_template_open" type="object" string="Product Infos"
                         icon="fa-gears">  
                     </button> 
                 </div> 
@@ -184,6 +193,19 @@
             </field>
         </record>
 
+    <record id="plm_template_tree_inherit" model="ir.ui.view">
+        <field name="name">plm.product.template.extension</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_tree_view"/>
+        <field name="type">tree</field>
+        <field name="priority" eval="15"/>
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+				<field name="engineering_revision" />
+            </field>
+        </field>
+    </record> 
+     
 </data>
 </openerp>
 
