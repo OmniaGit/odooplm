@@ -93,7 +93,6 @@
 	                <button name="confirm" states="draft" 		string="Confirm Component" type="workflow" icon="gtk-go-forward" 	class="oe_highlight"/>
 	                <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,released" statusbar_colors='{"undermodify":"red","obsoleted":"red"}' />
 	            </header>
-             		<sheet>
                 <div name="button_box" class="oe_button_box">
                     <button class="oe_stat_button" name="product_template_open" type="object" string="Engineering Infos"
                         icon="fa-gears">  
@@ -143,7 +142,6 @@
         				</group>	
 	    			</page>	
 	    		</notebook> 
-	    		</sheet>	
             </form>
         </field>
     </record>
