@@ -23,6 +23,7 @@ import types
 import logging
 from datetime import datetime
 from openerp import models, fields, api, SUPERUSER_ID, _, osv
+from openerp.exceptions import ValidationError
 _logger = logging.getLogger(__name__)
 
 USED_STATES     =   [('draft','Draft'),
@@ -61,6 +62,21 @@ class plm_component(models.Model):
                 'res_model': 'product.template',
                 'res_id': product_id,
                 'views': [(form_id, 'form')],
+            }
+
+    @api.multi
+    def open_boms(self):
+        product_tmpl_id = self.product_tmpl_id.id
+        if product_tmpl_id:
+            localCtx = self.env.context.copy()
+            localCtx.update({'default_product_tmpl_id': product_tmpl_id, 'search_default_product_tmpl_id': product_tmpl_id})
+            return {
+                'type'      : 'ir.actions.act_window',
+                'name'      : _('Mrp Bom'),
+                'view_type' : 'form',
+                'view_mode' : 'tree,form',
+                'res_model' : 'mrp.bom',
+                'context'   : localCtx,
             }
             
 #     def _getExplodedBom(self, cr, uid, ids, level=0, currlevel=0):
@@ -508,7 +524,7 @@ class plm_component(models.Model):
 
     def create(self, cr, uid, vals, context=None):
         if not vals:
-            return False
+            raise ValidationError(_("""You are trying to create a product without values"""))
         if ('name' in vals):
             if not vals['name']:
                 return False
@@ -530,15 +546,13 @@ class plm_component(models.Model):
                             return existingID
                 else:
                     return existingID
-            
-            try:
-                return super(plm_component,self).create(cr, uid, vals, context=context)
-            except Exception ,ex:
-                import psycopg2
-                if isinstance(ex,psycopg2.IntegrityError):
-                    raise ex
-                raise Exception(" (%r). It has tried to create with values : (%r)."%(ex,vals))
-        return False
+        try:
+            return super(plm_component,self).create(cr, uid, vals, context=context)
+        except Exception ,ex:
+            import psycopg2
+            if isinstance(ex,psycopg2.IntegrityError):
+                raise ex
+            raise Exception(" (%r). It has tried to create with values : (%r)."%(ex,vals))
 
     def write(self, cr, uid, ids, vals, context=None, check=True):
 #        checkState=('confirmed','released','undermodify','obsoleted')
