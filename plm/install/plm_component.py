@@ -62,6 +62,21 @@ class plm_component(models.Model):
                 'res_id': product_id,
                 'views': [(form_id, 'form')],
             }
+
+    @api.multi
+    def open_boms(self):
+        product_tmpl_id = self.product_tmpl_id.id
+        if product_tmpl_id:
+            localCtx = self.env.context.copy()
+            localCtx.update({'default_product_tmpl_id': product_tmpl_id, 'search_default_product_tmpl_id': product_tmpl_id})
+            return {
+                'type'      : 'ir.actions.act_window',
+                'name'      : _('Mrp Bom'),
+                'view_type' : 'form',
+                'view_mode' : 'tree,form',
+                'res_model' : 'mrp.bom',
+                'context'   : localCtx,
+            }
             
 #     def _getExplodedBom(self, cr, uid, ids, level=0, currlevel=0):
 #         """

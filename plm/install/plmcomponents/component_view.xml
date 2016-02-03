@@ -96,7 +96,7 @@
 	            </header>
 	           	<sheet>
                 <div name="button_box" class="oe_button_box">
- 					<button class="oe_stat_button" name="%(mrp.template_open_bom)d" type="action"
+ 					<button class="oe_stat_button" name="open_boms" type="object"
                         attrs="{'invisible':[('type', 'not in', ['product', 'consu'])]}" icon="fa-flask">
                         <field string="Bill of Materials" name="bom_count" widget="statinfo" />
                     </button>
