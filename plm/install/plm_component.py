@@ -137,14 +137,6 @@ class plm_component(models.Model):
             exitValues['engineering_revision']=newEnt.engineering_revision
         return exitValues
 
-#     def newVersion(self,cr,uid,ids,context=None):
-#         """
-#             create a new version of the component (to WorkFlow calling)
-#         """
-#         if self.newRevision(cr,uid,ids,context=context)!=None:
-#             return True 
-#         return False
-
     def GetUpdated(self,cr,uid,vals,context=None):
         """
             Get Last/Requested revision of given items (by name, revision, update time)
