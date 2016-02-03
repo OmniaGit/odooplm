@@ -192,6 +192,14 @@
                         icon="fa-gears"> 
                     </button>
                 </div>
+                <div name="options" position="before"> 
+                	<div style="display: inline-flex;">
+                		<label	for="engineering_code" style="width:200px;"/>
+	                	<field name="engineering_code" />	
+	                	<label	for="engineering_revision" style="padding-left: 40px;"/>	
+	                	<field name="engineering_revision" readonly="1"/> 
+                	</div>		
+                </div>		 
             </field>
         </record>
 
