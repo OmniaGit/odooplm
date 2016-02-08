@@ -23,13 +23,22 @@
 import sys
 import types
 import logging
-
 import openerp.addons.decimal_precision as dp
-from openerp        import models, fields, api, SUPERUSER_ID, _, osv
+from openerp        import models
+from openerp        import fields
+from openerp        import api
+from openerp        import SUPERUSER_ID
+from openerp        import _
+from openerp        import osv
 _logger         =   logging.getLogger(__name__)
 
 # To be adequated to plm.document class states
-USED_STATES=[('draft',_('Draft')),('confirmed',_('Confirmed')),('released',_('Released')),('undermodify',_('UnderModify')),('obsoleted',_('Obsoleted'))]
+USED_STATES = [('draft', _('Draft')),
+               ('confirmed', _('Confirmed')),
+               ('released', _('Released')),
+               ('undermodify', _('UnderModify')),
+               ('obsoleted', _('Obsoleted'))]
+
 
 class plm_config_settings(models.Model):
     _name = 'plm.config.settings'
@@ -45,77 +54,72 @@ class plm_config_settings(models.Model):
     active_os_arch  =   fields.Char(_('OS architecture'),                               size=128,  help=_("Editor OS architecture"))
     node_id         =   fields.Char(_('Registered PLM client'),                         size=128,  help=_("Listed registered Client."))
 
- 
     def GetServiceIds(self, cr, uid, oids, default=None, context=None):
         """
             Get all Service Ids registered.
         """
-        ids=[]
-        partIds=self.search(cr,uid,[('activated_id','=',False)],context=context)
+        ids = []
+        partIds = self.search(cr, uid, [('activated_id', '=', False)], context=context)
         for part in self.browse(cr, uid, partIds):
             ids.append(part.plm_service_id)
         return list(set(ids))
- 
+
     def RegisterActiveId(self, cr, uid, vals, default=None, context=None):
         """
             Get all Service Ids registered.  [serviceID, activation, activeEditor, (system, node, release, version, machine, processor) ]
         """
-        defaults={}
-        serviceID, activation, activeEditor, platformData, nodeId=vals
+        defaults = {}
+        serviceID, activation, activeEditor, platformData, nodeId = vals
         if activation:
-            defaults['plm_service_id']=serviceID
-            defaults['activated_id']=activation
-            defaults['active_editor']=activeEditor
-            defaults['active_os']=platformData[0]
-            defaults['active_node']=platformData[1]
-            defaults['active_os_rel']=platformData[2]
-            defaults['active_os_ver']=platformData[3]
-            defaults['active_os_arch']=platformData[4]
-            defaults['node_id']=nodeId
-    
-            partIds=self.search(cr,uid,[('plm_service_id','=',serviceID),('activated_id','=',activation)],context=context)
-    
+            defaults['plm_service_id'] = serviceID
+            defaults['activated_id'] = activation
+            defaults['active_editor'] = activeEditor
+            defaults['active_os'] = platformData[0]
+            defaults['active_node'] = platformData[1]
+            defaults['active_os_rel'] = platformData[2]
+            defaults['active_os_ver'] = platformData[3]
+            defaults['active_os_arch'] = platformData[4]
+            defaults['node_id'] = nodeId
+            partIds = self.search(cr, uid, [('plm_service_id', '=', serviceID), ('activated_id', '=', activation)], context=context)
             if partIds:
                 for partId  in partIds:
                     self.write(cr, uid, [partId], defaults, context=context)
                     return False
-            
             self.create(cr, uid, defaults, context=context)
         return False
-   
+
     def GetActiveServiceId(self, cr, uid, vals, default=None, context=None):
         """
             Get all Service Ids registered.  [serviceID, activation, activeEditor, (system, node, release, version, machine, processor) ]
         """
-        results=[]
-        nodeId, activation, activeEditor, platformData =vals
-
-        partIds=self.search(cr,uid,[('node_id','=',nodeId),('activated_id','=',activation)],context=context)
-
+        results = []
+        nodeId, activation, activeEditor, platformData = vals
+        activeEditor = activeEditor
+        platformData = platformData
+        partIds = self.search(cr, uid, [('node_id', '=', nodeId), ('activated_id', '=', activation)], context=context)
         for partId  in self.browse(cr, uid, partIds):
             results.append(partId.plm_service_id)
-            
         return results
-
 plm_config_settings()
-    
+
+
 class plm_component(models.Model):
     _name = 'product.template'
     _inherit = 'product.template'
-    
-    state                   =   fields.Selection    (USED_STATES,_('Status'), help=_("The status of the product in its LifeCycle."), readonly="True")
-    engineering_code        =   fields.Char         (_('Part Number'),help=_("This is engineering reference to manage a different P/N from item Name."),size=64)
-    engineering_revision    =   fields.Integer      (_('Revision'), required=True,help=_("The revision of the product."))
-    engineering_writable    =   fields.Boolean      (_('Writable'))
-    engineering_material    =   fields.Char         (_('Raw Material'),size=128,required=False,help=_("Raw material for current product, only description for titleblock."))
+
+    state                   =   fields.Selection(USED_STATES, _('Status'), help=_("The status of the product in its LifeCycle."), readonly="True")
+    engineering_code        =   fields.Char(_('Part Number'), help=_("This is engineering reference to manage a different P/N from item Name."), size=64)
+    engineering_revision    =   fields.Integer(_('Revision'), required=True, help=_("The revision of the product."))
+    engineering_writable    =   fields.Boolean(_('Writable'))
+    engineering_material    =   fields.Char(_('Raw Material'), size=128, required=False, help=_("Raw material for current product, only description for titleblock."))
     #engineering_treatment    =    fields.Char        (_('Treatment'),size=64,required=False,help=_("Thermal treatment for current product"))
-    engineering_surface     =   fields.Char         (_('Surface Finishing'),size=128,required=False,help=_("Surface finishing for current product, only description for titleblock."))
+    engineering_surface     =   fields.Char(_('Surface Finishing'), size=128, required=False, help=_("Surface finishing for current product, only description for titleblock."))
 
 #   Internal methods
     @api.multi
     def engineering_products_open(self):
         product_id = False
-        relatedProductBrwsList = self.env['product.product'].search([('product_tmpl_id','=',self.id)])
+        relatedProductBrwsList = self.env['product.product'].search([('product_tmpl_id', '=', self.id)])
         for relatedProductBrws in relatedProductBrwsList:
             product_id = relatedProductBrws.id
         mod_obj = self.env['ir.model.data']
@@ -131,27 +135,27 @@ class plm_component(models.Model):
                 'res_id': product_id,
                 'views': [(form_id, 'form')],
             }
-    
+
     _defaults = {
                  'state': lambda *a: 'draft',
                  #'engineering_revision': lambda self,ctx:0,
                  #'engineering_writable': lambda *a: True,
-                 'engineering_revision':0,
+                 'engineering_revision': 0,
                  'engineering_writable': True,
                  'type': 'product',
                  'standard_price': 0,
-                 'volume':0,
-                 'weight':0,
-                 'cost_method':0,
-                 'sale_ok':0,
-                 'state':'draft',
-                 'mes_type':'fixed',
-                 'cost_method':'standard',
+                 'volume': 0,
+                 'weight': 0,
+                 'cost_method': 0,
+                 'sale_ok': 0,
+                 'state': 'draft',
+                 'mes_type': 'fixed',
+                 'cost_method': 'standard',
     }
     _sql_constraints = [
         ('partnumber_uniq', 'unique (engineering_code,engineering_revision)', _('Part Number has to be unique!'))
     ]
-    
+
     def init(self, cr):
         cr.execute("""
 -- Index: product_template_engcode_index
@@ -163,7 +167,7 @@ CREATE INDEX product_template_engcode_index
   USING btree
   (engineering_code);
   """)
-  
+
         cr.execute("""
 -- Index: product_template_engcoderev_index
 
@@ -177,10 +181,11 @@ CREATE INDEX product_template_engcoderev_index
 
 plm_component()
 
+
 class plm_component_document_rel(models.Model):
     _name = 'plm.component.document.rel'
     _description = "Component Document Relations"
-    
+
     component_id    =   fields.Many2one('product.product', _('Linked Component'), ondelete='cascade')
     document_id     =   fields.Many2one('plm.document', _('Linked Document'), ondelete='cascade')
 
@@ -193,29 +198,29 @@ class plm_component_document_rel(models.Model):
             Save Document relations
         """
         def cleanStructure(relations):
-            res=[]
-            for document_id,component_id in relations:
-                latest=(document_id,component_id)
+            res = []
+            for document_id, component_id in relations:
+                latest = (document_id, component_id)
                 if latest in res:
                     continue
                 res.append(latest)
-                ids=self.search(cr,uid,[('document_id','=',document_id),('component_id','=',component_id)])
+                ids = self.search(cr, uid, [('document_id', '=', document_id), ('component_id', '=', component_id)])
                 if ids:
-                    self.unlink(cr,uid,ids)
+                    self.unlink(cr, uid, ids)
 
         def saveChild(args):
             """
-                save the relation 
+                save the relation
             """
             try:
-                res={}
-                res['document_id'],res['component_id']=args
+                res = {}
+                res['document_id'], res['component_id'] = args
                 self.create(cr, uid, res)
             except:
-                logging.warning("saveChild : Unable to create a link. Arguments (%s)." %(str(args)))
+                logging.warning("saveChild : Unable to create a link. Arguments (%s)." % (str(args)))
                 raise Exception(_("saveChild: Unable to create a link."))
-            
-        if len(relations)<1: # no relation to save 
+
+        if len(relations) < 1:  # no relation to save
             return False
         cleanStructure(relations)
         for relation in relations:
@@ -224,30 +229,31 @@ class plm_component_document_rel(models.Model):
 
 plm_component_document_rel()
 
-         
+
 class plm_relation_line(models.Model):
     _name = 'mrp.bom.line'
     _inherit = 'mrp.bom.line'
-    
+
     create_date     = fields.Datetime(_('Creation Date'), readonly=True)
-    source_id       = fields.Many2one('plm.document','name',ondelete='no action', readonly=True,help=_("This is the document object that declares this BoM."))
-    type            = fields.Selection([('normal',_('Normal BoM')),('phantom',_('Sets / Phantom')),('ebom',_('Engineering BoM')),('spbom',_('Spare BoM'))], _('BoM Type'), required=True, help=
+    source_id       = fields.Many2one('plm.document', 'name', ondelete='no action', readonly=True, help=_("This is the document object that declares this BoM."))
+    type            = fields.Selection([('normal', _('Normal BoM')), ('phantom', _('Sets / Phantom')), ('ebom', _('Engineering BoM')), ('spbom', _('Spare BoM'))], _('BoM Type'), required=True, help=
         _("Use a phantom bill of material in raw materials lines that have to be " \
         "automatically computed in on production order and not one per level." \
         "If you put \"Phantom/Set\" at the root level of a bill of material " \
         "it is considered as a set or pack: the products are replaced by the components " \
         "between the sale order to the picking without going through the production order." \
         "The normal BoM will generate one production order per BoM level."))
-    itemnum         = fields.Integer(_('CAD Item Position'),help=_("This is the item reference position into the CAD document that declares this BoM."))
-    itemlbl         = fields.Char(_('CAD Item Position Label'),size=64)
-                
+    itemnum         = fields.Integer(_('CAD Item Position'), help=_("This is the item reference position into the CAD document that declares this BoM."))
+    itemlbl         = fields.Char(_('CAD Item Position Label'), size=64)
+
     _defaults = {
-        'product_uom' : 1,
+        'product_uom': 1,
     }
-    
+
     _order = 'itemnum'
-        
+
 plm_relation_line()
+
 
 class plm_relation(models.Model):
     _name = 'mrp.bom'
