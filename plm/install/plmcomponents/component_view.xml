@@ -87,14 +87,23 @@
         <field name="arch" type="xml">
              <form string="Engineering Product">
              
+             	<field name="type" invisible="1"/>	
              	<header>
 	                <button name="release" states="confirmed" 	string="Release Component" type="workflow" icon="gtk-apply" 		class="oe_highlight"/>
 	                <button name="correct" states="confirmed" 	string="Correct Component" type="workflow" icon="gtk-cancel" />
 	                <button name="confirm" states="draft" 		string="Confirm Component" type="workflow" icon="gtk-go-forward" 	class="oe_highlight"/>
 	                <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,released" statusbar_colors='{"undermodify":"red","obsoleted":"red"}' />
 	            </header>
-             		<sheet>
+	           	<sheet>
                 <div name="button_box" class="oe_button_box">
+ 					<button class="oe_stat_button" name="open_boms" type="object"
+                        attrs="{'invisible':[('type', 'not in', ['product', 'consu'])]}" icon="fa-flask">
+                        <field string="Bill of Materials" name="bom_count" widget="statinfo" />
+                    </button>
+                    <button class="oe_stat_button" name="action_view_mos" type="object"
+                        attrs="{'invisible':[('type', 'not in', ['product', 'consu'])]}" icon="fa-list-alt">
+                        <field string="Manufacturing" name="mo_count" widget="statinfo" />
+                    </button>
                     <button class="oe_stat_button" name="product_template_open" type="object" string="Product Infos"
                         icon="fa-gears">  
                     </button> 
@@ -143,7 +152,7 @@
         				</group>	
 	    			</page>	
 	    		</notebook> 
-	    		</sheet>	
+	    	</sheet> 	
             </form>
         </field>
     </record>
@@ -183,6 +192,14 @@
                         icon="fa-gears"> 
                     </button>
                 </div>
+                <div name="options" position="before"> 
+                	<div style="display: inline-flex;">
+                		<label	for="engineering_code" style="width:200px;"/>
+	                	<field name="engineering_code" />	
+	                	<label	for="engineering_revision" style="padding-left: 40px;"/>	
+	                	<field name="engineering_revision" readonly="1"/> 
+                	</div>		
+                </div>		 
             </field>
         </record>
 
