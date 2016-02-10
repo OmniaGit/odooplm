@@ -528,32 +528,31 @@ class plm_component(models.Model):
         if ('name' in vals):
             if not vals['name']:
                 return False
-            existingIDs=self.search(cr, uid, [('name','=',vals['name'])], order = 'engineering_revision', context=context)
+            existingIDs = self.search(cr, uid, [('name', '=', vals['name'])], order='engineering_revision', context=context)
             if 'engineering_code' in vals:
                 if vals['engineering_code'] == False:
                     vals['engineering_code'] = vals['name']
             else:
                 vals['engineering_code'] = vals['name']
-    
             if existingIDs:
-                existingID=existingIDs[len(existingIDs)-1]
+                existingID = existingIDs[len(existingIDs) - 1]
                 if ('engineering_revision' in vals):
-                    existObj=self.browse(cr,uid,existingID,context=context)
+                    existObj = self.browse(cr, uid, existingID, context=context)
                     if existObj:
                         if vals['engineering_revision'] > existObj.engineering_revision:
-                            vals['name']=existObj.name
+                            vals['name'] = existObj.name
                         else:
                             return existingID
                 else:
                     return existingID
         try:
-            return super(plm_component,self).create(cr, uid, vals, context=context)
-        except Exception ,ex:
+            return super(plm_component, self).create(cr, uid, vals, context=context)
+        except Exception, ex:
             import psycopg2
-            if isinstance(ex,psycopg2.IntegrityError):
+            if isinstance(ex, psycopg2.IntegrityError):
                 raise ex
-            raise Exception(" (%r). It has tried to create with values : (%r)."%(ex,vals))
-
+            raise ValidationError(_(" (%r). It has tried to create with values : (%r).") % (ex, vals))
+            
     def write(self, cr, uid, ids, vals, context=None, check=True):
 #        checkState=('confirmed','released','undermodify','obsoleted')
 #        if check:

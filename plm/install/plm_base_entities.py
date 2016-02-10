@@ -94,7 +94,6 @@ class plm_config_settings(models.Model):
 
         for partId  in self.browse(cr, uid, partIds):
             results.append(partId.plm_service_id)
-            
         return results
 
 plm_config_settings()
@@ -102,7 +101,7 @@ plm_config_settings()
 class plm_component(models.Model):
     _name = 'product.template'
     _inherit = 'product.template'
-    
+
     state                   =   fields.Selection    (USED_STATES,_('Status'), help=_("The status of the product in its LifeCycle."), readonly="True")
     engineering_code        =   fields.Char         (_('Part Number'),help=_("This is engineering reference to manage a different P/N from item Name."),size=64)
     engineering_revision    =   fields.Integer      (_('Revision'), required=True,help=_("The revision of the product."))
