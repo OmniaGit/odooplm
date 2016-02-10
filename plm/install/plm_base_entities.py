@@ -390,7 +390,7 @@ class plm_relation(models.Model):
             for bom_line in bid.bom_line_ids:
                 if check and (bom_line.product_id.id in self._packed):
                     continue
-                innerids = self._explodebom(cr, uid, self._getbom(cr, uid, bom_line.product_tmpl_id.id), check)
+                innerids = self._explodebom(cr, uid, self._getbom(cr, uid, bom_line.product_id.product_tmpl_id.id), check)
                 self._packed.append(bom_line.product_id.id)
                 output.append([bom_line.product_id.id, innerids])
         return(output)
@@ -701,7 +701,7 @@ class plm_temporary(osv.osv.osv_memory):
             return False
         if not 'active_ids' in context:
             return False
-        
+
         productType=self.pool.get('product.product')
         for idd in context['active_ids']:
             checkObj=productType.browse(cr, uid, idd, context)
