@@ -30,6 +30,7 @@ from openerp        import api
 from openerp        import SUPERUSER_ID
 from openerp        import _
 from openerp        import osv
+from openerp.exceptions import UserError
 _logger         =   logging.getLogger(__name__)
 
 # To be adequated to plm.document class states
@@ -669,6 +670,7 @@ class plm_material(models.Model):
     ]
 plm_material()
 
+
 class plm_finishing(models.Model):
     _name = "plm.finishing"
     _description = "Surface Finishing"
@@ -689,38 +691,38 @@ plm_finishing()
 class plm_temporary(osv.osv.osv_memory):
     _name = "plm.temporary"
     _description = "Temporary Class"
-
-    name    =   fields.Char(_('Temp'), size=128)
-
+    name = fields.Char(_('Temp'), size=128)
 
     def action_create_normalBom(self, cr, uid, ids, context=None):
         """
-            Create a new Spare Bom if doesn't exist (action callable from views)
+            Create a new Normal Bom if doesn't exist (action callable from views)
         """
-        if not 'active_id' in context:
-            return False
-        if not 'active_ids' in context:
-            return False
-
-        productType=self.pool.get('product.product')
-        for idd in context['active_ids']:
-            checkObj=productType.browse(cr, uid, idd, context)
-            if not checkObj:
-                continue
-            objBoms=self.pool.get('mrp.bom').search(cr, uid, [('product_tmpl_id','=',idd),('type','=','normal')])
+        selectdIds = context.get('active_ids', [])
+        objType = context.get('active_model', '')
+        if objType != 'product.product':
+            raise UserError(_("The creation of the normalBom works only on product_product object"))
+        if not selectdIds:
+            raise UserError(_("Select a product before to continue"))
+        objType = context.get('active_model', False)
+        product_product_type_object = self.pool.get(objType)
+        collectableProduct = []
+        for productBrowse in product_product_type_object.browse(cr, uid, selectdIds, context):
+            idTemplate = productBrowse.product_tmpl_id.id
+            objBoms = self.pool.get('mrp.bom').search(cr, uid, [('product_tmpl_id', '=', idTemplate),
+                                                                ('type', '=', 'normal')])
             if objBoms:
-                raise osv.except_osv(_('Creating a new Normal Bom Error.'), _("BoM for Part %r already exists." %(checkObj.name)))
+                raise UserError(_("Normal BoM for Part %r already exists." % (objBoms)))
+            product_product_type_object.create_bom_from_ebom(cr, uid, productBrowse, 'normal', context)
+            collectableProduct.append(productBrowse.id)
+        if collectableProduct:
+            return {'name': _('Bill of Materials'),
+                    'view_type': 'form',
+                    "view_mode": 'tree,form',
+                    'res_model': 'mrp.bom',
+                    'type': 'ir.actions.act_window',
+                    'domain': "[('product_id','in', [" + ','.join(map(str, collectableProduct)) + "])]",
+                    }
+        else:
+            raise UserError(_("Unable to create the normall Bom"))
 
-        productType.action_create_normalBom_WF(cr, uid, context['active_ids'])
-
-        return {
-              'name': _('Bill of Materials'),
-              'view_type': 'form',
-              "view_mode": 'tree,form',
-              'res_model': 'mrp.bom',
-              'type': 'ir.actions.act_window',
-              'domain': "[('product_id','in', ["+','.join(map(str,context['active_ids']))+"])]",
-         }
-
-    
 plm_temporary()

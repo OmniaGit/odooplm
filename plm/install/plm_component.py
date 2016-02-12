@@ -23,7 +23,8 @@ import types
 import logging
 from datetime import datetime
 from openerp import models, fields, api, SUPERUSER_ID, _, osv
-from openerp.exceptions import ValidationError
+from openerp.exceptions import ValidationError, UserError
+
 _logger = logging.getLogger(__name__)
 
 USED_STATES     =   [('draft','Draft'),
@@ -271,7 +272,45 @@ class plm_component(models.Model):
                 expData=tmpData['datas']
         return expData
 
-##  Menu action Methods
+    def create_bom_from_ebom(self, cr, uid, objProductProductBrw, newBomType, context={}):
+        """
+            create a new bom starting from ebom
+        """
+        if newBomType not in ['normal', 'spbom']:
+            raise UserError(_("Could not convert source bom to %r" % newBomType))
+        product_template_id = objProductProductBrw.product_tmpl_id.id
+        bomType = self.pool.get('mrp.bom')
+        bomLType = self.pool.get('mrp.bom.line')
+        bomIds = bomType.search(cr, uid, [('product_tmpl_id', '=', product_template_id),
+                                          ('type', '=', newBomType)])
+        if bomIds:
+            for bom_line in bomType.browse(cr, uid, bomIds[0], context=context).bom_line_ids:
+                self.create_bom_from_ebom(cr, uid, bom_line.product_id, newBomType, context)
+        else:
+            idNewTypeBoms = bomType.search(cr, uid, [('product_tmpl_id', '=', product_template_id),
+                                                     ('type', '=', 'ebom')])
+            if not idNewTypeBoms:
+                UserError(_("No Enginnering bom provided"))
+            for newBomId in idNewTypeBoms:
+                newidBom = bomType.copy(cr, uid, newBomId, {}, context)
+                bomType.write(cr, uid, [newidBom], {'name': objProductProductBrw.name,
+                                                    'product_tmpl_id': product_template_id,
+                                                    'type': newBomType}, check=False, context=None)
+                oidBom = bomType.browse(cr, uid, newidBom, context=context)
+                ok_rows = self._summarizeBom(cr, uid, oidBom.bom_line_ids)
+                # remove not summarised lines
+                for bom_line in list(set(oidBom.bom_line_ids) ^ set(ok_rows)):
+                    bomLType.unlink(cr, uid, [bom_line.id], context=None)
+                # update the quantity with the summarised values
+                for bom_line in ok_rows:
+                    bomLType.write(cr, uid, [bom_line.id], {'type': newBomType,
+                                                            'source_id': False,
+                                                            'product_qty': bom_line.product_qty, }, context=None)
+                    self.create_bom_from_ebom(cr, uid, bom_line.product_id, newBomType, context)
+                self.wf_message_post(cr, uid, [objProductProductBrw.id], body=_('Created %r' % newBomType))
+                break
+
+    #  Menu action Methods
     def _create_normalBom(self, cr, uid, idd, context=None):
         """
             Create a new Normal Bom (recursive on all EBom children)
@@ -288,6 +327,8 @@ class plm_component(models.Model):
         idBoms=bomType.search(cr, uid, [('product_tmpl_id','=',checkObj.product_tmpl_id.id),('type','=','ebom')])
 
         if not objBoms:
+            idBoms = bomType.search(cr, uid, [('product_tmpl_id', '=', product_template_id),
+                                              ('type', '=', 'ebom')])
             if idBoms:
                 self.processedIds.append(idd)
                 newidBom=bomType.copy(cr, uid, idBoms[0], defaults, context)
@@ -301,19 +342,19 @@ class plm_component(models.Model):
                         bomLType.write(cr,uid,[bom_line.id],{'type':'normal','source_id':False,'name':bom_line.product_id.name,'product_qty':bom_line.product_qty,},context=None)
                         self._create_normalBom(cr, uid, bom_line.product_id.id, context)
         else:
-            for bom_line in bomType.browse(cr,uid,objBoms[0],context=context).bom_line_ids:
+            for bom_line in bomType.browse(cr, uid, objBoms[0], context=context).bom_line_ids:
                 self._create_normalBom(cr, uid, bom_line.product_id.id, context)
         return False
 
     def _summarizeBom(self, cr, uid, datarows):
-        dic={}
+        dic = {}
         for datarow in datarows:
-            key=datarow.product_id.name
+            key = str(datarow.product_id.id)
             if key in dic:
-                dic[key].product_qty=float(dic[key].product_qty)+float(datarow.product_qty)
+                dic[key].product_qty = float(dic[key].product_qty) + float(datarow.product_qty)
             else:
-                dic[key]=datarow
-        retd=dic.values()
+                dic[key] = datarow
+        retd = dic.values()
         return retd
 
 ##  Work Flow Internal Methods
