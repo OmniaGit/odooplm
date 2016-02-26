@@ -24,13 +24,18 @@ import os
 import random
 import string
 import base64
+import logging
 
 from openerp.report.render import render
 from openerp.report.interface import report_int
 from openerp import pooler
 
-from pyPdf import PdfFileWriter, PdfFileReader
-
+try:
+    from PyPDF2 import PdfFileWriter, PdfFileReader
+except:
+    logging.warning("PyPDF2 not installed ")
+    from pyPdf import PdfFileWriter, PdfFileReader
+    
 class external_pdf(render):
 
     """ Generate External PDF """

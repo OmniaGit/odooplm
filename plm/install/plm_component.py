@@ -161,7 +161,7 @@ class plm_component(models.Model):
         partData, attribNames = vals
         ids=self.GetLatestIds(cr, uid, partData, context)
         return self.read(cr, uid, list(set(ids)), attribNames)
-
+    
     def GetLatestIds(self,cr,uid,vals,context=None):
         """
             Get Last/Requested revision of given items (by name, revision, update time)
@@ -185,8 +185,8 @@ class plm_component(models.Model):
                 else:
                     ids.extend(self.search(cr,uid,[('engineering_code','=',partName),('engineering_revision','=',partRev)],context=context))
         return list(set(ids))
-    
-    def NewRevision(self,cr,uid,ids,context=None):
+
+    def NewRevision(self, cr, uid, ids, context=None):
         """
             create a new revision of current component
         """
@@ -251,13 +251,14 @@ class plm_component(models.Model):
             listedParts.append(part['engineering_code'])
         return retValues 
 
+
     def QueryLast(self, cr, uid, request=([],[]), default=None, context=None):
         """
             Query to return values based on columns selected.
         """
         objId=False
         expData=[]
-        queryFilter, columns = request        
+        queryFilter, columns = request
         if len(columns)<1:
             return expData
         if 'engineering_revision' in queryFilter:

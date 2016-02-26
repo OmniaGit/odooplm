@@ -1,9 +1,15 @@
 import os
 import base64
 import StringIO
+import logging
 from reportlab.pdfgen import canvas
 
-from pyPdf import PdfFileWriter, PdfFileReader
+try:
+    from PyPDF2 import PdfFileWriter, PdfFileReader
+except:
+    logging.warning("PyPDF2 not installed ")
+    from pyPdf import PdfFileWriter, PdfFileReader
+    
 from openerp.report.render import render
 def isPdf(fileName):
     if (os.path.splitext(fileName)[1].lower()=='.pdf'):
