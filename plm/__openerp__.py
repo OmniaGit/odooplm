@@ -27,8 +27,16 @@
     'category': 'Product Lifecycle Management',
     'sequence': 15,
     'summary': 'PLM Integration with main CAD editors',
-    'images': ['images/odooplmjpg.JPG', 'images/EngineeringPart.jpeg','images/OpenComponent.jpeg','images/OpenDocument.jpeg'],
-    'depends': ['base','board','document','product','mrp'],
+    'images': ['images/odooplmjpg.JPG',
+               'images/odooPLMV9_2.PNG',
+               'images/EngineeringPart.jpeg',
+               'images/OpenComponent.jpeg',
+               'images/OpenDocument.jpeg'],
+    'depends': ['base',
+                'board',
+                'document',
+                'product',
+                'mrp'],
     'description': """
 Manage Product Lifecycle Management in OpenERP
 ==============================================
