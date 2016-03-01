@@ -29,7 +29,7 @@ import time
 
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4,cm
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle,Paragraph
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
 from reportlab.lib.styles import getSampleStyleSheet
 from operator import itemgetter
 from book_collector import BookCollector
