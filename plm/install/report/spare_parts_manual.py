@@ -239,23 +239,23 @@ class component_spare_parts_report(report_int):
         Calculates the bom structure spare parts manual
     """   
     def create(self, cr, uid, ids, datas, context=None):
-        recursion=True
-        if self._report_int__name== 'report.product.product.spare.parts.pdf.one':
-            recursion=False
-        self.processedObjs=[]
+        recursion = True
+        if self._report_int__name == 'report.product.product.spare.parts.pdf.one':
+            recursion=  False
+        self.processedObjs = []
         self.pool = pooler.get_pool(cr.dbname)
-        componentType=self.pool.get('product.product')
-        bomType=self.pool.get('mrp.bom')
-        userType=self.pool.get('res.users')
-        user=userType.browse(cr, uid, uid, context=context)
-        msg = "Printed by "+str(user.name)+" : "+ str(time.strftime("%d/%m/%Y %H:%M:%S"))
-        output = BookCollector(customTest=(True,msg))
-        components=componentType.browse(cr, uid, ids, context=context)
+        componentType = self.pool.get('product.product')
+        bomType = self.pool.get('mrp.bom')
+        userType = self.pool.get('res.users')
+        user = userType.browse(cr, uid, uid, context=context)
+        msg = "Printed by " + str(user.name) + " : " + str(time.strftime("%d/%m/%Y %H:%M:%S"))
+        output = BookCollector(customTest=(True, msg))
+        components = componentType.browse(cr, uid, ids, context=context)
         for component in components:
-            self.processedObjs=[]
-            buf=self.getFirstPage(cr, uid, [component.id],context)
+            self.processedObjs = []
+            buf = self.getFirstPage(cr, uid, [component.id], context)
             output.addPage((buf,''))
-            self.getSparePartsPdfFile(cr, uid, context, component, output, componentType, bomType,recursion)
+            self.getSparePartsPdfFile(cr, uid, context, component, output, componentType, bomType, recursion)
         if output != None:
             pdf_string = StringIO.StringIO()
             output.collector.write(pdf_string)
@@ -266,35 +266,35 @@ class component_spare_parts_report(report_int):
         return (False, '')    
    
     def getSparePartsPdfFile(self, cr, uid, context, product, output, componentTemplate, bomTemplate,recursion):
-        packedObjs=[]
-        packedIds=[]
+        packedObjs = []
+        packedIds = []
         if product in self.processedObjs:
             return
-        bomIds=bomTemplate.search(cr,uid,[('product_id','=',product.id),('type','=','spbom')])
-        if len(bomIds)<1:
-            bomIds=bomTemplate.search(cr,uid,[('product_tmpl_id','=',product.product_tmpl_id.id),('type','=','spbom')])
+        bomIds = bomTemplate.search(cr, uid, [('product_id', '=', product.id), ('type', '=', 'spbom')])
+        if len(bomIds) < 1:
+            bomIds = bomTemplate.search(cr, uid, [('product_tmpl_id', '=', product.product_tmpl_id.id), ('type', '=', 'spbom')])
 #        if len(bomIds)<1:
 #            bomIds=bomTemplate.search(cr,uid,[('product_tmpl_id','=',product.id),('type','=','normal')])
 #        if len(bomIds)<1:
 #            bomIds=bomTemplate.search(cr,uid,[('product_tmpl_id','=',product.id),('type','=','ebom')])
-        if len(bomIds)>0:
-            BomObject=bomTemplate.browse(cr, uid, bomIds[0], context=context)
+        if len(bomIds) > 0:
+            BomObject = bomTemplate.browse(cr, uid, bomIds[0], context=context)
             if BomObject:
                 self.processedObjs.append(product)
                 for bom_line in BomObject.bom_line_ids:
                     packedObjs.append(bom_line.product_id)
                     packedIds.append(bom_line.id)
-                if len(packedIds)>0:
+                if len(packedIds) > 0:
                     for pageStream in self.getPdfComponentLayout(cr, product):
-                        output.addPage((pageStream,''))
-                    stream,typerep=BODY.create(cr, uid, [BomObject.id], data={'report_type': u'pdf'},context=context) 
-                    pageStream=StringIO.StringIO()
+                        output.addPage((pageStream, ''))
+                    stream, typerep = BODY.create(cr, uid, [BomObject.id], data={'report_type': u'pdf'}, context=context) 
+                    pageStream = StringIO.StringIO()
                     pageStream.write(stream)
-                    output.addPage((pageStream,''))
+                    output.addPage((pageStream, ''))
                     if recursion:
                         for packedObj in packedObjs:
                             if not packedObj in self.processedObjs:
-                                self.getSparePartsPdfFile(cr,uid,context,packedObj,output,componentTemplate,bomTemplate,recursion)   
+                                self.getSparePartsPdfFile(cr, uid, context, packedObj, output, componentTemplate, bomTemplate, recursion)   
  
     def getPdfComponentLayout(self, cr, component):
         ret=[]
