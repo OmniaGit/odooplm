@@ -441,7 +441,7 @@ class plm_document(models.Model):
             document['hasSaved']=hasSaved
             document['hasUpdated']=hasUpdated
             retValues.append(document)
-        return retValues 
+        return retValues
 
     def RegMessage(self, cr, uid, request, default=None, context=None):
         """
@@ -944,8 +944,6 @@ class plm_checkout(models.Model):
             docRelType.write(cr, uid, ids, values)
 
     def create(self, cr, uid, vals, context=None):
-        if context!=None and context!={}:
-            return False
         documentType=self.pool.get('plm.document')
         docID=documentType.browse(cr, uid, vals['documentid'])
         values={'writable':True,}
@@ -957,20 +955,8 @@ class plm_checkout(models.Model):
         newID = super(plm_checkout,self).create(cr, uid, vals, context=context)   
         documentType.wf_message_post(cr, uid, [docID.id], body=_('Checked-Out'))
         return newID
-         
+
     def unlink(self, cr, uid, ids, context=None):
-        if context!=None and context!={}:
-            res = False
-            groupType=self.pool.get('res.groups')
-            for gId in groupType.search(cr,uid,[('name','=','PLM / Administrator')],context=context):
-                for user in groupType.browse(cr, uid, gId, context).users:
-                    if uid == user.id or uid==1:
-                        res = True
-                        break
-            if not res:
-                logging.warning("unlink : Unable to Check-In the required document.\n You aren't authorized in this context.")
-                raise osv.except_osv(_('Check-In Error'), _("Unable to Check-In the required document.\n You aren't authorized in this context."))
-                return False
         documentType=self.pool.get('plm.document')
         checkObjs=self.browse(cr, uid, ids, context=context)
         docids=[]
