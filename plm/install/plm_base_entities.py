@@ -317,10 +317,9 @@ class plm_relation(models.Model):
         '''
         outList = []
         if len(structure) == 2:
-            treeListIds = structure[1]
             outList.append(structure[0])
-            if treeListIds:
-                outList.extend(self.getListIdsFromStructure(treeListIds[0]))
+            for item in structure[1]:
+                outList.extend(self.getListIdsFromStructure(item))
         return outList
 
     def _getpackdatas(self, cr, uid, relDatas):
@@ -350,9 +349,8 @@ class plm_relation(models.Model):
 
         if len(relids)<1:
             return relationDatas
-        setobj=self.pool.get('mrp.bom')
         for keyData in relids.keys():
-            relationDatas[keyData]=setobj.read(cr, uid, relids[keyData])
+            relationDatas[keyData]=self.read(cr, uid, relids[keyData])
         return relationDatas
 
     def GetWhereUsed(self, cr, uid, ids, context=None):
