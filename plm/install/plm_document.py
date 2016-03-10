@@ -858,21 +858,16 @@ class plm_document(models.Model):
         """
             Extract documents related to current one(s) (layouts, referred models, etc.)
         """
-        related_documents=[]
-        listed_documents=[]
-        read_docs=[]
+        related_documents = []
+        listed_documents = []
+        read_docs = []
         for oid in ids:
-            kinds=['RfTree','LyTree']   # Get relations due to referred models
+            kinds = ['RfTree', 'LyTree']   # Get relations due to referred models
             read_docs.extend(self._relateddocs(cr, uid, oid, kinds, listed_documents, False))
             read_docs.extend(self._relatedbydocs(cr, uid, oid, kinds, listed_documents, False))
-
-#             kind='LyTree'   # Get relations due to layout connected
-#             read_docs.extend(self._relateddocs(cr, uid, oid, kind, listed_documents, False))
-#             read_docs.extend(self._relatedbydocs(cr, uid, oid, kind, listed_documents, False))
-       
-        documents=self.browse(cr, uid, read_docs, context=context)
+        documents = self.browse(cr, uid, read_docs, context=context)
         for document in documents:
-            related_documents.append([document.id,document.name,''])    # The third parameter is set as '' to compatibility rule
+            related_documents.append([document.id, document.name, document.preview])
         return related_documents
 
     def getServerTime(self, cr, uid, oid, default=None, context=None):
