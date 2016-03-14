@@ -30,11 +30,11 @@ from openerp.report.interface import report_int
 from openerp import pooler, _
 from openerp.exceptions import UserError
 
+
 class component_custom_report(report_int):
     """
         Return a pdf report of each printable document attached to given Part ( level = 0 one level only, level = 1 all levels)
     """
-
     def create(self, cr, uid, ids, datas, context=None):
         self.pool = pooler.get_pool(cr.dbname)
         docRepository = self.pool.get('plm.document')._get_filestore(cr)
@@ -50,7 +50,8 @@ class component_custom_report(report_int):
             documents.extend(component.linkeddocuments)
         if len(documents):
             return packDocuments(docRepository, documents, output)
-        raise UserError(_("No Document found"))
+        if context.get("raise_report_warning", True):
+            raise UserError(_("No Document found"))
 
 component_custom_report('report.product.product.pdf')
 
@@ -81,7 +82,8 @@ class component_one_custom_report(report_int):
                 documents.extend(child.linkeddocuments)
         if len(documents):
             return packDocuments(docRepository, list(set(documents)), output)
-        raise UserError(_("No Document found"))
+        if context.get("raise_report_warning", True):
+            raise UserError(_("No Document found"))
 
 component_one_custom_report('report.one.product.product.pdf')
 
@@ -114,7 +116,8 @@ class component_all_custom_report(report_int):
             return packDocuments(docRepository,
                                  list(set(documents)),
                                  output)
-        raise UserError(_("No Document found"))
+        if context.get("raise_report_warning", True):
+            raise UserError(_("No Document found"))
 
 component_all_custom_report('report.all.product.product.pdf')
 
@@ -124,7 +127,7 @@ class component_custom_report_latest(report_int):
         Return a pdf report of each printable document attached to given Part ( level = 0 one level only, level = 1 all levels)
     """
 
-    def create(self, cr, uid, ids, datas, context=None):
+    def create(self, cr, uid, ids, datas, context={}):
         self.pool = pooler.get_pool(cr.dbname)
         objTemplateDoc = self.pool.get('plm.document')
         docRepository = objTemplateDoc._get_filestore(cr)
@@ -143,6 +146,7 @@ class component_custom_report_latest(report_int):
                     documents.extend(idDoc)
         if len(documents):
             return packDocuments(docRepository, documents, output)
-        raise UserError(_("No Document found"))
+        if context.get("raise_report_warning", True):
+            raise UserError(_("No Document found"))
 
 component_custom_report_latest('report.product.product.pdf.latest')
