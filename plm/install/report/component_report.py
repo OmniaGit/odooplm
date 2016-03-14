@@ -19,17 +19,16 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-import StringIO
 import os
-import random
 import time
+import random
 import string
+import StringIO
 
 from book_collector import BookCollector, packDocuments
 from openerp.report.interface import report_int
-from openerp import pooler
+from openerp import pooler, _
 from openerp.exceptions import UserError
-
 
 class component_custom_report(report_int):
     """
