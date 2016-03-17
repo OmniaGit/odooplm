@@ -215,12 +215,12 @@ class plm_component(models.Model):
             break
         return (newID, newIndex) 
 
-    def SaveOrUpdate(self, cr, uid, vals, default=None, context=None):
+    def SaveOrUpdate(self, cr, uid, vals, context={}):
         """
             Save or Update Parts
         """
-        listedParts=[]
-        retValues=[]
+        listedParts = []
+        retValues = []
         for part in vals:
             hasSaved=False
             if part['engineering_code'] in listedParts:
@@ -231,7 +231,8 @@ class plm_component(models.Model):
                 continue
             existingID=self.search(cr,uid,[
                                            ('engineering_code','=',part['engineering_code'])
-                                          ,('engineering_revision','=',part['engineering_revision'])])
+                                          ,('engineering_revision','=',part['engineering_revision'])],
+                                   context=context)
             if not existingID:
                 existingID=self.create(cr,uid,part)
                 hasSaved=True
@@ -243,7 +244,7 @@ class plm_component(models.Model):
                     if self._iswritable(cr,uid,objPart):
                         del(part['lastupdate'])
                         if not self.write(cr,uid,[existingID], part , context=context, check=True):
-                            raise osv.except_osv(_('Update Part Error'), _("Part %r cannot be updated" %(part['engineering_code'])))
+                            raise UserError(_("Part %r cannot be updated" % (part['engineering_code'])))
                         hasSaved=True
             part['componentID']=existingID
             part['hasSaved']=hasSaved
