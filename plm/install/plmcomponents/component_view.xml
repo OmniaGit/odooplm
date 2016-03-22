@@ -123,11 +123,11 @@
            		</group>
 
 	    		<notebook colspan="6" col="6">
-	    			<page string="Technical Infos">
+	    			<page name="techincal_infos" string="Technical Infos">
 	            		<group colspan="4" col="4" name="TechnicalInfos">
 	           				<field name="tmp_material" 	attrs="{'readonly':[('state','in',['released','obsoleted'])]}" on_change="on_change_tmpmater(tmp_material)"/>
 	         				<field name="tmp_surface" 	attrs="{'readonly':[('state','in',['released','obsoleted'])]}" on_change="on_change_tmpsurface(tmp_surface)"/>
-	             			<field digits="(14, 3)"  	attrs="{'readonly':[('state','in',['released','obsoleted'])]}" name="weight"/>
+	             			<field name="weight"		attrs="{'readonly':[('state','in',['released','obsoleted'])]}" digits="(14, 3)"  	/>
 	             			<field name="uom_id" 		attrs="{'readonly':[('state','in',['released','obsoleted'])]}" on_change="onchange_uom(uom_id,uom_po_id)"/>
                             <field name="uom_po_id" 	attrs="{'readonly':[('state','in',['released','obsoleted'])]}" groups="base.group_extended"/>
 	         			</group>
