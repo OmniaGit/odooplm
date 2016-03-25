@@ -213,7 +213,7 @@ class plm_component(models.Model):
                 # create a new "old revision" object
                 break
             break
-        return (newID, newIndex) 
+        return (newID, newIndex)
 
     def SaveOrUpdate(self, cr, uid, vals, context={}):
         """

@@ -319,11 +319,15 @@ class plm_relation(models.Model):
         if len(structure) == 2:
             outList.append(structure[0])
             for item in structure[1]:
-                outList.extend(self.getListIdsFromStructure(item))
+                try:
+                    _id = int(item)
+                    outList.extend(self.getListIdsFromStructure(_id))
+                except:
+                    pass
         return outList
 
     def _getpackdatas(self, cr, uid, relDatas):
-        prtDatas={}
+        prtDatas = {}
         tmpids = self.getListIdsFromStructure(relDatas)
         if len(tmpids)<1:
             return prtDatas

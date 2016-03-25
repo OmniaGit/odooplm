@@ -148,5 +148,6 @@ class component_custom_report_latest(report_int):
             return packDocuments(docRepository, documents, output)
         if context.get("raise_report_warning", True):
             raise UserError(_("No Document found"))
+        return False, False
 
 component_custom_report_latest('report.product.product.pdf.latest')

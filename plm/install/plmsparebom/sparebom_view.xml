@@ -27,6 +27,37 @@
         key2="client_action_multi"
         id="act_manage_spareBom"/>
  
+        
+     <record id="plm_sparechoselanguage_form" model="ir.ui.view">
+        <field name="name">plm.sparechoselanguage.form</field>
+        <field name="model">plm.sparechoselanguage</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+        <form string="Creation of Spare Bom">
+        <group col="4" colspan="4">	
+	        <field string="Language" name="lang"/>	
+	        <field string="First Level" name="onelevel"/>	
+        </group>
+        	<field name="datas" filename="datas_name"/>
+        <field name="datas_name" invisible="1"/>
+            <group colspan="4" col="4">
+            	<button icon="gtk-cancel" special="cancel" string="Cancel"/>
+            	<button icon="terp-gtk-go-back-rtl" string="Create Spare Report" name="print_report" type="object"/>
+            </group>
+        </form>
+        </field>
+    </record>	
+    	   
+    <act_window
+    	id="act_plm_print_spare_bom"
+     	name="Create Report Spare Bom"
+        res_model="plm.sparechoselanguage"
+        src_model="product.product"
+        view_mode="form"
+    	view_id="plm_sparechoselanguage_form"
+        target="new"
+        key2="client_action_multi"
+        />
  </data>
 </openerp>
         
