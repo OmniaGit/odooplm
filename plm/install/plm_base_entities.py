@@ -316,14 +316,10 @@ class plm_relation(models.Model):
             Convert from [id1,[[id2,[]]]] to [id1,id2]
         '''
         outList = []
-        if len(structure) == 2:
+        if isinstance(structure, (list, tuple)) and len(structure) == 2:
             outList.append(structure[0])
             for item in structure[1]:
-                try:
-                    _id = int(item)
-                    outList.extend(self.getListIdsFromStructure(_id))
-                except:
-                    pass
+                outList.extend(self.getListIdsFromStructure(item))
         return outList
 
     def _getpackdatas(self, cr, uid, relDatas):
