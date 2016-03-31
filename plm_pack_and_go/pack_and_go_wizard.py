@@ -65,13 +65,11 @@ class PackAndGo(osv.osv.osv_memory):
         """
         objBom = self.env['mrp.bom']
         objProduct = self.env['product.product']
-        
         prodTmplId      = objBom.GetTmpltIdFromProductId(self.component_id.id)
         bomId           = objBom._getbom(prodTmplId)
         explosedBomIds  = objBom._explodebom(bomId, True)
         relDatas        = [self.ids[0], explosedBomIds]
         compIds         = objBom.getListIdsFromStructure(relDatas)
-        
         tmpSubFolder = tempfile.mkdtemp()
         tmpSubSubFolder = os.path.join(tmpSubFolder, self.component_id.engineering_code)
         if not os.path.exists(tmpSubSubFolder):
@@ -80,10 +78,8 @@ class PackAndGo(osv.osv.osv_memory):
         for compId in compIds:
             compBrws = objProduct.browse(compId)
             outDocPaths.extend(self.computeDocFiles(compBrws, tmpSubSubFolder))
-            
         outZipFile = os.path.join(tempfile.gettempdir(), self.component_id.engineering_code)
         outZipFile = shutil.make_archive(outZipFile, 'zip', tmpSubFolder)
-
         with open(outZipFile, 'rb') as f:
             fileContent = f.read()
             if fileContent:
@@ -91,7 +87,6 @@ class PackAndGo(osv.osv.osv_memory):
         fileName = os.path.basename(outZipFile)
         self.datas_fname = fileName
         self.name = fileName
-        #self.store_fname = fileName
         return {'name': _('Pack and Go'),
                 'view_type': 'form',
                 "view_mode": 'form',
