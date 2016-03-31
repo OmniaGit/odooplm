@@ -44,9 +44,7 @@ class PackAndGo(osv.osv.osv_memory):
         """
         return self._context.get('active_id', 0)
 
-    #zipFile         = fields.Binary(_("Zip File"))
     component_id    = fields.Many2one('product.product', _('Component'), default=setComponentFromContext)
-    #datas_name      = fields.Char('Download file name')
     name            = fields.Char('Attachment Name', required=True, default=' '),
     type            = fields.Selection( [ ('url','URL'), ('binary','File'), ],
                 'Type', help="You can either upload a file from your computer or copy/paste an internet link to your file", required=True, change_default=True, default='binary'),
