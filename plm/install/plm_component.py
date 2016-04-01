@@ -244,7 +244,7 @@ class plm_component(models.Model):
                 if (self.getUpdTime(objPart)<datetime.strptime(part['lastupdate'],'%Y-%m-%d %H:%M:%S')):
                     if self._iswritable(cr,uid,objPart):
                         del(part['lastupdate'])
-                        if not self.write(cr,uid,[existingID], part , context=context, check=True):
+                        if not self.write(cr,uid,[existingID], part , context=context):
                             raise UserError(_("Part %r cannot be updated" % (part['engineering_code'])))
                         hasSaved=True
             part['componentID']=existingID
