@@ -324,10 +324,11 @@ class plm_component(models.Model):
         checkObj=self.browse(cr, uid, idd, context)
         if not checkObj:
             return False
-        bomType=self.pool.get('mrp.bom')
-        bomLType=self.pool.get('mrp.bom.line')
-        objBoms=bomType.search(cr, uid, [('product_tmpl_id','=',checkObj.product_tmpl_id.id),('type','=','normal')])
-        idBoms=bomType.search(cr, uid, [('product_tmpl_id','=',checkObj.product_tmpl_id.id),('type','=','ebom')])
+        bomType = self.pool.get('mrp.bom')
+        bomLType = self.pool.get('mrp.bom.line')
+        product_template_id = checkObj.product_tmpl_id.id
+        objBoms = bomType.search(cr, uid, [('product_tmpl_id','=',product_template_id),('type','=','normal')])
+        idBoms = bomType.search(cr, uid, [('product_tmpl_id','=',product_template_id),('type','=','ebom')])
 
         if not objBoms:
             idBoms = bomType.search(cr, uid, [('product_tmpl_id', '=', product_template_id),
