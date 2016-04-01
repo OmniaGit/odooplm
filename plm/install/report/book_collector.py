@@ -45,9 +45,26 @@ class BookCollector(object):
         self.bottomHeight=bottomHeight
         
     def getNextPageNumber(self,mediaBox, docState):
+        def computeFont(x1, y1):
+            computedX1 = float(x1)/2.834
+            if y1 > x1:
+                #vertical
+                if computedX1 <= 298:
+                    self.bottomHeight = 6
+                    return 6
+                return 10
+            else:
+                #horizontal
+                if computedX1 <= 421:
+                    self.bottomHeight = 6
+                    return 6
+                return 10
+            
         pagetNumberBuffer = StringIO.StringIO()
         c = canvas.Canvas(pagetNumberBuffer)
-        x,y,x1,y1 = mediaBox
+        x, y, x1, y1 = mediaBox
+        fontSize = computeFont(x1, y1)
+        c.setFont("Helvetica", fontSize)
         if isinstance(self.customTest,tuple):
             page,message=self.customTest
             message = message+'  State:%s'%(docState)
@@ -67,7 +84,7 @@ class BookCollector(object):
         return pagetNumberBuffer
     
     def addPage(self,pageRes):
-        streamBuffer,docState = pageRes
+        streamBuffer, docState = pageRes
         if streamBuffer.len<1:
             return False
         mainPage=PdfFileReader(streamBuffer)
@@ -76,7 +93,7 @@ class BookCollector(object):
                 self.collector.addPage(mainPage.getPage(i))
                 self.jumpFirst=False
             else:
-                numberPagerBuffer=self.getNextPageNumber(mainPage.getPage(i).mediaBox,docState)
+                numberPagerBuffer=self.getNextPageNumber(mainPage.getPage(i).mediaBox, docState)
                 numberPageReader=PdfFileReader(numberPagerBuffer)  
                 mainPage.getPage(i).mergePage(numberPageReader.getPage(0))
                 self.collector.addPage(mainPage.getPage(i))
