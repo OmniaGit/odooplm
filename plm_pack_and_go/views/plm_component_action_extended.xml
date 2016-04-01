@@ -14,8 +14,8 @@
 			</group>    
             <separator string=""/>
             <group colspan="4" col="4">
-            	<button icon="gtk-cancel" special="cancel" string="Cancella"/>
-            	<button icon="terp-gtk-go-back-rtl" string="Esporta" name="action_export_zip" type="object"/>
+            	<button icon="gtk-cancel" special="cancel" string="Cancel"/>
+            	<button icon="terp-gtk-go-back-rtl" string="Create zip archive" name="action_export_zip" type="object"/>
             </group>
         </form>
         </field>

@@ -20,7 +20,7 @@
 #
 ##############################################################################
 {
-    'name': 'Plm Pack and Go',
+    'name': 'Plm Report Language Helper',
     'version': '1.1',
     'author': 'OmniaSolutions',
     'website': 'http://www.omniasolutions.eu',
@@ -32,7 +32,7 @@
     'description': """
     """,
     'data': [
-             'views/plm_component_action_extended.xml'
+            'views/plm_component_action_extended.xml'
        ],
     'demo': [
         ],

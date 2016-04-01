@@ -140,19 +140,18 @@ class plm_component(models.Model):
         return {}
 
 ##  External methods
-    def Clone(self, cr, uid, oid, default=None, context=None):
+    def Clone(self, cr, uid, oid, context={}, defaults={}):
         """
             create a new revision of the component
         """
-        defaults={}
-        exitValues={}
-        newID=self.copy(cr,uid,oid,defaults,context)
-        if newID != None:
-            newEnt=self.browse(cr,uid,newID,context=context)
-            exitValues['_id']=newID
-            exitValues['name']=newEnt.name
-            exitValues['engineering_code']=newEnt.engineering_code
-            exitValues['engineering_revision']=newEnt.engineering_revision
+        exitValues = {}
+        newID = self.copy(cr, uid, oid, defaults, context)
+        if newID not in (None, False):
+            newEnt = self.browse(cr, uid, newID, context=context)
+            exitValues['_id'] = newID
+            exitValues['name'] = newEnt.name
+            exitValues['engineering_code'] = newEnt.engineering_code
+            exitValues['engineering_revision'] = newEnt.engineering_revision
         return exitValues
 
     def GetUpdated(self,cr,uid,vals,context=None):
