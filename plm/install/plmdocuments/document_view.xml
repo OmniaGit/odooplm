@@ -127,6 +127,7 @@
                 <field name="revisionid" 	select="True"/>
                 <field name="state" 		select="True"/>
                 <field name="datas_fname" 	select="True"/>
+                <field name="checkout_user" colspan="2"/>
                 <field name="create_uid" 	select="True"/>
                 <field name="create_date" 	select="True"/>
                 <field name="write_uid" 	select="True"/>

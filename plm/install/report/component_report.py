@@ -76,7 +76,7 @@ class component_one_custom_report(report_int):
         for component in components:
             documents.extend(component.linkeddocuments)
             idcs = componentType._getChildrenBom(
-                cr, uid, component, 0, context=context)
+                cr, uid, component, 0, 1, context=context)
             children = componentType.browse(cr, uid, idcs, context=context)
             for child in children:
                 documents.extend(child.linkeddocuments)

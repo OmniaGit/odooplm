@@ -30,6 +30,8 @@
     'images': [],
     'depends': ['plm'],
     'description': """
+Download BOM structure files from a component
+==============================================
     """,
     'data': [
              'views/plm_component_action_extended.xml'
