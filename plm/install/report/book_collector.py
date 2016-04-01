@@ -122,7 +122,8 @@ def packDocuments(docRepository,documents,bookCollector):
                         Flag=True
                 if Flag:
                     page=PdfFileReader(input1)
-                    orientation,paper=paperFormat(page.getPage(0).mediaBox)
+                    orientation, paper = paperFormat(page.getPage(0).mediaBox)
+                    orientation
                     if(paper==0)  :
                         output0.append((input1,document.state))
                     elif(paper==1):
