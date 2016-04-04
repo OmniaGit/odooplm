@@ -441,7 +441,7 @@ class plm_document(models.Model):
             document['hasSaved']=hasSaved
             document['hasUpdated']=hasUpdated
             retValues.append(document)
-        return retValues 
+        return retValues
 
     def RegMessage(self, cr, uid, request, default=None, context=None):
         """
@@ -858,21 +858,16 @@ class plm_document(models.Model):
         """
             Extract documents related to current one(s) (layouts, referred models, etc.)
         """
-        related_documents=[]
-        listed_documents=[]
-        read_docs=[]
+        related_documents = []
+        listed_documents = []
+        read_docs = []
         for oid in ids:
-            kinds=['RfTree','LyTree']   # Get relations due to referred models
+            kinds = ['RfTree', 'LyTree']   # Get relations due to referred models
             read_docs.extend(self._relateddocs(cr, uid, oid, kinds, listed_documents, False))
             read_docs.extend(self._relatedbydocs(cr, uid, oid, kinds, listed_documents, False))
-
-#             kind='LyTree'   # Get relations due to layout connected
-#             read_docs.extend(self._relateddocs(cr, uid, oid, kind, listed_documents, False))
-#             read_docs.extend(self._relatedbydocs(cr, uid, oid, kind, listed_documents, False))
-       
-        documents=self.browse(cr, uid, read_docs, context=context)
+        documents = self.browse(cr, uid, read_docs, context=context)
         for document in documents:
-            related_documents.append([document.id,document.name,''])    # The third parameter is set as '' to compatibility rule
+            related_documents.append([document.id, document.name, document.preview])
         return related_documents
 
     def getServerTime(self, cr, uid, oid, default=None, context=None):
@@ -944,8 +939,6 @@ class plm_checkout(models.Model):
             docRelType.write(cr, uid, ids, values)
 
     def create(self, cr, uid, vals, context=None):
-        if context!=None and context!={}:
-            return False
         documentType=self.pool.get('plm.document')
         docID=documentType.browse(cr, uid, vals['documentid'])
         values={'writable':True,}
@@ -957,21 +950,8 @@ class plm_checkout(models.Model):
         newID = super(plm_checkout,self).create(cr, uid, vals, context=context)   
         documentType.wf_message_post(cr, uid, [docID.id], body=_('Checked-Out'))
         return newID
-         
+
     def unlink(self, cr, uid, ids, context=None):
-        if context!=None and context!={}:
-            res = False
-            groupType=self.pool.get('res.groups')
-            #Forced void context to match exact name and not translated name
-            for gId in groupType.search(cr,uid,[('name','=', 'PLM / Administrator')],context={}):
-                for user in groupType.browse(cr, uid, gId, context).users:
-                    if uid == user.id or uid==1:
-                        res = True
-                        break
-            if not res:
-                logging.warning("unlink : Unable to Check-In the required document.\n You aren't authorized in this context.")
-                raise osv.except_osv(_('Check-In Error'), _("Unable to Check-In the required document.\n You aren't authorized in this context."))
-                return False
         documentType=self.pool.get('plm.document')
         checkObjs=self.browse(cr, uid, ids, context=context)
         docids=[]

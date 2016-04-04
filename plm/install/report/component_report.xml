@@ -31,6 +31,18 @@
                 />
     </data>
     <data>
+        <report id="report_product_product_pdf_latest"
+                string="Print All Production PDF Drawings" 
+                model="product.product"
+                name="product.product.pdf.latest"
+                report_type="sxw"
+                file=""
+                header="False"
+                />
+    </data>   
+   
+       
+    <data>
         <report id="report_product_product_spare_parts_pdf"
                 string="Print Spare Parts Manual"
                 model="product.product"

@@ -215,12 +215,12 @@ class plm_component(models.Model):
             break
         return (newID, newIndex) 
 
-    def SaveOrUpdate(self, cr, uid, vals, default=None, context=None):
+    def SaveOrUpdate(self, cr, uid, vals, context={}):
         """
             Save or Update Parts
         """
-        listedParts=[]
-        retValues=[]
+        listedParts = []
+        retValues = []
         for part in vals:
             hasSaved=False
             if part['engineering_code'] in listedParts:
@@ -231,7 +231,8 @@ class plm_component(models.Model):
                 continue
             existingID=self.search(cr,uid,[
                                            ('engineering_code','=',part['engineering_code'])
-                                          ,('engineering_revision','=',part['engineering_revision'])])
+                                          ,('engineering_revision','=',part['engineering_revision'])],
+                                   context=context)
             if not existingID:
                 existingID=self.create(cr,uid,part)
                 hasSaved=True
@@ -243,7 +244,7 @@ class plm_component(models.Model):
                     if self._iswritable(cr,uid,objPart):
                         del(part['lastupdate'])
                         if not self.write(cr,uid,[existingID], part , context=context, check=True):
-                            raise osv.except_osv(_('Update Part Error'), _("Part %r cannot be updated" %(part['engineering_code'])))
+                            raise UserError(_("Part %r cannot be updated" % (part['engineering_code'])))
                         hasSaved=True
             part['componentID']=existingID
             part['hasSaved']=hasSaved
@@ -677,5 +678,48 @@ class plm_component(models.Model):
                     readDict = translationObj.read(cr, uid, resIds[0], ['value'])
                     values[fieldName] = readDict.get('value','')
         return values
-    
+
 plm_component()
+
+class PlmComponentRevisionWizard(models.Model):
+    _name = 'product.rev_wizard'
+    
+    @api.multi
+    def action_create_new_revision_by_server(self):
+        def stateAllows(brwsObj, objType):
+            if brwsObj.state != 'released':
+                logging.error('[action_create_new_revision_by_server:stateAllows] Cannot revise obj %s, Id: %r because state is %r' % (objType, brwsObj.id, brwsObj.state))
+                raise UserError(_("%s cannot be revised because the state isn't released!" % (objType)))
+            return True
+        product_id = self.env.context.get('default_product_id', False)
+        if not product_id:
+            logging.error('[action_create_new_revision_by_server] Cannot revise because product_id is %r' % (product_id))
+            raise UserError(_('Current component cannot be revised!'))
+        prodProdEnv = self.env['product.product']
+        prodBrws = prodProdEnv.browse(product_id)
+        if stateAllows(prodBrws, 'Component'):
+            revRes = prodBrws.NewRevision()
+            newID, newIndex = revRes
+            newIndex
+            if not newID:
+                logging.error('[action_create_new_revision_by_server] newID: %r' % (newID))
+                raise UserError(_('Something wrong happens during new component revision process.'))
+            createdDocIds = []
+            for docBrws in prodBrws.linkeddocuments:
+                if stateAllows(docBrws, 'Document'):
+                    resDoc = docBrws.NewRevision()
+                    newDocID, newDocIndex = resDoc
+                    newDocIndex
+                    if not newDocID:
+                        logging.error('[action_create_new_revision_by_server] newDocID: %r' % (newDocID))
+                        raise UserError(_('Something wrong happens during new document revision process.'))
+                    createdDocIds.append(newDocID)
+            prodProdEnv.browse(newID).linkeddocuments = createdDocIds
+            return {'name': _('Revised Product'),
+                    'view_type': 'tree,form',
+                    "view_mode": 'form',
+                    'res_model': 'product.product',
+                    'res_id': newID,
+                    'type': 'ir.actions.act_window'}
+    
+PlmComponentRevisionWizard()
