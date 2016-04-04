@@ -1,0 +1,182 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+#	* plm_pack_and_go
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 9.0c\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-04-01 22:10+0000\n"
+"PO-Revision-Date: 2016-04-01 22:10+0000\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: plm_pack_and_go
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_local_url
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_website_url
+msgid "Attachment URL"
+msgstr "URL Allegato"
+
+#. module: plm_pack_and_go
+#: model:ir.ui.view,arch_db:plm_pack_and_go.act_plm_pack_and_go
+msgid "Cancel"
+msgstr "Annulla"
+
+#. module: plm_pack_and_go
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_checksum
+msgid "Checksum/SHA1"
+msgstr "Checksum/SHA1"
+
+#. module: plm_pack_and_go
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_company_id
+msgid "Company"
+msgstr "Azienda"
+
+#. module: plm_pack_and_go
+#: code:addons/plm_pack_and_go/pack_and_go_wizard.py:47
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_component_id
+#, python-format
+msgid "Component"
+msgstr "Prodotto"
+
+#. module: plm_pack_and_go
+#: model:ir.ui.view,arch_db:plm_pack_and_go.act_plm_pack_and_go
+msgid "Create zip archive"
+msgstr "Create zip archive"
+
+#. module: plm_pack_and_go
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_db_datas
+msgid "Database Data"
+msgstr "Dati Database"
+
+#. module: plm_pack_and_go
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_create_date
+msgid "Date Created"
+msgstr "Data di creazione"
+
+#. module: plm_pack_and_go
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_description
+msgid "Description"
+msgstr "Descrizione"
+
+#. module: plm_pack_and_go
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_display_name
+msgid "Display Name"
+msgstr "Visualizza Nome"
+
+#. module: plm_pack_and_go
+#: model:ir.ui.view,arch_db:plm_pack_and_go.act_plm_pack_and_go
+msgid "Export Form"
+msgstr "Finesta di esportazione"
+
+#. module: plm_pack_and_go
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_datas
+msgid "File Content"
+msgstr "Contenuto File"
+
+#. module: plm_pack_and_go
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_datas_fname
+msgid "File Name"
+msgstr "Nome File"
+
+#. module: plm_pack_and_go
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_file_size
+msgid "File Size"
+msgstr "Dimensione File"
+
+#. module: plm_pack_and_go
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_id
+msgid "ID"
+msgstr "ID"
+
+#. module: plm_pack_and_go
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_index_content
+msgid "Indexed Content"
+msgstr "Contenuto Indicizzato"
+
+#. module: plm_pack_and_go
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_public
+msgid "Is public document"
+msgstr "E' documento pubblico"
+
+#. module: plm_pack_and_go
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go___last_update
+msgid "Last Modified on"
+msgstr "Data di ultima modifica"
+
+#. module: plm_pack_and_go
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_write_uid
+msgid "Last Updated by"
+msgstr "Ultima modifica di"
+
+#. module: plm_pack_and_go
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_write_date
+msgid "Last Updated on"
+msgstr "Ultima modifica il"
+
+#. module: plm_pack_and_go
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_mimetype
+msgid "Mime Type"
+msgstr "Mime Type"
+
+#. module: plm_pack_and_go
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_create_uid
+msgid "Owner"
+msgstr "Proprietario"
+
+#. module: plm_pack_and_go
+#: code:addons/plm_pack_and_go/pack_and_go_wizard.py:90
+#: model:ir.actions.act_window,name:plm_pack_and_go.act_pack_and_go_action
+#, python-format
+msgid "Pack and Go"
+msgstr "Pack and Go"
+
+#. module: plm_pack_and_go
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_res_field
+msgid "Resource Field"
+msgstr "Campo Risorsa"
+
+#. module: plm_pack_and_go
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_res_id
+msgid "Resource ID"
+msgstr "ID Risorsa"
+
+#. module: plm_pack_and_go
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_res_model
+msgid "Resource Model"
+msgstr "Modello Risorsa"
+
+#. module: plm_pack_and_go
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_res_name
+msgid "Resource Name"
+msgstr "Nome Risorsa"
+
+#. module: plm_pack_and_go
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_store_fname
+msgid "Stored Filename"
+msgstr "Nome Storicizzato"
+
+#. module: plm_pack_and_go
+#: model:ir.model.fields,help:plm_pack_and_go.field_pack_and_go_res_model
+msgid "The database object this attachment will be attached to"
+msgstr "Oggetto di Database a cui questo allegato verra' collegato"
+
+#. module: plm_pack_and_go
+#: model:ir.model.fields,help:plm_pack_and_go.field_pack_and_go_res_id
+msgid "The record id this is attached to"
+msgstr "L'id del record a cui questo e' collegato"
+
+#. module: plm_pack_and_go
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_url
+msgid "Url"
+msgstr "Url"
+
+#. module: plm_pack_and_go
+#: model:ir.model,name:plm_pack_and_go.model_pack_and_go
+msgid "pack.and_go"
+msgstr "pack.and_go"
+

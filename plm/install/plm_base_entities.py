@@ -316,14 +316,14 @@ class plm_relation(models.Model):
             Convert from [id1,[[id2,[]]]] to [id1,id2]
         '''
         outList = []
-        if len(structure) == 2:
+        if isinstance(structure, (list, tuple)) and len(structure) == 2:
             outList.append(structure[0])
             for item in structure[1]:
                 outList.extend(self.getListIdsFromStructure(item))
-        return outList
+        return list(set(outList))
 
     def _getpackdatas(self, cr, uid, relDatas):
-        prtDatas={}
+        prtDatas = {}
         tmpids = self.getListIdsFromStructure(relDatas)
         if len(tmpids)<1:
             return prtDatas
@@ -385,6 +385,7 @@ class plm_relation(models.Model):
             Explodes a bom entity  ( check=False : all levels, check=True : one level )
         """
         output = []
+        self._packed = []
         for bid in bids:
             for bom_line in bid.bom_line_ids:
                 if check and (bom_line.product_id.id in self._packed):

@@ -24,6 +24,7 @@ import logging
 from datetime import datetime
 from openerp import models, fields, api, SUPERUSER_ID, _, osv
 from openerp.exceptions import ValidationError, UserError
+from openerp.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -133,25 +134,24 @@ class plm_component(models.Model):
         if name:
             results=self.search(cr,uid,[('name','=',name)])
             if len(results) > 0:
-                raise osv.osv.except_osv(_('Update Part Warning'), _("Part %s already exists.\nClose with OK to reuse, with Cancel to discharge." %(name)))
+                raise UserError(_("Part %s already exists.\nClose with OK to reuse, with Cancel to discharge." %(name)))
             if not engineering_code:
                 return {'value': {'engineering_code': name}}            
         return {}
 
 ##  External methods
-    def Clone(self, cr, uid, oid, default=None, context=None):
+    def Clone(self, cr, uid, oid, context={}, defaults={}):
         """
             create a new revision of the component
         """
-        defaults={}
-        exitValues={}
-        newID=self.copy(cr,uid,oid,defaults,context)
-        if newID != None:
-            newEnt=self.browse(cr,uid,newID,context=context)
-            exitValues['_id']=newID
-            exitValues['name']=newEnt.name
-            exitValues['engineering_code']=newEnt.engineering_code
-            exitValues['engineering_revision']=newEnt.engineering_revision
+        exitValues = {}
+        newID = self.copy(cr, uid, oid, defaults, context)
+        if newID not in (None, False):
+            newEnt = self.browse(cr, uid, newID, context=context)
+            exitValues['_id'] = newID
+            exitValues['name'] = newEnt.name
+            exitValues['engineering_code'] = newEnt.engineering_code
+            exitValues['engineering_revision'] = newEnt.engineering_revision
         return exitValues
 
     def GetUpdated(self,cr,uid,vals,context=None):
@@ -213,7 +213,7 @@ class plm_component(models.Model):
                 # create a new "old revision" object
                 break
             break
-        return (newID, newIndex) 
+        return (newID, newIndex)
 
     def SaveOrUpdate(self, cr, uid, vals, context={}):
         """
@@ -243,7 +243,7 @@ class plm_component(models.Model):
                 if (self.getUpdTime(objPart)<datetime.strptime(part['lastupdate'],'%Y-%m-%d %H:%M:%S')):
                     if self._iswritable(cr,uid,objPart):
                         del(part['lastupdate'])
-                        if not self.write(cr,uid,[existingID], part , context=context, check=True):
+                        if not self.write(cr,uid,[existingID], part , context=context):
                             raise UserError(_("Part %r cannot be updated" % (part['engineering_code'])))
                         hasSaved=True
             part['componentID']=existingID
@@ -323,10 +323,11 @@ class plm_component(models.Model):
         checkObj=self.browse(cr, uid, idd, context)
         if not checkObj:
             return False
-        bomType=self.pool.get('mrp.bom')
-        bomLType=self.pool.get('mrp.bom.line')
-        objBoms=bomType.search(cr, uid, [('product_tmpl_id','=',checkObj.product_tmpl_id.id),('type','=','normal')])
-        idBoms=bomType.search(cr, uid, [('product_tmpl_id','=',checkObj.product_tmpl_id.id),('type','=','ebom')])
+        bomType = self.pool.get('mrp.bom')
+        bomLType = self.pool.get('mrp.bom.line')
+        product_template_id = checkObj.product_tmpl_id.id
+        objBoms = bomType.search(cr, uid, [('product_tmpl_id','=',product_template_id),('type','=','normal')])
+        idBoms = bomType.search(cr, uid, [('product_tmpl_id','=',product_template_id),('type','=','ebom')])
 
         if not objBoms:
             idBoms = bomType.search(cr, uid, [('product_tmpl_id', '=', product_template_id),
@@ -359,34 +360,39 @@ class plm_component(models.Model):
         retd = dic.values()
         return retd
 
-##  Work Flow Internal Methods
+#  Work Flow Internal Methods
     def _get_recursive_parts(self, cr, uid, ids, excludeStatuses, includeStatuses):
         """
            Get all ids related to current one as children
         """
-        stopFlag=False
-        tobeReleasedIDs=[]
-        if not(type(ids) is types.ListType):
-            ids=[ids]
+        errors = []
+        tobeReleasedIDs = []
+        if not isinstance(ids, (list, tuple)):
+            ids = [ids]
         tobeReleasedIDs.extend(ids)
-        children=[]
+        children = []
         for oic in self.browse(cr, uid, ids, context=None):
-            children=self.browse(cr, uid, self._getChildrenBom(cr, uid, oic, 1), context=None)
+            children = self.browse(cr, uid, self._getChildrenBom(cr, uid, oic, 1))
             for child in children:
-                if (not child.state in excludeStatuses) and (not child.state in includeStatuses):
-                    stopFlag=True
-                    break
+                if (child.state not in excludeStatuses) and (child.state not in includeStatuses):
+                    errors.append(_("Product code: %r revision %r ") & (child.engineering_code, child.engineering_revision))
+                    continue
                 if child.state in includeStatuses:
-                    if not child.id in tobeReleasedIDs:
+                    if child.id not in tobeReleasedIDs:
                         tobeReleasedIDs.append(child.id)
-        return (stopFlag,list(set(tobeReleasedIDs)))
-    
+        msg = ''
+        if errors:
+            msg = _("Unable to perform workFlow action due")
+            for subMsg in errors:
+                msg = "\n" + subMsg
+        return (msg, list(set(tobeReleasedIDs)))
+
     def action_create_normalBom_WF(self, cr, uid, ids, context=None):
         """
             Create a new Normal Bom if doesn't exist (action callable from code)
         """
         for idd in ids:
-            self.processedIds=[]
+            self.processedIds = []
             self._create_normalBom(cr, uid, idd, context)
         self.wf_message_post(cr, uid, ids, body=_('Created Normal Bom.'))
         return False
@@ -395,42 +401,46 @@ class plm_component(models.Model):
         """
             move workflow on documents having the same state of component 
         """
-        docIDs=[]
-        documentType=self.pool.get('plm.document')
-        for oldObject in self.browse(cr, uid, ids, context=context):
-            if (action_name!='transmit') and (action_name!='reject') and (action_name!='release'):
-                check_state=oldObject.state
-            else:
-                check_state='confirmed'
-            for document in oldObject.linkeddocuments:
-                if document.state == check_state:
-                    if not document.id in docIDs:
-                        if documentType.ischecked_in(cr,uid,document.id,context):
+        docIDs = []
+        try:
+            documentType=self.pool.get('plm.document')
+            for oldObject in self.browse(cr, uid, ids, context=context):
+                if (action_name!='transmit') and (action_name!='reject') and (action_name!='release'):
+                    check_state=oldObject.state
+                else:
+                    check_state='confirmed'
+                for document in oldObject.linkeddocuments:
+                    if document.state == check_state:
+                        if document.is_checkout:
+                            logging.warning("Unable to perform workflow operation for document %r" % document.id)
+                            continue
+                        if document.id not in docIDs:
                             docIDs.append(document.id)
-        if len(docIDs)>0:
-            if action_name=='confirm':
-                documentType.signal_workflow(cr, uid, docIDs, action_name)
-            elif action_name=='transmit':
-                documentType.signal_workflow(cr, uid, docIDs, 'confirm')
-            elif action_name=='draft':
-                documentType.signal_workflow(cr, uid, docIDs, 'correct')
-            elif action_name=='correct':
-                documentType.signal_workflow(cr, uid, docIDs, action_name)
-            elif action_name=='reject':
-                documentType.signal_workflow(cr, uid, docIDs, 'correct')
-            elif action_name=='release':
-                documentType.signal_workflow(cr, uid, docIDs, action_name)
-            elif action_name=='undermodify':
-                documentType.action_cancel(cr,uid,docIDs)
-            elif action_name=='suspend':
-                documentType.action_suspend(cr,uid,docIDs)
-            elif action_name=='reactivate':
-                documentType.signal_workflow(cr, uid, docIDs, 'release')
-#                 documentType.action_reactivate(cr,uid,docIDs)
-            elif action_name=='obsolete':
-                documentType.signal_workflow(cr, uid, docIDs, action_name)
+            if len(docIDs)>0:
+                if action_name=='confirm':
+                    documentType.signal_workflow(cr, uid, docIDs, action_name)
+                elif action_name=='transmit':
+                    documentType.signal_workflow(cr, uid, docIDs, 'confirm')
+                elif action_name=='draft':
+                    documentType.signal_workflow(cr, uid, docIDs, 'correct')
+                elif action_name=='correct':
+                    documentType.signal_workflow(cr, uid, docIDs, action_name)
+                elif action_name=='reject':
+                    documentType.signal_workflow(cr, uid, docIDs, 'correct')
+                elif action_name=='release':
+                    documentType.signal_workflow(cr, uid, docIDs, action_name)
+                elif action_name=='undermodify':
+                    documentType.action_cancel(cr,uid,docIDs)
+                elif action_name=='suspend':
+                    documentType.action_suspend(cr,uid,docIDs)
+                elif action_name=='reactivate':
+                    documentType.signal_workflow(cr, uid, docIDs, 'release')
+                elif action_name=='obsolete':
+                    documentType.signal_workflow(cr, uid, docIDs, action_name)
+        except Exception, ex:
+            logging.error(ex)
         return docIDs
-
+            
     def _iswritable(self, cr, user, oid):
         checkState=('draft')
         if not oid.engineering_writable:
@@ -490,9 +500,9 @@ class plm_component(models.Model):
         prodTmplType=self.pool.get('product.template')
         excludeStatuses=['released','undermodify','obsoleted']
         includeStatuses=['confirmed']
-        stopFlag,allIDs=self._get_recursive_parts(cr, uid, ids, excludeStatuses, includeStatuses)
-        if len(allIDs)<1 or stopFlag:
-            raise osv.except_osv(_('WorkFlow Error'), _("Part cannot be released."))
+        errors, allIDs = self._get_recursive_parts(cr, uid, ids, excludeStatuses, includeStatuses)
+        if len(allIDs) < 1 or len(errors) > 0:
+            raise UserError(errors)
         allProdObjs=self.browse(cr, uid, allIDs, context=context)
         for oldObject in allProdObjs:
             last_id=self._getbyrevision(cr, uid, oldObject.engineering_code, oldObject.engineering_revision-1)
@@ -510,7 +520,7 @@ class plm_component(models.Model):
                 tmpl_ids.append(currId.product_tmpl_id.id)
             full_ids.append(currId.product_tmpl_id.id)
         self.signal_workflow(cr, uid, tmpl_ids, 'release')
-        objId=self.pool.get('product.template').write(cr, uid, full_ids, defaults, context=context)
+        objId = self.pool.get('product.template').write(cr, uid, full_ids, defaults, context=context)
         if (objId):
             self.wf_message_post(cr, uid, allIDs, body=_('Status moved to: %s.' %(USEDIC_STATES[defaults['state']])))
         return objId
@@ -548,7 +558,9 @@ class plm_component(models.Model):
     def _action_to_perform(self, cr, uid, ids, status, action, docaction, defaults=[], excludeStatuses=[], includeStatuses=[], context=None):
         tmpl_ids=[]
         full_ids=[]
-        stopFlag,allIDs=self._get_recursive_parts(cr, uid, ids, excludeStatuses, includeStatuses)
+        userErrors, allIDs = self._get_recursive_parts(cr, uid, ids, excludeStatuses, includeStatuses)
+        if userErrors:
+            UserError(userErrors)
         self._action_ondocuments(cr,uid,allIDs,docaction)
         for currId in self.browse(cr,uid,allIDs,context=context):
             if not(currId.id in ids):
@@ -558,7 +570,7 @@ class plm_component(models.Model):
             self.signal_workflow(cr, uid, tmpl_ids, action)
         objId=self.pool.get('product.template').write(cr, uid, full_ids, defaults, context=context)
         if (objId):
-            self.wf_message_post(cr, uid, allIDs, body=_('Status moved to: %s.' %(USEDIC_STATES[defaults['state']])))
+            self.wf_message_post(cr, uid, allIDs, body=_('Status moved to: %s.' % (USEDIC_STATES[defaults['state']])))
         return objId
     
 #######################################################################################################################################33
@@ -595,23 +607,8 @@ class plm_component(models.Model):
             if isinstance(ex, psycopg2.IntegrityError):
                 raise ex
             raise ValidationError(_(" (%r). It has tried to create with values : (%r).") % (ex, vals))
-            
-    def write(self, cr, uid, ids, vals, context=None, check=True):
-#        checkState=('confirmed','released','undermodify','obsoleted')
-#        if check:
-#            for customObject in self.browse(cr, uid, ids, context=context):
-#                if not customObject.engineering_writable:
-##                    raise osv.except_osv(_('Edit Entity Error'), _("No changes are allowed on entity (%s)." %(customObject.name)))
-#                    return False
-#                if customObject.state in checkState:
-##                    raise osv.except_osv(_('Edit Entity Error'), _("The active state does not allow you to make save action on entity (%s)." %(customObject.name)))
-#                    return False
-#                if customObject.engineering_code == False:
-#                    vals['engineering_code'] = customObject.name
-#                    # Force copy engineering_code to name if void
-        return super(plm_component,self).write(cr, uid, ids, vals, context=context)  
 
-    def copy(self,cr,uid,oid,defaults={},context=None):
+    def copy(self, cr, uid, oid, defaults={}, context=None):
         """
             Overwrite the default copy method
         """

@@ -76,7 +76,7 @@ class component_one_custom_report(report_int):
         for component in components:
             documents.extend(component.linkeddocuments)
             idcs = componentType._getChildrenBom(
-                cr, uid, component, 0, context=context)
+                cr, uid, component, 0, 1, context=context)
             children = componentType.browse(cr, uid, idcs, context=context)
             for child in children:
                 documents.extend(child.linkeddocuments)
@@ -148,5 +148,6 @@ class component_custom_report_latest(report_int):
             return packDocuments(docRepository, documents, output)
         if context.get("raise_report_warning", True):
             raise UserError(_("No Document found"))
+        return False, False
 
 component_custom_report_latest('report.product.product.pdf.latest')

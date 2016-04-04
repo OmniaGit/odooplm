@@ -26,6 +26,7 @@ import random
 import string
 import base64
 import time
+import copy
 
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4,cm
@@ -40,11 +41,18 @@ except:
     logging.warning("PyPDF2 not installed ")
     from pyPdf import PdfFileWriter, PdfFileReader
 
+
+import openerp
+from openerp import api
 from openerp.report.render import render
 from openerp.report.interface import report_int
 from openerp.report import report_sxw
 from openerp import pooler
 
+from openerp import tools
+from openerp.osv import osv, fields
+from openerp.tools.translate import _
+from openerp.exceptions import UserError
 #constant
 FIRST_LEVEL=0
 BOM_SHOW_FIELDS=['Position','Code','Description','Quantity']
@@ -229,7 +237,7 @@ HEADER=report_sxw.report_sxw("report.spare.parts.header",
                             header='internal')
    
 BODY=report_sxw.report_sxw("report.spare.parts.body", 
-                           "mrp.bom", 
+                           "mrp.bom",
                            rml=body_file,
                            parser=bom_structure_one_sum_custom_report,
                            header='internal')
@@ -256,16 +264,16 @@ class component_spare_parts_report(report_int):
             buf = self.getFirstPage(cr, uid, [component.id], context)
             output.addPage((buf,''))
             self.getSparePartsPdfFile(cr, uid, context, component, output, componentType, bomType, recursion)
-        if output != None:
+        if output is not None:
             pdf_string = StringIO.StringIO()
             output.collector.write(pdf_string)
             self.obj = external_pdf(pdf_string.getvalue())
             self.obj.render()
             pdf_string.close()
             return (self.obj.pdf, 'pdf')
-        return (False, '')    
-   
-    def getSparePartsPdfFile(self, cr, uid, context, product, output, componentTemplate, bomTemplate,recursion):
+        return (False, '')
+
+    def getSparePartsPdfFile(self, cr, uid, context, product, output, componentTemplate, bomTemplate, recursion):
         packedObjs = []
         packedIds = []
         if product in self.processedObjs:
@@ -273,10 +281,6 @@ class component_spare_parts_report(report_int):
         bomIds = bomTemplate.search(cr, uid, [('product_id', '=', product.id), ('type', '=', 'spbom')])
         if len(bomIds) < 1:
             bomIds = bomTemplate.search(cr, uid, [('product_tmpl_id', '=', product.product_tmpl_id.id), ('type', '=', 'spbom')])
-#        if len(bomIds)<1:
-#            bomIds=bomTemplate.search(cr,uid,[('product_tmpl_id','=',product.id),('type','=','normal')])
-#        if len(bomIds)<1:
-#            bomIds=bomTemplate.search(cr,uid,[('product_tmpl_id','=',product.id),('type','=','ebom')])
         if len(bomIds) > 0:
             BomObject = bomTemplate.browse(cr, uid, bomIds[0], context=context)
             if BomObject:
@@ -287,13 +291,13 @@ class component_spare_parts_report(report_int):
                 if len(packedIds) > 0:
                     for pageStream in self.getPdfComponentLayout(cr, product):
                         output.addPage((pageStream, ''))
-                    stream, typerep = BODY.create(cr, uid, [BomObject.id], data={'report_type': u'pdf'}, context=context) 
+                    stream, typerep = BODY.create(cr, uid, [BomObject.id], data={'report_type': u'pdf'}, context=context)
                     pageStream = StringIO.StringIO()
                     pageStream.write(stream)
                     output.addPage((pageStream, ''))
                     if recursion:
                         for packedObj in packedObjs:
-                            if not packedObj in self.processedObjs:
+                            if packedObj not in self.processedObjs:
                                 self.getSparePartsPdfFile(cr, uid, context, packedObj, output, componentTemplate, bomTemplate, recursion)   
  
     def getPdfComponentLayout(self, cr, component):
@@ -307,16 +311,16 @@ class component_spare_parts_report(report_int):
                     value=getDocumentStream(docRepository,document)
                     if value:
                         ret.append(StringIO.StringIO(value))
-        return ret 
-    
+        return ret
+
     def getFirstPage(self,cr, uid, ids,context):
         strbuffer = StringIO.StringIO()
         reportStream,reportType=HEADER.create(cr, uid, ids, data={'report_type': u'pdf'},context=context)
         strbuffer.write(reportStream)
         return strbuffer
-          
 
 
 component_spare_parts_report('report.product.product.spare.parts.pdf')
+
 
 component_spare_parts_report('report.product.product.spare.parts.pdf.one')
