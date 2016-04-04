@@ -27,7 +27,7 @@ Created on Mar 30, 2016
 '''
 import logging
 from openerp import models, fields, api, SUPERUSER_ID, _, osv
-import tempfile
+from openerp import tools
 import base64
 import os
 import shutil
@@ -65,25 +65,31 @@ class PackAndGo(osv.osv.osv_memory):
         """
         objBom = self.env['mrp.bom']
         objProduct = self.env['product.product']
-        prodTmplId      = objBom.GetTmpltIdFromProductId(self.component_id.id)
-        bomId           = objBom._getbom(prodTmplId)
-        explosedBomIds  = objBom._explodebom(bomId, True)
-        relDatas        = [self.ids[0], explosedBomIds]
-        compIds         = objBom.getListIdsFromStructure(relDatas)
-        tmpSubFolder = tempfile.mkdtemp()
-        tmpSubSubFolder = os.path.join(tmpSubFolder, self.component_id.engineering_code)
+        prodTmplId = self.component_id.product_tmpl_id.id
+        bomId = objBom._getbom(prodTmplId)
+        explosedBomIds = objBom._explodebom(bomId, True)
+        relDatas = [self.component_id.id, explosedBomIds]
+        compIds = objBom.getListIdsFromStructure(relDatas)
+        tmpSubFolder = tools.config.get('document_path', os.path.join(tools.config['root_path'], 'filestore'))
+        logging.info("Pack Go sub folder is %r" % tmpSubFolder)
+        tmpSubSubFolder = os.path.join(tmpSubFolder, 'export', self.component_id.engineering_code)
         if not os.path.exists(tmpSubSubFolder):
             os.makedirs(tmpSubSubFolder)
         outDocPaths = []
         for compId in compIds:
             compBrws = objProduct.browse(compId)
             outDocPaths.extend(self.computeDocFiles(compBrws, tmpSubSubFolder))
-        outZipFile = os.path.join(tempfile.gettempdir(), self.component_id.engineering_code)
-        outZipFile = shutil.make_archive(outZipFile, 'zip', tmpSubFolder)
+        outZipFile = os.path.join(tmpSubFolder, 'export_zip', self.component_id.engineering_code)
+        outZipFile = shutil.make_archive(outZipFile, 'zip', tmpSubSubFolder)
         with open(outZipFile, 'rb') as f:
             fileContent = f.read()
             if fileContent:
                 self.datas = base64.encodestring(fileContent)
+        try:
+            shutil.rmtree(tmpSubSubFolder)
+            shutil.rmtree(fileContent)
+        except Exception, ex:
+            logging.error("Enable to delete file from export function %r %r" % (tmpSubSubFolder, unicode(ex)))
         fileName = os.path.basename(outZipFile)
         self.datas_fname = fileName
         self.name = fileName
@@ -91,7 +97,7 @@ class PackAndGo(osv.osv.osv_memory):
                 'view_type': 'form',
                 "view_mode": 'form',
                 'res_model': 'pack.and_go',
-                'target' : 'new',
+                'target': 'new',
                 'res_id': self.ids[0],
                 'type': 'ir.actions.act_window',
                 'domain': "[]"}
