@@ -68,8 +68,9 @@
                      	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
                      	help="Created today"/>
                	<separator orientation="vertical"/>
-            	<field name="name"/>
+            	<field name="engineering_code"/>
             	<field name="description"/>
+            	<field name="name"/>
                	<separator orientation="vertical"/>
                	<filter string="Confirmed" icon="terp-stock_symbol-selection" domain="[('state', '=', 'confirmed')]"/>
                	<filter string="Released" icon="terp-stock_symbol-selection" domain="[('state', 'in', ['released','undermodify'])]"/>
