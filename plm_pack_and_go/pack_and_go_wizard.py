@@ -50,20 +50,17 @@ class PackAndGo(osv.osv.osv_memory):
                 'Type', help="You can either upload a file from your computer or copy/paste an internet link to your file", required=True, change_default=True, default='binary'),
              
     def computeDocFiles(self, compBrws, tmpSubFolder, filestorePath=''):
-        outDocs = []
         for docBws in compBrws.linkeddocuments:
             if filestorePath:
                 fileName = os.path.join(filestorePath, self.env.cr.dbname, docBws.store_fname)
                 if os.path.exists(fileName):
                     outFilePath = os.path.join(tmpSubFolder, docBws.datas_fname)
                     shutil.copyfile(fileName, outFilePath)
-                    
-                    outDocs.append(outFilePath)
+        #Commented because now we take pure file instead read it from database
+        
 #             outFilePath = os.path.join(tmpSubFolder, docBws.datas_fname)
 #             with open(outFilePath, 'wb') as outDocFile:
 #                 outDocFile.write(docBws.datas)
-#             outDocs.append(outFilePath)
-        return outDocs
 
     @api.multi
     def action_export_zip(self):
@@ -82,10 +79,9 @@ class PackAndGo(osv.osv.osv_memory):
         tmpSubSubFolder = os.path.join(tmpSubFolder, 'export', self.component_id.engineering_code)
         if not os.path.exists(tmpSubSubFolder):
             os.makedirs(tmpSubSubFolder)
-        outDocPaths = []
         for compId in compIds:
             compBrws = objProduct.browse(compId)
-            outDocPaths.extend(self.computeDocFiles(compBrws, tmpSubSubFolder, tmpSubFolder))
+            self.computeDocFiles(compBrws, tmpSubSubFolder, tmpSubFolder)
         outZipFile = os.path.join(tmpSubFolder, 'export_zip', self.component_id.engineering_code)
         outZipFile = shutil.make_archive(outZipFile, 'zip', tmpSubSubFolder)
         with open(outZipFile, 'rb') as f:
@@ -108,9 +104,6 @@ class PackAndGo(osv.osv.osv_memory):
                 'res_id': self.ids[0],
                 'type': 'ir.actions.act_window',
                 'domain': "[]"}
-        
-#     def _data_get(self, cr, uid, ids, name, arg, context=None):
-#         return self.pool.get('plm.document')._data_get(cr, uid, ids, name, arg, context)
 
 PackAndGo()
 
