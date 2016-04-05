@@ -48,14 +48,21 @@ class PackAndGo(osv.osv.osv_memory):
     name            = fields.Char('Attachment Name', required=True, default=' '),
     type            = fields.Selection( [ ('url','URL'), ('binary','File'), ],
                 'Type', help="You can either upload a file from your computer or copy/paste an internet link to your file", required=True, change_default=True, default='binary'),
-                
-    def computeDocFiles(self, compBrws, tmpSubFolder):
+             
+    def computeDocFiles(self, compBrws, tmpSubFolder, filestorePath=''):
         outDocs = []
         for docBws in compBrws.linkeddocuments:
-            outFilePath = os.path.join(tmpSubFolder, docBws.datas_fname)
-            with open(outFilePath, 'wb') as outDocFile:
-                outDocFile.write(docBws.datas)
-            outDocs.append(outFilePath)
+            if filestorePath:
+                fileName = os.path.join(filestorePath, self.env.cr.dbname, docBws.store_fname)
+                if os.path.exists(fileName):
+                    outFilePath = os.path.join(tmpSubFolder, docBws.datas_fname)
+                    shutil.copyfile(fileName, outFilePath)
+                    
+                    outDocs.append(outFilePath)
+#             outFilePath = os.path.join(tmpSubFolder, docBws.datas_fname)
+#             with open(outFilePath, 'wb') as outDocFile:
+#                 outDocFile.write(docBws.datas)
+#             outDocs.append(outFilePath)
         return outDocs
 
     @api.multi
@@ -78,7 +85,7 @@ class PackAndGo(osv.osv.osv_memory):
         outDocPaths = []
         for compId in compIds:
             compBrws = objProduct.browse(compId)
-            outDocPaths.extend(self.computeDocFiles(compBrws, tmpSubSubFolder))
+            outDocPaths.extend(self.computeDocFiles(compBrws, tmpSubSubFolder, tmpSubFolder))
         outZipFile = os.path.join(tmpSubFolder, 'export_zip', self.component_id.engineering_code)
         outZipFile = shutil.make_archive(outZipFile, 'zip', tmpSubSubFolder)
         with open(outZipFile, 'rb') as f:
@@ -101,6 +108,10 @@ class PackAndGo(osv.osv.osv_memory):
                 'res_id': self.ids[0],
                 'type': 'ir.actions.act_window',
                 'domain': "[]"}
+        
+#     def _data_get(self, cr, uid, ids, name, arg, context=None):
+#         return self.pool.get('plm.document')._data_get(cr, uid, ids, name, arg, context)
+
 PackAndGo()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
