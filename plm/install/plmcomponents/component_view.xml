@@ -148,8 +148,11 @@
 	        			</group>		
 	    			</page>	
 	    			<page string="Linked Documents"> 
-	    				<group>	
-	               			<field name="linkeddocuments" 		attrs="{'readonly':[('state','in',['released','obsoleted'])]}" nolabel="1"/>
+	    				<group>
+	    					<button class="oe_inline oe_stat_button"   type="object" icon="fa-list-alt" name="action_rev_docs" string="Revision Rel Docs"></button>	
+	               		</group>
+	               		<group>
+	    					<field name="linkeddocuments" 		attrs="{'readonly':[('state','in',['released','obsoleted'])]}" nolabel="1"/>
         				</group>	
 	    			</page>	
 	    		</notebook> 
