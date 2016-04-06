@@ -1041,12 +1041,13 @@ class plm_backupdoc(models.Model):
     _name = 'plm.backupdoc'
     
     
-    userid          =   fields.Many2one ('res.users', _('Related User'), ondelete='cascade')
+    userid          =   fields.Many2one ('res.users', _('Related User'))
     createdate      =   fields.Datetime (_('Date Created'), readonly=True)
     existingfile    =   fields.Char     (_('Physical Document Location'),size=1024)
-    documentid      =   fields.Many2one ('plm.document', _('Related Document'), ondelete='cascade')
-    revisionid      =   fields.Integer  ( related="documentid.revisionid",string=_("Revision"),store=False)
-    state           =   fields.Selection( related="documentid.state",string=_("Status"),store=False)
+    documentid      =   fields.Many2one ('plm.document', _('Related Document'))
+    revisionid      =   fields.Integer  ( related="documentid.revisionid",  string=_("Revision"),       store=True)
+    state           =   fields.Selection( related="documentid.state",       string=_("Status"),         store=True)
+    document_name   =   fields.Char     ( related="documentid.name",        string=_("Stored Name"),    store=True)
     printout        =   fields.Binary   (_('Printout Content'))
     preview         =   fields.Binary   (_('Preview Content'))
     
