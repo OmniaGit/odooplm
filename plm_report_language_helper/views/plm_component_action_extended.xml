@@ -57,7 +57,7 @@
     	id="act_plm_print_boms"
      	name="Create Boms Report"
         res_model="plm.bomchoselanguage"
-        src_model="product.product"
+        src_model="mrp.bom"
         view_mode="form"
     	view_id="plm_bomchoselanguage_form"
         target="new"

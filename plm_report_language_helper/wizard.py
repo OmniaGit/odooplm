@@ -144,14 +144,14 @@ class plm_bomChoseLanguage(osv.osv.osv_memory):
                 raise UserError("Language not Installed")
             reportName = self.bom_type
             srv = openerp.report.interface.report_int._reports['report.' + reportName]
-            productProductId = self.env.context.get('active_id')
+            bomId = self.env.context.get('active_id')
             newContext = self.env.context.copy()
             newContext['lang'] = lang
-            stream, fileExtention = srv.create(self.env.cr, self.env.uid, [productProductId, ], {'raise_report_warning': False}, context=newContext)
+            stream, fileExtention = srv.create(self.env.cr, self.env.uid, [bomId, ], {'raise_report_warning': False}, context=newContext)
             self.datas = base64.encodestring(stream)
-            tProductProduct = self.env['product.product']
-            brwProduct = tProductProduct.browse(productProductId)
-            fileName = brwProduct.name + "_" + lang + "_bom." + fileExtention
+            tMrpBom = self.env['mrp.bom']
+            brwProduct = tMrpBom.browse(bomId)
+            fileName = brwProduct.product_id.name + "_" + lang + "_bom." + fileExtention
             self.datas_name = fileName
             return {'context': self.env.context,
                     'view_type': 'form',
