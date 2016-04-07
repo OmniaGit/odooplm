@@ -48,15 +48,19 @@ class PackAndGo(osv.osv.osv_memory):
     name            = fields.Char('Attachment Name', required=True, default=' '),
     type            = fields.Selection( [ ('url','URL'), ('binary','File'), ],
                 'Type', help="You can either upload a file from your computer or copy/paste an internet link to your file", required=True, change_default=True, default='binary'),
-                
-    def computeDocFiles(self, compBrws, tmpSubFolder):
-        outDocs = []
+             
+    def computeDocFiles(self, compBrws, tmpSubFolder, filestorePath=''):
         for docBws in compBrws.linkeddocuments:
-            outFilePath = os.path.join(tmpSubFolder, docBws.datas_fname)
-            with open(outFilePath, 'wb') as outDocFile:
-                outDocFile.write(docBws.datas)
-            outDocs.append(outFilePath)
-        return outDocs
+            if filestorePath:
+                fileName = os.path.join(filestorePath, self.env.cr.dbname, docBws.store_fname)
+                if os.path.exists(fileName):
+                    outFilePath = os.path.join(tmpSubFolder, docBws.datas_fname)
+                    shutil.copyfile(fileName, outFilePath)
+        #Commented because now we take pure file instead read it from database
+        
+#             outFilePath = os.path.join(tmpSubFolder, docBws.datas_fname)
+#             with open(outFilePath, 'wb') as outDocFile:
+#                 outDocFile.write(docBws.datas)
 
     @api.multi
     def action_export_zip(self):
@@ -75,10 +79,9 @@ class PackAndGo(osv.osv.osv_memory):
         tmpSubSubFolder = os.path.join(tmpSubFolder, 'export', self.component_id.engineering_code)
         if not os.path.exists(tmpSubSubFolder):
             os.makedirs(tmpSubSubFolder)
-        outDocPaths = []
         for compId in compIds:
             compBrws = objProduct.browse(compId)
-            outDocPaths.extend(self.computeDocFiles(compBrws, tmpSubSubFolder))
+            self.computeDocFiles(compBrws, tmpSubSubFolder, tmpSubFolder)
         outZipFile = os.path.join(tmpSubFolder, 'export_zip', self.component_id.engineering_code)
         outZipFile = shutil.make_archive(outZipFile, 'zip', tmpSubSubFolder)
         with open(outZipFile, 'rb') as f:
@@ -101,6 +104,7 @@ class PackAndGo(osv.osv.osv_memory):
                 'res_id': self.ids[0],
                 'type': 'ir.actions.act_window',
                 'domain': "[]"}
+
 PackAndGo()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

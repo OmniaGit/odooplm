@@ -676,6 +676,30 @@ class plm_component(models.Model):
                     values[fieldName] = readDict.get('value','')
         return values
 
+    @api.multi
+    def action_rev_docs(self):
+        '''
+            This function is called by the button on component view, section LinkedDocuments
+            Clicking that button all documents related to all revisions of this component are opened in a tree view
+        '''
+        docIds = []
+        for compBrws in self:
+            engineering_code = compBrws.engineering_code
+            if not engineering_code:
+                logging.warning("Part %s doesn't have and engineering code!" %(compBrws.name))
+                continue
+            compBrwsList = self.search([('engineering_code', '=' , engineering_code)])
+            for compBrws in compBrwsList:
+                docIds.extend(compBrws.linkeddocuments.ids)
+        return {
+            'domain': [('id', 'in', docIds)],
+            'name': _('Related documents'),
+            'view_type': 'form',
+            'view_mode': 'tree,form',
+            'res_model': 'plm.document',
+            'type': 'ir.actions.act_window',
+         }
+
 plm_component()
 
 class PlmComponentRevisionWizard(models.Model):
