@@ -55,6 +55,8 @@
                  <filter icon="terp-go-month" string="  Today  " separator="1"
                          domain="[('createdate','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('createdate','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
                          help="Checked-Out today"/>
+                <separator orientation="vertical"/>
+            	<field name="document_name"/>
                	<separator orientation="vertical"/>
             	<field name="documentid"/>
                	<separator orientation="vertical"/>
@@ -108,7 +110,7 @@
  
     <record id="restore_document_button_view" model="ir.ui.view">
         <field name="name">Restore Document</field>
-        <field name="model">plm.backupdoc</field>
+        <field name="model">plm.backupdoc_wizard</field>
         <field name="type">form</field>
         <field name="arch" type="xml">
         <form string="Restore Selected Document">
@@ -116,14 +118,14 @@
             <separator string="" colspan="4" />
             <group colspan="4" col="6">
             	<button icon="gtk-cancel" special="cancel" string="Cancel"/>
-            	<button icon="terp-gtk-go-back-rtl" special="cancel" string="Restore Entry" name="action_restore_document" type="object"/>
+            	<button icon="terp-gtk-go-back-rtl" string="Restore Entry" name="action_restore_document" type="object"/>
             </group>
         </form>
         </field>
     </record>
 
     <act_window name="Restore Document"
-        res_model="plm.backupdoc"
+        res_model="plm.backupdoc_wizard"
         src_model="plm.backupdoc"
         view_mode="form"
         view_id="restore_document_button_view"
