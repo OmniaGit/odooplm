@@ -81,7 +81,6 @@ Supported Editors :
             'install/plmdocuments/document_view.xml',
             'install/plmcheckedout/checkout_view.xml',
             'install/board_plm_view.xml',
-            'install/res_config_view.xml',
             
             'install/plmdocuments/backupdoc_view.xml',
             'install/plmdocrelations/document_relations.xml',
