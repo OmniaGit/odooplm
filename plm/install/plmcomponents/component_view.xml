@@ -32,7 +32,7 @@
         <field name="name">plm.base.component</field>
         <field name="model">product.product</field>
         <field name="type">tree</field>
-        <field name="priority" eval="15"/>
+        <field name="priority" eval="5"/>
         <field name="arch" type="xml">
             <tree string="Engineering Parts">
                 <field name="name" select="True"/>
