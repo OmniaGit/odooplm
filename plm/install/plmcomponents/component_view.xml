@@ -68,8 +68,9 @@
                      	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
                      	help="Created today"/>
                	<separator orientation="vertical"/>
-            	<field name="name"/>
+            	<field name="engineering_code"/>
             	<field name="description"/>
+            	<field name="name"/>
                	<separator orientation="vertical"/>
                	<filter string="Confirmed" icon="terp-stock_symbol-selection" domain="[('state', '=', 'confirmed')]"/>
                	<filter string="Released" icon="terp-stock_symbol-selection" domain="[('state', 'in', ['released','undermodify'])]"/>
@@ -123,11 +124,11 @@
            		</group>
 
 	    		<notebook colspan="6" col="6">
-	    			<page string="Technical Infos">
+	    			<page name="techincal_infos" string="Technical Infos">
 	            		<group colspan="4" col="4" name="TechnicalInfos">
 	           				<field name="tmp_material" 	attrs="{'readonly':[('state','in',['released','obsoleted'])]}" on_change="on_change_tmpmater(tmp_material)"/>
 	         				<field name="tmp_surface" 	attrs="{'readonly':[('state','in',['released','obsoleted'])]}" on_change="on_change_tmpsurface(tmp_surface)"/>
-	             			<field digits="(14, 3)"  	attrs="{'readonly':[('state','in',['released','obsoleted'])]}" name="weight"/>
+	             			<field name="weight"		attrs="{'readonly':[('state','in',['released','obsoleted'])]}" digits="(14, 3)"  	/>
 	             			<field name="uom_id" 		attrs="{'readonly':[('state','in',['released','obsoleted'])]}" on_change="onchange_uom(uom_id,uom_po_id)"/>
                             <field name="uom_po_id" 	attrs="{'readonly':[('state','in',['released','obsoleted'])]}" groups="base.group_extended"/>
 	         			</group>
@@ -147,12 +148,20 @@
 	        			</group>		
 	    			</page>	
 	    			<page string="Linked Documents"> 
-	    				<group>	
-	               			<field name="linkeddocuments" 		attrs="{'readonly':[('state','in',['released','obsoleted'])]}" nolabel="1"/>
+	    				<group>
+	    					<button class="oe_inline oe_stat_button"   type="object" icon="fa-list-alt" name="action_rev_docs" string="Revision Rel Docs"></button>	
+	               		</group>
+	               		<group>
+	    					<field name="linkeddocuments" 		attrs="{'readonly':[('state','in',['released','obsoleted'])]}" nolabel="1"/>
         				</group>	
 	    			</page>	
 	    		</notebook> 
 	    	</sheet> 	
+	    	<div class="oe_chatter">
+				<field name="message_follower_ids" widget="mail_followers" modifiers="{}"/>
+				<field name="message_ids" widget="mail_thread" modifiers="{}"/>
+			</div>
+			
             </form>
         </field>
     </record>

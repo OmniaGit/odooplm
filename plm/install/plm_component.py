@@ -23,7 +23,9 @@ import types
 import logging
 from datetime import datetime
 from openerp import models, fields, api, SUPERUSER_ID, _, osv
-from openerp.exceptions import ValidationError
+from openerp.exceptions import ValidationError, UserError
+from openerp.exceptions import UserError
+
 _logger = logging.getLogger(__name__)
 
 USED_STATES     =   [('draft','Draft'),
@@ -132,25 +134,24 @@ class plm_component(models.Model):
         if name:
             results=self.search(cr,uid,[('name','=',name)])
             if len(results) > 0:
-                raise osv.osv.except_osv(_('Update Part Warning'), _("Part %s already exists.\nClose with OK to reuse, with Cancel to discharge." %(name)))
+                raise UserError(_("Part %s already exists.\nClose with OK to reuse, with Cancel to discharge." %(name)))
             if not engineering_code:
                 return {'value': {'engineering_code': name}}            
         return {}
 
 ##  External methods
-    def Clone(self, cr, uid, oid, default=None, context=None):
+    def Clone(self, cr, uid, oid, context={}, defaults={}):
         """
             create a new revision of the component
         """
-        defaults={}
-        exitValues={}
-        newID=self.copy(cr,uid,oid,defaults,context)
-        if newID != None:
-            newEnt=self.browse(cr,uid,newID,context=context)
-            exitValues['_id']=newID
-            exitValues['name']=newEnt.name
-            exitValues['engineering_code']=newEnt.engineering_code
-            exitValues['engineering_revision']=newEnt.engineering_revision
+        exitValues = {}
+        newID = self.copy(cr, uid, oid, defaults, context)
+        if newID not in (None, False):
+            newEnt = self.browse(cr, uid, newID, context=context)
+            exitValues['_id'] = newID
+            exitValues['name'] = newEnt.name
+            exitValues['engineering_code'] = newEnt.engineering_code
+            exitValues['engineering_revision'] = newEnt.engineering_revision
         return exitValues
 
     def GetUpdated(self,cr,uid,vals,context=None):
@@ -160,7 +161,7 @@ class plm_component(models.Model):
         partData, attribNames = vals
         ids=self.GetLatestIds(cr, uid, partData, context)
         return self.read(cr, uid, list(set(ids)), attribNames)
-
+    
     def GetLatestIds(self,cr,uid,vals,context=None):
         """
             Get Last/Requested revision of given items (by name, revision, update time)
@@ -184,8 +185,8 @@ class plm_component(models.Model):
                 else:
                     ids.extend(self.search(cr,uid,[('engineering_code','=',partName),('engineering_revision','=',partRev)],context=context))
         return list(set(ids))
-    
-    def NewRevision(self,cr,uid,ids,context=None):
+
+    def NewRevision(self, cr, uid, ids, context=None):
         """
             create a new revision of current component
         """
@@ -212,14 +213,14 @@ class plm_component(models.Model):
                 # create a new "old revision" object
                 break
             break
-        return (newID, newIndex) 
+        return (newID, newIndex)
 
-    def SaveOrUpdate(self, cr, uid, vals, default=None, context=None):
+    def SaveOrUpdate(self, cr, uid, vals, context={}):
         """
             Save or Update Parts
         """
-        listedParts=[]
-        retValues=[]
+        listedParts = []
+        retValues = []
         for part in vals:
             hasSaved=False
             if part['engineering_code'] in listedParts:
@@ -230,7 +231,8 @@ class plm_component(models.Model):
                 continue
             existingID=self.search(cr,uid,[
                                            ('engineering_code','=',part['engineering_code'])
-                                          ,('engineering_revision','=',part['engineering_revision'])])
+                                          ,('engineering_revision','=',part['engineering_revision'])],
+                                   context=context)
             if not existingID:
                 existingID=self.create(cr,uid,part)
                 hasSaved=True
@@ -241,8 +243,8 @@ class plm_component(models.Model):
                 if (self.getUpdTime(objPart)<datetime.strptime(part['lastupdate'],'%Y-%m-%d %H:%M:%S')):
                     if self._iswritable(cr,uid,objPart):
                         del(part['lastupdate'])
-                        if not self.write(cr,uid,[existingID], part , context=context, check=True):
-                            raise osv.except_osv(_('Update Part Error'), _("Part %r cannot be updated" %(part['engineering_code'])))
+                        if not self.write(cr,uid,[existingID], part , context=context):
+                            raise UserError(_("Part %r cannot be updated" % (part['engineering_code'])))
                         hasSaved=True
             part['componentID']=existingID
             part['hasSaved']=hasSaved
@@ -250,13 +252,14 @@ class plm_component(models.Model):
             listedParts.append(part['engineering_code'])
         return retValues 
 
+
     def QueryLast(self, cr, uid, request=([],[]), default=None, context=None):
         """
             Query to return values based on columns selected.
         """
         objId=False
         expData=[]
-        queryFilter, columns = request        
+        queryFilter, columns = request
         if len(columns)<1:
             return expData
         if 'engineering_revision' in queryFilter:
@@ -271,7 +274,45 @@ class plm_component(models.Model):
                 expData=tmpData['datas']
         return expData
 
-##  Menu action Methods
+    def create_bom_from_ebom(self, cr, uid, objProductProductBrw, newBomType, context={}):
+        """
+            create a new bom starting from ebom
+        """
+        if newBomType not in ['normal', 'spbom']:
+            raise UserError(_("Could not convert source bom to %r" % newBomType))
+        product_template_id = objProductProductBrw.product_tmpl_id.id
+        bomType = self.pool.get('mrp.bom')
+        bomLType = self.pool.get('mrp.bom.line')
+        bomIds = bomType.search(cr, uid, [('product_tmpl_id', '=', product_template_id),
+                                          ('type', '=', newBomType)])
+        if bomIds:
+            for bom_line in bomType.browse(cr, uid, bomIds[0], context=context).bom_line_ids:
+                self.create_bom_from_ebom(cr, uid, bom_line.product_id, newBomType, context)
+        else:
+            idNewTypeBoms = bomType.search(cr, uid, [('product_tmpl_id', '=', product_template_id),
+                                                     ('type', '=', 'ebom')])
+            if not idNewTypeBoms:
+                UserError(_("No Enginnering bom provided"))
+            for newBomId in idNewTypeBoms:
+                newidBom = bomType.copy(cr, uid, newBomId, {}, context)
+                bomType.write(cr, uid, [newidBom], {'name': objProductProductBrw.name,
+                                                    'product_tmpl_id': product_template_id,
+                                                    'type': newBomType}, check=False, context=None)
+                oidBom = bomType.browse(cr, uid, newidBom, context=context)
+                ok_rows = self._summarizeBom(cr, uid, oidBom.bom_line_ids)
+                # remove not summarised lines
+                for bom_line in list(set(oidBom.bom_line_ids) ^ set(ok_rows)):
+                    bomLType.unlink(cr, uid, [bom_line.id], context=None)
+                # update the quantity with the summarised values
+                for bom_line in ok_rows:
+                    bomLType.write(cr, uid, [bom_line.id], {'type': newBomType,
+                                                            'source_id': False,
+                                                            'product_qty': bom_line.product_qty, }, context=None)
+                    self.create_bom_from_ebom(cr, uid, bom_line.product_id, newBomType, context)
+                self.wf_message_post(cr, uid, [objProductProductBrw.id], body=_('Created %r' % newBomType))
+                break
+
+    #  Menu action Methods
     def _create_normalBom(self, cr, uid, idd, context=None):
         """
             Create a new Normal Bom (recursive on all EBom children)
@@ -282,12 +323,15 @@ class plm_component(models.Model):
         checkObj=self.browse(cr, uid, idd, context)
         if not checkObj:
             return False
-        bomType=self.pool.get('mrp.bom')
-        bomLType=self.pool.get('mrp.bom.line')
-        objBoms=bomType.search(cr, uid, [('product_tmpl_id','=',checkObj.product_tmpl_id.id),('type','=','normal')])
-        idBoms=bomType.search(cr, uid, [('product_tmpl_id','=',checkObj.product_tmpl_id.id),('type','=','ebom')])
+        bomType = self.pool.get('mrp.bom')
+        bomLType = self.pool.get('mrp.bom.line')
+        product_template_id = checkObj.product_tmpl_id.id
+        objBoms = bomType.search(cr, uid, [('product_tmpl_id','=',product_template_id),('type','=','normal')])
+        idBoms = bomType.search(cr, uid, [('product_tmpl_id','=',product_template_id),('type','=','ebom')])
 
         if not objBoms:
+            idBoms = bomType.search(cr, uid, [('product_tmpl_id', '=', product_template_id),
+                                              ('type', '=', 'ebom')])
             if idBoms:
                 self.processedIds.append(idd)
                 newidBom=bomType.copy(cr, uid, idBoms[0], defaults, context)
@@ -301,49 +345,54 @@ class plm_component(models.Model):
                         bomLType.write(cr,uid,[bom_line.id],{'type':'normal','source_id':False,'name':bom_line.product_id.name,'product_qty':bom_line.product_qty,},context=None)
                         self._create_normalBom(cr, uid, bom_line.product_id.id, context)
         else:
-            for bom_line in bomType.browse(cr,uid,objBoms[0],context=context).bom_line_ids:
+            for bom_line in bomType.browse(cr, uid, objBoms[0], context=context).bom_line_ids:
                 self._create_normalBom(cr, uid, bom_line.product_id.id, context)
         return False
 
     def _summarizeBom(self, cr, uid, datarows):
-        dic={}
+        dic = {}
         for datarow in datarows:
-            key=datarow.product_id.name
+            key = str(datarow.product_id.id)
             if key in dic:
-                dic[key].product_qty=float(dic[key].product_qty)+float(datarow.product_qty)
+                dic[key].product_qty = float(dic[key].product_qty) + float(datarow.product_qty)
             else:
-                dic[key]=datarow
-        retd=dic.values()
+                dic[key] = datarow
+        retd = dic.values()
         return retd
 
-##  Work Flow Internal Methods
+#  Work Flow Internal Methods
     def _get_recursive_parts(self, cr, uid, ids, excludeStatuses, includeStatuses):
         """
            Get all ids related to current one as children
         """
-        stopFlag=False
-        tobeReleasedIDs=[]
-        if not(type(ids) is types.ListType):
-            ids=[ids]
+        errors = []
+        tobeReleasedIDs = []
+        if not isinstance(ids, (list, tuple)):
+            ids = [ids]
         tobeReleasedIDs.extend(ids)
-        children=[]
+        children = []
         for oic in self.browse(cr, uid, ids, context=None):
-            children=self.browse(cr, uid, self._getChildrenBom(cr, uid, oic, 1), context=None)
+            children = self.browse(cr, uid, self._getChildrenBom(cr, uid, oic, 1))
             for child in children:
-                if (not child.state in excludeStatuses) and (not child.state in includeStatuses):
-                    stopFlag=True
-                    break
+                if (child.state not in excludeStatuses) and (child.state not in includeStatuses):
+                    errors.append(_("Product code: %r revision %r ") & (child.engineering_code, child.engineering_revision))
+                    continue
                 if child.state in includeStatuses:
-                    if not child.id in tobeReleasedIDs:
+                    if child.id not in tobeReleasedIDs:
                         tobeReleasedIDs.append(child.id)
-        return (stopFlag,list(set(tobeReleasedIDs)))
-    
+        msg = ''
+        if errors:
+            msg = _("Unable to perform workFlow action due")
+            for subMsg in errors:
+                msg = "\n" + subMsg
+        return (msg, list(set(tobeReleasedIDs)))
+
     def action_create_normalBom_WF(self, cr, uid, ids, context=None):
         """
             Create a new Normal Bom if doesn't exist (action callable from code)
         """
         for idd in ids:
-            self.processedIds=[]
+            self.processedIds = []
             self._create_normalBom(cr, uid, idd, context)
         self.wf_message_post(cr, uid, ids, body=_('Created Normal Bom.'))
         return False
@@ -352,42 +401,46 @@ class plm_component(models.Model):
         """
             move workflow on documents having the same state of component 
         """
-        docIDs=[]
-        documentType=self.pool.get('plm.document')
-        for oldObject in self.browse(cr, uid, ids, context=context):
-            if (action_name!='transmit') and (action_name!='reject') and (action_name!='release'):
-                check_state=oldObject.state
-            else:
-                check_state='confirmed'
-            for document in oldObject.linkeddocuments:
-                if document.state == check_state:
-                    if not document.id in docIDs:
-                        if documentType.ischecked_in(cr,uid,document.id,context):
+        docIDs = []
+        try:
+            documentType=self.pool.get('plm.document')
+            for oldObject in self.browse(cr, uid, ids, context=context):
+                if (action_name!='transmit') and (action_name!='reject') and (action_name!='release'):
+                    check_state=oldObject.state
+                else:
+                    check_state='confirmed'
+                for document in oldObject.linkeddocuments:
+                    if document.state == check_state:
+                        if document.is_checkout:
+                            logging.warning("Unable to perform workflow operation for document %r" % document.id)
+                            continue
+                        if document.id not in docIDs:
                             docIDs.append(document.id)
-        if len(docIDs)>0:
-            if action_name=='confirm':
-                documentType.signal_workflow(cr, uid, docIDs, action_name)
-            elif action_name=='transmit':
-                documentType.signal_workflow(cr, uid, docIDs, 'confirm')
-            elif action_name=='draft':
-                documentType.signal_workflow(cr, uid, docIDs, 'correct')
-            elif action_name=='correct':
-                documentType.signal_workflow(cr, uid, docIDs, action_name)
-            elif action_name=='reject':
-                documentType.signal_workflow(cr, uid, docIDs, 'correct')
-            elif action_name=='release':
-                documentType.signal_workflow(cr, uid, docIDs, action_name)
-            elif action_name=='undermodify':
-                documentType.action_cancel(cr,uid,docIDs)
-            elif action_name=='suspend':
-                documentType.action_suspend(cr,uid,docIDs)
-            elif action_name=='reactivate':
-                documentType.signal_workflow(cr, uid, docIDs, 'release')
-#                 documentType.action_reactivate(cr,uid,docIDs)
-            elif action_name=='obsolete':
-                documentType.signal_workflow(cr, uid, docIDs, action_name)
+            if len(docIDs)>0:
+                if action_name=='confirm':
+                    documentType.signal_workflow(cr, uid, docIDs, action_name)
+                elif action_name=='transmit':
+                    documentType.signal_workflow(cr, uid, docIDs, 'confirm')
+                elif action_name=='draft':
+                    documentType.signal_workflow(cr, uid, docIDs, 'correct')
+                elif action_name=='correct':
+                    documentType.signal_workflow(cr, uid, docIDs, action_name)
+                elif action_name=='reject':
+                    documentType.signal_workflow(cr, uid, docIDs, 'correct')
+                elif action_name=='release':
+                    documentType.signal_workflow(cr, uid, docIDs, action_name)
+                elif action_name=='undermodify':
+                    documentType.action_cancel(cr,uid,docIDs)
+                elif action_name=='suspend':
+                    documentType.action_suspend(cr,uid,docIDs)
+                elif action_name=='reactivate':
+                    documentType.signal_workflow(cr, uid, docIDs, 'release')
+                elif action_name=='obsolete':
+                    documentType.signal_workflow(cr, uid, docIDs, action_name)
+        except Exception, ex:
+            logging.error(ex)
         return docIDs
-
+            
     def _iswritable(self, cr, user, oid):
         checkState=('draft')
         if not oid.engineering_writable:
@@ -447,9 +500,9 @@ class plm_component(models.Model):
         prodTmplType=self.pool.get('product.template')
         excludeStatuses=['released','undermodify','obsoleted']
         includeStatuses=['confirmed']
-        stopFlag,allIDs=self._get_recursive_parts(cr, uid, ids, excludeStatuses, includeStatuses)
-        if len(allIDs)<1 or stopFlag:
-            raise osv.except_osv(_('WorkFlow Error'), _("Part cannot be released."))
+        errors, allIDs = self._get_recursive_parts(cr, uid, ids, excludeStatuses, includeStatuses)
+        if len(allIDs) < 1 or len(errors) > 0:
+            raise UserError(errors)
         allProdObjs=self.browse(cr, uid, allIDs, context=context)
         for oldObject in allProdObjs:
             last_id=self._getbyrevision(cr, uid, oldObject.engineering_code, oldObject.engineering_revision-1)
@@ -467,7 +520,7 @@ class plm_component(models.Model):
                 tmpl_ids.append(currId.product_tmpl_id.id)
             full_ids.append(currId.product_tmpl_id.id)
         self.signal_workflow(cr, uid, tmpl_ids, 'release')
-        objId=self.pool.get('product.template').write(cr, uid, full_ids, defaults, context=context)
+        objId = self.pool.get('product.template').write(cr, uid, full_ids, defaults, context=context)
         if (objId):
             self.wf_message_post(cr, uid, allIDs, body=_('Status moved to: %s.' %(USEDIC_STATES[defaults['state']])))
         return objId
@@ -505,7 +558,9 @@ class plm_component(models.Model):
     def _action_to_perform(self, cr, uid, ids, status, action, docaction, defaults=[], excludeStatuses=[], includeStatuses=[], context=None):
         tmpl_ids=[]
         full_ids=[]
-        stopFlag,allIDs=self._get_recursive_parts(cr, uid, ids, excludeStatuses, includeStatuses)
+        userErrors, allIDs = self._get_recursive_parts(cr, uid, ids, excludeStatuses, includeStatuses)
+        if userErrors:
+            UserError(userErrors)
         self._action_ondocuments(cr,uid,allIDs,docaction)
         for currId in self.browse(cr,uid,allIDs,context=context):
             if not(currId.id in ids):
@@ -515,7 +570,7 @@ class plm_component(models.Model):
             self.signal_workflow(cr, uid, tmpl_ids, action)
         objId=self.pool.get('product.template').write(cr, uid, full_ids, defaults, context=context)
         if (objId):
-            self.wf_message_post(cr, uid, allIDs, body=_('Status moved to: %s.' %(USEDIC_STATES[defaults['state']])))
+            self.wf_message_post(cr, uid, allIDs, body=_('Status moved to: %s.' % (USEDIC_STATES[defaults['state']])))
         return objId
     
 #######################################################################################################################################33
@@ -528,48 +583,32 @@ class plm_component(models.Model):
         if ('name' in vals):
             if not vals['name']:
                 return False
-            existingIDs=self.search(cr, uid, [('name','=',vals['name'])], order = 'engineering_revision', context=context)
+            existingIDs = self.search(cr, uid, [('name', '=', vals['name'])], order='engineering_revision', context=context)
             if 'engineering_code' in vals:
                 if vals['engineering_code'] == False:
                     vals['engineering_code'] = vals['name']
             else:
                 vals['engineering_code'] = vals['name']
-    
             if existingIDs:
-                existingID=existingIDs[len(existingIDs)-1]
+                existingID = existingIDs[len(existingIDs) - 1]
                 if ('engineering_revision' in vals):
-                    existObj=self.browse(cr,uid,existingID,context=context)
+                    existObj = self.browse(cr, uid, existingID, context=context)
                     if existObj:
                         if vals['engineering_revision'] > existObj.engineering_revision:
-                            vals['name']=existObj.name
+                            vals['name'] = existObj.name
                         else:
                             return existingID
                 else:
                     return existingID
         try:
-            return super(plm_component,self).create(cr, uid, vals, context=context)
-        except Exception ,ex:
+            return super(plm_component, self).create(cr, uid, vals, context=context)
+        except Exception, ex:
             import psycopg2
-            if isinstance(ex,psycopg2.IntegrityError):
+            if isinstance(ex, psycopg2.IntegrityError):
                 raise ex
-            raise Exception(" (%r). It has tried to create with values : (%r)."%(ex,vals))
+            raise ValidationError(_(" (%r). It has tried to create with values : (%r).") % (ex, vals))
 
-    def write(self, cr, uid, ids, vals, context=None, check=True):
-#        checkState=('confirmed','released','undermodify','obsoleted')
-#        if check:
-#            for customObject in self.browse(cr, uid, ids, context=context):
-#                if not customObject.engineering_writable:
-##                    raise osv.except_osv(_('Edit Entity Error'), _("No changes are allowed on entity (%s)." %(customObject.name)))
-#                    return False
-#                if customObject.state in checkState:
-##                    raise osv.except_osv(_('Edit Entity Error'), _("The active state does not allow you to make save action on entity (%s)." %(customObject.name)))
-#                    return False
-#                if customObject.engineering_code == False:
-#                    vals['engineering_code'] = customObject.name
-#                    # Force copy engineering_code to name if void
-        return super(plm_component,self).write(cr, uid, ids, vals, context=context)  
-
-    def copy(self,cr,uid,oid,defaults={},context=None):
+    def copy(self, cr, uid, oid, defaults={}, context=None):
         """
             Overwrite the default copy method
         """
@@ -636,5 +675,72 @@ class plm_component(models.Model):
                     readDict = translationObj.read(cr, uid, resIds[0], ['value'])
                     values[fieldName] = readDict.get('value','')
         return values
-    
+
+    @api.multi
+    def action_rev_docs(self):
+        '''
+            This function is called by the button on component view, section LinkedDocuments
+            Clicking that button all documents related to all revisions of this component are opened in a tree view
+        '''
+        docIds = []
+        for compBrws in self:
+            engineering_code = compBrws.engineering_code
+            if not engineering_code:
+                logging.warning("Part %s doesn't have and engineering code!" %(compBrws.name))
+                continue
+            compBrwsList = self.search([('engineering_code', '=' , engineering_code)])
+            for compBrws in compBrwsList:
+                docIds.extend(compBrws.linkeddocuments.ids)
+        return {
+            'domain': [('id', 'in', docIds)],
+            'name': _('Related documents'),
+            'view_type': 'form',
+            'view_mode': 'tree,form',
+            'res_model': 'plm.document',
+            'type': 'ir.actions.act_window',
+         }
+
 plm_component()
+
+class PlmComponentRevisionWizard(models.Model):
+    _name = 'product.rev_wizard'
+    
+    @api.multi
+    def action_create_new_revision_by_server(self):
+        def stateAllows(brwsObj, objType):
+            if brwsObj.state != 'released':
+                logging.error('[action_create_new_revision_by_server:stateAllows] Cannot revise obj %s, Id: %r because state is %r' % (objType, brwsObj.id, brwsObj.state))
+                raise UserError(_("%s cannot be revised because the state isn't released!" % (objType)))
+            return True
+        product_id = self.env.context.get('default_product_id', False)
+        if not product_id:
+            logging.error('[action_create_new_revision_by_server] Cannot revise because product_id is %r' % (product_id))
+            raise UserError(_('Current component cannot be revised!'))
+        prodProdEnv = self.env['product.product']
+        prodBrws = prodProdEnv.browse(product_id)
+        if stateAllows(prodBrws, 'Component'):
+            revRes = prodBrws.NewRevision()
+            newID, newIndex = revRes
+            newIndex
+            if not newID:
+                logging.error('[action_create_new_revision_by_server] newID: %r' % (newID))
+                raise UserError(_('Something wrong happens during new component revision process.'))
+            createdDocIds = []
+            for docBrws in prodBrws.linkeddocuments:
+                if stateAllows(docBrws, 'Document'):
+                    resDoc = docBrws.NewRevision()
+                    newDocID, newDocIndex = resDoc
+                    newDocIndex
+                    if not newDocID:
+                        logging.error('[action_create_new_revision_by_server] newDocID: %r' % (newDocID))
+                        raise UserError(_('Something wrong happens during new document revision process.'))
+                    createdDocIds.append(newDocID)
+            prodProdEnv.browse(newID).linkeddocuments = createdDocIds
+            return {'name': _('Revised Product'),
+                    'view_type': 'tree,form',
+                    "view_mode": 'form',
+                    'res_model': 'product.product',
+                    'res_id': newID,
+                    'type': 'ir.actions.act_window'}
+    
+PlmComponentRevisionWizard()

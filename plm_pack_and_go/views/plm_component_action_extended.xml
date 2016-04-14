@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		<record id="act_plm_pack_and_go" model="ir.ui.view">
+        <field name="name">pack.and_go.form</field>
+        <field name="model">pack.and_go</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+        <form string="Export Form">
+        	<group>
+        		<field name="component_id" />
+        		<field name="datas_fname" readonly="1"/>
+	            <field name="datas" readonly="1" filename="datas_fname"/>
+			</group>    
+            <separator string=""/>
+            <group colspan="4" col="4">
+            	<button icon="gtk-cancel" special="cancel" string="Cancel"/>
+            	<button icon="terp-gtk-go-back-rtl" string="Create zip archive" name="action_export_zip" type="object"/>
+            </group>
+        </form>
+        </field>
+    </record>
+
+    <act_window name="Pack and Go"
+        res_model="pack.and_go" 
+        src_model="product.product"
+        view_mode="form"
+        view_id="act_plm_pack_and_go"
+        target="new"
+        key2="client_action_multi"
+        id="act_pack_and_go_action" 
+        	/>
+	</data>
+</openerp>

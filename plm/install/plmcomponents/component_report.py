@@ -30,18 +30,11 @@ class report_plm_component(models.Model):
     _name = "report.plm_component"
     _description = "Report Component"
     _auto = False
-            
-
     count_component_draft       =   fields.Integer(_('Draft'), readonly=True)
     count_component_confirmed   =   fields.Integer(_('Confirmed'), readonly=True)
     count_component_released    =   fields.Integer(_('Released'), readonly=True)
     count_component_modified    =   fields.Integer(_('Under Modify'), readonly=True)
     count_component_obsoleted   =   fields.Integer(_('Obsoleted'), readonly=True)
-
-#         'rate_component_draft': fields.integer('Percent of Parts', readonly=True),
-#         'rate_component_released': fields.integer('Percent of Parts', readonly=True),
-#         'rate_component_modified': fields.integer('Percent of Parts', readonly=True),
-
 
     def init(self, cr):
         tools.drop_view_if_exists(cr, 'report_plm_component')
@@ -56,50 +49,5 @@ class report_plm_component(models.Model):
                     (SELECT count(*) FROM product_template WHERE state = 'obsoleted') AS count_component_obsoleted
              )
         """)
- 
-#     def _get_status_count(self,  ids, field_names, arg, context=None):
-#         objType = self.env['product.product']
-#         domains = {
-#             'count_component_draft': [('state', '=', 'draft')],
-#             'count_component_modified': [('state', '=', 'undermodify')],
-#             'count_component_released': [('state', '=', 'released')],
-#         }
-#         result = {}
-#         alldata = objType.search( [('state', 'not in', ('false', 'cancel'))])
-#         count_all=len(alldata)
-#         for field in domains:
-#             data = objType.search( domains[field], context=context)
-#             result[field] = len(data)
-# 
-#         for field in domains:
-#             if field == 'count_component_draft':
-#                 if result['count_component_draft']:
-#                     result['rate_component_draft'] = result['count_component_draft'] * 100 / count_all
-#                 else:
-#                     result['rate_component_draft'] = 0
-#             if field == 'count_component_modified':
-#                 if result['count_component_modified'] and result['count_component_released']:
-#                     result['count_component_released']=result['count_component_released']+result['count_component_modified']
-#                 else:
-#                     result['count_component_released'] = 0
-#             if field == 'count_component_modified':
-#                 if result['count_component_modified'] and result['count_component_released']:
-#                     result['rate_component_modified'] = result['count_component_modified'] * 100 / result['count_component_released']
-#                 else:
-#                     result['rate_component_modified'] = 0
-# 
-#         return result
-
-#     _columns = {
-#         'count_component_draft': fields.function(_get_status_count, type='integer', multi='_get_status_count'),
-#         'count_component_all': fields.function(_get_status_count, type='integer', multi='_get_status_count'),
-#         'count_component_released': fields.function(_get_status_count, type='integer', multi='_get_status_count'),
-#         'count_component_modified': fields.function(_get_status_count, type='integer', multi='_get_status_count'),
-# 
-#         'rate_component_draft': fields.function(_get_status_count, type='integer', multi='_get_status_count'),
-#         'rate_component_released': fields.function(_get_status_count, type='integer', multi='_get_status_count'),
-#         'rate_component_modified': fields.function(_get_status_count, type='integer', multi='_get_status_count'),
-#      }
-
 
 report_plm_component()

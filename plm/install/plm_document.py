@@ -441,7 +441,7 @@ class plm_document(models.Model):
             document['hasSaved']=hasSaved
             document['hasUpdated']=hasUpdated
             retValues.append(document)
-        return retValues 
+        return retValues
 
     def RegMessage(self, cr, uid, request, default=None, context=None):
         """
@@ -858,21 +858,16 @@ class plm_document(models.Model):
         """
             Extract documents related to current one(s) (layouts, referred models, etc.)
         """
-        related_documents=[]
-        listed_documents=[]
-        read_docs=[]
+        related_documents = []
+        listed_documents = []
+        read_docs = []
         for oid in ids:
-            kinds=['RfTree','LyTree']   # Get relations due to referred models
+            kinds = ['RfTree', 'LyTree']   # Get relations due to referred models
             read_docs.extend(self._relateddocs(cr, uid, oid, kinds, listed_documents, False))
             read_docs.extend(self._relatedbydocs(cr, uid, oid, kinds, listed_documents, False))
-
-#             kind='LyTree'   # Get relations due to layout connected
-#             read_docs.extend(self._relateddocs(cr, uid, oid, kind, listed_documents, False))
-#             read_docs.extend(self._relatedbydocs(cr, uid, oid, kind, listed_documents, False))
-       
-        documents=self.browse(cr, uid, read_docs, context=context)
+        documents = self.browse(cr, uid, read_docs, context=context)
         for document in documents:
-            related_documents.append([document.id,document.name,''])    # The third parameter is set as '' to compatibility rule
+            related_documents.append([document.id, document.name, document.preview])
         return related_documents
 
     def getServerTime(self, cr, uid, oid, default=None, context=None):
@@ -914,6 +909,14 @@ class plm_document(models.Model):
             return(objDoc.documentid.name,objDoc.documentid.revisionid,self.getUserSign(cr,objDoc.userid.id,1),objDoc.hostname)
         return False
 
+    def _file_delete(self, cr, uid, fname):
+        '''
+            Delete file only if is not saved on plm.backupdoc
+        '''
+        backupDocIds = self.pool.get('plm.backupdoc').search(cr, uid, [('existingfile', '=', fname)])
+        if not backupDocIds:
+            return super(plm_document, self)._file_delete(cr, uid, fname)
+
 plm_document()
 
 
@@ -944,8 +947,6 @@ class plm_checkout(models.Model):
             docRelType.write(cr, uid, ids, values)
 
     def create(self, cr, uid, vals, context=None):
-        if context!=None and context!={}:
-            return False
         documentType=self.pool.get('plm.document')
         docID=documentType.browse(cr, uid, vals['documentid'])
         values={'writable':True,}
@@ -957,20 +958,8 @@ class plm_checkout(models.Model):
         newID = super(plm_checkout,self).create(cr, uid, vals, context=context)   
         documentType.wf_message_post(cr, uid, [docID.id], body=_('Checked-Out'))
         return newID
-         
+
     def unlink(self, cr, uid, ids, context=None):
-        if context!=None and context!={}:
-            res = False
-            groupType=self.pool.get('res.groups')
-            for gId in groupType.search(cr,uid,[('name','=','PLM / Administrator')],context=context):
-                for user in groupType.browse(cr, uid, gId, context).users:
-                    if uid == user.id or uid==1:
-                        res = True
-                        break
-            if not res:
-                logging.warning("unlink : Unable to Check-In the required document.\n You aren't authorized in this context.")
-                raise osv.except_osv(_('Check-In Error'), _("Unable to Check-In the required document.\n You aren't authorized in this context."))
-                return False
         documentType=self.pool.get('plm.document')
         checkObjs=self.browse(cr, uid, ids, context=context)
         docids=[]
@@ -1060,12 +1049,13 @@ class plm_backupdoc(models.Model):
     _name = 'plm.backupdoc'
     
     
-    userid          =   fields.Many2one ('res.users', _('Related User'), ondelete='cascade')
+    userid          =   fields.Many2one ('res.users', _('Related User'))
     createdate      =   fields.Datetime (_('Date Created'), readonly=True)
     existingfile    =   fields.Char     (_('Physical Document Location'),size=1024)
-    documentid      =   fields.Many2one ('plm.document', _('Related Document'), ondelete='cascade')
-    revisionid      =   fields.Integer  ( related="documentid.revisionid",string=_("Revision"),store=False)
-    state           =   fields.Selection( related="documentid.state",string=_("Status"),store=False)
+    documentid      =   fields.Many2one ('plm.document', _('Related Document'))
+    revisionid      =   fields.Integer  ( related="documentid.revisionid",  string=_("Revision"),       store=True)
+    state           =   fields.Selection( related="documentid.state",       string=_("Status"),         store=True)
+    document_name   =   fields.Char     ( related="documentid.name",        string=_("Stored Name"),    store=True)
     printout        =   fields.Binary   (_('Printout Content'))
     preview         =   fields.Binary   (_('Preview Content'))
     
@@ -1101,26 +1091,62 @@ class plm_backupdoc(models.Model):
         else:
             return False
 
-    def action_restore_document(self, cr, uid, ids, context=None):
-        committed=False
-        if context!=None and context!={}:
-            if uid!=1:
-                logging.warning("unlink : Unable to remove the required documents.\n You aren't authorized in this context.")
-                raise osv.except_osv(_('Backup Error'), _("Unable to remove the required document.\n You aren't authorized in this context."))
-                return False
-        documentType=self.pool.get('plm.document')
-        checkObj=self.browse(cr, uid, context['active_id'])
-        objDoc=documentType.browse(cr, uid, checkObj.documentid.id)
-        if objDoc.state=='draft' and documentType.ischecked_in(cr, uid, ids, context):
-            if checkObj.existingfile != objDoc.store_fname:
-                committed=documentType.write(cr, uid, [objDoc.id], {'store_fname':checkObj.existingfile,'printout':checkObj.printout,'preview':checkObj.preview,}, context, check=False)
-                if  committed:
-                    self.wf_message_post(cr, uid, [objDoc.id], body=_('Document restored from backup.'))
-                else:
-                    logging.warning("action_restore_document : Unable to restore the document ("+str(checkObj.documentid.name)+"-"+str(checkObj.documentid.revisionid)+") from backup set.")
-                    raise osv.except_osv(_('Check-In Error'), _("Unable to restore the document ("+str(checkObj.documentid.name)+"-"+str(checkObj.documentid.revisionid)+") from backup set.\n Check if it's checked-in, before to proceed."))
-        self.unlink(cr, uid, ids, context)
-        return committed
-
 plm_backupdoc()
 
+
+class BackupDocWizard(osv.osv.osv_memory):
+    _name = 'plm.backupdoc_wizard'
+    
+    @api.multi
+    def action_restore_document(self):
+        #return True
+    
+        # TODO: To Test!!!        Restore datas field to allow file download
+        backupDocIds = self.env.context.get('active_ids', [])
+        backupDocObj = self.env['plm.backupdoc']
+        plmDocObj = self.env['plm.document']
+        for backupDocBrws in backupDocObj.browse(backupDocIds):
+            relDocBrws = backupDocBrws.documentid
+            values = {
+                      'printout' : backupDocBrws.printout,
+                      'state' : 'draft',
+                      'revisionid' : backupDocBrws.revisionid,
+                      'name' : backupDocBrws.document_name,
+                      'store_fname' : backupDocBrws.existingfile,
+                      }
+            if relDocBrws:
+                return relDocBrws.write(values)
+            else:
+                documentId = plmDocObj.create(values)
+                # TODO: Needs to be related to component?
+                if documentId:
+                    return {'name': _('Document'),
+                            'view_type': 'form',
+                            "view_mode": 'form, tree',
+                            'res_model': 'plm.document',
+                            'res_id': documentId,
+                            'type': 'ir.actions.act_window',
+                            'domain': "[]"}
+        return True   
+            
+#         committed=False
+#         if context!=None and context!={}:
+#             if uid!=1:
+#                 logging.warning("unlink : Unable to remove the required documents.\n You aren't authorized in this context.")
+#                 raise osv.except_osv(_('Backup Error'), _("Unable to remove the required document.\n You aren't authorized in this context."))
+#                 return False
+#         documentType=self.pool.get('plm.document')
+#         checkObj=self.browse(cr, uid, context['active_id'])
+#         objDoc=documentType.browse(cr, uid, checkObj.documentid.id)
+#         if objDoc.state=='draft' and documentType.ischecked_in(cr, uid, ids, context):
+#             if checkObj.existingfile != objDoc.store_fname:
+#                 committed=documentType.write(cr, uid, [objDoc.id], {'store_fname':checkObj.existingfile,'printout':checkObj.printout,'preview':checkObj.preview,}, context, check=False)
+#                 if  committed:
+#                     self.wf_message_post(cr, uid, [objDoc.id], body=_('Document restored from backup.'))
+#                 else:
+#                     logging.warning("action_restore_document : Unable to restore the document ("+str(checkObj.documentid.name)+"-"+str(checkObj.documentid.revisionid)+") from backup set.")
+#                     raise osv.except_osv(_('Check-In Error'), _("Unable to restore the document ("+str(checkObj.documentid.name)+"-"+str(checkObj.documentid.revisionid)+") from backup set.\n Check if it's checked-in, before to proceed."))
+#         self.unlink(cr, uid, ids, context)
+#         return committed
+
+BackupDocWizard()

@@ -30,6 +30,7 @@ from openerp        import api
 from openerp        import SUPERUSER_ID
 from openerp        import _
 from openerp        import osv
+from openerp.exceptions import UserError
 _logger         =   logging.getLogger(__name__)
 
 # To be adequated to plm.document class states
@@ -112,6 +113,7 @@ class plm_component(models.Model):
     engineering_revision    =   fields.Integer(_('Revision'), required=True, help=_("The revision of the product."))
     engineering_writable    =   fields.Boolean(_('Writable'))
     engineering_material    =   fields.Char(_('Raw Material'), size=128, required=False, help=_("Raw material for current product, only description for titleblock."))
+
     #engineering_treatment    =    fields.Char        (_('Treatment'),size=64,required=False,help=_("Thermal treatment for current product"))
     engineering_surface     =   fields.Char(_('Surface Finishing'), size=128, required=False, help=_("Surface finishing for current product, only description for titleblock."))
 
@@ -314,15 +316,14 @@ class plm_relation(models.Model):
             Convert from [id1,[[id2,[]]]] to [id1,id2]
         '''
         outList = []
-        if len(structure) == 2:
-            treeListIds = structure[1]
+        if isinstance(structure, (list, tuple)) and len(structure) == 2:
             outList.append(structure[0])
-            if treeListIds:
-                outList.extend(self.getListIdsFromStructure(treeListIds[0]))
-        return outList
+            for item in structure[1]:
+                outList.extend(self.getListIdsFromStructure(item))
+        return list(set(outList))
 
     def _getpackdatas(self, cr, uid, relDatas):
-        prtDatas={}
+        prtDatas = {}
         tmpids = self.getListIdsFromStructure(relDatas)
         if len(tmpids)<1:
             return prtDatas
@@ -348,9 +349,8 @@ class plm_relation(models.Model):
 
         if len(relids)<1:
             return relationDatas
-        setobj=self.pool.get('mrp.bom')
         for keyData in relids.keys():
-            relationDatas[keyData]=setobj.read(cr, uid, relids[keyData])
+            relationDatas[keyData]=self.read(cr, uid, relids[keyData])
         return relationDatas
 
     def GetWhereUsed(self, cr, uid, ids, context=None):
@@ -385,11 +385,12 @@ class plm_relation(models.Model):
             Explodes a bom entity  ( check=False : all levels, check=True : one level )
         """
         output = []
+        self._packed = []
         for bid in bids:
             for bom_line in bid.bom_line_ids:
                 if check and (bom_line.product_id.id in self._packed):
                     continue
-                innerids = self._explodebom(cr, uid, self._getbom(cr, uid, bom_line.product_tmpl_id.id), check)
+                innerids = self._explodebom(cr, uid, self._getbom(cr, uid, bom_line.product_id.product_tmpl_id.id), check)
                 self._packed.append(bom_line.product_id.id)
                 output.append([bom_line.product_id.id, innerids])
         return(output)
@@ -668,6 +669,7 @@ class plm_material(models.Model):
     ]
 plm_material()
 
+
 class plm_finishing(models.Model):
     _name = "plm.finishing"
     _description = "Surface Finishing"
@@ -688,38 +690,38 @@ plm_finishing()
 class plm_temporary(osv.osv.osv_memory):
     _name = "plm.temporary"
     _description = "Temporary Class"
-
-    name    =   fields.Char(_('Temp'), size=128)
-
+    name = fields.Char(_('Temp'), size=128)
 
     def action_create_normalBom(self, cr, uid, ids, context=None):
         """
-            Create a new Spare Bom if doesn't exist (action callable from views)
+            Create a new Normal Bom if doesn't exist (action callable from views)
         """
-        if not 'active_id' in context:
-            return False
-        if not 'active_ids' in context:
-            return False
-        
-        productType=self.pool.get('product.product')
-        for idd in context['active_ids']:
-            checkObj=productType.browse(cr, uid, idd, context)
-            if not checkObj:
-                continue
-            objBoms=self.pool.get('mrp.bom').search(cr, uid, [('product_tmpl_id','=',idd),('type','=','normal')])
+        selectdIds = context.get('active_ids', [])
+        objType = context.get('active_model', '')
+        if objType != 'product.product':
+            raise UserError(_("The creation of the normalBom works only on product_product object"))
+        if not selectdIds:
+            raise UserError(_("Select a product before to continue"))
+        objType = context.get('active_model', False)
+        product_product_type_object = self.pool.get(objType)
+        collectableProduct = []
+        for productBrowse in product_product_type_object.browse(cr, uid, selectdIds, context):
+            idTemplate = productBrowse.product_tmpl_id.id
+            objBoms = self.pool.get('mrp.bom').search(cr, uid, [('product_tmpl_id', '=', idTemplate),
+                                                                ('type', '=', 'normal')])
             if objBoms:
-                raise osv.except_osv(_('Creating a new Normal Bom Error.'), _("BoM for Part %r already exists." %(checkObj.name)))
+                raise UserError(_("Normal BoM for Part %r already exists." % (objBoms)))
+            product_product_type_object.create_bom_from_ebom(cr, uid, productBrowse, 'normal', context)
+            collectableProduct.append(productBrowse.id)
+        if collectableProduct:
+            return {'name': _('Bill of Materials'),
+                    'view_type': 'form',
+                    "view_mode": 'tree,form',
+                    'res_model': 'mrp.bom',
+                    'type': 'ir.actions.act_window',
+                    'domain': "[('product_id','in', [" + ','.join(map(str, collectableProduct)) + "])]",
+                    }
+        else:
+            raise UserError(_("Unable to create the normall Bom"))
 
-        productType.action_create_normalBom_WF(cr, uid, context['active_ids'])
-
-        return {
-              'name': _('Bill of Materials'),
-              'view_type': 'form',
-              "view_mode": 'tree,form',
-              'res_model': 'mrp.bom',
-              'type': 'ir.actions.act_window',
-              'domain': "[('product_id','in', ["+','.join(map(str,context['active_ids']))+"])]",
-         }
-
-    
 plm_temporary()
