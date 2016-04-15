@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+<template id="bom_structure_all">
+	<t t-foreach="docs" t-as="o">
+    <t t-call="report.html_container">
+        <t t-set="data_report_margin_top" t-value="12"/>
+        <t t-set="data_report_header_spacing" t-value="9"/>
+        <t t-set="data_report_dpi" t-value="110"/>
+
+        <t t-call="report.internal_layout">
+        	<div style="border-bottom: 1px solid black;"></div>
+            <div class="page" align="center">
+                <h2><span t-esc="bom_type(o)"/></h2>
+				<table style="width: 100%; border: 1px solid rgb(202, 202, 202);"  class="table"> 
+					<tr>
+						<t t-foreach="headers" t-as="header">
+							<th style="background-color: #E4EDFB; border: 1px solid rgb(202, 202, 202);"> <span t-esc="header"/> </th> 
+						</t>
+					</tr>
+					<tr>
+						<t t-foreach="get_parent(o)" t-as="parentData"> 
+							<td> <b><span t-esc="parentData"/> </b></td>
+						</t>
+					</tr>
+					<t t-set="i" t-value="1"/>
+					<t t-foreach="o.bom_line_ids" t-as="lineObj">
+						<tr>
+							<t t-foreach="get_children(lineObj)" t-as="childDict">
+								
+								<t t-if="i%2 == 1">
+									<td style="background-color: aliceblue;"></td> 
+									<td style="background-color: aliceblue;"><span t-esc="childDict.get('item')"/></td> 
+									<td style="background-color: aliceblue;"><span t-esc="childDict.get('level')"/></td> 
+									<td style="background-color: aliceblue;"><span t-esc="childDict.get('pname')"/></td> 
+									<td style="background-color: aliceblue;"><span t-esc="childDict.get('previ')"/></td> 
+									<td style="background-color: aliceblue;"><span t-esc="childDict.get('pdesc')"/></td> 
+									<td style="background-color: aliceblue;"><span t-esc="childDict.get('producer')"/></td>
+									<td style="background-color: aliceblue;"><span t-esc="childDict.get('producer_pn')"/></td>
+									<td style="background-color: aliceblue;"><span t-esc="childDict.get('pqty')"/></td> 
+									<td style="background-color: aliceblue;"><span t-esc="childDict.get('uname')"/></td> 
+									<td style="background-color: aliceblue;"><span t-esc="childDict.get('pweight')"/></td> 
+								</t>
+								<t t-if="i%2 != 1">
+									<td ></td> 
+									<td ><span t-esc="childDict.get('item')"/></td> 
+									<td ><span t-esc="childDict.get('level')"/></td> 
+									<td ><span t-esc="childDict.get('pname')"/></td> 
+									<td ><span t-esc="childDict.get('previ')"/></td> 
+									<td ><span t-esc="childDict.get('pdesc')"/></td> 
+									<td ><span t-esc="childDict.get('producer')"/></td>
+									<td ><span t-esc="childDict.get('producer_pn')"/></td>
+									<td ><span t-esc="childDict.get('pqty')"/></td> 
+									<td ><span t-esc="childDict.get('uname')"/></td> 
+									<td ><span t-esc="childDict.get('pweight')"/></td> 
+								</t>
+								
+							</t>
+						</tr>
+						<t t-set="i" t-value="i+1"/>
+					</t> 
+				</table>
+            </div>
+        </t> 
+    </t> 
+    </t>
+</template>
+
+<template id="bom_structure_one">
+    <t t-call="plm.bom_structure_all"></t>
+</template>
+
+<template id="bom_structure_all_sum">
+    <t t-call="plm.bom_structure_all"></t>
+</template>
+
+<template id="bom_structure_one_sum">
+    <t t-call="plm.bom_structure_all"></t>
+</template>
+
+<template id="bom_structure_leaves_sum">
+    <t t-call="plm.bom_structure_all"></t>
+</template>
+
+</odoo>
