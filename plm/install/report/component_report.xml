@@ -41,7 +41,7 @@
                 />
     </data>   
    
-       
+<!-- 
     <data>
         <report id="report_product_product_spare_parts_pdf"
                 string="Print Spare Parts Manual"
@@ -62,4 +62,5 @@
                 header="False"
                 />
     </data>
+--> 
 </openerp>

@@ -28,33 +28,14 @@
 						<tr>
 							<t t-foreach="get_children(lineObj)" t-as="childDict">
 								
-								<t t-if="i%2 == 1">
-									<td style="background-color: aliceblue;"></td> 
-									<td style="background-color: aliceblue;"><span t-esc="childDict.get('item')"/></td> 
-									<td style="background-color: aliceblue;"><span t-esc="childDict.get('level')"/></td> 
-									<td style="background-color: aliceblue;"><span t-esc="childDict.get('pname')"/></td> 
-									<td style="background-color: aliceblue;"><span t-esc="childDict.get('previ')"/></td> 
-									<td style="background-color: aliceblue;"><span t-esc="childDict.get('pdesc')"/></td> 
-									<td style="background-color: aliceblue;"><span t-esc="childDict.get('producer')"/></td>
-									<td style="background-color: aliceblue;"><span t-esc="childDict.get('producer_pn')"/></td>
-									<td style="background-color: aliceblue;"><span t-esc="childDict.get('pqty')"/></td> 
-									<td style="background-color: aliceblue;"><span t-esc="childDict.get('uname')"/></td> 
-									<td style="background-color: aliceblue;"><span t-esc="childDict.get('pweight')"/></td> 
+								<t t-foreach="keys_order" t-as="key_name">
+									<t t-if="i%2 == 1">
+										<td style="background-color: aliceblue;"><span t-esc="childDict.get(key_name)"/></td>
+									</t>
+									<t t-if="i%2 != 1">
+										<td ><span t-esc="childDict.get(key_name)"/></td>
+									</t>
 								</t>
-								<t t-if="i%2 != 1">
-									<td ></td> 
-									<td ><span t-esc="childDict.get('item')"/></td> 
-									<td ><span t-esc="childDict.get('level')"/></td> 
-									<td ><span t-esc="childDict.get('pname')"/></td> 
-									<td ><span t-esc="childDict.get('previ')"/></td> 
-									<td ><span t-esc="childDict.get('pdesc')"/></td> 
-									<td ><span t-esc="childDict.get('producer')"/></td>
-									<td ><span t-esc="childDict.get('producer_pn')"/></td>
-									<td ><span t-esc="childDict.get('pqty')"/></td> 
-									<td ><span t-esc="childDict.get('uname')"/></td> 
-									<td ><span t-esc="childDict.get('pweight')"/></td> 
-								</t>
-								
 							</t>
 						</tr>
 						<t t-set="i" t-value="i+1"/>
@@ -83,6 +64,10 @@
 </template>
 
 <template id="bom_structure_flat">
+    <t t-call="plm.bom_structure_all"></t>
+</template>
+
+<template id="bom_spare_one_sum">
     <t t-call="plm.bom_structure_all"></t>
 </template>
 

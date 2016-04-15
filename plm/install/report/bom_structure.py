@@ -18,14 +18,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-#
-#    To customize report layout :
-#
-#    1 - Configure final layout using bom_structure.sxw in OpenOffice
-#    2 - Compile to bom_structure.rml using ..\base_report_designer\openerp_sxw2rml\openerp_sxw2rml.py
-#           python openerp_sxw2rml.py bom_structure.sxw > bom_structure.rml
-#
-##############################################################################
 
 '''
 Created on Apr 14, 2016
@@ -41,7 +33,8 @@ from operator import itemgetter
 from openerp import _
 import time
 
-HEADERS = ['BOM Name', 'Pos.', 'Level', 'Product Name', 'Rev', 'Description', 'Producer', 'producer P/N', 'Qty', 'UoM', 'Weight']
+HEADERS =       ['BOM Name', 'Pos.', 'Level', 'Product Name',   'Rev',  'Description', 'Producer', 'producer P/N', 'Qty', 'UoM',    'Weight']
+FIELDS_ORDER =  ['',        'item',  'level', 'pname',          'previ','pdesc',       'producer', 'producer_pn',  'pqty','uname',  'pweight']
 
 
 def _translate(value):
@@ -152,6 +145,7 @@ class bom_structure_all_custom_report(report_sxw.rml_parse):
             'trans': _translate,
             'headers': HEADERS,
             'get_parent': get_parent,
+            'keys_order': FIELDS_ORDER,
         })
 
     def get_children(self, myObject, level=0):
@@ -207,6 +201,7 @@ class bom_structure_one_custom_report(report_sxw.rml_parse):
             'trans': _translate,
             'headers': HEADERS,
             'get_parent': get_parent,
+            'keys_order': FIELDS_ORDER,
         })
 
     def get_children(self, myObject, level=0):
@@ -257,6 +252,7 @@ class bom_structure_all_sum_custom_report(report_sxw.rml_parse):
             'trans': _translate,
             'headers': HEADERS,
             'get_parent': get_parent,
+            'keys_order': FIELDS_ORDER,
         })
 
     def get_children(self, myObject, level=0):
@@ -328,6 +324,7 @@ class bom_structure_one_sum_custom_report(report_sxw.rml_parse):
             'trans': _translate,
             'headers': HEADERS,
             'get_parent': get_parent,
+            'keys_order': FIELDS_ORDER,
         })
 
     def get_children(self, myObject, level=0):
@@ -389,6 +386,7 @@ class bom_structure_leaves_custom_report(report_sxw.rml_parse):
             'trans': _translate,
             'headers': HEADERS,
             'get_parent': get_parent,
+            'keys_order': FIELDS_ORDER,
         })
 
     def get_children(self, myObject, level=0):
@@ -465,6 +463,7 @@ class bom_structure_flat_custom_report(report_sxw.rml_parse):
             'trans': _translate,
             'headers': HEADERS,
             'get_parent': get_parent,
+            'keys_order': FIELDS_ORDER,
         })
 
     def get_children(self, myObject, level=0):
