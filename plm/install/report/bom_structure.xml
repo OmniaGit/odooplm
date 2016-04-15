@@ -41,6 +41,15 @@
         		report_type="qweb-pdf"    
                 name="plm.bom_structure_leaves_sum"  
                 file="plm.bom_structure_leaves_sum"   
+                 /> 
+                 	
+        <report id="report_plm_bom_structure_flat"
+                model="mrp.bom"
+                string="BOM Only Leaves Summarized"
+        		report_type="qweb-pdf"    
+                name="plm.bom_structure_flat"  
+                file="plm.bom_structure_flat"   
                  />
+        
     </data>
 </openerp>

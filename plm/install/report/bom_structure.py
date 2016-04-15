@@ -151,11 +151,8 @@ class bom_structure_all_custom_report(report_sxw.rml_parse):
             'bom_type': self.bom_type,
             'trans': _translate,
             'headers': HEADERS,
-            'get_parent': self.get_parent,
+            'get_parent': get_parent,
         })
-
-    def get_parent(self, myObject):
-        return get_parent(myObject)
 
     def get_children(self, myObject, level=0):
         result = []
@@ -209,7 +206,7 @@ class bom_structure_one_custom_report(report_sxw.rml_parse):
             'bom_type': self.bom_type,
             'trans': _translate,
             'headers': HEADERS,
-            'get_parent': self.get_parent,
+            'get_parent': get_parent,
         })
 
     def get_children(self, myObject, level=0):
@@ -249,9 +246,6 @@ class bom_structure_one_custom_report(report_sxw.rml_parse):
         result = dict(self.pool.get(myObject._model._name).fields_get(self.cr, self.uid)['type']['selection']).get(myObject.type, '')
         return _(result)
 
-    def get_parent(self, myObject):
-        return get_parent(myObject)
-
 
 class bom_structure_all_sum_custom_report(report_sxw.rml_parse):
     def __init__(self, cr, uid, name, context):
@@ -262,7 +256,7 @@ class bom_structure_all_sum_custom_report(report_sxw.rml_parse):
             'bom_type': self.bom_type,
             'trans': _translate,
             'headers': HEADERS,
-            'get_parent': self.get_parent,
+            'get_parent': get_parent,
         })
 
     def get_children(self, myObject, level=0):
@@ -323,9 +317,6 @@ class bom_structure_all_sum_custom_report(report_sxw.rml_parse):
         result = dict(self.pool.get(myObject._model._name).fields_get(self.cr, self.uid)['type']['selection']).get(myObject.type, '')
         return _(result)
 
-    def get_parent(self, myObject):
-        return get_parent(myObject)
-
 
 class bom_structure_one_sum_custom_report(report_sxw.rml_parse):
     def __init__(self, cr, uid, name, context):
@@ -336,11 +327,8 @@ class bom_structure_one_sum_custom_report(report_sxw.rml_parse):
             'bom_type': self.bom_type,
             'trans': _translate,
             'headers': HEADERS,
-            'get_parent': self.get_parent,
+            'get_parent': get_parent,
         })
-
-    def get_parent(self, myObject):
-        return get_parent(myObject)
 
     def get_children(self, myObject, level=0):
         result = []
@@ -400,11 +388,8 @@ class bom_structure_leaves_custom_report(report_sxw.rml_parse):
             'bom_type': self.bom_type,
             'trans': _translate,
             'headers': HEADERS,
-            'get_parent': self.get_parent,
+            'get_parent': get_parent,
         })
-
-    def get_parent(self, myObject):
-        return get_parent(myObject)
 
     def get_children(self, myObject, level=0):
         result = []
@@ -469,6 +454,79 @@ class bom_structure_leaves_custom_report(report_sxw.rml_parse):
         return _(result)
 
 
+class bom_structure_flat_custom_report(report_sxw.rml_parse):
+    def __init__(self, cr, uid, name, context):
+        super(bom_structure_flat_custom_report, self).__init__(cr, uid, name, context=context)
+        self.keyIndex = 0
+        self.localcontext.update({
+            'time': time,
+            'get_children': self.get_children,
+            'bom_type': self.bom_type,
+            'trans': _translate,
+            'headers': HEADERS,
+            'get_parent': get_parent,
+        })
+
+    def get_children(self, myObject, level=0):
+        result = []
+        results = {}
+        listed = []
+
+        def _get_rec(bomobject, listedBoM, listed, level, ancestor=""):
+            myObject = BomSort(bomobject)
+            tmp_result = []
+            for l in myObject:
+                productName = l.product_id.name
+                if productName in listed:
+                    continue
+                res = {}
+                listed.append(productName)
+                fatherName = l.bom_id.product_id.name
+                fatherRef = "%s-%d" % (fatherName, level - 1)
+                if fatherRef in listedBoM.keys():
+                    listedName = "%s-%s-%d" % (ancestor, productName, level)
+                    if listedName in listedBoM[fatherRef]:
+                        listedline = listedBoM[fatherRef][listedName]
+                        product = listedline['product']
+                        quantity = QuantityInBom(listedBoM, product.name)
+                        producer = ''
+                        producer_pn = ''
+                        for sellerObj in product.seller_ids:
+                            producer = sellerObj.name.name
+                            producer_pn = sellerObj.product_name or sellerObj.product_code
+                        res['name'] = product.name
+                        res['item'] = l.itemnum
+                        res['pfather'] = fatherName
+                        res['pname'] = product.name
+                        res['pdesc'] = _(product.description)
+                        res['pcode'] = l.product_id.default_code
+                        res['previ'] = product.engineering_revision
+                        res['pqty'] = quantity
+                        res['uname'] = l.product_uom.name
+                        res['pweight'] = product.weight
+                        res['code'] = l.product_id.default_code
+                        res['level'] = level
+                        res['producer'] = producer
+                        res['producer_pn'] = producer_pn
+                        tmp_result.append(res)
+
+                        for bomId in l.product_id.bom_ids:
+                            if bomId.type == l.bom_id.type:
+                                if bomId.bom_line_ids:
+                                    buffer_obj = _get_rec(bomId.bom_line_ids, listedBoM, listed, level + 1, fatherName)
+                                    tmp_result.extend(buffer_obj)
+            return tmp_result
+
+        results = SummarizeBom(myObject, level + 1, results)
+        result.extend(_get_rec(myObject, results, listed, level + 1))
+
+        return result
+
+    def bom_type(self, myObject):
+        result = dict(self.pool.get(myObject._model._name).fields_get(self.cr, self.uid)['type']['selection']).get(myObject.type, '')
+        return _(result)
+
+
 class report_plm_bom_all(osv.AbstractModel):
     _name = 'report.plm.bom_structure_all'
     _inherit = 'report.abstract_report'
@@ -501,4 +559,11 @@ class report_plm_bom_leaves_sum(osv.AbstractModel):
     _name = 'report.plm.bom_structure_leaves_sum'
     _inherit = 'report.abstract_report'
     _template = 'plm.bom_structure_leaves_sum'
+    _wrapped_report_class = bom_structure_leaves_custom_report
+
+
+class report_plm_bom_flat(osv.AbstractModel):
+    _name = 'report.plm.bom_structure_flat'
+    _inherit = 'report.abstract_report'
+    _template = 'plm.bom_structure_flat'
     _wrapped_report_class = bom_structure_leaves_custom_report

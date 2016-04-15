@@ -82,4 +82,8 @@
     <t t-call="plm.bom_structure_all"></t>
 </template>
 
+<template id="bom_structure_flat">
+    <t t-call="plm.bom_structure_all"></t>
+</template>
+
 </odoo>
