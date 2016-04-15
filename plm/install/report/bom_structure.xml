@@ -25,6 +25,22 @@
         		report_type="qweb-pdf"   
                 name="plm.bom_structure_all_sum"  
                 file="plm.bom_structure_all_sum" 
+                 /> 
+          
+        <report id="report_plm_bom_structure_one_sum"
+                model="mrp.bom"
+                string="BOM One Level Summarized"
+        		report_type="qweb-pdf"    
+                name="plm.bom_structure_one_sum"  
+                file="plm.bom_structure_one_sum"  
+                 /> 
+                 	
+        <report id="report_plm_bom_structure_leaves_summarized"
+                model="mrp.bom"
+                string="BOM Only Leaves Summarized"
+        		report_type="qweb-pdf"    
+                name="plm.bom_structure_leaves_sum"  
+                file="plm.bom_structure_leaves_sum"   
                  />
     </data>
 </openerp>
