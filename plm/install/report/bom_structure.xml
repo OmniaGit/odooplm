@@ -1,74 +1,30 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <openerp>
     <data>
-
-<!--
-       IMPORTANT : DO NOT CHANGE THIS FILE, IT WILL BE REGENERERATED AUTOMATICALLY
--->
-
-        <report auto="True"
-                header="True"
+        <!-- QWeb Reports -->
+        <report 
+            id="report_bom_structure_report"
+            model="mrp.bom"
+            string="BOM All Levels"
+            report_type="qweb-pdf"  
+            name="plm.bom_structure_all"  
+            file="plm.bom_structure_all"   
+        />
+        
+        <report id="report_plm_bom_structure_one"
                 model="mrp.bom"
-                id="report_plm_bom_structure_all"
-                string="BOM All Levels"
-                name="plm.bom.structure.all"
-                rml="plm/install/report/bom_structure.rml"
-                report_type="pdf"
-                file=""
-                 />
-        <report auto="True"
-                header="True"
-                model="mrp.bom"
-                id="report_plm_bom_structure_one"
                 string="BOM One Level"
-                name="plm.bom.structure.one"
-                rml="plm/install/report/bom_structure.rml"
-                report_type="pdf"
-                file=""
+        		report_type="qweb-pdf"   
+                name="plm.bom_structure_one"  
+                file="plm.bom_structure_one" 
                  />
-        <report auto="True"
-                header="True"
+        
+        <report id="report_plm_bom_structure_all_sum"
                 model="mrp.bom"
-                id="report_plm_bom_structure_all_sum"
                 string="BOM All Levels Summarized"
-                name="plm.bom.structure.all.sum"
-                rml="plm/install/report/bom_structure.rml"
-                report_type="pdf"
-                file=""
+        		report_type="qweb-pdf"   
+                name="plm.bom_structure_all_sum"  
+                file="plm.bom_structure_all_sum" 
                  />
-        <report auto="True"
-                header="True"
-                model="mrp.bom"
-                id="report_plm_bom_structure_one_sum"
-                string="BOM One Level Summarized"
-                name="plm.bom.structure.one.sum"
-                rml="plm/install/report/bom_structure.rml"
-                report_type="pdf"
-                file=""
-                 />
-        <report auto="True"
-                header="True"
-                model="mrp.bom"
-                id="report_plm_bom_structure_leaves"
-                string="BOM Only Leaves Summarized"
-                name="plm.bom.structure.leaves"
-                rml="plm/install/report/bom_structure.rml"
-                report_type="pdf"
-                file=""
-                 />
-        <report auto="True"
-                header="True"
-                model="mrp.bom"
-                id="report_plm_bom_structure_flat"
-                string="BOM All Flat Summarized"
-                name="plm.bom.structure.flat"
-                rml="plm/install/report/bom_structure.rml"
-                report_type="pdf"
-                file=""
-                 />
-<!--
-       IMPORTANT : DO NOT CHANGE THIS FILE, IT WILL BE REGENERERATED AUTOMATICALLY
--->
-
     </data>
 </openerp>

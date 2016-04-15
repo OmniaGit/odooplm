@@ -108,6 +108,7 @@ Supported Editors :
             'install/report/document_report.xml',
             'install/report/checkout_report.xml',
             'install/report/bom_structure.xml',
+            'install/report/bom_structure_report.xml',
             
             'install/plmcomponents/plm_component_kanban.xml',
             
