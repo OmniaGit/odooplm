@@ -41,7 +41,7 @@
                 />
     </data>   
    
-<!-- 
+
     <data>
         <report id="report_product_product_spare_parts_pdf"
                 string="Print Spare Parts Manual"
@@ -62,5 +62,14 @@
                 header="False"
                 />
     </data>
---> 
+    <data>
+        <report id="report_product_product_spare_header"
+                model="product.product"
+                string="Print Spare Header"
+        		report_type="qweb-pdf"    
+                name="plm.bom_spare_header"  
+                file="plm.bom_spare_header"   
+                 />
+    </data>
+ 
 </openerp>

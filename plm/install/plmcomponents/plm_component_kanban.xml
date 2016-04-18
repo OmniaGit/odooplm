@@ -149,8 +149,10 @@
 	                                <a type="action" title="Print Attached PDF Drawings" name="%(plm.report_product_product_pdf)d">
 	                                    <t>Print Attached PDF Drawings</t>
 	                                </a>
-
-	                                <a type="action" title="Print Spare Parts Manual One Level" name="%(plm.report_plm_bom_spare_one_sum)d">
+	                                <a type="action" title="Print Spare Parts Manual" name="%(plm.report_product_product_spare_parts_pdf)d">
+	                                    <t>Print Spare Parts Manual</t>
+	                                </a>
+	                                <a type="action" title="Print Spare Parts Manual One Level" name="%(plm.report_product_product_spare_parts_pdf_one)d">
 	                                    <t>Print Spare Parts Manual One Level</t>
 	                                </a>
 	                            </div>

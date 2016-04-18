@@ -29,12 +29,56 @@ from openerp import api
 from openerp import models
 from openerp.osv import osv
 from openerp.report import report_sxw
+from openerp.report.interface import report_int
 from operator import itemgetter
 from openerp import _
+from openerp import pooler
+from book_collector import BookCollector
+from openerp.report.render import render
+from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT
 import time
+import StringIO
+import base64
+import os
+import logging
+import datetime
+try:
+    from PyPDF2 import PdfFileWriter, PdfFileReader
+except:
+    logging.warning("PyPDF2 not installed ")
+    from pyPdf import PdfFileWriter, PdfFileReader
 
-HEADERS =       ['BOM Name', 'Pos.', 'Product Name', 'Rev',  'Description', 'Producer', 'producer P/N', 'Qty', 'UoM',    'Weight']
-FIELDS_ORDER =  ['',        'item',  'pname',        'previ','pdesc',       'producer', 'producer_pn',  'pqty','uname',  'pweight']
+
+def isPdf(fileName):
+    if (os.path.splitext(fileName)[1].lower() == '.pdf'):
+        return True
+    return False
+
+
+def getDocumentStream(docRepository, objDoc):
+    """
+        Gets the stream of a file
+    """
+    content = False
+    try:
+        if (not objDoc.store_fname) and (objDoc.db_datas):
+            content = base64.decodestring(objDoc.db_datas)
+        else:
+            content = file(os.path.join(docRepository, objDoc.store_fname), 'rb').read()
+    except Exception, ex:
+        print "getFileStream : Exception (%s)reading  stream on file : %s." % (str(ex), objDoc.datas_fname)
+    return content
+
+
+class external_pdf(render):
+    """ Generate External PDF """
+    def __init__(self, pdf):
+        render.__init__(self)
+        self.pdf = pdf
+        self.output_type = 'pdf'
+
+    def _render(self):
+        return self.pdf
 
 
 def _translate(value):
@@ -70,16 +114,13 @@ def get_parent(myObject):
               ]
 
 
-class bom_spare_one_sum_custom_report(report_sxw.rml_parse):
+class bom_structure_one_sum_custom_report(report_sxw.rml_parse):
     def __init__(self, cr, uid, name, context):
-        super(bom_spare_one_sum_custom_report, self).__init__(cr, uid, name, context=context)
+        super(bom_structure_one_sum_custom_report, self).__init__(cr, uid, name, context=context)
         self.localcontext.update({
             'time': time,
             'get_children': self.get_children,
             'bom_type': self.bom_type,
-            'headers': HEADERS,
-            'get_parent': get_parent,
-            'keys_order': FIELDS_ORDER,
         })
 
     def get_children(self, myObject, level=0):
@@ -98,11 +139,6 @@ class bom_spare_one_sum_custom_report(report_sxw.rml_parse):
                     res['pqty'] = res['pqty'] + l.product_qty
                     tmp_result[listed[product.name]] = res
                 else:
-                    producer = ''
-                    producer_pn = ''
-                    for sellerObj in product.seller_ids:
-                        producer = sellerObj.name.name
-                        producer_pn = sellerObj.product_name or sellerObj.product_code
                     res['name'] = product.name
                     res['item'] = l.itemnum
                     res['pname'] = l.product_id.name
@@ -114,8 +150,6 @@ class bom_spare_one_sum_custom_report(report_sxw.rml_parse):
                     res['pweight'] = product.weight
                     res['code'] = l.product_id.default_code
                     res['level'] = level
-                    res['producer'] = producer
-                    res['producer_pn'] = producer_pn
                     tmp_result.append(res)
                     listed[product.name] = keyIndex
                     keyIndex += 1
@@ -130,8 +164,135 @@ class bom_spare_one_sum_custom_report(report_sxw.rml_parse):
         return _(result)
 
 
-class report_plm_bom_flat(osv.AbstractModel):
-    _name = 'report.plm.bom_spare_one_sum'
+class bom_spare_header(report_sxw.rml_parse):
+    def __init__(self, cr, uid, name, context):
+        print 'bom_spare_header'
+        super(bom_spare_header, self).__init__(cr, uid, name, context=context)
+        self.cr = cr
+        self.uid = uid
+        self.context = context
+        print self.cr
+        print self.uid
+        print self.context
+        self.localcontext.update({
+            'time': time,
+            'get_component_brws': self.get_component_brws,
+            'get_document_brws': self.get_document_brws,
+        })
+
+    def get_component_brws(self):
+        self.pool = pooler.get_pool(self.cr.dbname)
+        component_ids = self.context.get('active_ids', [])
+        for compBrws in self.pool.get('product.product').browse(self.cr, self.uid, component_ids):
+            return compBrws
+        return ''
+
+    def get_document_brws(self):
+        productBrws = self.get_component_brws()
+        oldest_dt = datetime.datetime.now()
+        oldest_obj = None
+        for linkedBrwsDoc in productBrws.linkeddocuments:
+            create_date_str = linkedBrwsDoc.create_date
+            create_date = datetime.datetime.strptime(create_date_str, DEFAULT_SERVER_DATETIME_FORMAT)
+            if create_date < oldest_dt:
+                oldest_dt = create_date
+                oldest_obj = linkedBrwsDoc
+        return oldest_obj
+
+
+class report_spare_parts_header(osv.AbstractModel):
+    _name = 'report.plm.bom_spare_header'
     _inherit = 'report.abstract_report'
-    _template = 'plm.bom_spare_one_sum'
-    _wrapped_report_class = bom_spare_one_sum_custom_report
+    _template = 'plm.bom_spare_header'
+    _wrapped_report_class = bom_spare_header
+
+
+class component_spare_parts_report(report_int):
+    """
+        Calculates the bom structure spare parts manual
+    """
+    def create(self, cr, uid, ids, datas, context=None):
+        recursion = True
+        if self._report_int__name == 'report.product.product.spare.parts.pdf.one':
+            recursion = False
+        self.processedObjs = []
+        self.pool = pooler.get_pool(cr.dbname)
+        componentType = self.pool.get('product.product')
+        bomType = self.pool.get('mrp.bom')
+        userType = self.pool.get('res.users')
+        user = userType.browse(cr, uid, uid, context=context)
+        msg = "Printed by " + str(user.name) + " : " + str(time.strftime("%d/%m/%Y %H:%M:%S"))
+        output = BookCollector(customTest=(True, msg))
+        components = componentType.browse(cr, uid, ids, context=context)
+        for component in components:
+            self.processedObjs = []
+            buf = self.getFirstPage(cr, uid, [component.id], context)
+            output.addPage((buf, ''))
+            self.getSparePartsPdfFile(cr, uid, context, component, output, componentType, bomType, recursion)
+        if output is not None:
+            pdf_string = StringIO.StringIO()
+            output.collector.write(pdf_string)
+            self.obj = external_pdf(pdf_string.getvalue())
+            self.obj.render()
+            pdf_string.close()
+            return (self.obj.pdf, 'pdf')
+        logging.warning('Unable to create PDF')
+        return (False, '')
+
+    def getSparePartsPdfFile(self, cr, uid, context, product, output, componentTemplate, bomTemplate, recursion):
+        packedObjs = []
+        packedIds = []
+        if product in self.processedObjs:
+            return
+        bomIds = bomTemplate.search(cr, uid, [('product_id', '=', product.id), ('type', '=', 'spbom')])
+        if len(bomIds) < 1:
+            bomIds = bomTemplate.search(cr, uid, [('product_tmpl_id', '=', product.product_tmpl_id.id), ('type', '=', 'spbom')])
+        if len(bomIds) > 0:
+            BomObject = bomTemplate.browse(cr, uid, bomIds[0], context=context)
+            if BomObject:
+                self.processedObjs.append(product)
+                for bom_line in BomObject.bom_line_ids:
+                    packedObjs.append(bom_line.product_id)
+                    packedIds.append(bom_line.id)
+                if len(packedIds) > 0:
+                    for pageStream in self.getPdfComponentLayout(cr, product):
+                        output.addPage((pageStream, ''))
+                    context['active_ids'] = bomIds
+                    context['active_model'] = 'mrp.bom'
+                    template_ids = self.pool.get('ir.ui.view').search(cr, uid, [('name', '=', 'bom_structure_one')])
+                    pdf = self.pool.get('report').get_pdf(cr, uid, template_ids, 'plm.bom_structure_one', context=context)
+                    pageStream = StringIO.StringIO()
+                    pageStream.write(pdf)
+                    output.addPage((pageStream, ''))
+                    if recursion:
+                        for packedObj in packedObjs:
+                            if packedObj not in self.processedObjs:
+                                self.getSparePartsPdfFile(cr, uid, context, packedObj, output, componentTemplate, bomTemplate, recursion)
+
+    def getPdfComponentLayout(self, cr, component):
+        ret = []
+        docRepository = self.pool.get('plm.document')._get_filestore(cr)
+        for document in component.linkeddocuments:
+            if (document.usedforspare) and (document.type == 'binary'):
+                if document.printout:
+                    ret.append(StringIO.StringIO(base64.decodestring(document.printout)))
+                elif isPdf(document.datas_fname):
+                    value = getDocumentStream(docRepository, document)
+                    if value:
+                        ret.append(StringIO.StringIO(value))
+        return ret
+
+    def getFirstPage(self, cr, uid, ids, context):
+        strbuffer = StringIO.StringIO()
+        template_ids = self.pool.get('ir.ui.view').search(cr, uid, [('name', '=', 'bom_spare_header')])
+        context['active_ids'] = ids
+        context['active_model'] = 'product.product'
+        pdf = self.pool.get('report').get_pdf(cr, uid, template_ids, 'plm.bom_spare_header', context=context)
+        strbuffer.write(pdf)
+        return strbuffer
+
+
+component_spare_parts_report('report.product.product.spare.parts.pdf')
+
+
+component_spare_parts_report('report.product.product.spare.parts.pdf.one')

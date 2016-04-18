@@ -14,21 +14,56 @@
                 <h2><span t-esc="bom_type(o)"/></h2>
 				<table style="width: 100%; border: 1px solid rgb(202, 202, 202);"  class="table"> 
 					<tr>
-						<t t-foreach="headers" t-as="header">
-							<th style="background-color: #E4EDFB; border: 1px solid rgb(202, 202, 202);"> <span t-esc="header"/> </th> 
-						</t>
+						<th name="bom_name" style="background-color: #E4EDFB; border: 1px solid rgb(202, 202, 202);"> BOM Name </th> 
+						<th name="bom_pos" style="background-color: #E4EDFB; border: 1px solid rgb(202, 202, 202);"> Pos. </th>
+						<th name="bom_level" style="background-color: #E4EDFB; border: 1px solid rgb(202, 202, 202);"> Level </th> 
+						<th name="bom_prod_name" style="background-color: #E4EDFB; border: 1px solid rgb(202, 202, 202);"> Product Name </th> 
+						<th name="bom_rev" style="background-color: #E4EDFB; border: 1px solid rgb(202, 202, 202);"> Rev. </th> 
+						<th name="bom_description" style="background-color: #E4EDFB; border: 1px solid rgb(202, 202, 202);"> Description </th> 
+						<th name="bom_qty" style="background-color: #E4EDFB; border: 1px solid rgb(202, 202, 202);"> Qty </th> 
+						<th name="bom_uom" style="background-color: #E4EDFB; border: 1px solid rgb(202, 202, 202);"> UoM </th> 
+						<th name="bom_weight" style="background-color: #E4EDFB; border: 1px solid rgb(202, 202, 202);"> Weight </th> 
 					</tr>
 					<tr>
-						<t t-foreach="get_parent(o)" t-as="parentData"> 
-							<td> <b><span t-esc="parentData"/> </b></td>
-						</t>
+						<td name="parent_bom_name"> <b><span t-esc="o.product_tmpl_id.name"/> </b></td>
+						<td name="parent_bom_pos"> <b></b></td>
+						<td name="parent_bom_level"> <b></b></td>
+						<td name="parent_bom_prod_name"> <b><span t-esc="o.product_tmpl_id.name or o.product_tmpl_id.default_code"/> </b></td>
+						<td name="parent_bom_rev"> <b><span t-esc="o.product_tmpl_id.engineering_revision"/> </b></td>
+						<td name="parent_bom_description"> <b><span t-esc="o.product_tmpl_id.description"/> </b></td>
+						<td name="parent_bom_qty"> <b><span t-esc="o.product_qty"/> </b></td>
+						<td name="parent_bom_uom"> <b></b></td>
+						<td name="parent_bom_weight"> <b><span t-esc="o.weight_net"/> </b></td>
 					</tr>
 					<t t-set="i" t-value="1"/>
 					<t t-foreach="o.bom_line_ids" t-as="lineObj">
-						<tr>
-							<t t-foreach="get_children(lineObj)" t-as="childDict">
-								
-								<t t-foreach="keys_order" t-as="key_name">
+						
+						<t t-foreach="get_children(lineObj)" t-as="childDict">
+							<tr>
+								<t t-if="i%2 == 1">
+									<td name="bom_name_value_b" style="background-color: aliceblue;"></td>
+									<td name="bom_pos_value_b" style="background-color: aliceblue;"><span t-esc="childDict.get('item')"/></td>
+									<td name="bom_level_value_b" style="background-color: aliceblue;"><span t-esc="childDict.get('level')"/></td>
+									<td name="bom_prod_name_value_b" style="background-color: aliceblue;"><span t-esc="childDict.get('pname')"/></td>
+									<td name="bom_rev_value_b" style="background-color: aliceblue;"><span t-esc="childDict.get('previ')"/></td>
+									<td name="bom_description_value_b" style="background-color: aliceblue;"><span t-esc="childDict.get('pdesc')"/></td>
+									<td name="bom_qty_value_b" style="background-color: aliceblue;"><span t-esc="childDict.get('pqty')"/></td>
+									<td name="bom_uom_value_b" style="background-color: aliceblue;"><span t-esc="childDict.get('uname')"/></td>
+									<td name="bom_weight_value_b" style="background-color: aliceblue;"><span t-esc="childDict.get('pweight')"/></td>
+								</t>
+								<t t-if="i%2 != 1">
+									<td name="bom_name_value"></td>
+									<td name="bom_pos_value"><span t-esc="childDict.get('item')"/></td>
+									<td name="bom_level_value" ><span t-esc="childDict.get('level')"/></td>
+									<td name="bom_prod_name_value"><span t-esc="childDict.get('pname')"/></td>
+									<td name="bom_rev_value" ><span t-esc="childDict.get('previ')"/></td>
+									<td name="bom_description_value" ><span t-esc="childDict.get('pdesc')"/></td>
+									<td name="bom_qty_value" ><span t-esc="childDict.get('pqty')"/></td>
+									<td name="bom_uom_value" ><span t-esc="childDict.get('uname')"/></td>
+									<td name="bom_weight_value" ><span t-esc="childDict.get('pweight')"/></td>
+								</t>
+								<!--
+								<t t-foreach="childDict.keys()" t-as="key_name">
 									<t t-if="i%2 == 1">
 										<td style="background-color: aliceblue;"><span t-esc="childDict.get(key_name)"/></td>
 									</t>
@@ -36,9 +71,10 @@
 										<td ><span t-esc="childDict.get(key_name)"/></td>
 									</t>
 								</t>
-							</t>
-						</tr>
-						<t t-set="i" t-value="i+1"/>
+								-->
+							</tr>
+							<t t-set="i" t-value="i+1"/>
+						</t>
 					</t> 
 				</table>
             </div>
@@ -67,8 +103,30 @@
     <t t-call="plm.bom_structure_all"></t>
 </template>
 
-<template id="bom_spare_one_sum">
-    <t t-call="plm.bom_structure_all"></t>
+
+
+<template id="bom_spare_header">
+	<t t-foreach="docs" t-as="compBrws">
+		<t t-call="report.html_container">
+	        <t t-set="data_report_margin_top" t-value="12"/>
+	        <t t-set="data_report_header_spacing" t-value="9"/>
+	        <t t-set="data_report_dpi" t-value="110"/>
+	
+	        <t t-call="report.internal_layout">
+		        <div class="page" align="center">
+					<t t-set="docBrws" t-value="get_document_brws()"/>
+					<table> 
+						<tr><td style="text-align: center;"><b>Spare Parts Report</b></td></tr> 
+						<tr><td style="text-align: center;"><b><span t-esc="compBrws.product_tmpl_id.name or compBrws.product_tmpl_id.default_code"/></b></td></tr>
+						<tr><td style="text-align: center;"><b><span t-esc="compBrws.product_tmpl_id.description"/></b></td></tr>
+					</table>
+					<br></br>
+					<br></br>
+					<span t-field="docBrws.preview" t-field-options='{"widget": "image"}'/>
+				</div>
+			</t>
+		</t>
+	</t>
 </template>
 
 </odoo>

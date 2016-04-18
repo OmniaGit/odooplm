@@ -33,9 +33,6 @@ from operator import itemgetter
 from openerp import _
 import time
 
-HEADERS =       ['BOM Name', 'Pos.', 'Level', 'Product Name',   'Rev',  'Description', 'Producer', 'producer P/N', 'Qty', 'UoM',    'Weight']
-FIELDS_ORDER =  ['',        'item',  'level', 'pname',          'previ','pdesc',       'producer', 'producer_pn',  'pqty','uname',  'pweight']
-
 
 def _translate(value):
     return _(value)
@@ -103,22 +100,6 @@ def SummarizeBom(bomobject, level=1, result={}, ancestorName=""):
     return result
 
 
-def get_parent(myObject):
-    return [
-               myObject.product_tmpl_id.name,
-               '',
-               '',
-               _(myObject.product_tmpl_id.name) or _(myObject.product_tmpl_id.default_code),
-               myObject.product_tmpl_id.engineering_revision,
-               _(myObject.product_tmpl_id.description),
-               '',
-               '',
-               myObject.product_qty,
-               '',
-               myObject.weight_net,
-              ]
-
-
 def QuantityInBom(listedBoM={}, productName=""):
     found = []
     result = 0.0
@@ -143,9 +124,6 @@ class bom_structure_all_custom_report(report_sxw.rml_parse):
             'get_children': self.get_children,
             'bom_type': self.bom_type,
             'trans': _translate,
-            'headers': HEADERS,
-            'get_parent': get_parent,
-            'keys_order': FIELDS_ORDER,
         })
 
     def get_children(self, myObject, level=0):
@@ -157,11 +135,6 @@ class bom_structure_all_custom_report(report_sxw.rml_parse):
             for l in myObject:
                 res = {}
                 product = l.product_id.product_tmpl_id
-                producer = ''
-                producer_pn = ''
-                for sellerObj in product.seller_ids:
-                    producer = sellerObj.name.name
-                    producer_pn = sellerObj.product_name or sellerObj.product_code
                 res['name'] = product.name
                 res['item'] = l.itemnum
                 res['ancestor'] = l.bom_id.product_id
@@ -174,8 +147,8 @@ class bom_structure_all_custom_report(report_sxw.rml_parse):
                 res['pweight'] = product.weight
                 res['code'] = l.product_id.default_code
                 res['level'] = level
-                res['producer'] = producer
-                res['producer_pn'] = producer_pn
+                res['prodBrws'] = l.product_id
+                res['prodTmplBrws'] = product
                 result.append(res)
                 for bomId in l.product_id.bom_ids:
                     if bomId.type == l.bom_id.type:
@@ -199,9 +172,6 @@ class bom_structure_one_custom_report(report_sxw.rml_parse):
             'get_children': self.get_children,
             'bom_type': self.bom_type,
             'trans': _translate,
-            'headers': HEADERS,
-            'get_parent': get_parent,
-            'keys_order': FIELDS_ORDER,
         })
 
     def get_children(self, myObject, level=0):
@@ -212,11 +182,6 @@ class bom_structure_one_custom_report(report_sxw.rml_parse):
             for l in myObject:
                 res = {}
                 product = l.product_id.product_tmpl_id
-                producer = ''
-                producer_pn = ''
-                for sellerObj in product.seller_ids:
-                    producer = sellerObj.name.name
-                    producer_pn = sellerObj.product_name or sellerObj.product_code
                 res['name'] = product.name
                 res['item'] = l.itemnum
                 res['pname'] = product.name
@@ -228,8 +193,8 @@ class bom_structure_one_custom_report(report_sxw.rml_parse):
                 res['pweight'] = product.weight
                 res['code'] = l.product_id.default_code
                 res['level'] = level
-                res['producer'] = producer
-                res['producer_pn'] = producer_pn
+                res['prodBrws'] = l.product_id
+                res['prodTmplBrws'] = product
                 result.append(res)
             return result
 
@@ -250,9 +215,6 @@ class bom_structure_all_sum_custom_report(report_sxw.rml_parse):
             'get_children': self.get_children,
             'bom_type': self.bom_type,
             'trans': _translate,
-            'headers': HEADERS,
-            'get_parent': get_parent,
-            'keys_order': FIELDS_ORDER,
         })
 
     def get_children(self, myObject, level=0):
@@ -276,11 +238,6 @@ class bom_structure_all_sum_custom_report(report_sxw.rml_parse):
                     if listedName in listedBoM[fatherRef]:
                         listedline = listedBoM[fatherRef][listedName]
                         product = listedline['product']
-                        producer = ''
-                        producer_pn = ''
-                        for sellerObj in product.seller_ids:
-                            producer = sellerObj.name.name
-                            producer_pn = sellerObj.product_name or sellerObj.product_code
                         res['name'] = product.name
                         res['item'] = l.itemnum
                         res['pfather'] = fatherName
@@ -293,8 +250,8 @@ class bom_structure_all_sum_custom_report(report_sxw.rml_parse):
                         res['pweight'] = product.weight
                         res['code'] = l.product_id.default_code
                         res['level'] = level
-                        res['producer'] = producer
-                        res['producer_pn'] = producer_pn
+                        res['prodBrws'] = l.product_id
+                        res['prodTmplBrws'] = product
                         tmp_result.append(res)
 
                         for bomId in l.product_id.bom_ids:
@@ -322,9 +279,6 @@ class bom_structure_one_sum_custom_report(report_sxw.rml_parse):
             'get_children': self.get_children,
             'bom_type': self.bom_type,
             'trans': _translate,
-            'headers': HEADERS,
-            'get_parent': get_parent,
-            'keys_order': FIELDS_ORDER,
         })
 
     def get_children(self, myObject, level=0):
@@ -343,11 +297,6 @@ class bom_structure_one_sum_custom_report(report_sxw.rml_parse):
                     res['pqty'] = res['pqty'] + l.product_qty
                     tmp_result[listed[product.name]] = res
                 else:
-                    producer = ''
-                    producer_pn = ''
-                    for sellerObj in product.seller_ids:
-                        producer = sellerObj.name.name
-                        producer_pn = sellerObj.product_name or sellerObj.product_code
                     res['name'] = product.name
                     res['item'] = l.itemnum
                     res['pname'] = product.name
@@ -359,8 +308,8 @@ class bom_structure_one_sum_custom_report(report_sxw.rml_parse):
                     res['pweight'] = product.weight
                     res['code'] = l.product_id.default_code
                     res['level'] = level
-                    res['producer'] = producer
-                    res['producer_pn'] = producer_pn
+                    res['prodBrws'] = l.product_id
+                    res['prodTmplBrws'] = product
                     tmp_result.append(res)
                     listed[l.product_id.name] = keyIndex
                     keyIndex += 1
@@ -384,9 +333,6 @@ class bom_structure_leaves_custom_report(report_sxw.rml_parse):
             'get_children': self.get_children,
             'bom_type': self.bom_type,
             'trans': _translate,
-            'headers': HEADERS,
-            'get_parent': get_parent,
-            'keys_order': FIELDS_ORDER,
         })
 
     def get_children(self, myObject, level=0):
@@ -414,11 +360,6 @@ class bom_structure_leaves_custom_report(report_sxw.rml_parse):
                         productRef = "%s-%d" % (product.name, level)
                         if not productRef in listedBoM.keys():
                             quantity = QuantityInBom(listedBoM, product.name)
-                            producer = ''
-                            producer_pn = ''
-                            for sellerObj in product.seller_ids:
-                                producer = sellerObj.name.name
-                                producer_pn = sellerObj.product_name or sellerObj.product_code
                             res['name'] = product.name
                             res['item'] = l.itemnum
                             res['pfather'] = fatherName
@@ -431,8 +372,8 @@ class bom_structure_leaves_custom_report(report_sxw.rml_parse):
                             res['pweight'] = product.weight
                             res['code'] = l.product_id.default_code
                             res['level'] = level
-                            res['producer'] = producer
-                            res['producer_pn'] = producer_pn
+                            res['prodBrws'] = l.product_id
+                            res['prodTmplBrws'] = product
                             tmp_result.append(res)
 
                         for bomId in l.product_id.bom_ids:
@@ -461,9 +402,6 @@ class bom_structure_flat_custom_report(report_sxw.rml_parse):
             'get_children': self.get_children,
             'bom_type': self.bom_type,
             'trans': _translate,
-            'headers': HEADERS,
-            'get_parent': get_parent,
-            'keys_order': FIELDS_ORDER,
         })
 
     def get_children(self, myObject, level=0):
@@ -488,11 +426,6 @@ class bom_structure_flat_custom_report(report_sxw.rml_parse):
                         listedline = listedBoM[fatherRef][listedName]
                         product = listedline['product']
                         quantity = QuantityInBom(listedBoM, product.name)
-                        producer = ''
-                        producer_pn = ''
-                        for sellerObj in product.seller_ids:
-                            producer = sellerObj.name.name
-                            producer_pn = sellerObj.product_name or sellerObj.product_code
                         res['name'] = product.name
                         res['item'] = l.itemnum
                         res['pfather'] = fatherName
@@ -505,10 +438,9 @@ class bom_structure_flat_custom_report(report_sxw.rml_parse):
                         res['pweight'] = product.weight
                         res['code'] = l.product_id.default_code
                         res['level'] = level
-                        res['producer'] = producer
-                        res['producer_pn'] = producer_pn
+                        res['prodBrws'] = l.product_id
+                        res['prodTmplBrws'] = product
                         tmp_result.append(res)
-
                         for bomId in l.product_id.bom_ids:
                             if bomId.type == l.bom_id.type:
                                 if bomId.bom_line_ids:

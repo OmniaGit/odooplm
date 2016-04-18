@@ -53,12 +53,6 @@
         
                  	
                  	
-        <report id="report_plm_bom_spare_one_sum"
-                model="product.product" 
-                string="Print Spare Parts Manual One Level"
-        		report_type="qweb-pdf"    
-                name="plm.bom_spare_one_sum"  
-                file="plm.bom_spare_one_sum"   
-                 />
+
     </data>
 </openerp>
