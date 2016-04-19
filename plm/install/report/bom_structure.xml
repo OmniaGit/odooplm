@@ -3,52 +3,46 @@
     <data>
         <!-- QWeb Reports -->
         <report 
-            id="report_bom_structure_report"
+            id="report_plm_bom_structure_all"
             model="mrp.bom"
-            string="BOM All Levels"
+            string="BOM All Levels" 
             report_type="qweb-pdf"  
             name="plm.bom_structure_all"  
-            file="plm.bom_structure_all"   
         />
         
         <report id="report_plm_bom_structure_one"
                 model="mrp.bom"
                 string="BOM One Level"
         		report_type="qweb-pdf"   
-                name="plm.bom_structure_one"  
-                file="plm.bom_structure_one" 
+                name="plm.bom_structure_one"   
                  />
         
         <report id="report_plm_bom_structure_all_sum"
                 model="mrp.bom"
                 string="BOM All Levels Summarized"
         		report_type="qweb-pdf"   
-                name="plm.bom_structure_all_sum"  
-                file="plm.bom_structure_all_sum" 
+                name="plm.bom_structure_all_sum"   
                  /> 
           
         <report id="report_plm_bom_structure_one_sum"
                 model="mrp.bom"
                 string="BOM One Level Summarized"
-        		report_type="qweb-pdf"    
-                name="plm.bom_structure_one_sum"  
-                file="plm.bom_structure_one_sum"  
+        		report_type="qweb-pdf"     
+                name="plm.bom_structure_one_sum"   
                  /> 
                  	
-        <report id="report_plm_bom_structure_leaves_summarized"
+        <report id="report_plm_bom_structure_leaves"
                 model="mrp.bom"
                 string="BOM Only Leaves Summarized"
         		report_type="qweb-pdf"    
-                name="plm.bom_structure_leaves_sum"  
-                file="plm.bom_structure_leaves_sum"   
+                name="plm.bom_structure_leaves"   
                  /> 
                  	
         <report id="report_plm_bom_structure_flat"
                 model="mrp.bom"
                 string="BOM Only Leaves Summarized"
         		report_type="qweb-pdf"    
-                name="plm.bom_structure_flat"  
-                file="plm.bom_structure_flat"   
+                name="plm.bom_structure_flat"   
                  />
         
                 

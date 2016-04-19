@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-<template id="bom_structure_all">
+<template id="plm.bom_structure_all">
 	<t t-foreach="docs" t-as="o">
     <t t-call="report.html_container">
         <t t-set="data_report_margin_top" t-value="12"/>
@@ -83,23 +83,23 @@
     </t>
 </template>
 
-<template id="bom_structure_one">
+<template id="plm.bom_structure_one">
     <t t-call="plm.bom_structure_all"></t>
 </template>
 
-<template id="bom_structure_all_sum">
+<template id="plm.bom_structure_all_sum">
     <t t-call="plm.bom_structure_all"></t>
 </template>
 
-<template id="bom_structure_one_sum">
+<template id="plm.bom_structure_one_sum">
     <t t-call="plm.bom_structure_all"></t>
 </template>
 
-<template id="bom_structure_leaves_sum">
+<template id="plm.bom_structure_leaves">
     <t t-call="plm.bom_structure_all"></t>
 </template>
 
-<template id="bom_structure_flat">
+<template id="plm.bom_structure_flat">
     <t t-call="plm.bom_structure_all"></t>
 </template>
 
@@ -122,7 +122,9 @@
 					</table>
 					<br></br>
 					<br></br>
-					<span t-field="docBrws.preview" t-field-options='{"widget": "image"}'/>
+					<t t-if="docBrws != null">
+						<span t-field="docBrws.preview" t-field-options='{"widget": "image"}'/>
+					</t>
 				</div>
 			</t>
 		</t>

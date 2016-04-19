@@ -466,9 +466,9 @@ class report_plm_bom_all(osv.AbstractModel):
 
 
 class report_plm_bom_one(osv.AbstractModel):
-    _name = 'report.plm.bom_structure_one'
-    _inherit = 'report.abstract_report'
-    _template = 'plm.bom_structure_one'
+    _name = 'report.plm.bom_structure_one'                          # May it is equal to "_template" keyword
+    _inherit = 'report.abstract_report'                             # Every time inherit from abstract report
+    _template = 'plm.bom_structure_one'                             # Searched as "report_name" in ir.actions.act.window
     _wrapped_report_class = bom_structure_one_custom_report
 
 
@@ -487,9 +487,9 @@ class report_plm_bom_one_sum(osv.AbstractModel):
 
 
 class report_plm_bom_leaves_sum(osv.AbstractModel):
-    _name = 'report.plm.bom_structure_leaves_sum'
+    _name = 'report.plm.bom_structure_leaves'
     _inherit = 'report.abstract_report'
-    _template = 'plm.bom_structure_leaves_sum'
+    _template = 'plm.bom_structure_leaves'
     _wrapped_report_class = bom_structure_leaves_custom_report
 
 
@@ -497,4 +497,4 @@ class report_plm_bom_flat(osv.AbstractModel):
     _name = 'report.plm.bom_structure_flat'
     _inherit = 'report.abstract_report'
     _template = 'plm.bom_structure_flat'
-    _wrapped_report_class = bom_structure_leaves_custom_report
+    _wrapped_report_class = bom_structure_flat_custom_report
