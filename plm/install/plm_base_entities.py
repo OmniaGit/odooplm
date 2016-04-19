@@ -54,6 +54,8 @@ class plm_config_settings(models.Model):
     active_os_ver   =   fields.Char(_('OS version'),                                    size=128,  help=_("Editor OS version"))
     active_os_arch  =   fields.Char(_('OS architecture'),                               size=128,  help=_("Editor OS architecture"))
     node_id         =   fields.Char(_('Registered PLM client'),                         size=128,  help=_("Listed registered Client."))
+    module_plm_pack_and_go = fields.Boolean("Pack and go")
+    module_plm_report_language_helper = fields.Boolean("Pack and go")
 
     def GetServiceIds(self, cr, uid, oids, default=None, context=None):
         """
