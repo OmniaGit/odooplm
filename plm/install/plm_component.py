@@ -490,7 +490,7 @@ class plm_component(models.Model):
         includeStatuses=['draft']
         return self._action_to_perform(cr, uid, ids, status, action, docaction, defaults, excludeStatuses, includeStatuses, context)
 
-    def action_release(self,cr,uid,ids,context=None):
+    def action_release(self, cr, uid, ids, context=None):
         """
            action to be executed for Released state
         """
@@ -686,25 +686,34 @@ class plm_component(models.Model):
         for compBrws in self:
             engineering_code = compBrws.engineering_code
             if not engineering_code:
-                logging.warning("Part %s doesn't have and engineering code!" %(compBrws.name))
+                logging.warning("Part %s doesn't have and engineering code!" % (compBrws.name))
                 continue
-            compBrwsList = self.search([('engineering_code', '=' , engineering_code)])
+            compBrwsList = self.search([('engineering_code', '=', engineering_code)])
             for compBrws in compBrwsList:
                 docIds.extend(compBrws.linkeddocuments.ids)
-        return {
-            'domain': [('id', 'in', docIds)],
-            'name': _('Related documents'),
-            'view_type': 'form',
-            'view_mode': 'tree,form',
-            'res_model': 'plm.document',
-            'type': 'ir.actions.act_window',
-         }
+        return {'domain': [('id', 'in', docIds)],
+                'name': _('Related documents'),
+                'view_type': 'form',
+                'view_mode': 'tree,form',
+                'res_model': 'plm.document',
+                'type': 'ir.actions.act_window',
+                }
+
+        def name_search(self, cr, user, name='', args=None, operator='ilike', context=None, limit=100):
+            result = super(plm_component, self).name_search(cr, user, name, args, operator, context, limit)
+            newResult = []
+            for productId, oldName in result:
+                objBrowse = self.browse(cr, user, [productId], context)
+                newName = "%r [%r] " % (oldName, objBrowse.engineering_revision)
+                newResult.append((productId, newName))
+            return newResult
 
 plm_component()
 
+
 class PlmComponentRevisionWizard(models.Model):
     _name = 'product.rev_wizard'
-    
+
     @api.multi
     def action_create_new_revision_by_server(self):
         def stateAllows(brwsObj, objType):
