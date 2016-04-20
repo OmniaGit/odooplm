@@ -122,9 +122,11 @@
 					</table>
 					<br></br>
 					<br></br>
+					<!--	to fix in merge pdf
 					<t t-if="docBrws != null">
 						<span t-field="docBrws.preview" t-field-options='{"widget": "image"}'/>
 					</t>
+					-->
 				</div>
 			</t>
 		</t>

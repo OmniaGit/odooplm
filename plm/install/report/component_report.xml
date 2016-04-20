@@ -62,6 +62,7 @@
                 header="False"
                 />
     </data>
+   
     <data>
         <report id="report_product_product_spare_header"
                 model="product.product"
@@ -69,7 +70,8 @@
         		report_type="qweb-pdf"    
                 name="plm.bom_spare_header"  
                 file="plm.bom_spare_header"   
-                 />
+        		groups="plm.group_plm_admin" 
+                  />
     </data>
  
 </openerp>
