@@ -109,12 +109,12 @@ plm_spareChoseLanguage()
 #
 #  ************************** BOM REPORTS *****************
 #
-AVAILABLE_REPORT = [("plm.bom.structure.all", "BOM All Levels"),
-                    ("plm.bom.structure.one", "BOM One Level"),
-                    ("plm.bom.structure.all.sum", "BOM All Levels Summarized"),
-                    ("plm.bom.structure.one.sum", "BOM One Level Summarized"),
-                    ("plm.bom.structure.leaves", "BOM Only Leaves Summarized"),
-                    ("plm.bom.structure.flat", "BOM All Flat Summarized"),
+AVAILABLE_REPORT = [("plm.bom_structure_all", "BOM All Levels"),
+                    ("plm.bom_structure_one", "BOM One Level"),
+                    ("plm.bom_structure_all_sum", "BOM All Levels Summarized"),
+                    ("plm.bom_structure_one_sum", "BOM One Level Summarized"),
+                    ("plm.bom_structure_leaves", "BOM Only Leaves Summarized"),
+                    ("plm.bom_structure_flat", "BOM All Flat Summarized"),
                     ]
 
 
@@ -143,11 +143,11 @@ class plm_bomChoseLanguage(osv.osv.osv_memory):
             if not mids:
                 raise UserError("Language not Installed")
             reportName = self.bom_type
-            srv = openerp.report.interface.report_int._reports['report.' + reportName]
+            template_ids = self.env['ir.ui.view'].search([('name', '=', reportName)])
+            stream, fileExtention = self.env['report'].get_pdf(template_ids, reportName), 'pdf'
             bomId = self.env.context.get('active_id')
             newContext = self.env.context.copy()
             newContext['lang'] = lang
-            stream, fileExtention = srv.create(self.env.cr, self.env.uid, [bomId, ], {'raise_report_warning': False}, context=newContext)
             self.datas = base64.encodestring(stream)
             tMrpBom = self.env['mrp.bom']
             brwProduct = tMrpBom.browse(bomId)

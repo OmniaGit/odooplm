@@ -45,64 +45,10 @@ class plm_config_settings(models.Model):
     _name = 'plm.config.settings'
     _inherit = 'res.config.settings'
 
-    plm_service_id  =   fields.Char(_('Register PLM module, insert your Service ID.'),  size=128,  help=_("Insert the Service ID and register your PLM module. Ask it to OmniaSolutions."))
-    activated_id    =   fields.Char(_('Activated PLM client'),                          size=128,  help=_("Listed activated Client."))
-    active_editor   =   fields.Char(_('Client Editor Name'),                            size=128,  help=_("Used Editor Name"))
-    active_node     =   fields.Char(_('OS machine name'),                               size=128,  help=_("Editor Machine name"))
-    active_os       =   fields.Char(_('OS name'),                                       size=128,  help=_("Editor OS name"))
-    active_os_rel   =   fields.Char(_('OS release'),                                    size=128,  help=_("Editor OS release"))
-    active_os_ver   =   fields.Char(_('OS version'),                                    size=128,  help=_("Editor OS version"))
-    active_os_arch  =   fields.Char(_('OS architecture'),                               size=128,  help=_("Editor OS architecture"))
-    node_id         =   fields.Char(_('Registered PLM client'),                         size=128,  help=_("Listed registered Client."))
+
     module_plm_pack_and_go = fields.Boolean("Plm Pack and go")
     module_plm_report_language_helper = fields.Boolean("Plm Report Language Helper")
 
-    def GetServiceIds(self, cr, uid, oids, default=None, context=None):
-        """
-            Get all Service Ids registered.
-        """
-        ids = []
-        partIds = self.search(cr, uid, [('activated_id', '=', False)], context=context)
-        for part in self.browse(cr, uid, partIds):
-            ids.append(part.plm_service_id)
-        return list(set(ids))
-
-    def RegisterActiveId(self, cr, uid, vals, default=None, context=None):
-        """
-            Get all Service Ids registered.  [serviceID, activation, activeEditor, (system, node, release, version, machine, processor) ]
-        """
-        defaults = {}
-        serviceID, activation, activeEditor, platformData, nodeId = vals
-        if activation:
-            defaults['plm_service_id'] = serviceID
-            defaults['activated_id'] = activation
-            defaults['active_editor'] = activeEditor
-            defaults['active_os'] = platformData[0]
-            defaults['active_node'] = platformData[1]
-            defaults['active_os_rel'] = platformData[2]
-            defaults['active_os_ver'] = platformData[3]
-            defaults['active_os_arch'] = platformData[4]
-            defaults['node_id'] = nodeId
-            partIds = self.search(cr, uid, [('plm_service_id', '=', serviceID), ('activated_id', '=', activation)], context=context)
-            if partIds:
-                for partId  in partIds:
-                    self.write(cr, uid, [partId], defaults, context=context)
-                    return False
-            self.create(cr, uid, defaults, context=context)
-        return False
-
-    def GetActiveServiceId(self, cr, uid, vals, default=None, context=None):
-        """
-            Get all Service Ids registered.  [serviceID, activation, activeEditor, (system, node, release, version, machine, processor) ]
-        """
-        results = []
-        nodeId, activation, activeEditor, platformData = vals
-        activeEditor = activeEditor
-        platformData = platformData
-        partIds = self.search(cr, uid, [('node_id', '=', nodeId), ('activated_id', '=', activation)], context=context)
-        for partId  in self.browse(cr, uid, partIds):
-            results.append(partId.plm_service_id)
-        return results
 plm_config_settings()
 
 
