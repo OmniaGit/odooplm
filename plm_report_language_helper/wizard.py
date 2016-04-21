@@ -143,16 +143,19 @@ class plm_bomChoseLanguage(osv.osv.osv_memory):
             if not mids:
                 raise UserError("Language not Installed")
             reportName = self.bom_type
+            oldContext = self.env.context.copy()    # Used for restore after pdf generation
+            newContext = self.env.context.copy()    # Used to update and generate pdf
+            newContext['lang'] = lang
+            self.env.context = newContext
             template_ids = self.env['ir.ui.view'].search([('name', '=', reportName)])
             stream, fileExtention = self.env['report'].get_pdf(template_ids, reportName), 'pdf'
             bomId = self.env.context.get('active_id')
-            newContext = self.env.context.copy()
-            newContext['lang'] = lang
             self.datas = base64.encodestring(stream)
             tMrpBom = self.env['mrp.bom']
             brwProduct = tMrpBom.browse(bomId)
-            fileName = brwProduct.product_id.name + "_" + lang + "_bom." + fileExtention
+            fileName = brwProduct.product_tmpl_id.name + "_" + lang + "_bom." + fileExtention
             self.datas_name = fileName
+            self.env.context = oldContext
             return {'context': self.env.context,
                     'view_type': 'form',
                     'view_mode': 'form',
