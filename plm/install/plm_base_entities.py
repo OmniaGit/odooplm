@@ -212,7 +212,7 @@ class plm_relation(models.Model):
 
     create_date      =   fields.Datetime(_('Creation Date'), readonly=True)
     source_id        =   fields.Many2one('plm.document', 'name', ondelete='no action', readonly=True, help=_('This is the document object that declares this BoM.'))
-    type             =   fields.Selection([('normal', _('Normal BoM')), ('phantom', _('Sets / Phantom')), ('ebom', _('Engineering BoM')), ('spbom', _('Spare BoM'))], _('BoM Type'), required=True, help=
+    type             =   fields.Selection([('normal', _('Normal BoM')), ('phantom', _('Sets / Phantom')), ('ebom', _('Engineering BoM')), ('spbom', _('Spare BoM'))], _('BoM Type'), required=True, help = 
                     _("Use a phantom bill of material in raw materials lines that have to be " \
                     "automatically computed on a production order and not one per level." \
                     "If you put \"Phantom/Set\" at the root level of a bill of material " \
@@ -228,38 +228,38 @@ class plm_relation(models.Model):
     }
 
     def init(self, cr):
-        self._packed=[]
+        self._packed = []
 
     def _getinbom(self, cr, uid, pid, sid=False):
-        bomLType=self.pool.get('mrp.bom.line')
-        ids=bomLType.search(cr,uid,[('product_id','=',pid),('source_id','=',sid),('type','=','ebom')])
+        bomLType = self.pool.get('mrp.bom.line')
+        ids = bomLType.search(cr, uid, [('product_id', '=', pid), ('source_id', '=', sid), ('type', '=', 'ebom')])
         if not ids:
-            ids=bomLType.search(cr,uid,[('product_id','=',pid),('source_id','=',sid),('type','=','normal')])
+            ids = bomLType.search(cr, uid, [('product_id', '=', pid), ('source_id', '=', sid), ('type', '=', 'normal')])
             if not ids:
-                ids=bomLType.search(cr,uid,[('product_id','=',pid),('source_id','=',False),('type','=','ebom')])
+                ids = bomLType.search(cr, uid, [('product_id', '=', pid), ('source_id', '=', False), ('type', '=', 'ebom')])
             if not ids:
-                ids=bomLType.search(cr,uid,[('product_id','=',pid),('source_id','=',False),('type','=','normal')])
+                ids = bomLType.search(cr, uid, [('product_id', '=', pid), ('source_id', '=', False), ('type', '=', 'normal')])
                 if not ids:
-                    ids=bomLType.search(cr,uid,[('product_id','=',pid),('type','=','ebom')])
+                    ids = bomLType.search(cr, uid, [('product_id', '=', pid), ('type', '=', 'ebom')])
                 if not ids:
-                    ids=bomLType.search(cr,uid,[('product_id','=',pid),('type','=','normal')])
-        return bomLType.browse(cr,uid,list(set(ids)),context=None)
+                    ids = bomLType.search(cr, uid, [('product_id', '=', pid), ('type', '=', 'normal')])
+        return bomLType.browse(cr, uid, list(set(ids)), context=None)
 
     def _getbom(self, cr, uid, pid, sid=False):
-        if sid==None:
-            sid=False
-        ids=self.search(cr,uid,[('product_tmpl_id','=',pid),('source_id','=',sid),('type','=','ebom')])
+        if sid is None:
+            sid = False
+        ids = self.search(cr, uid, [('product_tmpl_id', '=', pid), ('source_id', '=', sid), ('type', '=', 'ebom')])
         if not ids:
-            ids=self.search(cr,uid,[('product_tmpl_id','=',pid),('source_id','=',sid),('type','=','normal')])
+            ids = self.search(cr, uid, [('product_tmpl_id', '=', pid), ('source_id', '=', sid), ('type', '=', 'normal')])
             if not ids:
-                ids=self.search(cr,uid,[('product_tmpl_id','=',pid),('source_id','=',False),('type','=','ebom')])
+                ids = self.search(cr, uid, [('product_tmpl_id', '=', pid), ('source_id', '=', False), ('type', '=', 'ebom')])
                 if not ids:
-                    ids=self.search(cr,uid,[('product_tmpl_id','=',pid),('source_id','=',False),('type','=','normal')])
+                    ids = self.search(cr, uid, [('product_tmpl_id', '=', pid), ('source_id', '=', False), ('type', '=', 'normal')])
                     if not ids:
-                        ids=self.search(cr,uid,[('product_tmpl_id','=',pid),('type','=','ebom')])
+                        ids = self.search(cr, uid, [('product_tmpl_id', '=', pid), ('type', '=', 'ebom')])
                         if not ids:
-                            ids=self.search(cr,uid,[('product_tmpl_id','=',pid),('type','=','normal')])
-        return self.browse(cr,uid,list(set(ids)),context=None)
+                            ids = self.search(cr, uid, [('product_tmpl_id', '=', pid), ('type', '=', 'normal')])
+        return self.browse(cr, uid, list(set(ids)), context=None)
 
     def getListIdsFromStructure(self, structure):
         '''
@@ -275,32 +275,32 @@ class plm_relation(models.Model):
     def _getpackdatas(self, cr, uid, relDatas):
         prtDatas = {}
         tmpids = self.getListIdsFromStructure(relDatas)
-        if len(tmpids)<1:
+        if len(tmpids) < 1:
             return prtDatas
-        compType=self.pool.get('product.product')
-        tmpDatas=compType.read(cr, uid, tmpids)
+        compType = self.pool.get('product.product')
+        tmpDatas = compType.read(cr, uid, tmpids)
         for tmpData in tmpDatas:
             for keyData in tmpData.keys():
-                if tmpData[keyData]==None:
+                if tmpData[keyData] is None:
                     del tmpData[keyData]
-            prtDatas[str(tmpData['id'])]=tmpData
+            prtDatas[str(tmpData['id'])] = tmpData
         return prtDatas
 
     def _getpackreldatas(self, cr, uid, relDatas, prtDatas):
-        relids={}
-        relationDatas={}
+        relids = {}
+        relationDatas = {}
         tmpids = self.getListIdsFromStructure(relDatas)
-        if len(tmpids)<1:
+        if len(tmpids) < 1:
             return prtDatas
         for keyData in prtDatas.keys():
-            tmpData=prtDatas[keyData]
-            if len(tmpData['bom_ids'])>0:
-                relids[keyData]=tmpData['bom_ids'][0]
+            tmpData = prtDatas[keyData]
+            if len(tmpData['bom_ids']) > 0:
+                relids[keyData] = tmpData['bom_ids'][0]
 
-        if len(relids)<1:
+        if len(relids) < 1:
             return relationDatas
         for keyData in relids.keys():
-            relationDatas[keyData]=self.read(cr, uid, relids[keyData])
+            relationDatas[keyData] = self.read(cr, uid, relids[keyData])
         return relationDatas
 
     def GetWhereUsed(self, cr, uid, ids, context=None):
@@ -403,16 +403,16 @@ class plm_relation(models.Model):
         """
             Return a list of all children in a Bom ( level = 0 one level only, level = 1 all levels)
         """
-        self._packed=[]
-        result=[]
-        if level==0 and currlevel>1:
+        self._packed = []
+        result = []
+        if level == 0 and currlevel > 1:
             return result
-        bomids=self.browse(cr, uid, ids)
+        bomids = self.browse(cr, uid, ids)
         for bomid in bomids:
             for bom in bomid.bom_line_ids:
-                children=self.GetExplodedBom(cr, uid, [bom.id], level, currlevel+1)
+                children = self.GetExplodedBom(cr, uid, [bom.id], level, currlevel + 1)
                 result.extend(children)
-            if len(str(bomid.bom_id))>0:
+            if len(str(bomid.bom_id)) > 0:
                 result.append(bomid.id)
         return result
 
