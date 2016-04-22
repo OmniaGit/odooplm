@@ -36,7 +36,7 @@ _logger = logging.getLogger(__name__)
 
 class PackAndGo(osv.osv.osv_memory):
     _name = 'pack.and_go'
-    _inherit='ir.attachment'
+    _inherit = 'ir.attachment'
 
     def setComponentFromContext(self):
         """
@@ -45,10 +45,9 @@ class PackAndGo(osv.osv.osv_memory):
         return self._context.get('active_id', 0)
 
     component_id    = fields.Many2one('product.product', _('Component'), default=setComponentFromContext)
-    name            = fields.Char('Attachment Name', required=True, default=' '),
-    type            = fields.Selection( [ ('url','URL'), ('binary','File'), ],
-                'Type', help="You can either upload a file from your computer or copy/paste an internet link to your file", required=True, change_default=True, default='binary'),
-             
+    name            = fields.Char('Attachment Name', required=True, default=' ')
+    type            = fields.Selection( [ ('url','URL'), ('binary','File'), ], 'Type', help="You can either upload a file from your computer or copy/paste an internet link to your file", required=True, change_default=True, default='binary')
+
     def computeDocFiles(self, compBrws, tmpSubFolder, filestorePath=''):
         for docBws in compBrws.linkeddocuments:
             if filestorePath:
