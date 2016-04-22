@@ -195,6 +195,7 @@ class plm_relation_line(models.Model):
         "The normal BoM will generate one production order per BoM level."))
     itemnum         = fields.Integer(_('CAD Item Position'), help=_("This is the item reference position into the CAD document that declares this BoM."))
     itemlbl         = fields.Char(_('CAD Item Position Label'), size=64)
+    ebom_source_id  = fields.Integer('Source Ebom ID')
 
     _defaults = {
         'product_uom': 1,
@@ -210,19 +211,20 @@ class plm_relation(models.Model):
     _inherit = 'mrp.bom'
 
     create_date      =   fields.Datetime(_('Creation Date'), readonly=True)
-    source_id        =   fields.Many2one('plm.document','name',ondelete='no action',readonly=True,help=_('This is the document object that declares this BoM.'))
-    type             =   fields.Selection([('normal',_('Normal BoM')),('phantom',_('Sets / Phantom')),('ebom',_('Engineering BoM')),('spbom',_('Spare BoM'))], _('BoM Type'), required=True, help=
+    source_id        =   fields.Many2one('plm.document', 'name', ondelete='no action', readonly=True, help=_('This is the document object that declares this BoM.'))
+    type             =   fields.Selection([('normal', _('Normal BoM')), ('phantom', _('Sets / Phantom')), ('ebom', _('Engineering BoM')), ('spbom', _('Spare BoM'))], _('BoM Type'), required=True, help=
                     _("Use a phantom bill of material in raw materials lines that have to be " \
                     "automatically computed on a production order and not one per level." \
                     "If you put \"Phantom/Set\" at the root level of a bill of material " \
                     "it is considered as a set or pack: the products are replaced by the components " \
                     "between the sale order to the picking without going through the production order." \
                     "the normal bom will generate one production order per bom level."))
-    weight_net      =   fields.Float('Weight',digits_compute=dp.get_precision(_('Stock Weight')), help=_("The BoM net weight in Kg."))
+    weight_net      =   fields.Float('Weight', digits_compute=dp.get_precision(_('Stock Weight')), help=_("The BoM net weight in Kg."))
+    ebom_source_id  = fields.Integer('Source Ebom ID')
 
     _defaults = {
-        'product_uom' : 1,
-        'weight_net' : 0.0,
+        'product_uom': 1,
+        'weight_net': 0.0,
     }
 
     def init(self, cr):
@@ -639,11 +641,13 @@ class plm_temporary(osv.osv.osv_memory):
     _name = "plm.temporary"
     _description = "Temporary Class"
     name = fields.Char(_('Temp'), size=128)
+    summarize = fields.Boolean('Summarize Bom Lines if needed.', help="If set as true, when a Bom line comes from EBOM was in the old normal BOM two lines where been summarized.")
 
     def action_create_normalBom(self, cr, uid, ids, context=None):
         """
             Create a new Normal Bom if doesn't exist (action callable from views)
         """
+        summarize = self.browse(cr, uid, ids[0], context).summarize
         selectdIds = context.get('active_ids', [])
         objType = context.get('active_model', '')
         if objType != 'product.product':
@@ -652,24 +656,34 @@ class plm_temporary(osv.osv.osv_memory):
             raise UserError(_("Select a product before to continue"))
         objType = context.get('active_model', False)
         product_product_type_object = self.pool.get(objType)
-        collectableProduct = []
         for productBrowse in product_product_type_object.browse(cr, uid, selectdIds, context):
             idTemplate = productBrowse.product_tmpl_id.id
             objBoms = self.pool.get('mrp.bom').search(cr, uid, [('product_tmpl_id', '=', idTemplate),
                                                                 ('type', '=', 'normal')])
             if objBoms:
                 raise UserError(_("Normal BoM for Part %r already exists." % (objBoms)))
-            product_product_type_object.create_bom_from_ebom(cr, uid, productBrowse, 'normal', context)
-            collectableProduct.append(productBrowse.id)
-        if collectableProduct:
-            return {'name': _('Bill of Materials'),
-                    'view_type': 'form',
-                    "view_mode": 'tree,form',
-                    'res_model': 'mrp.bom',
-                    'type': 'ir.actions.act_window',
-                    'domain': "[('product_id','in', [" + ','.join(map(str, collectableProduct)) + "])]",
-                    }
-        else:
-            raise UserError(_("Unable to create the normall Bom"))
+            lineMessaggesList = product_product_type_object.create_bom_from_ebom(cr, uid, productBrowse, 'normal', summarize, context)
+            if lineMessaggesList:
+                outMess = ''
+                for mess in lineMessaggesList:
+                    outMess = outMess + '\n' + mess
+                t_mess_obj = self.pool.get("plm.temporary.message")
+                t_mess_id = t_mess_obj.create(cr, uid, {'name': outMess})
+                return {'name': _('Result'),
+                        'view_type': 'form',
+                        "view_mode": 'form',
+                        'res_model': "plm.temporary.message",
+                        'res_id': t_mess_id,
+                        'type': 'ir.actions.act_window',
+                        'target': 'new',
+                        }
 
 plm_temporary()
+
+
+class plm_temporary_message(osv.osv.osv_memory):
+    _name = "plm.temporary.message"
+    _description = "Temporary Class"
+    name = fields.Text(_('Bom Result'), readonly=True)
+
+plm_temporary_message()
