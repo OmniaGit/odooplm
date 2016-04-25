@@ -28,7 +28,7 @@ from datetime import datetime
 
 from openerp.osv.orm import except_orm
 import openerp.tools as tools
-
+from openerp.exceptions import UserError
 from openerp.osv import fields as oldFields
 from openerp        import models, fields, api, SUPERUSER_ID, _, osv
 import logging
@@ -128,7 +128,7 @@ class plm_document(models.Model):
                 if not objDoc.store_fname:
                     value=objDoc.db_datas
                     if not value or len(value)<1:
-                        raise osv.osv.except_osv(_('Stored Document Error'), _("Document %s - %s cannot be accessed" %(str(objDoc.name),str(objDoc.revisionid))))
+                        raise UserError(_("Document %s - %s cannot be accessed" %(str(objDoc.name),str(objDoc.revisionid))))
                 else:
                     filestore=os.path.join(self._get_filestore(cr), objDoc.store_fname)
                     if os.path.exists(filestore):
@@ -301,7 +301,7 @@ class plm_document(models.Model):
             try:
                 os.makedirs(path)
             except:
-                raise osv.except_osv(_('Document Error'), _("Permission denied or directory %s cannot be created." %(str(path))))
+                raise UserError( _("Permission denied or directory %s cannot be created." %(str(path))))
         
         flag = None
         # This can be improved
@@ -435,7 +435,7 @@ class plm_document(models.Model):
                     if self._iswritable(cr,uid,objDocument):
                         del(document['lastupdate'])
                         if not self.write(cr,uid,[existingID], document , context=context, check=True):
-                            raise osv.except_osv(_('Update Document Error'), _("Document %s - %s cannot be updated" %(str(document['name']), str(document['revisionid']))))
+                            raise UserError( _("Document %s - %s cannot be updated" %(str(document['name']), str(document['revisionid']))))
                         hasSaved=True
             document['documentID']=existingID
             document['hasSaved']=hasSaved
@@ -627,7 +627,7 @@ class plm_document(models.Model):
         if check:
             for customObject in self.browse(cr,uid,ids,context=context):
                 if customObject.state in checkState:
-                    raise osv.except_osv(_('Edit Entity Error'), _("The active state does not allow you to make save action"))
+                    raise UserError(_("The active state does not allow you to make save action"))
                     return False
         return super(plm_document,self).write(cr, uid, ids, vals, context=context)
 
@@ -952,7 +952,7 @@ class plm_checkout(models.Model):
         values={'writable':True,}
         if not documentType.write(cr, uid, [docID.id], values):
             logging.warning("create : Unable to check-out the required document ("+str(docID.name)+"-"+str(docID.revisionid)+").")
-            raise osv.except_osv(_('Check-Out Error'), _("Unable to check-out the required document ("+str(docID.name)+"-"+str(docID.revisionid)+")."))
+            raise UserError( _("Unable to check-out the required document ("+str(docID.name)+"-"+str(docID.revisionid)+")."))
             return False
         self._adjustRelations(cr, uid, [docID.id], uid)
         newID = super(plm_checkout,self).create(cr, uid, vals, context=context)   
@@ -969,7 +969,7 @@ class plm_checkout(models.Model):
             docids.append(checkObj.documentid.id)
             if not documentType.write(cr, uid, [checkObj.documentid.id], values):
                 logging.warning("unlink : Unable to check-in the document ("+str(checkObj.documentid.name)+"-"+str(checkObj.documentid.revisionid)+").\n You can't change writable flag.")
-                raise osv.except_osv(_('Check-In Error'), _("Unable to Check-In the document ("+str(checkObj.documentid.name)+"-"+str(checkObj.documentid.revisionid)+").\n You can't change writable flag."))
+                raise UserError( _("Unable to Check-In the document ("+str(checkObj.documentid.name)+"-"+str(checkObj.documentid.revisionid)+").\n You can't change writable flag."))
                 return False
         self._adjustRelations(cr, uid, docids, False)
         dummy = super(plm_checkout,self).unlink(cr, uid, ids, context=context)
@@ -1068,7 +1068,7 @@ class plm_backupdoc(models.Model):
         if context!=None and context!={}:
             if uid!=1:
                 logging.warning("unlink : Unable to remove the required documents. You aren't authorized in this context.")
-                raise osv.except_osv(_('Backup Error'), _("Unable to remove the required document.\n You aren't authorized in this context."))
+                raise UserError( _("Unable to remove the required document.\n You aren't authorized in this context."))
                 return False
         documentType=self.pool.get('plm.document')
         checkObjs=self.browse(cr, uid, ids, context=context)
@@ -1085,7 +1085,7 @@ class plm_backupdoc(models.Model):
                         committed=True
                 else:
                     logging.warning("unlink : Unable to remove the document ("+str(checkObj.documentid.name)+"-"+str(checkObj.documentid.revisionid)+") from backup set. You can't change writable flag.")
-                    raise osv.except_osv(_('Check-In Error'), _("Unable to remove the document ("+str(checkObj.documentid.name)+"-"+str(checkObj.documentid.revisionid)+") from backup set.\n It isn't a backup file, it's original current one."))
+                    raise UserError( _("Unable to remove the document ("+str(checkObj.documentid.name)+"-"+str(checkObj.documentid.revisionid)+") from backup set.\n It isn't a backup file, it's original current one."))
         if committed:
             return super(plm_backupdoc,self).unlink(cr, uid, ids, context=context)
         else:
@@ -1127,26 +1127,6 @@ class BackupDocWizard(osv.osv.osv_memory):
                             'res_id': documentId,
                             'type': 'ir.actions.act_window',
                             'domain': "[]"}
-        return True   
-            
-#         committed=False
-#         if context!=None and context!={}:
-#             if uid!=1:
-#                 logging.warning("unlink : Unable to remove the required documents.\n You aren't authorized in this context.")
-#                 raise osv.except_osv(_('Backup Error'), _("Unable to remove the required document.\n You aren't authorized in this context."))
-#                 return False
-#         documentType=self.pool.get('plm.document')
-#         checkObj=self.browse(cr, uid, context['active_id'])
-#         objDoc=documentType.browse(cr, uid, checkObj.documentid.id)
-#         if objDoc.state=='draft' and documentType.ischecked_in(cr, uid, ids, context):
-#             if checkObj.existingfile != objDoc.store_fname:
-#                 committed=documentType.write(cr, uid, [objDoc.id], {'store_fname':checkObj.existingfile,'printout':checkObj.printout,'preview':checkObj.preview,}, context, check=False)
-#                 if  committed:
-#                     self.wf_message_post(cr, uid, [objDoc.id], body=_('Document restored from backup.'))
-#                 else:
-#                     logging.warning("action_restore_document : Unable to restore the document ("+str(checkObj.documentid.name)+"-"+str(checkObj.documentid.revisionid)+") from backup set.")
-#                     raise osv.except_osv(_('Check-In Error'), _("Unable to restore the document ("+str(checkObj.documentid.name)+"-"+str(checkObj.documentid.revisionid)+") from backup set.\n Check if it's checked-in, before to proceed."))
-#         self.unlink(cr, uid, ids, context)
-#         return committed
+        return True
 
 BackupDocWizard()
