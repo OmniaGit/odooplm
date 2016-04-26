@@ -23,7 +23,7 @@ import types
 import logging
 from datetime import datetime
 from openerp import models, fields, api, SUPERUSER_ID, _, osv
-from openerp.exceptions import ValidationError, UserError
+from openerp.exceptions import ValidationError
 from openerp.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
@@ -317,24 +317,22 @@ class plm_component(models.Model):
         """
             Create a new Normal Bom (recursive on all EBom children)
         """
-        defaults={}
+        defaults = {}
         if idd in self.processedIds:
             return False
-        checkObj=self.browse(cr, uid, idd, context)
+        checkObj = self.browse(cr, uid, idd, context)
         if not checkObj:
             return False
         bomType = self.pool.get('mrp.bom')
         bomLType = self.pool.get('mrp.bom.line')
         product_template_id = checkObj.product_tmpl_id.id
-        objBoms = bomType.search(cr, uid, [('product_tmpl_id','=',product_template_id),('type','=','normal')])
-        idBoms = bomType.search(cr, uid, [('product_tmpl_id','=',product_template_id),('type','=','ebom')])
-
+        objBoms = bomType.search(cr, uid, [('product_tmpl_id', '=', product_template_id), ('type', '=', 'normal')])
         if not objBoms:
             idBoms = bomType.search(cr, uid, [('product_tmpl_id', '=', product_template_id),
                                               ('type', '=', 'ebom')])
-            if idBoms:
+            for idBom in idBoms:
+                newidBom = bomType.copy(cr, uid, idBom, defaults, context)
                 self.processedIds.append(idd)
-                newidBom=bomType.copy(cr, uid, idBoms[0], defaults, context)
                 if newidBom:
                     bomType.write(cr,uid,[newidBom],{'name':checkObj.name,'product_id':checkObj.id,'type':'normal',},check=False,context=None)
                     oidBom=bomType.browse(cr,uid,newidBom,context=context)
