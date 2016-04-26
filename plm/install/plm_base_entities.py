@@ -45,62 +45,10 @@ class plm_config_settings(models.Model):
     _name = 'plm.config.settings'
     _inherit = 'res.config.settings'
 
-    plm_service_id  =   fields.Char(_('Register PLM module, insert your Service ID.'),  size=128,  help=_("Insert the Service ID and register your PLM module. Ask it to OmniaSolutions."))
-    activated_id    =   fields.Char(_('Activated PLM client'),                          size=128,  help=_("Listed activated Client."))
-    active_editor   =   fields.Char(_('Client Editor Name'),                            size=128,  help=_("Used Editor Name"))
-    active_node     =   fields.Char(_('OS machine name'),                               size=128,  help=_("Editor Machine name"))
-    active_os       =   fields.Char(_('OS name'),                                       size=128,  help=_("Editor OS name"))
-    active_os_rel   =   fields.Char(_('OS release'),                                    size=128,  help=_("Editor OS release"))
-    active_os_ver   =   fields.Char(_('OS version'),                                    size=128,  help=_("Editor OS version"))
-    active_os_arch  =   fields.Char(_('OS architecture'),                               size=128,  help=_("Editor OS architecture"))
-    node_id         =   fields.Char(_('Registered PLM client'),                         size=128,  help=_("Listed registered Client."))
 
-    def GetServiceIds(self, cr, uid, oids, default=None, context=None):
-        """
-            Get all Service Ids registered.
-        """
-        ids = []
-        partIds = self.search(cr, uid, [('activated_id', '=', False)], context=context)
-        for part in self.browse(cr, uid, partIds):
-            ids.append(part.plm_service_id)
-        return list(set(ids))
+    module_plm_pack_and_go = fields.Boolean("Plm Pack and go")
+    module_plm_report_language_helper = fields.Boolean("Plm Report Language Helper")
 
-    def RegisterActiveId(self, cr, uid, vals, default=None, context=None):
-        """
-            Get all Service Ids registered.  [serviceID, activation, activeEditor, (system, node, release, version, machine, processor) ]
-        """
-        defaults = {}
-        serviceID, activation, activeEditor, platformData, nodeId = vals
-        if activation:
-            defaults['plm_service_id'] = serviceID
-            defaults['activated_id'] = activation
-            defaults['active_editor'] = activeEditor
-            defaults['active_os'] = platformData[0]
-            defaults['active_node'] = platformData[1]
-            defaults['active_os_rel'] = platformData[2]
-            defaults['active_os_ver'] = platformData[3]
-            defaults['active_os_arch'] = platformData[4]
-            defaults['node_id'] = nodeId
-            partIds = self.search(cr, uid, [('plm_service_id', '=', serviceID), ('activated_id', '=', activation)], context=context)
-            if partIds:
-                for partId  in partIds:
-                    self.write(cr, uid, [partId], defaults, context=context)
-                    return False
-            self.create(cr, uid, defaults, context=context)
-        return False
-
-    def GetActiveServiceId(self, cr, uid, vals, default=None, context=None):
-        """
-            Get all Service Ids registered.  [serviceID, activation, activeEditor, (system, node, release, version, machine, processor) ]
-        """
-        results = []
-        nodeId, activation, activeEditor, platformData = vals
-        activeEditor = activeEditor
-        platformData = platformData
-        partIds = self.search(cr, uid, [('node_id', '=', nodeId), ('activated_id', '=', activation)], context=context)
-        for partId  in self.browse(cr, uid, partIds):
-            results.append(partId.plm_service_id)
-        return results
 plm_config_settings()
 
 
@@ -247,6 +195,7 @@ class plm_relation_line(models.Model):
         "The normal BoM will generate one production order per BoM level."))
     itemnum         = fields.Integer(_('CAD Item Position'), help=_("This is the item reference position into the CAD document that declares this BoM."))
     itemlbl         = fields.Char(_('CAD Item Position Label'), size=64)
+    ebom_source_id  = fields.Integer('Source Ebom ID')
 
     _defaults = {
         'product_uom': 1,
@@ -262,54 +211,55 @@ class plm_relation(models.Model):
     _inherit = 'mrp.bom'
 
     create_date      =   fields.Datetime(_('Creation Date'), readonly=True)
-    source_id        =   fields.Many2one('plm.document','name',ondelete='no action',readonly=True,help=_('This is the document object that declares this BoM.'))
-    type             =   fields.Selection([('normal',_('Normal BoM')),('phantom',_('Sets / Phantom')),('ebom',_('Engineering BoM')),('spbom',_('Spare BoM'))], _('BoM Type'), required=True, help=
+    source_id        =   fields.Many2one('plm.document', 'name', ondelete='no action', readonly=True, help=_('This is the document object that declares this BoM.'))
+    type             =   fields.Selection([('normal', _('Normal BoM')), ('phantom', _('Sets / Phantom')), ('ebom', _('Engineering BoM')), ('spbom', _('Spare BoM'))], _('BoM Type'), required=True, help = 
                     _("Use a phantom bill of material in raw materials lines that have to be " \
                     "automatically computed on a production order and not one per level." \
                     "If you put \"Phantom/Set\" at the root level of a bill of material " \
                     "it is considered as a set or pack: the products are replaced by the components " \
                     "between the sale order to the picking without going through the production order." \
                     "the normal bom will generate one production order per bom level."))
-    weight_net      =   fields.Float('Weight',digits_compute=dp.get_precision(_('Stock Weight')), help=_("The BoM net weight in Kg."))
+    weight_net      =   fields.Float('Weight', digits_compute=dp.get_precision(_('Stock Weight')), help=_("The BoM net weight in Kg."))
+    ebom_source_id  = fields.Integer('Source Ebom ID')
 
     _defaults = {
-        'product_uom' : 1,
-        'weight_net' : 0.0,
+        'product_uom': 1,
+        'weight_net': 0.0,
     }
 
     def init(self, cr):
-        self._packed=[]
+        self._packed = []
 
     def _getinbom(self, cr, uid, pid, sid=False):
-        bomLType=self.pool.get('mrp.bom.line')
-        ids=bomLType.search(cr,uid,[('product_id','=',pid),('source_id','=',sid),('type','=','ebom')])
+        bomLType = self.pool.get('mrp.bom.line')
+        ids = bomLType.search(cr, uid, [('product_id', '=', pid), ('source_id', '=', sid), ('type', '=', 'ebom')])
         if not ids:
-            ids=bomLType.search(cr,uid,[('product_id','=',pid),('source_id','=',sid),('type','=','normal')])
+            ids = bomLType.search(cr, uid, [('product_id', '=', pid), ('source_id', '=', sid), ('type', '=', 'normal')])
             if not ids:
-                ids=bomLType.search(cr,uid,[('product_id','=',pid),('source_id','=',False),('type','=','ebom')])
+                ids = bomLType.search(cr, uid, [('product_id', '=', pid), ('source_id', '=', False), ('type', '=', 'ebom')])
             if not ids:
-                ids=bomLType.search(cr,uid,[('product_id','=',pid),('source_id','=',False),('type','=','normal')])
+                ids = bomLType.search(cr, uid, [('product_id', '=', pid), ('source_id', '=', False), ('type', '=', 'normal')])
                 if not ids:
-                    ids=bomLType.search(cr,uid,[('product_id','=',pid),('type','=','ebom')])
+                    ids = bomLType.search(cr, uid, [('product_id', '=', pid), ('type', '=', 'ebom')])
                 if not ids:
-                    ids=bomLType.search(cr,uid,[('product_id','=',pid),('type','=','normal')])
-        return bomLType.browse(cr,uid,list(set(ids)),context=None)
+                    ids = bomLType.search(cr, uid, [('product_id', '=', pid), ('type', '=', 'normal')])
+        return bomLType.browse(cr, uid, list(set(ids)), context=None)
 
     def _getbom(self, cr, uid, pid, sid=False):
-        if sid==None:
-            sid=False
-        ids=self.search(cr,uid,[('product_tmpl_id','=',pid),('source_id','=',sid),('type','=','ebom')])
+        if sid is None:
+            sid = False
+        ids = self.search(cr, uid, [('product_tmpl_id', '=', pid), ('source_id', '=', sid), ('type', '=', 'ebom')])
         if not ids:
-            ids=self.search(cr,uid,[('product_tmpl_id','=',pid),('source_id','=',sid),('type','=','normal')])
+            ids = self.search(cr, uid, [('product_tmpl_id', '=', pid), ('source_id', '=', sid), ('type', '=', 'normal')])
             if not ids:
-                ids=self.search(cr,uid,[('product_tmpl_id','=',pid),('source_id','=',False),('type','=','ebom')])
+                ids = self.search(cr, uid, [('product_tmpl_id', '=', pid), ('source_id', '=', False), ('type', '=', 'ebom')])
                 if not ids:
-                    ids=self.search(cr,uid,[('product_tmpl_id','=',pid),('source_id','=',False),('type','=','normal')])
+                    ids = self.search(cr, uid, [('product_tmpl_id', '=', pid), ('source_id', '=', False), ('type', '=', 'normal')])
                     if not ids:
-                        ids=self.search(cr,uid,[('product_tmpl_id','=',pid),('type','=','ebom')])
+                        ids = self.search(cr, uid, [('product_tmpl_id', '=', pid), ('type', '=', 'ebom')])
                         if not ids:
-                            ids=self.search(cr,uid,[('product_tmpl_id','=',pid),('type','=','normal')])
-        return self.browse(cr,uid,list(set(ids)),context=None)
+                            ids = self.search(cr, uid, [('product_tmpl_id', '=', pid), ('type', '=', 'normal')])
+        return self.browse(cr, uid, list(set(ids)), context=None)
 
     def getListIdsFromStructure(self, structure):
         '''
@@ -325,32 +275,32 @@ class plm_relation(models.Model):
     def _getpackdatas(self, cr, uid, relDatas):
         prtDatas = {}
         tmpids = self.getListIdsFromStructure(relDatas)
-        if len(tmpids)<1:
+        if len(tmpids) < 1:
             return prtDatas
-        compType=self.pool.get('product.product')
-        tmpDatas=compType.read(cr, uid, tmpids)
+        compType = self.pool.get('product.product')
+        tmpDatas = compType.read(cr, uid, tmpids)
         for tmpData in tmpDatas:
             for keyData in tmpData.keys():
-                if tmpData[keyData]==None:
+                if tmpData[keyData] is None:
                     del tmpData[keyData]
-            prtDatas[str(tmpData['id'])]=tmpData
+            prtDatas[str(tmpData['id'])] = tmpData
         return prtDatas
 
     def _getpackreldatas(self, cr, uid, relDatas, prtDatas):
-        relids={}
-        relationDatas={}
+        relids = {}
+        relationDatas = {}
         tmpids = self.getListIdsFromStructure(relDatas)
-        if len(tmpids)<1:
+        if len(tmpids) < 1:
             return prtDatas
         for keyData in prtDatas.keys():
-            tmpData=prtDatas[keyData]
-            if len(tmpData['bom_ids'])>0:
-                relids[keyData]=tmpData['bom_ids'][0]
+            tmpData = prtDatas[keyData]
+            if len(tmpData['bom_ids']) > 0:
+                relids[keyData] = tmpData['bom_ids'][0]
 
-        if len(relids)<1:
+        if len(relids) < 1:
             return relationDatas
         for keyData in relids.keys():
-            relationDatas[keyData]=self.read(cr, uid, relids[keyData])
+            relationDatas[keyData] = self.read(cr, uid, relids[keyData])
         return relationDatas
 
     def GetWhereUsed(self, cr, uid, ids, context=None):
@@ -453,16 +403,16 @@ class plm_relation(models.Model):
         """
             Return a list of all children in a Bom ( level = 0 one level only, level = 1 all levels)
         """
-        self._packed=[]
-        result=[]
-        if level==0 and currlevel>1:
+        self._packed = []
+        result = []
+        if level == 0 and currlevel > 1:
             return result
-        bomids=self.browse(cr, uid, ids)
+        bomids = self.browse(cr, uid, ids)
         for bomid in bomids:
             for bom in bomid.bom_line_ids:
-                children=self.GetExplodedBom(cr, uid, [bom.id], level, currlevel+1)
+                children = self.GetExplodedBom(cr, uid, [bom.id], level, currlevel + 1)
                 result.extend(children)
-            if len(str(bomid.bom_id))>0:
+            if len(str(bomid.bom_id)) > 0:
                 result.append(bomid.id)
         return result
 
@@ -691,11 +641,13 @@ class plm_temporary(osv.osv.osv_memory):
     _name = "plm.temporary"
     _description = "Temporary Class"
     name = fields.Char(_('Temp'), size=128)
+    summarize = fields.Boolean('Summarize Bom Lines if needed.', help="If set as true, when a Bom line comes from EBOM was in the old normal BOM two lines where been summarized.")
 
     def action_create_normalBom(self, cr, uid, ids, context=None):
         """
             Create a new Normal Bom if doesn't exist (action callable from views)
         """
+        summarize = self.browse(cr, uid, ids[0], context).summarize
         selectdIds = context.get('active_ids', [])
         objType = context.get('active_model', '')
         if objType != 'product.product':
@@ -704,24 +656,34 @@ class plm_temporary(osv.osv.osv_memory):
             raise UserError(_("Select a product before to continue"))
         objType = context.get('active_model', False)
         product_product_type_object = self.pool.get(objType)
-        collectableProduct = []
         for productBrowse in product_product_type_object.browse(cr, uid, selectdIds, context):
             idTemplate = productBrowse.product_tmpl_id.id
             objBoms = self.pool.get('mrp.bom').search(cr, uid, [('product_tmpl_id', '=', idTemplate),
                                                                 ('type', '=', 'normal')])
             if objBoms:
                 raise UserError(_("Normal BoM for Part %r already exists." % (objBoms)))
-            product_product_type_object.create_bom_from_ebom(cr, uid, productBrowse, 'normal', context)
-            collectableProduct.append(productBrowse.id)
-        if collectableProduct:
-            return {'name': _('Bill of Materials'),
-                    'view_type': 'form',
-                    "view_mode": 'tree,form',
-                    'res_model': 'mrp.bom',
-                    'type': 'ir.actions.act_window',
-                    'domain': "[('product_id','in', [" + ','.join(map(str, collectableProduct)) + "])]",
-                    }
-        else:
-            raise UserError(_("Unable to create the normall Bom"))
+            lineMessaggesList = product_product_type_object.create_bom_from_ebom(cr, uid, productBrowse, 'normal', summarize, context)
+            if lineMessaggesList:
+                outMess = ''
+                for mess in lineMessaggesList:
+                    outMess = outMess + '\n' + mess
+                t_mess_obj = self.pool.get("plm.temporary.message")
+                t_mess_id = t_mess_obj.create(cr, uid, {'name': outMess})
+                return {'name': _('Result'),
+                        'view_type': 'form',
+                        "view_mode": 'form',
+                        'res_model': "plm.temporary.message",
+                        'res_id': t_mess_id,
+                        'type': 'ir.actions.act_window',
+                        'target': 'new',
+                        }
 
 plm_temporary()
+
+
+class plm_temporary_message(osv.osv.osv_memory):
+    _name = "plm.temporary.message"
+    _description = "Temporary Class"
+    name = fields.Text(_('Bom Result'), readonly=True)
+
+plm_temporary_message()

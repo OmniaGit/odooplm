@@ -80,21 +80,6 @@ class plm_component(models.Model):
                 'res_model' : 'mrp.bom',
                 'context'   : localCtx,
             }
-            
-#     def _getExplodedBom(self, cr, uid, ids, level=0, currlevel=0):
-#         """
-#             Return a flat list of all children in a Bom ( level = 0 one level only, level = 1 all levels)
-#         """
-#         result=[]
-#         if level==0 and currlevel>1:
-#             return result
-#         components=self.pool.get('product.product').browse(cr, uid, ids)
-#         relType=self.pool.get('mrp.bom')
-#         for component in components: 
-#             for bomid in component.bom_ids:
-#                 children=relType.GetExplodedBom(cr, uid, [bomid.id], level, currlevel)
-#                 result.extend(children)
-#         return result
 
     def _getChildrenBom(self, cr, uid, component, level=0, currlevel=0, context=None):
         """
@@ -274,43 +259,115 @@ class plm_component(models.Model):
                 expData=tmpData['datas']
         return expData
 
-    def create_bom_from_ebom(self, cr, uid, objProductProductBrw, newBomType, context={}):
+    def create_bom_from_ebom(self, cr, uid, objProductProductBrw, newBomType, summarize=False, context={}):
         """
             create a new bom starting from ebom
         """
+        bomType = self.pool.get('mrp.bom')
+        bomLType = self.pool.get('mrp.bom.line')
+        prodTmplObj = self.pool.get('product.template')
+        collectList = []
+
+        def getPreviousNormalBOM(bomBrws):
+            outBomBrws = []
+            engineering_revision = bomBrws.engineering_revision
+            if engineering_revision <= 0:
+                return []
+            engineering_code = bomBrws.product_tmpl_id.engineering_code
+            previousRevProductIds = prodTmplObj.search(cr, uid, [('engineering_revision', '=', engineering_revision - 1),
+                                                                 ('engineering_code', '=', engineering_code)])
+            for prodId in previousRevProductIds:
+                oldBomIds = bomType.search(cr, uid, [('product_tmpl_id', '=', prodId), ('type', '=', newBomType)])
+                for oldBomId in oldBomIds:
+                    outBomBrws.append(bomType.browse(cr, uid, oldBomId))
+                break
+            return outBomBrws
+
+        eBomId = False
+        newidBom = False
         if newBomType not in ['normal', 'spbom']:
             raise UserError(_("Could not convert source bom to %r" % newBomType))
         product_template_id = objProductProductBrw.product_tmpl_id.id
-        bomType = self.pool.get('mrp.bom')
-        bomLType = self.pool.get('mrp.bom.line')
         bomIds = bomType.search(cr, uid, [('product_tmpl_id', '=', product_template_id),
                                           ('type', '=', newBomType)])
         if bomIds:
-            for bom_line in bomType.browse(cr, uid, bomIds[0], context=context).bom_line_ids:
-                self.create_bom_from_ebom(cr, uid, bom_line.product_id, newBomType, context)
+            bomBrws = bomType.browse(cr, uid, bomIds[0], context=context)
+            for bom_line in bomBrws.bom_line_ids:
+                self.create_bom_from_ebom(cr, uid, bom_line.product_id, newBomType, summarize, context)
         else:
-            idNewTypeBoms = bomType.search(cr, uid, [('product_tmpl_id', '=', product_template_id),
-                                                     ('type', '=', 'ebom')])
-            if not idNewTypeBoms:
+            bomIds = bomType.search(cr, uid, [('product_tmpl_id', '=', product_template_id),
+                                                ('type', '=', 'ebom')])
+            if not bomIds:
                 UserError(_("No Enginnering bom provided"))
-            for newBomId in idNewTypeBoms:
-                newidBom = bomType.copy(cr, uid, newBomId, {}, context)
+            for eBomId in bomIds:
+                newidBom = bomType.copy(cr, uid, eBomId, {}, context)
                 bomType.write(cr, uid, [newidBom], {'name': objProductProductBrw.name,
                                                     'product_tmpl_id': product_template_id,
-                                                    'type': newBomType}, check=False, context=None)
+                                                    'type': newBomType,
+                                                    'ebom_source_id': eBomId,
+                                                    }, check=False, context=None)
                 oidBom = bomType.browse(cr, uid, newidBom, context=context)
                 ok_rows = self._summarizeBom(cr, uid, oidBom.bom_line_ids)
-                # remove not summarised lines
+                # remove not summarized lines
                 for bom_line in list(set(oidBom.bom_line_ids) ^ set(ok_rows)):
                     bomLType.unlink(cr, uid, [bom_line.id], context=None)
-                # update the quantity with the summarised values
+                # update the quantity with the summarized values
                 for bom_line in ok_rows:
                     bomLType.write(cr, uid, [bom_line.id], {'type': newBomType,
                                                             'source_id': False,
-                                                            'product_qty': bom_line.product_qty, }, context=None)
+                                                            'product_qty': bom_line.product_qty,
+                                                            'ebom_source_id': eBomId,
+                                                            }, context=None)
                     self.create_bom_from_ebom(cr, uid, bom_line.product_id, newBomType, context)
                 self.wf_message_post(cr, uid, [objProductProductBrw.id], body=_('Created %r' % newBomType))
                 break
+        if newidBom and eBomId:
+            bomBrws = bomType.browse(cr, uid, eBomId, context)
+            oldBomList = getPreviousNormalBOM(bomBrws)
+            for oldNBom in oldBomList:
+                oidBoms = newidBom
+                if oldNBom != oldBomList[-1]:       # Because in the previous loop I already have a copy of the normal BOM
+                    oidBoms = bomType.copy(cr, uid, newidBom, context)
+                newBomBrws = bomType.browse(cr, uid, oidBoms)
+                collectList.extend(self.addOldBomLines(cr, uid, oldNBom, newBomBrws, bomLType, newBomType, bomBrws, bomType, summarize, context))
+        return collectList
+
+    def addOldBomLines(self, cr, uid, oldNBom, newBomBrws, bomLineObj, newBomType, bomBrws, bomType, summarize=False, context={}):
+        collectList = []
+
+        def verifySummarize(product_id, old_prod_qty):
+            toReturn = old_prod_qty, False
+            for newLine in newBomBrws.bom_line_ids:
+                if newLine.product_id.id == product_id:
+                    templateName = newBomBrws.product_tmpl_id.name
+                    product_name = newLine.product_id.name
+                    outMsg = 'In BOM "%s" ' % (templateName)
+                    toReturn = 0, False
+                    if summarize:
+                        outMsg = outMsg + 'line "%s" has been summarized.' % (product_name)
+                        toReturn =  newLine.product_qty + old_prod_qty, newLine.id
+                    else:
+                        outMsg = outMsg + 'line "%s" has been not summarized.' % (product_name)
+                        toReturn =  newLine.product_qty, newLine.id
+                    collectList.append(outMsg)
+                    return toReturn
+            return toReturn
+
+        for oldBrwsLine in oldNBom.bom_line_ids:
+            if not oldBrwsLine.ebom_source_id:
+                qty, foundLineId = verifySummarize(oldBrwsLine.product_id.id, oldBrwsLine.product_qty)
+                if not foundLineId:
+                    newbomLineId = bomLineObj.copy(cr, uid, oldBrwsLine.id)
+                    bomLineObj.write(cr, uid, newbomLineId, {
+                                                                'type': newBomType,
+                                                                'source_id': False,
+                                                                'product_qty': oldBrwsLine.product_qty,
+                                                                'ebom_source_id': False,
+                                                             }, context)
+                    bomType.write(cr, uid, newBomBrws.id, {'bom_line_ids': [(4, newbomLineId, 0)]})
+                else:
+                    bomLineObj.write(cr, uid, foundLineId, {'product_qty': qty})
+        return collectList
 
     #  Menu action Methods
     def _create_normalBom(self, cr, uid, idd, context=None):
@@ -333,14 +390,15 @@ class plm_component(models.Model):
             for idBom in idBoms:
                 newidBom = bomType.copy(cr, uid, idBom, defaults, context)
                 self.processedIds.append(idd)
+                newidBom = bomType.copy(cr, uid, idBoms[0], defaults, context)
                 if newidBom:
-                    bomType.write(cr,uid,[newidBom],{'name':checkObj.name,'product_id':checkObj.id,'type':'normal',},check=False,context=None)
-                    oidBom=bomType.browse(cr,uid,newidBom,context=context)
-                    ok_rows=self._summarizeBom(cr, uid, oidBom.bom_line_ids)
+                    bomType.write(cr, uid, [newidBom], {'name': checkObj.name, 'product_id': checkObj.id, 'type': 'normal'}, check=False, context=None)
+                    oidBom = bomType.browse(cr, uid, newidBom, context=context)
+                    ok_rows = self._summarizeBom(cr, uid, oidBom.bom_line_ids)
                     for bom_line in list(set(oidBom.bom_line_ids) ^ set(ok_rows)):
-                        bomLType.unlink(cr,uid,[bom_line.id],context=None)
+                        bomLType.unlink(cr, uid, [bom_line.id], context=None)
                     for bom_line in ok_rows:
-                        bomLType.write(cr,uid,[bom_line.id],{'type':'normal','source_id':False,'name':bom_line.product_id.name,'product_qty':bom_line.product_qty,},context=None)
+                        bomLType.write(cr, uid, [bom_line.id], {'type': 'normal', 'source_id': False, 'name': bom_line.product_id.name, 'product_qty': bom_line.product_qty}, context=None)
                         self._create_normalBom(cr, uid, bom_line.product_id.id, context)
         else:
             for bom_line in bomType.browse(cr, uid, objBoms[0], context=context).bom_line_ids:
