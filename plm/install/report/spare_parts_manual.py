@@ -166,14 +166,10 @@ class bom_structure_one_sum_custom_report(report_sxw.rml_parse):
 
 class bom_spare_header(report_sxw.rml_parse):
     def __init__(self, cr, uid, name, context):
-        print 'bom_spare_header'
         super(bom_spare_header, self).__init__(cr, uid, name, context=context)
         self.cr = cr
         self.uid = uid
         self.context = context
-        print self.cr
-        print self.uid
-        print self.context
         self.localcontext.update({
             'time': time,
             'get_component_brws': self.get_component_brws,
@@ -257,6 +253,7 @@ class component_spare_parts_report(report_int):
                 if len(packedIds) > 0:
                     for pageStream in self.getPdfComponentLayout(cr, product):
                         output.addPage((pageStream, ''))
+                    context['starting_model'] = 'product.product'
                     context['active_ids'] = bomIds
                     context['active_model'] = 'mrp.bom'
                     template_ids = self.pool.get('ir.ui.view').search(cr, uid, [('name', '=', 'bom_structure_one')])
