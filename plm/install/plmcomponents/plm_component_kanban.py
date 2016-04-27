@@ -55,38 +55,32 @@ class ComponentDashboard(models.Model):
 
     @api.multi
     def open_action(self):
-        print 'Pressed open action'
         return self.common_open(_('New Component'), 'product.product', 'form', 'form', self.ids[0], self.env.context)
 
     @api.multi
     def create_component(self):
-        print 'New Component'
         return self.common_open(_('New Component'), 'product.product', 'form', 'form', False, self.env.context)
 
     @api.multi
     def open_normal_bom(self):
-        print 'Open Normal Boms'
         boms = self.get_related_boms()
         domain = [('id', 'in', boms.ids), ('type', '=', 'normal')]
         return self.common_open(_('Related Boms'), 'mrp.bom', 'tree,form', 'form', boms.ids, self.env.context, domain)
 
     @api.multi
     def open_engin_bom(self):
-        print 'Open Engineering Boms'
         boms = self.get_related_boms()
         domain = [('id', 'in', boms.ids), ('type', '=', 'ebom')]
         return self.common_open(_('Related Boms'), 'mrp.bom', 'tree,form', 'form', boms.ids, self.env.context, domain)
 
     @api.multi
     def open_spare_bom(self):
-        print 'Open Spare Boms'
         boms = self.get_related_boms()
         domain = [('id', 'in', boms.ids), ('type', '=', 'spbom')]
         return self.common_open(_('Related Boms'), 'mrp.bom', 'tree,form', 'form', boms.ids, self.env.context, domain)
 
     @api.multi
     def open_new_component(self):
-        print 'Open New Component'
         return self.common_open(_('New Component'), 'product.product', 'form', 'form', False, self.env.context)
 
     @api.multi
@@ -97,14 +91,12 @@ class ComponentDashboard(models.Model):
 
     @api.multi
     def open_related_boms_action(self):
-        print 'Open Related Boms'
         boms = self.get_related_boms()
         domain = [('id', 'in', boms.ids)]
         return self.common_open(_('Related Boms'), 'mrp.bom', 'tree,form', 'form', boms.ids, self.env.context, domain)
 
     @api.multi
     def create_normal_bom(self):
-        print 'Open Normal Boms'
         context = self.env.context.copy()
         context.update({'default_type': 'normal'})
         docIds = self.get_related_docs()
@@ -132,8 +124,6 @@ class ComponentDashboard(models.Model):
         pass
 
     def computePrevious(self, linkeddocs):
-        print 'here'
-        print linkeddocs
         pass
 
 

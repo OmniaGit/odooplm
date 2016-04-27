@@ -124,6 +124,7 @@ class bom_structure_all_custom_report(report_sxw.rml_parse):
             'get_children': self.get_children,
             'bom_type': self.bom_type,
             'trans': _translate,
+            'context': context,
         })
 
     def get_children(self, myObject, level=0):
@@ -172,6 +173,7 @@ class bom_structure_one_custom_report(report_sxw.rml_parse):
             'get_children': self.get_children,
             'bom_type': self.bom_type,
             'trans': _translate,
+            'context': context,
         })
 
     def get_children(self, myObject, level=0):
@@ -215,6 +217,7 @@ class bom_structure_all_sum_custom_report(report_sxw.rml_parse):
             'get_children': self.get_children,
             'bom_type': self.bom_type,
             'trans': _translate,
+            'context': context,
         })
 
     def get_children(self, myObject, level=0):
@@ -279,6 +282,7 @@ class bom_structure_one_sum_custom_report(report_sxw.rml_parse):
             'get_children': self.get_children,
             'bom_type': self.bom_type,
             'trans': _translate,
+            'context': context,
         })
 
     def get_children(self, myObject, level=0):
@@ -333,6 +337,7 @@ class bom_structure_leaves_custom_report(report_sxw.rml_parse):
             'get_children': self.get_children,
             'bom_type': self.bom_type,
             'trans': _translate,
+            'context': context,
         })
 
     def get_children(self, myObject, level=0):
@@ -402,6 +407,7 @@ class bom_structure_flat_custom_report(report_sxw.rml_parse):
             'get_children': self.get_children,
             'bom_type': self.bom_type,
             'trans': _translate,
+            'context': context,
         })
 
     def get_children(self, myObject, level=0):
