@@ -22,6 +22,8 @@
 "group_plm_admin","access_plm_compare_bom","plm_compare_bom","BoM Comparison",1,1,1,1
 "group_plm_admin","access_plm_config_settings","plm_config_settings","plm.config.settings",1,1,1,1
 "group_plm_admin","access_plm_email_thread","mail_thread","Email Thread",1,1,1,1
+"group_plm_admin","access_plm_web_revision","Web Revision","product.rev_wizard",1,1,1,1
+"group_plm_integrationuser","access_plm_web_revision","Web Revision","product.rev_wizard",1,1,1,0
 "group_plm_integrationuser","access_iu_plm_checkout","plm_checkout","plm.checkout",1,1,1,1
 "group_plm_integrationuser","access_iu_plm_component_document_rel","plm_component_document_rel","Component Document Relations",1,1,1,1
 "group_plm_integrationuser","access_iu_plm_document_relation","plm_document_relation","plm.document.relation",1,1,1,1

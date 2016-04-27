@@ -184,7 +184,7 @@ class plm_component(models.Model):
                 defaults={}
                 defaults['engineering_writable']=False
                 defaults['state']='undermodify'
-                self.write(cr, uid, [oldObject.id], defaults, context=context, check=False)
+                self.write(cr, uid, [oldObject.id], defaults, context=context)
                 self.wf_message_post(cr, uid, [oldObject.id], body=_('Status moved to: %s.' %(USEDIC_STATES[defaults['state']])))
                 # store updated infos in "revision" object
                 defaults['name']=oldObject.name                 # copy function needs an explicit name value
@@ -194,7 +194,7 @@ class plm_component(models.Model):
                 defaults['linkeddocuments']=[]                  # Clean attached documents for new revision object
                 newID=self.copy(cr, uid, oldObject.id, defaults, context=context)
                 self.wf_message_post(cr, uid, [oldObject.id], body=_('Created : New Revision.'))
-                self.write(cr,uid,[newID],{'name':oldObject.name},check=False,context=None)
+                self.write(cr,uid,[newID],{'name':oldObject.name}, context=None)
                 # create a new "old revision" object
                 break
             break
@@ -696,7 +696,7 @@ class plm_component(models.Model):
                 oldObject=self.browse(cr, uid, existingID[0], context=context)
                 if oldObject.state in checkState:
                     self.wf_message_post(cr, uid, [oldObject.id], body=_('Removed : Latest Revision.'))
-                    if not self.write(cr, uid, [oldObject.id], values, context, check=False):
+                    if not self.write(cr, uid, [oldObject.id], values, context):
                         logging.warning("unlink : Unable to update state to old component (%r - %d)." %(oldObject.engineering_code,oldObject.engineering_revision))
                         return False
         return super(plm_component,self).unlink(cr, uid, ids, context=context)
@@ -769,7 +769,10 @@ plm_component()
 
 class PlmComponentRevisionWizard(models.Model):
     _name = 'product.rev_wizard'
-
+    riviseDocument = fields.Boolean(_('Document Revision'),
+                                    help=_("""
+                                    Make new revision of the linked document ?
+                                    """))
     @api.multi
     def action_create_new_revision_by_server(self):
         def stateAllows(brwsObj, objType):
@@ -790,17 +793,18 @@ class PlmComponentRevisionWizard(models.Model):
             if not newID:
                 logging.error('[action_create_new_revision_by_server] newID: %r' % (newID))
                 raise UserError(_('Something wrong happens during new component revision process.'))
-            createdDocIds = []
-            for docBrws in prodBrws.linkeddocuments:
-                if stateAllows(docBrws, 'Document'):
-                    resDoc = docBrws.NewRevision()
-                    newDocID, newDocIndex = resDoc
-                    newDocIndex
-                    if not newDocID:
-                        logging.error('[action_create_new_revision_by_server] newDocID: %r' % (newDocID))
-                        raise UserError(_('Something wrong happens during new document revision process.'))
-                    createdDocIds.append(newDocID)
-            prodProdEnv.browse(newID).linkeddocuments = createdDocIds
+            if self.riviseDocument:
+                createdDocIds = []
+                for docBrws in prodBrws.linkeddocuments:
+                    if stateAllows(docBrws, 'Document'):
+                        resDoc = docBrws.NewRevision()
+                        newDocID, newDocIndex = resDoc
+                        newDocIndex
+                        if not newDocID:
+                            logging.error('[action_create_new_revision_by_server] newDocID: %r' % (newDocID))
+                            raise UserError(_('Something wrong happens during new document revision process.'))
+                        createdDocIds.append(newDocID)
+                prodProdEnv.browse(newID).linkeddocuments = createdDocIds
             return {'name': _('Revised Product'),
                     'view_type': 'tree,form',
                     "view_mode": 'form',
