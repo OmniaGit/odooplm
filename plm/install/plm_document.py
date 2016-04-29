@@ -412,34 +412,32 @@ class plm_document(models.Model):
         """
             Save or Update Documents
         """
-        retValues=[]
+        retValues = []
         for document in documents:
-            hasSaved=False
-            hasUpdated=False
+            hasSaved = False
+            hasUpdated = False
             if not ('name' in document) or (not 'revisionid' in document):
-                document['documentID']=False
-                document['hasSaved']=hasSaved
-                document['hasUpdated']=hasUpdated
+                document['documentID'] = False
+                document['hasSaved'] = hasSaved
+                document['hasUpdated'] = hasUpdated
                 continue
-            existingID=self.search(cr,uid,[
-                                           ('name','=',document['name'])
-                                          ,('revisionid','=',document['revisionid'])],order='revisionid')
+            existingID = self.search(cr, uid, [('name', '=', document['name']), ('revisionid', '=', document['revisionid'])], order='revisionid')
             if not existingID:
-                existingID=self.create(cr,uid,document)
-                hasSaved=True
+                existingID = self.create(cr, uid, document)
+                hasSaved = True
             else:
-                existingID=existingID[0]
-                objDocument=self.browse(cr, uid, existingID, context=context)
+                existingID = existingID[0]
+                objDocument = self.browse(cr, uid, existingID, context=context)
 #                logging.info("SaveOrUpdate : time db : %s time file : %s" %(str(self.getLastTime(cr,uid,existingID).strftime('%Y-%m-%d %H:%M:%S')), str(document['lastupdate'])))
-                if self.getLastTime(cr,uid,existingID)<datetime.strptime(str(document['lastupdate']),'%Y-%m-%d %H:%M:%S'):
-                    if self._iswritable(cr,uid,objDocument):
+                if self.getLastTime(cr, uid, existingID) < datetime.strptime(str(document['lastupdate']), '%Y-%m-%d %H:%M:%S'):
+                    if self._iswritable(cr, uid, objDocument):
                         del(document['lastupdate'])
-                        if not self.write(cr,uid,[existingID], document , context=context, check=True):
-                            raise UserError( _("Document %s  -  %s cannot be updated" %(str(document['name']), str(document['revisionid']))))
-                        hasSaved=True
-            document['documentID']=existingID
-            document['hasSaved']=hasSaved
-            document['hasUpdated']=hasUpdated
+                        if not self.write(cr, uid, [existingID], document, context=context, check=True):
+                            raise UserError(_("Document %s  -  %s cannot be updated" % (str(document['name']), str(document['revisionid']))))
+                        hasSaved = True
+            document['documentID'] = existingID
+            document['hasSaved'] = hasSaved
+            document['hasUpdated'] = hasUpdated
             retValues.append(document)
         return retValues
 
@@ -455,56 +453,56 @@ class plm_document(models.Model):
         """
             Save or Update Documents
         """
-        ret=True
+        ret = True
         for document in documents:
-            oid=document['documentID']
+            oid = document['documentID']
             del(document['documentID'])
-            ret=ret and self.write(cr,uid,[oid], document , context=context, check=True)
-        return ret 
+            ret = ret and self.write(cr, uid, [oid], document, context=context, check=True)
+        return ret
 
     def CleanUp(self, cr, uid, ids, default=None, context=None):
         """
             Remove faked documents
         """
         cr.execute("delete from plm_document where store_fname=NULL and type='binary'")
-        return True 
+        return True
 
-    def QueryLast(self, cr, uid, request=([],[]), default=None, context=None):
+    def QueryLast(self, cr, uid, request=([], []), default=None, context=None):
         """
             Query to return values based on columns selected.
         """
-        expData=[]
-        queryFilter, columns = request        
-        if len(columns)<1:
+        expData = []
+        queryFilter, columns = request
+        if len(columns) < 1:
             return expData
         if 'revisionid' in queryFilter:
             del queryFilter['revisionid']
-        allIDs=self.search(cr,uid,queryFilter,order='revisionid',context=context)
-        if len(allIDs)>0:
+        allIDs = self.search(cr, uid, queryFilter, order='revisionid', context=context)
+        if len(allIDs) > 0:
             allIDs.sort()
-            tmpData=self.export_data(cr, uid, allIDs, columns)
+            tmpData = self.export_data(cr, uid, allIDs, columns)
             if 'datas' in tmpData:
-                expData=tmpData['datas']
+                expData = tmpData['datas']
         return expData
 
     def ischecked_in(self, cr, uid, ids, context=None):
         """
-            Check if a document is checked-in 
+            Check if a document is checked-in
         """
-        documents=self.browse(cr, uid, ids, context=context)
-        checkoutType=self.pool.get('plm.checkout')
-             
+        documents = self.browse(cr, uid, ids, context=context)
+        checkoutType = self.pool.get('plm.checkout')
+
         for document in documents:
-            if checkoutType.search(cr, uid, [('documentid','=',document.id)], context=context):
-                logging.warning(_("The document %s - %s has not checked-in" %(str(document.name),str(document.revisionid))))
+            if checkoutType.search(cr, uid, [('documentid', '=', document.id)], context=context):
+                logging.warning(_("The document %s - %s has not checked-in" % (str(document.name), str(document.revisionid))))
                 return False
         return True
- 
-    def wf_message_post(self,cr,uid,ids,body='',context=None):
+
+    def wf_message_post(self, cr, uid, ids, body='', context=None):
         """
             Writing messages to follower, on multiple objects
         """
-        if not (body==''):
+        if not (body == ''):
             for idd in ids:
                 self.message_post(cr, uid, [idd], body=_(body))
 
@@ -512,46 +510,46 @@ class plm_document(models.Model):
         """
             release the object
         """
-        defaults={}
-        defaults['writable']=True
-        defaults['state']='draft'
+        defaults = {}
+        defaults['writable'] = True
+        defaults['state'] = 'draft'
         objId = self.write(cr, uid, ids, defaults, check=False)
         if (objId):
-            self.wf_message_post(cr, uid, ids, body=_('Status moved to: %s.' %(USEDIC_STATES[defaults['state']])))
+            self.wf_message_post(cr, uid, ids, body=_('Status moved to: %s.' % (USEDIC_STATES[defaults['state']])))
         return objId
 
-    def action_confirm(self,cr,uid,ids,context=None):
+    def action_confirm(self, cr, uid, ids, context=None):
         """
             action to be executed for Draft state
         """
-        defaults={}
-        defaults['writable']=False
-        defaults['state']='confirmed'
-        if self.ischecked_in(cr, uid, ids,context):
+        defaults = {}
+        defaults['writable'] = False
+        defaults['state'] = 'confirmed'
+        if self.ischecked_in(cr, uid, ids, context):
             objId = self.write(cr, uid, ids, defaults, context=context, check=False)
             if (objId):
-                self.wf_message_post(cr, uid, ids, body=_('Status moved to: %s.' %(USEDIC_STATES[defaults['state']])))
+                self.wf_message_post(cr, uid, ids, body=_('Status moved to: %s.' % (USEDIC_STATES[defaults['state']])))
             return objId
         return False
-    
+
     def action_release(self, cr, uid, ids, *args):
         """
             release the object
         """
-        defaults={}
+        defaults = {}
         for oldObject in self.browse(cr, uid, ids, context=None):
-            last_id=self._getbyrevision(cr, uid, oldObject.name, oldObject.revisionid - 1)
+            last_id = self._getbyrevision(cr, uid, oldObject.name, oldObject.revisionid - 1)
             if last_id != None:
-                defaults['writable']=False
-                defaults['state']='obsoleted'
+                defaults['writable'] = False
+                defaults['state'] = 'obsoleted'
                 self.write(cr, uid, [last_id], defaults, check=False)
-                self.wf_message_post(cr, uid, [last_id], body=_('Status moved to: %s.' %(USEDIC_STATES[defaults['state']])))
-        defaults['writable']=False
-        defaults['state']='released'
+                self.wf_message_post(cr, uid, [last_id], body=_('Status moved to: %s.' % (USEDIC_STATES[defaults['state']])))
+        defaults['writable'] = False
+        defaults['state'] = 'released'
         if self.ischecked_in(cr, uid, ids):
             objId = self.write(cr, uid, ids, defaults, check=False)
             if (objId):
-                self.wf_message_post(cr, uid, ids, body=_('Status moved to: %s.' %(USEDIC_STATES[defaults['state']])))
+                self.wf_message_post(cr, uid, ids, body=_('Status moved to: %s.' % (USEDIC_STATES[defaults['state']])))
             return objId
         return False
 
