@@ -771,15 +771,38 @@ class plm_document(models.Model):
                         ids.extend(docIds)
         return list(set(ids))
 
+    def isCheckedOutByMe(self, cr, uid, docId, context):
+        checkoutIds = self.pool.get('plm.checkout').search(cr, uid, [('documentid', '=', docId), ('userid', '=', uid)])
+        for checkoutId in checkoutIds:
+            return checkoutId
+        return None
+
     def CheckAllFiles(self, cr, uid, request, default=None, context=None):
         """
             Evaluate documents to return
         """
+        def getDocId(args):
+            docName = args.get('name')
+            docRev = args.get('revisionid')
+            docIds = self.search(cr, uid, [('name', '=', docName), ('revisionid', '=', docRev)])
+            if not docIds:
+                logging.warning('Document with name "%s" and revision "%s" not found' % (docName, docRev))
+                return False
+            return docIds[0]
+
         forceFlag = False
         listed_models = []
         listed_documents = []
         outIds = []
+        compChildDocs = []
         oid, listedFiles, selection = request
+        if isinstance(oid, dict):
+            args = oid
+            oid = getDocId(args)
+            checkRes = self.isCheckedOutByMe(cr, uid, oid, context)
+            if not checkRes:
+                return False
+            compChildDocs = self.getComponentChildrenDocuments(cr, uid, oid)
         outIds.append(oid)
         if selection is False:
             selection = 1
@@ -790,10 +813,18 @@ class plm_document(models.Model):
         docArray = self._relateddocs(cr, uid, oid, ['LyTree'], listed_documents)
         # Get Hierarchical tree relations due to children
         modArray = self._explodedocs(cr, uid, oid, ['HiTree'], listed_models)
-        outIds = list(set(outIds + modArray + docArray))
+        outIds = list(set(outIds + modArray + docArray + compChildDocs))
         if selection == 2:
             outIds = self._getlastrev(cr, uid, outIds, context)
         return self._data_check_files(cr, uid, outIds, listedFiles, forceFlag, context)
+
+    def getComponentChildrenDocuments(self, cr, uid, oid):
+        documentBrws = self.browse(cr, uid, oid)
+        parentCompBrws = None
+        for componentBrws in documentBrws.linkedcomponents:
+            parentCompBrws = componentBrws
+            break
+        return parentCompBrws.linkeddocuments.ids
 
     def GetSomeFiles(self, cr, uid, request, default=None, context=None):
         """

@@ -181,9 +181,9 @@ class plm_relation(models.Model):
                         result.extend([bom_child.bom_id.id])
             bom_obj.father_complete_ids = self.env['mrp.bom'].browse(list(set(result)))
  
-    state                   = fields.Selection  (related="product_id.state",                string=_("Status"),     help=_("The status of the product in its LifeCycle."),  store=False)
-    engineering_revision    = fields.Integer    (related="product_id.engineering_revision", string=_("Revision"),   help=_("The revision of the product."),                 store=False)
-    description             = fields.Text       (related="product_id.description",          string=_("Description"),                                                        store=False)
+    state                   = fields.Selection  (related="product_tmpl_id.state",                string=_("Status"),     help=_("The status of the product in its LifeCycle."),  store=False)
+    engineering_revision    = fields.Integer    (related="product_tmpl_id.engineering_revision", string=_("Revision"),   help=_("The revision of the product."),                 store=False)
+    description             = fields.Text       (related="product_tmpl_id.description",          string=_("Description"),                                                        store=False)
     father_complete_ids     = fields.Many2many  ('mrp.bom', compute=_father_compute,        string=_("BoM Hierarchy"),                                                      store=False)
 
 plm_relation()
