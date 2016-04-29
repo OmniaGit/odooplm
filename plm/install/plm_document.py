@@ -790,6 +790,19 @@ class plm_document(models.Model):
                 return False
             return docIds[0]
 
+        def getComponentChildrenDocuments(cr, uid, args, docId, context={}):
+            engineering_code = args.get('engineering_code')
+            engineering_revision = args.get('engineering_revision')
+            prodProdObj = self.pool.get('product.product')
+            if not engineering_code:
+                engineering_code = args.get('name', '').split('-')[0]
+            parentCompIds = prodProdObj.search(cr, uid, [('engineering_code', '=', engineering_code), ('engineering_revision', '=', engineering_revision)], context)
+            for compId in parentCompIds:
+                parentCompBrws = prodProdObj.browse(cr, uid, compId, context)
+                return parentCompBrws.linkeddocuments.ids
+            logging.warning('Component with engineering_code: "%s" and engineering_revision: "%s" not found' % (engineering_code, engineering_revision))
+            return []
+
         forceFlag = False
         listed_models = []
         listed_documents = []
@@ -802,7 +815,7 @@ class plm_document(models.Model):
             checkRes = self.isCheckedOutByMe(cr, uid, oid, context)
             if not checkRes:
                 return False
-            compChildDocs = self.getComponentChildrenDocuments(cr, uid, oid)
+            compChildDocs = getComponentChildrenDocuments(cr, uid, args, context)
         outIds.append(oid)
         if selection is False:
             selection = 1
@@ -817,14 +830,6 @@ class plm_document(models.Model):
         if selection == 2:
             outIds = self._getlastrev(cr, uid, outIds, context)
         return self._data_check_files(cr, uid, outIds, listedFiles, forceFlag, context)
-
-    def getComponentChildrenDocuments(self, cr, uid, oid):
-        documentBrws = self.browse(cr, uid, oid)
-        parentCompBrws = None
-        for componentBrws in documentBrws.linkedcomponents:
-            parentCompBrws = componentBrws
-            break
-        return parentCompBrws.linkeddocuments.ids
 
     def GetSomeFiles(self, cr, uid, request, default=None, context=None):
         """
