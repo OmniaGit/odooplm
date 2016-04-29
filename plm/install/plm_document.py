@@ -780,41 +780,11 @@ class plm_document(models.Model):
         """
             Evaluate documents to return
         """
-        def getDocId(args):
-            docName = args.get('name')
-            docRev = args.get('revisionid')
-            docIds = self.search(cr, uid, [('name', '=', docName), ('revisionid', '=', docRev)])
-            if not docIds:
-                logging.warning('Document with name "%s" and revision "%s" not found' % (docName, docRev))
-                return False
-            return docIds[0]
-
-        def getComponentChildrenDocuments(cr, uid, args, docId, context={}):
-            engineering_code = args.get('engineering_code')
-            engineering_revision = args.get('engineering_revision')
-            prodProdObj = self.pool.get('product.product')
-            if not engineering_code:
-                engineering_code = args.get('name', '').split('-')[0]
-            parentCompIds = prodProdObj.search(cr, uid, [('engineering_code', '=', engineering_code), ('engineering_revision', '=', engineering_revision)], context)
-            for compId in parentCompIds:
-                parentCompBrws = prodProdObj.browse(cr, uid, compId, context)
-                return parentCompBrws.linkeddocuments.ids
-            logging.warning('Component with engineering_code: "%s" and engineering_revision: "%s" not found' % (engineering_code, engineering_revision))
-            return []
-
         forceFlag = False
         listed_models = []
         listed_documents = []
         outIds = []
-        compChildDocs = []
         oid, listedFiles, selection = request
-        if isinstance(oid, dict):
-            args = oid
-            oid = getDocId(args)
-            checkRes = self.isCheckedOutByMe(cr, uid, oid, context)
-            if not checkRes:
-                return False
-            compChildDocs = getComponentChildrenDocuments(cr, uid, args, context)
         outIds.append(oid)
         if selection is False:
             selection = 1
@@ -825,10 +795,60 @@ class plm_document(models.Model):
         docArray = self._relateddocs(cr, uid, oid, ['LyTree'], listed_documents)
         # Get Hierarchical tree relations due to children
         modArray = self._explodedocs(cr, uid, oid, ['HiTree'], listed_models)
-        outIds = list(set(outIds + modArray + docArray + compChildDocs))
+        outIds = list(set(outIds + modArray + docArray))
         if selection == 2:
             outIds = self._getlastrev(cr, uid, outIds, context)
         return self._data_check_files(cr, uid, outIds, listedFiles, forceFlag, context)
+
+    def CheckInRecursive(self, cr, uid, request, default=None, context=None):
+        """
+            Evaluate documents to return
+        """
+        def getDocId(args):
+            docName = args.get('name')
+            docRev = args.get('revisionid')
+            docIds = self.search(cr, uid, [('name', '=', docName), ('revisionid', '=', docRev)])
+            if not docIds:
+                logging.warning('Document with name "%s" and revision "%s" not found' % (docName, docRev))
+                return False
+            return docIds[0]
+
+        forceFlag = False
+        oid, listedFiles, selection = request
+        oid = getDocId(oid)
+        checkRes = self.isCheckedOutByMe(cr, uid, oid, context)
+        if not checkRes:
+            return False
+        if selection is False:
+            selection = 1
+        if selection < 0:
+            forceFlag = True
+            selection = selection * (-1)
+        documentRelation = self.pool.get('plm.document.relation')
+        docArray = []
+
+        def recursionCompute(oid):
+            if oid in docArray:
+                return
+            docRelIds = documentRelation.search(cr, uid, ['|', ('parent_id', '=', oid), ('child_id', '=', oid)])
+            for objRel in documentRelation.browse(cr, uid, docRelIds, context):
+                if objRel.link_kind in ['LyTree', 'RfTree'] and objRel.child_id.id not in docArray:
+                    docArray.append(objRel.child_id.id)
+                else:
+                    if objRel.parent_id.id == oid:
+                        recursionCompute(objRel.child_id.id)
+            if oid not in docArray:
+                docArray.append(oid)
+
+        recursionCompute(oid)
+        if selection == 2:
+            docArray = self._getlastrev(cr, uid, docArray, context)
+        checkoutObj = self.pool.get('plm.checkout')
+        for docId in docArray:
+            checkoutId = checkoutObj.search(cr, uid, [('documentid', '=', docId), ('userid', '=', uid)], context)
+            if checkoutId:
+                checkoutObj.unlink(cr, uid, checkoutId)
+        return self.read(cr, uid, docArray, ['datas_fname'], context)
 
     def GetSomeFiles(self, cr, uid, request, default=None, context=None):
         """
@@ -1023,6 +1043,7 @@ class plm_document_relation(models.Model):
     configuration   =   fields.Char     (_('Configuration Name'),size=1024)
     link_kind       =   fields.Char     (_('Kind of Link'),size=64, required=True)
     create_date     =   fields.Datetime (_('Date Created'), readonly=True)
+    #  TODO: To remove userid field for version 10
     userid          =   fields.Many2one ('res.users', _('CheckOut User'),readonly="True")
     
     _defaults = {
