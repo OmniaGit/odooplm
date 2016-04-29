@@ -67,7 +67,7 @@ class plm_document(models.Model):
         act=False
         lastDoc=self._getlastrev(cr, uid, [oid], context)
         checkType=self.pool.get('plm.checkout')
-        docIDs=checkType.search(cr, uid, [('documentid','=',lastDoc[0])])
+        docIDs=checkType.search(cr, uid,  [('documentid', '=', lastDoc[0])])
         for docID in docIDs:
             objectCheck = checkType.browse(cr, uid, docID)
             if objectCheck.userid.id==uid:
@@ -80,7 +80,7 @@ class plm_document(models.Model):
         for objDoc in self.browse(cr, uid, ids, context=context):
             docIds=self.search(cr,uid,[('name','=',objDoc.name),('type','=','binary')],order='revisionid',context=context)
             docIds.sort()   # Ids are not surely ordered, but revision are always in creation order.
-            result.append(docIds[len(docIds)-1])
+            result.append(docIds[len(docIds) - 1])
         return list(set(result))
             
     def _data_get_files(self, cr, uid, ids, listedFiles=([],[]), forceFlag=False, context=None):
@@ -106,7 +106,7 @@ class plm_document(models.Model):
                             isNewer=True
                         else:
                             timefile=time.mktime(datetime.strptime(str(datefiles[listfiles.index(objDoc.datas_fname)]),'%Y-%m-%d %H:%M:%S').timetuple())
-                            isNewer=(timeSaved-timefile)>5
+                            isNewer=(timeSaved - timefile)>5
                         if (isNewer and not(isCheckedOutToMe)):
                             if (not objDoc.store_fname) and (objDoc.db_datas):
                                 value = objDoc.db_datas
@@ -238,7 +238,7 @@ class plm_document(models.Model):
                         isNewer = True
                     else:
                         timefile=time.mktime(datetime.strptime(str(datefiles[listfiles.index(objDoc.datas_fname)]),'%Y-%m-%d %H:%M:%S').timetuple())
-                        isNewer=(timeSaved-timefile)>5
+                        isNewer=(timeSaved - timefile)>5
                     collectable = isNewer and not(isCheckedOutToMe)
                 else:
                     collectable = True
@@ -435,7 +435,7 @@ class plm_document(models.Model):
                     if self._iswritable(cr,uid,objDocument):
                         del(document['lastupdate'])
                         if not self.write(cr,uid,[existingID], document , context=context, check=True):
-                            raise UserError( _("Document %s - %s cannot be updated" %(str(document['name']), str(document['revisionid']))))
+                            raise UserError( _("Document %s  -  %s cannot be updated" %(str(document['name']), str(document['revisionid']))))
                         hasSaved=True
             document['documentID']=existingID
             document['hasSaved']=hasSaved
@@ -540,7 +540,7 @@ class plm_document(models.Model):
         """
         defaults={}
         for oldObject in self.browse(cr, uid, ids, context=None):
-            last_id=self._getbyrevision(cr, uid, oldObject.name, oldObject.revisionid-1)
+            last_id=self._getbyrevision(cr, uid, oldObject.name, oldObject.revisionid - 1)
             if last_id != None:
                 defaults['writable']=False
                 defaults['state']='obsoleted'
@@ -555,31 +555,31 @@ class plm_document(models.Model):
             return objId
         return False
 
-    def action_obsolete(self,cr,uid,ids,context=None):
+    def action_obsolete(self, cr, uid, ids, context=None):
         """
             obsolete the object
         """
-        defaults={}
-        defaults['writable']=False
-        defaults['state']='obsoleted'
-        if self.ischecked_in(cr, uid, ids,context):
+        defaults = {}
+        defaults['writable'] = False
+        defaults['state'] = 'obsoleted'
+        if self.ischecked_in(cr, uid, ids, context):
             objId = self.write(cr, uid, ids, defaults, context=context, check=False)
             if (objId):
-                self.wf_message_post(cr, uid, ids, body=_('Status moved to: %s.' %(USEDIC_STATES[defaults['state']])))
+                self.wf_message_post(cr, uid, ids, body=_('Status moved to: %s.' % (USEDIC_STATES[defaults['state']])))
             return objId
         return False
 
-    def action_reactivate(self,cr,uid,ids,context=None):
+    def action_reactivate(self, cr, uid, ids, context=None):
         """
             reactivate the object
         """
-        defaults={}
-        defaults['engineering_writable']=False
-        defaults['state']='released'
-        if self.ischecked_in(cr, uid, ids,context):
+        defaults = {}
+        defaults['engineering_writable'] = False
+        defaults['state'] = 'released'
+        if self.ischecked_in(cr, uid, ids, context):
             objId = self.write(cr, uid, ids, defaults, context=context, check=False)
             if (objId):
-                self.wf_message_post(cr, uid, ids, body=_('Status moved to:%s.' %(USEDIC_STATES[defaults['state']])))
+                self.wf_message_post(cr, uid, ids, body=_('Status moved to:%s.' % (USEDIC_STATES[defaults['state']])))
             return objId
         return False
 
@@ -592,7 +592,7 @@ class plm_document(models.Model):
 
 #   Overridden methods for this entity
     def _get_filestore(self, cr):
-        dms_Root_Path=tools.config.get('document_path', os.path.join(tools.config['root_path'], 'filestore'))
+        dms_Root_Path = tools.config.get('document_path', os.path.join(tools.config['root_path'], 'filestore'))
         return os.path.join(dms_Root_Path, cr.dbname)
 
 #     def search(self, cr, uid, args, offset=0, limit=None, order=None, context=None, count=False):
@@ -600,76 +600,76 @@ class plm_document(models.Model):
 #         ids = osv.osv.osv.search(self,cr, uid, args, offset=offset, limit=limit, order=order, context=context, count=False)
 #         if not ids:
 #             return 0 if count else []
-# 
+#
 #         # Filter out documents that are in directories that the user is not allowed to read.
 #         # Must use pure SQL to avoid access rules exceptions (we want to remove the records,
 #         # not fail), and the records have been filtered in parent's search() anyway.
 #         cr.execute('SELECT id, parent_id from plm_document WHERE id in %s', (tuple(ids),))
-# 
+#
 #         # cont a dict of parent -> attach
 #         parents = {}
 #         for attach_id, attach_parent in cr.fetchall():
 #             parents.setdefault(attach_parent, []).append(attach_id)
 #         parent_ids = parents.keys()
-# 
+#
 #         # filter parents
 #         visible_parent_ids = self.pool.get('document.directory').search(cr, uid, [('id', 'in', list(parent_ids))])
-# 
+#
 #         # null parents means allowed
 #         ids = parents.get(None,[])
 #         for parent_id in visible_parent_ids:
 #             ids.extend(parents[parent_id])
-# 
+#
 #         return len(ids) if count else ids
 
     def write(self, cr, uid, ids, vals, context=None, check=True):
-        checkState=('confirmed','released','undermodify','obsoleted')
+        checkState = ('confirmed', 'released', 'undermodify', 'obsoleted')
         if check:
-            for customObject in self.browse(cr,uid,ids,context=context):
+            for customObject in self.browse(cr, uid, ids, context=context):
                 if customObject.state in checkState:
                     raise UserError(_("The active state does not allow you to make save action"))
                     return False
-        return super(plm_document,self).write(cr, uid, ids, vals, context=context)
+        return super(plm_document, self).write(cr, uid, ids, vals, context=context)
 
     def unlink(self, cr, uid, ids, context=None):
-        values={'state':'released',}
-        checkState=('undermodify','obsoleted')
+        values = {'state': 'released', }
+        checkState = ('undermodify', 'obsoleted')
         for checkObj in self.browse(cr, uid, ids, context=context):
-            existingID = self.search(cr, uid, [('name', '=', checkObj.name),('revisionid', '=', checkObj.revisionid-1)])
-            if len(existingID)>0:
-                oldObject=self.browse(cr, uid, existingID[0], context=context)
+            existingID = self.search(cr, uid, [('name', '=', checkObj.name), ('revisionid', '=', checkObj.revisionid - 1)])
+            if len(existingID) > 0:
+                oldObject = self.browse(cr, uid, existingID[0], context=context)
                 if oldObject.state in checkState:
                     self.wf_message_post(cr, uid, [oldObject.id], body=_('Removed : Latest Revision.'))
                     if not self.write(cr, uid, [oldObject.id], values, context, check=False):
-                        logging.warning("unlink : Unable to update state to old document ("+str(oldObject.name)+"-"+str(oldObject.revisionid)+").")
+                        logging.warning("unlink : Unable to update state to old document (" + str(oldObject.name) + "-" + str(oldObject.revisionid) + ").")
                         return False
-        return super(plm_document,self).unlink(cr, uid, ids, context=context)
+        return super(plm_document, self).unlink(cr, uid, ids, context=context)
 
 #   Overridden methods for this entity
 
     def _check_duplication(self, cr, uid, vals, ids=None, op='create'):
         SUPERUSER_ID = 1
-        name=vals.get('name',False)
-        parent_id=vals.get('parent_id',False)
-        ressource_parent_type_id=vals.get('ressource_parent_type_id',False)
-        ressource_id=vals.get('ressource_id',0)
+        name = vals.get('name', False)
+        parent_id = vals.get('parent_id', False)
+        ressource_parent_type_id = vals.get('ressource_parent_type_id', False)
+        ressource_id = vals.get('ressource_id', 0)
         revisionid = vals.get('revisionid', 0)
-        if op=='write':
+        if op == 'write':
             for directory in self.browse(cr, SUPERUSER_ID, ids):
                 if not name:
-                    name=directory.name
+                    name = directory.name
                 if not parent_id:
-                    parent_id=directory.parent_id and directory.parent_id.id or False
+                    parent_id = directory.parent_id and directory.parent_id.id or False
                 # TODO fix algo
                 if not ressource_parent_type_id:
-                    ressource_parent_type_id=directory.ressource_parent_type_id and directory.ressource_parent_type_id.id or False
+                    ressource_parent_type_id = directory.ressource_parent_type_id and directory.ressource_parent_type_id.id or False
                 if not ressource_id:
-                    ressource_id=directory.ressource_id and directory.ressource_id or 0
-                res=self.search(cr,uid,[('id','<>',directory.id),('name','=',name),('parent_id','=',parent_id),('ressource_parent_type_id','=',ressource_parent_type_id),('ressource_id','=',ressource_id), ('revisionid', '=', revisionid)])
+                    ressource_id = directory.ressource_id and directory.ressource_id or 0
+                res = self.search(cr, uid, [('id', '<>', directory.id), ('name', '=', name), ('parent_id', '=', parent_id), ('ressource_parent_type_id', '=', ressource_parent_type_id), ('ressource_id', '=', ressource_id), ('revisionid', '=', revisionid)])
                 if len(res):
                     return False
-        if op=='create':
-            res = self.search(cr, SUPERUSER_ID, [('name','=',name),('parent_id','=',parent_id),('ressource_parent_type_id','=',ressource_parent_type_id),('ressource_id','=',ressource_id), ('revisionid', '=', revisionid)])
+        if op == 'create':
+            res = self.search(cr, SUPERUSER_ID, [('name', '=', name), ('parent_id', '=', parent_id), ('ressource_parent_type_id', '=', ressource_parent_type_id), ('ressource_id', '=', ressource_id), ('revisionid', '=', revisionid)])
             if len(res):
                 return False
         return True
@@ -682,7 +682,7 @@ class plm_document(models.Model):
             self.checkout_user = str(chechRes[2])
         else:
             self.checkout_user = ''
-        
+
     @api.one
     def _is_checkout(self):
         chechRes = self.getCheckedOut(self.id, None)
@@ -690,84 +690,85 @@ class plm_document(models.Model):
             self.is_checkout = True
         else:
             self.is_checkout = False
-    
-    usedforspare    =   fields.Boolean  (_('Used for Spare'),help=_("Drawings marked here will be used printing Spare Part Manual report."))
-    revisionid      =   fields.Integer  (_('Revision Index'), required=True)
-    writable        =   fields.Boolean  (_('Writable'))
-    #datas           =   fields.Binary   (fnct_inv=_data_set,compute=_data_get,method=True,string=_('File Content'))
-    printout        =   fields.Binary   (_('Printout Content'), help=_("Print PDF content."))
-    preview         =   fields.Binary   (_('Preview Content'), help=_("Static preview."))
-    state           =   fields.Selection(USED_STATES,_('Status'), help=_("The status of the product."), readonly="True", required=True)
+
+    usedforspare    =   fields.Boolean(_('Used for Spare'), help=_("Drawings marked here will be used printing Spare Part Manual report."))
+    revisionid      =   fields.Integer(_('Revision Index'), required=True)
+    writable        =   fields.Boolean(_('Writable'))
+    #  datas           =   fields.Binary   (fnct_inv=_data_set,compute=_data_get,method=True,string=_('File Content'))
+    printout        =   fields.Binary(_('Printout Content'), help=_("Print PDF content."))
+    preview         =   fields.Binary(_('Preview Content'), help=_("Static preview."))
+    state           =   fields.Selection(USED_STATES, _('Status'), help=_("The status of the product."), readonly="True", required=True)
     checkout_user   =   fields.Char(string=_("Checked-Out to"), compute=_get_checkout_state)
     is_checkout     =   fields.Boolean(_('Is Checked-Out'), compute=_is_checkout, store=False)
 
     _columns = {
-                'datas': oldFields.function(_data_get,method=True,fnct_inv=_data_set,string=_('File Content'),type="binary"),
+                'datas': oldFields.function(_data_get, method=True, fnct_inv=_data_set, string=_('File Content'), type="binary"),
                 #'checkout_user':fields.function(_get_checkout_state, type='char', string="Checked-Out to"),
                 #'is_checkout':fields.function(_is_checkout, type='boolean', string="Is Checked-Out", store=False)
                 }
     _defaults = {
-                 'usedforspare' : lambda *a: False,
-                 'revisionid'   : lambda *a: 0,
-                 'writable'     : lambda *a: True,
-                 'state'        : lambda *a: 'draft',
+                 'usedforspare': lambda *a: False,
+                 'revisionid': lambda *a: 0,
+                 'writable': lambda *a: True,
+                 'state': lambda *a: 'draft',
     }
 
     _sql_constraints = [
-        ('name_unique', 'unique (name,revisionid)', 'File name has to be unique!') # qui abbiamo la sicurezza dell'univocita del nome file
+        ('name_unique', 'unique (name, revisionid)', 'File name has to be unique!')  # qui abbiamo la sicurezza dell'univocita del nome file
     ]
 
     def CheckedIn(self, cr, uid, files, default=None, context=None):
         """
             Get checked status for requested files
         """
-        retValues=[]
+        retValues = []
+
         def getcheckedfiles(files):
-            res=[]
+            res = []
             for fileName in files:
-                ids=self.search(cr,uid,[('datas_fname','=',fileName)],order='revisionid')
-                if len(ids)>0:
+                ids = self.search(cr, uid, [('datas_fname', '=', fileName)], order='revisionid')
+                if len(ids) > 0:
                     ids.sort()
-                    res.append([fileName,not(self._is_checkedout_for_me(cr, uid, ids[len(ids)-1], context))])
+                    res.append([fileName, not (self._is_checkedout_for_me(cr, uid, ids[len(ids) - 1], context))])
             return res
-        
-        if len(files)>0: # no files to process 
-            retValues=getcheckedfiles(files)
+
+        if len(files) > 0:  # no files to process
+            retValues = getcheckedfiles(files)
         return retValues
 
-    def GetUpdated(self,cr,uid,vals,context=None):
+    def GetUpdated(self, cr, uid, vals, context=None):
         """
             Get Last/Requested revision of given items (by name, revision, update time)
         """
         docData, attribNames = vals
-        ids=self.GetLatestIds(cr, uid, docData, context)
+        ids = self.GetLatestIds(cr, uid, docData, context)
         return self.read(cr, uid, list(set(ids)), attribNames)
 
-    def GetLatestIds(self,cr,uid,vals,context=None):
+    def GetLatestIds(self, cr, uid, vals, context=None):
         """
             Get Last/Requested revision of given items (by name, revision, update time)
         """
-        ids=[]
+        ids = []
         for docName, docRev, updateDate in vals:
             if updateDate:
                 if docRev == None or docRev == False:
-                    docIds=self.search(cr,uid,[('name','=',docName),('write_date','>',updateDate)],order='revisionid',context=context)
-                    if len(docIds)>0:
+                    docIds = self.search(cr, uid, [('name', '=', docName), ('write_date', '>', updateDate)], order='revisionid', context=context)
+                    if len(docIds) > 0:
                         ids.sort()
-                        ids.append(docIds[len(ids)-1])
+                        ids.append(docIds[len(ids) - 1])
                 else:
-                    docIds=self.search(cr,uid,[('name','=',docName),('revisionid','=',docRev),('write_date','>',updateDate)],context=context)
-                    if len(docIds)>0:
+                    docIds = self.search(cr, uid, [('name', '=', docName), ('revisionid', '=', docRev), ('write_date', '>', updateDate)], context=context)
+                    if len(docIds) > 0:
                         ids.extend(docIds)
             else:
                 if docRev == None or docRev == False:
-                    docIds=self.search(cr,uid,[('name','=',docName)],order='revisionid',context=context)
-                    if len(docIds)>0:
+                    docIds = self.search(cr, uid, [('name', '=', docName)], order='revisionid', context=context)
+                    if len(docIds) > 0:
                         ids.sort()
-                        ids.append(docIds[len(ids)-1])
+                        ids.append(docIds[len(ids) - 1])
                 else:
-                    docIds=self.search(cr,uid,[('name','=',docName),('revisionid','=',docRev)],context=context)
-                    if len(docIds)>0:
+                    docIds = self.search(cr, uid, [('name', '=', docName), ('revisionid', '=', docRev)], context=context)
+                    if len(docIds) > 0:
                         ids.extend(docIds)
         return list(set(ids))
 
