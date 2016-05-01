@@ -708,7 +708,6 @@ class plm_component(models.Model):
             Get values attribute in this format:
             values = [{'field1':value1,'field2':value2,...}]     only one element in the list!!!
             and return computed values due to language
-            
             Get also forcedLang attribute in this format:
             forcedLang = 'en_US'
             if is not set it takes language from user
