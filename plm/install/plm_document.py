@@ -813,8 +813,7 @@ class plm_document(models.Model):
                 return False
             return docIds[0]
 
-        forceFlag = False
-        oid, listedFiles, selection = request
+        oid, _listedFiles, selection = request
         oid = getDocId(oid)
         checkRes = self.isCheckedOutByMe(cr, uid, oid, context)
         if not checkRes:
@@ -822,7 +821,6 @@ class plm_document(models.Model):
         if selection is False:
             selection = 1
         if selection < 0:
-            forceFlag = True
             selection = selection * (-1)
         documentRelation = self.pool.get('plm.document.relation')
         docArray = []
@@ -830,6 +828,8 @@ class plm_document(models.Model):
         def recursionCompute(oid):
             if oid in docArray:
                 return
+            else:
+                docArray.append(oid)
             docRelIds = documentRelation.search(cr, uid, ['|', ('parent_id', '=', oid), ('child_id', '=', oid)])
             for objRel in documentRelation.browse(cr, uid, docRelIds, context):
                 if objRel.link_kind in ['LyTree', 'RfTree'] and objRel.child_id.id not in docArray:
@@ -837,8 +837,6 @@ class plm_document(models.Model):
                 else:
                     if objRel.parent_id.id == oid:
                         recursionCompute(objRel.child_id.id)
-            if oid not in docArray:
-                docArray.append(oid)
 
         recursionCompute(oid)
         if selection == 2:
