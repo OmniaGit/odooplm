@@ -41,7 +41,7 @@ class plm_document(models.Model):
     _defaults           = {
                              'state': lambda *a: 'draft',
                              'res_id': lambda *a: False,
-                             }    
+                             }
 plm_document()
 
 
@@ -113,46 +113,31 @@ class plm_relation(models.Model):
 
 #   Overridden methods for this entity
 
-    def _bom_find(self, cr, uid, product_tmpl_id=None, product_id=None, properties=None, bomType='normal',context=None):
+    def _bom_find(self, cr, uid, product_tmpl_id=None, product_id=None, properties=None,context=None):
         """ Finds BoM for particular product and product uom.
         @param product_tmpl_id: Selected product.
         @param product_uom: Unit of measure of a product.
         @param properties: List of related properties.
         @return: False or BoM id.
         """
-        if properties is None:
-            properties = []
-        if product_id:
-            domain = ['&',('type', '=', bomType)]
-            if not product_tmpl_id:
-                product_tmpl_id = self.pool['product.product'].browse(cr, uid, product_id, context=context).product_tmpl_id.id
-            domain = domain + [
-                '|',
-                    ('product_id', '=', product_id),
-                    '&',
-                        ('product_id', '=', False),
-                        ('product_tmpl_id', '=', product_tmpl_id)
-            ]
-        elif product_tmpl_id:
-            domain = domain + [('product_id', '=', False), ('product_tmpl_id', '=', product_tmpl_id)]
-        else:
-            # neither product nor template, makes no sense to search
-            return False
-        domain = domain + [ '|', ('date_start', '=', False), ('date_start', '<=', time.strftime(DEFAULT_SERVER_DATE_FORMAT)),
-                            '|', ('date_stop', '=', False), ('date_stop', '>=', time.strftime(DEFAULT_SERVER_DATE_FORMAT))]
-        # order to prioritize bom with product_id over the one without
-        ids = self.search(cr, uid, domain, order='product_id', context=context)
-        # Search a BoM which has all properties specified, or if you can not find one, you could
-        # pass a BoM without any properties
-        bom_empty_prop = False
-        for bom in self.pool.get('mrp.bom').browse(cr, uid, ids, context=context):
-            if not set(map(int, bom.property_ids or [])) - set(properties or []):
-                if properties and not bom.property_ids:
-                    bom_empty_prop = bom.id
-                else:
-                    return bom.id
-        return bom_empty_prop
-    
+        bom_id = super(plm_relation, self)._bom_find(cr,
+                                                     uid,
+                                                     product_tmpl_id=None,
+                                                     product_id=None,
+                                                     properties=None,
+                                                     context=None)
+        if bom_id:
+            objBom = self.browse(cr, uid, bom_id, context)
+            odooPLMBom = ['ebom', 'spbom']
+            if objBom.type in odooPLMBom:
+                bom_ids = self.search(cr, uid, [('product_id', '=', objBom.product_id),
+                                                ('product_tmpl_id', '=', objBom.product_tmpl_id),
+                                                ('type', 'not in', odooPLMBom)])
+                for _id in bom_ids:
+                    return _id
+        return bom_id
+
+
 #######################################################################################################################################33
     @api.multi
     def _father_compute(self, name='', arg={}):
@@ -180,7 +165,7 @@ class plm_relation(models.Model):
                     if not(bom_child.bom_id.id in result):
                         result.extend([bom_child.bom_id.id])
             bom_obj.father_complete_ids = self.env['mrp.bom'].browse(list(set(result)))
- 
+
     state                   = fields.Selection  (related="product_tmpl_id.state",                string=_("Status"),     help=_("The status of the product in its LifeCycle."),  store=False)
     engineering_revision    = fields.Integer    (related="product_tmpl_id.engineering_revision", string=_("Revision"),   help=_("The revision of the product."),                 store=False)
     description             = fields.Text       (related="product_tmpl_id.description",          string=_("Description"),                                                        store=False)
@@ -200,15 +185,14 @@ class plm_relation_line(models.Model):
         """
         bom_obj = self.env['mrp.bom']
         for bom_line in self:
-            bom_id = bom_obj._bom_find(
-                                        product_tmpl_id=bom_line.product_id.product_tmpl_id.id,
-                                        product_id=bom_line.product_id.id, 
-                                        bomType=bom_line.type)
-            if bom_id:
+            for bom_id in self.search([('product_id', '=', bom_line.product_id.id),
+                                      ('product_tmpl_id', '=', bom_line.product_id.product_tmpl_id.id),
+                                      ('type', '=', bom_line.type)]):
                 child_bom = bom_obj.browse(bom_id)
                 for childBomLine in child_bom.bom_line_ids:
                     childBomLine._get_child_bom_lines()
                 self.child_line_ids = [x.id for x in child_bom.bom_line_ids]
+                return
             else:
                 self.child_line_ids = False
 
@@ -216,8 +200,6 @@ class plm_relation_line(models.Model):
     engineering_revision    =   fields.Integer      (related="product_id.engineering_revision", string=_("Revision"),   help=_("The revision of the product."),                 store=False)
     description             =   fields.Text         (related="product_id.description",          string=_("Description"),                                                        store=False)
     weight_net              =   fields.Float        (related="product_id.weight",               string=_("Weight Net"),                                                         store=False)
-    child_line_ids          =   fields.One2many     ("mrp.bom.line",compute=_get_child_bom_lines,string=_("BOM lines of the referred bom"))
-
 
 plm_relation_line()
 
