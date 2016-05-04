@@ -82,7 +82,7 @@ class plm_document(models.Model):
             docIds.sort()   # Ids are not surely ordered, but revision are always in creation order.
             result.append(docIds[len(docIds) - 1])
         return list(set(result))
-            
+
     def _data_get_files(self, cr, uid, ids, listedFiles=([],[]), forceFlag=False, context=None):
         """
             Get Files to return to Client
