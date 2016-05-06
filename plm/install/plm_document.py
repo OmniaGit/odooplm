@@ -83,6 +83,13 @@ class plm_document(models.Model):
             result.append(docIds[len(docIds) - 1])
         return list(set(result))
 
+    def GetLastNamesFromID(self, cr, uid, ids=[], context={}):
+        """
+            get the last rev
+        """
+        newIds = self._getlastrev(cr, uid, ids=ids, context=context)
+        return self.read(cr, uid, newIds, ['datas_fname'], context=context)
+    
     def _data_get_files(self, cr, uid, ids, listedFiles=([],[]), forceFlag=False, context=None):
         """
             Get Files to return to Client
