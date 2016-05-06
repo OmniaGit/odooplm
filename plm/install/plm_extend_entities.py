@@ -113,7 +113,7 @@ class plm_relation(models.Model):
 
 #   Overridden methods for this entity
 
-    def _bom_find(self, cr, uid, product_tmpl_id=None, product_id=None, properties=None,context=None):
+    def _bom_find(self, cr, uid, product_tmpl_id=None, product_id=None, properties=None, context=None):
         """ Finds BoM for particular product and product uom.
         @param product_tmpl_id: Selected product.
         @param product_uom: Unit of measure of a product.
@@ -121,22 +121,21 @@ class plm_relation(models.Model):
         @return: False or BoM id.
         """
         bom_id = super(plm_relation, self)._bom_find(cr,
-                                                     uid,
-                                                     product_tmpl_id=None,
-                                                     product_id=None,
-                                                     properties=None,
-                                                     context=None)
+                                                                                     uid,
+                                                                                     product_tmpl_id=product_tmpl_id,
+                                                                                     product_id=product_id,
+                                                                                     properties=properties,
+                                                                                     context=context)
         if bom_id:
             objBom = self.browse(cr, uid, bom_id, context)
             odooPLMBom = ['ebom', 'spbom']
             if objBom.type in odooPLMBom:
-                bom_ids = self.search(cr, uid, [('product_id', '=', objBom.product_id),
-                                                ('product_tmpl_id', '=', objBom.product_tmpl_id),
+                bom_ids = self.search(cr, uid, [('product_id', '=', objBom.product_id.id),
+                                                ('product_tmpl_id', '=', objBom.product_tmpl_id.id),
                                                 ('type', 'not in', odooPLMBom)])
                 for _id in bom_ids:
                     return _id
         return bom_id
-
 
 #######################################################################################################################################33
     @api.multi

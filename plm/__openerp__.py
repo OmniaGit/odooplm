@@ -104,10 +104,10 @@ Supported Editors :
             #workflow
             'install/plmdocuments/document_workflow.xml',
             'install/plmcomponents/component_workflow.xml',
+            'install/settings/settings.xml',
             #security
             'security/res.groups.csv',
             'security/ir.model.access.csv',
-
        ],
     'demo': [
         ],
