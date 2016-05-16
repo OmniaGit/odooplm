@@ -143,32 +143,36 @@ class plm_component(models.Model):
         """
             Get Last/Requested revision of given items (by name, revision, update time)
         """
-        partData, attribNames = vals
-        ids=self.GetLatestIds(cr, uid, partData, context)
+        partData, attribNames, forceCADProperties = vals
+        ids = self.GetLatestIds(cr, uid, partData, context, forceCADProperties=forceCADProperties)
         return self.read(cr, uid, list(set(ids)), attribNames)
     
-    def GetLatestIds(self,cr,uid,vals,context=None):
+    def GetLatestIds(self,cr,uid,vals,context=None, forceCADProperties=False):
         """
             Get Last/Requested revision of given items (by name, revision, update time)
         """
-        ids=[]
-        for partName, partRev, updateDate in vals:
-            if updateDate:
-                if partRev == None or partRev == False:
-                    partIds=self.search(cr,uid,[('engineering_code','=',partName),('write_date','>',updateDate)],order='engineering_revision',context=context)
-                    if len(partIds)>0:
-                        partIds.sort()
-                        ids.append(partIds[len(partIds)-1])
-                else:
-                    ids.extend(self.search(cr,uid,[('engineering_code','=',partName),('engineering_revision','=',partRev),('write_date','>',updateDate)],context=context))
+        ids = []
+        plmDocObj = self.pool.get('plm.document')
+        
+        def getCompIds(partName, partRev):
+            if docRev is None or docRev is False:
+                partIds=self.search(cr,uid,[('engineering_code','=',partName)], order='engineering_revision', context=context)
+                if len(partIds)>0:
+                    partIds.sort()
+                    ids.append(partIds[len(partIds)-1])
             else:
-                if partRev == None or partRev == False:
-                    partIds=self.search(cr,uid,[('engineering_code','=',partName)],order='engineering_revision',context=context)
-                    if len(partIds)>0:
-                        partIds.sort()
-                        ids.append(partIds[len(partIds)-1])
+                ids.extend(self.search(cr, uid, [('engineering_code', '=', partName), ('engineering_revision', '=', partRev)], context=context))
+
+        for docName, docRev, docIdToOpen in vals:
+            checkOutUser = plmDocObj.get_checkout_user(cr, uid, docIdToOpen, context)
+            if checkOutUser:
+                isMyDocument = plmDocObj.isCheckedOutByMe(cr, uid, docIdToOpen, context)
+                if isMyDocument and forceCADProperties:
+                    return []    # Document properties will be not updated
                 else:
-                    ids.extend(self.search(cr,uid,[('engineering_code','=',partName),('engineering_revision','=',partRev)],context=context))
+                    getCompIds(docName, docRev)
+            else:
+                getCompIds(docName, docRev)
         return list(set(ids))
 
     def NewRevision(self, cr, uid, ids, context=None):

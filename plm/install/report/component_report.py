@@ -19,16 +19,23 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-import os
-import time
-import random
-import string
-import StringIO
+from datetime import datetime
+from dateutil import tz
 
 from book_collector import BookCollector, packDocuments
 from openerp.report.interface import report_int
 from openerp import pooler, _
 from openerp.exceptions import UserError
+
+
+def getBottomMessage(user, context):
+        to_zone = tz.gettz(context.get('tz', 'Europe/Rome'))
+        from_zone = tz.tzutc()
+        dt = datetime.now()
+        dt = dt.replace(tzinfo=from_zone)
+        localDT = dt.astimezone(to_zone)
+        localDT = localDT.replace(microsecond=0)
+        return "Printed by " + str(user.name) + " : " + str(localDT.ctime())
 
 
 class component_custom_report(report_int):
@@ -40,8 +47,7 @@ class component_custom_report(report_int):
         docRepository = self.pool.get('plm.document')._get_filestore(cr)
         componentType = self.pool.get('product.product')
         user = self.pool.get('res.users').browse(cr, uid, uid, context=context)
-        msg = "Printed by " + \
-            str(user.name) + " : " + str(time.strftime("%d/%m/%Y %H:%M:%S"))
+        msg = getBottomMessage(user, context)
         output = BookCollector(
             jumpFirst=False, customTest=(False, msg), bottomHeight=10)
         documents = []
@@ -66,8 +72,7 @@ class component_one_custom_report(report_int):
         docRepository = self.pool.get('plm.document')._get_filestore(cr)
         componentType = self.pool.get('product.product')
         user = self.pool.get('res.users').browse(cr, uid, uid, context=context)
-        msg = "Printed by " + \
-            str(user.name) + " : " + str(time.strftime("%d/%m/%Y %H:%M:%S"))
+        msg = getBottomMessage(user, context)
         output = BookCollector(
             jumpFirst=False, customTest=(False, msg), bottomHeight=10)
         children = []
@@ -97,8 +102,7 @@ class component_all_custom_report(report_int):
         docRepository = self.pool.get('plm.document')._get_filestore(cr)
         componentType = self.pool.get('product.product')
         user = self.pool.get('res.users').browse(cr, uid, uid, context=context)
-        msg = "Printed by " + \
-            str(user.name) + " : " + str(time.strftime("%d/%m/%Y %H:%M:%S"))
+        msg = getBottomMessage(user, context)
         output = BookCollector(
             jumpFirst=False, customTest=(False, msg), bottomHeight=10)
         children = []
@@ -132,8 +136,7 @@ class component_custom_report_latest(report_int):
         docRepository = objTemplateDoc._get_filestore(cr)
         componentType = self.pool.get('product.product')
         user = self.pool.get('res.users').browse(cr, uid, uid, context=context)
-        msg = "Printed by " + \
-            str(user.name) + " : " + str(time.strftime("%d/%m/%Y %H:%M:%S"))
+        msg = getBottomMessage(user, context)
         output = BookCollector(jumpFirst=False,
                                customTest=(False, msg),
                                bottomHeight=10)
