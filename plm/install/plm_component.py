@@ -285,18 +285,18 @@ class plm_component(models.Model):
 
         eBomId = False
         newidBom = False
-        if newBomType not in ['normal', 'spbom']:
+        if newBomType not in ['normal', 'phantom']:
             raise UserError(_("Could not convert source bom to %r" % newBomType))
         product_template_id = objProductProductBrw.product_tmpl_id.id
         bomIds = bomType.search(cr, uid, [('product_tmpl_id', '=', product_template_id),
-                                          ('type', '=', newBomType)])
+                                                                  ('type', '=', newBomType)])
         if bomIds:
             bomBrws = bomType.browse(cr, uid, bomIds[0], context=context)
             for bom_line in bomBrws.bom_line_ids:
                 self.create_bom_from_ebom(cr, uid, bom_line.product_id, newBomType, summarize, context)
         else:
             bomIds = bomType.search(cr, uid, [('product_tmpl_id', '=', product_template_id),
-                                                ('type', '=', 'ebom')])
+                                                                      ('type', '=', 'ebom')])
             if not bomIds:
                 UserError(_("No Enginnering bom provided"))
             for eBomId in bomIds:
