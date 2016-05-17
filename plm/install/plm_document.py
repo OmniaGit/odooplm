@@ -63,9 +63,10 @@ class plm_document(models.Model):
     def get_checkout_user(self, cr, uid, oid, context={}):
         checkType = self.pool.get('plm.checkout')
         lastDoc = self._getlastrev(cr, uid, [oid], context)
-        for docID in checkType.search(cr, uid, [('documentid', '=', lastDoc[0])]):
-            objectCheck = checkType.browse(cr, uid, docID)
-            return objectCheck.userid
+        if lastDoc:
+            for docID in checkType.search(cr, uid, [('documentid', '=', lastDoc[0])]):
+                objectCheck = checkType.browse(cr, uid, docID)
+                return objectCheck.userid
         False
 
     def _is_checkedout_for_me(self, cr, uid, oid, context=None):
@@ -83,7 +84,10 @@ class plm_document(models.Model):
         for objDoc in self.browse(cr, uid, ids, context=context):
             docIds = self.search(cr, uid, [('name', '=', objDoc.name), ('type', '=', 'binary')], order='revisionid', context=context)
             docIds.sort()   # Ids are not surely ordered, but revision are always in creation order.
-            result.append(docIds[len(docIds) - 1])
+            if docIds:
+                result.append(docIds[len(docIds)-1])
+            else:
+                logging.warning('[_getlastrev] No documents are found for object with name: "%s"' % (objDoc.name))
         return list(set(result))
 
     def GetLastNamesFromID(self, cr, uid, ids=[], context={}):
