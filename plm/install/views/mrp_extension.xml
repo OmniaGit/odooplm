@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data> 
+	
+    <record model="ir.ui.view" id="mrp_production_form_view">
+        <field name="name">mrp.production.form.extension</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+			<xpath expr="//field[@name='bom_id']" position="replace">
+                <field name="bom_id"
+                    domain="['|',
+                                ('product_id','=',product_id),
+                                '&amp;',
+                                    ('product_tmpl_id.product_variant_ids','=',product_id),
+                                    ('product_id','=',False),
+                					('type', '!=', 'ebom')]"
+                    context="{'default_product_id': product_id}" on_change="bom_id_change(bom_id)" required="1"/>
+            </xpath>
+        </field>
+    </record>
+	
+	</data>
+</openerp>
