@@ -1,0 +1,3242 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+#	* plm
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 9.0e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-05-13 08:25+0000\n"
+"PO-Revision-Date: 2016-05-13 08:25+0000\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: plm
+#: code:addons/plm/install/plm_component.py:772
+#: model:ir.model.fields,help:plm.field_product_rev_wizard_riviseDocument
+#, python-format
+msgid "\n"
+"                                    Make new revision of the linked document ?\n"
+"                                    "
+msgstr "\n"
+"                                    Nieuwe revisie makan van het gekoppelde document?\n"
+"                                    "
+
+#. module: plm
+#: code:addons/plm/install/plm_component.py:665
+#, python-format
+msgid " (%r). It has tried to create with values : (%r)."
+msgstr " (%r). Het is geprobeert met de waardes : (%r)."
+
+#. module: plm
+#: code:addons/plm/install/plmdocuments/document_report.py:34
+#: code:addons/plm/install/plmdocuments/document_report.py:69
+#: code:addons/plm/install/plmdocuments/document_report.py:108
+#: model:ir.model.fields,field_description:plm.field_report_plm_document_file_nbr
+#: model:ir.model.fields,field_description:plm.field_report_plm_document_user_nbr
+#: model:ir.model.fields,field_description:plm.field_report_plm_files_partner_nbr
+#, python-format
+msgid "# of Files"
+msgstr "# bestanden"
+
+#. module: plm
+#: code:addons/plm/install/plm_component.py:780
+#, python-format
+msgid "%s cannot be revised because the state isn't released!"
+msgstr "%s kan niet worden gereviseerd om de status niet staat op vrijgegeven!!"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.bom_spare_header
+msgid "<b>Spare Parts Report</b>"
+msgstr "<b>Reserve onderdelen rapport</b>"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_component_kanban
+msgid "<span>Action</span>"
+msgstr "<span>Actie</span>"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_component_kanban
+msgid "<span>New</span>"
+msgstr "<span>Nieuw</span>"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_component_kanban
+msgid "<span>Report</span>"
+msgstr "<span>Rapport</span>"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_component_kanban
+msgid "<span>View</span>"
+msgstr "<span>Bekijk</span>"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_mrp_bom_description
+#: model:ir.model.fields,help:plm.field_mrp_bom_line_description
+#: model:ir.model.fields,help:plm.field_plm_adding_bom_description
+#: model:ir.model.fields,help:plm.field_plm_compare_bom_description1
+#: model:ir.model.fields,help:plm.field_plm_compare_bom_description2
+#: model:ir.model.fields,help:plm.field_plm_missing_bom_description
+msgid "A precise description of the Product, used only for internal information purposes."
+msgstr "Een precieze omschrijving van het product, alleen voor intern gebruik."
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_document_message_needaction
+msgid "Action Needed"
+msgstr "Vereist actie"
+
+#. module: plm
+#: code:addons/plm/install/plmdescriptions/plm_descriptions.py:44
+#: model:ir.model.fields,help:plm.field_plm_description_fmtend
+#, python-format
+msgid "Allow to represent a normalized composition of technical features : %s%s allows to build chained values."
+msgstr "Allow to represent a normalized composition of technical features : %s%s allows to build chained values."
+
+#. module: plm
+#: code:addons/plm/install/plmdescriptions/plm_descriptions.py:39
+#: code:addons/plm/install/plmdescriptions/plm_descriptions.py:41
+#: code:addons/plm/install/plmdescriptions/plm_descriptions.py:43
+#: model:ir.model.fields,help:plm.field_plm_description_fmt1
+#: model:ir.model.fields,help:plm.field_plm_description_fmt2
+#: model:ir.model.fields,help:plm.field_plm_description_fmt3
+#, python-format
+msgid "Allow to represent the measure: %s%s allow to build um and value, %s builds only value, none builds only value."
+msgstr "Allow to represent the measure: %s%s allow to build um and value, %s builds only value, none builds only value."
+
+#. module: plm
+#: code:addons/plm/install/plmdescriptions/plm_descriptions.py:80
+#: model:ir.model.fields,help:plm.field_product_product_std_umc1
+#, python-format
+msgid "Allow to specifiy a unit measure for the first feature."
+msgstr "Sta toe om een maateenheid te specificeren voor de eerste feature."
+
+#. module: plm
+#: code:addons/plm/install/plmdescriptions/plm_descriptions.py:82
+#: model:ir.model.fields,help:plm.field_product_product_std_umc2
+#, python-format
+msgid "Allow to specifiy a unit measure for the second feature."
+msgstr "Sta toe om een maateenheid te specificeren voor de tweede feature."
+
+#. module: plm
+#: code:addons/plm/install/plmdescriptions/plm_descriptions.py:84
+#: model:ir.model.fields,help:plm.field_product_product_std_umc3
+#, python-format
+msgid "Allow to specifiy a unit measure for the third feature."
+msgstr "Sta toe om een maateenheid te specificeren voor de derde feature."
+
+#. module: plm
+#: code:addons/plm/install/plmdescriptions/plm_descriptions.py:38
+#: code:addons/plm/install/plmdescriptions/plm_descriptions.py:40
+#: code:addons/plm/install/plmdescriptions/plm_descriptions.py:42
+#: model:ir.model.fields,help:plm.field_plm_description_umc1
+#: model:ir.model.fields,help:plm.field_plm_description_umc2
+#: model:ir.model.fields,help:plm.field_plm_description_umc3
+#, python-format
+msgid "Allow to specify a unit measure or a label for the feature."
+msgstr "Sta toe om een maateenheid of labe te specificeren voor de feature."
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Apply"
+msgstr "Toepassen"
+
+#. module: plm
+#: code:addons/plm/install/plmdocuments/document_report.py:59
+#: code:addons/plm/install/plmdocuments/document_report.py:110
+#: selection:report.plm_document.user,month:0
+#: selection:report.plm_files.partner,month:0
+#, python-format
+msgid "April"
+msgstr "April"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_component_create_normalbom
+msgid "Are you sure you want to create a new Normal Bom?"
+msgstr "Weet u zeker dat u een nieuwe Normale BOM wilt aanmaken?"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_component_new_revision
+msgid "Are you sure you want to create a new Revision?"
+msgstr "Weet u zeker dat u een nieuwe new revisie wilt aanmaken?"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_component_manage_sparebom
+msgid "Are you sure you want to create a new Spare Bom?"
+msgstr "Weet u zeker dat u een nieuwe Reserve BOM wilt aanmaken?"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.restore_document_button_view
+msgid "Are you sure you want to restore this document?"
+msgstr "Weet u zeker dat u dit document wilt herstellen?"
+
+#. module: plm
+#: code:addons/plm/install/plmdescriptions/plm_descriptions.py:46
+#: model:ir.model.fields,help:plm.field_plm_description_sequence
+#, python-format
+msgid "Assign the sequence order when displaying a list of product categories."
+msgstr "Voeg een volgorder toe om de lijst van product categorien weer te geven."
+
+#. module: plm
+#: code:addons/plm/install/plmdescriptions/plm_descriptions.py:81
+#: model:ir.model.fields,help:plm.field_product_product_std_value1
+#, python-format
+msgid "Assign value to the first characteristic."
+msgstr "Voeg de waarde toe aan de eerste karateristiek."
+
+#. module: plm
+#: code:addons/plm/install/plmdescriptions/plm_descriptions.py:83
+#: code:addons/plm/install/plmdescriptions/plm_descriptions.py:85
+#: model:ir.model.fields,help:plm.field_product_product_std_value2
+#: model:ir.model.fields,help:plm.field_product_product_std_value3
+#, python-format
+msgid "Assign value to the second characteristic."
+msgstr "Voeg de waarde toe aan de tweede karateristiek."
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.view_plm_document
+msgid "Attached To"
+msgstr "Gekoppeld aan"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.view_plm_document
+msgid "Attachment"
+msgstr "Bijlage"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_document_name
+msgid "Attachment Name"
+msgstr "Naam bijlage"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_document_local_url
+msgid "Attachment URL"
+msgstr "Bijlage URL"
+
+#. module: plm
+#: code:addons/plm/install/plmdocuments/document_report.py:60
+#: code:addons/plm/install/plmdocuments/document_report.py:111
+#: selection:report.plm_document.user,month:0
+#: selection:report.plm_files.partner,month:0
+#, python-format
+msgid "August"
+msgstr "Augustus"
+
+#. module: plm
+#: model:ir.actions.report.xml,name:plm.report_plm_bom_structure_all
+msgid "BOM All Levels"
+msgstr "Materiaallijst Alle niveaus"
+
+#. module: plm
+#: model:ir.actions.report.xml,name:plm.report_plm_bom_structure_all_sum
+msgid "BOM All Levels Summarized"
+msgstr "BOM All Levels Summarized"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.bom_structure_all
+msgid "BOM Name"
+msgstr "Materiaallijst naam"
+
+#. module: plm
+#: model:ir.actions.report.xml,name:plm.report_plm_bom_structure_one
+msgid "BOM One Level"
+msgstr "Materiaallijst één niveaus"
+
+#. module: plm
+#: model:ir.actions.report.xml,name:plm.report_plm_bom_structure_one_sum
+msgid "BOM One Level Summarized"
+msgstr "Materiaallijst één niveau samengevat"
+
+#. module: plm
+#: model:ir.actions.report.xml,name:plm.report_plm_bom_structure_flat
+#: model:ir.actions.report.xml,name:plm.report_plm_bom_structure_leaves
+msgid "BOM Only Leaves Summarized"
+msgstr "BOM Only Leaves Summarized"
+
+#. module: plm
+#: code:addons/plm/install/plm_extend_entities.py:219
+#, python-format
+msgid "BOM lines of the referred bom"
+msgstr "Materiaallijst regels van de gekoppelde BOM"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.action_plm_backupdoc
+msgid "Backup Data Set"
+msgstr "Backup dataset"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.view_plm_backupdoc
+msgid "Backup Document"
+msgstr "Backup document"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_backupdoc_search
+msgid "Backup Document Set"
+msgstr "Backup documentset"
+
+#. module: plm
+#: model:ir.model,name:plm.model_mrp_bom
+#: model:ir.ui.view,arch_db:plm.plm_bom_form_view_eng
+msgid "Bill of Material"
+msgstr "Materiaallijst"
+
+#. module: plm
+#: code:addons/plm/install/plmsparebom/plm_sparebom.py:54
+#: model:ir.ui.view,arch_db:plm.mrp_part_tree_view_where
+#: model:ir.ui.view,arch_db:plm.plm_bom_tree_structure
+#: model:ir.ui.view,arch_db:plm.plm_component_base_form
+#, python-format
+msgid "Bill of Materials"
+msgstr "Materiaallijsten"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.action2
+msgid "Bill of Materials Structure"
+msgstr "Materiaallijststructuur"
+
+#. module: plm
+#: code:addons/plm/install/plmcomparebom/compare_bom.py:287
+#: code:addons/plm/install/plmcomparebom/compare_bom.py:304
+#: model:ir.model.fields,field_description:plm.field_plm_adding_bom_bom_id
+#: model:ir.model.fields,field_description:plm.field_plm_missing_bom_bom_id
+#, python-format
+msgid "BoM"
+msgstr "Materiaallijst"
+
+#. module: plm
+#: code:addons/plm/install/plmcomparebom/compare_bom.py:55
+#: model:ir.model.fields,field_description:plm.field_plm_compare_bom_bom_id1
+#, python-format
+msgid "BoM 1"
+msgstr "BOM 1"
+
+#. module: plm
+#: code:addons/plm/install/plmcomparebom/compare_bom.py:64
+#: model:ir.model.fields,field_description:plm.field_plm_compare_bom_bom_id2
+#, python-format
+msgid "BoM 2"
+msgstr "BOM 2"
+
+#. module: plm
+#: code:addons/plm/install/plmcomparebom/compare_bom.py:73
+#: model:ir.model.fields,field_description:plm.field_plm_compare_bom_anotinb
+#, python-format
+msgid "BoM Adding"
+msgstr "BOM toevoegen"
+
+#. module: plm
+#: model:ir.model,name:plm.model_plm_adding_bom
+msgid "BoM Adding Objects"
+msgstr "BOM toevoegen objecten"
+
+#. module: plm
+#: model:ir.model,name:plm.model_plm_compare_bom
+msgid "BoM Comparison"
+msgstr "BOM vergelijken"
+
+#. module: plm
+#: code:addons/plm/install/plm_extend_entities.py:77
+#: code:addons/plm/install/plm_extend_entities.py:187
+#: model:ir.model.fields,field_description:plm.field_mrp_bom_father_complete_ids
+#: model:ir.model.fields,field_description:plm.field_product_product_father_part_ids
+#, python-format
+msgid "BoM Hierarchy"
+msgstr "BOM Hierarchie"
+
+#. module: plm
+#: code:addons/plm/install/plmcomparebom/compare_bom.py:288
+#: code:addons/plm/install/plmcomparebom/compare_bom.py:305
+#: model:ir.model.fields,field_description:plm.field_plm_adding_bom_bom_idrow
+#: model:ir.model.fields,field_description:plm.field_plm_missing_bom_bom_idrow
+#, python-format
+msgid "BoM Line"
+msgstr "BOM regel"
+
+#. module: plm
+#: code:addons/plm/install/plmcomparebom/compare_bom.py:74
+#: model:ir.model.fields,field_description:plm.field_plm_compare_bom_bnotina
+#, python-format
+msgid "BoM Missing"
+msgstr "BOM ontbreekt"
+
+#. module: plm
+#: model:ir.model,name:plm.model_plm_missing_bom
+msgid "BoM Missing Objects"
+msgstr "BOM ontbrekende objecten"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.mrp_bom_tree_view_where
+#: model:ir.ui.view,arch_db:plm.view_mrp_bom_filter_inherit
+msgid "BoM Name"
+msgstr "BOM naam"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_adding_bom_tree_view
+msgid "BoM Relations in Bom 1"
+msgstr "BOM relaties in BOM 1"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_missing_bom_tree_view
+msgid "BoM Relations in Bom 2"
+msgstr "BOM relaties in BOM 2"
+
+#. module: plm
+#: code:addons/plm/install/plm_base_entities.py:189
+#: code:addons/plm/install/plm_base_entities.py:215
+#: code:addons/plm/install/plmcomparebom/compare_bom.py:60
+#: code:addons/plm/install/plmcomparebom/compare_bom.py:69
+#: model:ir.model.fields,field_description:plm.field_mrp_bom_line_type
+#: model:ir.model.fields,field_description:plm.field_plm_compare_bom_type_id1
+#: model:ir.model.fields,field_description:plm.field_plm_compare_bom_type_id2
+#, python-format
+msgid "BoM Type"
+msgstr "Materiaallijst soort"
+
+#. module: plm
+#: code:addons/plm/install/plmsparebom/plm_sparebom.py:49
+#, python-format
+msgid "BoM for Part %r already exists."
+msgstr "BOM van onderdeel %r bestaan al."
+
+#. module: plm
+#: code:addons/plm/install/plm_base_entities.py:687
+#: model:ir.model.fields,field_description:plm.field_plm_temporary_message_name
+#, python-format
+msgid "Bom Result"
+msgstr "BOM Resultaten"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_component_kanban
+msgid "Boms"
+msgstr "Materiaallijsten"
+
+#. module: plm
+#: code:addons/plm/install/plm_base_entities.py:196
+#: model:ir.model.fields,field_description:plm.field_mrp_bom_line_itemnum
+#, python-format
+msgid "CAD Item Position"
+msgstr "CAD item positie"
+
+#. module: plm
+#: code:addons/plm/install/plm_base_entities.py:197
+#: model:ir.model.fields,field_description:plm.field_mrp_bom_line_itemlbl
+#, python-format
+msgid "CAD Item Position Label"
+msgstr "CAD item positie label"
+
+#. module: plm
+#: code:addons/plm/install/plmcomparebom/compare_bom.py:292
+#: code:addons/plm/install/plmcomparebom/compare_bom.py:309
+#: model:ir.model.fields,field_description:plm.field_plm_adding_bom_itemnum
+#: model:ir.model.fields,field_description:plm.field_plm_missing_bom_itemnum
+#, python-format
+msgid "Cad Item Position"
+msgstr "Cad item positie"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_component_create_normalbom
+#: model:ir.ui.view,arch_db:plm.plm_component_manage_sparebom
+#: model:ir.ui.view,arch_db:plm.plm_component_new_revision
+#: model:ir.ui.view,arch_db:plm.restore_document_button_view
+#: model:ir.ui.view,arch_db:plm.view_plm_compare_bom
+#: model:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Cancel"
+msgstr "Annuleren"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_document_search
+msgid "Changed by"
+msgstr "Gewijzigd door"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_document_search
+msgid "Changed by Month"
+msgstr "Gewijzigd in maand"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.action_plm_checkout
+msgid "Check-Out"
+msgstr "Check-Out"
+
+#. module: plm
+#: code:addons/plm/install/plm_document.py:1045
+#: model:ir.model.fields,field_description:plm.field_plm_document_relation_userid
+#, python-format
+msgid "CheckOut User"
+msgstr "Check-Out gebruiker"
+
+#. module: plm
+#: code:addons/plm/install/plm_document.py:1030
+#, python-format
+msgid "Checked-In"
+msgstr "Checked-In"
+
+#. module: plm
+#: code:addons/plm/install/plm_document.py:1012
+#, python-format
+msgid "Checked-Out"
+msgstr "Checked-Out"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_checkout_search
+msgid "Checked-Out Document"
+msgstr "Checked-Out document"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_backupdoc_search
+#: model:ir.ui.view,arch_db:plm.plm_checkout_search
+msgid "Checked-Out Yesterday"
+msgstr "Checked-Out gisteren"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_backupdoc_search
+#: model:ir.ui.view,arch_db:plm.plm_checkout_search
+msgid "Checked-Out in last month"
+msgstr "Checked-Out afgelopen maand"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_backupdoc_search
+#: model:ir.ui.view,arch_db:plm.plm_checkout_search
+msgid "Checked-Out in last week"
+msgstr "Checked-Out afgelopen week"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_backupdoc_search
+msgid "Checked-Out in latest 7 days"
+msgstr "Checked-Out in laatste 7 dagen"
+
+#. module: plm
+#: code:addons/plm/install/plm_document.py:699
+#: model:ir.model.fields,field_description:plm.field_plm_document_checkout_user
+#, python-format
+msgid "Checked-Out to"
+msgstr "Checked-Out door"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_backupdoc_search
+#: model:ir.ui.view,arch_db:plm.plm_checkout_search
+msgid "Checked-Out today"
+msgstr "Checked-Out vandaag"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_document_checksum
+msgid "Checksum/SHA1"
+msgstr "Checksum/SHA1"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_docbom_search
+msgid "Child"
+msgstr "Onderliggend"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_docbom_form_view
+msgid "Child Preview"
+msgstr "Onderliggende weergave"
+
+#. module: plm
+#: code:addons/plm/install/plmsparebom/plm_sparebom.py:128
+#: model:ir.model.fields,field_description:plm.field_plm_description_bom_tmpl
+#, python-format
+msgid "Choose a BoM"
+msgstr "Selecteer een BOM"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_document_company_id
+msgid "Company"
+msgstr "Bedrijf"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.act_plm_compare_bom
+#: model:ir.ui.view,arch_db:plm.view_plm_compare_bom
+msgid "Compare BoMs"
+msgstr "Vergelijk BOM's"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.view_plm_compare_bom
+msgid "Compare selected BoMs"
+msgstr "Vergelijk geselecteerde BOM's"
+
+#. module: plm
+#: model:ir.model,name:plm.model_plm_component_document_rel
+msgid "Component Document Relations"
+msgstr "Component document relaties"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.mrp_bom_tree_view_where
+#: model:ir.ui.view,arch_db:plm.mrp_part_tree_view_where
+#: model:ir.ui.view,arch_db:plm.plm_bom_tree_structure
+msgid "Component Name"
+msgstr "Component naam"
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.plm_menu_relation
+msgid "Component Relations"
+msgstr "Component relaties"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.action_view_checkout_custom
+#: model:ir.actions.act_window,name:plm.action_view_component_status
+#: model:ir.actions.act_window,name:plm.action_view_documents_custom
+#: model:ir.ui.view,arch_db:plm.board_plm_manager_form
+#: model:ir.ui.view,arch_db:plm.view_component_status
+msgid "Component Status"
+msgstr "Component status"
+
+#. module: plm
+#: code:addons/plm/install/plm_base_entities.py:143
+#: sql_constraint:plm.component.document.rel:0
+#, python-format
+msgid "Component and Document relation has to be unique !"
+msgstr "Component en dcument relatie moet uniek zijn!"
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.plm_component_menu_view
+#: model:ir.ui.view,arch_db:plm.plm_bom_form_view_eng
+msgid "Components"
+msgstr "Componenten"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.action_view_component_status_graph
+msgid "Components Status"
+msgstr "Componenten status"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.view_component_status_graph
+msgid "Components by State"
+msgstr "Componenten per status"
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.plm_menu_dictionaries
+msgid "Configuration"
+msgstr "Instellingen"
+
+#. module: plm
+#: code:addons/plm/install/plm_document.py:1041
+#: model:ir.model.fields,field_description:plm.field_plm_document_relation_configuration
+#, python-format
+msgid "Configuration Name"
+msgstr "Configuratie naam"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Configure PLM"
+msgstr "Configureer PLM"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_component_base_form
+msgid "Confirm Component"
+msgstr "Bevestig component"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.view_plm_document
+msgid "Confirm Document"
+msgstr "Bevestig document"
+
+#. module: plm
+#: code:addons/plm/install/plm_base_entities.py:38
+#: code:addons/plm/install/plmcomponents/component_report.py:34
+#: model:ir.model.fields,field_description:plm.field_report_plm_component_count_component_confirmed
+#: model:ir.ui.view,arch_db:plm.plm_component_base_search
+#: model:ir.ui.view,arch_db:plm.plm_document_search
+#: selection:plm.document,state:0
+#, python-format
+msgid "Confirmed"
+msgstr "Bevestigd"
+
+#. module: plm
+#: code:addons/plm/install/plm_component.py:687
+#: code:addons/plm/install/plm_document.py:282
+#, python-format
+msgid "Copied starting from : %s."
+msgstr "Kopie start vanaf: %s."
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_component_base_form
+msgid "Correct Component"
+msgstr "Correct component"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.view_plm_document
+msgid "Correct Document"
+msgstr "Correct document"
+
+#. module: plm
+#: code:addons/plm/install/plm_component.py:289
+#, python-format
+msgid "Could not convert source bom to %r"
+msgstr "Het was niet mogelijk om de bron BOM te converteren naar %r"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_component_new_revision
+msgid "Create New Revision"
+msgstr "Maak een nieuwe revisie"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.act_create_normalBom
+#: model:ir.ui.view,arch_db:plm.plm_component_create_normalbom
+msgid "Create Normal Bom"
+msgstr "Maak een normale BOM"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.act_manage_spareBom
+#: model:ir.ui.view,arch_db:plm.plm_component_manage_sparebom
+msgid "Create Spare Bom"
+msgstr "Maak een reserve onderdeel BOM"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_backupdoc_search
+#: model:ir.ui.view,arch_db:plm.plm_checkout_search
+msgid "Create by Month"
+msgstr "Aangemaakt per maand"
+
+#. module: plm
+#: code:addons/plm/install/plm_component.py:322
+#, python-format
+msgid "Created %r"
+msgstr "Aangemaakt %r"
+
+#. module: plm
+#: code:addons/plm/install/plm_component.py:196
+#: code:addons/plm/install/plm_document.py:364
+#, python-format
+msgid "Created : New Revision."
+msgstr "Aangemaakt : Nieuwe revisie."
+
+#. module: plm
+#: code:addons/plm/install/plm_component.py:453
+#, python-format
+msgid "Created Normal Bom."
+msgstr "Aangemaakte Normale BOM."
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.view_plm_document
+msgid "Created and Modified"
+msgstr "Aangemaakt en aangepast"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_adding_bom_create_uid
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc_create_uid
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc_wizard_create_uid
+#: model:ir.model.fields,field_description:plm.field_plm_checkout_create_uid
+#: model:ir.model.fields,field_description:plm.field_plm_compare_bom_create_uid
+#: model:ir.model.fields,field_description:plm.field_plm_component_document_rel_create_uid
+#: model:ir.model.fields,field_description:plm.field_plm_config_settings_create_uid
+#: model:ir.model.fields,field_description:plm.field_plm_description_create_uid
+#: model:ir.model.fields,field_description:plm.field_plm_document_relation_create_uid
+#: model:ir.model.fields,field_description:plm.field_plm_finishing_create_uid
+#: model:ir.model.fields,field_description:plm.field_plm_installer_create_uid
+#: model:ir.model.fields,field_description:plm.field_plm_material_create_uid
+#: model:ir.model.fields,field_description:plm.field_plm_missing_bom_create_uid
+#: model:ir.model.fields,field_description:plm.field_plm_temporary_create_uid
+#: model:ir.model.fields,field_description:plm.field_plm_temporary_message_create_uid
+#: model:ir.model.fields,field_description:plm.field_product_rev_wizard_create_uid
+#: model:ir.ui.view,arch_db:plm.plm_document_search
+msgid "Created by"
+msgstr "Aangemaakt door"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_document_search
+msgid "Created by Month"
+msgstr "Aangemaakt per maand"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_backupdoc_search
+#: model:ir.ui.view,arch_db:plm.plm_checkout_search
+msgid "Created by me"
+msgstr "Aangemaakt door mij"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_document_search
+msgid "Created last month"
+msgstr "Aangemaakt laatste maand"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_docbom_search
+#: model:ir.ui.view,arch_db:plm.plm_document_search
+msgid "Created last week"
+msgstr "Aangemaakt laatste week"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_component_base_search
+#: model:ir.ui.view,arch_db:plm.view_mrp_bom_filter_inherit
+msgid "Created latest 2 Weeks"
+msgstr "Aangemaakt laatste 2 weken"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_component_base_search
+#: model:ir.ui.view,arch_db:plm.plm_document_search
+#: model:ir.ui.view,arch_db:plm.view_mrp_bom_filter_inherit
+msgid "Created latest 7 Days"
+msgstr "Aangemaakt laatste 7 dagen"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_adding_bom_create_date
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc_create_date
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc_wizard_create_date
+#: model:ir.model.fields,field_description:plm.field_plm_checkout_create_date
+#: model:ir.model.fields,field_description:plm.field_plm_compare_bom_create_date
+#: model:ir.model.fields,field_description:plm.field_plm_component_document_rel_create_date
+#: model:ir.model.fields,field_description:plm.field_plm_config_settings_create_date
+#: model:ir.model.fields,field_description:plm.field_plm_description_create_date
+#: model:ir.model.fields,field_description:plm.field_plm_finishing_create_date
+#: model:ir.model.fields,field_description:plm.field_plm_installer_create_date
+#: model:ir.model.fields,field_description:plm.field_plm_material_create_date
+#: model:ir.model.fields,field_description:plm.field_plm_missing_bom_create_date
+#: model:ir.model.fields,field_description:plm.field_plm_temporary_create_date
+#: model:ir.model.fields,field_description:plm.field_plm_temporary_message_create_date
+#: model:ir.model.fields,field_description:plm.field_product_rev_wizard_create_date
+msgid "Created on"
+msgstr "Aangemaakt op"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_component_base_search
+#: model:ir.ui.view,arch_db:plm.plm_docbom_search
+#: model:ir.ui.view,arch_db:plm.plm_document_search
+#: model:ir.ui.view,arch_db:plm.view_mrp_bom_filter_inherit
+msgid "Created today"
+msgstr "Aangemaakt vandaag"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_component_base_search
+#: model:ir.ui.view,arch_db:plm.plm_docbom_search
+#: model:ir.ui.view,arch_db:plm.plm_document_search
+#: model:ir.ui.view,arch_db:plm.view_mrp_bom_filter_inherit
+msgid "Created yesterday"
+msgstr "Aangemaat gisteren"
+
+#. module: plm
+#: code:addons/plm/install/plmsparebom/plm_sparebom.py:49
+#, python-format
+msgid "Creating a new Spare Bom Error."
+msgstr "Fout bij aanmaken nieuwe reserve onderdeel BOM."
+
+#. module: plm
+#: code:addons/plm/install/plm_base_entities.py:187
+#: code:addons/plm/install/plm_base_entities.py:213
+#, python-format
+msgid "Creation Date"
+msgstr "Aanmaak datum"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_document_search
+msgid "Creation Month"
+msgstr "Aanmaak maand"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_component_new_revision
+msgid "Creation of New Revision"
+msgstr "Aanmaken van nieuwe revisie"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_component_create_normalbom
+msgid "Creation of Normal Bom"
+msgstr "Aanmaken van Normale BOM"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_component_manage_sparebom
+msgid "Creation of Spare Bom"
+msgstr "Aanmaken van Reserve onderdeel BOM"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_backupdoc_search
+#: model:ir.ui.view,arch_db:plm.plm_checkout_search
+msgid "Creator"
+msgstr "Aangemaakt door"
+
+#. module: plm
+#: code:addons/plm/install/plm_component.py:785
+#, python-format
+msgid "Current component cannot be revised!"
+msgstr "Van het huidige component kan geen revisie worden gemaakt!"
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.plm_dashboard_menu
+msgid "Dashboard"
+msgstr "Dashboard"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_document_db_datas
+msgid "Database Data"
+msgstr "Database Gegevens"
+
+#. module: plm
+#: code:addons/plm/install/plm_component.py:42
+#: code:addons/plm/install/plm_document.py:983
+#: code:addons/plm/install/plm_document.py:1043
+#: code:addons/plm/install/plm_document.py:1107
+#: code:addons/plm/install/plmdocuments/document_report.py:66
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc_createdate
+#: model:ir.model.fields,field_description:plm.field_plm_checkout_createdate
+#: model:ir.model.fields,field_description:plm.field_plm_document_create_date
+#: model:ir.model.fields,field_description:plm.field_plm_document_relation_create_date
+#: model:ir.model.fields,field_description:plm.field_report_plm_document_user_create_date
+#, python-format
+msgid "Date Created"
+msgstr "Aanmaakdatum"
+
+#. module: plm
+#: code:addons/plm/install/plm_component.py:43
+#, python-format
+msgid "Date Modified"
+msgstr "Wijzigingsdatum"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_plm_document_message_last_post
+msgid "Date of the last message posted on the record."
+msgstr "Datum van het laatste bericht verstuurt op deze regel."
+
+#. module: plm
+#: code:addons/plm/install/plmdocuments/document_report.py:61
+#: model:ir.model.fields,field_description:plm.field_report_plm_document_user_day
+#, python-format
+msgid "Day"
+msgstr "Dag"
+
+#. module: plm
+#: code:addons/plm/install/plmdocuments/document_report.py:60
+#: code:addons/plm/install/plmdocuments/document_report.py:111
+#: selection:report.plm_document.user,month:0
+#: selection:report.plm_files.partner,month:0
+#, python-format
+msgid "December"
+msgstr "December"
+
+#. module: plm
+#: code:addons/plm/install/plm_base_entities.py:611
+#: code:addons/plm/install/plm_base_entities.py:628
+#: code:addons/plm/install/plm_extend_entities.py:186
+#: code:addons/plm/install/plm_extend_entities.py:217
+#: code:addons/plm/install/plmcomparebom/compare_bom.py:63
+#: code:addons/plm/install/plmcomparebom/compare_bom.py:72
+#: code:addons/plm/install/plmcomparebom/compare_bom.py:291
+#: code:addons/plm/install/plmcomparebom/compare_bom.py:308
+#: code:addons/plm/installer.py:40
+#: model:ir.model.fields,field_description:plm.field_mrp_bom_description
+#: model:ir.model.fields,field_description:plm.field_mrp_bom_line_description
+#: model:ir.model.fields,field_description:plm.field_plm_adding_bom_description
+#: model:ir.model.fields,field_description:plm.field_plm_compare_bom_description1
+#: model:ir.model.fields,field_description:plm.field_plm_compare_bom_description2
+#: model:ir.model.fields,field_description:plm.field_plm_document_description
+#: model:ir.model.fields,field_description:plm.field_plm_finishing_description
+#: model:ir.model.fields,field_description:plm.field_plm_installer_description
+#: model:ir.model.fields,field_description:plm.field_plm_material_description
+#: model:ir.model.fields,field_description:plm.field_plm_missing_bom_description
+#: model:ir.ui.view,arch_db:plm.bom_structure_all
+#: model:ir.ui.view,arch_db:plm.view_plm_description
+#, python-format
+msgid "Description"
+msgstr "Omschrijving"
+
+#. module: plm
+#: code:addons/plm/install/plmdescriptions/plm_descriptions.py:37
+#: model:ir.model.fields,field_description:plm.field_plm_description_description_en
+#, python-format
+msgid "Description English"
+msgstr "Omschrijving Engels"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.plm_action_description_form
+#: model:ir.ui.menu,name:plm.menu_description
+#: model:ir.ui.view,arch_db:plm.plm_view_description_tree
+msgid "Descriptions"
+msgstr "Omschrijvingen"
+
+#. module: plm
+#: code:addons/plm/install/plm_base_entities.py:610
+#: model:ir.model.fields,field_description:plm.field_plm_material_name
+#, python-format
+msgid "Designation"
+msgstr "Aanwijzing"
+
+#. module: plm
+#: code:addons/plm/install/plmcomparebom/compare_bom.py:294
+#: code:addons/plm/install/plmcomparebom/compare_bom.py:311
+#: model:ir.model.fields,field_description:plm.field_plm_adding_bom_reason
+#: model:ir.model.fields,field_description:plm.field_plm_missing_bom_reason
+#, python-format
+msgid "Difference"
+msgstr "Verschil"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_visualize_diff_form
+msgid "Differences Between BoMs"
+msgstr "Verschillen tussen BOM's"
+
+#. module: plm
+#: code:addons/plm/install/plmcomparebom/compare_bom.py:177
+#, python-format
+msgid "Differences on BoMs"
+msgstr "Verschillen tussen BOM's"
+
+#. module: plm
+#: code:addons/plm/install/plmdocuments/document_report.py:64
+#: model:ir.model.fields,field_description:plm.field_report_plm_document_user_directory
+#, python-format
+msgid "Directory"
+msgstr "Directory"
+
+#. module: plm
+#: code:addons/plm/install/plmdocuments/document_report.py:70
+#: model:ir.model.fields,field_description:plm.field_report_plm_document_user_type
+#, python-format
+msgid "Directory Type"
+msgstr "Directory soort"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_adding_bom_display_name
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc_display_name
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc_wizard_display_name
+#: model:ir.model.fields,field_description:plm.field_plm_checkout_display_name
+#: model:ir.model.fields,field_description:plm.field_plm_compare_bom_display_name
+#: model:ir.model.fields,field_description:plm.field_plm_component_document_rel_display_name
+#: model:ir.model.fields,field_description:plm.field_plm_config_settings_display_name
+#: model:ir.model.fields,field_description:plm.field_plm_description_display_name
+#: model:ir.model.fields,field_description:plm.field_plm_document_display_name
+#: model:ir.model.fields,field_description:plm.field_plm_document_relation_display_name
+#: model:ir.model.fields,field_description:plm.field_plm_finishing_display_name
+#: model:ir.model.fields,field_description:plm.field_plm_installer_display_name
+#: model:ir.model.fields,field_description:plm.field_plm_material_display_name
+#: model:ir.model.fields,field_description:plm.field_plm_missing_bom_display_name
+#: model:ir.model.fields,field_description:plm.field_plm_temporary_display_name
+#: model:ir.model.fields,field_description:plm.field_plm_temporary_message_display_name
+#: model:ir.model.fields,field_description:plm.field_product_rev_wizard_display_name
+#: model:ir.model.fields,field_description:plm.field_report_plm_bom_spare_header_display_name
+#: model:ir.model.fields,field_description:plm.field_report_plm_bom_structure_all_display_name
+#: model:ir.model.fields,field_description:plm.field_report_plm_bom_structure_all_sum_display_name
+#: model:ir.model.fields,field_description:plm.field_report_plm_bom_structure_flat_display_name
+#: model:ir.model.fields,field_description:plm.field_report_plm_bom_structure_leaves_display_name
+#: model:ir.model.fields,field_description:plm.field_report_plm_bom_structure_one_display_name
+#: model:ir.model.fields,field_description:plm.field_report_plm_bom_structure_one_sum_display_name
+#: model:ir.model.fields,field_description:plm.field_report_plm_component_display_name
+#: model:ir.model.fields,field_description:plm.field_report_plm_document_file_display_name
+#: model:ir.model.fields,field_description:plm.field_report_plm_document_user_display_name
+#: model:ir.model.fields,field_description:plm.field_report_plm_document_wall_display_name
+#: model:ir.model.fields,field_description:plm.field_report_plm_files_partner_display_name
+msgid "Display Name"
+msgstr "Naam weergeven"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_component_kanban
+msgid "Docs"
+msgstr "Documenten"
+
+#. module: plm
+#: code:addons/plm/install/plm_document.py:1177
+#: model:ir.ui.view,arch_db:plm.view_plm_document
+#, python-format
+msgid "Document"
+msgstr "Document"
+
+#. module: plm
+#: code:addons/plm/install/plm_document.py:436
+#, python-format
+msgid "Document %s  -  %s cannot be updated"
+msgstr "Document %s  -  %s kan niet worden bijgewerkt"
+
+#. module: plm
+#: code:addons/plm/install/plm_document.py:131
+#, python-format
+msgid "Document %s - %s cannot be accessed"
+msgstr "Document %s - %s kan niet worden benaderd"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_backupdoc_search
+msgid "Document Name"
+msgstr "Document Name"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_docbom_search
+msgid "Document Relation Kind"
+msgstr "Document relatie soort"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.plm_action_document_relations
+#: model:ir.ui.view,arch_db:plm.plm_docbom_tree_view
+msgid "Document Relations"
+msgstr "Document relaties"
+
+#. module: plm
+#: code:addons/plm/install/plm_component.py:771
+#: model:ir.model.fields,field_description:plm.field_product_rev_wizard_riviseDocument
+#, python-format
+msgid "Document Revision"
+msgstr "Document revisie"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.board_plm_manager_form
+msgid "Document board"
+msgstr "Document dashboard"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.plm_action_document_form
+#: model:ir.ui.menu,name:plm.plm_document_form
+#: model:ir.ui.view,arch_db:plm.plm_document_search
+#: model:ir.ui.view,arch_db:plm.plm_document_tree
+msgid "Documents"
+msgstr "Documenten"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_backupdoc_tree
+#: model:ir.ui.view,arch_db:plm.plm_checkout_tree
+msgid "Documents in Check-Out"
+msgstr "Documenten in Check-Out"
+
+#. module: plm
+#: code:addons/plm/install/plm_base_entities.py:37
+#: code:addons/plm/install/plmcomponents/component_report.py:33
+#: model:ir.model.fields,field_description:plm.field_report_plm_component_count_component_draft
+#: selection:plm.document,state:0
+#, python-format
+msgid "Draft"
+msgstr "Concept"
+
+#. module: plm
+#: code:addons/plm/install/plm_document.py:692
+#: model:ir.model.fields,help:plm.field_plm_document_usedforspare
+#, python-format
+msgid "Drawings marked here will be used printing Spare Part Manual report."
+msgstr "Tekeningen welke hier zijn gemarkeerd worden gebruikt om een reserve onderdelen handleiding te printen."
+
+#. module: plm
+#: model:ir.model,name:plm.model_plm_document
+msgid "Email Thread"
+msgstr "E-mail discussie"
+
+#. module: plm
+#: code:addons/plm/install/plm_base_entities.py:189
+#: code:addons/plm/install/plm_base_entities.py:215
+#: code:addons/plm/install/plmcomparebom/compare_bom.py:58
+#: code:addons/plm/install/plmcomparebom/compare_bom.py:67
+#: selection:mrp.bom.line,type:0
+#: selection:plm.compare.bom,type_id1:0
+#: selection:plm.compare.bom,type_id2:0
+#, python-format
+msgid "Engineering BoM"
+msgstr "Engineering BOM"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.plm_action_ebom_form
+msgid "Engineering BoMs"
+msgstr "Engineering BOM's"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_component_kanban
+msgid "Engineering Boms"
+msgstr "Engineering BOM's"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.product_template_form_view_plm_custom
+msgid "Engineering Infos"
+msgstr "Engineering Informatie"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.action_plm_component_base
+#: model:ir.ui.view,arch_db:plm.plm_component_base_tree
+msgid "Engineering Parts"
+msgstr "Engineering onderdelen"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_component_base_form
+msgid "Engineering Product"
+msgstr "Engineering product"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_component_kanban
+msgid "Engineering revision:"
+msgstr "Engineering revisie:"
+
+#. module: plm
+#: code:addons/plm/install/plm_document.py:174
+#, python-format
+msgid "Error in _data_set"
+msgstr "Error in _data_set"
+
+#. module: plm
+#: code:addons/plm/install/actions/dataconnector.py:430
+#: code:addons/plm/install/actions/dataconnector.py:437
+#: code:addons/plm/install/actions/dataconnector.py:442
+#: code:addons/plm/install/actions/dataconnector.py:465
+#: code:addons/plm/install/actions/dataconnector.py:470
+#, python-format
+msgid "Export Data Error"
+msgstr "Export gegevens fout"
+
+#. module: plm
+#: code:addons/plm/install/plmdocuments/document_report.py:59
+#: code:addons/plm/install/plmdocuments/document_report.py:110
+#: selection:report.plm_document.user,month:0
+#: selection:report.plm_files.partner,month:0
+#, python-format
+msgid "February"
+msgstr "Februari"
+
+#. module: plm
+#: code:addons/plm/install/plmdocuments/document_report.py:65
+#: model:ir.model.fields,field_description:plm.field_report_plm_document_user_datas_fname
+#: selection:plm.document,type:0
+#, python-format
+msgid "File"
+msgstr "Bestand"
+
+#. module: plm
+#: code:addons/plm/install/plm_document.py:703
+#: model:ir.model.fields,field_description:plm.field_plm_document_datas
+#, python-format
+msgid "File Content"
+msgstr "Bestandsinhoud"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.view_plm_document
+msgid "File Data"
+msgstr "Bestand gegevens"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_document_datas_fname
+msgid "File Name"
+msgstr "Bestandsnaam"
+
+#. module: plm
+#: code:addons/plm/install/plmdocuments/document_report.py:33
+#: code:addons/plm/install/plmdocuments/document_report.py:68
+#: code:addons/plm/install/plmdocuments/document_report.py:107
+#: model:ir.model.fields,field_description:plm.field_plm_document_file_size
+#: model:ir.model.fields,field_description:plm.field_report_plm_document_file_file_size
+#: model:ir.model.fields,field_description:plm.field_report_plm_document_user_file_size
+#: model:ir.model.fields,field_description:plm.field_report_plm_files_partner_file_size
+#, python-format
+msgid "File Size"
+msgstr "Bestandsgrootte"
+
+#. module: plm
+#: code:addons/plm/installer.py:36
+#: code:addons/plm/installer.py:37
+#: model:ir.model.fields,field_description:plm.field_plm_installer_exe_name
+#: model:ir.model.fields,field_description:plm.field_plm_installer_name
+#, python-format
+msgid "File name"
+msgstr "Bestandsnaam"
+
+#. module: plm
+#: sql_constraint:plm.document:0
+msgid "File name has to be unique!"
+msgstr "Bestandsnaam moet uniek zijn!"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.action_view_file_month
+#: model:ir.ui.view,arch_db:plm.board_plm_manager_form
+#: model:ir.ui.view,arch_db:plm.view_file_month
+msgid "Files by Month"
+msgstr "Bestanden per maand"
+
+#. module: plm
+#: model:ir.model,name:plm.model_report_plm_document_file
+msgid "Files details by Directory"
+msgstr "Bestanddetails per directory"
+
+#. module: plm
+#: model:ir.model,name:plm.model_report_plm_files_partner
+msgid "Files details by Partners"
+msgstr "Bestanddetails per relaties"
+
+#. module: plm
+#: model:ir.model,name:plm.model_report_plm_document_user
+msgid "Files details by Users"
+msgstr "Bestanddetails per gebruikers"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_document_search
+msgid "Filter on documents changed by me"
+msgstr "Filter op documenten gewijzigd door mij"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_document_search
+msgid "Filter on documents created by me"
+msgstr "Filter op documenten aangemaakt door mij"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.view_plm_finishing
+msgid "Finishing"
+msgstr "Afwerking"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.plm_action_finishing_form
+#: model:ir.ui.menu,name:plm.menu_finishing
+#: model:ir.ui.view,arch_db:plm.plm_view_finishing_tree
+msgid "Finishings"
+msgstr "Afwerkingen"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_document_message_follower_ids
+msgid "Followers"
+msgstr "Volgers"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_document_message_channel_ids
+msgid "Followers (Channels)"
+msgstr "Volgers (Kanalen)"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_document_message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Volgers (relaties)"
+
+#. module: plm
+#: code:addons/plm/install/plmdescriptions/plm_descriptions.py:39
+#: model:ir.model.fields,field_description:plm.field_plm_description_fmt1
+#, python-format
+msgid "Format Feature 1"
+msgstr "Formaat feature 1"
+
+#. module: plm
+#: code:addons/plm/install/plmdescriptions/plm_descriptions.py:41
+#: model:ir.model.fields,field_description:plm.field_plm_description_fmt2
+#, python-format
+msgid "Format Feature 2"
+msgstr "Formaat feature 2"
+
+#. module: plm
+#: code:addons/plm/install/plmdescriptions/plm_descriptions.py:43
+#: model:ir.model.fields,field_description:plm.field_plm_description_fmt3
+#, python-format
+msgid "Format Feature 3"
+msgstr "Formaat feature 3"
+
+#. module: plm
+#: code:addons/plm/install/plmdescriptions/plm_descriptions.py:44
+#: model:ir.model.fields,field_description:plm.field_plm_description_fmtend
+#, python-format
+msgid "Format Feature Composed"
+msgstr "Format feature samengesteld"
+
+#. module: plm
+#: code:addons/plm/install/plm_base_entities.py:612
+#: code:addons/plm/install/plm_base_entities.py:629
+#: model:ir.model.fields,help:plm.field_plm_finishing_sequence
+#: model:ir.model.fields,help:plm.field_plm_material_sequence
+#, python-format
+msgid "Gives the sequence order when displaying a list of product categories."
+msgstr "Geeft de volgorde weer waarin de product categorieën worden weergegeven."
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_backupdoc_search
+#: model:ir.ui.view,arch_db:plm.plm_checkout_search
+#: model:ir.ui.view,arch_db:plm.plm_document_search
+msgid "Group By..."
+msgstr "Groepeer op..."
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_docbom_search
+msgid "Group by..."
+msgstr "Groepeer op..."
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_checkout_search
+msgid "Hostname"
+msgstr "Hostname"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_adding_bom_id
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc_id
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc_wizard_id
+#: model:ir.model.fields,field_description:plm.field_plm_checkout_id
+#: model:ir.model.fields,field_description:plm.field_plm_compare_bom_id
+#: model:ir.model.fields,field_description:plm.field_plm_component_document_rel_id
+#: model:ir.model.fields,field_description:plm.field_plm_config_settings_id
+#: model:ir.model.fields,field_description:plm.field_plm_description_id
+#: model:ir.model.fields,field_description:plm.field_plm_document_id
+#: model:ir.model.fields,field_description:plm.field_plm_document_relation_id
+#: model:ir.model.fields,field_description:plm.field_plm_finishing_id
+#: model:ir.model.fields,field_description:plm.field_plm_installer_id
+#: model:ir.model.fields,field_description:plm.field_plm_material_id
+#: model:ir.model.fields,field_description:plm.field_plm_missing_bom_id
+#: model:ir.model.fields,field_description:plm.field_plm_temporary_id
+#: model:ir.model.fields,field_description:plm.field_plm_temporary_message_id
+#: model:ir.model.fields,field_description:plm.field_product_rev_wizard_id
+#: model:ir.model.fields,field_description:plm.field_report_plm_bom_spare_header_id
+#: model:ir.model.fields,field_description:plm.field_report_plm_bom_structure_all_id
+#: model:ir.model.fields,field_description:plm.field_report_plm_bom_structure_all_sum_id
+#: model:ir.model.fields,field_description:plm.field_report_plm_bom_structure_flat_id
+#: model:ir.model.fields,field_description:plm.field_report_plm_bom_structure_leaves_id
+#: model:ir.model.fields,field_description:plm.field_report_plm_bom_structure_one_id
+#: model:ir.model.fields,field_description:plm.field_report_plm_bom_structure_one_sum_id
+#: model:ir.model.fields,field_description:plm.field_report_plm_component_id
+#: model:ir.model.fields,field_description:plm.field_report_plm_document_file_id
+#: model:ir.model.fields,field_description:plm.field_report_plm_document_user_id
+#: model:ir.model.fields,field_description:plm.field_report_plm_document_wall_id
+#: model:ir.model.fields,field_description:plm.field_report_plm_files_partner_id
+msgid "ID"
+msgstr "ID"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_plm_document_message_unread
+msgid "If checked new messages require your attention."
+msgstr "Indien aangevinkt zullen nieuwe berichten uw aandacht vragen."
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_plm_document_message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "Indien aangevinkt vragen nieuwe berichten uw aandacht."
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_plm_temporary_summarize
+msgid "If set as true, when a Bom line comes from EBOM was in the old normal BOM two lines where been summarized."
+msgstr "If set as true, when a Bom line comes from EBOM was in the old normal BOM two lines where been summarized."
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_document_index_content
+#: model:ir.ui.view,arch_db:plm.view_plm_document
+msgid "Indexed Content"
+msgstr "Geïndexeerde inhoud"
+
+#. module: plm
+#: code:addons/plm/install/plm_document.py:700
+#: model:ir.model.fields,field_description:plm.field_plm_document_is_checkout
+#, python-format
+msgid "Is Checked-Out"
+msgstr "Is Checked-Out"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_document_message_is_follower
+msgid "Is Follower"
+msgstr "Is een volger"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_document_public
+msgid "Is public document"
+msgstr "Is een openbaar document"
+
+#. module: plm
+#: code:addons/plm/install/plmdocuments/document_report.py:59
+#: code:addons/plm/install/plmdocuments/document_report.py:110
+#: selection:report.plm_document.user,month:0
+#: selection:report.plm_files.partner,month:0
+#, python-format
+msgid "January"
+msgstr "Januari"
+
+#. module: plm
+#: code:addons/plm/install/plmdocuments/document_report.py:60
+#: code:addons/plm/install/plmdocuments/document_report.py:111
+#: selection:report.plm_document.user,month:0
+#: selection:report.plm_files.partner,month:0
+#, python-format
+msgid "July"
+msgstr "Juli"
+
+#. module: plm
+#: code:addons/plm/install/plmdocuments/document_report.py:59
+#: code:addons/plm/install/plmdocuments/document_report.py:110
+#: selection:report.plm_document.user,month:0
+#: selection:report.plm_files.partner,month:0
+#, python-format
+msgid "June"
+msgstr "Juni"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product_kanban_dashboard
+msgid "Kanban dashboard"
+msgstr "Kanban dashboard"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_docbom_search
+msgid "Kind"
+msgstr "Soort"
+
+#. module: plm
+#: code:addons/plm/install/plm_document.py:1042
+#: model:ir.model.fields,field_description:plm.field_plm_document_relation_link_kind
+#, python-format
+msgid "Kind of Link"
+msgstr "Soort koppeling"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_document_message_last_post
+msgid "Last Message Date"
+msgstr "Laatste bericht datum"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_adding_bom___last_update
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc___last_update
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc_wizard___last_update
+#: model:ir.model.fields,field_description:plm.field_plm_checkout___last_update
+#: model:ir.model.fields,field_description:plm.field_plm_compare_bom___last_update
+#: model:ir.model.fields,field_description:plm.field_plm_component_document_rel___last_update
+#: model:ir.model.fields,field_description:plm.field_plm_config_settings___last_update
+#: model:ir.model.fields,field_description:plm.field_plm_description___last_update
+#: model:ir.model.fields,field_description:plm.field_plm_document___last_update
+#: model:ir.model.fields,field_description:plm.field_plm_document_relation___last_update
+#: model:ir.model.fields,field_description:plm.field_plm_finishing___last_update
+#: model:ir.model.fields,field_description:plm.field_plm_installer___last_update
+#: model:ir.model.fields,field_description:plm.field_plm_material___last_update
+#: model:ir.model.fields,field_description:plm.field_plm_missing_bom___last_update
+#: model:ir.model.fields,field_description:plm.field_plm_temporary___last_update
+#: model:ir.model.fields,field_description:plm.field_plm_temporary_message___last_update
+#: model:ir.model.fields,field_description:plm.field_product_rev_wizard___last_update
+#: model:ir.model.fields,field_description:plm.field_report_plm_bom_spare_header___last_update
+#: model:ir.model.fields,field_description:plm.field_report_plm_bom_structure_all___last_update
+#: model:ir.model.fields,field_description:plm.field_report_plm_bom_structure_all_sum___last_update
+#: model:ir.model.fields,field_description:plm.field_report_plm_bom_structure_flat___last_update
+#: model:ir.model.fields,field_description:plm.field_report_plm_bom_structure_leaves___last_update
+#: model:ir.model.fields,field_description:plm.field_report_plm_bom_structure_one___last_update
+#: model:ir.model.fields,field_description:plm.field_report_plm_bom_structure_one_sum___last_update
+#: model:ir.model.fields,field_description:plm.field_report_plm_component___last_update
+#: model:ir.model.fields,field_description:plm.field_report_plm_document_file___last_update
+#: model:ir.model.fields,field_description:plm.field_report_plm_document_user___last_update
+#: model:ir.model.fields,field_description:plm.field_report_plm_document_wall___last_update
+#: model:ir.model.fields,field_description:plm.field_report_plm_files_partner___last_update
+msgid "Last Modified on"
+msgstr "Laatst gewijzigd op"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_backupdoc_search
+#: model:ir.ui.view,arch_db:plm.plm_checkout_search
+#: model:ir.ui.view,arch_db:plm.plm_document_search
+msgid "Last Month"
+msgstr "Laatste maand"
+
+#. module: plm
+#: code:addons/plm/install/plmdocuments/document_report.py:143
+#: model:ir.model.fields,field_description:plm.field_report_plm_document_wall_last
+#, python-format
+msgid "Last Posted Time"
+msgstr "Laatst boek tijd"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_adding_bom_write_uid
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc_wizard_write_uid
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc_write_uid
+#: model:ir.model.fields,field_description:plm.field_plm_checkout_write_uid
+#: model:ir.model.fields,field_description:plm.field_plm_compare_bom_write_uid
+#: model:ir.model.fields,field_description:plm.field_plm_component_document_rel_write_uid
+#: model:ir.model.fields,field_description:plm.field_plm_config_settings_write_uid
+#: model:ir.model.fields,field_description:plm.field_plm_description_write_uid
+#: model:ir.model.fields,field_description:plm.field_plm_document_relation_write_uid
+#: model:ir.model.fields,field_description:plm.field_plm_document_write_uid
+#: model:ir.model.fields,field_description:plm.field_plm_finishing_write_uid
+#: model:ir.model.fields,field_description:plm.field_plm_installer_write_uid
+#: model:ir.model.fields,field_description:plm.field_plm_material_write_uid
+#: model:ir.model.fields,field_description:plm.field_plm_missing_bom_write_uid
+#: model:ir.model.fields,field_description:plm.field_plm_temporary_message_write_uid
+#: model:ir.model.fields,field_description:plm.field_plm_temporary_write_uid
+#: model:ir.model.fields,field_description:plm.field_product_rev_wizard_write_uid
+msgid "Last Updated by"
+msgstr "Laatst bijgewerkt door"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_adding_bom_write_date
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc_wizard_write_date
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc_write_date
+#: model:ir.model.fields,field_description:plm.field_plm_checkout_write_date
+#: model:ir.model.fields,field_description:plm.field_plm_compare_bom_write_date
+#: model:ir.model.fields,field_description:plm.field_plm_component_document_rel_write_date
+#: model:ir.model.fields,field_description:plm.field_plm_config_settings_write_date
+#: model:ir.model.fields,field_description:plm.field_plm_description_write_date
+#: model:ir.model.fields,field_description:plm.field_plm_document_relation_write_date
+#: model:ir.model.fields,field_description:plm.field_plm_document_write_date
+#: model:ir.model.fields,field_description:plm.field_plm_finishing_write_date
+#: model:ir.model.fields,field_description:plm.field_plm_installer_write_date
+#: model:ir.model.fields,field_description:plm.field_plm_material_write_date
+#: model:ir.model.fields,field_description:plm.field_plm_missing_bom_write_date
+#: model:ir.model.fields,field_description:plm.field_plm_temporary_message_write_date
+#: model:ir.model.fields,field_description:plm.field_plm_temporary_write_date
+#: model:ir.model.fields,field_description:plm.field_product_rev_wizard_write_date
+msgid "Last Updated on"
+msgstr "Laatst bijgewerkt op"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_backupdoc_search
+#: model:ir.ui.view,arch_db:plm.plm_checkout_search
+#: model:ir.ui.view,arch_db:plm.plm_docbom_search
+#: model:ir.ui.view,arch_db:plm.plm_document_search
+msgid "Last Week"
+msgstr "Laatste week"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_component_base_search
+#: model:ir.ui.view,arch_db:plm.plm_document_search
+msgid "Latest"
+msgstr "Laatste"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_component_base_search
+#: model:ir.ui.view,arch_db:plm.view_mrp_bom_filter_inherit
+msgid "Latest 2 Weeks"
+msgstr "Laatste 2 weken"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_backupdoc_search
+#: model:ir.ui.view,arch_db:plm.plm_checkout_search
+#: model:ir.ui.view,arch_db:plm.plm_component_base_search
+#: model:ir.ui.view,arch_db:plm.plm_document_search
+#: model:ir.ui.view,arch_db:plm.view_mrp_bom_filter_inherit
+msgid "Latest 7 Days"
+msgstr "Laatste 7 dagen"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.bom_structure_all
+msgid "Level"
+msgstr "Niveau"
+
+#. module: plm
+#: code:addons/plm/install/plm_base_entities.py:139
+#: model:ir.model.fields,field_description:plm.field_plm_component_document_rel_component_id
+#, python-format
+msgid "Linked Component"
+msgstr "Gekoppeld component"
+
+#. module: plm
+#: code:addons/plm/install/plm_extend_entities.py:74
+#: model:ir.model.fields,field_description:plm.field_product_product_linkeddocuments
+#, python-format
+msgid "Linked Docs"
+msgstr "Gekoppelde documenten"
+
+#. module: plm
+#: code:addons/plm/install/plm_base_entities.py:140
+#: model:ir.model.fields,field_description:plm.field_plm_component_document_rel_document_id
+#, python-format
+msgid "Linked Document"
+msgstr "Gekoppeld document"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_component_base_form
+msgid "Linked Documents"
+msgstr "Gekoppelde documenten"
+
+#. module: plm
+#: code:addons/plm/install/plm_extend_entities.py:39
+#: model:ir.model.fields,field_description:plm.field_plm_document_linkedcomponents
+#: model:ir.ui.view,arch_db:plm.view_plm_document
+#, python-format
+msgid "Linked Parts"
+msgstr "Gekoppelde onderdelen"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_component_base_form
+msgid "Manufacturing"
+msgstr "Productie"
+
+#. module: plm
+#: code:addons/plm/install/plmdocuments/document_report.py:59
+#: code:addons/plm/install/plmdocuments/document_report.py:110
+#: selection:report.plm_document.user,month:0
+#: selection:report.plm_files.partner,month:0
+#, python-format
+msgid "March"
+msgstr "Maart"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.view_plm_material
+msgid "Material"
+msgstr "Materiaal"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.plm_action_material_form
+#: model:ir.ui.menu,name:plm.menu_material
+#: model:ir.ui.view,arch_db:plm.plm_view_material_tree
+msgid "Materials"
+msgstr "Materialen"
+
+#. module: plm
+#: code:addons/plm/install/plmdocuments/document_report.py:59
+#: code:addons/plm/install/plmdocuments/document_report.py:110
+#: selection:report.plm_document.user,month:0
+#: selection:report.plm_files.partner,month:0
+#, python-format
+msgid "May"
+msgstr "Mei"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_document_message_ids
+msgid "Messages"
+msgstr "Berichten"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_document_mimetype
+msgid "Mime Type"
+msgstr "Mime Type"
+
+#. module: plm
+#: code:addons/plm/install/plmdocuments/document_report.py:67
+#: model:ir.model.fields,field_description:plm.field_report_plm_document_user_change_date
+#, python-format
+msgid "Modified Date"
+msgstr "Datum aangepast"
+
+#. module: plm
+#: code:addons/plm/install/plmdocuments/document_report.py:35
+#: code:addons/plm/install/plmdocuments/document_report.py:60
+#: code:addons/plm/install/plmdocuments/document_report.py:111
+#: code:addons/plm/install/plmdocuments/document_report.py:139
+#: code:addons/plm/install/plmdocuments/document_report.py:142
+#: model:ir.model.fields,field_description:plm.field_report_plm_document_file_month
+#: model:ir.model.fields,field_description:plm.field_report_plm_document_user_month
+#: model:ir.model.fields,field_description:plm.field_report_plm_document_wall_month
+#: model:ir.model.fields,field_description:plm.field_report_plm_document_wall_name
+#: model:ir.model.fields,field_description:plm.field_report_plm_files_partner_month
+#, python-format
+msgid "Month"
+msgstr "Maand"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_component_kanban
+msgid "More <i class=\"fa fa-caret-down\"/>"
+msgstr "Meer <i class=\"fa fa-caret-down\"/>"
+
+#. module: plm
+#: code:addons/plm/install/plm_component.py:77
+#, python-format
+msgid "Mrp Bom"
+msgstr "MRP BOM"
+
+#. module: plm
+#: code:addons/plm/install/plmcomponents/plm_component_kanban.py:58
+#: code:addons/plm/install/plmcomponents/plm_component_kanban.py:62
+#: code:addons/plm/install/plmcomponents/plm_component_kanban.py:84
+#: model:ir.ui.view,arch_db:plm.plm_component_kanban
+#, python-format
+msgid "New Component"
+msgstr "Nieuw component"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.action_product_new_revision
+msgid "New Revision"
+msgstr "Nieuwe revisie"
+
+#. module: plm
+#: code:addons/plm/install/actions/dataconnector.py:438
+#: code:addons/plm/install/actions/dataconnector.py:466
+#: code:addons/plm/install/actions/dataconnector.py:471
+#, python-format
+msgid "No Bom extraction files was generated, about entity (%s)."
+msgstr "Er zijn geen BOM bestanden gegenereerd, over deze entiteit (%s)."
+
+#. module: plm
+#: code:addons/plm/install/report/component_report.py:54
+#: code:addons/plm/install/report/component_report.py:86
+#: code:addons/plm/install/report/component_report.py:120
+#: code:addons/plm/install/report/component_report.py:150
+#, python-format
+msgid "No Document found"
+msgstr "Geen documenten gevonden"
+
+#. module: plm
+#: code:addons/plm/install/plm_component.py:301
+#, python-format
+msgid "No Enginnering bom provided"
+msgstr "Geen engineering BOM aangeleverd"
+
+#. module: plm
+#: code:addons/plm/install/plm_base_entities.py:189
+#: code:addons/plm/install/plm_base_entities.py:215
+#: code:addons/plm/install/plmcomparebom/compare_bom.py:56
+#: code:addons/plm/install/plmcomparebom/compare_bom.py:65
+#: selection:mrp.bom.line,type:0
+#: selection:plm.compare.bom,type_id1:0
+#: selection:plm.compare.bom,type_id2:0
+#, python-format
+msgid "Normal BoM"
+msgstr "Normale BOM"
+
+#. module: plm
+#: code:addons/plm/install/plm_base_entities.py:664
+#, python-format
+msgid "Normal BoM for Part %r already exists."
+msgstr "Normale BOM voor ondereed %r bestaat al."
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.plm_action_normal_form
+msgid "Normal BoMs"
+msgstr "Normale BOM's"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_component_kanban
+msgid "Normal Bom"
+msgstr "Normale BOM"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_component_kanban
+msgid "Normal Boms"
+msgstr "Normale BOM's"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.view_plm_description
+msgid "Normalization Section"
+msgstr "Normalisatie sectie"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.view_plm_description
+msgid "Normalized features formatting"
+msgstr "Normalisatie features formatering"
+
+#. module: plm
+#: code:addons/plm/install/plmdescriptions/plm_descriptions.py:45
+#: model:ir.model.fields,field_description:plm.field_plm_description_unitab
+#, python-format
+msgid "Normative Rule"
+msgstr "Normatieve regel"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.view_plm_description
+msgid "Normative reference"
+msgstr "Normatieve referentie"
+
+#. module: plm
+#: code:addons/plm/install/plmdescriptions/plm_descriptions.py:35
+#: model:ir.model.fields,field_description:plm.field_plm_description_name
+#, python-format
+msgid "Note to Description"
+msgstr "Opemerking over omschrijving"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.view_plm_description
+msgid "Note to help selection"
+msgstr "OPmerking over help sectie"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.view_plm_document
+msgid "Notes"
+msgstr "Notities"
+
+#. module: plm
+#: code:addons/plm/install/plmdocuments/document_report.py:60
+#: code:addons/plm/install/plmdocuments/document_report.py:111
+#: selection:report.plm_document.user,month:0
+#: selection:report.plm_files.partner,month:0
+#, python-format
+msgid "November"
+msgstr "November"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_component_kanban
+msgid "Number Related Boms"
+msgstr "Aantal gekoppelde BOM's"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_component_kanban
+msgid "Number Related Documents"
+msgstr "Aantal gekoppelde documenten"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_document_message_needaction_counter
+msgid "Number of Actions"
+msgstr "Aantal acties"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_plm_document_message_needaction_counter
+msgid "Number of messages which requires an action"
+msgstr "Aantal berichten die actie vereisen"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_plm_document_message_unread_counter
+msgid "Number of unread messages"
+msgstr "Aantal ongelezen berichten"
+
+#. module: plm
+#: code:addons/plm/install/plm_base_entities.py:41
+#: code:addons/plm/install/plmcomponents/component_report.py:37
+#: model:ir.model.fields,field_description:plm.field_report_plm_component_count_component_obsoleted
+#: model:ir.ui.view,arch_db:plm.plm_component_base_search
+#: selection:plm.document,state:0
+#, python-format
+msgid "Obsoleted"
+msgstr "Niet actief"
+
+#. module: plm
+#: code:addons/plm/install/plmdocuments/document_report.py:60
+#: code:addons/plm/install/plmdocuments/document_report.py:111
+#: selection:report.plm_document.user,month:0
+#: selection:report.plm_files.partner,month:0
+#, python-format
+msgid "October"
+msgstr "Oktober"
+
+#. module: plm
+#: code:addons/plm/installer.py:39
+#: model:ir.model.fields,field_description:plm.field_plm_installer_exe_file
+#, python-format
+msgid "Odoo PLM File download"
+msgstr "Odoo PLM bestand download"
+
+#. module: plm
+#: code:addons/plm/installer.py:38
+#: model:ir.model.fields,field_description:plm.field_plm_installer_plm
+#, python-format
+msgid "Odoo PLM Plug-in"
+msgstr "Odoo PLM Plug-in"
+
+#. module: plm
+#: code:addons/plm/install/plmdocuments/document_report.py:62
+#: code:addons/plm/install/plmdocuments/document_report.py:140
+#: model:ir.model.fields,field_description:plm.field_plm_document_create_uid
+#: model:ir.model.fields,field_description:plm.field_report_plm_document_user_user_id
+#: model:ir.model.fields,field_description:plm.field_report_plm_document_wall_user_id
+#, python-format
+msgid "Owner"
+msgstr "Eigenaar"
+
+#. module: plm
+#: model:res.groups,name:plm.group_plm_admin
+msgid "PLM / Administrator"
+msgstr "PLM / Administrator"
+
+#. module: plm
+#: model:res.groups,name:plm.group_plm_integrationuser
+msgid "PLM / Integration User"
+msgstr "PLM / Integratie gebruiker
+
+#. module: plm
+#: model:res.groups,name:plm.group_plm_viewuser
+msgid "PLM / View User"
+msgstr "PLM / Kijker"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.open_board_plm_manager
+msgid "PLM Dashboard"
+msgstr "PLM Dashboard"
+
+#. module: plm
+#: model:ir.model,name:plm.model_plm_description
+msgid "PLM Descriptions"
+msgstr "PLM Omschrijvingen"
+
+#. module: plm
+#: model:ir.model,name:plm.model_plm_material
+msgid "PLM Materials"
+msgstr "PLM Materialen"
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.plm_menu
+msgid "PLM Module"
+msgstr "PLM Module"
+
+#. module: plm
+#: code:addons/plm/install/plm_document.py:981
+#: model:ir.model.fields,field_description:plm.field_plm_checkout_hostpws
+#, python-format
+msgid "PWS Directory"
+msgstr "PWS Directory"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_docbom_search
+msgid "Parent"
+msgstr "Bovenliggend"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_docbom_form_view
+msgid "Parent Preview"
+msgstr "Bovenliggend voorbeeld"
+
+#. module: plm
+#: code:addons/plm/install/plmcomparebom/compare_bom.py:289
+#: code:addons/plm/install/plmcomparebom/compare_bom.py:306
+#: model:ir.model.fields,field_description:plm.field_plm_adding_bom_part_id
+#: model:ir.model.fields,field_description:plm.field_plm_compare_bom_part_id1
+#: model:ir.model.fields,field_description:plm.field_plm_compare_bom_part_id2
+#: model:ir.model.fields,field_description:plm.field_plm_missing_bom_part_id
+#, python-format
+msgid "Part"
+msgstr "Onderdeel"
+
+#. module: plm
+#: code:addons/plm/install/plm_component.py:232
+#, python-format
+msgid "Part %r cannot be updated"
+msgstr "Onderdeel %r kan niet worden bijgewerkt"
+
+#. module: plm
+#: code:addons/plm/install/plm_component.py:122
+#, python-format
+msgid "Part %s already exists.\n"
+"Close with OK to reuse, with Cancel to discharge."
+msgstr "Onderdeed %s bestaat al.\n"
+"Sluit af met OK om te hergebruiken of met Annuleren om af te breken."
+
+#. module: plm
+#: code:addons/plm/install/plm_base_entities.py:60
+#: code:addons/plm/install/plmcomparebom/compare_bom.py:54
+#: model:ir.model.fields,field_description:plm.field_plm_compare_bom_name
+#: model:ir.model.fields,field_description:plm.field_product_product_engineering_code
+#: model:ir.model.fields,field_description:plm.field_product_template_engineering_code
+#, python-format
+msgid "Part Number"
+msgstr "Onderdeel nummer"
+
+#. module: plm
+#: code:addons/plm/install/plm_base_entities.py:106
+#: sql_constraint:product.template:0
+#, python-format
+msgid "Part Number has to be unique!"
+msgstr "Onderdeelnummer moet uniek zijn!"
+
+#. module: plm
+#: code:addons/plm/install/plmdocuments/document_report.py:109
+#: model:ir.model.fields,field_description:plm.field_report_plm_files_partner_partner
+#, python-format
+msgid "Partner"
+msgstr "Relatie"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_component_base_search
+msgid "Parts"
+msgstr "Onderdelen"
+
+#. module: plm
+#: code:addons/plm/install/plm_document.py:304
+#, python-format
+msgid "Permission denied or directory %s cannot be created."
+msgstr "Toegang gewijgerd of directory %s can niet worden aangemaakt"
+
+#. module: plm
+#: code:addons/plm/install/plm_document.py:1108
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc_existingfile
+#, python-format
+msgid "Physical Document Location"
+msgstr "Fysieke document locatie"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_config_settings_module_plm_pack_and_go
+msgid "Plm Pack and go"
+msgstr "Plm Pack and go"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_config_settings_module_plm_report_language_helper
+msgid "Plm Report Language Helper"
+msgstr "Plm rapport taal hulp"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.bom_structure_all
+msgid "Pos."
+msgstr "Pos."
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_bom_tree_structure
+msgid "Position"
+msgstr "Functie"
+
+#. module: plm
+#: code:addons/plm/install/plm_extend_entities.py:228
+#: code:addons/plm/install/plm_extend_entities.py:231
+#: model:ir.model.fields,field_description:plm.field_plm_document_relation_child_preview
+#: model:ir.model.fields,field_description:plm.field_plm_document_relation_parent_preview
+#: model:ir.ui.view,arch_db:plm.view_plm_backupdoc
+#, python-format
+msgid "Preview"
+msgstr "Voorbeeld"
+
+#. module: plm
+#: code:addons/plm/install/plm_document.py:697
+#: code:addons/plm/install/plm_document.py:1114
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc_preview
+#: model:ir.model.fields,field_description:plm.field_plm_document_preview
+#, python-format
+msgid "Preview Content"
+msgstr "Voorbeeld van inhoud"
+
+#. module: plm
+#: model:ir.actions.report.xml,name:plm.report_product_product_pdf_latest
+msgid "Print All Production PDF Drawings"
+msgstr "Afdrukken alle dproductie PDF tekeningen"
+
+#. module: plm
+#: model:ir.actions.report.xml,name:plm.report_product_product_pdf
+#: model:ir.ui.view,arch_db:plm.plm_component_kanban
+msgid "Print Attached PDF Drawings"
+msgstr "Afdrukken gekoppelde PDF tekening"
+
+#. module: plm
+#: model:ir.actions.report.xml,name:plm.report_all_product_product_pdf
+#: model:ir.ui.view,arch_db:plm.plm_component_kanban
+msgid "Print Bom All Levels PDF Drawings"
+msgstr "Print Bom All Levels PDF Drawings"
+
+#. module: plm
+#: model:ir.actions.report.xml,name:plm.report_one_product_product_pdf
+#: model:ir.ui.view,arch_db:plm.plm_component_kanban
+msgid "Print Bom One Level PDF Drawings"
+msgstr "Afdrukken BOM één niveau PDF tekening"
+
+#. module: plm
+#: model:ir.actions.report.xml,name:plm.report_plm_checkout_pdf
+msgid "Print Drawings Pdf"
+msgstr "Afdrukken PDF tekeningen"
+
+#. module: plm
+#: code:addons/plm/install/plm_document.py:696
+#: model:ir.model.fields,help:plm.field_plm_document_printout
+#, python-format
+msgid "Print PDF content."
+msgstr "Afdrukken PDF inhoud."
+
+#. module: plm
+#: model:ir.actions.report.xml,name:plm.report_plm_document_pdf
+msgid "Print Pdf"
+msgstr "Afdrukken PDF"
+
+#. module: plm
+#: model:ir.actions.report.xml,name:plm.report_product_product_spare_header
+msgid "Print Spare Header"
+msgstr "Afdrukken reserve materieel kop"
+
+#. module: plm
+#: model:ir.actions.report.xml,name:plm.report_product_product_spare_parts_pdf
+#: model:ir.ui.view,arch_db:plm.plm_component_kanban
+msgid "Print Spare Parts Manual"
+msgstr "Afdrukken reserve materiaal handleiding"
+
+#. module: plm
+#: model:ir.actions.report.xml,name:plm.report_product_product_spare_parts_pdf_one
+#: model:ir.ui.view,arch_db:plm.plm_component_kanban
+msgid "Print Spare Parts Manual One Level"
+msgstr "Afdrukken reserve materiaal handleiding één niveau"
+
+#. module: plm
+#: code:addons/plm/install/plm_document.py:696
+#: code:addons/plm/install/plm_document.py:1113
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc_printout
+#: model:ir.model.fields,field_description:plm.field_plm_document_printout
+#, python-format
+msgid "Printout Content"
+msgstr "Afdrukken inhoud"
+
+#. module: plm
+#: model:ir.model,name:plm.model_product_product
+msgid "Product"
+msgstr "Product"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.action_product_bom_structure_where
+#: model:ir.ui.view,arch_db:plm.plm_component_kanban
+msgid "Product BoM Where Used Structure"
+msgstr "Product BOM waar gebruikt"
+
+#. module: plm
+#: code:addons/plm/install/plm_base_entities.py:81
+#: code:addons/plm/install/plm_component.py:61
+#, python-format
+msgid "Product Engineering"
+msgstr "Product engineering"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_component_base_form
+msgid "Product Infos"
+msgstr "Product Infrmatie"
+
+#. module: plm
+#: code:addons/plm/installer.py:39
+#: model:ir.model.fields,help:plm.field_plm_installer_exe_file
+#, python-format
+msgid "Product Life-Cycle Management Client file. Save this file and install this application."
+msgstr "Product Life-Cycle Management Client bestand. Bestand opslaan en installeren."
+
+#. module: plm
+#: code:addons/plm/installer.py:38
+#: model:ir.model.fields,help:plm.field_plm_installer_plm
+#, python-format
+msgid "Product Life-Cycle Management Module."
+msgstr "Product Life-Cycle Management Module."
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.bom_structure_all
+msgid "Product Name"
+msgstr "Productnaam"
+
+#. module: plm
+#: model:ir.model,name:plm.model_product_template
+msgid "Product Template"
+msgstr "Productsjabloon"
+
+#. module: plm
+#: code:addons/plm/install/plm_component.py:434
+#, python-format
+msgid "Product code: %r revision %r "
+msgstr "Productcode: %r revisie %r "
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_bom_form_view_eng
+msgid "Properties"
+msgstr "Eigenschappen"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.bom_structure_all
+msgid "Qty"
+msgstr "Hvhd"
+
+#. module: plm
+#: code:addons/plm/install/plmcomparebom/compare_bom.py:293
+#: code:addons/plm/install/plmcomparebom/compare_bom.py:310
+#: model:ir.model.fields,field_description:plm.field_plm_adding_bom_itemqty
+#: model:ir.model.fields,field_description:plm.field_plm_missing_bom_itemqty
+#: model:ir.ui.view,arch_db:plm.plm_bom_form_view_eng
+#, python-format
+msgid "Quantity"
+msgstr "Hoeveelheid"
+
+#. module: plm
+#: code:addons/plm/install/plm_base_entities.py:63
+#: code:addons/plm/install/plm_extend_entities.py:75
+#: model:ir.model.fields,field_description:plm.field_product_product_engineering_material
+#: model:ir.model.fields,field_description:plm.field_product_product_tmp_material
+#: model:ir.model.fields,field_description:plm.field_product_template_engineering_material
+#, python-format
+msgid "Raw Material"
+msgstr "Grondstof"
+
+#. module: plm
+#: code:addons/plm/install/plm_base_entities.py:618
+#: code:addons/plm/install/plm_base_entities.py:635
+#: sql_constraint:plm.finishing:0
+#: sql_constraint:plm.material:0
+#, python-format
+msgid "Raw Material has to be unique !"
+msgstr "Grondstof moet uniek zijn!"
+
+#. module: plm
+#: code:addons/plm/install/plm_base_entities.py:63
+#: model:ir.model.fields,help:plm.field_product_product_engineering_material
+#: model:ir.model.fields,help:plm.field_product_template_engineering_material
+#, python-format
+msgid "Raw material for current product, only description for titleblock."
+msgstr "Grondstof voor huidige product, alleen omschrijving voor titel blok."
+
+#. module: plm
+#: code:addons/plm/install/plmcomponents/plm_component_kanban.py:68
+#: code:addons/plm/install/plmcomponents/plm_component_kanban.py:74
+#: code:addons/plm/install/plmcomponents/plm_component_kanban.py:80
+#: code:addons/plm/install/plmcomponents/plm_component_kanban.py:96
+#: code:addons/plm/install/plmcomponents/plm_component_kanban.py:106
+#: code:addons/plm/install/plmcomponents/plm_component_kanban.py:116
+#, python-format
+msgid "Related Boms"
+msgstr "Gekoppelde BOM's"
+
+#. module: plm
+#: code:addons/plm/install/plm_document.py:982
+#: code:addons/plm/install/plm_document.py:1109
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc_documentid
+#: model:ir.model.fields,field_description:plm.field_plm_checkout_documentid
+#, python-format
+msgid "Related Document"
+msgstr "Gekoppeld document"
+
+#. module: plm
+#: code:addons/plm/install/plmcomponents/plm_component_kanban.py:90
+#, python-format
+msgid "Related Documents"
+msgstr "Gekoppelde documenten"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.view_plm_document
+msgid "Related To"
+msgstr "Gekoppeld aan"
+
+#. module: plm
+#: code:addons/plm/install/plm_document.py:979
+#: code:addons/plm/install/plm_document.py:1106
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc_userid
+#: model:ir.model.fields,field_description:plm.field_plm_checkout_userid
+#, python-format
+msgid "Related User"
+msgstr "Gekoppelde gebruiker"
+
+#. module: plm
+#: code:addons/plm/install/plm_document.py:1040
+#: model:ir.model.fields,field_description:plm.field_plm_document_relation_child_id
+#, python-format
+msgid "Related child document"
+msgstr "Gekoppeld onderliggend document"
+
+#. module: plm
+#: code:addons/plm/install/plm_component.py:750
+#, python-format
+msgid "Related documents"
+msgstr "Gekoppeld onderliggend documenten"
+
+#. module: plm
+#: code:addons/plm/install/plm_document.py:1039
+#: model:ir.model.fields,field_description:plm.field_plm_document_relation_parent_id
+#, python-format
+msgid "Related parent document"
+msgstr "Gekoppeld bovenliggend document"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_component_base_form
+msgid "Release Component"
+msgstr "Vrijgeven component"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.view_plm_document
+msgid "Release Document"
+msgstr "Vrijgeven document"
+
+#. module: plm
+#: code:addons/plm/install/plm_base_entities.py:39
+#: code:addons/plm/install/plmcomponents/component_report.py:35
+#: model:ir.model.fields,field_description:plm.field_report_plm_component_count_component_released
+#: model:ir.ui.view,arch_db:plm.plm_component_base_search
+#: model:ir.ui.view,arch_db:plm.plm_document_search
+#: selection:plm.document,state:0
+#, python-format
+msgid "Released"
+msgstr "Vrijgegeven"
+
+#. module: plm
+#: code:addons/plm/install/plm_component.py:698
+#: code:addons/plm/install/plm_document.py:640
+#, python-format
+msgid "Removed : Latest Revision."
+msgstr "Verwijderd : Laatste revisie."
+
+#. module: plm
+#: model:ir.model,name:plm.model_report_plm_component
+msgid "Report Component"
+msgstr "Component rapport"
+
+#. module: plm
+#: code:addons/plm/install/actions/dataconnector.py:431
+#, python-format
+msgid "Requested writing path (%s) doesn't exist."
+msgstr "Gewenste opslaan pad (%s) bestaat niet."
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_document_res_field
+msgid "Resource Field"
+msgstr "Bronveld"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_document_res_id
+msgid "Resource ID"
+msgstr "Bron ID"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_document_res_model
+msgid "Resource Model"
+msgstr "Bron model"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_document_res_name
+msgid "Resource Name"
+msgstr "Bronnaam"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.act_restore_document
+msgid "Restore Document"
+msgstr "Document herstellen"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.restore_document_button_view
+msgid "Restore Entry"
+msgstr "Invoer herstellen"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.restore_document_button_view
+msgid "Restore Selected Document"
+msgstr "Geselecteerde document herstellen"
+
+#. module: plm
+#: code:addons/plm/install/plm_base_entities.py:672
+#, python-format
+msgid "Result"
+msgstr "Resultaat"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.bom_structure_all
+msgid "Rev."
+msgstr "Rev."
+
+#. module: plm
+#: code:addons/plm/install/plm_component.py:807
+#, python-format
+msgid "Revised Product"
+msgstr "Gereviseerd product"
+
+#. module: plm
+#: code:addons/plm/install/plm_base_entities.py:61
+#: code:addons/plm/install/plm_document.py:1110
+#: code:addons/plm/install/plm_extend_entities.py:185
+#: code:addons/plm/install/plm_extend_entities.py:216
+#: code:addons/plm/install/plm_extend_entities.py:230
+#: code:addons/plm/install/plm_extend_entities.py:233
+#: code:addons/plm/install/plmcomparebom/compare_bom.py:62
+#: code:addons/plm/install/plmcomparebom/compare_bom.py:71
+#: code:addons/plm/install/plmcomparebom/compare_bom.py:290
+#: code:addons/plm/install/plmcomparebom/compare_bom.py:307
+#: model:ir.model.fields,field_description:plm.field_mrp_bom_engineering_revision
+#: model:ir.model.fields,field_description:plm.field_mrp_bom_line_engineering_revision
+#: model:ir.model.fields,field_description:plm.field_plm_adding_bom_revision
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc_revisionid
+#: model:ir.model.fields,field_description:plm.field_plm_compare_bom_revision1
+#: model:ir.model.fields,field_description:plm.field_plm_compare_bom_revision2
+#: model:ir.model.fields,field_description:plm.field_plm_document_relation_child_revision
+#: model:ir.model.fields,field_description:plm.field_plm_document_relation_parent_revision
+#: model:ir.model.fields,field_description:plm.field_plm_missing_bom_revision
+#: model:ir.model.fields,field_description:plm.field_product_product_engineering_revision
+#: model:ir.model.fields,field_description:plm.field_product_template_engineering_revision
+#: model:ir.ui.view,arch_db:plm.mrp_bom_tree_view_where
+#: model:ir.ui.view,arch_db:plm.mrp_part_tree_view_where
+#: model:ir.ui.view,arch_db:plm.plm_bom_tree_structure
+#, python-format
+msgid "Revision"
+msgstr "Revisie"
+
+#. module: plm
+#: code:addons/plm/install/plm_document.py:693
+#: model:ir.model.fields,field_description:plm.field_plm_document_revisionid
+#, python-format
+msgid "Revision Index"
+msgstr "Revisie index"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_component_kanban
+msgid "Revision Number"
+msgstr "Revisie number"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_component_base_form
+msgid "Revision Rel Docs"
+msgstr "Revisie gekoppelde documenten"
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.menu_backupdoc
+msgid "Search on Backup Data Set"
+msgstr "Zoek op backup dataset"
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.menu_checkout
+msgid "Search on Checked-Out Documents"
+msgstr "Zoek op checked-out documenten"
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.menu_document_relations
+#: model:ir.ui.view,arch_db:plm.plm_docbom_search
+msgid "Search on Document Relations"
+msgstr "Zoek op document relaties"
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.menu_document_files
+msgid "Search on Documents"
+msgstr "Zoek op documenten"
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.menu_relation_ebom
+msgid "Search on Engineering Bill of Materials"
+msgstr "Zoek op engineering materiaallijsten"
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.menu_base_component
+msgid "Search on Engineering Parts"
+msgstr "Zoek op engineering onderdelen"
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.menu_relation_normal
+msgid "Search on Normal Bill of Materials"
+msgstr "Zoek op normale materiaallijsten"
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.menu_relation_spare
+msgid "Search on Spare Bill of Materials"
+msgstr "Zoek op reserver onderdeel materiaallijsten"
+
+#. module: plm
+#: code:addons/plm/install/plmsparebom/plm_sparebom.py:128
+#: model:ir.model.fields,help:plm.field_plm_description_bom_tmpl
+#, python-format
+msgid "Select a  BoM as template to drive building Spare BoM."
+msgstr "Selecteer een BOM als sjabloon om een reserve onderdeel BOM te maken."
+
+#. module: plm
+#: code:addons/plm/install/plm_base_entities.py:656
+#, python-format
+msgid "Select a product before to continue"
+msgstr "Selecteer een product voor u verder gaat"
+
+#. module: plm
+#: code:addons/plm/install/plm_extend_entities.py:75
+#: model:ir.model.fields,help:plm.field_product_product_tmp_material
+#, python-format
+msgid "Select raw material for current product"
+msgstr "Selecteer grondstoffen voor het huidige product"
+
+#. module: plm
+#: code:addons/plm/install/plmdescriptions/plm_descriptions.py:79
+#: model:ir.model.fields,help:plm.field_product_product_std_description
+#, python-format
+msgid "Select standard description for current product."
+msgstr "Selecteer een standaard omschrijving vor het huidige product."
+
+#. module: plm
+#: code:addons/plm/install/plm_extend_entities.py:76
+#: model:ir.model.fields,help:plm.field_product_product_tmp_surface
+#, python-format
+msgid "Select surface finishing for current product"
+msgstr "Selecteer een afwerking voor het huidige product."
+
+#. module: plm
+#: code:addons/plm/install/plmdocuments/document_report.py:60
+#: code:addons/plm/install/plmdocuments/document_report.py:111
+#: selection:report.plm_document.user,month:0
+#: selection:report.plm_files.partner,month:0
+#, python-format
+msgid "September"
+msgstr "September"
+
+#. module: plm
+#: code:addons/plm/install/plm_base_entities.py:612
+#: code:addons/plm/install/plm_base_entities.py:629
+#: code:addons/plm/install/plmdescriptions/plm_descriptions.py:46
+#: model:ir.model.fields,field_description:plm.field_plm_description_sequence
+#: model:ir.model.fields,field_description:plm.field_plm_finishing_sequence
+#: model:ir.model.fields,field_description:plm.field_plm_material_sequence
+#, python-format
+msgid "Sequence"
+msgstr "Volgorde"
+
+#. module: plm
+#: code:addons/plm/install/plm_base_entities.py:189
+#: code:addons/plm/install/plm_base_entities.py:215
+#: code:addons/plm/install/plmcomparebom/compare_bom.py:57
+#: code:addons/plm/install/plmcomparebom/compare_bom.py:66
+#: selection:mrp.bom.line,type:0
+#: selection:plm.compare.bom,type_id1:0
+#: selection:plm.compare.bom,type_id2:0
+#, python-format
+msgid "Sets / Phantom"
+msgstr "Set van onderdelen (pakket)"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.plm_action_settings_form
+#: model:ir.ui.menu,name:plm.plm_settings
+#: model:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Settings"
+msgstr "Instellingen"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_docbom_form_view
+msgid "Show Document Relation"
+msgstr "Document relatie weergeven"
+
+#. module: plm
+#: code:addons/plm/install/plm_component.py:794
+#, python-format
+msgid "Something wrong happens during new component revision process."
+msgstr "Er is iets fout gegaan tijdens het nieuwe component revisie proces."
+
+#. module: plm
+#: code:addons/plm/install/plm_component.py:804
+#, python-format
+msgid "Something wrong happens during new document revision process."
+msgstr "Er is iets fout gegaan tijdens het nieuwe document revisie proces"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_mrp_bom_ebom_source_id
+#: model:ir.model.fields,field_description:plm.field_mrp_bom_line_ebom_source_id
+msgid "Source Ebom ID"
+msgstr "Bron Ebom ID"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.mrp_bom_tree_view_where
+#: model:ir.ui.view,arch_db:plm.plm_bom_component_tree_view
+#: model:ir.ui.view,arch_db:plm.plm_bom_form_view
+#: model:ir.ui.view,arch_db:plm.plm_bom_form_view_eng
+#: model:ir.ui.view,arch_db:plm.plm_bom_tree_structure
+#: model:ir.ui.view,arch_db:plm.plm_bom_tree_view
+msgid "Source Relation Document"
+msgstr "Bron relatie document"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.view_mrp_bom_filter_inherit
+msgid "Source Relationship"
+msgstr "Bron relatie"
+
+#. module: plm
+#: code:addons/plm/install/plm_base_entities.py:189
+#: code:addons/plm/install/plm_base_entities.py:215
+#: code:addons/plm/install/plmcomparebom/compare_bom.py:59
+#: code:addons/plm/install/plmcomparebom/compare_bom.py:68
+#: selection:mrp.bom.line,type:0
+#: selection:plm.compare.bom,type_id1:0
+#: selection:plm.compare.bom,type_id2:0
+#, python-format
+msgid "Spare BoM"
+msgstr "Reserve onderdeel BOM"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.plm_action_spare_form
+msgid "Spare BoMs"
+msgstr "Reserve onderdeel BOM's"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_component_kanban
+msgid "Spare Bom"
+msgstr "Reserve onderdeel BOM"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_component_kanban
+msgid "Spare Boms"
+msgstr "Reserve onderdeel BOM's"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.view_plm_document
+msgid "Spare Part"
+msgstr "Reserve onderdeel"
+
+#. module: plm
+#: code:addons/plm/install/plm_base_entities.py:627
+#: model:ir.model.fields,field_description:plm.field_plm_finishing_name
+#, python-format
+msgid "Specification"
+msgstr "Specificatie"
+
+#. module: plm
+#: code:addons/plm/install/plmdescriptions/plm_descriptions.py:45
+#: model:ir.model.fields,help:plm.field_plm_description_unitab
+#, python-format
+msgid "Specify normative rule (UNI, ISO, DIN...). It will be queued to build the product description."
+msgstr "Specificeer een normative regel (UNI, ISO, DIN...). Deze wordt gebruikt om de product omschrijving op te bouwen."
+
+#. module: plm
+#: code:addons/plm/install/plmdescriptions/plm_descriptions.py:36
+#: code:addons/plm/install/plmdescriptions/plm_descriptions.py:79
+#: model:ir.model.fields,field_description:plm.field_plm_description_description
+#: model:ir.model.fields,field_description:plm.field_product_product_std_description
+#, python-format
+msgid "Standard Description"
+msgstr "Standaard omschrijving"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_component_kanban
+msgid "State:"
+msgstr "Status:"
+
+#. module: plm
+#: code:addons/plm/install/plm_document.py:697
+#: model:ir.model.fields,help:plm.field_plm_document_preview
+#: model:ir.model.fields,help:plm.field_plm_document_relation_child_preview
+#: model:ir.model.fields,help:plm.field_plm_document_relation_parent_preview
+#, python-format
+msgid "Static preview."
+msgstr "Statisch voorbeeld."
+
+#. module: plm
+#: code:addons/plm/install/plm_base_entities.py:59
+#: code:addons/plm/install/plm_document.py:698
+#: code:addons/plm/install/plm_document.py:1111
+#: code:addons/plm/install/plm_extend_entities.py:184
+#: code:addons/plm/install/plm_extend_entities.py:215
+#: code:addons/plm/install/plm_extend_entities.py:229
+#: code:addons/plm/install/plm_extend_entities.py:232
+#: model:ir.model.fields,field_description:plm.field_mrp_bom_line_state
+#: model:ir.model.fields,field_description:plm.field_mrp_bom_state
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc_state
+#: model:ir.model.fields,field_description:plm.field_plm_document_relation_child_state
+#: model:ir.model.fields,field_description:plm.field_plm_document_relation_parent_state
+#: model:ir.model.fields,field_description:plm.field_plm_document_state
+#: model:ir.ui.view,arch_db:plm.plm_document_search
+#, python-format
+msgid "Status"
+msgstr "Status"
+
+#. module: plm
+#: code:addons/plm/install/plm_component.py:188
+#: code:addons/plm/install/plm_component.py:570
+#: code:addons/plm/install/plm_component.py:581
+#: code:addons/plm/install/plm_component.py:629
+#: code:addons/plm/install/plm_document.py:518
+#: code:addons/plm/install/plm_document.py:531
+#: code:addons/plm/install/plm_document.py:546
+#: code:addons/plm/install/plm_document.py:552
+#: code:addons/plm/install/plm_document.py:566
+#, python-format
+msgid "Status moved to: %s."
+msgstr "Status gewijzigd naar: %s."
+
+#. module: plm
+#: code:addons/plm/install/plm_document.py:580
+#, python-format
+msgid "Status moved to:%s."
+msgstr "Status gewijzigd naar:%s."
+
+#. module: plm
+#: code:addons/plm/install/plm_base_entities.py:222
+#, python-format
+msgid "Stock Weight"
+msgstr "Gewicht"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_document_store_fname
+msgid "Stored Filename"
+msgstr "Opgeslagen bestandsnaam"
+
+#. module: plm
+#: code:addons/plm/install/plm_document.py:1112
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc_document_name
+#, python-format
+msgid "Stored Name"
+msgstr "Opgeslagen naam"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_temporary_summarize
+msgid "Summarize Bom Lines if needed."
+msgstr "Indien nodig, voeg BOM regels samen."
+
+#. module: plm
+#: code:addons/plm/install/plm_base_entities.py:66
+#: code:addons/plm/install/plm_extend_entities.py:76
+#: model:ir.model,name:plm.model_plm_finishing
+#: model:ir.model.fields,field_description:plm.field_product_product_engineering_surface
+#: model:ir.model.fields,field_description:plm.field_product_product_tmp_surface
+#: model:ir.model.fields,field_description:plm.field_product_template_engineering_surface
+#, python-format
+msgid "Surface Finishing"
+msgstr "Oppervlakte afwerking"
+
+#. module: plm
+#: code:addons/plm/install/plm_base_entities.py:66
+#: model:ir.model.fields,help:plm.field_product_product_engineering_surface
+#: model:ir.model.fields,help:plm.field_product_template_engineering_surface
+#, python-format
+msgid "Surface finishing for current product, only description for titleblock."
+msgstr "Oppervlakte afwerking voor huidge product, alleen omschrijving voor titel blok."
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.view_plm_description
+msgid "Technical Features"
+msgstr "Technische instellingen"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_component_base_form
+msgid "Technical Infos"
+msgstr "Technische informatie"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.view_plm_description
+msgid "Technical feature label and formatting"
+msgstr "Technische mogelijkheden en formatering"
+
+#. module: plm
+#: code:addons/plm/install/plm_base_entities.py:643
+#: model:ir.model.fields,field_description:plm.field_plm_temporary_name
+#, python-format
+msgid "Temp"
+msgstr "Tijdelijk"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.view_plm_description_spare
+msgid "Template BOM"
+msgstr "Sjabloon BOM"
+
+#. module: plm
+#: model:ir.model,name:plm.model_plm_temporary
+#: model:ir.model,name:plm.model_plm_temporary_message
+msgid "Temporary Class"
+msgstr "Tijdelijke Class"
+
+#. module: plm
+#: code:addons/plm/install/plm_base_entities.py:222
+#: model:ir.model.fields,help:plm.field_mrp_bom_weight_net
+#, python-format
+msgid "The BoM net weight in Kg."
+msgstr "Het netto gewicht van de BOM in Kg."
+
+#. module: plm
+#: code:addons/plm/install/plm_document.py:1052
+#: sql_constraint:plm.document.relation:0
+#, python-format
+msgid "The Document Relation must be unique !"
+msgstr "De document relatie moet uniek zijn!"
+
+#. module: plm
+#: code:addons/plm/install/plm_document.py:628
+#, python-format
+msgid "The active state does not allow you to make save action"
+msgstr "In de actief status is het niet mogelijk op te slaan"
+
+#. module: plm
+#: code:addons/plm/install/plm_base_entities.py:654
+#, python-format
+msgid "The creation of the normalBom works only on product_product object"
+msgstr "Het aanmaken van een normale BOM kan alleen op het product_product object"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_plm_document_res_model
+msgid "The database object this attachment will be attached to"
+msgstr "Het database object waaraan deze bijlage wordt gekoppeld"
+
+#. module: plm
+#: code:addons/plm/install/plm_document.py:497
+#, python-format
+msgid "The document %s - %s has not checked-in"
+msgstr "Het document %s - %s is niet checked-in"
+
+#. module: plm
+#: code:addons/plm/install/plm_document.py:989
+#: sql_constraint:plm.checkout:0
+#, python-format
+msgid "The documentid must be unique !"
+msgstr "Het document ID moet uniek zijn!"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_plm_document_res_id
+msgid "The record id this is attached to"
+msgstr "Het record id waaraan dit is gekoppeld"
+
+#. module: plm
+#: code:addons/plm/install/plm_base_entities.py:61
+#: code:addons/plm/install/plm_extend_entities.py:185
+#: code:addons/plm/install/plm_extend_entities.py:216
+#: model:ir.model.fields,help:plm.field_mrp_bom_engineering_revision
+#: model:ir.model.fields,help:plm.field_mrp_bom_line_engineering_revision
+#: model:ir.model.fields,help:plm.field_plm_adding_bom_revision
+#: model:ir.model.fields,help:plm.field_plm_compare_bom_revision1
+#: model:ir.model.fields,help:plm.field_plm_compare_bom_revision2
+#: model:ir.model.fields,help:plm.field_plm_missing_bom_revision
+#: model:ir.model.fields,help:plm.field_product_product_engineering_revision
+#: model:ir.model.fields,help:plm.field_product_template_engineering_revision
+#, python-format
+msgid "The revision of the product."
+msgstr "De revisie van het product."
+
+#. module: plm
+#: code:addons/plm/install/plm_base_entities.py:59
+#: code:addons/plm/install/plm_extend_entities.py:184
+#: code:addons/plm/install/plm_extend_entities.py:215
+#: model:ir.model.fields,help:plm.field_mrp_bom_line_state
+#: model:ir.model.fields,help:plm.field_mrp_bom_state
+#, python-format
+msgid "The status of the product in its LifeCycle."
+msgstr "De status van het product in de levenscyclus."
+
+#. module: plm
+#: code:addons/plm/install/plm_document.py:698
+#: model:ir.model.fields,help:plm.field_plm_backupdoc_state
+#: model:ir.model.fields,help:plm.field_plm_document_relation_child_state
+#: model:ir.model.fields,help:plm.field_plm_document_relation_parent_state
+#: model:ir.model.fields,help:plm.field_plm_document_state
+#, python-format
+msgid "The status of the product."
+msgstr "De status van het product."
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_mrp_bom_line_weight_net
+msgid "The weight of the contents in Kg, not including any packaging, etc."
+msgstr "Het gewicht van de inhoud in kg, exclusief verpakkingsmateriaal, etc."
+
+#. module: plm
+#: code:addons/plm/install/plm_base_entities.py:60
+#: model:ir.model.fields,help:plm.field_product_product_engineering_code
+#: model:ir.model.fields,help:plm.field_product_template_engineering_code
+#, python-format
+msgid "This is engineering reference to manage a different P/N from item Name."
+msgstr "Dit is de engineering referentie om een verschillend P/N te beheren van de naam."
+
+#. module: plm
+#: code:addons/plm/install/plm_base_entities.py:188
+#: code:addons/plm/install/plm_base_entities.py:214
+#: model:ir.model.fields,help:plm.field_mrp_bom_line_source_id
+#: model:ir.model.fields,help:plm.field_mrp_bom_source_id
+#, python-format
+msgid "This is the document object that declares this BoM."
+msgstr "Dit is het document object van deze BOM."
+
+#. module: plm
+#: code:addons/plm/install/plm_base_entities.py:196
+#: model:ir.model.fields,help:plm.field_mrp_bom_line_itemnum
+#: model:ir.model.fields,help:plm.field_plm_adding_bom_itemnum
+#: model:ir.model.fields,help:plm.field_plm_missing_bom_itemnum
+#, python-format
+msgid "This is the item reference position into the CAD document that declares this BoM."
+msgstr "This is the item reference position into the CAD document that declares this BoM."
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.view_plm_compare_bom
+msgid "This wizard will allow to compare two Bill of Materials."
+msgstr "Deze wizard geeft u de mogelijkheid om twee materiaallijsten te vergelijken."
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_component_base_form
+msgid "TitleBlock Informations"
+msgstr "Title blok informatie"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_backupdoc_search
+#: model:ir.ui.view,arch_db:plm.plm_checkout_search
+#: model:ir.ui.view,arch_db:plm.plm_component_base_search
+#: model:ir.ui.view,arch_db:plm.plm_docbom_search
+#: model:ir.ui.view,arch_db:plm.plm_document_search
+#: model:ir.ui.view,arch_db:plm.view_mrp_bom_filter_inherit
+msgid "Today"
+msgstr "Vandaag"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_document_type
+msgid "Type"
+msgstr "Soort"
+
+#. module: plm
+#: code:addons/plm/install/plmdescriptions/plm_descriptions.py:38
+#: code:addons/plm/install/plmdescriptions/plm_descriptions.py:80
+#: model:ir.model.fields,field_description:plm.field_plm_description_umc1
+#: model:ir.model.fields,field_description:plm.field_product_product_std_umc1
+#, python-format
+msgid "UM / Feature 1"
+msgstr "UM / Feature 1"
+
+#. module: plm
+#: code:addons/plm/install/plmdescriptions/plm_descriptions.py:40
+#: code:addons/plm/install/plmdescriptions/plm_descriptions.py:82
+#: model:ir.model.fields,field_description:plm.field_plm_description_umc2
+#: model:ir.model.fields,field_description:plm.field_product_product_std_umc2
+#, python-format
+msgid "UM / Feature 2"
+msgstr "UM / Feature 2"
+
+#. module: plm
+#: code:addons/plm/install/plmdescriptions/plm_descriptions.py:42
+#: code:addons/plm/install/plmdescriptions/plm_descriptions.py:84
+#: model:ir.model.fields,field_description:plm.field_plm_description_umc3
+#: model:ir.model.fields,field_description:plm.field_product_product_std_umc3
+#, python-format
+msgid "UM / Feature 3"
+msgstr "UM / Feature 3"
+
+#. module: plm
+#: selection:plm.document,type:0
+msgid "URL"
+msgstr "URL"
+
+#. module: plm
+#: code:addons/plm/install/plm_document.py:1025
+#, python-format
+msgid "Unable to Check-In the document (-).\n"
+" You can't change writable flag."
+msgstr "Check-In van document (-). niet mogelijk\n"
+" Het is niet mogelijk de schrijven flag te wijzigen."
+
+#. module: plm
+#: code:addons/plm/install/plm_document.py:1008
+#, python-format
+msgid "Unable to check-out the required document (-)."
+msgstr "Check-out benodigde bestand (-) niet mogelijk ."
+
+#. module: plm
+#: code:addons/plm/install/plm_component.py:441
+#, python-format
+msgid "Unable to perform workFlow action due"
+msgstr "Niet mogelijk de workflow actie uit te voeren omdat"
+
+#. module: plm
+#: code:addons/plm/install/plm_document.py:1142
+#, python-format
+msgid "Unable to remove the document (-) from backup set.\n"
+" It isn't a backup file, it's original current one."
+msgstr "Niet mogelijk document (-) te verwijderen van backup set.\n"
+" Het is geen backup bestand, maar het huidige origineel."
+
+#. module: plm
+#: code:addons/plm/install/plm_document.py:1125
+#, python-format
+msgid "Unable to remove the required document.\n"
+" You aren't authorized in this context."
+msgstr "Niet mogelijk om het benodigde document te verwijderen.\n"
+" Je hebt niet voldoende rechten."
+
+#. module: plm
+#: code:addons/plm/install/plmcomponents/component_report.py:36
+#: model:ir.model.fields,field_description:plm.field_report_plm_component_count_component_modified
+#, python-format
+msgid "Under Modify"
+msgstr "Worden aangepast"
+
+#. module: plm
+#: code:addons/plm/install/plm_base_entities.py:40
+#: selection:plm.document,state:0
+#, python-format
+msgid "UnderModify"
+msgstr "Worden aangepast"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_document_message_unread
+msgid "Unread Messages"
+msgstr "Ongelezen berichten"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_document_message_unread_counter
+msgid "Unread Messages Counter"
+msgstr "Teller ongelezen berichten"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.bom_structure_all
+msgid "UoM"
+msgstr "Maateenheid"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_document_url
+msgid "Url"
+msgstr "Url"
+
+#. module: plm
+#: code:addons/plm/install/plm_base_entities.py:190
+#: model:ir.model.fields,help:plm.field_mrp_bom_line_type
+#, python-format
+msgid "Use a phantom bill of material in raw materials lines that have to be automatically computed in on production order and not one per level.If you put \"Phantom/Set\" at the root level of a bill of material it is considered as a set or pack: the products are replaced by the components between the sale order to the picking without going through the production order.The normal BoM will generate one production order per BoM level."
+msgstr "Use a phantom bill of material in raw materials lines that have to be automatically computed in on production order and not one per level.If you put \"Phantom/Set\" at the root level of a bill of material it is considered as a set or pack: the products are replaced by the components between the sale order to the picking without going through the production order.The normal BoM will generate one production order per BoM level."
+
+#. module: plm
+#: code:addons/plm/install/plm_base_entities.py:216
+#, python-format
+msgid "Use a phantom bill of material in raw materials lines that have to be automatically computed on a production order and not one per level.If you put \"Phantom/Set\" at the root level of a bill of material it is considered as a set or pack: the products are replaced by the components between the sale order to the picking without going through the production order.the normal bom will generate one production order per bom level."
+msgstr "Use a phantom bill of material in raw materials lines that have to be automatically computed on a production order and not one per level.If you put \"Phantom/Set\" at the root level of a bill of material it is considered as a set or pack: the products are replaced by the components between the sale order to the picking without going through the production order.the normal bom will generate one production order per bom level."
+
+#. module: plm
+#: code:addons/plm/install/plm_document.py:692
+#: model:ir.model.fields,field_description:plm.field_plm_document_usedforspare
+#, python-format
+msgid "Used for Spare"
+msgstr "Wordt gebruikt voor reserve onderdeel"
+
+#. module: plm
+#: code:addons/plm/install/plmdocuments/document_report.py:63
+#: code:addons/plm/install/plmdocuments/document_report.py:141
+#: model:ir.model.fields,field_description:plm.field_report_plm_document_user_user
+#: model:ir.model.fields,field_description:plm.field_report_plm_document_wall_user
+#, python-format
+msgid "User"
+msgstr "Gebruiker"
+
+#. module: plm
+#: model:ir.model,name:plm.model_report_plm_document_wall
+msgid "Users that did not inserted documents since one month"
+msgstr "Gebruiers welke geen documenten hebben ingevoegd deze maand"
+
+#. module: plm
+#: code:addons/plm/install/plmdescriptions/plm_descriptions.py:81
+#: model:ir.model.fields,field_description:plm.field_product_product_std_value1
+#, python-format
+msgid "Value 1"
+msgstr "Waarde 1"
+
+#. module: plm
+#: code:addons/plm/install/plmdescriptions/plm_descriptions.py:83
+#: model:ir.model.fields,field_description:plm.field_product_product_std_value2
+#, python-format
+msgid "Value 2"
+msgstr "Waarde 2"
+
+#. module: plm
+#: code:addons/plm/install/plmdescriptions/plm_descriptions.py:85
+#: model:ir.model.fields,field_description:plm.field_product_product_std_value3
+#, python-format
+msgid "Value 3"
+msgstr "Waarde 3"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.view_mrp_bom_filter_inherit
+msgid "Variant Name"
+msgstr "Variant naam"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_visualize_diff_form
+msgid "Visualize BoM"
+msgstr "Visualiseer BOM"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_mrp_bom_weight_net
+#: model:ir.ui.view,arch_db:plm.bom_structure_all
+msgid "Weight"
+msgstr "Gewicht"
+
+#. module: plm
+#: code:addons/plm/install/plm_extend_entities.py:218
+#: model:ir.model.fields,field_description:plm.field_mrp_bom_line_weight_net
+#, python-format
+msgid "Weight Net"
+msgstr "Netto gewicht"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.mrp_bom_tree_view_where
+msgid "Where Used Bill of Materials"
+msgstr "Waar materiaalijsten gebruikt"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.action20
+msgid "Where Used Bill of Materials Structure"
+msgstr "Waar materiaalijsten gebruikt structuur"
+
+#. module: plm
+#: code:addons/plm/install/plm_base_entities.py:62
+#: code:addons/plm/install/plm_document.py:694
+#: model:ir.model.fields,field_description:plm.field_plm_document_writable
+#: model:ir.model.fields,field_description:plm.field_product_product_engineering_writable
+#: model:ir.model.fields,field_description:plm.field_product_template_engineering_writable
+#, python-format
+msgid "Writable"
+msgstr "Schrifbaar"
+
+#. module: plm
+#: code:addons/plm/install/actions/dataconnector.py:443
+#, python-format
+msgid "Writing operations on file (%s) have failed."
+msgstr "Schrijf bewerkingen op bestand (%s) zijn mislukt."
+
+#. module: plm
+#: code:addons/plm/install/plmdocuments/document_report.py:58
+#: code:addons/plm/install/plmdocuments/document_report.py:106
+#: model:ir.model.fields,field_description:plm.field_report_plm_document_user_name
+#: model:ir.model.fields,field_description:plm.field_report_plm_files_partner_name
+#, python-format
+msgid "Year"
+msgstr "Jaar"
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.plm_backupdoc_search
+#: model:ir.ui.view,arch_db:plm.plm_checkout_search
+#: model:ir.ui.view,arch_db:plm.plm_component_base_search
+#: model:ir.ui.view,arch_db:plm.plm_docbom_search
+#: model:ir.ui.view,arch_db:plm.plm_document_search
+#: model:ir.ui.view,arch_db:plm.view_mrp_bom_filter_inherit
+msgid "Yesterday"
+msgstr "Gisteren"
+
+#. module: plm
+#: code:addons/plm/install/plm_component.py:638
+#, python-format
+msgid "You are trying to create a product without values"
+msgstr "U probeert een product aan te maken zonder waardes"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_plm_document_type
+msgid "You can either upload a file from your computer or copy/paste an internet link to your file"
+msgstr "U kan een bestand van uw computer uploaden of een internet link kopiëren/plakken die linkt naar uw bestand"
+
+#. module: plm
+#: code:addons/plm/install/plm_document.py:980
+#: model:ir.model.fields,field_description:plm.field_plm_checkout_hostname
+#, python-format
+msgid "hostname"
+msgstr "hostname"
+
+#. module: plm
+#: model:ir.model,name:plm.model_mrp_bom_line
+msgid "mrp.bom.line"
+msgstr "mrp.bom.line"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_mrp_bom_line_source_id
+#: model:ir.model.fields,field_description:plm.field_mrp_bom_source_id
+msgid "name"
+msgstr "naam"
+
+#. module: plm
+#: model:ir.model,name:plm.model_plm_backupdoc
+msgid "plm.backupdoc"
+msgstr "plm.backupdoc"
+
+#. module: plm
+#: model:ir.model,name:plm.model_plm_backupdoc_wizard
+msgid "plm.backupdoc_wizard"
+msgstr "plm.backupdoc_wizard"
+
+#. module: plm
+#: model:ir.model,name:plm.model_plm_checkout
+msgid "plm.checkout"
+msgstr "plm.checkout"
+
+#. module: plm
+#: model:ir.model,name:plm.model_plm_config_settings
+msgid "plm.config.settings"
+msgstr "plm.config.settings"
+
+#. module: plm
+#: model:ir.model,name:plm.model_plm_document_relation
+msgid "plm.document.relation"
+msgstr "plm.document.relation"
+
+#. module: plm
+#: model:ir.model,name:plm.model_plm_installer
+msgid "plm.installer"
+msgstr "plm.installer"
+
+#. module: plm
+#: model:ir.model,name:plm.model_product_rev_wizard
+msgid "product.rev_wizard"
+msgstr "product.rev_wizard"
+
+#. module: plm
+#: model:ir.model,name:plm.model_report_plm_bom_spare_header
+msgid "report.plm.bom_spare_header"
+msgstr "report.plm.bom_spare_header"
+
+#. module: plm
+#: model:ir.model,name:plm.model_report_plm_bom_structure_all
+msgid "report.plm.bom_structure_all"
+msgstr "report.plm.bom_structure_all"
+
+#. module: plm
+#: model:ir.model,name:plm.model_report_plm_bom_structure_all_sum
+msgid "report.plm.bom_structure_all_sum"
+msgstr "report.plm.bom_structure_all_sum"
+
+#. module: plm
+#: model:ir.model,name:plm.model_report_plm_bom_structure_flat
+msgid "report.plm.bom_structure_flat"
+msgstr "report.plm.bom_structure_flat"
+
+#. module: plm
+#: model:ir.model,name:plm.model_report_plm_bom_structure_leaves
+msgid "report.plm.bom_structure_leaves"
+msgstr "report.plm.bom_structure_leaves"
+
+#. module: plm
+#: model:ir.model,name:plm.model_report_plm_bom_structure_one
+msgid "report.plm.bom_structure_one"
+msgstr "report.plm.bom_structure_one"
+
+#. module: plm
+#: model:ir.model,name:plm.model_report_plm_bom_structure_one_sum
+msgid "report.plm.bom_structure_one_sum"
+msgstr "report.plm.bom_structure_one_sum"
+
+#. module: plm
+#: code:addons/plm/install/plm_base_entities.py:527
+#, python-format
+msgid "saveChild :  unable to create a relation for part (%s) with source (%d) : %s."
+msgstr "Onderliggende opslaan :  niet mogelijk om een relatie aan te maken voor component (%s) met bron id (%d) : %s."
+
+#. module: plm
+#: code:addons/plm/install/plm_base_entities.py:469
+#, python-format
+msgid "saveChild.toCompute : Father \"%s\" refers to himself"
+msgstr "saveChild.toCompute : Father \"%s\" refers to himself"
+
+#. module: plm
+#: code:addons/plm/install/plm_base_entities.py:171
+#, python-format
+msgid "saveChild: Unable to create a link."
+msgstr "Onderliggende opslaan: Kan geen koppeling maken."
+
+#. module: plm
+#: code:addons/plm/install/plm_document.py:1086
+#, python-format
+msgid "saveChild: Unable to create a relation between documents. One of documents involved doesn't exist."
+msgstr "Onderliggende opslaan: Kan geen relatie tussen documenten maken. Een van de documenten bestaat niet meer."
+
+#. module: plm
+#: code:addons/plm/install/plm_document.py:1089
+#, python-format
+msgid "saveChild: Unable to create a relation."
+msgstr "Onderliggende opslaan: Kan geen koppeling maken"
+
+#. module: plm
+#: code:addons/plm/install/plm_base_entities.py:501
+#, python-format
+msgid "saveParent :  unable to create a relation for part (%s) with source (%d) : %s."
+msgstr "Bovenliggende opslaan :  niet mogelijk om een relatie aan te maken voor component (%s) met bron id (%d) : %s."
+
+#. module: plm
+#: model:ir.ui.view,arch_db:plm.view_mrp_bom_filter_inherit
+msgid "string=\"Group By...\""
+msgstr "string=\"Groepeer op...\""
+
