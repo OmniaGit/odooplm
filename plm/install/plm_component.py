@@ -143,32 +143,36 @@ class plm_component(models.Model):
         """
             Get Last/Requested revision of given items (by name, revision, update time)
         """
-        partData, attribNames = vals
-        ids=self.GetLatestIds(cr, uid, partData, context)
+        partData, attribNames, forceCADProperties = vals
+        ids = self.GetLatestIds(cr, uid, partData, context, forceCADProperties=forceCADProperties)
         return self.read(cr, uid, list(set(ids)), attribNames)
     
-    def GetLatestIds(self,cr,uid,vals,context=None):
+    def GetLatestIds(self,cr,uid,vals,context=None, forceCADProperties=False):
         """
             Get Last/Requested revision of given items (by name, revision, update time)
         """
-        ids=[]
-        for partName, partRev, updateDate in vals:
-            if updateDate:
-                if partRev == None or partRev == False:
-                    partIds=self.search(cr,uid,[('engineering_code','=',partName),('write_date','>',updateDate)],order='engineering_revision',context=context)
-                    if len(partIds)>0:
-                        partIds.sort()
-                        ids.append(partIds[len(partIds)-1])
-                else:
-                    ids.extend(self.search(cr,uid,[('engineering_code','=',partName),('engineering_revision','=',partRev),('write_date','>',updateDate)],context=context))
+        ids = []
+        plmDocObj = self.pool.get('plm.document')
+        
+        def getCompIds(partName, partRev):
+            if docRev is None or docRev is False:
+                partIds=self.search(cr,uid,[('engineering_code','=',partName)], order='engineering_revision', context=context)
+                if len(partIds)>0:
+                    partIds.sort()
+                    ids.append(partIds[len(partIds)-1])
             else:
-                if partRev == None or partRev == False:
-                    partIds=self.search(cr,uid,[('engineering_code','=',partName)],order='engineering_revision',context=context)
-                    if len(partIds)>0:
-                        partIds.sort()
-                        ids.append(partIds[len(partIds)-1])
+                ids.extend(self.search(cr, uid, [('engineering_code', '=', partName), ('engineering_revision', '=', partRev)], context=context))
+
+        for docName, docRev, docIdToOpen in vals:
+            checkOutUser = plmDocObj.get_checkout_user(cr, uid, docIdToOpen, context)
+            if checkOutUser:
+                isMyDocument = plmDocObj.isCheckedOutByMe(cr, uid, docIdToOpen, context)
+                if isMyDocument and forceCADProperties:
+                    return []    # Document properties will be not updated
                 else:
-                    ids.extend(self.search(cr,uid,[('engineering_code','=',partName),('engineering_revision','=',partRev)],context=context))
+                    getCompIds(docName, docRev)
+            else:
+                getCompIds(docName, docRev)
         return list(set(ids))
 
     def NewRevision(self, cr, uid, ids, context=None):
@@ -285,18 +289,18 @@ class plm_component(models.Model):
 
         eBomId = False
         newidBom = False
-        if newBomType not in ['normal', 'spbom']:
+        if newBomType not in ['normal', 'phantom']:
             raise UserError(_("Could not convert source bom to %r" % newBomType))
         product_template_id = objProductProductBrw.product_tmpl_id.id
         bomIds = bomType.search(cr, uid, [('product_tmpl_id', '=', product_template_id),
-                                          ('type', '=', newBomType)])
+                                                                  ('type', '=', newBomType)])
         if bomIds:
             bomBrws = bomType.browse(cr, uid, bomIds[0], context=context)
             for bom_line in bomBrws.bom_line_ids:
                 self.create_bom_from_ebom(cr, uid, bom_line.product_id, newBomType, summarize, context)
         else:
             bomIds = bomType.search(cr, uid, [('product_tmpl_id', '=', product_template_id),
-                                                ('type', '=', 'ebom')])
+                                                                      ('type', '=', 'ebom')])
             if not bomIds:
                 UserError(_("No Enginnering bom provided"))
             for eBomId in bomIds:
@@ -668,23 +672,23 @@ class plm_component(models.Model):
         """
             Overwrite the default copy method
         """
-        previous_name=self.browse(cr,uid,oid,context=context).name
+        previous_name = self.browse(cr,uid,oid,context=context).name
         if not 'name' in defaults:
-            new_name='Copy of %s'%previous_name
-            l=self.search(cr,uid,[('name','like',new_name)],context=context)
-            if len(l)>0:
-                new_name='%s (%s)'%(new_name,len(l)+1)
-            defaults['name']=new_name
-            defaults['engineering_code']=new_name
-            defaults['engineering_revision']=0
+            new_name = 'Copy of %s'%previous_name
+            l = self.search(cr, uid, [('name', 'like', new_name)], context=context)
+            if len(l) > 0:
+                new_name = '%s (%s)' % (new_name, len(l) + 1)
+            defaults['name'] = new_name
+            defaults['engineering_code'] = ''
+            defaults['engineering_revision'] = 0
         #assign default value
-        defaults['state']='draft'
-        defaults['engineering_writable']=True
-        defaults['write_date']=None
-        defaults['linkeddocuments']=[]
-        objId = super(plm_component,self).copy(cr,uid,oid,defaults,context=context)
+        defaults['state'] = 'draft'
+        defaults['engineering_writable'] = True
+        defaults['write_date'] = None
+        defaults['linkeddocuments'] = []
+        objId = super(plm_component,self).copy(cr, uid, oid, defaults, context=context)
         if (objId):
-            self.wf_message_post(cr, uid, [oid], body=_('Copied starting from : %s.' %previous_name))
+            self.wf_message_post(cr, uid, [oid], body=_('Copied starting from : %s.' % previous_name))
         return objId
 
     def unlink(self, cr, uid, ids, context=None):

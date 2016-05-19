@@ -63,9 +63,10 @@ class plm_document(models.Model):
     def get_checkout_user(self, cr, uid, oid, context={}):
         checkType = self.pool.get('plm.checkout')
         lastDoc = self._getlastrev(cr, uid, [oid], context)
-        for docID in checkType.search(cr, uid, [('documentid', '=', lastDoc[0])]):
-            objectCheck = checkType.browse(cr, uid, docID)
-            return objectCheck.userid
+        if lastDoc:
+            for docID in checkType.search(cr, uid, [('documentid', '=', lastDoc[0])]):
+                objectCheck = checkType.browse(cr, uid, docID)
+                return objectCheck.userid
         False
 
     def _is_checkedout_for_me(self, cr, uid, oid, context=None):
@@ -83,7 +84,10 @@ class plm_document(models.Model):
         for objDoc in self.browse(cr, uid, ids, context=context):
             docIds = self.search(cr, uid, [('name', '=', objDoc.name), ('type', '=', 'binary')], order='revisionid', context=context)
             docIds.sort()   # Ids are not surely ordered, but revision are always in creation order.
-            result.append(docIds[len(docIds) - 1])
+            if docIds:
+                result.append(docIds[len(docIds)-1])
+            else:
+                logging.warning('[_getlastrev] No documents are found for object with name: "%s"' % (objDoc.name))
         return list(set(result))
 
     def GetLastNamesFromID(self, cr, uid, ids=[], context={}):
@@ -758,32 +762,31 @@ class plm_document(models.Model):
         ids = self.GetLatestIds(cr, uid, docData, context)
         return self.read(cr, uid, list(set(ids)), attribNames)
 
-    def GetLatestIds(self, cr, uid, vals, context=None):
+    def GetLatestIds(self, cr, uid, vals, context=None, forceCADProperties=False):
         """
             Get Last/Requested revision of given items (by name, revision, update time)
         """
         ids = []
-        for docName, docRev, updateDate in vals:
-            if updateDate:
-                if docRev == None or docRev == False:
-                    docIds = self.search(cr, uid, [('name', '=', docName), ('write_date', '>', updateDate)], order='revisionid', context=context)
-                    if len(docIds) > 0:
-                        ids.sort()
-                        ids.append(docIds[len(ids) - 1])
-                else:
-                    docIds = self.search(cr, uid, [('name', '=', docName), ('revisionid', '=', docRev), ('write_date', '>', updateDate)], context=context)
-                    if len(docIds) > 0:
-                        ids.extend(docIds)
+
+        def getCompIds(docName, docRev):
+            if docRev is None or docRev is False:
+                docIds = self.search(cr, uid, [('name', '=', docName)], order='revisionid', context=context)
+                if len(docIds)>0:
+                    ids.sort()
+                    ids.append(docIds[len(ids)-1])
             else:
-                if docRev == None or docRev == False:
-                    docIds = self.search(cr, uid, [('name', '=', docName)], order='revisionid', context=context)
-                    if len(docIds) > 0:
-                        ids.sort()
-                        ids.append(docIds[len(ids) - 1])
+                ids.extend(self.search(cr, uid, [('name', '=', docName), ('revisionid', '=', docRev)], context=context))
+
+        for docName, docRev, docIdToOpen in vals:
+            checkOutUser = self.get_checkout_user(cr, uid, docIdToOpen, context)
+            if checkOutUser:
+                isMyDocument = self.isCheckedOutByMe(cr, uid, docIdToOpen, context)
+                if isMyDocument:
+                    return []    # Document properties will be not updated
                 else:
-                    docIds = self.search(cr, uid, [('name', '=', docName), ('revisionid', '=', docRev)], context=context)
-                    if len(docIds) > 0:
-                        ids.extend(docIds)
+                    getCompIds(docName, docRev)
+            else:
+                getCompIds(docName, docRev)
         return list(set(ids))
 
     def isCheckedOutByMe(self, cr, uid, docId, context):

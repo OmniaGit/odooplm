@@ -41,7 +41,9 @@ import StringIO
 import base64
 import os
 import logging
-import datetime
+from datetime import datetime
+from dateutil import tz
+
 try:
     from PyPDF2 import PdfFileWriter, PdfFileReader
 except:
@@ -112,6 +114,16 @@ def get_parent(myObject):
                '',
                myObject.weight_net,
               ]
+
+
+def getBottomMessage(user, context):
+        to_zone = tz.gettz(context.get('tz', 'Europe/Rome'))
+        from_zone = tz.tzutc()
+        dt = datetime.now()
+        dt = dt.replace(tzinfo=from_zone)
+        localDT = dt.astimezone(to_zone)
+        localDT = localDT.replace(microsecond=0)
+        return "Printed by " + str(user.name) + " : " + str(localDT.ctime())
 
 
 class bom_structure_one_sum_custom_report(report_sxw.rml_parse):
@@ -185,11 +197,11 @@ class bom_spare_header(report_sxw.rml_parse):
 
     def get_document_brws(self):
         productBrws = self.get_component_brws()
-        oldest_dt = datetime.datetime.now()
+        oldest_dt = datetime.now()
         oldest_obj = None
         for linkedBrwsDoc in productBrws.linkeddocuments:
             create_date_str = linkedBrwsDoc.create_date
-            create_date = datetime.datetime.strptime(create_date_str, DEFAULT_SERVER_DATETIME_FORMAT)
+            create_date = datetime.strptime(create_date_str, DEFAULT_SERVER_DATETIME_FORMAT)
             if create_date < oldest_dt:
                 oldest_dt = create_date
                 oldest_obj = linkedBrwsDoc
@@ -217,7 +229,7 @@ class component_spare_parts_report(report_int):
         bomType = self.pool.get('mrp.bom')
         userType = self.pool.get('res.users')
         user = userType.browse(cr, uid, uid, context=context)
-        msg = "Printed by " + str(user.name) + " : " + str(time.strftime("%d/%m/%Y %H:%M:%S"))
+        msg = getBottomMessage(user, context)
         output = BookCollector(customTest=(True, msg))
         components = componentType.browse(cr, uid, ids, context=context)
         for component in components:

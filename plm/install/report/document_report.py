@@ -21,7 +21,8 @@
 ##############################################################################
 
 from book_collector     import BookCollector,packDocuments
-import time
+from datetime import datetime
+from dateutil import tz
 
 from openerp.report.interface import report_int
 from openerp import pooler
@@ -34,7 +35,13 @@ class document_custom_report(report_int):
         documents = docType.browse(cr, uid, ids, context=context)
         userType=self.pool.get('res.users')
         user=userType.browse(cr, uid, uid, context=context)
-        msg = "Printed by "+str(user.name)+" : "+ str(time.strftime("%d/%m/%Y %H:%M:%S"))
+        to_zone = tz.gettz(context.get('tz', 'Europe/Rome'))
+        from_zone = tz.tzutc()
+        dt = datetime.now()
+        dt = dt.replace(tzinfo=from_zone)
+        localDT = dt.astimezone(to_zone)
+        localDT = localDT.replace(microsecond=0)
+        msg = "Printed by " + str(user.name) + " : " + str(localDT.ctime())
         output  = BookCollector(jumpFirst=False,customTest=(False,msg),bottomHeight=10)
         return packDocuments(docRepository,documents,output)
     
