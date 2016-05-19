@@ -2,91 +2,6 @@
 <openerp>
 <data>
 
-<!--
-    <menuitem name="Checked-Out Documents View" id="plm_menu_checkout" parent="plm_document_form" sequence="13"/>
-
-
-    <record model="ir.ui.view" id="view_plm_checkout">
-        <field name="name">form.plm.checkout.view</field>
-        <field name="model">plm.checkout</field>
-        <field name="priority" eval="1"/>
-        <field name="type">form</field>
-        <field name="arch" type="xml">
-            <form string="Checked-Out Document">
-                <group colspan="4" col="6">
-                    <field name="userid" select="1" />
-                    <field name="hostname" select="1"/>
-                    <field name="hostpws"/>
-                    <field name="documentid"/>
-                    <field name="createdate" select="2"/>
-                </group>
-                <notebook colspan="4">
-                <page string="Attachment">
-                    <group col="2" colspan="2">
-                        <separator string="Data" colspan="2"/>
-                        <field name="datas" filename="datas_fname"/>
-                        <field name="datas_fname" select="1"/>
-                    </group>
-                    <group col="2" colspan="2">
-                        <separator string="Attached To" colspan="2"/>
-                        <field name="res_model" select="2" readonly="1"/>
-                        <field name="res_id" readonly="1"/>
-                    </group>
-                    <separator string="Preview" colspan="4"/>
-                    <field
-                        name="preview"
-                        widget="image"
-                        readonly="1"
-                        nolabel="1"
-                        colspan="4"
-                        img_height="400"
-                        img_width="800"/>
-
-                </page><page string="Indexed Content">
-                    <field name="index_content" nolabel="1" colspan="4" select="1"/>
-                </page><page string="Security">
-                    <field name="group_ids" colspan="4" nolabel="1"/>
-                </page><page string="Others Info">
-                    <group colspan="2" col="2">
-                        <separator string="History" colspan="2"/>
-                        <field name="userid"/>
-                        <field name="hostname"/>
-                        <field name="hostpws"/>
-                        <field name="documentid"/>
-                        <field name="createdate"/>
-                    </group>
-                    <group colspan="2" col="2">
-                        <separator string="File Information" colspan="2"/>
-                        <field name="hostname" readonly="1"/>
-                        <field name="hostpws" readonly="1" select="2"/>
-                    </group>
-                </page><page string="Notes">
-                    <field colspan="4" name="documentid" nolabel="1"/>
-                </page>
-                </notebook>
-            </form>
-        </field>
-    </record>
-
-    <record model="ir.ui.view" id="plm_checkout_form">
-        <field name="name">plm.checkout</field>
-        <field name="model">plm.checkout</field>
-        <field name="priority" eval="1"/>
-        <field name="type">form</field>
-        <field name="arch" type="xml">
-            <form string="Checked-Out Document">
-                <group>
-                    <field name="userid" select="1" />
-                    <field name="hostname" select="1"/>
-                    <field name="hostpws" select="1" />
-                    <field name="documentid" select="1" />
-                    <field name="createdate" select="1" />
-                </group>
-            </form>
-        </field>
-    </record>
--->    
-
     <record model="ir.ui.view" id="plm_checkout_search">
         <field name="name">plm.checkout</field>
         <field name="model">plm.checkout</field>
@@ -137,6 +52,7 @@
                 <field name="hostname" select="1"/>
                 <field name="hostpws" select="1"/>
                 <field name="documentid" select="1"/>
+                <field name="rel_doc_rev"/>
                 <field name="createdate" select="1"/>
             </tree>
         </field>

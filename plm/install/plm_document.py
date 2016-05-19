@@ -1007,6 +1007,7 @@ class plm_checkout(models.Model):
     hostpws     =   fields.Char     (_('PWS Directory'),size=1024)
     documentid  =   fields.Many2one ('plm.document', _('Related Document'), ondelete='cascade')
     createdate  =   fields.Datetime (_('Date Created'), readonly=True)
+    rel_doc_rev =   fields.Integer  (related='documentid.revisionid', string="Revision", store=True)
 
     _defaults = {
         'create_date': lambda self,ctx:time.strftime("%Y-%m-%d %H:%M:%S")
@@ -1067,6 +1068,7 @@ class plm_document_relation(models.Model):
     configuration   =   fields.Char     (_('Configuration Name'),size=1024)
     link_kind       =   fields.Char     (_('Kind of Link'),size=64, required=True)
     create_date     =   fields.Datetime (_('Date Created'), readonly=True)
+
     #  TODO: To remove userid field for version 10
     userid          =   fields.Many2one ('res.users', _('CheckOut User'),readonly="True")
     
