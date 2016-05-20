@@ -289,18 +289,18 @@ class plm_component(models.Model):
 
         eBomId = False
         newidBom = False
-        if newBomType not in ['normal', 'spbom']:
+        if newBomType not in ['normal', 'phantom']:
             raise UserError(_("Could not convert source bom to %r" % newBomType))
         product_template_id = objProductProductBrw.product_tmpl_id.id
         bomIds = bomType.search(cr, uid, [('product_tmpl_id', '=', product_template_id),
-                                          ('type', '=', newBomType)])
+                                                                  ('type', '=', newBomType)])
         if bomIds:
             bomBrws = bomType.browse(cr, uid, bomIds[0], context=context)
             for bom_line in bomBrws.bom_line_ids:
                 self.create_bom_from_ebom(cr, uid, bom_line.product_id, newBomType, summarize, context)
         else:
             bomIds = bomType.search(cr, uid, [('product_tmpl_id', '=', product_template_id),
-                                                ('type', '=', 'ebom')])
+                                                                      ('type', '=', 'ebom')])
             if not bomIds:
                 UserError(_("No Enginnering bom provided"))
             for eBomId in bomIds:
@@ -672,23 +672,23 @@ class plm_component(models.Model):
         """
             Overwrite the default copy method
         """
-        previous_name=self.browse(cr,uid,oid,context=context).name
+        previous_name = self.browse(cr,uid,oid,context=context).name
         if not 'name' in defaults:
-            new_name='Copy of %s'%previous_name
-            l=self.search(cr,uid,[('name','like',new_name)],context=context)
-            if len(l)>0:
-                new_name='%s (%s)'%(new_name,len(l)+1)
-            defaults['name']=new_name
-            defaults['engineering_code']=new_name
-            defaults['engineering_revision']=0
+            new_name = 'Copy of %s'%previous_name
+            l = self.search(cr, uid, [('name', 'like', new_name)], context=context)
+            if len(l) > 0:
+                new_name = '%s (%s)' % (new_name, len(l) + 1)
+            defaults['name'] = new_name
+            defaults['engineering_code'] = ''
+            defaults['engineering_revision'] = 0
         #assign default value
-        defaults['state']='draft'
-        defaults['engineering_writable']=True
-        defaults['write_date']=None
-        defaults['linkeddocuments']=[]
-        objId = super(plm_component,self).copy(cr,uid,oid,defaults,context=context)
+        defaults['state'] = 'draft'
+        defaults['engineering_writable'] = True
+        defaults['write_date'] = None
+        defaults['linkeddocuments'] = []
+        objId = super(plm_component,self).copy(cr, uid, oid, defaults, context=context)
         if (objId):
-            self.wf_message_post(cr, uid, [oid], body=_('Copied starting from : %s.' %previous_name))
+            self.wf_message_post(cr, uid, [oid], body=_('Copied starting from : %s.' % previous_name))
         return objId
 
     def unlink(self, cr, uid, ids, context=None):

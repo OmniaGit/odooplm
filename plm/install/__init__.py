@@ -20,6 +20,7 @@
 #
 ##############################################################################
 import plm_base_entities
+import mrp_extension
 import plm_document
 import plm_component
 import plm_extend_entities

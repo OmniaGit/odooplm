@@ -63,9 +63,10 @@ class plm_document(models.Model):
     def get_checkout_user(self, cr, uid, oid, context={}):
         checkType = self.pool.get('plm.checkout')
         lastDoc = self._getlastrev(cr, uid, [oid], context)
-        for docID in checkType.search(cr, uid, [('documentid', '=', lastDoc[0])]):
-            objectCheck = checkType.browse(cr, uid, docID)
-            return objectCheck.userid
+        if lastDoc:
+            for docID in checkType.search(cr, uid, [('documentid', '=', lastDoc[0])]):
+                objectCheck = checkType.browse(cr, uid, docID)
+                return objectCheck.userid
         False
 
     def _is_checkedout_for_me(self, cr, uid, oid, context=None):
@@ -83,7 +84,10 @@ class plm_document(models.Model):
         for objDoc in self.browse(cr, uid, ids, context=context):
             docIds = self.search(cr, uid, [('name', '=', objDoc.name), ('type', '=', 'binary')], order='revisionid', context=context)
             docIds.sort()   # Ids are not surely ordered, but revision are always in creation order.
-            result.append(docIds[len(docIds) - 1])
+            if docIds:
+                result.append(docIds[len(docIds)-1])
+            else:
+                logging.warning('[_getlastrev] No documents are found for object with name: "%s"' % (objDoc.name))
         return list(set(result))
 
     def GetLastNamesFromID(self, cr, uid, ids=[], context={}):
@@ -1003,6 +1007,7 @@ class plm_checkout(models.Model):
     hostpws     =   fields.Char     (_('PWS Directory'),size=1024)
     documentid  =   fields.Many2one ('plm.document', _('Related Document'), ondelete='cascade')
     createdate  =   fields.Datetime (_('Date Created'), readonly=True)
+    rel_doc_rev =   fields.Integer  (related='documentid.revisionid', string="Revision", store=True)
 
     _defaults = {
         'create_date': lambda self,ctx:time.strftime("%Y-%m-%d %H:%M:%S")
@@ -1063,6 +1068,7 @@ class plm_document_relation(models.Model):
     configuration   =   fields.Char     (_('Configuration Name'),size=1024)
     link_kind       =   fields.Char     (_('Kind of Link'),size=64, required=True)
     create_date     =   fields.Datetime (_('Date Created'), readonly=True)
+
     #  TODO: To remove userid field for version 10
     userid          =   fields.Many2one ('res.users', _('CheckOut User'),readonly="True")
     
