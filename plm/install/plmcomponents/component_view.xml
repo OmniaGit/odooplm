@@ -153,7 +153,7 @@
 	    					<button class="oe_inline oe_stat_button"   type="object" icon="fa-list-alt" name="action_rev_docs" string="Revision Rel Docs"></button>	
 	               		</group>
 	               		<group>
-	    					<field name="linkeddocuments" 		attrs="{'readonly':[('state','in',['released','obsoleted'])]}" nolabel="1"/>
+	    					<field name="linkeddocuments" nolabel="1"/>
         				</group>	
 	    			</page>	
 	    		</notebook> 
