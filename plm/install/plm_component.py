@@ -146,20 +146,23 @@ class plm_component(models.Model):
         partData, attribNames, forceCADProperties = vals
         ids = self.GetLatestIds(cr, uid, partData, context, forceCADProperties=forceCADProperties)
         return self.read(cr, uid, list(set(ids)), attribNames)
-    
-    def GetLatestIds(self,cr,uid,vals,context=None, forceCADProperties=False):
+
+    def GetLatestIds(self, cr, uid, vals, context=None, forceCADProperties=False):
         """
             Get Last/Requested revision of given items (by name, revision, update time)
         """
         ids = []
         plmDocObj = self.pool.get('plm.document')
-        
+
         def getCompIds(partName, partRev):
             if docRev is None or docRev is False:
-                partIds=self.search(cr,uid,[('engineering_code','=',partName)], order='engineering_revision', context=context)
-                if len(partIds)>0:
-                    partIds.sort()
-                    ids.append(partIds[len(partIds)-1])
+                partIds = self.search(cr,
+                                      uid,
+                                      [('engineering_code', '=', partName)],
+                                      order='engineering_revision',
+                                      context=context)
+                if len(partIds) > 0:
+                    ids.append(partIds[-1])
             else:
                 ids.extend(self.search(cr, uid, [('engineering_code', '=', partName), ('engineering_revision', '=', partRev)], context=context))
 
