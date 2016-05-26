@@ -328,10 +328,8 @@ class plm_component(models.Model):
             queueFiles['distinte'] = part_data_transfer['append']
         else:
             fieldsListed = datamap.keys()
-        allIDs = self._query_data(
-            cr, uid, updateDate, part_data_transfer['status'])
-        tmpData = self._exportData(
-            cr, uid, allIDs, fieldsListed, bom_data_transfer['kind'])
+        allIDs = self._query_data(cr, uid, updateDate, part_data_transfer['status'])
+        tmpData = self._exportData(cr, uid, allIDs, fieldsListed, bom_data_transfer['kind'])
         if tmpData.get('datas'):
             tmpData = self._rectify_data(cr, uid, tmpData, part_data_transfer)
             if 'db' in transfer:
@@ -379,10 +377,8 @@ class plm_component(models.Model):
         else:
             statusList = statuses
         objTempl = self.pool.get('product.template')
-        allIDs = objTempl.search(cr, uid, [(
-            'write_date', '>', updateDate), ('state', 'in', statusList)], order='engineering_revision')
-        allIDs.extend(objTempl.search(cr, uid, [
-                      ('create_date', '>', updateDate), ('state', 'in', statusList)], order='engineering_revision'))
+        allIDs = objTempl.search(cr, uid, [( 'write_date', '>', updateDate), ('state', 'in', statusList)], order='engineering_revision')
+        allIDs.extend(objTempl.search(cr, uid, [('create_date', '>', updateDate), ('state', 'in', statusList)], order='engineering_revision'))
         return list(set(allIDs))
 
     def _extract_data(self, cr, uid, allIDs, queueFiles, fixedformat, kindBomname='normal', anag_Data={}, anag_fields=False, rel_fields=False, transferdata={}, partLengths={}, bomLengths={}):
@@ -427,7 +423,7 @@ class plm_component(models.Model):
         if outputpath == None:
             return True
         if not os.path.exists(outputpath):
-            raise osv.except_osv(_('Export Data Error'), _(
+            raise osv.osv.except_osv(_('Export Data Error'), _(
                 "Requested writing path (%s) doesn't exist." % (outputpath)))
             return False
 
@@ -439,7 +435,7 @@ class plm_component(models.Model):
                 return False
         else:
             if not self._export_csv(filename, anag_Data['labels'], anag_Data, True, delimiter, textQuoted, queueFiles['anagrafica']):
-                raise osv.except_osv(_('Export Data Error'), _(
+                raise osv.osv.except_osv(_('Export Data Error'), _(
                     "Writing operations on file (%s) have failed." % (filename)))
                 return False
 
@@ -462,12 +458,12 @@ class plm_component(models.Model):
 
                 if fixedformat and (partLengths and bomLengths):
                     if not self._export_fixed(filename, ext_fields, expData, False, partLengths, bomLengths):
-                        raise osv.except_osv(_('Export Data Error'), _(
+                        raise osv.osv.except_osv(_('Export Data Error'), _(
                             "No Bom extraction files was generated, about entity (%s)." % (fname)))
                         return False
                 else:
                     if not self._export_csv(filename, ext_fields, expData, True, delimiter, textQuoted, queueFiles['distinte']):
-                        raise osv.except_osv(_('Export Data Error'), _(
+                        raise osv.osv.except_osv(_('Export Data Error'), _(
                             "No Bom extraction files was generated, about entity (%s)." % (fname)))
                         return False
         return True

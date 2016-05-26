@@ -22,7 +22,7 @@
 from datetime import datetime
 from dateutil import tz
 
-from book_collector import BookCollector, packDocuments
+from book_collector import BookCollector, packDocuments, external_pdf
 from openerp.report.interface import report_int
 from openerp import pooler, _
 from openerp.exceptions import UserError
@@ -57,7 +57,18 @@ class component_custom_report(report_int):
         if len(documents):
             return packDocuments(docRepository, documents, output)
         if context.get("raise_report_warning", True):
-            raise UserError(_("No Document found"))
+            # To avoid error when no PDF is returned
+            import StringIO
+            from reportlab.pdfgen import canvas
+            pdf_string = StringIO.StringIO()
+            c = canvas.Canvas(pdf_string)
+            c.drawString(20, 20, str('      '))
+            c.showPage()
+            c.save()
+            obj = external_pdf(pdf_string.getvalue())
+            obj.render()
+            pdf_string.close()
+            return (obj.pdf, 'pdf')
 
 component_custom_report('report.product.product.pdf')
 
