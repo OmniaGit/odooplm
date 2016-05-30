@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		
+		
+		
+<!-- Views -->	
+
+	<record id="product_product_cutted_parts" model="ir.ui.view">
+		<field name="name">product.product.cutted.parts</field>
+		<field name="model">product.product</field>
+		<field name="inherit_id" ref="plm.plm_component_base_form"/>
+		<field name="priority" eval="3"/>
+		<field name="arch" type="xml">
+			<field name="engineering_material" position="after">
+				<group col="4" colspan="4">
+					<field name="row_material"></field>
+					<field name="row_material_xlenght" readonly="1"></field>
+					<field name="row_material_ylenght" readonly="1"></field>
+					<field name="wastage_percent"></field>
+				</group>
+			</field>
+		</field>
+	</record>
+
+	<record id="plm_cutted_normalbom" model="ir.ui.view">
+		<field name="name">plm.relation.normal</field>
+		<field name="model">plm.temporary</field>
+		<field name="inherit_id" ref="plm.plm_component_create_normalbom"/>
+		<field name="type">form</field>
+		<field name="arch" type="xml">
+			<field name="summarize" position="after">
+				<group>
+					<field name="cutted_part_explosion" widget="radio"/>
+				</group>
+			</field>
+		</field>
+	</record>
+    </data>
+</openerp>

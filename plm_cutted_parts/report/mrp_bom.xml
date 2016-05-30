@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <template id="bom_structure_all_cutted" inherit_id="plm.bom_structure_all">
+			<xpath expr="//th[@name='bom_description']" position="after">
+				<th name="x_leght" style="background-color: #E4EDFB; border: 1px solid rgb(202, 202, 202);"> L.X </th>
+				<th name="y_leght" style="background-color: #E4EDFB; border: 1px solid rgb(202, 202, 202);"> L.Y </th>
+            </xpath>
+            
+			<xpath expr="//td[@name='parent_bom_description']" position="after">
+				<td name="x_leght"></td>
+				<td name="y_leght"></td>
+            </xpath>            
+
+			<xpath expr="//td[@name='bom_description_value']" position="after">
+				<td name="x_leght" ><span t-esc="childDict.get('x_leght')"/></td>
+				<td name="y_leght" ><span t-esc="childDict.get('y_leght')"/></td>
+            </xpath>
+        </template>
+        
+        <!-- QWeb Reports -->
+        <report 
+            id="report_bom_structure_all_cutted"
+            model="mrp.bom"
+            string="Cutted Parts" 
+            report_type="qweb-pdf"  
+            name="bom_structure_all_cutted"  
+        />
+    </data>
+</openerp>
