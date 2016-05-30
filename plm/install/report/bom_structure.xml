@@ -40,7 +40,7 @@
                  	
         <report id="report_plm_bom_structure_flat"
                 model="mrp.bom"
-                string="BOM Only Leaves Summarized"
+                string="BOM Flat Summarized"
         		report_type="qweb-pdf"    
                 name="plm.bom_structure_flat"   
                  />

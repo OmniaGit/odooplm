@@ -134,10 +134,10 @@ class bom_structure_one_sum_custom_report(report_sxw.rml_parse):
             'get_children': self.get_children,
             'bom_type': self.bom_type,
         })
-
+ 
     def get_children(self, myObject, level=0):
         result = []
-
+ 
         def _get_rec(bomobject, level):
             myObject = BomSort(bomobject)
             tmp_result = []
@@ -166,11 +166,11 @@ class bom_structure_one_sum_custom_report(report_sxw.rml_parse):
                     listed[product.name] = keyIndex
                     keyIndex += 1
             return result.extend(tmp_result)
-
+ 
         _get_rec(myObject, level + 1)
-
+ 
         return result
-
+ 
     def bom_type(self, myObject):
         result = dict(self.pool.get(myObject._model._name).fields_get(self.cr, self.uid)['type']['selection']).get(myObject.type, '')
         return _(result)
