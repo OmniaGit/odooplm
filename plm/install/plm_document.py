@@ -771,9 +771,8 @@ class plm_document(models.Model):
         def getCompIds(docName, docRev):
             if docRev is None or docRev is False:
                 docIds = self.search(cr, uid, [('name', '=', docName)], order='revisionid', context=context)
-                if len(docIds)>0:
-                    ids.sort()
-                    ids.append(docIds[len(ids)-1])
+                if len(docIds) > 0:
+                    ids.append(docIds[-1])
             else:
                 ids.extend(self.search(cr, uid, [('name', '=', docName), ('revisionid', '=', docRev)], context=context))
 
