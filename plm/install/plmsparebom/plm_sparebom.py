@@ -25,11 +25,13 @@ import logging
 from openerp        import models, fields, api, SUPERUSER_ID, _, osv
 _logger         =   logging.getLogger(__name__)
 
-RETDMESSAGE=''
+RETDMESSAGE = ''
+
 
 class plm_temporary(osv.osv.osv_memory):
     _inherit = "plm.temporary"
 ##  Specialized Actions callable interactively
+
     def action_create_spareBom(self, cr, uid, ids, context=None):
         """
             Create a new Spare Bom if doesn't exist (action callable from views)
@@ -38,15 +40,15 @@ class plm_temporary(osv.osv.osv_memory):
             return False
         if not 'active_ids' in context:
             return False
-        
-        productType=self.pool.get('product.product')
-        for idd in context['active_ids']:
-            checkObj=productType.browse(cr, uid, idd, context)
-            if not checkObj:
+        productType = self.pool.get('product.product')
+        for prod_ids in context['active_ids']:
+            prodProdObj = productType.browse(cr, uid, prod_ids, context)
+            if not prodProdObj:
+                logging.warning('[action_create_spareBom] product_id %s not found' % (prod_ids))
                 continue
-            objBoms=self.pool.get('mrp.bom').search(cr, uid, [('product_tmpl_id','=',idd),('type','=','spbom')])
+            objBoms = self.pool.get('mrp.bom').search(cr, uid, [('product_tmpl_id', '=', prodProdObj.product_tmpl_id.id), ('type', '=', 'spbom')])
             if objBoms:
-                raise osv.except_osv(_('Creating a new Spare Bom Error.'), _("BoM for Part %r already exists." %(checkObj.name)))
+                raise osv.osv.except_osv(_('Creating a new Spare Bom Error.'), _("BoM for Part %r already exists." % (prodProdObj.name)))
 
         productType.action_create_spareBom_WF(cr, uid, context['active_ids'])
 
