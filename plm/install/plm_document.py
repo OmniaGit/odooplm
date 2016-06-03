@@ -362,7 +362,7 @@ class plm_document(models.Model):
         """
             create a new version of the document (to WorkFlow calling)
         """
-        if self.newRevision(cr, uid, ids, context=context) is not None:
+        if self.NewRevision(cr, uid, ids, context=context) is not None:
             return True
         return False
 
