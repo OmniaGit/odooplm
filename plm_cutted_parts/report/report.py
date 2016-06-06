@@ -41,7 +41,7 @@ class bom_structure_cutted_parts(report_sxw.rml_parse):
     def get_children(self, myObject, level=0):
         result = {}
 
-        def _get_rec(bomobject, level, parentQty=0):
+        def _get_rec(bomobject, level, parentQty=1):
             for l in bomobject.bom_line_ids:
                 if l.product_id.is_row_material:
                     eng_code = l.product_id.engineering_code
@@ -54,7 +54,7 @@ class bom_structure_cutted_parts(report_sxw.rml_parse):
                     res['pdesc'] = _(product.description)
                     res['pcode'] = l.product_id.default_code
                     res['previ'] = product.engineering_revision
-                    res['pqty'] = l.product_qty + parentQty
+                    res['pqty'] = l.product_qty * 1 if parentQty < 1 else parentQty
                     res['uname'] = l.product_uom.name
                     res['pweight'] = product.weight
                     res['code'] = eng_code
