@@ -55,26 +55,32 @@ class plm_temporary_cutted(models.Model):
             mrp_bom_line_type_object = self.pool.get('mrp.bom.line')
 
             def cuttedPartAction(bomLine):
+                addedMaterial = (1 + bomLine.product_id.wastage_percent)
+                commonValues = {'x_leght': bomLine.product_id.row_material_xlenght * addedMaterial,
+                                'y_leght': bomLine.product_id.row_material_ylenght * addedMaterial,
+                                'product_id': bomLine.product_id.row_material.id}
                 if explosion_action == 'replace':
-                    values = {'x_leght': bomLine.product_id.row_material_xlenght * bomLine.product_id.wastage_percent,
-                              'y_leght': bomLine.product_id.row_material_ylenght * bomLine.product_id.wastage_percent,
-                              'product_id': bomLine.product_id.row_material.id}
-                    mrp_bom_line_type_object.write(cr, uid, [bomLine.id], values)
+                    mrp_bom_line_type_object.write(cr, uid, [bomLine.id], commonValues)
                 else:
                     idTemplate = bomLine.product_id.product_tmpl_id.id
                     bomIds = mrp_bom_type_object.search(cr, uid, [('product_tmpl_id', '=', idTemplate),
                                                                   ('type', '=', 'normal')])
+
                     if not bomIds:
                         values = {'product_tmpl_id': idTemplate,
                                   'type': 'normal'}
                         newBomId = mrp_bom_type_object.create(cr, uid, values)
-                        values = {'product_id': bomLine.product_id.row_material.id,
-                                  'x_leght': bomLine.product_id.row_material_xlenght * bomLine.product_id.wastage_percent,
-                                  'y_leght': bomLine.product_id.row_material_ylenght * bomLine.product_id.wastage_percent,
-                                  'type': 'normal',
-                                  'bom_id': newBomId,
-                                  }
+                        values = {'type': 'normal',
+                                  'bom_id': newBomId}
+                        values.update(commonValues)
                         mrp_bom_line_type_object.create(cr, uid, values)
+                    else:
+                        for bomId in mrp_bom_type_object.browse(cr, uid, bomIds):
+                            for bomLineId in bomId.bom_line_ids:
+                                logging.info("Bom line updated %r" % bomLineId)
+                                mrp_bom_line_type_object.write(cr, uid, [bomLineId.id], commonValues)
+                                return
+                        logging.warning("No Bom Line detected for bom %r" % bomIds.id)
 
             def actionOnBom(productIds):
                 for productBrowse in product_product_type_object.browse(cr, uid, productIds, context):

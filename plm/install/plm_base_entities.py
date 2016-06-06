@@ -677,7 +677,7 @@ class plm_temporary(osv.osv.osv_memory):
                         'type': 'ir.actions.act_window',
                         'target': 'new',
                         }
-
+        return {}
 plm_temporary()
 
 

@@ -14,6 +14,7 @@
 		<field name="arch" type="xml">
 			<field name="engineering_material" position="after">
 				<group col="4" colspan="4">
+					<field name="is_row_material"></field>
 					<field name="row_material"></field>
 					<field name="row_material_xlenght" readonly="1"></field>
 					<field name="row_material_ylenght" readonly="1"></field>

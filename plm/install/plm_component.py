@@ -139,7 +139,7 @@ class plm_component(models.Model):
             exitValues['engineering_revision'] = newEnt.engineering_revision
         return exitValues
 
-    def GetUpdated(self,cr,uid,vals,context=None):
+    def GetUpdated(self, cr, uid, vals, context=None):
         """
             Get Last/Requested revision of given items (by name, revision, update time)
         """

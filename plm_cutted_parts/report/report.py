@@ -23,6 +23,7 @@ Created on 28/mag/2016
 
 @author: mboscolo
 '''
+from openerp import _
 from openerp.osv import osv
 from openerp.report import report_sxw
 
@@ -38,12 +39,12 @@ class bom_structure_cutted_parts(report_sxw.rml_parse):
         })
 
     def get_children(self, myObject, level=0):
-        result = []
+        result = {}
 
         def _get_rec(bomobject, level):
-
             for l in bomobject.bom_line_ids:
-                if l.product_id.row_material:
+                if l.product_id.is_row_material:
+                    eng_code = l.product_id.engineering_code
                     res = {}
                     product = l.product_id.product_tmpl_id
                     res['name'] = product.name
@@ -56,20 +57,22 @@ class bom_structure_cutted_parts(report_sxw.rml_parse):
                     res['pqty'] = l.product_qty
                     res['uname'] = l.product_uom.name
                     res['pweight'] = product.weight
-                    res['code'] = l.product_id.default_code
+                    res['code'] = eng_code
                     res['level'] = level
                     res['prodBrws'] = l.product_id
                     res['prodTmplBrws'] = product
                     res['x_leght'] = l.x_leght
                     res['y_leght'] = l.y_leght
-                    result.append(res)
+                    spoolList = result.get(eng_code, [])
+                    spoolList.append(res)
+                    result[eng_code] = spoolList
+                    continue
+
                 for bomId in l.product_id.bom_ids:
                     if bomId.type == l.bom_id.type:
-                        _get_rec(bomId.bom_line_ids, level + 1)
-            return result
-
+                        _get_rec(bomId, level + 1)
+            return result.values()
         children = _get_rec(myObject, level + 1)
-
         return children
 
     def bom_type(self, myObject):
@@ -78,7 +81,7 @@ class bom_structure_cutted_parts(report_sxw.rml_parse):
 
 
 class bom_structure_all_cutted(osv.AbstractModel):
-    _name = 'report.bom_structure_all_cutted'
+    _name = 'report.plm_cutted_parts.bom_structure_all_cutted'
     _inherit = 'report.abstract_report'
-    _template = 'bom_structure_all_cutted'
+    _template = 'plm_cutted_parts.bom_structure_all_cutted'
     _wrapped_report_class = bom_structure_cutted_parts

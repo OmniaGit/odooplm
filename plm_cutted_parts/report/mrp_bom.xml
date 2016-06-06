@@ -1,21 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
     <data>
-        <template id="bom_structure_all_cutted" inherit_id="plm.bom_structure_all">
-			<xpath expr="//th[@name='bom_description']" position="after">
-				<th name="x_leght" style="background-color: #E4EDFB; border: 1px solid rgb(202, 202, 202);"> L.X </th>
-				<th name="y_leght" style="background-color: #E4EDFB; border: 1px solid rgb(202, 202, 202);"> L.Y </th>
-            </xpath>
-            
-			<xpath expr="//td[@name='parent_bom_description']" position="after">
-				<td name="x_leght"></td>
-				<td name="y_leght"></td>
-            </xpath>            
+        <template id="plm_cutted_parts.bom_structure_all_cutted">
+        	<t t-foreach="docs" t-as="o">
+				<t t-call="report.html_container">
+			        <t t-set="data_report_margin_top" t-value="12"/>
+			        <t t-set="data_report_header_spacing" t-value="9"/>
+			        <t t-set="data_report_dpi" t-value="110"/>
 
-			<xpath expr="//td[@name='bom_description_value']" position="after">
-				<td name="x_leght" ><span t-esc="childDict.get('x_leght')"/></td>
-				<td name="y_leght" ><span t-esc="childDict.get('y_leght')"/></td>
-            </xpath>
+        			<t t-call="report.internal_layout">
+        				<div style="border-bottom: 1px solid black;"></div>
+            			<div class="page" align="center">
+							<table style="width: 100%; border: 1px solid rgb(202, 202, 202);"  class="table">
+								<tr>
+									<th>Name</th>
+									<th>Revision</th>
+									<th>Description</th>
+									<th>Quantity</th>
+									<th>Lenght</th>
+									<th>Width</th>
+									<th>U.M.</th>
+								</tr>
+	
+								<t t-foreach="get_children(o)" t-as="childDicts">
+									<t t-foreach="childDicts" t-as="childDict">
+										<tr>
+											<td name="bom_prod_name_value"><span t-esc="childDict.get('code')"/></td>
+											<td name="bom_rev_value" ><span t-esc="childDict.get('previ')"/></td>
+											<td name="bom_description_value" ><span t-esc="childDict.get('pdesc')"/></td>
+											<td name="bom_qty_value" ><span t-esc="childDict.get('pqty')"/></td>
+											<td name="bom_x_leght" ><span t-esc="childDict.get('x_leght')"/></td>
+											<td name="bom_y_leght" ><span t-esc="childDict.get('y_leght')"/></td>
+											<td name="bom_uom_value" ><span t-esc="childDict.get('uname')"/></td>
+										</tr>
+									</t>
+								</t>
+
+							</table>
+						</div>
+					</t>
+				</t>
+			</t>
         </template>
         
         <!-- QWeb Reports -->
@@ -24,7 +49,7 @@
             model="mrp.bom"
             string="Cutted Parts" 
             report_type="qweb-pdf"  
-            name="bom_structure_all_cutted"  
+            name="plm_cutted_parts.bom_structure_all_cutted" 
         />
     </data>
 </openerp>

@@ -37,7 +37,6 @@
 					</tr>
 					<t t-set="i" t-value="1"/>
 					<t t-foreach="o.bom_line_ids" t-as="lineObj">
-						
 						<t t-foreach="get_children(lineObj)" t-as="childDict">
 							<tr>
 								<t t-if="i%2 == 1">
@@ -62,16 +61,6 @@
 									<td name="bom_uom_value" ><span t-esc="childDict.get('uname')"/></td>
 									<td name="bom_weight_value" ><span t-esc="childDict.get('pweight')"/></td>
 								</t>
-								<!--
-								<t t-foreach="childDict.keys()" t-as="key_name">
-									<t t-if="i%2 == 1">
-										<td style="background-color: aliceblue;"><span t-esc="childDict.get(key_name)"/></td>
-									</t>
-									<t t-if="i%2 != 1">
-										<td ><span t-esc="childDict.get(key_name)"/></td>
-									</t>
-								</t>
-								-->
 							</tr>
 							<t t-set="i" t-value="i+1"/>
 						</t>
