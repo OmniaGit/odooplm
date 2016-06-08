@@ -81,7 +81,8 @@ class PlmComponent(models.Model):
                         bomTotalWeight = bomTotalWeight + productWeight
                     productBrws.write({'weight_ebom_computed': bomTotalWeight})
                     productBrws.weight_ebom_computed = bomTotalWeight
-                    bomBrws.write({'weight_net': bomTotalWeight})
+                    if productBrws.state not in ['released', 'obsoleted'] or (productBrws.state in ['released', 'obsoleted'] and isUserAdmin):
+                        bomBrws.write({'weight_net': bomTotalWeight})
                     self.commonWeightCompute(productBrws, isUserAdmin, productBrws.weight_ebom_computed)
                     break
 
