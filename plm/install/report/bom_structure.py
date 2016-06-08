@@ -63,9 +63,9 @@ def get_bom_report(myObject, recursion=False, flat=False, leaf=False, level=1, s
             if myKey in listed.keys() and summarize:
                 listed[myKey]['pqty'] = listed[myKey].get('pqty', 0) + l.product_qty
             else:
-                res['name'] = product.name
+                res['name'] = product.engineering_code
                 res['item'] = l.itemnum
-                res['pname'] = product.name
+                res['pname'] = product.engineering_code
                 res['pdesc'] = _(product.description)
                 res['pcode'] = l.product_id.default_code
                 res['previ'] = product.engineering_revision
