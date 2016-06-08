@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+        <data>
+                <record id="group_plm_weight_admin" model="res.groups">
+                        <field name="name">PLM / Weight Admin</field>
+                        <!-- To work correctly if you modify name you have to modify match in component_extension.py-->
+                </record>
+        </data>
+</openerp>
