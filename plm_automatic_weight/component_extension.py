@@ -112,3 +112,14 @@ class PlmComponent(models.Model):
         return False
 
 PlmComponent()
+
+
+class MrpBomExtension(models.Model):
+    _name = 'mrp.bom'
+    _inherit = 'mrp.bom'
+
+    @api.multi
+    def computeBomWeightAction(self):
+        pass
+
+MrpBomExtension()
