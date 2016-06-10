@@ -10,15 +10,35 @@
         <field name="arch" type="xml">
 			<xpath expr="//field[@name='weight']" position="replace">
 				<group name="weight" string="Weight" colspan="4" col="4">
-         				<field name="weight"		attrs="{'readonly':[('state','in',['released','obsoleted'])]}" />
-         				<field name="automatic_compute"/>
-         			<field name="weight_additional"		attrs="{'readonly':['|', ('state','in',['released','obsoleted']), ('automatic_compute', '=', False)]}"	/>
+					<field name="automatic_compute_selection" widget="radio"/> 
+         			<field name="weight"		attrs="{'readonly':[('state', 'in', ['released', 'obsoleted'])]}" />
+         			<field name="weight_additional"		attrs="{'readonly':['|', ('state', 'in', ['released', 'obsoleted']), 
+         																		 ('automatic_compute_selection', '!=', 'use_normal_bom')]}"	/>
 					<field name="weight_cad" />
-					<field name="weight_ebom_computed" />
+					<field name="weight_nbom_computed" />
         		</group>
 			</xpath>
         </field>
     </record>
 	
+        <record id="action_bom_weight_computed" model="ir.actions.server">
+            <field name="name">Compute Bom Weight</field>
+            <field name="condition">True</field>
+            <field name="type">ir.actions.server</field>
+            <field name="model_id" ref="model_product_product"/>
+            <field name="state">code</field>
+            <field name="code">self.computeBomWeightAction(cr, uid, context.get('active_ids', []), context=context)</field>
+        </record>
+
+        <record model="ir.values" id="action_bom_weight_computed_value">
+            <field name="name">action_bom_weight_computed</field>
+            <field name="action_id" ref="action_bom_weight_computed" />
+            <field name="value" eval="'ir.actions.server,' + str(ref('action_bom_weight_computed'))" />
+            <field name="key">action</field>
+            <field name="model_id" ref="model_product_product" />
+            <field name="model">mrp.bom</field>
+            <field name="key2">client_action_multi</field>
+        </record>
+        
 	</data>
 </openerp>
