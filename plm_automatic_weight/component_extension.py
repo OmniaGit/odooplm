@@ -41,24 +41,38 @@ class PlmComponent(models.Model):
     _name = 'product.product'
     _inherit = 'product.product'
 
-    automatic_compute = fields.Boolean(_('Automatic BOM compute'), default=False)
+    automatic_compute_selection = fields.Selection([
+                                                    ('use_net', 'Use Net Weight'),
+                                                    ('use_cad', 'Use CAD Weight'),
+                                                    ('use_normal_bom', 'Use Normal Bom')],
+                                                   'Weight compute mode',
+                                                   default='use_net',
+                                                   )
     weight_additional = fields.Float(_('Additional Weight'), digits_compute=dp.get_precision('Stock Weight'), default=0)
     weight_cad = fields.Float(_('CAD Weight'), readonly=True, digits_compute=dp.get_precision('Stock Weight'), default=0)
-    weight_ebom_computed = fields.Float(_('EBOM Weight Computed'), readonly=True, digits_compute=dp.get_precision('Stock Weight'), default=0)
+    weight_nbom_computed = fields.Float(_('NBOM Weight Computed'), readonly=True, digits_compute=dp.get_precision('Stock Weight'), default=0)
 
-    @api.onchange('automatic_compute')
+    @api.model
+    def create(self, vals):
+        weight = vals.get('weight', 0)
+        weight_cad = vals.get('weight_cad', 0)
+        if weight_cad and not weight:
+            vals['weight'] = weight_cad
+        elif weight and not weight_cad:
+            vals['weight_cad'] = weight
+        return super(PlmComponent, self).create(vals)
+        
+    @api.onchange('automatic_compute_selection')
     def on_change_automatic_compute(self):
-        if self.automatic_compute:
-            prodBrws = self.search([('engineering_code', '=', self.engineering_code), ('engineering_revision', '=', self.engineering_revision)])
-            prodBrws.automatic_compute = True
-            self.computeBomWeight(prodBrws)
-        else:
+        if self.automatic_compute_selection == 'use_cad':
             self.weight = self.weight_cad
+        elif self.automatic_compute_selection == 'use_normal_bom':
+            self.weight = self.weight_additional + self.weight_nbom_computed
 
     @api.onchange('weight_additional')
     def on_change_weight_additional(self):
-        if self.automatic_compute:
-            self.weight = self.weight_ebom_computed + self.weight_additional
+        if self.automatic_compute_selection == 'use_normal_bom':
+            self.weight = self.weight_nbom_computed + self.weight_additional
 
     @api.multi
     def computeBomWeight(self, prodBrws):
@@ -68,7 +82,7 @@ class PlmComponent(models.Model):
             productTmplId = productBrws.product_tmpl_id.id
             if not productTmplId:
                 logging.warning('No Product Template is set for product %s '  % (productBrws.id))
-            bomBrwsList = bomObj.search([('type', '=', 'ebom'), ('product_tmpl_id', '=', productTmplId)])
+            bomBrwsList = bomObj.search([('type', '=', 'normal'), ('product_tmpl_id', '=', productTmplId)])
             isUserAdmin = self.isUserWeightAdmin()
             if not bomBrwsList:
                 self.commonWeightCompute(productBrws, isUserAdmin, productBrws.weight_cad)
@@ -78,48 +92,43 @@ class PlmComponent(models.Model):
                     for bomLineBrws in bomBrws.bom_line_ids:
                         recursionBom(bomLineBrws.product_id)
                         productWeight = bomLineBrws.product_id.weight
-                        bomTotalWeight = bomTotalWeight + productWeight
-                    productBrws.write({'weight_ebom_computed': bomTotalWeight})
-                    productBrws.weight_ebom_computed = bomTotalWeight
+                        lineAmount = productWeight * bomLineBrws.product_qty
+                        bomTotalWeight = bomTotalWeight + lineAmount
+                    productBrws.write({'weight_nbom_computed': bomTotalWeight})
+                    productBrws.weight_nbom_computed = bomTotalWeight
                     if productBrws.state not in ['released', 'obsoleted'] or (productBrws.state in ['released', 'obsoleted'] and isUserAdmin):
                         bomBrws.write({'weight_net': bomTotalWeight})
-                    self.commonWeightCompute(productBrws, isUserAdmin, productBrws.weight_ebom_computed)
+                    self.commonWeightCompute(productBrws, isUserAdmin, productBrws.weight_nbom_computed)
                     break
 
         recursionBom(prodBrws)
 
     def commonWeightCompute(self, productBrws, isUserAdmin, toAdd):
         def commonSet(productB):
-                if productB.automatic_compute:
-                    common = toAdd + productB.weight_additional
-                    productB.write({'weight': common})
-                    productB.weight = common
-                else:
-                    productB.write({'weight': productB.weight_cad})
-                    productB.weight = productB.weight_cad
+            if productB.automatic_compute_selection == 'use_cad':
+                productB.write({'weight': productB.weight_cad})
+                productB.weight = productB.weight_cad
+            elif productB.automatic_compute_selection == 'use_normal_bom':
+                common = toAdd + productB.weight_additional
+                productB.write({'weight': common})
+                productB.weight = common
 
         if productBrws.state in ['released', 'obsoleted']:
             if isUserAdmin:
                 commonSet(productBrws)
         else:
-                commonSet(productBrws)
+            commonSet(productBrws)
 
     def isUserWeightAdmin(self):
-        groupBrws = self.env['res.groups'].search([('name', '=', 'PLM / Weight Admin')])
+        groupBrws = self.env['res.groups'].search([('name', '=', 'PLM / Weight Admin')])    # Same name must be used in data record file
         if groupBrws:
             if self.env.user in groupBrws.users:
                 return True
         return False
 
-PlmComponent()
-
-
-class MrpBomExtension(models.Model):
-    _name = 'mrp.bom'
-    _inherit = 'mrp.bom'
-
     @api.multi
     def computeBomWeightAction(self):
-        pass
+        for prodBrws in self:
+            self.computeBomWeight(prodBrws)
 
-MrpBomExtension()
+PlmComponent()
