@@ -36,10 +36,11 @@ _logger = logging.getLogger(__name__)
 
 class product_templateCuttedParts(models.Model):
     _inherit = 'product.template'
-    row_material = fields.Many2one('product.product', _("Row Material Product"))
-    row_material_xlenght = fields.Float(_("Row Material x lenght"), default=0.0)
-    row_material_ylenght = fields.Float(_("Row Material y_lenght"), default=0.0)
+    row_material = fields.Many2one('product.product', _("Raw Material Product"))
+    row_material_xlenght = fields.Float(_("Raw Material x lenght"), default=0.0)
+    row_material_ylenght = fields.Float(_("Raw Material y_lenght"), default=0.0)
     wastage_percent = fields.Float(_("Percent Wastage"), default=0.0)
+    material_added = fields.Float(_("material Wastage"), default=0.0)
     is_row_material = fields.Boolean(_("Is Row Material"))
 
 product_templateCuttedParts()

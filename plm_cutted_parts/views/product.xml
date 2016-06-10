@@ -19,6 +19,7 @@
 					<field name="row_material_xlenght" readonly="1"></field>
 					<field name="row_material_ylenght" readonly="1"></field>
 					<field name="wastage_percent"></field>
+					<field name="material_added"></field>
 				</group>
 			</field>
 		</field>
