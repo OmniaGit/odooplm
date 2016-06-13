@@ -29,9 +29,7 @@ Created on May 25, 2016
 from openerp        import models
 from openerp        import fields
 from openerp        import api
-from openerp        import SUPERUSER_ID
 from openerp        import _
-from openerp        import osv
 import openerp.addons.decimal_precision as dp
 import logging
 _logger = logging.getLogger(__name__)

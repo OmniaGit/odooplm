@@ -21,10 +21,21 @@
 ##############################################################################
 
 '''
-Created on May 25, 2016
+Created on 13 Jun 2016
 
 @author: Daniel Smerghetto
 '''
 
-import component_extension
-import bom_extension
+from openerp        import models
+from openerp        import api
+
+
+class MrpBomExtension(models.Model):
+    _name = 'mrp.bom'
+    _inherit = 'mrp.bom'
+    
+    @api.multi
+    def forceComputeBomWeight(self):
+        self.RebaseBomWeight(self.id)
+    
+MrpBomExtension()

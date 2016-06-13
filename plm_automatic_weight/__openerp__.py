@@ -33,6 +33,7 @@
     'data': [
              'settings_and_data/datas.xml',
              'views/component_extension.xml',
+             'views/bom_extension.xml',
        ],
     'demo': [
         ],
