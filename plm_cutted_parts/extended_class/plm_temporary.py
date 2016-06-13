@@ -55,7 +55,7 @@ class plm_temporary_cutted(models.Model):
             mrp_bom_line_type_object = self.pool.get('mrp.bom.line')
 
             def cuttedPartAction(bomLine):
-                addedMaterial = (1 + bomLine.product_id.wastage_percent)
+                addedMaterial = (1 + bomLine.product_id.wastage_percent) + bomLine.product_id.material_added
                 commonValues = {'x_leght': bomLine.product_id.row_material_xlenght * addedMaterial,
                                 'y_leght': bomLine.product_id.row_material_ylenght * addedMaterial,
                                 'product_id': bomLine.product_id.row_material.id}
