@@ -47,6 +47,7 @@ class PlmComponent(models.Model):
                                                     ('use_normal_bom', 'Use Normal Bom')],
                                                    'Weight compute mode',
                                                    default='use_net',
+                                                   help="""Set "Use Net Weight" to use only gross weight. Set "Use CAD Weight" to use CAD weight as gross weight. Set "Use Normal Bom" to use NBOM Weight Computed + Additional weight as gross weight."""
                                                    )
     weight_additional = fields.Float(_('Additional Weight'), digits_compute=dp.get_precision('Stock Weight'), default=0)
     weight_cad = fields.Float(_('CAD Weight'), readonly=True, digits_compute=dp.get_precision('Stock Weight'), default=0)
@@ -65,7 +66,7 @@ class PlmComponent(models.Model):
     @api.onchange('automatic_compute_selection')
     def on_change_automatic_compute(self):
         if self.automatic_compute_selection == 'use_cad':
-            self.weight = self.weight_cad
+            self.weight = self.weight_cad + self.weight_additional
         elif self.automatic_compute_selection == 'use_normal_bom':
             self.weight = self.weight_additional + self.weight_nbom_computed
 
@@ -73,6 +74,8 @@ class PlmComponent(models.Model):
     def on_change_weight_additional(self):
         if self.automatic_compute_selection == 'use_normal_bom':
             self.weight = self.weight_nbom_computed + self.weight_additional
+        elif self.automatic_compute_selection == 'use_cad':
+            self.weight = self.weight_cad + self.weight_additional
 
     @api.multi
     def computeBomWeight(self, prodBrws):
@@ -106,8 +109,9 @@ class PlmComponent(models.Model):
     def commonWeightCompute(self, productBrws, isUserAdmin, toAdd):
         def commonSet(productB):
             if productB.automatic_compute_selection == 'use_cad':
-                productB.write({'weight': productB.weight_cad})
-                productB.weight = productB.weight_cad
+                commonWeight = productB.weight_cad + productB.weight_additional
+                productB.write({'weight': commonWeight})
+                productB.weight = commonWeight
             elif productB.automatic_compute_selection == 'use_normal_bom':
                 common = toAdd + productB.weight_additional
                 productB.write({'weight': common})
