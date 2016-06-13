@@ -36,6 +36,9 @@ class MrpBomExtension(models.Model):
     
     @api.multi
     def forceComputeBomWeight(self):
+        '''
+            Call plm bom weight calculator function
+        '''
         self.RebaseBomWeight(self.id)
     
 MrpBomExtension()
