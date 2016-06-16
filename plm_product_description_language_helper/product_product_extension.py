@@ -30,6 +30,7 @@ from openerp import models
 from openerp import api
 from openerp import fields
 from openerp import _
+import logging
 
 
 class ProductProductExtension(models.Model):
@@ -97,66 +98,68 @@ class ProductProductExtension(models.Model):
             - Set up translations every time description changes
         '''
         ir_translation_obj = self.env['ir.translation']
-        templateId = self.product_tmpl_id.id
-        if 'std_description' in vals:
-            std_description_id = vals.get('std_description', False)
-            self.commonTranslationSetUp(templateId, std_description_id)
-        if 'description' in vals:
-            description = vals.get('description', '')
-            if not description:
+        for prodBrws in self:
+            templateId = prodBrws.product_tmpl_id.id
+            if 'std_description' in vals:
+                std_description_id = vals.get('std_description', False)
+                self.commonTranslationSetUp(templateId, std_description_id)
+            if 'description' in vals:
+                description = vals.get('description', '')
+                if not description:
+                    translationObjs = ir_translation_obj.search([
+                                               ('name', '=', 'product.template,description'),
+                                               ('res_id', '=', templateId),
+                                               ])
+                    translationObjs.write({'value': ''})
+                    vals['description'] = ' '
+            if 'name' in vals.keys():
                 translationObjs = ir_translation_obj.search([
-                                           ('name', '=', 'product.template,description'),
+                                           ('name', '=', 'product.template,name'),
                                            ('res_id', '=', templateId),
                                            ])
-                translationObjs.write({'value': ''})
-                vals['description'] = ' '
-        if 'name' in vals.keys():
-            translationObjs = ir_translation_obj.search([
-                                       ('name', '=', 'product.template,name'),
-                                       ('res_id', '=', templateId),
-                                       ])
-            translationObjs.write({'value': vals['name']})
-        self.commonSpecialDescriptionCompute(vals, templateId, self.std_description)
+                translationObjs.write({'value': vals['name']})
+            self.commonSpecialDescriptionCompute(vals, templateId, prodBrws.std_description)
         return super(ProductProductExtension, self).write(vals)
      
     def commonSpecialDescriptionCompute(self, vals, templateId, std_description_obj):
-        ir_translation_obj = self.env['ir.translation']
-        vals_std_value1 = vals.get('std_value1', False)
-        vals_std_value2 = vals.get('std_value2', False)
-        vals_std_value3 = vals.get('std_value3', False)
-        std_value1 = self.std_value1
-        std_value2 = self.std_value2
-        std_value3 = self.std_value3
-        if vals_std_value1 != False:
-            std_value1 = vals_std_value1
-        if vals_std_value2 != False:
-            std_value2 = vals_std_value2
-        if vals_std_value3 != False:
-            std_value3 = vals_std_value3
-        if std_description_obj and (vals_std_value1 != False or vals_std_value2 != False or vals_std_value3 != False):
-            userLang = self.env.context.get('lang', 'en_US')
-            for langBrwsObj in self.env['res.lang'].search([]):
-                thisObject = std_description_obj.with_context({'lang': langBrwsObj.code})
-                initVal = thisObject.name
-                if not initVal:
-                    initVal = thisObject.description
-                description = self.computeDescription(thisObject, initVal, thisObject.umc1, thisObject.umc2, thisObject.umc3, std_value1, std_value2, std_value3)
-                translationObjs = ir_translation_obj.search([
-                                       ('name', '=', 'product.template,description'),
-                                       ('res_id', '=', templateId),
-                                       ('lang', '=', langBrwsObj.code),
-                                       ])
-                if translationObjs:
-                    translationObjs.write({'value': description})
-                else:
-                    ir_translation_obj.create({
-                                              'src' : description,
-                                              'res_id': templateId,
-                                              'name': 'product.template,description',
-                                              'type': 'model',
-                                              'lang': userLang,
-                                              'value': description,
-                                               })
+        for prodWriteObj in self:
+            ir_translation_obj = self.env['ir.translation']
+            vals_std_value1 = vals.get('std_value1', False)
+            vals_std_value2 = vals.get('std_value2', False)
+            vals_std_value3 = vals.get('std_value3', False)
+            std_value1 = prodWriteObj.std_value1
+            std_value2 = prodWriteObj.std_value2
+            std_value3 = prodWriteObj.std_value3
+            if vals_std_value1 != False:
+                std_value1 = vals_std_value1
+            if vals_std_value2 != False:
+                std_value2 = vals_std_value2
+            if vals_std_value3 != False:
+                std_value3 = vals_std_value3
+            if std_description_obj and (vals_std_value1 != False or vals_std_value2 != False or vals_std_value3 != False):
+                userLang = prodWriteObj.env.context.get('lang', 'en_US')
+                for langBrwsObj in self.env['res.lang'].search([]):
+                    thisObject = std_description_obj.with_context({'lang': langBrwsObj.code})
+                    initVal = thisObject.name
+                    if not initVal:
+                        initVal = thisObject.description
+                    description = prodWriteObj.computeDescription(thisObject, initVal, thisObject.umc1, thisObject.umc2, thisObject.umc3, std_value1, std_value2, std_value3)
+                    translationObjs = ir_translation_obj.search([
+                                           ('name', '=', 'product.template,description'),
+                                           ('res_id', '=', templateId),
+                                           ('lang', '=', langBrwsObj.code),
+                                           ])
+                    if translationObjs:
+                        translationObjs.write({'value': description})
+                    else:
+                        ir_translation_obj.create({
+                                                  'src' : description,
+                                                  'res_id': templateId,
+                                                  'name': 'product.template,description',
+                                                  'type': 'model',
+                                                  'lang': userLang,
+                                                  'value': description,
+                                                   })
      
     def commonTranslationSetUp(self, templateId, std_description_id):
         '''
