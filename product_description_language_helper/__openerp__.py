@@ -17,7 +17,7 @@
 #
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
+#http://www.spamhaus.org/query/bl?ip=93.66.161.145
 ##############################################################################
 {
     'name': 'PLM Product Description Language Helper',
@@ -32,6 +32,7 @@
     'description': """ """,
     'data': [
              'views/translation.xml',
+             'views/plm_description_extension.xml',
        ],
     'demo': [
         ],

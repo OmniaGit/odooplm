@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data> 
+
+    <record model="ir.ui.view" id="view_plm_description_extension">
+        <field name="name">plm.description.view.advanced.translation</field>
+        <field name="model">plm.description</field>
+        <field name="inherit_id" ref="plm.view_plm_description"/>
+        <field name="arch" type="xml">
+          	<xpath expr="//field[@name='description_en']" position="replace"></xpath>
+          	<xpath expr="//field[@name='sequence']" position="replace">
+          		<field name="sequence" invisible="1"/>
+          	</xpath>
+        </field>
+    </record> 
+    
+</data>
+</openerp>
