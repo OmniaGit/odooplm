@@ -19,29 +19,26 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-{
-    'name': 'PLM Cutted Parts',
-    'version': '1.1',
-    'author': 'OmniaSolutions',
-    'website': 'http://www.omniasolutions.eu',
-    'category': 'Product Lifecycle Management',
-    'sequence': 15,
-    'summary': '',
-    'images': [],
-    'depends': ['plm'],
-    'description': """
-Manage bom explosion for cutted parts
-==============================================
-    """,
-    'data': ['views/product.xml',
-             'views/mrp_bom_lines.xml',
-             'report/mrp_bom.xml',
-             ],
-    'demo': [],
-    'test': [],
-    'installable': True,
-    'application': False,
-    'auto_install': False,
-}
 
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+'''
+Created on 13 Jun 2016
+
+@author: Daniel Smerghetto
+'''
+
+from openerp        import models
+from openerp        import api
+
+
+class MrpBomExtension(models.Model):
+    _name = 'mrp.bom'
+    _inherit = 'mrp.bom'
+    
+    @api.multi
+    def forceComputeBomWeight(self):
+        '''
+            Call plm bom weight calculator function
+        '''
+        self.RebaseBomWeight(self.id)
+    
+MrpBomExtension()

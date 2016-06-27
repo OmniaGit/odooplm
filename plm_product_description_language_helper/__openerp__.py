@@ -17,28 +17,27 @@
 #
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
+#http://www.spamhaus.org/query/bl?ip=93.66.161.145
 ##############################################################################
 {
-    'name': 'PLM Cutted Parts',
+    'name': 'PLM Product Description Language Helper',
     'version': '1.1',
     'author': 'OmniaSolutions',
     'website': 'http://www.omniasolutions.eu',
     'category': 'Product Lifecycle Management',
     'sequence': 15,
-    'summary': '',
+    'summary': 'PLM Product Description Language Helper',
     'images': [],
     'depends': ['plm'],
-    'description': """
-Manage bom explosion for cutted parts
-==============================================
-    """,
-    'data': ['views/product.xml',
-             'views/mrp_bom_lines.xml',
-             'report/mrp_bom.xml',
-             ],
-    'demo': [],
-    'test': [],
+    'description': """ """,
+    'data': [
+             'views/translation.xml',
+             'views/plm_description_extension.xml',
+       ],
+    'demo': [
+        ],
+    'test': [
+        ],
     'installable': True,
     'application': False,
     'auto_install': False,

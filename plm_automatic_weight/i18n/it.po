@@ -1,0 +1,108 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+#	* plm_automatic_weight
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 9.0c\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-06-13 12:31+0000\n"
+"PO-Revision-Date: 2016-06-13 12:31+0000\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: plm_automatic_weight
+#: code:addons/plm_automatic_weight/component_extension.py:50
+#: model:ir.model.fields,field_description:plm_automatic_weight.field_product_product_weight_additional
+#, python-format
+msgid "Additional Weight"
+msgstr "Peso Addizionale"
+
+#. module: plm_automatic_weight
+#: model:ir.model,name:plm_automatic_weight.model_mrp_bom
+msgid "Bill of Material"
+msgstr "Distinta base"
+
+#. module: plm_automatic_weight
+#: model:ir.model.fields,field_description:plm_automatic_weight.field_mrp_bom_name
+msgid "Bom Name"
+msgstr "Nome Bom"
+
+#. module: plm_automatic_weight
+#: code:addons/plm_automatic_weight/component_extension.py:51
+#: model:ir.model.fields,field_description:plm_automatic_weight.field_product_product_weight_cad
+#, python-format
+msgid "CAD Weight"
+msgstr "Peso CAD"
+
+#. module: plm_automatic_weight
+#: model:ir.actions.server,name:plm_automatic_weight.action_force_bom_weight_calculation
+msgid "Calculate Bom Weight"
+msgstr "Calcola Peso BOM"
+
+#. module: plm_automatic_weight
+#: model:ir.actions.server,name:plm_automatic_weight.action_bom_weight_computed
+msgid "Compute Bom Weight"
+msgstr "Computa Peso BOM"
+
+#. module: plm_automatic_weight
+#: code:addons/plm_automatic_weight/component_extension.py:52
+#: model:ir.model.fields,field_description:plm_automatic_weight.field_product_product_weight_nbom_computed
+#, python-format
+msgid "NBOM Weight Computed"
+msgstr "Peso NBOM Calcolato"
+
+#. module: plm_automatic_weight
+#: model:res.groups,name:plm_automatic_weight.group_plm_weight_admin
+msgid "PLM / Weight Admin"
+msgstr "PLM / Amministratore Peso"
+
+#. module: plm_automatic_weight
+#: model:ir.model,name:plm_automatic_weight.model_product_product
+msgid "Product"
+msgstr "Prodotto"
+
+#. module: plm_automatic_weight
+#: code:addons/plm_automatic_weight/component_extension.py:48
+#: model:ir.model.fields,help:plm_automatic_weight.field_product_product_automatic_compute_selection
+#, python-format
+msgid "Set \"Use Net Weight\" to use only gross weight. Set \"Use CAD Weight\" to use CAD weight + Additional Weight as gross weight. Set \"Use Normal Bom\" to use NBOM Weight Computed + Additional weight as gross weight."
+msgstr "Imposta \"Usa Peso Netto\" per usare solo il peso netto. Imposta \"Usa Peso CAD\" per impostare il campo peso come somma dei campi \"Peso CAD\" e \"Peso Addizionale\". Imposta \"Usa Bom Normale\" per usare Peso NBOM Computato + Peso Addizionale come peso complessivo."
+
+#. module: plm_automatic_weight
+#: code:addons/plm_automatic_weight/component_extension.py:44
+#: selection:product.product,automatic_compute_selection:0
+#, python-format
+msgid "Use CAD Weight"
+msgstr "Usa Peso CAD"
+
+#. module: plm_automatic_weight
+#: code:addons/plm_automatic_weight/component_extension.py:43
+#: selection:product.product,automatic_compute_selection:0
+#, python-format
+msgid "Use Net Weight"
+msgstr "Usa Peso Netto"
+
+#. module: plm_automatic_weight
+#: code:addons/plm_automatic_weight/component_extension.py:45
+#: selection:product.product,automatic_compute_selection:0
+#, python-format
+msgid "Use Normal Bom"
+msgstr "Usa BOM Normale"
+
+#. module: plm_automatic_weight
+#: model:ir.ui.view,arch_db:plm_automatic_weight.plm_component_base_form_extended_weight
+msgid "Weight"
+msgstr "Peso"
+
+#. module: plm_automatic_weight
+#: code:addons/plm_automatic_weight/component_extension.py:46
+#: model:ir.model.fields,field_description:plm_automatic_weight.field_product_product_automatic_compute_selection
+#, python-format
+msgid "Weight compute mode"
+msgstr "Modalità Computazione Peso"
+

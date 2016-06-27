@@ -12,11 +12,20 @@
                     </header>
                     <group string="Settings">
                         <group>
+		                    <field name="module_plm_automatic_weight" />
+		                </group>
+		                <group>
+		                    <field name="module_plm_cutted_parts" />
+		                </group>
+		                <group>
 		                    <field name="module_plm_pack_and_go" />
 		                </group>
 		                <group>
+		                    <field name="module_product_description_language_helper" />
+		                </group>
+                        <group>
 		                    <field name="module_plm_report_language_helper" />
-                        </group>
+		                </group>
                     </group>
                 </form>
             </field>

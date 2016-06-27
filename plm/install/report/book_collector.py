@@ -95,8 +95,11 @@ class BookCollector(object):
             else:
                 numberPagerBuffer=self.getNextPageNumber(mainPage.getPage(i).mediaBox, docState)
                 numberPageReader=PdfFileReader(numberPagerBuffer)  
-                mainPage.getPage(i).mergePage(numberPageReader.getPage(0))
-                self.collector.addPage(mainPage.getPage(i))
+                pdfPage = mainPage.getPage(i)
+                toMerge = numberPageReader.getPage(0)
+                pdfPage.mergePage(toMerge)
+                pageToAddInCollector = mainPage.getPage(i)
+                self.collector.addPage(pageToAddInCollector)
     
     def printToFile(self,fileName):  
         outputStream = file(fileName, "wb")

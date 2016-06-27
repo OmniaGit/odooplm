@@ -56,8 +56,8 @@ class plm_temporary_cutted(models.Model):
 
             def cuttedPartAction(bomLine):
                 addedMaterial = (1 + bomLine.product_id.wastage_percent) + bomLine.product_id.material_added
-                commonValues = {'x_leght': bomLine.product_id.row_material_xlenght * addedMaterial,
-                                'y_leght': bomLine.product_id.row_material_ylenght * addedMaterial,
+                commonValues = {'x_leght': (bomLine.product_id.row_material_xlenght * addedMaterial) / bomLine.product_id.row_material.row_material_xlenght,
+                                'y_leght': (bomLine.product_id.row_material_ylenght * addedMaterial) / bomLine.product_id.row_material.row_material_ylenght,
                                 'product_id': bomLine.product_id.row_material.id}
                 if explosion_action == 'replace':
                     mrp_bom_line_type_object.write(cr, uid, [bomLine.id], commonValues)

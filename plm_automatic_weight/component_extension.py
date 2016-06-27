@@ -29,9 +29,7 @@ Created on May 25, 2016
 from openerp        import models
 from openerp        import fields
 from openerp        import api
-from openerp        import SUPERUSER_ID
 from openerp        import _
-from openerp        import osv
 import openerp.addons.decimal_precision as dp
 import logging
 _logger = logging.getLogger(__name__)
@@ -42,11 +40,12 @@ class PlmComponent(models.Model):
     _inherit = 'product.product'
 
     automatic_compute_selection = fields.Selection([
-                                                    ('use_net', 'Use Net Weight'),
-                                                    ('use_cad', 'Use CAD Weight'),
-                                                    ('use_normal_bom', 'Use Normal Bom')],
-                                                   'Weight compute mode',
+                                                    ('use_net', _('Use Net Weight')),
+                                                    ('use_cad', _('Use CAD Weight')),
+                                                    ('use_normal_bom', _('Use Normal Bom'))],
+                                                   _('Weight compute mode'),
                                                    default='use_net',
+                                                   help=_("""Set "Use Net Weight" to use only gross weight. Set "Use CAD Weight" to use CAD weight + Additional Weight as gross weight. Set "Use Normal Bom" to use NBOM Weight Computed + Additional weight as gross weight.""")
                                                    )
     weight_additional = fields.Float(_('Additional Weight'), digits_compute=dp.get_precision('Stock Weight'), default=0)
     weight_cad = fields.Float(_('CAD Weight'), readonly=True, digits_compute=dp.get_precision('Stock Weight'), default=0)
@@ -54,6 +53,9 @@ class PlmComponent(models.Model):
 
     @api.model
     def create(self, vals):
+        '''
+            Creating a product weight is set equal to weight_net and vice-versa
+        '''
         weight = vals.get('weight', 0)
         weight_cad = vals.get('weight_cad', 0)
         if weight_cad and not weight:
@@ -64,18 +66,30 @@ class PlmComponent(models.Model):
         
     @api.onchange('automatic_compute_selection')
     def on_change_automatic_compute(self):
+        '''
+            Compute weight due to selection choice
+        '''
         if self.automatic_compute_selection == 'use_cad':
-            self.weight = self.weight_cad
+            self.weight = self.weight_cad + self.weight_additional
         elif self.automatic_compute_selection == 'use_normal_bom':
             self.weight = self.weight_additional + self.weight_nbom_computed
 
     @api.onchange('weight_additional')
     def on_change_weight_additional(self):
+        '''
+            Compute weight due to additional weight change
+        '''
         if self.automatic_compute_selection == 'use_normal_bom':
             self.weight = self.weight_nbom_computed + self.weight_additional
+        elif self.automatic_compute_selection == 'use_cad':
+            self.weight = self.weight_cad + self.weight_additional
 
     @api.multi
     def computeBomWeight(self, prodBrws):
+        '''
+            - Compute first founded Normal Bom weight
+            - Compute and set weight for all products and boms during computation
+        '''
         bomObj = self.env['mrp.bom']
 
         def recursionBom(productBrws):
@@ -104,10 +118,14 @@ class PlmComponent(models.Model):
         recursionBom(prodBrws)
 
     def commonWeightCompute(self, productBrws, isUserAdmin, toAdd):
+        '''
+            Common compute and set weight in single product
+        '''
         def commonSet(productB):
             if productB.automatic_compute_selection == 'use_cad':
-                productB.write({'weight': productB.weight_cad})
-                productB.weight = productB.weight_cad
+                commonWeight = productB.weight_cad + productB.weight_additional
+                productB.write({'weight': commonWeight})
+                productB.weight = commonWeight
             elif productB.automatic_compute_selection == 'use_normal_bom':
                 common = toAdd + productB.weight_additional
                 productB.write({'weight': common})
@@ -120,6 +138,9 @@ class PlmComponent(models.Model):
             commonSet(productBrws)
 
     def isUserWeightAdmin(self):
+        '''
+            Verify if logged user is a weight admin
+        '''
         groupBrws = self.env['res.groups'].search([('name', '=', 'PLM / Weight Admin')])    # Same name must be used in data record file
         if groupBrws:
             if self.env.user in groupBrws.users:
@@ -128,6 +149,9 @@ class PlmComponent(models.Model):
 
     @api.multi
     def computeBomWeightAction(self):
+        '''
+            Function called form xml action to compute and set weight for all selected products and boms
+        '''
         for prodBrws in self:
             self.computeBomWeight(prodBrws)
 

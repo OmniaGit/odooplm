@@ -27,3 +27,4 @@ Created on May 25, 2016
 '''
 
 import component_extension
+import bom_extension

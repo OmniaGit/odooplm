@@ -168,7 +168,7 @@ class plm_component(models.Model):
         return retvalue
 
 ##  Customized Automations
-    def on_change_stddesc(self, cr, uid, _id, std_description=False):
+    def on_change_stddesc(self, cr, uid, _id, std_description=False, context={}):
         values = {
                   'description': False,
                   'std_umc1': False,
@@ -179,7 +179,7 @@ class plm_component(models.Model):
                   'std_value3': False}
         if std_description:
             thisDescription = self.pool.get('plm.description')
-            thisObject = thisDescription.browse(cr, uid, std_description)
+            thisObject = thisDescription.browse(cr, uid, std_description, context)
             if thisObject.description:
                 values['description'] = thisObject.description
                 if thisObject.umc1:
@@ -193,34 +193,39 @@ class plm_component(models.Model):
         return {'value': values}
 
     def on_change_stdvalue(self, cr, uid, _id, std_description=False, std_umc1=False, std_value1=False,\
-                           std_umc2=False, std_value2=False, std_umc3=False, std_value3=False):
+                           std_umc2=False, std_value2=False, std_umc3=False, std_value3=False, context={}):
         if std_description:
-            description1 = False
-            description2 = False
-            description3 = False
             thisDescription = self.pool.get('plm.description')
-            thisObject = thisDescription.browse(cr, uid, std_description)
+            thisObject = thisDescription.browse(cr, uid, std_description, context)
             if thisObject.description:
-                description = thisObject.description
-                if thisObject.fmtend:
-                    if std_umc1 and std_value1:
-                        description1 = self._packvalues(thisObject.fmt1, std_umc1, std_value1)
-                    if std_umc2 and std_value2:
-                        description2 = self._packvalues(thisObject.fmt2, std_umc2, std_value2)
-                    if std_umc3 and std_value3:
-                        description3 = self._packvalues(thisObject.fmt3, std_umc3, std_value3)
-                    description = description + " " + self._packfinalvalues(thisObject.fmtend, description1, description2, description3)
-                else:
-                    if std_umc1 and std_value1:
-                        description = description + " " + self._packvalues(thisObject.fmt1, std_umc1, std_value1)
-                    if std_umc2 and std_value2:
-                        description = description + " " + self._packvalues(thisObject.fmt2, std_umc2, std_value2)
-                    if std_umc3 and std_value3:
-                        description = description + " " + self._packvalues(thisObject.fmt3, std_umc3, std_value3)
-                if thisObject.unitab:
-                    description = description + " " + thisObject.unitab
+                description = self.computeDescription(thisObject, thisObject.description, std_umc1, std_umc2, std_umc3, std_value1, std_value2, std_value3)
                 return {'value': {'description': description}}
         return {}
+    
+    def computeDescription(self, thisObject, initialVal, std_umc1, std_umc2, std_umc3, std_value1, std_value2, std_value3):
+        description1 = False
+        description2 = False
+        description3 = False
+        description = initialVal
+        if thisObject.fmtend:
+            if std_umc1 and std_value1:
+                description1 = self._packvalues(thisObject.fmt1, std_umc1, std_value1)
+            if std_umc2 and std_value2:
+                description2 = self._packvalues(thisObject.fmt2, std_umc2, std_value2)
+            if std_umc3 and std_value3:
+                description3 = self._packvalues(thisObject.fmt3, std_umc3, std_value3)
+            description = description + " " + self._packfinalvalues(thisObject.fmtend, description1, description2, description3)
+        else:
+            if std_umc1 and std_value1:
+                description = description + " " + self._packvalues(thisObject.fmt1, std_umc1, std_value1)
+            if std_umc2 and std_value2:
+                description = description + " " + self._packvalues(thisObject.fmt2, std_umc2, std_value2)
+            if std_umc3 and std_value3:
+                description = description + " " + self._packvalues(thisObject.fmt3, std_umc3, std_value3)
+        if thisObject.unitab:
+            description = description + " " + thisObject.unitab
+        return description
+        
 ##  Customized Automations
 plm_component()
 
