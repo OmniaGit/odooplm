@@ -221,7 +221,7 @@ class plm_relation(models.Model):
                     "the normal bom will generate one production order per bom level."))
     weight_net      =   fields.Float('Weight', digits_compute=dp.get_precision(_('Stock Weight')), help=_("The BoM net weight in Kg."))
     ebom_source_id  = fields.Integer('Source Ebom ID')
-    name = fields.Text("Bom Name")
+    
 
     _defaults = {
         'product_uom': 1,
@@ -499,7 +499,7 @@ class plm_relation(models.Model):
                 res['product_tmpl_id'] = objPart.product_tmpl_id.id
                 res['product_id'] = partID
                 res['source_id'] = sourceID
-                res['name'] = name
+                #res['name'] = name
                 if args is not None:
                     for arg in args:
                         res[str(arg)] = args[str(arg)]
@@ -524,7 +524,7 @@ class plm_relation(models.Model):
                     res['type'] = 'ebom'
                 res['product_id'] = partID
                 res['source_id'] = sourceID
-                res['name'] = name
+                #res['name'] = name
                 if args is not None:
                     for arg in args:
                         res[str(arg)] = args[str(arg)]

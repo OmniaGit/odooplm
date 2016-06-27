@@ -86,12 +86,12 @@ class plm_component(models.Model):
             Return a flat list of each child, listed once, in a Bom ( level = 0 one level only, level = 1 all levels)
         """
         result = []
-        bufferdata=[]
-        if level==0 and currlevel>1:
+        bufferdata = []
+        if level == 0 and currlevel > 1:
             return bufferdata
         for bomid in component.product_tmpl_id.bom_ids:
             for bomline in bomid.bom_line_ids:
-                children=self._getChildrenBom(cr, uid, bomline.product_id, level, currlevel+1, context=context)
+                children = self._getChildrenBom(cr, uid, bomline.product_id, level, currlevel + 1, context=context)
                 bufferdata.extend(children)
                 bufferdata.append(bomline.product_id.id)
         result.extend(bufferdata)
@@ -438,7 +438,7 @@ class plm_component(models.Model):
             children = self.browse(cr, uid, self._getChildrenBom(cr, uid, oic, 1))
             for child in children:
                 if (child.state not in excludeStatuses) and (child.state not in includeStatuses):
-                    errors.append(_("Product code: %r revision %r ") & (child.engineering_code, child.engineering_revision))
+                    errors.append(_("Product code: %r revision %r status %r") % (child.engineering_code, child.engineering_revision, child.state))
                     continue
                 if child.state in includeStatuses:
                     if child.id not in tobeReleasedIDs:
@@ -447,7 +447,7 @@ class plm_component(models.Model):
         if errors:
             msg = _("Unable to perform workFlow action due")
             for subMsg in errors:
-                msg = "\n" + subMsg
+                msg = msg + "\n" + subMsg
         return (msg, list(set(tobeReleasedIDs)))
 
     def action_create_normalBom_WF(self, cr, uid, ids, context=None):
@@ -465,45 +465,49 @@ class plm_component(models.Model):
             move workflow on documents having the same state of component 
         """
         docIDs = []
-        try:
-            documentType=self.pool.get('plm.document')
-            for oldObject in self.browse(cr, uid, ids, context=context):
-                if (action_name!='transmit') and (action_name!='reject') and (action_name!='release'):
-                    check_state=oldObject.state
-                else:
-                    check_state='confirmed'
-                for document in oldObject.linkeddocuments:
-                    if document.state == check_state:
-                        if document.is_checkout:
-                            logging.warning("Unable to perform workflow operation for document %r" % document.id)
-                            continue
-                        if document.id not in docIDs:
-                            docIDs.append(document.id)
-            if len(docIDs)>0:
-                if action_name=='confirm':
-                    documentType.signal_workflow(cr, uid, docIDs, action_name)
-                elif action_name=='transmit':
-                    documentType.signal_workflow(cr, uid, docIDs, 'confirm')
-                elif action_name=='draft':
-                    documentType.signal_workflow(cr, uid, docIDs, 'correct')
-                elif action_name=='correct':
-                    documentType.signal_workflow(cr, uid, docIDs, action_name)
-                elif action_name=='reject':
-                    documentType.signal_workflow(cr, uid, docIDs, 'correct')
-                elif action_name=='release':
-                    documentType.signal_workflow(cr, uid, docIDs, action_name)
-                elif action_name=='undermodify':
-                    documentType.action_cancel(cr,uid,docIDs)
-                elif action_name=='suspend':
-                    documentType.action_suspend(cr,uid,docIDs)
-                elif action_name=='reactivate':
-                    documentType.signal_workflow(cr, uid, docIDs, 'release')
-                elif action_name=='obsolete':
-                    documentType.signal_workflow(cr, uid, docIDs, action_name)
-        except Exception, ex:
-            logging.error(ex)
+        docInError = []
+        documentType=self.pool.get('plm.document')
+        for oldObject in self.browse(cr, uid, ids, context=context):
+            if (action_name!='transmit') and (action_name!='reject') and (action_name!='release'):
+                check_state=oldObject.state
+            else:
+                check_state='confirmed'
+            for document in oldObject.linkeddocuments:
+                if document.state == check_state:
+                    if document.is_checkout:
+                        docInError.append(_("Document %r : %r is checked out by user %r") % (document.name ,document.revisionid ,document.checkout_user))
+                        continue
+                    if document.id not in docIDs:
+                        docIDs.append(document.id)
+        if docInError:
+            msg = "Error on workflow operation"
+            for e in docInError:
+                msg = msg + "\n" + e
+            raise UserError(msg)
+
+        if len(docIDs)>0:
+            if action_name=='confirm':
+                documentType.signal_workflow(cr, uid, docIDs, action_name)
+            elif action_name=='transmit':
+                documentType.signal_workflow(cr, uid, docIDs, 'confirm')
+            elif action_name=='draft':
+                documentType.signal_workflow(cr, uid, docIDs, 'correct')
+            elif action_name=='correct':
+                documentType.signal_workflow(cr, uid, docIDs, action_name)
+            elif action_name=='reject':
+                documentType.signal_workflow(cr, uid, docIDs, 'correct')
+            elif action_name=='release':
+                documentType.signal_workflow(cr, uid, docIDs, action_name)
+            elif action_name=='undermodify':
+                documentType.action_cancel(cr,uid,docIDs)
+            elif action_name=='suspend':
+                documentType.action_suspend(cr,uid,docIDs)
+            elif action_name=='reactivate':
+                documentType.signal_workflow(cr, uid, docIDs, 'release')
+            elif action_name=='obsolete':
+                documentType.signal_workflow(cr, uid, docIDs, action_name)
         return docIDs
-            
+    
     def _iswritable(self, cr, user, oid):
         checkState=('draft')
         if not oid.engineering_writable:
@@ -623,15 +627,16 @@ class plm_component(models.Model):
         full_ids=[]
         userErrors, allIDs = self._get_recursive_parts(cr, uid, ids, excludeStatuses, includeStatuses)
         if userErrors:
-            UserError(userErrors)
-        self._action_ondocuments(cr,uid,allIDs,docaction)
-        for currId in self.browse(cr,uid,allIDs,context=context):
+            raise UserError(userErrors)
+        self._action_ondocuments(cr, uid, allIDs, docaction)
+        
+        for currId in self.browse(cr, uid, allIDs, context=context):
             if not(currId.id in ids):
                 tmpl_ids.append(currId.product_tmpl_id.id)
             full_ids.append(currId.product_tmpl_id.id)
         if action:
             self.signal_workflow(cr, uid, tmpl_ids, action)
-        objId=self.pool.get('product.template').write(cr, uid, full_ids, defaults, context=context)
+        objId = self.pool.get('product.template').write(cr, uid, full_ids, defaults, context=context)
         if (objId):
             self.wf_message_post(cr, uid, allIDs, body=_('Status moved to: %s.' % (USEDIC_STATES[defaults['state']])))
         return objId
