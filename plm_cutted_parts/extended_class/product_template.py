@@ -45,34 +45,35 @@ class product_templateCuttedParts(models.Model):
 
 product_templateCuttedParts()
 
+
 class product_productCuttedParts(models.Model):
     _inherit = 'product.product'
-    
+
     @api.onchange('is_row_material')
     def onchange_is_row_material(self):
         if self.is_row_material:
             self.row_material = False
-            
+
     @api.onchange('row_material_xlenght')
     def onchange_row_material_xlenght(self):
-        if not self.row_material_xlenght or not int(self.row_material_xlenght):
+        if not self.row_material_xlenght or self.row_material_xlenght == 0.0:
             raise UserError('"Raw Material x lenght" cannot have zero value.')
-            
+
     @api.onchange('row_material_ylenght')
     def onchange_row_material_ylenght(self):
-        if not self.row_material_ylenght or not int(self.row_material_xlenght):
+        if not self.row_material_ylenght or self.row_material_xlenght == 0.0:
             raise UserError('"Raw Material y lenght" cannot have zero value.')
-        
+
     def verifyRowMatLenght(self, vals):
         if 'row_material_xlenght' in vals:
             row_material_xlenght = vals.get('row_material_xlenght')
-            if not row_material_xlenght or not int(row_material_xlenght):
+            if not row_material_xlenght or row_material_xlenght == 0.0:
                 raise UserError('"Raw Material x lenght" cannot have zero value.')
         if 'row_material_ylenght' in vals:
             row_material_ylenght = vals.get('row_material_ylenght')
-            if not row_material_ylenght or not int(row_material_xlenght):
+            if not row_material_ylenght or row_material_xlenght == 0.0:
                 raise UserError('"Raw Material y lenght" cannot have zero value.')
-        
+
     @api.multi
     def write(self, vals):
         self.verifyRowMatLenght(vals)
