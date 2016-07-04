@@ -82,7 +82,7 @@ class plm_document(models.Model):
     def _getlastrev(self, cr, uid, ids, context=None):
         result = []
         for objDoc in self.browse(cr, uid, ids, context=context):
-            docIds = self.search(cr, uid, [('name', '=', objDoc.name), ('type', '=', 'binary')], order='revisionid', context=context)
+            docIds = self.search(cr, uid, [('name', '=', objDoc.name)], order='revisionid', context=context)
             docIds.sort()   # Ids are not surely ordered, but revision are always in creation order.
             if docIds:
                 result.append(docIds[len(docIds)-1])
@@ -257,7 +257,8 @@ class plm_document(models.Model):
                     if forceFlag:
                         isNewer = True
                     else:
-                        timefile = time.mktime(datetime.strptime(str(datefiles[listfiles.index(objDoc.datas_fname)]), '%Y-%m-%d %H:%M:%S').timetuple())
+                        listFileIndex = listfiles.index(objDoc.datas_fname)
+                        timefile = time.mktime(datetime.strptime(str(datefiles[listFileIndex]), '%Y-%m-%d %H:%M:%S').timetuple())
                         isNewer = (timeSaved - timefile) > 5
                     collectable = isNewer and not(isCheckedOutToMe)
                 else:
@@ -805,8 +806,8 @@ class plm_document(models.Model):
         oid, listedFiles, selection = request
         outIds.append(oid)
         if selection is False:
-            selection = 1
-        if selection < 0:
+            selection = 1   # Case of selected
+        if selection < 0:   # Case of force refresh PWS
             forceFlag = True
             selection = selection * (-1)
         # Get relations due to layout connected
@@ -814,7 +815,7 @@ class plm_document(models.Model):
         # Get Hierarchical tree relations due to children
         modArray = self._explodedocs(cr, uid, oid, ['HiTree'], listed_models)
         outIds = list(set(outIds + modArray + docArray))
-        if selection == 2:
+        if selection == 2:  # Case of latest
             outIds = self._getlastrev(cr, uid, outIds, context)
         return self._data_check_files(cr, uid, outIds, listedFiles, forceFlag, context)
 
