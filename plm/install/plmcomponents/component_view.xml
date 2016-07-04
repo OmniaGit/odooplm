@@ -113,7 +113,7 @@
                  <group colspan="6" col="2">
                       <field name="name" on_change="on_change_name(name,engineering_code)" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
                  </group>
-           		<group colspan="6" col="6" sname="PNArea">
+           		<group colspan="6" col="6" name="PNArea">
              		<group colspan="6" col="6">
               			<field name="engineering_code" 		colspan="4" 			attrs="{'readonly':[('state','!=','draft')]}" 				select="1"/>
                			<field name="engineering_revision" 	colspan="2"				readonly="True" 											/>
@@ -143,7 +143,7 @@
 					    </group>
 	    			</page>
 	    			<page string="TitleBlock Informations"> 
-	    				<group>
+	    				<group name="TBlock">
 	               			<field name="engineering_material" 	attrs="{'readonly':[('state','in',['released','obsoleted'])]}" colspan="2"/>
 	        				<field name="engineering_surface" 	attrs="{'readonly':[('state','in',['released','obsoleted'])]}" colspan="2"/> 
 	        			</group>		
