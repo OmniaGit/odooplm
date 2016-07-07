@@ -32,7 +32,7 @@
 	               <label for="name" class="oe_edit_only"/>
 	               <group colspan="4" col="4" name="DocData">
 	               		<strong>
-	               			<field name="name" select="1" attrs="{'readonly':[('state','!=','draft')]}" colspan="2"/>
+	               			<field name="name" select="1" readonly='1' colspan="2"/>
 	               		</strong>
 	               		<strong>	
 				        	<field name="revisionid" readonly="True" colspan="2"/>
@@ -115,6 +115,18 @@
             </form>
         </field>
     </record>
+
+   <record id="view_plm_document_plm_admin" model="ir.ui.view">
+            <field name="name">plm.document.plm.admin</field>
+            <field name="model">plm.document</field>
+            <field name="inherit_id" ref="plm.view_plm_document" />
+            <field name="groups_id" eval="[(6, 0, [ref('plm.group_plm_admin') ])]" />                
+            <field name="arch" type="xml">                                   
+                <field name="name" position="attributes">
+                   <attribute name="readonly">0</attribute>                   
+                </field>                             
+            </field>
+	</record> 
 
     <record model="ir.ui.view" id="plm_document_tree">
         <field name="name">plm.document</field>

@@ -165,8 +165,7 @@
 			
             </form>
         </field>
-    </record>
-
+    </record> 
         							
     <record model="ir.actions.act_window" id="action_plm_component_base">
         <field name="name">Engineering Parts</field>
