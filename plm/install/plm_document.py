@@ -82,7 +82,7 @@ class plm_document(models.Model):
     def _getlastrev(self, cr, uid, ids, context=None):
         result = []
         for objDoc in self.browse(cr, uid, ids, context=context):
-            docIds = self.search(cr, uid, [('name', '=', objDoc.name)], order='revisionid', context=context)
+            docIds = self.search(cr, uid, [('name', '=ilike', objDoc.name)], order='revisionid', context=context)
             docIds.sort()   # Ids are not surely ordered, but revision are always in creation order.
             if docIds:
                 result.append(docIds[len(docIds)-1])
