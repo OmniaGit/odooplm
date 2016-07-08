@@ -682,11 +682,7 @@ class plm_component(models.Model):
         """
         previous_name = self.browse(cr,uid,oid,context=context).name
         if not 'name' in defaults:
-            new_name = 'Copy of %s'%previous_name
-            l = self.search(cr, uid, [('name', 'like', new_name)], context=context)
-            if len(l) > 0:
-                new_name = '%s (%s)' % (new_name, len(l) + 1)
-            defaults['name'] = new_name
+            defaults['name'] = ''
             defaults['engineering_code'] = ''
             defaults['engineering_revision'] = 0
         #assign default value
