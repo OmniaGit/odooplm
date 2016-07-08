@@ -1,0 +1,164 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+#	* plm_cutted_parts
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 9.0e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-07-05 18:39+0000\n"
+"PO-Revision-Date: 2016-07-05 18:39+0000\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: plm_cutted_parts
+#: model:ir.model.fields,field_description:plm_cutted_parts.field_plm_temporary_cutted_part_explosion
+msgid "Cutted Part Action"
+msgstr "Bewerkte delen actie"
+
+#. module: plm_cutted_parts
+#: model:ir.actions.report.xml,name:plm_cutted_parts.report_bom_structure_all_cutted
+msgid "Cutted Parts"
+msgstr "Bewerkte delen"
+
+#. module: plm_cutted_parts
+#: model:ir.ui.view,arch_db:plm_cutted_parts.bom_structure_all_cutted
+msgid "Description"
+msgstr "Omschrijving"
+
+#. module: plm_cutted_parts
+#: model:ir.model.fields,field_description:plm_cutted_parts.field_report_plm_cutted_parts_bom_structure_all_cutted_display_name
+msgid "Display Name"
+msgstr "Naam weergeven"
+
+#. module: plm_cutted_parts
+#: selection:plm.temporary,cutted_part_explosion:0
+msgid "Explode"
+msgstr "Explodeer"
+
+#. module: plm_cutted_parts
+#: model:ir.model.fields,field_description:plm_cutted_parts.field_report_plm_cutted_parts_bom_structure_all_cutted_id
+msgid "ID"
+msgstr "ID"
+
+#. module: plm_cutted_parts
+#: code:addons/plm_cutted_parts/extended_class/product_template.py:44
+#: model:ir.model.fields,field_description:plm_cutted_parts.field_product_product_is_row_material
+#: model:ir.model.fields,field_description:plm_cutted_parts.field_product_template_is_row_material
+#, python-format
+msgid "Is Row Material"
+msgstr "Is grondstof"
+
+#. module: plm_cutted_parts
+#: model:ir.model.fields,field_description:plm_cutted_parts.field_report_plm_cutted_parts_bom_structure_all_cutted___last_update
+msgid "Last Modified on"
+msgstr "Laatst gewijzigd op"
+
+#. module: plm_cutted_parts
+#: model:ir.ui.view,arch_db:plm_cutted_parts.bom_structure_all_cutted
+msgid "Lenght"
+msgstr "Lengte"
+
+#. module: plm_cutted_parts
+#: code:addons/plm_cutted_parts/extended_class/product_template.py:43
+#: model:ir.model.fields,field_description:plm_cutted_parts.field_product_product_material_added
+#: model:ir.model.fields,field_description:plm_cutted_parts.field_product_template_material_added
+#, python-format
+msgid "Material Wastage"
+msgstr "Materiaal verlies"
+
+#. module: plm_cutted_parts
+#: model:ir.ui.view,arch_db:plm_cutted_parts.bom_structure_all_cutted
+msgid "Name"
+msgstr "Naam"
+
+#. module: plm_cutted_parts
+#: selection:plm.temporary,cutted_part_explosion:0
+msgid "None"
+msgstr "Geen"
+
+#. module: plm_cutted_parts
+#: code:addons/plm_cutted_parts/extended_class/product_template.py:42
+#: model:ir.model.fields,field_description:plm_cutted_parts.field_product_product_wastage_percent
+#: model:ir.model.fields,field_description:plm_cutted_parts.field_product_template_wastage_percent
+#, python-format
+msgid "Percent Wastage"
+msgstr "Percentage verslies"
+
+#. module: plm_cutted_parts
+#: model:ir.model,name:plm_cutted_parts.model_product_product
+msgid "Product"
+msgstr "Product"
+
+#. module: plm_cutted_parts
+#: model:ir.model,name:plm_cutted_parts.model_product_template
+msgid "Product Template"
+msgstr "Productsjabloon"
+
+#. module: plm_cutted_parts
+#: model:ir.ui.view,arch_db:plm_cutted_parts.bom_structure_all_cutted
+msgid "Quantity"
+msgstr "Hoeveelheid"
+
+#. module: plm_cutted_parts
+#: code:addons/plm_cutted_parts/extended_class/product_template.py:39
+#: model:ir.model.fields,field_description:plm_cutted_parts.field_product_product_row_material
+#: model:ir.model.fields,field_description:plm_cutted_parts.field_product_template_row_material
+#, python-format
+msgid "Raw Material Product"
+msgstr "Grondstof productten"
+
+#. module: plm_cutted_parts
+#: code:addons/plm_cutted_parts/extended_class/product_template.py:40
+#: model:ir.model.fields,field_description:plm_cutted_parts.field_product_product_row_material_xlenght
+#: model:ir.model.fields,field_description:plm_cutted_parts.field_product_template_row_material_xlenght
+#, python-format
+msgid "Raw Material x lenght"
+msgstr "Grondstof x lengte"
+
+#. module: plm_cutted_parts
+#: code:addons/plm_cutted_parts/extended_class/product_template.py:41
+#: model:ir.model.fields,field_description:plm_cutted_parts.field_product_product_row_material_ylenght
+#: model:ir.model.fields,field_description:plm_cutted_parts.field_product_template_row_material_ylenght
+#, python-format
+msgid "Raw Material y lenght"
+msgstr "Grondstof y lengte"
+
+#. module: plm_cutted_parts
+#: selection:plm.temporary,cutted_part_explosion:0
+msgid "Replace"
+msgstr "Vervang"
+
+#. module: plm_cutted_parts
+#: model:ir.ui.view,arch_db:plm_cutted_parts.bom_structure_all_cutted
+msgid "Revision"
+msgstr "Revisie"
+
+#. module: plm_cutted_parts
+#: model:ir.model,name:plm_cutted_parts.model_plm_temporary
+msgid "Temporary Class"
+msgstr "Tijdelijke Class"
+
+#. module: plm_cutted_parts
+#: model:ir.ui.view,arch_db:plm_cutted_parts.bom_structure_all_cutted
+msgid "U.M."
+msgstr "Eenh."
+
+#. module: plm_cutted_parts
+#: model:ir.ui.view,arch_db:plm_cutted_parts.bom_structure_all_cutted
+msgid "Width"
+msgstr "Breedte"
+
+#. module: plm_cutted_parts
+#: model:ir.model.fields,field_description:plm_cutted_parts.field_mrp_bom_line_x_leght
+msgid "X Lenght"
+msgstr "X Lengte"
+
+#. module: plm_cutted_parts
+#: model:ir.model.fields,field_description:plm_cutted_parts.field_mrp_bom_line_y_leght
+msgid "Y Lenght"
+msgstr "Y Lengte"
