@@ -35,7 +35,13 @@
         <field name="type">tree</field>
         <field name="priority" eval="5"/>
         <field name="arch" type="xml">
-            <tree string="Engineering Parts">
+            <tree string="Engineering Parts" colors="
+            	rgb(110, 51, 197):state=='draft';
+            	blue:state=='confirmed';
+            	rgba(0, 170, 34, 0.66):state == 'released';
+            	rgb(230,100,0):state == 'undermodify';
+            	rgb(231, 43, 26):state == 'obsoleted';"
+            	fonts="bold:state == 'released';">  
                 <field name="name" select="True"/>
                 <field name="engineering_code" select="True"/>
                 <field name="engineering_revision"/>

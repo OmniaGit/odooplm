@@ -61,7 +61,7 @@
 	                            			</div>
 	                                    </t>
 	                                	<t t-if="stateToUse == 'released'">
-	                            			<div style="color: rgb(0, 170, 34);padding-left: 5px;">
+	                            			<div style="color: rgba(0, 170, 34, 0.66);padding-left: 5px;">
 	                            				<b><field name="state"/></b>
 	                            			</div>
 	                                    </t>
