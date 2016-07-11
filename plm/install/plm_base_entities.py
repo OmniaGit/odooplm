@@ -58,7 +58,7 @@ class plm_component(models.Model):
     _name = 'product.template'
     _inherit = 'product.template'
 
-    state                   =   fields.Selection(USED_STATES, _('Status'), help=_("The status of the product in its LifeCycle."), readonly="True")
+    state                   =   fields.Selection(USED_STATES, _('Status'), help=_("The status of the product in its LifeCycle."), readonly="True", translate=True)
     engineering_code        =   fields.Char(_('Part Number'), help=_("This is engineering reference to manage a different P/N from item Name."), size=64)
     engineering_revision    =   fields.Integer(_('Revision'), required=True, help=_("The revision of the product."))
     engineering_writable    =   fields.Boolean(_('Writable'))

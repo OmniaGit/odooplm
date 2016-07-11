@@ -28,11 +28,11 @@ from openerp.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
-USED_STATES     =   [('draft','Draft'),
-                     ('confirmed','Confirmed'),
-                     ('released','Released'),
-                     ('undermodify','UnderModify'),
-                     ('obsoleted','Obsoleted')]
+USED_STATES     =   [('draft',_('Draft')),
+                     ('confirmed',_('Confirmed')),
+                     ('released',_('Released')),
+                     ('undermodify',_('UnderModify')),
+                     ('obsoleted',_('Obsoleted'))]
 USEDIC_STATES   =   dict(USED_STATES)
 #STATEFORRELEASE=['confirmed']
 #STATESRELEASABLE=['confirmed','transmitted','released','undermodify','obsoleted']
