@@ -3020,17 +3020,16 @@ msgid "Url"
 msgstr "Url"
 
 #. module: plm
-#: code:addons/plm/install/plm_base_entities.py:192
-#: model:ir.model.fields,help:plm.field_mrp_bom_line_type
+#: code:addons/plm/install/plm_base_entities.py:214
 #, python-format
-msgid "Use a phantom bill of material in raw materials lines that have to be automatically computed in on production order and not one per level.If you put \"Phantom/Set\" at the root level of a bill of material it is considered as a set or pack: the products are replaced by the components between the sale order to the picking without going through the production order.The normal BoM will generate one production order per BoM level."
-msgstr "Use a phantom bill of material in raw materials lines that have to be automatically computed in on production order and not one per level.If you put \"Phantom/Set\" at the root level of a bill of material it is considered as a set or pack: the products are replaced by the components between the sale order to the picking without going through the production order.The normal BoM will generate one production order per BoM level."
+msgid "Phantom BOM: When processing a sales order for this product, the delivery order will contain the raw materials, instead of the finished product. Ship this product as a set of components (kit)."
+msgstr "Bom Phantom: Quando viene processato un ordine di vendita per questo prodotto, l'ordine di spedizione conterrà le materie prime anzichè il prodotto finito."
 
 #. module: plm
-#: code:addons/plm/install/plm_base_entities.py:218
+#: code:addons/plm/install/plm_base_entities.py:192
 #, python-format
-msgid "Use a phantom bill of material in raw materials lines that have to be automatically computed on a production order and not one per level.If you put \"Phantom/Set\" at the root level of a bill of material it is considered as a set or pack: the products are replaced by the components between the sale order to the picking without going through the production order.the normal bom will generate one production order per bom level."
-msgstr "Usa una distinta phantom nelle linee dei materiali grezzi che devono essere automaticamente computati in un'ordine di produzione e non uno per livello. Se inserisci \"Phantom/Set\" a livello base della distinta e' considerato come un'insieme o un pacchetto: i prodotti sono sostituiti dai componenti nell'ordine di vendita che deve essere scelto senza entrare nell'ordine di produzione. La Bom normale generera' un ordine di produzione per ogni livello di distinta."
+msgid "Phantom BOM: When processing a sales order for this product, the delivery order will contain the raw materials, instead of the finished product. Ship this product as a set of components (kit)."
+msgstr "Bom Phantom: Quando viene processato un ordine di vendita per questo prodotto, l'ordine di spedizione conterrà le materie prime anzichè il prodotto finito."
 
 #. module: plm
 #: code:addons/plm/install/plm_document.py:713

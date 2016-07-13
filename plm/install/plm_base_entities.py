@@ -190,7 +190,7 @@ class plm_relation_line(models.Model):
     source_id       = fields.Many2one('plm.document', 'name', ondelete='no action', readonly=True, help=_("This is the document object that declares this BoM."))
     type            = fields.Selection([('normal', _('Normal BoM')), ('phantom', _('Sets / Phantom')), ('ebom', _('Engineering BoM')), ('spbom', _('Spare BoM'))], _('BoM Type'), required=True, help=
         _("Phantom BOM: When processing a sales order for this product, the delivery order will contain the raw materials, instead of the finished product." \
-        "Ship this product as a set of components (kit)."))
+        " Ship this product as a set of components (kit)."))
     itemnum         = fields.Integer(_('CAD Item Position'), help=_("This is the item reference position into the CAD document that declares this BoM."))
     itemlbl         = fields.Char(_('CAD Item Position Label'), size=64)
     ebom_source_id  = fields.Integer('Source Ebom ID')
@@ -212,7 +212,7 @@ class plm_relation(models.Model):
     source_id        =   fields.Many2one('plm.document', 'name', ondelete='no action', readonly=True, help=_('This is the document object that declares this BoM.'))
     type             =   fields.Selection([('normal', _('Normal BoM')), ('phantom', _('Sets / Phantom')), ('ebom', _('Engineering BoM')), ('spbom', _('Spare BoM'))], _('BoM Type'), required=True, help = 
                     _("Phantom BOM: When processing a sales order for this product, the delivery order will contain the raw materials, instead of the finished product." \
-        "Ship this product as a set of components (kit)."))
+        " Ship this product as a set of components (kit)."))
     weight_net      =   fields.Float('Weight', digits_compute=dp.get_precision(_('Stock Weight')), help=_("The BoM net weight in Kg."))
     ebom_source_id  = fields.Integer('Source Ebom ID')
     
