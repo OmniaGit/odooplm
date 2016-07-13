@@ -8,7 +8,8 @@
         <field name="model">plm.description</field>
         <field name="type">form</field>
         <field name="arch" type="xml">
-             <form string="Description"  version="7.0">
+             <form string="Description"  version="7.0"> 
+             	<sheet>	
                 <group colspan="4" col="4">
                     <separator colspan="4" string="Note to help selection"/>
                 	<field name="name" select="1" colspan="1"/>
@@ -18,7 +19,7 @@
                     <field name="description_en" select="1" />
                     <separator/>
   	               	<group colspan="4" col="4" string="Technical Features">
-	 	                <sheet>
+	 	                
 	 	                	<group colspan="4" col="4">
 		                    	<separator colspan="4" string="Technical feature label and formatting"/>
 		                    	<field name="umc1"/>
@@ -35,18 +36,17 @@
 		                	</group>
 		               		<separator colspan="4" string="Normalization Section"/>
  	 	                	<group colspan="4" col="4">
-	 	                		<sheet>
 			                    	<separator colspan="4" string="Normalized features formatting"/>
 			                    	<field name="fmtend"/>
 			                    	<newline/>
 			                    	<separator colspan="4" string="Normative reference"/>
 			                    	<field name="unitab"/>
-		                    	</sheet>
 		                    	<newline/>
    	               			</group>
- 	                    </sheet>
   	                </group>
-               </group>
+  	               <field name="bom_tmpl"/>  
+               </group> 
+              </sheet> 
             </form>
         </field>
     </record>
@@ -70,6 +70,7 @@
                    	<field name="fmtend"/>
                     <field name="unitab"/>
                    	<field name="sequence"/>
+                   	<field name="bom_tmpl"/>
             </tree>
         </field>
     </record>
