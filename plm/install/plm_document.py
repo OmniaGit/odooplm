@@ -716,7 +716,7 @@ class plm_document(models.Model):
     #  datas           =   fields.Binary   (fnct_inv=_data_set,compute=_data_get,method=True,string=_('File Content'))
     printout        =   fields.Binary(_('Printout Content'), help=_("Print PDF content."))
     preview         =   fields.Binary(_('Preview Content'), help=_("Static preview."))
-    state           =   fields.Selection(USED_STATES, _('Status'), help=_("The status of the product."), readonly="True", required=True, translate=True)
+    state           =   fields.Selection(USED_STATES, _('Status'), help=_("The status of the product."), readonly="True", required=True)
     checkout_user   =   fields.Char(string=_("Checked-Out to"), compute=_get_checkout_state)
     is_checkout     =   fields.Boolean(_('Is Checked-Out'), compute=_is_checkout, store=False)
 
