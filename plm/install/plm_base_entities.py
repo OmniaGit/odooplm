@@ -347,6 +347,7 @@ class plm_relation(models.Model):
         tmplTuple = tmplDict.get('product_tmpl_id', {})
         if len(tmplTuple) == 2:
             return tmplTuple[0]
+        return False
 
     def GetExploseSum(self, cr, uid, ids, context=None):
         """
