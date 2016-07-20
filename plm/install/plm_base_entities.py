@@ -568,24 +568,24 @@ class plm_relation(models.Model):
 
 #   Overridden methods for this entity
     def write(self, cr, uid, ids, vals, check=True, context=None):
-        ret=super(plm_relation,self).write(cr, uid, ids, vals, context=context)
-        for bomId in self.browse(cr,uid,ids,context=None):
+        ret = super(plm_relation, self).write(cr, uid, ids, vals, context=context)
+        for bomId in self.browse(cr, uid, ids, context=None):
             self.RebaseBomWeight(cr, uid, bomId.id, context=context)
         return ret
 
-    def copy(self,cr,uid,oid,defaults={},context=None):
+    def copy(self, cr, uid, oid, defaults={}, context=None):
         """
             Return new object copied (removing SourceID)
         """
-        newId=super(plm_relation,self).copy(cr,uid,oid,defaults,context=context)
+        newId = super(plm_relation, self).copy(cr, uid, oid, defaults, context=context)
         if newId:
-            compType=self.pool.get('product.product')
-            bomLType=self.pool.get('mrp.bom.line')
-            newOid=self.browse(cr,uid,newId,context=context)
+            compType = self.pool.get('product.product')
+            bomLType = self.pool.get('mrp.bom.line')
+            newOid = self.browse(cr, uid, newId, context=context)
             for bom_line in newOid.bom_line_ids:
-                lateRevIdC=compType.GetLatestIds(cr,uid,[(bom_line.product_id.product_tmpl_id.engineering_code,False,False)],context=context) # Get Latest revision of each Part
-                bomLType.write(cr,uid,[bom_line.id],{'source_id':False,'name':bom_line.product_id.product_tmpl_id.name,'product_id':lateRevIdC[0]},context=context)
-            self.write(cr,uid,[newId],{'source_id':False,'name':newOid.product_tmpl_id.name,},check=False,context=context)
+                lateRevIdC = compType.GetLatestIds(cr, uid, [(bom_line.product_id.product_tmpl_id.engineering_code, False, False)], context=context)  # Get Latest revision of each Part
+                bomLType.write(cr, uid, [bom_line.id], {'source_id': False, 'name': bom_line.product_id.product_tmpl_id.name, 'product_id': lateRevIdC[0]}, context=context)
+            self.write(cr, uid, [newId], {'source_id': False, 'name': newOid.product_tmpl_id.name}, check=False, context=context)
         return newId
 
 #   Overridden methods for this entity

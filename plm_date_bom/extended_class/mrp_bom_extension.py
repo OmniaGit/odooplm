@@ -37,21 +37,24 @@ class mrp_bom_extension_data(models.Model):
     _name = 'mrp.bom'
     _inherit = 'mrp.bom'
 
-    @api.depends('bom_line_ids.state', 'bom_line_ids')
+    @api.multi
     def _obsolete_compute(self):
         '''
             Verify if obsolete lines are present in current bom
         '''
-        print '_obsolete_computes'
         for bomObj in self:
+            obsoleteFlag = False
             for bomLine in bomObj.bom_line_ids:
                 if bomLine.product_id.state == 'obsoleted':
-                    self.obsolete_presents = True
-                    return
-            bomObj.obsolete_presents = False
+                    obsoleteFlag = True
+                    break
+            bomObj.obsolete_presents = obsoleteFlag
+            bomObj.write({'obsolete_presents': obsoleteFlag})   # don't remove this force write or when form is opened the value is not updated
 
     # If store = True is set you need to provide @api.depends because odoo has to know when to compute that field.
-    obsolete_presents = fields.Boolean(_("Obsolete presents"), compute='_obsolete_compute', store=True)
+    # If you decide to compute that field each time without store you have always to put it in the view or the field will not be computed
+    obsolete_presents_computed = fields.Boolean(string=_("Obsolete presents"), compute='_obsolete_compute')
+    obsolete_presents = fields.Boolean(_("Obsolete presents stored"))
 
     @api.multi
     def action_wizard_compute_bom(self):
@@ -151,6 +154,7 @@ class mrp_bom_data_compute(models.Model):
                         if recursive:
                             # Check if new added product has boms
                             self.updateObsoleteBom(prodBrws.product_tmpl_id.bom_ids.ids)
+            bomBrws._obsolete_compute()
 
     def copyObsoleteBom(self, bomIds=[]):
         '''
@@ -161,6 +165,14 @@ class mrp_bom_data_compute(models.Model):
             newBomBrws = bomObject.copy(bomId)
             self.updateObsoleteBom(newBomBrws.ids)
         bomObject.browse(bomIds).write({'active': False})
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Product Engineering'),
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'mrp.bom',
+            'domain': [('id', 'in', newBomBrws.id)],
+        }
 
 mrp_bom_data_compute()
 

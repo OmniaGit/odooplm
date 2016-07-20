@@ -24,6 +24,7 @@
             <field name="arch" type="xml">
                  <field name="weight_net" position="after">
                    	<field name="obsolete_presents" invisible='False'/>
+                   	<field name="obsolete_presents_computed" invisible='True'/>
           		</field>
         	</field>
         </record>
@@ -49,6 +50,7 @@
 	            	<xpath expr="//field[@name='product_qty']" position="after"> 
 	            		<group>
 		               		<field name="obsolete_presents" /> 
+		               		<field name="obsolete_presents_computed" invisible='True'/>
 		               	</group>
 		           	</xpath>
 	           	</data>
