@@ -3,18 +3,18 @@
 	<data>
 <!-- Views -->		
 
-	<record model="ir.ui.view" id="plm_tree_bom_obsoleted">
-        <field name="name">plm.tree.bom.obsoleted</field>
-        <field name="model">mrp.bom</field>
-        <field name="inherit_id" ref="plm.plm_bom_tree_view"/>
-        <field name="type">tree</field>
-        <field name="priority" eval="1"/>
-        <field name="arch" type="xml">
-            <tree position="attributes">
-                <attribute name="colors">rgb(231, 43, 26):obsolete_presents == True;</attribute>
-            </tree>
-        </field>
-    </record>
+		<record model="ir.ui.view" id="plm_tree_bom_obsoleted">
+	        <field name="name">plm.tree.bom.obsoleted</field>
+	        <field name="model">mrp.bom</field>
+	        <field name="inherit_id" ref="plm.plm_bom_tree_view"/>
+	        <field name="type">tree</field>
+	        <field name="priority" eval="1"/>
+	        <field name="arch" type="xml">
+	            <tree position="attributes">
+	                <attribute name="colors">rgb(231, 43, 26):obsolete_presents == True;</attribute>
+	            </tree>
+	        </field>
+	    </record>
 
         <record id="plm_bom_tree_view_obsoleted" model="ir.ui.view">
             <field name="name">plm.mrp.bom.tree</field>
@@ -23,7 +23,7 @@
             <field name="inherit_id" ref="plm.plm_bom_tree_view"/>
             <field name="arch" type="xml">
                  <field name="weight_net" position="after">
-                   	<field name="obsolete_presents" invisible='False'/>
+                   	<field name="obsolete_presents" invisible='True'/>
                    	<field name="obsolete_presents_computed" invisible='True'/>
           		</field>
         	</field>
@@ -39,13 +39,13 @@
             	<data>
             		<xpath expr="//field[@name='product_tmpl_id']" position="before">
 		                <group colspan="8" col="8">
-		                    <button string="Compute Bom" 
+		                    <button string="Update Bom" 
 				                    name="action_wizard_compute_bom" 
 				                    type="object" 
 				                    icon="fa-gears" 
 				                    attrs="{'invisible':[('obsolete_presents', '!=', True)]}"
 		                    />
-		                    <button string="All Boms to Update" 
+		                    <button string="All Related Boms to Update" 
 				                    name="showAllBomsToCompute" 
 				                    type="object" 
 				                    icon="fa-gears" 
@@ -54,7 +54,7 @@
 		            </xpath>
 	            	<xpath expr="//field[@name='product_qty']" position="after"> 
 	            		<group>
-		               		<field name="obsolete_presents" /> 
+		               		<field name="obsolete_presents" invisible='True'/> 
 		               		<field name="obsolete_presents_computed" invisible='True'/>
 		               	</group>
 		           	</xpath>
@@ -80,11 +80,6 @@
         </form>
         </field>
     </record>
-        
-
-    
-    
-    
     
     <record model="ir.ui.view" id="plm_bom_filter_obsoleted">
         <field name="name">plm.bom.obsoleted</field>
@@ -98,48 +93,6 @@
             </search>
          </field>
     </record>
-    
-    
-    
-    
-    
-    
-    
-        <record id="action_view_obsoleted" model="ir.actions.act_window">
-            <field name="name">Bill of Materials Obsoleted</field>
-            <field name="type">ir.actions.act_window</field>
-            <field name="res_model">mrp.bom.line</field>
-            <field name="domain">[('bom_id', 'in', active_ids), ('product_id.state', '=', 'obsoleted')]</field>
-            <field name="view_type">tree</field>
-            <field name="view_id" ref="plm.plm_bom_tree_structure"/>
-        </record>
-        
-        <record id="ir_BOM_structure_obsoleted" model="ir.values">
-            <field eval="'client_action_multi'" name="key2"/>
-            <field eval="'mrp.bom'" name="model"/>
-            <field name="name">Bill of Materials Obsoleted</field>
-            <field eval="'ir.actions.act_window,'+str(action_view_obsoleted)" name="value"/>
-        </record>    
-    
-        
-        <record id="action_compute_all_levels_obsoleted" model="ir.actions.server">
-            <field name="name">All Boms to Update Not Working</field>
-            <field name="condition">True</field>
-            <field name="type">ir.actions.server</field>
-            <field name="model_id" ref="model_mrp_bom"/>
-            <field name="state">code</field>
-            <field name="code">self.showAllBomsToCompute(cr, uid, context.get('active_ids', []), context=context)</field>
-        </record>
-
-        <record model="ir.values" id="action_compute_all_levels_obsoleted_value">
-            <field name="name">action_compute_all_levels_obsoleted</field>
-            <field name="action_id" ref="action_compute_all_levels_obsoleted" />
-            <field name="value" eval="'ir.actions.server,' + str(ref('action_compute_all_levels_obsoleted'))" />
-            <field name="key">action</field>
-            <field name="model_id" ref="model_mrp_bom"/>
-            <field name="model">mrp.bom</field>
-            <field name="key2">client_action_multi</field>
-        </record>
 
     </data>
 </openerp>
