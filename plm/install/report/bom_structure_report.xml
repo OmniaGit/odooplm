@@ -36,7 +36,7 @@
 						<td name="parent_bom_weight"> <b><span t-esc="o.weight_net"/> </b></td>
 					</tr>
 					<t t-set="i" t-value="1"/>
-						<t t-foreach="get_children(o)" t-as="childDict">
+						<t t-foreach="get_children(o)" t-as="childDict" name='children_compute'>
 							<tr>
 								<t t-if="i%2 == 1">
 									<td name="bom_name_value_b" style="background-color: aliceblue;"></td>
@@ -62,7 +62,7 @@
 								</t>
 							</tr>
 							<t t-set="i" t-value="i+1"/>
-						</t>
+						</t> 
 				</table>
             </div>
         </t> 
