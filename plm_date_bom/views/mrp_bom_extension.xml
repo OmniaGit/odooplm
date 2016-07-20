@@ -2,7 +2,7 @@
 <openerp>
 	<data>
 <!-- Views -->		
-<!--
+
 	<record model="ir.ui.view" id="plm_tree_bom_obsoleted">
         <field name="name">plm.tree.bom.obsoleted</field>
         <field name="model">mrp.bom</field>
@@ -11,11 +11,11 @@
         <field name="priority" eval="1"/>
         <field name="arch" type="xml">
             <tree position="attributes">
-                <attribute name="colors">"rgb(231, 43, 26):obsolete_presents == True;"</attribute>
+                <attribute name="colors">rgb(231, 43, 26):obsolete_presents == True;</attribute>
             </tree>
         </field>
     </record>
-	-->
+
         <record id="plm_bom_tree_view_obsoleted" model="ir.ui.view">
             <field name="name">plm.mrp.bom.tree</field>
             <field name="model">mrp.bom</field>
@@ -38,7 +38,7 @@
             <field name="arch" type="xml">
             	<data>
             		<xpath expr="//field[@name='product_tmpl_id']" position="before">
-		                <group>
+		                <group colspan="8" col="8">
 		                    <button string="Compute Bom" 
 				                    name="action_wizard_compute_bom" 
 				                    type="object" 

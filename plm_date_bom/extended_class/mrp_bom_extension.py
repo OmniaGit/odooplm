@@ -85,19 +85,14 @@ class mrp_bom_extension_data(models.Model):
                         outLines.append(bomBrws.id)
         recursion(self)
         outLines = list(set(outLines))
-        mod_obj = self.env['ir.model.data']
-        search_res = mod_obj.get_object_reference('plm_date_bom', 'plm_bom_tree_view_obsoleted')
-        tree_id = search_res and search_res[1] or False
-        if tree_id:
-            return {
-                'type': 'ir.actions.act_window',
-                'name': _('Product Engineering'),
-                'view_type': 'form',
-                'view_mode': 'tree,form',
-                'res_model': 'mrp.bom',
-                'domain': [('id', 'in', outLines)],
-                'views': [(tree_id, 'tree')],
-            }
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Product Engineering'),
+            'view_type': 'form',
+            'view_mode': 'tree,form',
+            'res_model': 'mrp.bom',
+            'domain': [('id', 'in', outLines)],
+        }
 
     def getBomFromTemplate(self, prodTmplBrws, bomType):
         '''
