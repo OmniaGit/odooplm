@@ -45,6 +45,11 @@
 				                    icon="fa-gears" 
 				                    attrs="{'invisible':[('obsolete_presents', '!=', True)]}"
 		                    />
+		                    <button string="All Boms to Update" 
+				                    name="showAllBomsToCompute" 
+				                    type="object" 
+				                    icon="fa-gears" 
+		                    />
 		                </group>
 		            </xpath>
 	            	<xpath expr="//field[@name='product_qty']" position="after"> 
@@ -118,7 +123,7 @@
     
         
         <record id="action_compute_all_levels_obsoleted" model="ir.actions.server">
-            <field name="name">All Boms to Update</field>
+            <field name="name">All Boms to Update Not Working</field>
             <field name="condition">True</field>
             <field name="type">ir.actions.server</field>
             <field name="model_id" ref="model_mrp_bom"/>
