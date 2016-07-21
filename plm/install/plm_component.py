@@ -682,8 +682,8 @@ class plm_component(models.Model):
         """
         previous_name = self.browse(cr, uid, oid, context=context).name
         if 'name' not in defaults:
-            defaults['name'] = ''                   # If field is required super of clone will fail returning False, this is the case
-            defaults['engineering_code'] = ''
+            defaults['name'] = '-'                   # If field is required super of clone will fail returning False, this is the case
+            defaults['engineering_code'] = '-'
             defaults['engineering_revision'] = 0
         # assign default value
         defaults['state'] = 'draft'
