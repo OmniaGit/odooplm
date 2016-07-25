@@ -33,30 +33,26 @@
             <field name="name">plm.bom.form.date.compute</field>
             <field name="model">mrp.bom</field>
             <field name="inherit_id" ref="plm.plm_bom_form_view"/>
+            <field name="priority" eval="19"/>
             <field name="type">form</field>
-        	<field name="priority" eval="18"/>
             <field name="arch" type="xml">
             	<data>
             		<xpath expr="//field[@name='product_tmpl_id']" position="before">
-		                <group colspan="8" col="8">
 		                    <button string="Update Bom" 
 				                    name="action_wizard_compute_bom" 
 				                    type="object" 
 				                    icon="fa-gears" 
-				                    attrs="{'invisible':[('obsolete_presents', '!=', True)]}"
+				                    attrs="{'invisible':[('obsolete_presents', '!=', True)]}" 
 		                    />
 		                    <button string="All Related Boms to Update" 
 				                    name="showAllBomsToCompute" 
 				                    type="object" 
 				                    icon="fa-gears" 
 		                    />
-		                </group>
 		            </xpath>
 	            	<xpath expr="//field[@name='product_qty']" position="after"> 
-	            		<group>
-		               		<field name="obsolete_presents" invisible='True'/> 
-		               		<field name="obsolete_presents_computed" invisible='True'/>
-		               	</group>
+		               	<field name="obsolete_presents" invisible='True'/>
+		               	<field name="obsolete_presents_computed" invisible='True'/>
 		           	</xpath>
 	           	</data>
 			</field>

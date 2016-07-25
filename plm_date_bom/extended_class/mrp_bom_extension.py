@@ -53,8 +53,12 @@ class mrp_bom_extension_data(models.Model):
 
     # If store = True is set you need to provide @api.depends because odoo has to know when to compute that field.
     # If you decide to compute that field each time without store you have always to put it in the view or the field will not be computed
-    obsolete_presents_computed = fields.Boolean(string=_("Obsolete presents"), compute='_obsolete_compute')
-    obsolete_presents = fields.Boolean(_("Obsolete presents stored"))
+    obsolete_presents_computed = fields.Boolean(string=_("Obsolete presents computed"), compute='_obsolete_compute')
+    obsolete_presents = fields.Boolean(_("Obsolete presents"))
+
+    @api.onchange('bom_line_ids')
+    def onchangeBomLine(self):
+        self._obsolete_compute()
 
     @api.multi
     def action_wizard_compute_bom(self):
@@ -181,7 +185,6 @@ class bom_line_obsoleted_extension(models.Model):
         '''
             Force update flag every time bom line state changes
         '''
-        print 'onchange_line_state'
         for bomLineObj in self:
             bomBrws = bomLineObj.bom_id
             bomBrws._obsolete_compute()
