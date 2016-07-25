@@ -681,7 +681,7 @@ class plm_component(models.Model):
             Overwrite the default copy method
         """
         previous_name = self.browse(cr, uid, oid, context=context).name
-        if 'name' not in defaults:
+        if not defaults.get('name', False):
             defaults['name'] = '-'                   # If field is required super of clone will fail returning False, this is the case
             defaults['engineering_code'] = '-'
             defaults['engineering_revision'] = 0
