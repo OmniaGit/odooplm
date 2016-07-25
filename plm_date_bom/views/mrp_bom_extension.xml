@@ -76,17 +76,18 @@
         </form>
         </field>
     </record>
-    
+
+
     <record model="ir.ui.view" id="plm_bom_filter_obsoleted">
         <field name="name">plm.bom.obsoleted</field>
         <field name="model">mrp.bom</field>
         <field name="type">search</field>
-        <field name="priority" eval="5"/>
+        <field name="inherit_id" ref="plm.view_mrp_bom_filter_inherit"/>
         <field name="arch" type="xml">
-		 	<search string="Bom">
+        	<xpath expr="//filter[@name='filter_today']" position="after"> 
                    	<filter icon="terp-go-month" string="  Boms To Update  " separator="1"
                            	domain="[('obsolete_presents','=', True)]" />
-            </search>
+            </xpath>
          </field>
     </record>
 
