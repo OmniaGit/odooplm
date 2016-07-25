@@ -154,6 +154,14 @@ class mrp_bom_data_compute(models.Model):
                             # Check if new added product has boms
                             self.updateObsoleteBom(prodBrws.product_tmpl_id.bom_ids.ids)
             bomBrws._obsolete_compute()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Product Engineering'),
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'mrp.bom',
+            'domain': [('id', 'in', bomIds)],
+        }
 
     def copyObsoleteBom(self, bomIds=[]):
         '''
