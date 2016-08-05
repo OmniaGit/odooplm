@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<openerp>
+    <data noupdate="1"> 
+    	
+    	<record id="ir_nbom_cron" model="ir.cron">
+            <field name="name">Automate NBOM</field>
+            <field name="active" eval="False"/>
+            <field name="interval_number">5</field>
+            <field name="interval_type">minutes</field>
+            <field name="numbercall">-1</field>
+            <field name="doall" eval="False"/>
+            <field name="model">product.product</field>
+            <field name="function">generateAutomatedNBomsScheduler</field>
+            <field name="args">()</field>
+        </record> 
+
+        <record id="action_nbom_scheduler" model="ir.actions.server">
+            <field name="name">Automate NBOM Scheduler</field>
+            <field name="condition">True</field>
+            <field name="model_id" ref="model_product_product"/>
+            <field name="code">action = pool.get('product.product').generateAutomatedNBoms(cr, uid, [], context)</field>
+            <field name="state">code</field>
+            <field name="type">ir.actions.server</field>
+        </record>
+        
+        <menuitem id="menu_nbom_scheduler" name="Run Automate NBOM" action="action_nbom_scheduler" parent="base.menu_custom"/> 
+        	
+    </data>
+</openerp>

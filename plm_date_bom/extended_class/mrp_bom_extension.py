@@ -31,6 +31,7 @@ from openerp import models
 from openerp import fields
 from openerp import api
 from openerp import _
+from openerp.exceptions import UserError
 
 
 class mrp_bom_extension_data(models.Model):
@@ -137,6 +138,8 @@ class mrp_bom_data_compute(models.Model):
         bomObj = self.env['mrp.bom']
         prodProdObj = self.env['product.product']
         for bomBrws in bomObj.browse(bomIds):
+            if bomBrws.type != 'normal':
+                raise UserError(_('This functionality is avaible only for normal bom.'))
             for bomLineBrws in bomBrws.bom_line_ids:
                 templateBrws = bomLineBrws.product_id.product_tmpl_id
                 if recursive:
