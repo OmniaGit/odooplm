@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+<!-- Views -->		
+
+		<record model="ir.ui.view" id="plm_tree_bom_obsoleted">
+	        <field name="name">plm.tree.bom.obsoleted</field>
+	        <field name="model">mrp.bom</field>
+	        <field name="inherit_id" ref="plm.plm_bom_tree_view"/>
+	        <field name="type">tree</field>
+	        <field name="priority" eval="1"/>
+	        <field name="arch" type="xml">
+	            <tree position="attributes">
+	                <attribute name="colors">rgb(231, 43, 26):obsolete_presents == True;</attribute>
+	            </tree>
+	        </field>
+	    </record>
+
+        <record id="plm_bom_tree_view_obsoleted" model="ir.ui.view">
+            <field name="name">plm.mrp.bom.tree</field>
+            <field name="model">mrp.bom</field>
+            <field name="type">tree</field>
+            <field name="inherit_id" ref="plm.plm_bom_tree_view"/>
+            <field name="arch" type="xml">
+                 <field name="weight_net" position="after">
+                   	<field name="obsolete_presents" invisible='True'/>
+                   	<field name="obsolete_presents_computed" invisible='True'/>
+          		</field>
+        	</field>
+        </record>
+
+	    <record id="plm_mrp_bom_date_compute" model="ir.ui.view">
+            <field name="name">plm.bom.form.date.compute</field>
+            <field name="model">mrp.bom</field>
+            <field name="inherit_id" ref="plm.plm_bom_form_view"/>
+            <field name="priority" eval="19"/>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+            	<data>
+            		<xpath expr="//field[@name='product_tmpl_id']" position="before">
+		                    <button string="Update Bom" 
+				                    name="action_wizard_compute_bom" 
+				                    type="object" 
+				                    icon="fa-gears" 
+				                    attrs="{'invisible':[('obsolete_presents', '!=', True)]}" 
+		                    />
+		                    <button string="All Related Boms to Update" 
+				                    name="showAllBomsToCompute" 
+				                    type="object" 
+				                    icon="fa-gears" 
+		                    />
+		            </xpath>
+	            	<xpath expr="//field[@name='product_qty']" position="after"> 
+		               	<field name="obsolete_presents" invisible='True'/>
+		               	<field name="obsolete_presents_computed" invisible='True'/>
+		           	</xpath>
+	           	</data>
+			</field>
+        </record>
+        
+    <record id="plm_bom_date_compute" model="ir.ui.view">
+        <field name="name">plm.date.compure</field>
+        <field name="model">plm.temporary_date_compute</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+        <form string="Compute Bom">
+            <label string="Select computation type and proceed." colspan="4"/>
+            <separator string=""/>
+            <group>
+            	<field name='compute_type'/>
+            </group>
+            <group colspan="4" col="4">
+            	<button icon="gtk-cancel" special="cancel" string="Cancel"/>
+            	<button icon="terp-gtk-go-back-rtl" string="Compute Bom" name="action_compute_bom" type="object"/>
+            </group>
+        </form>
+        </field>
+    </record>
+
+
+    <record model="ir.ui.view" id="plm_bom_filter_obsoleted">
+        <field name="name">plm.bom.obsoleted</field>
+        <field name="model">mrp.bom</field>
+        <field name="type">search</field>
+        <field name="inherit_id" ref="plm.view_mrp_bom_filter_inherit"/>
+        <field name="arch" type="xml">
+        	<xpath expr="//filter[@name='filter_today']" position="after"> 
+                   	<filter icon="terp-go-month" string="  Boms To Update  " separator="1"
+                           	domain="[('obsolete_presents','=', True)]" />
+            </xpath>
+         </field>
+    </record>
+
+    </data>
+</openerp>

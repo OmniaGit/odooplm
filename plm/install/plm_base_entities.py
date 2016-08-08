@@ -189,16 +189,12 @@ class plm_relation_line(models.Model):
     create_date     = fields.Datetime(_('Creation Date'), readonly=True)
     source_id       = fields.Many2one('plm.document', 'name', ondelete='no action', readonly=True, help=_("This is the document object that declares this BoM."))
     type            = fields.Selection([('normal', _('Normal BoM')), ('phantom', _('Sets / Phantom')), ('ebom', _('Engineering BoM')), ('spbom', _('Spare BoM'))], _('BoM Type'), required=True, help=
-        _("Use a phantom bill of material in raw materials lines that have to be " \
-        "automatically computed in on production order and not one per level." \
-        "If you put \"Phantom/Set\" at the root level of a bill of material " \
-        "it is considered as a set or pack: the products are replaced by the components " \
-        "between the sale order to the picking without going through the production order." \
-        "The normal BoM will generate one production order per BoM level."))
+        _("Phantom BOM: When processing a sales order for this product, the delivery order will contain the raw materials, instead of the finished product." \
+        " Ship this product as a set of components (kit)."))
     itemnum         = fields.Integer(_('CAD Item Position'), help=_("This is the item reference position into the CAD document that declares this BoM."))
     itemlbl         = fields.Char(_('CAD Item Position Label'), size=64)
     ebom_source_id  = fields.Integer('Source Ebom ID')
-
+ 
     _defaults = {
         'product_uom': 1,
     }
@@ -215,12 +211,8 @@ class plm_relation(models.Model):
     create_date      =   fields.Datetime(_('Creation Date'), readonly=True)
     source_id        =   fields.Many2one('plm.document', 'name', ondelete='no action', readonly=True, help=_('This is the document object that declares this BoM.'))
     type             =   fields.Selection([('normal', _('Normal BoM')), ('phantom', _('Sets / Phantom')), ('ebom', _('Engineering BoM')), ('spbom', _('Spare BoM'))], _('BoM Type'), required=True, help = 
-                    _("Use a phantom bill of material in raw materials lines that have to be " \
-                    "automatically computed on a production order and not one per level." \
-                    "If you put \"Phantom/Set\" at the root level of a bill of material " \
-                    "it is considered as a set or pack: the products are replaced by the components " \
-                    "between the sale order to the picking without going through the production order." \
-                    "the normal bom will generate one production order per bom level."))
+                    _("Phantom BOM: When processing a sales order for this product, the delivery order will contain the raw materials, instead of the finished product." \
+        " Ship this product as a set of components (kit)."))
     weight_net      =   fields.Float('Weight', digits_compute=dp.get_precision(_('Stock Weight')), help=_("The BoM net weight in Kg."))
     ebom_source_id  = fields.Integer('Source Ebom ID')
     
@@ -355,6 +347,7 @@ class plm_relation(models.Model):
         tmplTuple = tmplDict.get('product_tmpl_id', {})
         if len(tmplTuple) == 2:
             return tmplTuple[0]
+        return False
 
     def GetExploseSum(self, cr, uid, ids, context=None):
         """
@@ -575,24 +568,24 @@ class plm_relation(models.Model):
 
 #   Overridden methods for this entity
     def write(self, cr, uid, ids, vals, check=True, context=None):
-        ret=super(plm_relation,self).write(cr, uid, ids, vals, context=context)
-        for bomId in self.browse(cr,uid,ids,context=None):
+        ret = super(plm_relation, self).write(cr, uid, ids, vals, context=context)
+        for bomId in self.browse(cr, uid, ids, context=None):
             self.RebaseBomWeight(cr, uid, bomId.id, context=context)
         return ret
 
-    def copy(self,cr,uid,oid,defaults={},context=None):
+    def copy(self, cr, uid, oid, defaults={}, context=None):
         """
             Return new object copied (removing SourceID)
         """
-        newId=super(plm_relation,self).copy(cr,uid,oid,defaults,context=context)
+        newId = super(plm_relation, self).copy(cr, uid, oid, defaults, context=context)
         if newId:
-            compType=self.pool.get('product.product')
-            bomLType=self.pool.get('mrp.bom.line')
-            newOid=self.browse(cr,uid,newId,context=context)
+            compType = self.pool.get('product.product')
+            bomLType = self.pool.get('mrp.bom.line')
+            newOid = self.browse(cr, uid, newId, context=context)
             for bom_line in newOid.bom_line_ids:
-                lateRevIdC=compType.GetLatestIds(cr,uid,[(bom_line.product_id.product_tmpl_id.engineering_code,False,False)],context=context) # Get Latest revision of each Part
-                bomLType.write(cr,uid,[bom_line.id],{'source_id':False,'name':bom_line.product_id.product_tmpl_id.name,'product_id':lateRevIdC[0]},context=context)
-            self.write(cr,uid,[newId],{'source_id':False,'name':newOid.product_tmpl_id.name,},check=False,context=context)
+                lateRevIdC = compType.GetLatestIds(cr, uid, [(bom_line.product_id.product_tmpl_id.engineering_code, False, False)], context=context)  # Get Latest revision of each Part
+                bomLType.write(cr, uid, [bom_line.id], {'source_id': False, 'name': bom_line.product_id.product_tmpl_id.name, 'product_id': lateRevIdC[0]}, context=context)
+            self.write(cr, uid, [newId], {'source_id': False, 'name': newOid.product_tmpl_id.name}, check=False, context=context)
         return newId
 
 #   Overridden methods for this entity

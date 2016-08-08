@@ -1,5 +1,6 @@
 from openerp import models, api, _, fields
 import json
+import logging
 
 
 class ComponentDashboard(models.Model):
@@ -27,11 +28,32 @@ class ComponentDashboard(models.Model):
 
     @api.multi
     def get_related_boms(self):
-        return self.env['mrp.bom'].search([('product_tmpl_id', '=', self.product_tmpl_id.id)])
+        try:
+            product_tmpl_id = False
+            for prodBrws in self.ids:
+                if isinstance(prodBrws, int):
+                    prodBrws = self.browse(prodBrws)
+                for dictElem in prodBrws.read(['product_tmpl_id']):
+                    tmplTuple = dictElem.get('product_tmpl_id', ())
+                    if tmplTuple:
+                        product_tmpl_id = tmplTuple[0]
+            return self.env['mrp.bom'].search([('product_tmpl_id', '=', product_tmpl_id)])
+        except Exception, ex:
+            logging.warning(ex)
+            return self.env['mrp.bom'].browse()
 
     @api.multi
     def get_related_docs(self):
-        return self.browse(self.ids).linkeddocuments
+        try:
+            out = []
+            for brws in self.ids:
+                if isinstance(brws, int):
+                    brws = self.browse(brws)
+                out.extend(brws.linkeddocuments.ids)
+            return list(set(out))
+        except Exception, ex:
+            logging.warning(ex)
+            return []
 
     @api.multi
     def common_open(self, name, model, view_mode='form', view_type='form', res_id=False, ctx={}, domain=[]):
@@ -85,9 +107,9 @@ class ComponentDashboard(models.Model):
 
     @api.multi
     def open_related_docs_action(self):
-        docs = self.get_related_docs()
-        domain = [('id', 'in', docs.ids)]
-        return self.common_open(_('Related Documents'), 'plm.document', 'tree,form', 'form', docs.ids, self.env.context, domain)
+        docIds = self.get_related_docs()
+        domain = [('id', 'in', docIds)]
+        return self.common_open(_('Related Documents'), 'plm.document', 'tree,form', 'form', docIds, self.env.context, domain)
 
     @api.multi
     def open_related_boms_action(self):

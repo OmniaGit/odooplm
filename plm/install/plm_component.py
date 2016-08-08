@@ -28,11 +28,11 @@ from openerp.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
-USED_STATES     =   [('draft','Draft'),
-                     ('confirmed','Confirmed'),
-                     ('released','Released'),
-                     ('undermodify','UnderModify'),
-                     ('obsoleted','Obsoleted')]
+USED_STATES     =   [('draft',_('Draft')),
+                     ('confirmed',_('Confirmed')),
+                     ('released',_('Released')),
+                     ('undermodify',_('UnderModify')),
+                     ('obsoleted',_('Obsoleted'))]
 USEDIC_STATES   =   dict(USED_STATES)
 #STATEFORRELEASE=['confirmed']
 #STATESRELEASABLE=['confirmed','transmitted','released','undermodify','obsoleted']
@@ -680,21 +680,17 @@ class plm_component(models.Model):
         """
             Overwrite the default copy method
         """
-        previous_name = self.browse(cr,uid,oid,context=context).name
-        if not 'name' in defaults:
-            new_name = 'Copy of %s'%previous_name
-            l = self.search(cr, uid, [('name', 'like', new_name)], context=context)
-            if len(l) > 0:
-                new_name = '%s (%s)' % (new_name, len(l) + 1)
-            defaults['name'] = new_name
-            defaults['engineering_code'] = ''
+        previous_name = self.browse(cr, uid, oid, context=context).name
+        if not defaults.get('name', False):
+            defaults['name'] = '-'                   # If field is required super of clone will fail returning False, this is the case
+            defaults['engineering_code'] = '-'
             defaults['engineering_revision'] = 0
-        #assign default value
+        # assign default value
         defaults['state'] = 'draft'
         defaults['engineering_writable'] = True
         defaults['write_date'] = None
         defaults['linkeddocuments'] = []
-        objId = super(plm_component,self).copy(cr, uid, oid, defaults, context=context)
+        objId = super(plm_component, self).copy(cr, uid, oid, defaults, context=context)
         if (objId):
             self.wf_message_post(cr, uid, [oid], body=_('Copied starting from : %s.' % previous_name))
         return objId

@@ -35,7 +35,13 @@
         <field name="type">tree</field>
         <field name="priority" eval="5"/>
         <field name="arch" type="xml">
-            <tree string="Engineering Parts">
+            <tree string="Engineering Parts" colors="
+            	rgb(110, 51, 197):state=='draft';
+            	blue:state=='confirmed';
+            	rgba(0, 170, 34, 0.66):state == 'released';
+            	rgb(230,100,0):state == 'undermodify';
+            	rgb(231, 43, 26):state == 'obsoleted';"
+            	fonts="bold:state == 'released';">  
                 <field name="name" select="True"/>
                 <field name="engineering_code" select="True"/>
                 <field name="engineering_revision"/>
@@ -165,8 +171,7 @@
 			
             </form>
         </field>
-    </record>
-
+    </record> 
         							
     <record model="ir.actions.act_window" id="action_plm_component_base">
         <field name="name">Engineering Parts</field>
@@ -174,7 +179,8 @@
         <field name="view_type">form</field>
         <field name="view_mode">kanban,tree,form</field>
         <field name="view_id" ref="plm_component_base_tree"/>
-        <field name="context">{"search_default_latest":1}</field>      
+        <field name="context">{"search_default_latest":1}</field>
+        <field name="domain">['|', ('engineering_code','!=',''), ('engineering_code','!=',False)]</field>  
         <field name="view_id_search" ref="plm_component_base_search"/>
     </record>
     

@@ -36,7 +36,7 @@ _logger = logging.getLogger(__name__)
 
 
 # To be adequated to plm.component class states
-USED_STATES=[('draft','Draft'),('confirmed','Confirmed'),('released','Released'),('undermodify','UnderModify'),('obsoleted','Obsoleted')]
+USED_STATES=[('draft',_('Draft')),('confirmed',_('Confirmed')),('released',_('Released')),('undermodify',_('UnderModify')),('obsoleted',_('Obsoleted'))]
 USEDIC_STATES=dict(USED_STATES)
 #STATEFORRELEASE=['confirmed']
 #STATESRELEASABLE=['confirmed','released','undermodify','UnderModify']
@@ -82,7 +82,7 @@ class plm_document(models.Model):
     def _getlastrev(self, cr, uid, ids, context=None):
         result = []
         for objDoc in self.browse(cr, uid, ids, context=context):
-            docIds = self.search(cr, uid, [('name', '=', objDoc.name)], order='revisionid', context=context)
+            docIds = self.search(cr, uid, [('name', '=ilike', objDoc.name)], order='revisionid', context=context)
             docIds.sort()   # Ids are not surely ordered, but revision are always in creation order.
             if docIds:
                 result.append(docIds[len(docIds)-1])

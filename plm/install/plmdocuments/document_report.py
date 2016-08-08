@@ -57,7 +57,7 @@ class report_plm_document_user(models.Model):
 
     name            =   fields.Char(_('Year'), size=64,readonly=True)
     month           =   fields.Selection([('01',_('January')), ('02',_('February')), ('03',_('March')), ('04',_('April')), ('05',_('May')), ('06',_('June')),
-                                  ('07',_('July')), ('08',_('August')), ('09',_('September')), ('10',_('October')), ('11',_('November')), ('12',_('December'))],_('Month'),readonly=True)
+                                  ('07',_('July')), ('08',_('August')), ('09',_('September')), ('10',_('October')), ('11',_('November')), ('12',_('December'))],_('Month'),readonly=True, transalte=True)
     day             =   fields.Char(_('Day'), size=64,readonly=True)
     user_id         =   fields.Integer(_('Owner'), readonly=True)
     user            =   fields.Char(_('User'),size=64,readonly=True)
@@ -108,7 +108,7 @@ class report_plm_files_partner(models.Model):
     nbr         =   fields.Integer(_('# of Files'), readonly=True)
     partner     =   fields.Char(_('Partner'),size=64,readonly=True)
     month       =   fields.Selection([('01',_('January')), ('02',_('February')), ('03',_('March')), ('04',_('April')), ('05',_('May')), ('06',_('June')),
-                                  ('07',_('July')), ('08',_('August')), ('09',_('September')), ('10',_('October')), ('11',_('November')), ('12',_('December'))],_('Month'),readonly=True)
+                                  ('07',_('July')), ('08',_('August')), ('09',_('September')), ('10',_('October')), ('11',_('November')), ('12',_('December'))],_('Month'),readonly=True, translate=True)
 
 #     def init(self, cr):
 #         tools.drop_view_if_exists(cr, 'report_plm_files_partner')

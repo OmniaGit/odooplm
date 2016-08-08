@@ -30,11 +30,11 @@ class report_plm_component(models.Model):
     _name = "report.plm_component"
     _description = "Report Component"
     _auto = False
-    count_component_draft       =   fields.Integer(_('Draft'), readonly=True)
-    count_component_confirmed   =   fields.Integer(_('Confirmed'), readonly=True)
-    count_component_released    =   fields.Integer(_('Released'), readonly=True)
-    count_component_modified    =   fields.Integer(_('Under Modify'), readonly=True)
-    count_component_obsoleted   =   fields.Integer(_('Obsoleted'), readonly=True)
+    count_component_draft       =   fields.Integer(_('Draft'), readonly=True, translate=True)
+    count_component_confirmed   =   fields.Integer(_('Confirmed'), readonly=True, translate=True)
+    count_component_released    =   fields.Integer(_('Released'), readonly=True, translate=True)
+    count_component_modified    =   fields.Integer(_('Under Modify'), readonly=True, translate=True)
+    count_component_obsoleted   =   fields.Integer(_('Obsoleted'), readonly=True, translate=True)
 
     def init(self, cr):
         tools.drop_view_if_exists(cr, 'report_plm_component')

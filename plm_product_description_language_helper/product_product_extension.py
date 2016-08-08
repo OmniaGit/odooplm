@@ -44,8 +44,9 @@ class ProductProductExtension(models.Model):
         '''
             Set flag to skip translation creation because super copy function makes the trick
         '''
-        context['skip_translations'] = True
-        return super(ProductProductExtension, self).copy(cr, uid, _id, default, context)
+        newcontext = self.env.context.copy()
+        newcontext['skip_translations'] = True
+        return super(ProductProductExtension, self).copy(cr, uid, _id, default, newcontext)
 
     @api.model
     def create(self, vals):

@@ -68,7 +68,7 @@ class plm_component(models.Model):
             bom_line_objs = bom_line_objType.search([('product_id', '=', prod_obj.id)])
             for bom_line_obj in bom_line_objs:
                 for objPrd in self.search([('product_tmpl_id', '=', bom_line_obj.bom_id.product_tmpl_id.id)]):
-                    prod_ids.append(objPrd)
+                    prod_ids.append(objPrd.id)
             prod_obj.father_part_ids = prod_ids
 
     linkeddocuments = fields.Many2many('plm.document', 'plm_component_document_rel', 'component_id', 'document_id', _('Linked Docs'))
@@ -168,7 +168,7 @@ class plm_relation(models.Model):
     state                   = fields.Selection  (related="product_tmpl_id.state",                string=_("Status"),     help=_("The status of the product in its LifeCycle."),  store=False)
     engineering_revision    = fields.Integer    (related="product_tmpl_id.engineering_revision", string=_("Revision"),   help=_("The revision of the product."),                 store=False)
     description             = fields.Text       (related="product_tmpl_id.description",          string=_("Description"),                                                        store=False)
-    father_complete_ids     = fields.Many2many  ('mrp.bom', compute=_father_compute,        string=_("BoM Hierarchy"),                                                      store=False)
+    father_complete_ids     = fields.Many2many  ('mrp.bom', compute=_father_compute,        string=_("BoM Hierarchy"),                                                     store=False)
 
 plm_relation()
 

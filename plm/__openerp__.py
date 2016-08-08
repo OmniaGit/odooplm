@@ -85,7 +85,6 @@ Supported Editors :
             'install/plmcomponentrelations/relations_view.xml',
             'install/plmdescriptions/description_view.xml',
             'install/plmsparebom/sparebom_view.xml',
-            'install/plmsparebom/description_view.xml',
             'install/plmcomparebom/compare_bom_view.xml',
             'install/plmmaterials/material_view.xml',
             'install/plmfinishings/finishing_view.xml',

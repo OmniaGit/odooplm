@@ -144,7 +144,7 @@
             <field name="model">mrp.bom</field>
             <field name="inherit_id" ref="mrp.mrp_bom_form_view"/>
             <field name="type">form</field>
-        	<field name="priority" eval="15"/>
+        	<field name="priority" eval="16"/>
             <field name="arch" type="xml">
             	<data>
 	                <field name="product_id" position="after">
@@ -240,16 +240,16 @@
             <field name="type">search</field>
             <field name="arch" type="xml">
                 <field name="code" position="before">
-	               	<filter icon="terp-go-month" string="Latest 2 Weeks" separator="1"
+	               	<filter name="filter_latest_2_weeks" icon="terp-go-month" string="Latest 2 Weeks" separator="1"
 	                       	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"
 	                      	help="Created latest 2 Weeks"/>
-	               	<filter icon="terp-go-month" string="Latest 7 Days" separator="1"
+	               	<filter name="filter_latest_7" icon="terp-go-month" string="Latest 7 Days" separator="1"
 	                       	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
 	                      	help="Created latest 7 Days"/>
-	             	<filter icon="terp-go-month" string="Yesterday" separator="1"
+	             	<filter name="filter_yesterday" icon="terp-go-month" string="Yesterday" separator="1"
 	                     	domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
 	                		help="Created yesterday"/>
-	            	<filter icon="terp-go-month" string="Today" separator="1"
+	            	<filter name="filter_today" icon="terp-go-month" string="Today" separator="1"
 	                     	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
 	                     	help="Created today"/>
 	               	<separator orientation="vertical"/>
