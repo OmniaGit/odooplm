@@ -182,13 +182,13 @@ class plm_document(models.Model):
                                               'printout': printout,
                                               'preview': preview
                                              }, context=context)
-    
+
                 return True
-            except Exception,ex :
+            except Exception, ex:
                 raise except_orm(_('Error in _data_set'), str(ex))
         else:
             return True
-        
+
     def _explodedocs(self, cr, uid, oid, kinds, listed_documents=[], recursion=True):
         result = []
         documentRelation = self.pool.get('plm.document.relation')
@@ -560,7 +560,7 @@ class plm_document(models.Model):
         defaults = {}
         for oldObject in self.browse(cr, uid, ids, context=None):
             last_id = self._getbyrevision(cr, uid, oldObject.name, oldObject.revisionid - 1)
-            if last_id != None:
+            if last_id is not None:
                 defaults['writable'] = False
                 defaults['state'] = 'obsoleted'
                 self.write(cr, uid, [last_id], defaults, check=False)

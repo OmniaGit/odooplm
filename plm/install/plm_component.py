@@ -475,7 +475,7 @@ class plm_component(models.Model):
             for document in oldObject.linkeddocuments:
                 if document.state == check_state:
                     if document.is_checkout:
-                        docInError.append(_("Document %r : %r is checked out by user %r") % (document.name ,document.revisionid ,document.checkout_user))
+                        docInError.append(_("Document %r : %r is checked out by user %r") % (document.name , document.revisionid , document.checkout_user))
                         continue
                     if document.id not in docIDs:
                         docIDs.append(document.id)
