@@ -30,23 +30,31 @@ from openerp import models
 from openerp import api
 from openerp import fields
 from openerp import _
-import logging
 
 
 class ProductProductExtension(models.Model):
     _inherit = 'product.product'
-    
-    std_umc1            =   fields.Char(_('UM / Feature 1'), size=32, help=_("Allow to specifiy a unit measure for the first feature."), related='std_description.umc1', store=True)
-    std_umc2            =   fields.Char(_('UM / Feature 2'), size=32, help=_("Allow to specifiy a unit measure for the second feature."), related='std_description.umc2', store=True)
-    std_umc3            =   fields.Char(_('UM / Feature 3'), size=32, help=_("Allow to specifiy a unit measure for the third feature."), related='std_description.umc3', store=True)
-    
-    def copy(self, cr, uid, _id, default=None, context=None):
+
+    std_umc1 = fields.Char(_('UM / Feature 1'),
+                           size=32,
+                           help=_("Allow to specifiy a unit measure for the first feature."),
+                           related='std_description.umc1',
+                           store=True)
+    std_umc2 = fields.Char(_('UM / Feature 2'),
+                           size=32,
+                           help=_("Allow to specifiy a unit measure for the second feature."),
+                           related='std_description.umc2', store=True)
+    std_umc3 = fields.Char(_('UM / Feature 3'),
+                           size=32,
+                           help=_("Allow to specifiy a unit measure for the third feature."),
+                           related='std_description.umc3', store=True)
+
+    def copy(self, cr, uid, _id, default=None, context={}):
         '''
             Set flag to skip translation creation because super copy function makes the trick
         '''
-        newcontext = self.env.context.copy()
-        newcontext['skip_translations'] = True
-        return super(ProductProductExtension, self).copy(cr, uid, _id, default, newcontext)
+        context['skip_translations'] = True
+        return super(ProductProductExtension, self).copy(cr, uid, _id, default, context)
 
     @api.model
     def create(self, vals):
@@ -65,34 +73,24 @@ class ProductProductExtension(models.Model):
                 self.commonSpecialDescriptionCompute(vals, productBrws.product_tmpl_id.id, self.env['plm.description'].browse(std_description_id))
             elif 'description' in vals.keys():
                 description = vals['description']
-                if not description:
-                    translationObjs = ir_translation_obj.search([
-                                               ('name', '=', 'product.template,description'),
-                                               ('res_id', '=', templateId),
-                                               ])
-                    translationObjs.write({'value': ''})
-                    vals['description'] = ' '
-                else:
+                if description:
                     userLang = self.env.context.get('lang', 'en_US')
-                    translationObjs = ir_translation_obj.search([
-                                               ('name', '=', 'product.template,description'),
-                                               ('res_id', '=', templateId),
-                                               ('value', '=', description),
-                                               ('lang', '=', userLang),
-                                               ])
-                    if translationObjs:
-                        translationObjs.write({'value': description})
-                    else:
-                        ir_translation_obj.create({
-                                                  'src' : description,
-                                                  'res_id': templateId,
-                                                  'name': 'product.template,description',
-                                                  'type': 'model',
-                                                  'lang': userLang,
-                                                  'value': description,
-                                                   })
+                    translationObjs = ir_translation_obj.search([('name', '=', 'product.template,description'),
+                                                                 ('value', '=', description),
+                                                                 ('lang', '=', userLang)],
+                                                                limit=1)
+                    for ranslationObj in translationObjs:
+                        oldDescObjs = ir_translation_obj.search([('res_id', '=', ranslationObj.res_id),
+                                                                ('name', '=', ranslationObj.name)])
+                        for oldDescObj in oldDescObjs:
+                            ir_translation_obj.create({'src': oldDescObj.src,
+                                                       'res_id': templateId,
+                                                       'name': 'product.template,description',
+                                                       'type': 'model',
+                                                       'lang': oldDescObj.lang,
+                                                       'value': oldDescObj.value})
         return productBrws
-      
+
     @api.multi
     def write(self, vals):
         '''
@@ -107,21 +105,17 @@ class ProductProductExtension(models.Model):
             if 'description' in vals:
                 description = vals.get('description', '')
                 if not description:
-                    translationObjs = ir_translation_obj.search([
-                                               ('name', '=', 'product.template,description'),
-                                               ('res_id', '=', templateId),
-                                               ])
+                    translationObjs = ir_translation_obj.search([('name', '=', 'product.template,description'),
+                                                                 ('res_id', '=', templateId)])
                     translationObjs.write({'value': ''})
                     vals['description'] = ' '
             if 'name' in vals.keys():
-                translationObjs = ir_translation_obj.search([
-                                           ('name', '=', 'product.template,name'),
-                                           ('res_id', '=', templateId),
-                                           ])
+                translationObjs = ir_translation_obj.search([('name', '=', 'product.template,name'),
+                                                             ('res_id', '=', templateId)])
                 translationObjs.write({'value': vals['name']})
             self.commonSpecialDescriptionCompute(vals, templateId, prodBrws.std_description)
         return super(ProductProductExtension, self).write(vals)
-     
+
     def commonSpecialDescriptionCompute(self, vals, templateId, std_description_obj):
         for prodWriteObj in self:
             ir_translation_obj = self.env['ir.translation']
@@ -131,13 +125,13 @@ class ProductProductExtension(models.Model):
             std_value1 = prodWriteObj.std_value1
             std_value2 = prodWriteObj.std_value2
             std_value3 = prodWriteObj.std_value3
-            if vals_std_value1 != False:
+            if vals_std_value1 is not False:
                 std_value1 = vals_std_value1
-            if vals_std_value2 != False:
+            if vals_std_value2 is not False:
                 std_value2 = vals_std_value2
-            if vals_std_value3 != False:
+            if vals_std_value3 is not False:
                 std_value3 = vals_std_value3
-            if std_description_obj and (vals_std_value1 != False or vals_std_value2 != False or vals_std_value3 != False):
+            if std_description_obj and (vals_std_value1 is not False or vals_std_value2 is not False or vals_std_value3 is not False):
                 userLang = prodWriteObj.env.context.get('lang', 'en_US')
                 for langBrwsObj in self.env['res.lang'].search([]):
                     thisObject = std_description_obj.with_context({'lang': langBrwsObj.code})
@@ -145,53 +139,43 @@ class ProductProductExtension(models.Model):
                     if not initVal:
                         initVal = thisObject.description
                     description = prodWriteObj.computeDescription(thisObject, initVal, thisObject.umc1, thisObject.umc2, thisObject.umc3, std_value1, std_value2, std_value3)
-                    translationObjs = ir_translation_obj.search([
-                                           ('name', '=', 'product.template,description'),
-                                           ('res_id', '=', templateId),
-                                           ('lang', '=', langBrwsObj.code),
-                                           ])
+                    translationObjs = ir_translation_obj.search([('name', '=', 'product.template,description'),
+                                                                 ('res_id', '=', templateId),
+                                                                 ('lang', '=', langBrwsObj.code)])
                     if translationObjs:
                         translationObjs.write({'value': description})
                     else:
                         ir_translation_obj.create({
-                                                  'src' : description,
+                                                  'src': description,
                                                   'res_id': templateId,
                                                   'name': 'product.template,description',
                                                   'type': 'model',
                                                   'lang': userLang,
-                                                  'value': description,
-                                                   })
-     
+                                                  'value': description})
+
     def commonTranslationSetUp(self, templateId, std_description_id):
         '''
             Set standard description correctly, called from write and create
         '''
         ir_translation_obj = self.env['ir.translation']
-        descTransBrwsList = ir_translation_obj.search([
-                                ('name', '=', 'plm.description,name'),             # field to translate
-                                ('res_id', '=', std_description_id),
-                                ])
+        descTransBrwsList = ir_translation_obj.search([('name', '=', 'plm.description,name'),             # field to translate
+                                                       ('res_id', '=', std_description_id)])
         if not descTransBrwsList:
-            descTransBrwsList = ir_translation_obj.search([
-                                ('name', '=', 'plm.description,description'),             # field to translate
-                                ('res_id', '=', std_description_id),
-                                ])
+            descTransBrwsList = ir_translation_obj.search([('name', '=', 'plm.description,description'),             # field to translate
+                                                           ('res_id', '=', std_description_id)])
         for transDescBrws in descTransBrwsList:
-            alreadyPresentTranslations = ir_translation_obj.search([
-                                       ('name', '=', 'product.template,description'),
-                                       ('lang', '=', transDescBrws.lang),
-                                       ('res_id', '=', templateId),
-                                       ])
+            alreadyPresentTranslations = ir_translation_obj.search([('name', '=', 'product.template,description'),
+                                                                    ('lang', '=', transDescBrws.lang),
+                                                                    ('res_id', '=', templateId)])
             if alreadyPresentTranslations:
                 alreadyPresentTranslations.write({'value': transDescBrws.value})
             else:
                 ir_translation_obj.create({
-                                          'src' : transDescBrws.src,
+                                          'src': transDescBrws.src,
                                           'res_id': templateId,
                                           'name': 'product.template,description',
                                           'type': 'model',
                                           'lang': transDescBrws.lang,
-                                          'value': transDescBrws.value,
-                                           })
+                                          'value': transDescBrws.value})
 
 ProductProductExtension()
