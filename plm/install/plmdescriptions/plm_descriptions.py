@@ -84,6 +84,10 @@ class plm_component(models.Model):
     std_umc3            =   fields.Char(_('UM / Feature 3'), size=32, help=_("Allow to specifiy a unit measure for the third feature."))
     std_value3          =   fields.Float(_('Value 3'), help=_("Assign value to the second characteristic."))
 
+    # Don't overload std_umc1, std_umc2, std_umc3 setting them related to std_description because odoo try to set value
+    # of related fields and integration users doesn't have write permissions in std_description. The result is that
+    # integration users can't create products if in changed values there is std_description
+
     _defaults = {
         'std_description': lambda *a: False,
         'std_umc1': lambda *a: False,
