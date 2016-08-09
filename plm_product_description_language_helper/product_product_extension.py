@@ -35,20 +35,6 @@ from openerp import _
 class ProductProductExtension(models.Model):
     _inherit = 'product.product'
 
-    std_umc1 = fields.Char(_('UM / Feature 1'),
-                           size=32,
-                           help=_("Allow to specifiy a unit measure for the first feature."),
-                           related='std_description.umc1',
-                           store=True)
-    std_umc2 = fields.Char(_('UM / Feature 2'),
-                           size=32,
-                           help=_("Allow to specifiy a unit measure for the second feature."),
-                           related='std_description.umc2', store=True)
-    std_umc3 = fields.Char(_('UM / Feature 3'),
-                           size=32,
-                           help=_("Allow to specifiy a unit measure for the third feature."),
-                           related='std_description.umc3', store=True)
-
     def copy(self, cr, uid, _id, default=None, context={}):
         '''
             Set flag to skip translation creation because super copy function makes the trick
