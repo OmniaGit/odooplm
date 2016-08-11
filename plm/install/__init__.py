@@ -29,6 +29,7 @@ import plmdescriptions
 import plmsparebom
 import plmcomponents
 import plmdocuments
+import plm_backup_document
 import actions
 import report
 

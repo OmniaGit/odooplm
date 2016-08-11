@@ -82,7 +82,7 @@ class plm_document(models.Model):
     def _getlastrev(self, cr, uid, ids, context=None):
         result = []
         for objDoc in self.browse(cr, uid, ids, context=context):
-            docIds = self.search(cr, uid, [('name', '=ilike', objDoc.name)], order='revisionid', context=context)
+            docIds = self.search(cr, uid, [('name', '=', objDoc.name)], order='revisionid', context=context)
             docIds.sort()   # Ids are not surely ordered, but revision are always in creation order.
             if docIds:
                 result.append(docIds[len(docIds)-1])
@@ -1125,90 +1125,3 @@ class plm_document_relation(models.Model):
         return False
 
 plm_document_relation()
-
-
-class plm_backupdoc(models.Model):
-    _name = 'plm.backupdoc'
-    
-    
-    userid          =   fields.Many2one ('res.users', _('Related User'))
-    createdate      =   fields.Datetime (_('Date Created'), readonly=True)
-    existingfile    =   fields.Char     (_('Physical Document Location'),size=1024)
-    documentid      =   fields.Many2one ('plm.document', _('Related Document'))
-    revisionid      =   fields.Integer  ( related="documentid.revisionid",  string=_("Revision"),       store=True)
-    state           =   fields.Selection( related="documentid.state",       string=_("Status"),         store=True)
-    document_name   =   fields.Char     ( related="documentid.name",        string=_("Stored Name"),    store=True)
-    printout        =   fields.Binary   (_('Printout Content'))
-    preview         =   fields.Binary   (_('Preview Content'))
-    
-    _defaults = {
-        'create_date': lambda self,ctx:time.strftime("%Y-%m-%d %H:%M:%S")
-    }
-        
-    def unlink(self, cr, uid, ids, context=None):
-        committed=False
-        if context!=None and context!={}:
-            if uid!=1:
-                logging.warning("unlink : Unable to remove the required documents. You aren't authorized in this context.")
-                raise UserError( _("Unable to remove the required document.\n You aren't authorized in this context."))
-                return False
-        documentType=self.pool.get('plm.document')
-        checkObjs=self.browse(cr, uid, ids, context=context)
-        for checkObj in checkObjs:
-            if not int(checkObj.documentid):
-                return super(plm_backupdoc,self).unlink(cr, uid, ids, context=context)
-            currentname=checkObj.documentid.store_fname
-            if checkObj.existingfile != currentname:
-                fullname=os.path.join(documentType._get_filestore(cr),checkObj.existingfile)
-                if os.path.exists(fullname):
-                    if os.path.exists(fullname):
-                        os.chmod(fullname, stat.S_IWRITE)
-                        os.unlink(fullname)
-                        committed=True
-                else:
-                    logging.warning("unlink : Unable to remove the document ("+str(checkObj.documentid.name)+"-"+str(checkObj.documentid.revisionid)+") from backup set. You can't change writable flag.")
-                    raise UserError( _("Unable to remove the document ("+str(checkObj.documentid.name)+"-"+str(checkObj.documentid.revisionid)+") from backup set.\n It isn't a backup file, it's original current one."))
-        if committed:
-            return super(plm_backupdoc,self).unlink(cr, uid, ids, context=context)
-        else:
-            return False
-
-plm_backupdoc()
-
-
-class BackupDocWizard(osv.osv.osv_memory):
-    _name = 'plm.backupdoc_wizard'
-    
-    @api.multi
-    def action_restore_document(self):
-        #return True
-    
-        # TODO: To Test!!!        Restore datas field to allow file download
-        backupDocIds = self.env.context.get('active_ids', [])
-        backupDocObj = self.env['plm.backupdoc']
-        plmDocObj = self.env['plm.document']
-        for backupDocBrws in backupDocObj.browse(backupDocIds):
-            relDocBrws = backupDocBrws.documentid
-            values = {
-                      'printout' : backupDocBrws.printout,
-                      'state' : 'draft',
-                      'revisionid' : backupDocBrws.revisionid,
-                      'name' : backupDocBrws.document_name,
-                      'store_fname' : backupDocBrws.existingfile,
-                      }
-            if relDocBrws:
-                return relDocBrws.write(values)
-            else:
-                documentId = plmDocObj.create(values)
-                # TODO: Needs to be related to component?
-                if documentId:
-                    return {'name': _('Document'),
-                            'view_type': 'form',
-                            "view_mode": 'form, tree',
-                            'res_model': 'plm.document',
-                            'res_id': documentId,
-                            'type': 'ir.actions.act_window',
-                            'domain': "[]"}
-        return True
-
-BackupDocWizard()
