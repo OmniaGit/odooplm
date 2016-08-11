@@ -38,6 +38,9 @@ import stat
 
 
 class plm_backupdoc(models.Model):
+    '''
+        Only administrator is allowed to remove elements by this table
+    '''
     _name = 'plm.backupdoc'
 
     userid = fields.Many2one('res.users', _('Related User'))
