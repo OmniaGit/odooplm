@@ -19,32 +19,37 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-import types
 import logging
 from datetime import datetime
-from openerp import models, fields, api, SUPERUSER_ID, _, osv
+from openerp import models
+from openerp import fields
+from openerp import api
+from openerp import _
 from openerp.exceptions import ValidationError
 from openerp.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
-USED_STATES     =   [('draft',_('Draft')),
-                     ('confirmed',_('Confirmed')),
-                     ('released',_('Released')),
-                     ('undermodify',_('UnderModify')),
-                     ('obsoleted',_('Obsoleted'))]
-USEDIC_STATES   =   dict(USED_STATES)
-#STATEFORRELEASE=['confirmed']
-#STATESRELEASABLE=['confirmed','transmitted','released','undermodify','obsoleted']
+USED_STATES = [('draft', _('Draft')),
+               ('confirmed', _('Confirmed')),
+               ('released', _('Released')),
+               ('undermodify', _('UnderModify')),
+               ('obsoleted', _('Obsoleted'))]
+USEDIC_STATES = dict(USED_STATES)
+
+# STATEFORRELEASE=['confirmed']
+# STATESRELEASABLE=['confirmed','transmitted','released','undermodify','obsoleted']
+
 
 class plm_component(models.Model):
     _inherit = 'product.product'
-    create_date     =   fields.Datetime(_('Date Created'),     readonly=True)
-    write_date      =   fields.Datetime(_('Date Modified'),    readonly=True)
+    create_date = fields.Datetime(_('Date Created'), readonly=True)
+    write_date = fields.Datetime(_('Date Modified'), readonly=True)
 #   Internal methods
+
     def _getbyrevision(self, cr, uid, name, revision):
-        result=None
-        results=self.search(cr,uid,[('engineering_code','=',name),('engineering_revision','=',revision)])
+        result = None
+        results = self.search(cr, uid, [('engineering_code', '=', name), ('engineering_revision', '=', revision)])
         for result in results:
             break
         return result
@@ -72,14 +77,13 @@ class plm_component(models.Model):
         if product_tmpl_id:
             localCtx = self.env.context.copy()
             localCtx.update({'default_product_tmpl_id': product_tmpl_id, 'search_default_product_tmpl_id': product_tmpl_id})
-            return {
-                'type'      : 'ir.actions.act_window',
-                'name'      : _('Mrp Bom'),
-                'view_type' : 'form',
-                'view_mode' : 'tree,form',
-                'res_model' : 'mrp.bom',
-                'context'   : localCtx,
-            }
+            return {'type': 'ir.actions.act_window',
+                    'name': _('Mrp Bom'),
+                    'view_type': 'form',
+                    'view_mode': 'tree,form',
+                    'res_model': 'mrp.bom',
+                    'context': localCtx,
+                    }
 
     def _getChildrenBom(self, cr, uid, component, level=0, currlevel=0, context=None):
         """
@@ -109,22 +113,22 @@ class plm_component(models.Model):
         return self.getUpdTime(self.browse(cr, uid, oid, context=context))
 
     def getUpdTime(self, obj):
-        if(obj.write_date!=False):
-            return datetime.strptime(obj.write_date,'%Y-%m-%d %H:%M:%S')
+        if(obj.write_date is not False):
+            return datetime.strptime(obj.write_date, '%Y-%m-%d %H:%M:%S')
         else:
-            return datetime.strptime(obj.create_date,'%Y-%m-%d %H:%M:%S')
+            return datetime.strptime(obj.create_date, '%Y-%m-%d %H:%M:%S')
 
-##  Customized Automations
+#  Customized Automations
     def on_change_name(self, cr, uid, oid, name=False, engineering_code=False):
         if name:
-            results=self.search(cr,uid,[('name','=',name)])
+            results = self.search(cr, uid, [('name', '=', name)])
             if len(results) > 0:
-                raise UserError(_("Part %s already exists.\nClose with OK to reuse, with Cancel to discharge." %(name)))
+                raise UserError(_("Part %s already exists.\nClose with OK to reuse, with Cancel to discharge." % (name)))
             if not engineering_code:
-                return {'value': {'engineering_code': name}}            
+                return {'value': {'engineering_code': name}}
         return {}
 
-##  External methods
+#  External methods
     def Clone(self, cr, uid, oid, context={}, defaults={}):
         """
             create a new revision of the component
@@ -182,26 +186,26 @@ class plm_component(models.Model):
         """
             create a new revision of current component
         """
-        newID=None
-        newIndex=0
+        newID = None
+        newIndex = 0
         for tmpObject in self.browse(cr, uid, ids, context=context):
-            latestIDs=self.GetLatestIds(cr, uid,[(tmpObject.engineering_code,tmpObject.engineering_revision,False)], context=context)
+            latestIDs = self.GetLatestIds(cr, uid, [(tmpObject.engineering_code, tmpObject.engineering_revision, False)], context=context)
             for oldObject in self.browse(cr, uid, latestIDs, context=context):
-                newIndex=int(oldObject.engineering_revision)+1
-                defaults={}
-                defaults['engineering_writable']=False
-                defaults['state']='undermodify'
+                newIndex = int(oldObject.engineering_revision) + 1
+                defaults = {}
+                defaults['engineering_writable'] = False
+                defaults['state'] = 'undermodify'
                 self.write(cr, uid, [oldObject.id], defaults, context=context)
-                self.wf_message_post(cr, uid, [oldObject.id], body=_('Status moved to: %s.' %(USEDIC_STATES[defaults['state']])))
+                self.wf_message_post(cr, uid, [oldObject.id], body=_('Status moved to: %s.' % (USEDIC_STATES[defaults['state']])))
                 # store updated infos in "revision" object
-                defaults['name']=oldObject.name                 # copy function needs an explicit name value
-                defaults['engineering_revision']=newIndex
-                defaults['engineering_writable']=True
-                defaults['state']='draft'
-                defaults['linkeddocuments']=[]                  # Clean attached documents for new revision object
-                newID=self.copy(cr, uid, oldObject.id, defaults, context=context)
+                defaults['name'] = oldObject.name                 # copy function needs an explicit name value
+                defaults['engineering_revision'] = newIndex
+                defaults['engineering_writable'] = True
+                defaults['state'] = 'draft'
+                defaults['linkeddocuments'] = []                  # Clean attached documents for new revision object
+                newID = self.copy(cr, uid, oldObject.id, defaults, context=context)
                 self.wf_message_post(cr, uid, [oldObject.id], body=_('Created : New Revision.'))
-                self.write(cr,uid,[newID],{'name':oldObject.name}, context=None)
+                self.write(cr, uid, [newID], {'name': oldObject.name}, context=None)
                 # create a new "old revision" object
                 break
             break
@@ -772,51 +776,3 @@ class plm_component(models.Model):
             return newResult
 
 plm_component()
-
-
-class PlmComponentRevisionWizard(models.Model):
-    _name = 'product.rev_wizard'
-    riviseDocument = fields.Boolean(_('Document Revision'),
-                                    help=_("""
-                                    Make new revision of the linked document ?
-                                    """))
-    @api.multi
-    def action_create_new_revision_by_server(self):
-        def stateAllows(brwsObj, objType):
-            if brwsObj.state != 'released':
-                logging.error('[action_create_new_revision_by_server:stateAllows] Cannot revise obj %s, Id: %r because state is %r' % (objType, brwsObj.id, brwsObj.state))
-                raise UserError(_("%s cannot be revised because the state isn't released!" % (objType)))
-            return True
-        product_id = self.env.context.get('default_product_id', False)
-        if not product_id:
-            logging.error('[action_create_new_revision_by_server] Cannot revise because product_id is %r' % (product_id))
-            raise UserError(_('Current component cannot be revised!'))
-        prodProdEnv = self.env['product.product']
-        prodBrws = prodProdEnv.browse(product_id)
-        if stateAllows(prodBrws, 'Component'):
-            revRes = prodBrws.NewRevision()
-            newID, newIndex = revRes
-            newIndex
-            if not newID:
-                logging.error('[action_create_new_revision_by_server] newID: %r' % (newID))
-                raise UserError(_('Something wrong happens during new component revision process.'))
-            if self.riviseDocument:
-                createdDocIds = []
-                for docBrws in prodBrws.linkeddocuments:
-                    if stateAllows(docBrws, 'Document'):
-                        resDoc = docBrws.NewRevision()
-                        newDocID, newDocIndex = resDoc
-                        newDocIndex
-                        if not newDocID:
-                            logging.error('[action_create_new_revision_by_server] newDocID: %r' % (newDocID))
-                            raise UserError(_('Something wrong happens during new document revision process.'))
-                        createdDocIds.append(newDocID)
-                prodProdEnv.browse(newID).linkeddocuments = createdDocIds
-            return {'name': _('Revised Product'),
-                    'view_type': 'tree,form',
-                    "view_mode": 'form',
-                    'res_model': 'product.product',
-                    'res_id': newID,
-                    'type': 'ir.actions.act_window'}
-    
-PlmComponentRevisionWizard()

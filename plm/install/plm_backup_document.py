@@ -92,8 +92,6 @@ class BackupDocWizard(osv.osv.osv_memory):
     '''
         This class is called from an action in xml located in plm.backupdoc.
         Pay attention! You can restore also confirmed, released and obsoleted documents!!!
-        If you have a document AAA in PWS and you restore AAA from previous change client won't download it.
-        You have to delete it from PWS and open again with the integration
     '''
 
     _name = 'plm.backupdoc_wizard'
