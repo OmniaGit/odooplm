@@ -70,7 +70,7 @@ def get_bom_report(myObject, recursion=False, flat=False, leaf=False, level=1, s
                 res['pcode'] = l.product_id.default_code
                 res['previ'] = product.engineering_revision
                 res['pqty'] = l.product_qty
-                res['uname'] = l.product_uom.name
+                res['uname'] = l.product_uom_id.name
                 res['pweight'] = product.weight
                 res['code'] = l.product_id.default_code
                 res['level'] = level

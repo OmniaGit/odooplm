@@ -196,7 +196,7 @@ class plm_relation_line(models.Model):
     ebom_source_id  = fields.Integer('Source Ebom ID')
  
     _defaults = {
-        'product_uom': 1,
+        'product_uom_id': 1,
     }
 
     _order = 'itemnum'
@@ -218,7 +218,7 @@ class plm_relation(models.Model):
     
 
     _defaults = {
-        'product_uom': 1,
+        'product_uom_id': 1,
         'weight_net': 0.0,
     }
 

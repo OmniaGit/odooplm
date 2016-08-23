@@ -136,7 +136,7 @@
 	           				<field name="tmp_material" 	attrs="{'readonly':[('state','in',['released','obsoleted'])]}" on_change="on_change_tmpmater(tmp_material)"/>
 	         				<field name="tmp_surface" 	attrs="{'readonly':[('state','in',['released','obsoleted'])]}" on_change="on_change_tmpsurface(tmp_surface)"/>
 	             			<field name="weight"		attrs="{'readonly':[('state','in',['released','obsoleted'])]}" digits="(14, 3)"  	/>
-	             			<field name="uom_id" 		attrs="{'readonly':[('state','in',['released','obsoleted'])]}" on_change="onchange_uom(uom_id,uom_po_id)"/>
+	             			<field name="uom_id" 		attrs="{'readonly':[('state','in',['released','obsoleted'])]}" />
                             <field name="uom_po_id" 	attrs="{'readonly':[('state','in',['released','obsoleted'])]}" groups="base.group_extended"/>
 	         			</group>
 					    <group col="4" colspan="4">

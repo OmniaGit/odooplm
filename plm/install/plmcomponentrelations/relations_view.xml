@@ -60,7 +60,7 @@
                             <label for="product_qty" string="Quantity"/>
                             <div>
                                 <field name="product_qty" class="oe_inline" on_change="onchange_product_tmpl_id(product_tmpl_id, product_qty, context)"/>
-                                <field name="product_uom" options="{'no_open':True,'no_create':True}" class="oe_inline" on_change="onchange_uom(product_tmpl_id, product_uom)" groups="product.group_uom"/>
+                                <field name="product_uom_id" options="{'no_open':True,'no_create':True}" class="oe_inline" groups="product.group_uom"/>
                             </div>
                             <label for="routing_id" class="oe_inline" groups="mrp.group_mrp_routings"/>
                             <div groups="mrp.group_mrp_routings">
@@ -80,13 +80,8 @@
                                     <field name="sequence" widget="handle"/>
                                     <field name="product_id" on_change="onchange_product_id(product_id, product_qty)"/>
                                     <field name="product_qty"/>
-                                    <field name="product_uom" options="{'no_open':True,'no_create':True}" on_change="onchange_uom(product_id, product_uom)" groups="product.group_uom"/>
-                                    <field name="product_rounding" groups="mrp.group_rounding_efficiency"/>
-                                    <field name="product_efficiency" groups="mrp.group_rounding_efficiency"/>
-                                    <field name="date_start"/>
-                                    <field name="date_stop"/>
+                                    <field name="product_uom_id" options="{'no_open':True,'no_create':True}" groups="product.group_uom"/>
                                     <field name="attribute_value_ids" widget="many2many_tags" domain="[('product_ids.product_tmpl_id', '=', parent.product_tmpl_id)]" groups="product.group_product_variant"/>
-                                    <field name="property_ids" widget="many2many_tags" groups="product.group_mrp_properties"/>
 		            	<field name="engineering_revision" readonly="True"/>
 		                <field name="state" readonly="True"/>
 		            	<field name="description" readonly="True"/>
@@ -98,21 +93,13 @@
                         <page string="Properties" groups="base.group_no_one">
                             <group>
                                 <group>
-                                    <field name="position"/>
                                     <field name="sequence"/>
                                     <field name="active"/>
-                                </group>
-                                <group>
-                                    <field name="date_start"/>
-                                    <field name="date_stop"/>
-                                    <field name="product_rounding"/>
-                                    <field name="product_efficiency"/>
                                 </group>
                             </group>
                             <separator string="Properties" groups="product.group_mrp_properties"/>
                             <group>
                                 <group>
-                                    <field name="property_ids" widget="many2many_tags" groups="product.group_mrp_properties"/>
                                 </group>
                                 <group/>
                             </group>
@@ -303,7 +290,7 @@
                     <field name="description"/>
                     <field name="source_id" string="Source Relation Document"/>
                     <field name="product_qty"/>
-                    <field name="product_uom"/>
+                    <field name="product_uom_id"/>
                     <field name="weight_net"/>
                     <field name="create_date" select="True"/>
                     <field name="type"/>
@@ -323,7 +310,7 @@
                     <field name="description"/>
                     <field name="source_id" string="Source Relation Document"/>
                     <field name="product_qty"/>
-                    <field name="product_uom"/>
+                    <field name="product_uom_id"/>
                     <field name="weight_net"/>
                     <field name="create_date" select="True"/>
                     <field name="type"/>

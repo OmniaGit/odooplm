@@ -506,99 +506,98 @@ class plm_document(models.Model):
                 expData = tmpData['datas']
         return expData
 
-    def ischecked_in(self, cr, uid, ids, context=None):
+    @api.multi
+    def ischecked_in(self):
         """
             Check if a document is checked-in
         """
-        documents = self.browse(cr, uid, ids, context=context)
         checkoutType = self.pool.get('plm.checkout')
-
-        for document in documents:
-            if checkoutType.search(cr, uid, [('documentid', '=', document.id)], context=context):
+        for document in self:
+            if checkoutType.search([('documentid', '=', document.id)]):
                 logging.warning(_("The document %s - %s has not checked-in" % (str(document.name), str(document.revisionid))))
                 return False
         return True
 
-    def wf_message_post(self, cr, uid, ids, body='', context=None):
+    @api.multi
+    def wf_message_post(self, body=''):
         """
             Writing messages to follower, on multiple objects
         """
-        if not (body == ''):
-            for idd in ids:
-                self.message_post(cr, uid, [idd], body=_(body))
+        if body:
+            self.message_post(body=_(body))
 
-    def action_draft(self, cr, uid, ids, *args):
-        """
-            release the object
-        """
-        defaults = {}
-        defaults['writable'] = True
-        defaults['state'] = 'draft'
-        objId = self.write(cr, uid, ids, defaults, check=False)
+    @api.multi
+    def setCheckContextWrite(self, checkVal=True):
+        '''
+            :checkVal Set check flag in context
+        '''
+        localCtx = self.env.context.copy()
+        localCtx['check'] = checkVal
+        self.env.context = localCtx
+
+    @api.multi
+    def commonWFAction(self, writable, state, check):
+        '''
+            :writable set writable flag for component
+            :state define product state
+            :check do check verification for component write
+        '''
+        self.setCheckContextWrite(check)
+        objId = self.write({'writable': writable,
+                            'state': state
+                            })
         if (objId):
-            self.wf_message_post(cr, uid, ids, body=_('Status moved to: %s.' % (USEDIC_STATES[defaults['state']])))
+            self.wf_message_post(body=_('Status moved to: %s.' % (USEDIC_STATES[state])))
         return objId
 
-    def action_confirm(self, cr, uid, ids, context=None):
+    @api.multi
+    def action_draft(self):
         """
             action to be executed for Draft state
         """
-        defaults = {}
-        defaults['writable'] = False
-        defaults['state'] = 'confirmed'
-        if self.ischecked_in(cr, uid, ids, context):
-            objId = self.write(cr, uid, ids, defaults, context=context, check=False)
-            if (objId):
-                self.wf_message_post(cr, uid, ids, body=_('Status moved to: %s.' % (USEDIC_STATES[defaults['state']])))
-            return objId
-        return False
+        return self.commonWFAction(True, 'draft', False)
 
-    def action_release(self, cr, uid, ids, *args):
+    @api.multi
+    def action_confirm(self):
+        """
+            action to be executed for Confirm state
+        """
+        return self.commonWFAction(False, 'confirmed', False)
+
+    @api.multi
+    def action_release(self):
         """
             release the object
         """
-        defaults = {}
-        for oldObject in self.browse(cr, uid, ids, context=None):
-            last_id = self._getbyrevision(cr, uid, oldObject.name, oldObject.revisionid - 1)
+        for oldObject in self:
+            last_id = self._getbyrevision(oldObject.name, oldObject.revisionid - 1)
             if last_id is not None:
-                defaults['writable'] = False
-                defaults['state'] = 'obsoleted'
-                self.write(cr, uid, [last_id], defaults, check=False)
-                self.wf_message_post(cr, uid, [last_id], body=_('Status moved to: %s.' % (USEDIC_STATES[defaults['state']])))
-        defaults['writable'] = False
-        defaults['state'] = 'released'
-        if self.ischecked_in(cr, uid, ids):
-            objId = self.write(cr, uid, ids, defaults, check=False)
-            if (objId):
-                self.wf_message_post(cr, uid, ids, body=_('Status moved to: %s.' % (USEDIC_STATES[defaults['state']])))
-            return objId
+                selfBrws = self.browse([last_id])
+                selfBrws.commonWFAction(False, 'released', False)
+        if self.ischecked_in():
+            return self.commonWFAction(False, 'released', False)
         return False
 
-    def action_obsolete(self, cr, uid, ids, context=None):
+    @api.multi
+    def action_obsolete(self):
         """
             obsolete the object
         """
-        defaults = {}
-        defaults['writable'] = False
-        defaults['state'] = 'obsoleted'
-        if self.ischecked_in(cr, uid, ids, context):
-            objId = self.write(cr, uid, ids, defaults, context=context, check=False)
-            if (objId):
-                self.wf_message_post(cr, uid, ids, body=_('Status moved to: %s.' % (USEDIC_STATES[defaults['state']])))
-            return objId
-        return False
+        return self.commonWFAction(False, 'obsoleted', False)
 
-    def action_reactivate(self, cr, uid, ids, context=None):
+    @api.multi
+    def action_reactivate(self):
         """
             reactivate the object
         """
         defaults = {}
         defaults['engineering_writable'] = False
         defaults['state'] = 'released'
-        if self.ischecked_in(cr, uid, ids, context):
-            objId = self.write(cr, uid, ids, defaults, context=context, check=False)
+        if self.ischecked_in():
+            self.setCheckContextWrite(False)
+            objId = self.write(defaults)
             if (objId):
-                self.wf_message_post(cr, uid, ids, body=_('Status moved to:%s.' % (USEDIC_STATES[defaults['state']])))
+                self.wf_message_post(body=_('Status moved to:%s.' % (USEDIC_STATES[defaults['state']])))
             return objId
         return False
 
@@ -641,14 +640,16 @@ class plm_document(models.Model):
 #
 #         return len(ids) if count else ids
 
-    def write(self, cr, uid, ids, vals, context=None, check=True):
+    @api.multi
+    def write(self, vals):
         checkState = ('confirmed', 'released', 'undermodify', 'obsoleted')
+        check = self.env.context.get('check', True)
         if check:
-            for customObject in self.browse(cr, uid, ids, context=context):
+            for customObject in self:
                 if customObject.state in checkState:
                     raise UserError(_("The active state does not allow you to make save action"))
                     return False
-        return super(plm_document, self).write(cr, uid, ids, vals, context=context)
+        return super(plm_document, self).write(vals)
 
     def unlink(self, cr, uid, ids, context=None):
         values = {'state': 'released', }
@@ -966,13 +967,14 @@ class plm_document(models.Model):
         uiUser=userType.browse(cr,uid,uid,context=context)
         return uiUser.name
 
-    def _getbyrevision(self, cr, uid, name, revision):
-        result=None
-        results=self.search(cr,uid,[('name','=',name),('revisionid','=',revision)])
+    @api.multi
+    def _getbyrevision(self, name, revision):
+        result = False
+        results = self.search([('name', '=', name), ('revisionid', '=', revision)])
         for result in results:
-            break
+            return result
         return result
-    
+
     def getCheckedOut(self, cr, uid, oid, default=None, context=None):
         checkoutType=self.pool.get('plm.checkout')
         checkoutIDs=checkoutType.search(cr,uid,[('documentid', '=',oid)])

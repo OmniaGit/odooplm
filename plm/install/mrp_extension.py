@@ -44,7 +44,7 @@ class MrpProductionExtension(osv.osv):
             bomBrws = self.pool.get('mrp.bom').browse(cr, uid, bom_id, context)
             if bomBrws.type == 'ebom':
                 return {'value': {
-                    'product_uom': False,
+                    'product_uom_id': False,
                     'bom_id': False,
                     'routing_id': False,
                     'product_uos_qty': 0,

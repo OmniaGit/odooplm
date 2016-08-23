@@ -55,7 +55,7 @@ class bom_structure_cutted_parts(report_sxw.rml_parse):
                     res['pcode'] = l.product_id.default_code
                     res['previ'] = product.engineering_revision
                     res['pqty'] = l.product_qty * 1 if parentQty < 1 else parentQty
-                    res['uname'] = l.product_uom.name
+                    res['uname'] = l.product_uom_id.name
                     res['pweight'] = product.weight
                     res['code'] = eng_code
                     res['level'] = level

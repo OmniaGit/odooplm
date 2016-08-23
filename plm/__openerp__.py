@@ -107,7 +107,7 @@ Supported Editors :
             'install/views/mrp_extension.xml',
             #security
             'security/res.groups.csv',
-            'security/ir.model.access.csv',
+            # TODO: reenable'security/ir.model.access.csv',
        ],
     'demo': [
         ],
