@@ -511,7 +511,7 @@ class plm_document(models.Model):
         """
             Check if a document is checked-in
         """
-        checkoutType = self.pool.get('plm.checkout')
+        checkoutType = self.env['plm.checkout']
         for document in self:
             if checkoutType.search([('documentid', '=', document.id)]):
                 logging.warning(_("The document %s - %s has not checked-in" % (str(document.name), str(document.revisionid))))
@@ -529,7 +529,7 @@ class plm_document(models.Model):
     @api.multi
     def setCheckContextWrite(self, checkVal=True):
         '''
-            :checkVal Set check flag in context
+            :checkVal Set check flag in context to do state verification in component write
         '''
         localCtx = self.env.context.copy()
         localCtx['check'] = checkVal
@@ -539,8 +539,8 @@ class plm_document(models.Model):
     def commonWFAction(self, writable, state, check):
         '''
             :writable set writable flag for component
-            :state define product state
-            :check do check verification for component write
+            :state define new product state
+            :check do state verification in component write
         '''
         self.setCheckContextWrite(check)
         objId = self.write({'writable': writable,
@@ -571,7 +571,7 @@ class plm_document(models.Model):
         """
         for oldObject in self:
             last_id = self._getbyrevision(oldObject.name, oldObject.revisionid - 1)
-            if last_id is not None:
+            if last_id:
                 selfBrws = self.browse([last_id])
                 selfBrws.commonWFAction(False, 'released', False)
         if self.ischecked_in():
@@ -612,33 +612,6 @@ class plm_document(models.Model):
     def _get_filestore(self, cr):
         dms_Root_Path = tools.config.get('document_path', os.path.join(tools.config['root_path'], 'filestore'))
         return os.path.join(dms_Root_Path, cr.dbname)
-
-#     def search(self, cr, uid, args, offset=0, limit=None, order=None, context=None, count=False):
-#         # Grab ids, bypassing 'count'
-#         ids = osv.osv.osv.search(self,cr, uid, args, offset=offset, limit=limit, order=order, context=context, count=False)
-#         if not ids:
-#             return 0 if count else []
-#
-#         # Filter out documents that are in directories that the user is not allowed to read.
-#         # Must use pure SQL to avoid access rules exceptions (we want to remove the records,
-#         # not fail), and the records have been filtered in parent's search() anyway.
-#         cr.execute('SELECT id, parent_id from plm_document WHERE id in %s', (tuple(ids),))
-#
-#         # cont a dict of parent -> attach
-#         parents = {}
-#         for attach_id, attach_parent in cr.fetchall():
-#             parents.setdefault(attach_parent, []).append(attach_id)
-#         parent_ids = parents.keys()
-#
-#         # filter parents
-#         visible_parent_ids = self.pool.get('document.directory').search(cr, uid, [('id', 'in', list(parent_ids))])
-#
-#         # null parents means allowed
-#         ids = parents.get(None,[])
-#         for parent_id in visible_parent_ids:
-#             ids.extend(parents[parent_id])
-#
-#         return len(ids) if count else ids
 
     @api.multi
     def write(self, vals):
