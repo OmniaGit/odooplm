@@ -102,13 +102,5 @@
         <field name="view_mode">tree,form</field>
     </record>
 
-    <menuitem
-        name="Search on Document Relations"
-        action="plm_action_document_relations"
-        id="menu_document_relations"
-        parent="plm_document_form"
-        sequence="11"
-    />
-
 </data>
 </openerp>

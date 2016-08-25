@@ -184,17 +184,6 @@
         <field name="view_id_search" ref="plm_component_base_search"/>
     </record>
     
-	<menuitem 	id		="plm_component_menu_view" 
-				name	="Components" 
-				parent	="plm.plm_menu" 
-				sequence="10"/>
-        	
-    <menuitem 	id		="menu_base_component"
-    			name	="Search on Engineering Parts" 
-    			parent	="plm.plm_component_menu_view"
-              	action	="action_plm_component_base" />
-    
-              	
     <!-- Product Template Overload -->
     
         <record id="product_template_form_view_plm_custom" model="ir.ui.view">
@@ -231,7 +220,32 @@
             </field>
         </field>
     </record> 
-     
+
+<!--  Tree Structure Where Used on Product -->
+
+        <record id="mrp_part_tree_view_where" model="ir.ui.view">
+            <field name="name">mrp.part.tree.where</field>
+            <field name="model">product.product</field>
+            <field name="field_parent">father_part_ids</field>
+            <field name="arch" type="xml">
+                <tree string="Bill of Materials">
+                    <field name="name" string="Component Name"/>
+                    <field name="engineering_revision" string="Revision"/>
+                    <field name="description"/>
+                </tree>
+            </field>
+        </record>
+
+        <act_window
+            id="action_product_bom_structure_where"
+            name="Product BoM Where Used Structure"
+            domain="[('id','in',active_ids)]" 
+            context="{'default_product_id': active_id}"
+            view_type="tree"
+            view_id="mrp_part_tree_view_where"
+            res_model="product.product"
+            src_model="product.product"/>	<!-- Do not remove src_model. It is used to get action only in component form -->
+    
 </data>
 </openerp>
 

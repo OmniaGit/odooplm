@@ -127,36 +127,6 @@
              <field name="view_mode">form</field>
              <field name="view_id" ref="board_plm_manager_form"/>
         </record>
-
-        <menuitem id="plm_menu" name="PLM Module" icon="terp-stock" 
-            web_icon="plm,images/PLMmodule-hover.png"
-            web_icon_hover="images/PLMmodule-hover.png"
-        	action = "plm.open_board_plm_manager"
-        />
-
-        <menuitem
-            action="plm.open_board_plm_manager"
-            id="plm_dashboard_menu" 
-            parent="plm.plm_menu" sequence="1"
-            name="Dashboard"/>
-
-		<menuitem name="Documents" id="plm_document_form" parent="plm_menu" sequence="11"/>
-		
-	    <menuitem
-	        name="Search on Documents"
-	        action="plm.plm_action_document_form"
-	        id="menu_document_files"
-	        parent="plm.plm_document_form" 
-	    	sequence="10" 
-	    />
-	    
-	    <menuitem
-	        name="Search on Checked-Out Documents"
-	        action="plm.action_plm_checkout"
-	        id="menu_checkout"
-	        parent="plm.plm_document_form" 
-	    	sequence="12"
-	    />
     
 	</data>
  </openerp>

@@ -37,7 +37,7 @@ import os
 import stat
 
 
-class plm_backupdoc(models.Model):
+class PlmBackupDocument(models.Model):
     '''
         Only administrator is allowed to remove elements by this table
     '''
@@ -68,7 +68,7 @@ class plm_backupdoc(models.Model):
         checkObjs = self.browse(cr, uid, ids, context=context)
         for checkObj in checkObjs:
             if not int(checkObj.documentid):
-                return super(plm_backupdoc, self).unlink(cr, uid, ids, context=context)
+                return super(PlmBackupDocument, self).unlink(cr, uid, ids, context=context)
             currentname = checkObj.documentid.store_fname
             if checkObj.existingfile != currentname:
                 fullname = os.path.join(documentType._get_filestore(cr), checkObj.existingfile)
@@ -81,11 +81,11 @@ class plm_backupdoc(models.Model):
                     logging.warning("unlink : Unable to remove the document (" + str(checkObj.documentid.name) + "-" + str(checkObj.documentid.revisionid) + ") from backup set. You can't change writable flag.")
                     raise UserError(_("Unable to remove the document (" + str(checkObj.documentid.name) + "-" + str(checkObj.documentid.revisionid) + ") from backup set.\n It isn't a backup file, it's original current one."))
         if committed:
-            return super(plm_backupdoc, self).unlink(cr, uid, ids, context=context)
+            return super(PlmBackupDocument, self).unlink(cr, uid, ids, context=context)
         else:
             return False
 
-plm_backupdoc()
+PlmBackupDocument()
 
 
 class BackupDocWizard(osv.osv.osv_memory):

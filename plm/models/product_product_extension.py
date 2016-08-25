@@ -25,8 +25,10 @@ from openerp import models
 from openerp import fields
 from openerp import api
 from openerp import _
+#from types import *
 from openerp.exceptions import ValidationError
 from openerp.exceptions import UserError
+from openerp import osv
 
 _logger = logging.getLogger(__name__)
 
@@ -42,10 +44,180 @@ USEDIC_STATES = dict(USED_STATES)
 
 
 class plm_component(models.Model):
+    _name = 'product.product'
     _inherit = 'product.product'
-    create_date = fields.Datetime(_('Date Created'), readonly=True)
-    write_date = fields.Datetime(_('Date Modified'), readonly=True)
+
+    create_date = fields.Datetime(_('Date Created'),
+                                  readonly=True)
+    write_date = fields.Datetime(_('Date Modified'),
+                                 readonly=True)
+    std_description = fields.Many2one('plm.description',
+                                      _('Standard Description'),
+                                      required=False,
+                                      change_default=True,
+                                      help=_("Select standard description for current product."))
+    std_umc1 = fields.Char(_('UM / Feature 1'),
+                           size=32,
+                           help=_("Allow to specifiy a unit measure for the first feature."))
+    std_value1 = fields.Float(_('Value 1'),
+                              help=_("Assign value to the first characteristic."))
+    std_umc2 = fields.Char(_('UM / Feature 2'),
+                           size=32,
+                           help=_("Allow to specifiy a unit measure for the second feature."))
+    std_value2 = fields.Float(_('Value 2'),
+                              help=_("Assign value to the second characteristic."))
+    std_umc3 = fields.Char(_('UM / Feature 3'),
+                           size=32,
+                           help=_("Allow to specifiy a unit measure for the third feature."))
+    std_value3 = fields.Float(_('Value 3'),
+                              help=_("Assign value to the second characteristic."))
+
+    # Don't overload std_umc1, std_umc2, std_umc3 setting them related to std_description because odoo try to set value
+    # of related fields and integration users doesn't have write permissions in std_description. The result is that
+    # integration users can't create products if in changed values there is std_description
+
+    _defaults = {
+        'std_description': lambda *a: False,
+        'std_umc1': lambda *a: False,
+        'std_value1': lambda *a: False,
+        'std_umc2': lambda *a: False,
+        'std_value2': lambda *a: False,
+        'std_umc3': lambda *a: False,
+        'std_value3': lambda *a: False,
+    }
+
 #   Internal methods
+    def _packfinalvalues(self,fmt,value=False,value2=False,value3=False):
+        """
+            Pack a string formatting it like specified in fmt
+            mixing both label and value or only label.
+        """
+        retvalue=''
+        
+        if value3:
+            if (type(value3) is FloatType):
+                svalue3="%g" %value3
+            else:
+                svalue3=value3
+        else:
+            svalue3=''
+
+        if value2:
+            if (type(value2) is FloatType):
+                svalue2="%g" %value2
+            else:
+                svalue2=value2
+        else:
+            svalue2=''
+
+        if value:
+            if (type(value) is FloatType):
+                svalue="%g" %value
+            else:
+                svalue=value
+        else:
+            svalue=''
+
+        if svalue or svalue2 or svalue3:
+            cnt=fmt.count('%s')
+            if cnt == 3:
+                retvalue = fmt %(svalue, svalue2, svalue3)
+            if cnt == 2:
+                retvalue = fmt %(svalue, svalue2)
+            elif cnt == 1:
+                retvalue = fmt %(svalue)
+        return retvalue
+
+    def _packvalues(self,fmt,label=False,value=False):
+        """
+            Pack a string formatting it like specified in fmt
+            mixing both label and value or only label.
+        """
+        retvalue=''
+        
+        if value:
+            if (type(value) is FloatType):
+                svalue="%g" %value
+            else:
+                svalue=value
+        else:
+            svalue=''
+
+        if label:
+            if (type(label) is FloatType):
+                slabel="%g" %label
+            else:
+                slabel=label
+        else:
+            slabel=''
+
+        if svalue:
+            cnt=fmt.count('%s')
+
+            if cnt == 2:
+                retvalue = fmt %(slabel, svalue)
+            elif cnt == 1:
+                retvalue = fmt %(svalue)
+        return retvalue
+
+##  Customized Automations
+    def on_change_stddesc(self, cr, uid, _id, std_description=False, context={}):
+        values = {
+                  'description': False,
+                  'std_umc1': False,
+                  'std_value1': False,
+                  'std_umc2': False,
+                  'std_value2': False,
+                  'std_umc3': False,
+                  'std_value3': False}
+        if std_description:
+            thisDescription = self.pool.get('plm.description')
+            thisObject = thisDescription.browse(cr, uid, std_description, context)
+            if thisObject.description:
+                values['description'] = thisObject.description
+                if thisObject.umc1:
+                    values['std_umc1'] = thisObject.umc1
+                if thisObject.umc2:
+                    values['std_umc2'] = thisObject.umc2
+                if thisObject.umc3:
+                    values['std_umc3'] = thisObject.umc3
+                if thisObject.unitab:
+                    values['description'] = values['description'] + " " + thisObject.unitab
+        return {'value': values}
+
+    def on_change_stdvalue(self, cr, uid, _id, std_description=False, std_umc1=False, std_value1=False,\
+                           std_umc2=False, std_value2=False, std_umc3=False, std_value3=False, context={}):
+        if std_description:
+            thisDescription = self.pool.get('plm.description')
+            thisObject = thisDescription.browse(cr, uid, std_description, context)
+            if thisObject.description:
+                description = self.computeDescription(thisObject, thisObject.description, std_umc1, std_umc2, std_umc3, std_value1, std_value2, std_value3)
+                return {'value': {'description': description}}
+        return {}
+    
+    def computeDescription(self, thisObject, initialVal, std_umc1, std_umc2, std_umc3, std_value1, std_value2, std_value3):
+        description1 = False
+        description2 = False
+        description3 = False
+        description = initialVal
+        if thisObject.fmtend:
+            if std_umc1 and std_value1:
+                description1 = self._packvalues(thisObject.fmt1, std_umc1, std_value1)
+            if std_umc2 and std_value2:
+                description2 = self._packvalues(thisObject.fmt2, std_umc2, std_value2)
+            if std_umc3 and std_value3:
+                description3 = self._packvalues(thisObject.fmt3, std_umc3, std_value3)
+            description = description + " " + self._packfinalvalues(thisObject.fmtend, description1, description2, description3)
+        else:
+            if std_umc1 and std_value1:
+                description = description + " " + self._packvalues(thisObject.fmt1, std_umc1, std_value1)
+            if std_umc2 and std_value2:
+                description = description + " " + self._packvalues(thisObject.fmt2, std_umc2, std_value2)
+            if std_umc3 and std_value3:
+                description = description + " " + self._packvalues(thisObject.fmt3, std_umc3, std_value3)
+        if thisObject.unitab:
+            description = description + " " + thisObject.unitab
+        return description
 
     def _getbyrevision(self, cr, uid, name, revision):
         result = None
@@ -775,4 +947,110 @@ class plm_component(models.Model):
                 newResult.append((productId, newName))
             return newResult
 
+    @api.multi
+    def _father_part_compute(self, name='', arg={}):
+        """ Gets father bom.
+        @param self: The object pointer
+        @param cr: The current row, from the database cursor,
+        @param uid: The current user ID for security checks
+        @param ids: List of selected IDs
+        @param name: Name of the field
+        @param arg: User defined argument
+        @param context: A standard dictionary for contextual values
+        @return:  Dictionary of values
+        """
+        bom_line_objType = self.env['mrp.bom.line']
+        prod_objs = self.browse(self.ids)
+        for prod_obj in prod_objs:
+            prod_ids = []
+            bom_line_objs = bom_line_objType.search([('product_id', '=', prod_obj.id)])
+            for bom_line_obj in bom_line_objs:
+                for objPrd in self.search([('product_tmpl_id', '=', bom_line_obj.bom_id.product_tmpl_id.id)]):
+                    prod_ids.append(objPrd.id)
+            prod_obj.father_part_ids = prod_ids
+
+    linkeddocuments = fields.Many2many('plm.document', 'plm_component_document_rel', 'component_id', 'document_id', _('Linked Docs'))
+    tmp_material = fields.Many2one('plm.material', _('Raw Material'), required=False, change_default=True, help=_("Select raw material for current product"))
+    tmp_surface = fields.Many2one('plm.finishing', _('Surface Finishing'), required=False, change_default=True, help=_("Select surface finishing for current product"))
+    father_part_ids = fields.Many2many('product.product', compute=_father_part_compute, string=_("BoM Hierarchy"), store=False)
+
+    def on_change_tmpmater(self, cr, uid, ids, tmp_material=False):
+        values = {'engineering_material': ''}
+        if tmp_material:
+            thisMaterial = self.pool.get('plm.material')
+            thisObject = thisMaterial.browse(cr, uid, tmp_material)
+            if thisObject.name:
+                values['engineering_material'] = unicode(thisObject.name)
+        return {'value': values}
+
+    def on_change_tmptreatment(self, cr, uid, ids, tmp_treatment=False):
+        values = {'engineering_treatment': ''}
+        if tmp_treatment:
+            thisTreatment = self.pool.get('plm.treatment')
+            thisObject = thisTreatment.browse(cr, uid, tmp_treatment)
+            if thisObject.name:
+                values['engineering_treatment'] = unicode(thisObject.name)
+        return {'value': values}
+
+    def on_change_tmpsurface(self, cr, uid, ids, tmp_surface=False):
+        values = {'engineering_surface': ''}
+        if tmp_surface:
+            thisSurface = self.pool.get('plm.finishing')
+            thisObject = thisSurface.browse(cr, uid, tmp_surface)
+            if thisObject.name:
+                values['engineering_surface'] = unicode(thisObject.name)
+        return {'value': values}
+
 plm_component()
+
+
+class ProductTemporaryNormalBom(osv.osv.osv_memory):
+    _name = "plm.temporary"
+    _description = "Temporary Class"
+    name = fields.Char(_('Temp'), size=128)
+    summarize = fields.Boolean('Summarize Bom Lines if needed.', help="If set as true, when a Bom line comes from EBOM was in the old normal BOM two lines where been summarized.")
+
+    def action_create_normalBom(self, cr, uid, ids, context=None):
+        """
+            Create a new Normal Bom if doesn't exist (action callable from views)
+        """
+        summarize = self.browse(cr, uid, ids[0], context).summarize
+        selectdIds = context.get('active_ids', [])
+        objType = context.get('active_model', '')
+        if objType != 'product.product':
+            raise UserError(_("The creation of the normalBom works only on product_product object"))
+        if not selectdIds:
+            raise UserError(_("Select a product before to continue"))
+        objType = context.get('active_model', False)
+        product_product_type_object = self.pool.get(objType)
+        for productBrowse in product_product_type_object.browse(cr, uid, selectdIds, context):
+            idTemplate = productBrowse.product_tmpl_id.id
+            objBoms = self.pool.get('mrp.bom').search(cr, uid, [('product_tmpl_id', '=', idTemplate),
+                                                                ('type', '=', 'normal')])
+            if objBoms:
+                raise UserError(_("Normal BoM for Part %r already exists." % (objBoms)))
+            lineMessaggesList = product_product_type_object.create_bom_from_ebom(cr, uid, productBrowse, 'normal', summarize, context)
+            if lineMessaggesList:
+                outMess = ''
+                for mess in lineMessaggesList:
+                    outMess = outMess + '\n' + mess
+                t_mess_obj = self.pool.get("plm.temporary.message")
+                t_mess_id = t_mess_obj.create(cr, uid, {'name': outMess})
+                return {'name': _('Result'),
+                        'view_type': 'form',
+                        "view_mode": 'form',
+                        'res_model': "plm.temporary.message",
+                        'res_id': t_mess_id,
+                        'type': 'ir.actions.act_window',
+                        'target': 'new',
+                        }
+        return {}
+ProductTemporaryNormalBom()
+
+
+class plm_temporary_message(osv.osv.osv_memory):
+    _name = "plm.temporary.message"
+    _description = "Temporary Class"
+    name = fields.Text(_('Bom Result'), readonly=True)
+
+plm_temporary_message()

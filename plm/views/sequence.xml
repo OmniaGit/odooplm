@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+
+    <data noupdate="1">
+        <!-- Sequences for plm.finishing --> 
+        <record id="seq_plm_finishing" model="ir.sequence">
+            <field name="name">PLM Finishing Sequence</field>
+            <field name="code">plm.finishing</field>
+            <field name="prefix">SF</field>
+            <field name="padding">5</field>
+        </record>
+    </data>
+    
+    <data noupdate="1">
+        <!-- Sequences for plm.material --> 
+        <record id="seq_plm_description" model="ir.sequence">
+            <field name="name">PLM description Sequence</field>
+            <field name="code">plm.description</field>
+            <field name="prefix">DS</field>
+            <field name="padding">5</field>
+        </record>
+    </data>
+
+    <data noupdate="1">
+        <!-- Sequences for plm.material --> 
+        <record id="seq_plm_material" model="ir.sequence">
+            <field name="name">PLM Material Sequence</field>
+            <field name="code">plm.material</field>
+            <field name="prefix">RM</field>
+            <field name="padding">5</field>
+        </record>
+    </data>
+    
+	<data noupdate="1">
+        <record id="sequence_document" model="ir.sequence">
+            <field name="name">Document Sequence</field>
+            <field eval="6" name="padding"/>
+            <field name="code">plm.document.progress</field>
+        </record> 
+    </data>
+
+</openerp>

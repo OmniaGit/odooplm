@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
 <data>
-    <menuitem id="plm_menu_dictionaries" name="Configuration" parent="plm_menu" sequence="50" groups="plm.group_plm_admin"/>
 
     <record model="ir.ui.view" id="view_plm_description">
         <field name="name">plm.description.view</field>
@@ -83,13 +82,7 @@
         <field name="view_mode">tree,form</field>
         <field name="view_id" ref="plm_view_description_tree"/>
     </record>
-    
-    
-    <menuitem
-        name="Descriptions"
-        action="plm_action_description_form"
-        id="menu_description"
-        parent="plm_menu_dictionaries"/>
+
 
 </data>
 </openerp>

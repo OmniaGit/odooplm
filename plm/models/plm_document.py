@@ -22,40 +22,47 @@
 import random
 import string
 import base64
-import os, stat
+import os
 import time
 from datetime import datetime
-
 from openerp.osv.orm import except_orm
 import openerp.tools as tools
 from openerp.exceptions import UserError
 from openerp.osv import fields as oldFields
-from openerp        import models, fields, api, SUPERUSER_ID, _, osv
+from openerp import models
+from openerp import fields
+from openerp import api
+from openerp import _
 import logging
 _logger = logging.getLogger(__name__)
 
 
 # To be adequated to plm.component class states
-USED_STATES=[('draft',_('Draft')),('confirmed',_('Confirmed')),('released',_('Released')),('undermodify',_('UnderModify')),('obsoleted',_('Obsoleted'))]
-USEDIC_STATES=dict(USED_STATES)
-#STATEFORRELEASE=['confirmed']
-#STATESRELEASABLE=['confirmed','released','undermodify','UnderModify']
+USED_STATES = [('draft', _('Draft')),
+               ('confirmed', _('Confirmed')),
+               ('released', _('Released')),
+               ('undermodify', _('UnderModify')),
+               ('obsoleted', _('Obsoleted'))]
+USEDIC_STATES = dict(USED_STATES)
+
 
 def random_name():
     random.seed()
-    d = [random.choice(string.ascii_letters) for x in xrange(20) ]
+    d = [random.choice(string.ascii_letters) for _x in xrange(20)]
     return ("".join(d))
+
 
 def create_directory(path):
     dir_name = random_name()
-    path = os.path.join(path,dir_name)
+    path = os.path.join(path, dir_name)
     os.makedirs(path)
     return dir_name
+
 
 class plm_document(models.Model):
     _name = 'plm.document'
     _table = 'plm_document'
-    _inherit = 'ir.attachment'
+    _inherit = ['mail.thread', 'ir.attachment']
 
     def create(self, cr, uid, vals, context={}):
         return super(plm_document, self).create(cr, uid, vals, context)
@@ -85,7 +92,7 @@ class plm_document(models.Model):
             docIds = self.search(cr, uid, [('name', '=', objDoc.name)], order='revisionid', context=context)
             docIds.sort()   # Ids are not surely ordered, but revision are always in creation order.
             if docIds:
-                result.append(docIds[len(docIds)-1])
+                result.append(docIds[len(docIds) - 1])
             else:
                 logging.warning('[_getlastrev] No documents are found for object with name: "%s"' % (objDoc.name))
         return list(set(result))
@@ -96,19 +103,19 @@ class plm_document(models.Model):
         """
         newIds = self._getlastrev(cr, uid, ids=ids, context=context)
         return self.read(cr, uid, newIds, ['datas_fname'], context=context)
-    
-    def _data_get_files(self, cr, uid, ids, listedFiles=([],[]), forceFlag=False, context=None):
+
+    def _data_get_files(self, cr, uid, ids, listedFiles=([], []), forceFlag=False, context=None):
         """
             Get Files to return to Client
         """
         result = []
-        datefiles,listfiles=listedFiles
+        datefiles, listfiles = listedFiles
         for objDoc in self.browse(cr, uid, ids, context=context):
-            if objDoc.type=='binary':
-                timeDoc=self.getLastTime(cr,uid,objDoc.id)
-                timeSaved=time.mktime(timeDoc.timetuple())
+            if objDoc.type == 'binary':
+                timeDoc = self.getLastTime(cr, uid, objDoc.id)
+                timeSaved = time.mktime(timeDoc.timetuple())
                 try:
-                    isCheckedOutToMe=self._is_checkedout_for_me(cr, uid, objDoc.id, context)
+                    isCheckedOutToMe = self._is_checkedout_for_me(cr, uid, objDoc.id, context)
                     if not(objDoc.datas_fname in listfiles):
                         if (not objDoc.store_fname) and (objDoc.db_datas):
                             value = objDoc.db_datas
@@ -117,10 +124,10 @@ class plm_document(models.Model):
                         result.append((objDoc.id, objDoc.datas_fname, base64.encodestring(value), isCheckedOutToMe, timeDoc))
                     else:
                         if forceFlag:
-                            isNewer=True
+                            isNewer = True
                         else:
-                            timefile=time.mktime(datetime.strptime(str(datefiles[listfiles.index(objDoc.datas_fname)]),'%Y-%m-%d %H:%M:%S').timetuple())
-                            isNewer=(timeSaved - timefile)>5
+                            timefile = time.mktime(datetime.strptime(str(datefiles[listfiles.index(objDoc.datas_fname)]), '%Y-%m-%d %H:%M:%S').timetuple())
+                            isNewer = (timeSaved - timefile) > 5
                         if (isNewer and not(isCheckedOutToMe)):
                             if (not objDoc.store_fname) and (objDoc.db_datas):
                                 value = objDoc.db_datas
@@ -128,60 +135,61 @@ class plm_document(models.Model):
                                 value = file(os.path.join(self._get_filestore(cr), objDoc.store_fname), 'rb').read()
                             result.append((objDoc.id, objDoc.datas_fname, base64.encodestring(value), isCheckedOutToMe, timeDoc))
                         else:
-                            result.append((objDoc.id,objDoc.datas_fname,False, isCheckedOutToMe, timeDoc))
+                            result.append((objDoc.id, objDoc.datas_fname, False, isCheckedOutToMe, timeDoc))
                 except Exception, ex:
-                    logging.error("_data_get_files : Unable to access to document ("+str(objDoc.name)+"). Error :" + str(ex))
-                    result.append((objDoc.id,objDoc.datas_fname,False, True, self.getServerTime(cr, uid, ids)))
+                    logging.error("_data_get_files : Unable to access to document (" + str(objDoc.name) + "). Error :" + str(ex))
+                    result.append((objDoc.id, objDoc.datas_fname, False, True, self.getServerTime(cr, uid, ids)))
         return result
-            
+
     def _data_get(self, cr, uid, ids, name, arg, context):
         result = {}
-        value=False
+        value = False
         for objDoc in self.browse(cr, uid, ids, context=context):
-            if objDoc.type=='binary':
+            if objDoc.type == 'binary':
                 if not objDoc.store_fname:
-                    value=objDoc.db_datas
-                    if not value or len(value)<1:
-                        raise UserError(_("Document %s - %s cannot be accessed" %(str(objDoc.name),str(objDoc.revisionid))))
+                    value = objDoc.db_datas
+                    if not value or len(value) < 1:
+                        raise UserError(_("Document %s - %s cannot be accessed" % (str(objDoc.name), str(objDoc.revisionid))))
                 else:
-                    filestore=os.path.join(self._get_filestore(cr), objDoc.store_fname)
+                    filestore = os.path.join(self._get_filestore(cr), objDoc.store_fname)
                     if os.path.exists(filestore):
                         value = file(filestore, 'rb').read()
-                if value and len(value)>0:
+                if value and len(value) > 0:
                     result[objDoc.id] = base64.encodestring(value)
                 else:
                     result[objDoc.id] = ''
         return result
 
     def _data_set(self, cr, uid, oid, name, value, args=None, context=None):
-        oiDocument=self.browse(cr, uid, oid, context)
-        if oiDocument.type=='binary':
+        oiDocument = self.browse(cr, uid, oid, context)
+        if oiDocument.type == 'binary':
             if not value:
                 filename = oiDocument.store_fname
                 try:
                     os.unlink(os.path.join(self._get_filestore(cr), filename))
                 except:
                     pass
-                cr.execute('update plm_document set store_fname=NULL WHERE id=%s', (oid,) )
+                cr.execute('update plm_document set store_fname=NULL WHERE id=%s', (oid,))
                 return True
-            #if (not context) or context.get('store_method','fs')=='fs':
             try:
-                printout=False
-                preview=False
+                printout = False
+                preview = False
                 if oiDocument.printout:
-                    printout=oiDocument.printout
+                    printout = oiDocument.printout
                 if oiDocument.preview:
-                    preview=oiDocument.preview
-                db_datas=b''                    # Clean storage field. 
-                fname,filesize=self._manageFile(cr,uid,oid,binvalue=value,context=context)
-                cr.execute('update plm_document set store_fname=%s,file_size=%s,db_datas=%s where id=%s', (fname,filesize,db_datas,oid))
-                self.pool.get('plm.backupdoc').create(cr,uid, {
-                                              'userid':uid,
-                                              'existingfile':fname,
-                                              'documentid':oid,
-                                              'printout': printout,
-                                              'preview': preview
-                                             }, context=context)
+                    preview = oiDocument.preview
+                db_datas = b''                    # Clean storage field.
+                fname, filesize = self._manageFile(cr, uid, oid, binvalue=value, context=context)
+                cr.execute('update plm_document set store_fname=%s,file_size=%s,db_datas=%s where id=%s', (fname, filesize, db_datas, oid))
+                self.pool.get('plm.backupdoc').create(cr,
+                                                      uid,
+                                                      {'userid': uid,
+                                                       'existingfile': fname,
+                                                       'documentid': oid,
+                                                       'printout': printout,
+                                                       'preview': preview
+                                                       },
+                                                      context=context)
 
                 return True
             except Exception, ex:
@@ -206,14 +214,14 @@ class plm_document(models.Model):
         return result
 
     def _relateddocs(self, cr, uid, oid, kinds, listed_documents=[], recursion=True):
-        result=[]
+        result = []
         if (oid in listed_documents):
             return result
-        documentRelation=self.pool.get('plm.document.relation')
-        docRelIds=documentRelation.search(cr,uid,[('child_id', '=',oid),('link_kind', 'in',kinds)])
-        if len(docRelIds)==0:
+        documentRelation = self.pool.get('plm.document.relation')
+        docRelIds = documentRelation.search(cr, uid, [('child_id', '=', oid), ('link_kind', 'in', kinds)])
+        if len(docRelIds) == 0:
             return result
-        children=documentRelation.browse(cr,uid,docRelIds)
+        children = documentRelation.browse(cr, uid, docRelIds)
         for child in children:
             if recursion:
                 listed_documents.append(oid)
@@ -223,14 +231,14 @@ class plm_document(models.Model):
         return list(set(result))
 
     def _relatedbydocs(self, cr, uid, oid, kinds, listed_documents=[], recursion=True):
-        result=[]
+        result = []
         if (oid in listed_documents):
             return result
-        documentRelation=self.pool.get('plm.document.relation')
-        docRelIds=documentRelation.search(cr,uid,[('parent_id', '=',oid),('link_kind', 'in',kinds)])
-        if len(docRelIds)==0:
+        documentRelation = self.pool.get('plm.document.relation')
+        docRelIds = documentRelation.search(cr, uid, [('parent_id', '=', oid), ('link_kind', 'in', kinds)])
+        if len(docRelIds) == 0:
             return result
-        children=documentRelation.browse(cr,uid,docRelIds)
+        children = documentRelation.browse(cr, uid, docRelIds)
         for child in children:
             if recursion:
                 listed_documents.append(oid)
@@ -684,27 +692,39 @@ class plm_document(models.Model):
         else:
             self.is_checkout = False
 
-    usedforspare    =   fields.Boolean(_('Used for Spare'), help=_("Drawings marked here will be used printing Spare Part Manual report."))
-    revisionid      =   fields.Integer(_('Revision Index'), required=True)
-    writable        =   fields.Boolean(_('Writable'))
-    #  datas           =   fields.Binary   (fnct_inv=_data_set,compute=_data_get,method=True,string=_('File Content'))
-    printout        =   fields.Binary(_('Printout Content'), help=_("Print PDF content."))
-    preview         =   fields.Binary(_('Preview Content'), help=_("Static preview."))
-    state           =   fields.Selection(USED_STATES, _('Status'), help=_("The status of the product."), readonly="True", required=True)
-    checkout_user   =   fields.Char(string=_("Checked-Out to"), compute=_get_checkout_state)
-    is_checkout     =   fields.Boolean(_('Is Checked-Out'), compute=_is_checkout, store=False)
+    usedforspare = fields.Boolean(_('Used for Spare'),
+                                  help=_("Drawings marked here will be used printing Spare Part Manual report."))
+    revisionid = fields.Integer(_('Revision Index'),
+                                required=True)
+    writable = fields.Boolean(_('Writable'))
+    printout = fields.Binary(_('Printout Content'),
+                             help=_("Print PDF content."))
+    preview = fields.Binary(_('Preview Content'),
+                            help=_("Static preview."))
+    state = fields.Selection(USED_STATES,
+                             _('Status'),
+                             help=_("The status of the product."),
+                             readonly="True",
+                             required=True)
+    checkout_user = fields.Char(string=_("Checked-Out to"),
+                                compute=_get_checkout_state)
+    is_checkout = fields.Boolean(_('Is Checked-Out'),
+                                 compute=_is_checkout,
+                                 store=False)
+    linkedcomponents = fields.Many2many('product.product',
+                                        'plm_component_document_rel',
+                                        'document_id',
+                                        'component_id',
+                                        _('Linked Parts'))
 
-    _columns = {
-                'datas': oldFields.function(_data_get, method=True, fnct_inv=_data_set, string=_('File Content'), type="binary"),
-                #'checkout_user':fields.function(_get_checkout_state, type='char', string="Checked-Out to"),
-                #'is_checkout':fields.function(_is_checkout, type='boolean', string="Is Checked-Out", store=False)
+    _columns = {'datas': oldFields.function(_data_get, method=True, fnct_inv=_data_set, string=_('File Content'), type="binary"),
                 }
-    _defaults = {
-                 'usedforspare': lambda *a: False,
+    _defaults = {'usedforspare': lambda *a: False,
                  'revisionid': lambda *a: 0,
                  'writable': lambda *a: True,
                  'state': lambda *a: 'draft',
-    }
+                 'res_id': lambda *a: False,
+                 }
 
     _sql_constraints = [
         ('name_unique', 'unique (name, revisionid)', 'File name has to be unique!')  # qui abbiamo la sicurezza dell'univocita del nome file
@@ -972,131 +992,3 @@ class plm_document(models.Model):
         return documentName + '-' + nextDocNum
 
 plm_document()
-
-
-class plm_checkout(models.Model):
-    _name = 'plm.checkout'
-    
-    userid      =   fields.Many2one ('res.users', _('Related User'), ondelete='cascade')
-    hostname    =   fields.Char     (_('hostname'),size=64)
-    hostpws     =   fields.Char     (_('PWS Directory'),size=1024)
-    documentid  =   fields.Many2one ('plm.document', _('Related Document'), ondelete='cascade')
-    createdate  =   fields.Datetime (_('Date Created'), readonly=True)
-    rel_doc_rev =   fields.Integer  (related='documentid.revisionid', string="Revision", store=True)
-
-    _defaults = {
-        'create_date': lambda self,ctx:time.strftime("%Y-%m-%d %H:%M:%S")
-    }
-    _sql_constraints = [
-        ('documentid', 'unique (documentid)', _('The documentid must be unique !'))
-    ]
-
-    def _adjustRelations(self, cr, uid, oids, userid=False):
-        docRelType=self.pool.get('plm.document.relation')
-        if userid:
-            ids=docRelType.search(cr,uid,[('child_id','in',oids),('userid','=',False)])
-        else:
-            ids=docRelType.search(cr,uid,[('child_id','in',oids)])
-        if ids:
-            values={'userid':userid,}
-            docRelType.write(cr, uid, ids, values)
-
-    def create(self, cr, uid, vals, context=None):
-        documentType=self.pool.get('plm.document')
-        docID=documentType.browse(cr, uid, vals['documentid'])
-        values={'writable':True,}
-        if not documentType.write(cr, uid, [docID.id], values):
-            logging.warning("create : Unable to check-out the required document ("+str(docID.name)+"-"+str(docID.revisionid)+").")
-            raise UserError( _("Unable to check-out the required document ("+str(docID.name)+"-"+str(docID.revisionid)+")."))
-            return False
-        self._adjustRelations(cr, uid, [docID.id], uid)
-        newID = super(plm_checkout,self).create(cr, uid, vals, context=context)   
-        documentType.wf_message_post(cr, uid, [docID.id], body=_('Checked-Out'))
-        return newID
-
-    def unlink(self, cr, uid, ids, context=None):
-        documentType=self.pool.get('plm.document')
-        checkObjs=self.browse(cr, uid, ids, context=context)
-        docids=[]
-        for checkObj in checkObjs:
-            checkObj.documentid.writable=False
-            values={'writable':False,}
-            docids.append(checkObj.documentid.id)
-            if not documentType.write(cr, uid, [checkObj.documentid.id], values):
-                logging.warning("unlink : Unable to check-in the document ("+str(checkObj.documentid.name)+"-"+str(checkObj.documentid.revisionid)+").\n You can't change writable flag.")
-                raise UserError( _("Unable to Check-In the document ("+str(checkObj.documentid.name)+"-"+str(checkObj.documentid.revisionid)+").\n You can't change writable flag."))
-                return False
-        self._adjustRelations(cr, uid, docids, False)
-        dummy = super(plm_checkout,self).unlink(cr, uid, ids, context=context)
-        if dummy:
-            documentType.wf_message_post(cr, uid, docids, body=_('Checked-In'))
-        return dummy
-
-plm_checkout()
-
-
-class plm_document_relation(models.Model):
-    _name = 'plm.document.relation'
-    
-    parent_id       =   fields.Many2one ('plm.document', _('Related parent document'), ondelete='cascade')
-    child_id        =   fields.Many2one ('plm.document', _('Related child document'),  ondelete='cascade')
-    configuration   =   fields.Char     (_('Configuration Name'),size=1024)
-    link_kind       =   fields.Char     (_('Kind of Link'),size=64, required=True)
-    create_date     =   fields.Datetime (_('Date Created'), readonly=True)
-
-    #  TODO: To remove userid field for version 10
-    userid          =   fields.Many2one ('res.users', _('CheckOut User'),readonly="True")
-    
-    _defaults = {
-                 'link_kind': lambda *a: 'HiTree',
-                 'userid': lambda *a: False,
-    }
-    _sql_constraints = [
-        ('relation_uniq', 'unique (parent_id,child_id,link_kind)', _('The Document Relation must be unique !')) 
-    ]
-
-    def SaveStructure(self, cr, uid, relations, level=0, currlevel=0):
-        """
-            Save Document relations
-        """
-        def cleanStructure(relations):
-            res={}
-            cleanIds=[]
-            for relation in relations:
-                res['parent_id'],res['child_id'],res['configuration'],res['link_kind']=relation
-                link=[('link_kind','=',res['link_kind'])]
-                if (res['link_kind']=='LyTree') or (res['link_kind']=='RfTree'):
-                    criteria=[('child_id','=',res['child_id'])]
-                else:
-                    criteria=[('parent_id','=',res['parent_id']),('child_id','=',res['child_id'])]
-                cleanIds.extend(self.search(cr,uid,criteria+link))
-            self.unlink(cr,uid,list(set(cleanIds)))
-
-        def saveChild(relation):
-            """
-                save the relation 
-            """
-            try:
-                res={}
-                res['parent_id'],res['child_id'],res['configuration'],res['link_kind']=relation
-                if (res['parent_id']!= None) and (res['child_id']!=None):
-                    if (len(str(res['parent_id']))>0) and (len(str(res['child_id']))>0):
-                        if not((res['parent_id'],res['child_id']) in savedItems):
-                            savedItems.append((res['parent_id'],res['child_id']))
-                            self.create(cr, uid, res)
-                else:
-                    logging.error("saveChild : Unable to create a relation between documents. One of documents involved doesn't exist. Arguments(" + str(relation) +") ")
-                    raise Exception(_("saveChild: Unable to create a relation between documents. One of documents involved doesn't exist."))
-            except Exception,ex:
-                logging.error("saveChild : Unable to create a relation. Arguments (%s) Exception (%s)" %(str(relation), str(ex)))
-                raise Exception(_("saveChild: Unable to create a relation."))
-            
-        savedItems=[]
-        if len(relations)<1: # no relation to save 
-            return False
-        cleanStructure(relations)
-        for relation in relations:
-            saveChild(relation)
-        return False
-
-plm_document_relation()

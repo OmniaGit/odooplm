@@ -3,7 +3,7 @@ import json
 import logging
 
 
-class ComponentDashboard(models.Model):
+class ProductProductKanban(models.Model):
     _inherit = "product.product"
 
     @api.one
@@ -149,4 +149,4 @@ class ComponentDashboard(models.Model):
         pass
 
 
-ComponentDashboard()
+ProductProductKanban()

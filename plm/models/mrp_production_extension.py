@@ -25,23 +25,25 @@ Created on May 18, 2016
 
 @author: Daniel Smerghetto
 '''
-from openerp.osv import osv
+from openerp import models
+from openerp import api
 
 
-class MrpProductionExtension(osv.osv):
+class MrpProductionExtension(models.Model):
     _name = 'mrp.production'
     _inherit = 'mrp.production'
-    
-    def product_id_change(self, cr, uid, ids, product_id, product_qty=0, context=None):
+
+    @api.multi
+    def product_id_change(self, product_id, product_qty=0):
         """ Finds UoM of changed product.
         @param product_id: Id of changed product.
         @return: Dictionary of values.
         """
-        result = super(MrpProductionExtension, self).product_id_change(cr, uid, ids, product_id, product_qty, context)
+        result = super(MrpProductionExtension, self).product_id_change(product_id, product_qty)
         outValues = result.get('value', {})
         bom_id = outValues.get('bom_id', False)
         if bom_id:
-            bomBrws = self.pool.get('mrp.bom').browse(cr, uid, bom_id, context)
+            bomBrws = self.env['mrp.bom'].browse(bom_id)
             if bomBrws.type == 'ebom':
                 return {'value': {
                     'product_uom_id': False,

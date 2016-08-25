@@ -1,49 +1,146 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <openerp>
-    <data>
-        <record id="view_plm_settings" model="ir.ui.view">
-            <field name="name">plm settings</field>
-            <field name="model">plm.config.settings</field>
-            <field name="arch" type="xml">
-                <form string="Configure PLM" class="oe_form_configuration">
-                    <header>
-                        <button string="Apply" type="object" name="execute" class="oe_highlight"/>
-                        <button string="Cancel" type="object" name="cancel" class="oe_link"/>
-                    </header>
-                    <group string="Settings">
-                        <group>
-		                    <field name="module_plm_automatic_weight" />
-		                </group>
-		                <group>
-		                    <field name="module_plm_cutted_parts" />
-		                </group>
-		                <group>
-		                    <field name="module_plm_pack_and_go" />
-		                </group>
-		                <group>
-		                    <field name="module_product_description_language_helper" />
-		                </group>
-                        <group>
-		                    <field name="module_plm_report_language_helper" />
-		                </group>
-                    </group>
-                </form>
-            </field>
-        </record>
-        
-    <record model="ir.actions.act_window" id="plm_action_settings_form">
-        <field name="name">Settings</field>
-        <field name="type">ir.actions.act_window</field>
-        <field name="res_model">plm.config.settings</field>
-        <field name="view_mode">form</field>
-        <field name="target">inline</field>
-    </record>
+<data> 
+
+    <menuitem 
+	id="plm_menu" 
+	name="PLM Module" 
+	icon="terp-stock" 
+    web_icon="plm,images/PLMmodule-hover.png"
+    web_icon_hover="images/PLMmodule-hover.png"
+	action = "plm.open_board_plm_manager"
+    />
     
-	<menuitem id="plm_settings" 
+    
+    <!-- Parent menu "PLM Module"  -->
+
+    <menuitem
+    action="plm.open_board_plm_manager"
+    id="plm_dashboard_menu" 
+    parent="plm.plm_menu" 
+	sequence="1"
+    name="Dashboard"/>
+    	
+	<menuitem 	
+	id		="plm_component_menu_view" 
+	name	="Components" 
+	parent	="plm.plm_menu" 
+	sequence="10"/>
+    	
+	<menuitem 
+	name="Documents"
+	id="plm_document_form"
+	parent="plm.plm_menu" 
+	sequence="11"/>
+
+	<menuitem 
+	name="Component Relations" 
+	id="plm_menu_relation" 
+	parent="plm.plm_menu" 
+	sequence="12"/>
+		
+    <menuitem  
+    id="plm_menu_dictionaries" 
+    name="Configuration" 
+	parent="plm.plm_menu"  
+    sequence="50" 
+	roups="plm.group_plm_admin"/>
+		
+
+		
+	<!-- Parent menu "Documents"  -->
+	
+    <menuitem
+    name="Search on Backup Data Set"
+    action="action_plm_backupdoc"
+    id="menu_backupdoc"
+    parent="plm.plm_document_form"
+    sequence="13" 
+	groups="plm.group_plm_admin"/>
+
+    <menuitem
+    name="Search on Documents"
+    action="plm.plm_action_document_form"
+    id="menu_document_files"
+    parent="plm.plm_document_form"  
+	sequence="10" 
+    />
+
+    <menuitem
+    name="Search on Checked-Out Documents"
+    action="plm.action_plm_checkout"
+    id="menu_checkout" 
+    parent="plm.plm_document_form" 
+	sequence="12"
+    />
+		
+    <menuitem
+    name="Search on Document Relations"
+    action="plm_action_document_relations"
+    id="menu_document_relations"
+    parent="plm.plm_document_form" 
+    sequence="11" 
+    />
+    	
+    	
+    	
+    <!-- Parent menu "Configuration" -->
+    <menuitem
+    name="Descriptions"
+    action="plm_action_description_form"
+    id="menu_description"
+    parent="plm.plm_menu_dictionaries"/> 
+	
+    <menuitem
+    name="Finishings"
+    action="plm_action_finishing_form"
+    id="menu_finishing"
+    parent="plm.plm_menu_dictionaries"/>
+
+    <menuitem
+    name="Materials"
+    action="plm_action_material_form"
+    id="menu_material"
+    parent="plm.plm_menu_dictionaries"/>
+    
+	<menuitem  
+	id="plm_settings" 
 	name="Settings"  
 	parent="plm.plm_menu_dictionaries" 
 	sequence="50" 
 	groups="plm.group_plm_admin"
-	action="plm_action_settings_form"/>
-    </data>
+	action="plm_action_settings_form"/> 
+    	
+    	
+    	
+	<!-- Parent menu "Configuration" -->
+    	
+    <menuitem 	
+	id		="menu_base_component"
+	name	="Search on Engineering Parts" 
+	parent	="plm.plm_component_menu_view"
+    action	="action_plm_component_base" /> 	
+    	
+
+        	
+	<!-- Parent menu "Component Relations" -->
+    
+    <menuitem
+    name="Search on Normal Bill of Materials"
+    action="plm_action_normal_form"
+    id="menu_relation_normal"
+    parent="plm.plm_menu_relation"/> 
+    
+    <menuitem
+    name="Search on Spare Bill of Materials"
+    action="plm_action_spare_form"
+    id="menu_relation_spare"
+    parent="plm.plm_menu_relation"/>
+
+   	<menuitem
+    name="Search on Engineering Bill of Materials"
+    action="plm_action_ebom_form"
+    id="menu_relation_ebom"
+    parent="plm_menu_relation"/> 
+	</data>
 </openerp>

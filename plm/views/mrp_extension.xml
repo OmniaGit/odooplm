@@ -2,8 +2,6 @@
 <openerp>
 <data>
 
-    <menuitem name="Component Relations" id="plm_menu_relation" parent="plm_menu" sequence="12"/>
- 
 <!-- View customization on MRP -->
 
         <record id="plm_bom_component_tree_view" model="ir.ui.view">
@@ -175,13 +173,6 @@
         <field name="filter" eval="True"/>
     </record>
 
-    <menuitem
-        name="Search on Normal Bill of Materials"
-        action="plm_action_normal_form"
-        id="menu_relation_normal"
-        parent="plm_menu_relation"/>
-
- 
     <record model="ir.actions.act_window" id="plm_action_ebom_form">
         <field name="name">Engineering BoMs</field>
         <field name="type">ir.actions.act_window</field>
@@ -194,12 +185,6 @@
             (0, 0, {'view_mode': 'tree', 'view_id': ref('plm.plm_bom_tree_view')}),
             (0, 0, {'view_mode': 'form', 'view_id': ref('plm.plm_bom_form_view_eng')})]"/>  
     </record>
-     
-    <menuitem
-        name="Search on Engineering Bill of Materials"
-        action="plm_action_ebom_form"
-        id="menu_relation_ebom"
-        parent="plm_menu_relation"/>
 
 
     <record model="ir.actions.act_window" id="plm_action_spare_form">
@@ -210,13 +195,6 @@
         <field name="domain">[('type','=','spbom')]</field>
         <field name="filter" eval="True"/>
     </record>
-
-    <menuitem
-        name="Search on Spare Bill of Materials"
-        action="plm_action_spare_form"
-        id="menu_relation_spare"
-        parent="plm_menu_relation"/>
-
 
 <!-- Overrides standard Search -->
 
@@ -250,31 +228,6 @@
 	        </field>
         </record>
 
-
-<!-- Tree Structure Where Used on Product -->
-
-        <record id="mrp_part_tree_view_where" model="ir.ui.view">
-            <field name="name">mrp.part.tree.where</field>
-            <field name="model">product.product</field>
-            <field name="field_parent">father_part_ids</field>
-            <field name="arch" type="xml">
-                <tree string="Bill of Materials">
-                    <field name="name" string="Component Name"/>
-                    <field name="engineering_revision" string="Revision"/>
-                    <field name="description"/>
-                </tree>
-            </field>
-        </record>
-
-        <act_window
-            id="action_product_bom_structure_where"
-            name="Product BoM Where Used Structure"
-            domain="[('id','in',active_ids)]" 
-            context="{'default_product_id': active_id}"
-            view_type="tree"
-            view_id="mrp_part_tree_view_where"
-            res_model="product.product"
-            src_model="product.product"/>	<!-- Do not remove src_model. It is used to get action only in component form -->
 
  <!-- Tree Structure Views on MRP -->
  
