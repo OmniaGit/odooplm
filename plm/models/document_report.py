@@ -22,19 +22,28 @@
 
 import openerp.tools as tools
 import logging
-from openerp        import models, fields, api, SUPERUSER_ID, _, osv
-_logger         =   logging.getLogger(__name__)
+from openerp import models
+from openerp import fields
+from openerp import api
+from openerp import _
+_logger = logging.getLogger(__name__)
+
 
 class report_plm_document_file(models.Model):
     _name = "report.plm_document.file"
     _description = "Files details by Directory"
     _auto = False
 
-    file_size   =   fields.Integer(_('File Size'), readonly=True)
-    nbr         =   fields.Integer(_('# of Files'), readonly=True)
-    month       =   fields.Char(_('Month'), size=24,readonly=True)
+    file_size = fields.Integer(_('File Size'),
+                               readonly=True)
+    nbr = fields.Integer(_('# of Files'),
+                         readonly=True)
+    month = fields.Char(_('Month'),
+                        size=24,
+                        readonly=True)
 
     _order = "month"
+
     def init(self, cr):
         tools.drop_view_if_exists(cr, 'report_plm_document_file')
         cr.execute("""
@@ -49,6 +58,7 @@ class report_plm_document_file(models.Model):
         """)
 
 report_plm_document_file()
+
 
 class report_plm_document_user(models.Model):
     _name = "report.plm_document.user"
