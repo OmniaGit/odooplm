@@ -29,7 +29,7 @@ from openerp.osv import osv
 from openerp.report import report_sxw
 from openerp import _
 import time
-from openerp.addons.plm.install.report.bom_structure import bom_structure_all_custom_report
+from openerp.addons.plm.report.bom_structure import bom_structure_all_custom_report
 
 
 class report_plm_bom_obsoleted(osv.AbstractModel):

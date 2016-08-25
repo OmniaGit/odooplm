@@ -27,7 +27,6 @@ import logging
 
 class PlmDocumentRelations(models.Model):
     _name = 'plm.document.relation'
-    _inherit = 'plm.document.relation'
 
     parent_preview = fields.Binary(related="parent_id.preview",
                                    string=_("Preview"),

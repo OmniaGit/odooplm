@@ -25,10 +25,11 @@ from openerp import models
 from openerp import fields
 from openerp import api
 from openerp import _
-#from types import *
+from types import *
 from openerp.exceptions import ValidationError
 from openerp.exceptions import UserError
 from openerp import osv
+import openerp.tools as tools
 
 _logger = logging.getLogger(__name__)
 
@@ -44,7 +45,6 @@ USEDIC_STATES = dict(USED_STATES)
 
 
 class plm_component(models.Model):
-    _name = 'product.product'
     _inherit = 'product.product'
 
     create_date = fields.Datetime(_('Date Created'),
@@ -1054,3 +1054,29 @@ class plm_temporary_message(osv.osv.osv_memory):
     name = fields.Text(_('Bom Result'), readonly=True)
 
 plm_temporary_message()
+
+class ProductProductDashboard(models.Model):
+    _name = "report.plm_component"
+    _description = "Report Component"
+    _auto = False
+    count_component_draft       =   fields.Integer(_('Draft'), readonly=True, translate=True)
+    count_component_confirmed   =   fields.Integer(_('Confirmed'), readonly=True, translate=True)
+    count_component_released    =   fields.Integer(_('Released'), readonly=True, translate=True)
+    count_component_modified    =   fields.Integer(_('Under Modify'), readonly=True, translate=True)
+    count_component_obsoleted   =   fields.Integer(_('Obsoleted'), readonly=True, translate=True)
+
+    def init(self, cr):
+        tools.drop_view_if_exists(cr, 'report_plm_component')
+        cr.execute("""
+            CREATE OR REPLACE VIEW report_plm_component AS (
+                SELECT
+                    (SELECT min(id) FROM product_template) as id,
+                    (SELECT count(*) FROM product_template WHERE state = 'draft') AS count_component_draft,
+                    (SELECT count(*) FROM product_template WHERE state = 'confirmed') AS count_component_confirmed,
+                    (SELECT count(*) FROM product_template WHERE state = 'released') AS count_component_released,
+                    (SELECT count(*) FROM product_template WHERE state = 'undermodify') AS count_component_modified,
+                    (SELECT count(*) FROM product_template WHERE state = 'obsoleted') AS count_component_obsoleted
+             )
+        """)
+        
+ProductProductDashboard()

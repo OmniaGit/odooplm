@@ -30,6 +30,7 @@ import odoo.addons.decimal_precision as dp
 from openerp import models
 from openerp import fields
 from openerp import api
+from openerp import _
 import logging
 import sys
 

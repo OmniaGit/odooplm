@@ -51,20 +51,20 @@ New functionality Compare BoMs helps to understand differences between Bill of M
 
 Key Features :
 --------------
-    
+
     * Editor Integration
     * Document Management
     * Document Relationship
     * Engineering Bill of Materials
     * Spare Parts BoM & Reports
     * Compare BoMs
-    
-    
+
+
 Supported Editors :
 -------------------
-   
+
     * Category : CAD / Mechanical CAD
-    
+
         * ThinkDesign 2009.3 (and above)
         * SolidWorks 2011 (and above)
         * Inventor 2011 (and above)
@@ -74,45 +74,37 @@ Supported Editors :
         * SPAC 2013 (needs SDProget connector license)
     """,
     'data': [
-             'security/base_plm_security.xml',
-            'install/import_stylesheet.xml',
-            'install/plmdocuments/document_view.xml',
-            'install/plmcheckedout/checkout_view.xml',
-            'install/board_plm_view.xml',
-            'install/plmdocuments/backupdoc_view.xml',
-            'install/plmdocrelations/document_relations.xml',
-            'install/plmcomponents/component_view.xml',
-            'install/plmcomponentrelations/relations_view.xml',
-            'install/plmdescriptions/description_view.xml',
-            'install/plmsparebom/sparebom_view.xml',
-            'install/plmcomparebom/compare_bom_view.xml',
-            'install/plmmaterials/material_view.xml',
-            'install/plmfinishings/finishing_view.xml',
-            #sequence
-            'install/plmdescriptions/description_sequence.xml',
-            'install/plmmaterials/material_sequence.xml',
-            'install/plmfinishings/finishing_sequence.xml',
-            #report
-            'install/report/component_report.xml',
-            'install/report/document_report.xml',
-            'install/report/checkout_report.xml',
-            'install/report/bom_structure.xml',
-            'install/report/bom_structure_report.xml',
-            'install/plmcomponents/plm_component_kanban.xml',
-            'install/settings.xml',
-            #workflow
-            'install/plmdocuments/document_workflow.xml',
-            'install/plmcomponents/component_workflow.xml',
-            'install/settings/settings.xml',
-            'install/views/mrp_extension.xml',
-            #security
+            'security/base_plm_security.xml',
+            'views/import_stylesheet.xml',
+            'views/mrp_extension.xml',
+            'views/plm_backupdoc_view.xml',
+            'views/plm_checkout_view.xml',
+            'views/plm_config_settings.xml',
+            'views/plm_description_view.xml',
+            'views/plm_document_relations.xml',
+            'views/plm_document_view.xml',
+            'views/plm_dashboard_view.xml',     # After plm_document_view.xml
+            'views/plm_finishing_view.xml',
+            'views/plm_material_view.xml',
+            'views/product_product_extension_view.xml',
+            'views/sequence.xml',
+            'views/menu.xml',
+
+            'views/workflow/plm_document_workflow.xml',
+            'views/workflow/product_product_workflow.xml',
+
+            'report/bom_structure_report.xml',
+            'report/bom_structure.xml',
+            'report/checkout_report.xml',
+            'report/component_report.xml',
+            'report/document_report.xml',
+            'views/product_product_kanban.xml',  # After component_report.xml
+            # security
             'security/res.groups.csv',
             # TODO: reenable'security/ir.model.access.csv',
-       ],
-    'demo': [
-        ],
-    'test': [
-        ],
+            ],
+    'demo': [],
+    'test': [],
     'installable': True,
     'application': True,
     'auto_install': False,

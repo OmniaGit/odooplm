@@ -27,16 +27,17 @@ Created on 25 Aug 2016
 '''
 from openerp import models
 from openerp import fields
+from openerp import _
 
 
 class PlmConfigSettings(models.Model):
     _name = 'plm.config.settings'
     _inherit = 'res.config.settings'
 
-    module_plm_automatic_weight = fields.Boolean("Plm Automatic Weight")
-    module_plm_cutted_parts = fields.Boolean("Plm Cutted Parts")
-    module_plm_pack_and_go = fields.Boolean("Plm Pack and go")
-    module_product_description_language_helper = fields.Boolean("Plm Product Description Language Helper")
-    module_plm_report_language_helper = fields.Boolean("Plm Report Language Helper")
+    module_plm_automatic_weight = fields.Boolean(_("Plm Automatic Weight"))
+    module_plm_cutted_parts = fields.Boolean(_("Plm Cutted Parts"))
+    module_plm_pack_and_go = fields.Boolean(_("Plm Pack and go"))
+    module_product_description_language_helper = fields.Boolean(_("Plm Product Description Language Helper"))
+    module_plm_report_language_helper = fields.Boolean(_("Plm Report Language Helper"))
 
 PlmConfigSettings()

@@ -25,25 +25,19 @@ Created on 25 Aug 2016
 
 @author: Daniel Smerghetto
 '''
-from openerp import models
-from openerp import fields
-from openerp import _
-
-
-class plm_material(models.Model):
-    _name = "plm.material"
-    _description = "PLM Materials"
-
-    name = fields.Char(_('Designation'),
-                       size=128,
-                       required=True)
-    description = fields.Char(_('Description'),
-                              size=128)
-    sequence = fields.Integer(_('Sequence'),
-                              help=_("Gives the sequence order when displaying a list of product categories."))
-
-    _sql_constraints = [
-        ('name_uniq', 'unique(name)', _('Raw Material has to be unique !')),
-    ]
-
-plm_material()
+import plm_finishing
+import plm_material
+import product_template_extension
+import plm_descriptions             # Has to be before "product_product_extension" due to related field
+import product_product_extension    # Has to be before "plm_document" due to related field
+import plm_document                 # Has to be before "plm_document_relations" due to related field
+import plm_document_relations
+import product_product_document_rel
+import product_product_kanban
+import plm_backup_document
+import plm_checkout
+import plm_config_settings
+import mrp_bom_extension
+import mrp_bom_line_extension
+import mrp_production_extension
+import document_report

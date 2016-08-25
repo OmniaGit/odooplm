@@ -43,7 +43,6 @@
 		                    	<newline/>
    	               			</group>
   	                </group>
-  	               <field name="bom_tmpl"/>  
                </group> 
               </sheet> 
             </form>
@@ -69,7 +68,6 @@
                    	<field name="fmtend"/>
                     <field name="unitab"/>
                    	<field name="sequence"/>
-                   	<field name="bom_tmpl"/>
             </tree>
         </field>
     </record>

@@ -28,6 +28,7 @@ Created on 25 Aug 2016
 from openerp import models
 from openerp import fields
 import logging
+from openerp import _
 
 
 class plm_component_document_rel(models.Model):
