@@ -28,6 +28,7 @@ Created on 25 Aug 2016
 from openerp.exceptions import UserError
 from openerp import models
 from openerp import fields
+from openerp import api
 from openerp import _
 import logging
 import time
@@ -59,45 +60,45 @@ class PlmCheckout(models.Model):
         ('documentid', 'unique (documentid)', _('The documentid must be unique !'))
     ]
 
-    def _adjustRelations(self, cr, uid, oids, userid=False):
-        docRelType=self.pool.get('plm.document.relation')
+    @api.model
+    def _adjustRelations(self, childDocIds, userid=False):
+        docRelType = self.env['plm.document.relation']
         if userid:
-            ids=docRelType.search(cr,uid,[('child_id','in',oids),('userid','=',False)])
+            docRelBrwsList = docRelType.search([('child_id', 'in', childDocIds), ('userid', '=', False)])
         else:
-            ids=docRelType.search(cr,uid,[('child_id','in',oids)])
-        if ids:
-            values={'userid':userid,}
-            docRelType.write(cr, uid, ids, values)
+            docRelBrwsList = docRelType.search([('child_id', 'in', childDocIds)])
+        if docRelBrwsList:
+            values = {'userid': userid}
+            docRelType.browse(docRelBrwsList).write(values)
 
-    def create(self, cr, uid, vals, context=None):
-        documentType=self.pool.get('plm.document')
-        docID=documentType.browse(cr, uid, vals['documentid'])
-        values={'writable':True,}
-        if not documentType.write(cr, uid, [docID.id], values):
-            logging.warning("create : Unable to check-out the required document ("+str(docID.name)+"-"+str(docID.revisionid)+").")
-            raise UserError( _("Unable to check-out the required document ("+str(docID.name)+"-"+str(docID.revisionid)+")."))
-            return False
-        self._adjustRelations(cr, uid, [docID.id], uid)
-        newID = super(PlmCheckout,self).create(cr, uid, vals, context=context)   
-        documentType.wf_message_post(cr, uid, [docID.id], body=_('Checked-Out'))
-        return newID
+    @api.model
+    def create(self, vals):
+        documentType = self.env['plm.document']
+        docBrws = documentType.browse(vals['documentid'])
+        values = {'writable': True}
+        if not documentType.browse([docBrws.id]).write(values):
+            logging.warning("create : Unable to check-out the required document (" + str(docBrws.name) + "-" + str(docBrws.revisionid) + ").")
+            raise UserError(_("Unable to check-out the required document (" + str(docBrws.name) + "-" + str(docBrws.revisionid) + ")."))
+        self._adjustRelations([docBrws.id])
+        newCheckoutBrws = super(PlmCheckout, self).create(vals)
+        documentType.wf_message_post([docBrws.id], body=_('Checked-Out'))
+        return newCheckoutBrws.id
 
-    def unlink(self, cr, uid, ids, context=None):
-        documentType=self.pool.get('plm.document')
-        checkObjs=self.browse(cr, uid, ids, context=context)
-        docids=[]
-        for checkObj in checkObjs:
-            checkObj.documentid.writable=False
-            values={'writable':False,}
+    @api.multi
+    def unlink(self):
+        documentType = self.env['plm.document']
+        docids = []
+        for checkObj in self:
+            checkObj.documentid.writable = False
+            values = {'writable': False}
             docids.append(checkObj.documentid.id)
-            if not documentType.write(cr, uid, [checkObj.documentid.id], values):
-                logging.warning("unlink : Unable to check-in the document ("+str(checkObj.documentid.name)+"-"+str(checkObj.documentid.revisionid)+").\n You can't change writable flag.")
-                raise UserError( _("Unable to Check-In the document ("+str(checkObj.documentid.name)+"-"+str(checkObj.documentid.revisionid)+").\n You can't change writable flag."))
-                return False
-        self._adjustRelations(cr, uid, docids, False)
-        dummy = super(PlmCheckout,self).unlink(cr, uid, ids, context=context)
+            if not documentType.browse([checkObj.documentid.id]).write(values):
+                logging.warning("unlink : Unable to check-in the document (" + str(checkObj.documentid.name) + "-" + str(checkObj.documentid.revisionid) + ").\n You can't change writable flag.")
+                raise UserError(_("Unable to Check-In the document (" + str(checkObj.documentid.name) + "-" + str(checkObj.documentid.revisionid) + ").\n You can't change writable flag."))
+        self._adjustRelations(docids, False)
+        dummy = super(PlmCheckout, self).unlink()
         if dummy:
-            documentType.wf_message_post(cr, uid, docids, body=_('Checked-In'))
+            documentType.wf_message_post(docids, body=_('Checked-In'))
         return dummy
 
 PlmCheckout()

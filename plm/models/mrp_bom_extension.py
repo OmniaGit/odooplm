@@ -83,14 +83,14 @@ class MrpBomExtension(models.Model):
             result = []
             bom_type = bom_obj.type
             if bom_type == '':
-                bom_children = bom_line_objType.search([('product_id', '=', bom_obj.product_id.id)])
+                bom_children_lines = bom_line_objType.search([('product_id', '=', bom_obj.product_id.id)])
             else:
-                bom_children = bom_line_objType.search([('product_id', '=', bom_obj.product_id.id),
+                bom_children_lines = bom_line_objType.search([('product_id', '=', bom_obj.product_id.id),
                                                         ('type', '=', bom_type)])
-            for bom_child in bom_children:
-                if bom_child.bom_id.id:
-                    if not(bom_child.bom_id.id in result):
-                        result.extend([bom_child.bom_id.id])
+            for bomLineBrws in bom_children_lines:
+                if bomLineBrws.bom_id.id:
+                    if not(bomLineBrws.bom_id.id in result):
+                        result.extend([bomLineBrws.bom_id.id])
             bom_obj.father_complete_ids = self.env['mrp.bom'].browse(list(set(result)))
 
     state = fields.Selection(related="product_tmpl_id.state",
@@ -503,18 +503,17 @@ class MrpBomExtension(models.Model):
         if newId:
             compType = self.env['product.product']
             bomLType = self.env['mrp.bom.line']
-            newOid = self.browse(newId)
-            for bom_line in newOid.bom_line_ids:
+            newBomid = self.browse(newId)
+            for bom_line in newBomid.bom_line_ids:
                 lateRevIdC = compType.GetLatestIds([(bom_line.product_id.product_tmpl_id.engineering_code,
                                                      False,
                                                      False)])  # Get Latest revision of each Part
-                bomLType.write([bom_line.id],
-                               {'source_id': False,
-                                'name': bom_line.product_id.product_tmpl_id.name,
-                                'product_id': lateRevIdC[0]})
-            newOid.write({'source_id': False,
-                          'name': newOid.product_tmpl_id.name},
-                         check=False)
+                bomLType.browse([bom_line.id]).write({'source_id': False,
+                                                      'name': bom_line.product_id.product_tmpl_id.name,
+                                                      'product_id': lateRevIdC[0]})
+            newBomid.write({'source_id': False,
+                            'name': newBomid.product_tmpl_id.name},
+                           check=False)
         return newId
 
 MrpBomExtension()

@@ -20,6 +20,7 @@
 #
 ##############################################################################
 from openerp import models
+from openerp import api
 from openerp import fields
 from openerp import _
 import logging
@@ -71,44 +72,45 @@ class PlmDocumentRelations(models.Model):
         ('relation_uniq', 'unique (parent_id,child_id,link_kind)', _('The Document Relation must be unique !'))
     ]
 
-    def SaveStructure(self, cr, uid, relations, level=0, currlevel=0):
+    @api.model
+    def SaveStructure(self, relations, level=0, currlevel=0):
         """
             Save Document relations
         """
         def cleanStructure(relations):
-            res={}
-            cleanIds=[]
+            res = {}
+            cleanIds = []
             for relation in relations:
-                res['parent_id'],res['child_id'],res['configuration'],res['link_kind']=relation
-                link=[('link_kind','=',res['link_kind'])]
-                if (res['link_kind']=='LyTree') or (res['link_kind']=='RfTree'):
-                    criteria=[('child_id','=',res['child_id'])]
+                res['parent_id'], res['child_id'], res['configuration'], res['link_kind'] = relation
+                link = [('link_kind', '=', res['link_kind'])]
+                if (res['link_kind'] == 'LyTree') or (res['link_kind'] == 'RfTree'):
+                    criteria = [('child_id', '=', res['child_id'])]
                 else:
-                    criteria=[('parent_id','=',res['parent_id']),('child_id','=',res['child_id'])]
-                cleanIds.extend(self.search(cr,uid,criteria+link))
-            self.unlink(cr,uid,list(set(cleanIds)))
+                    criteria = [('parent_id', '=', res['parent_id']), ('child_id', '=', res['child_id'])]
+                cleanIds.extend(self.search(criteria + link))
+            self.browse(list(set(cleanIds))).unlink()
 
         def saveChild(relation):
             """
-                save the relation 
+                save the relation
             """
             try:
-                res={}
-                res['parent_id'],res['child_id'],res['configuration'],res['link_kind']=relation
-                if (res['parent_id']!= None) and (res['child_id']!=None):
-                    if (len(str(res['parent_id']))>0) and (len(str(res['child_id']))>0):
-                        if not((res['parent_id'],res['child_id']) in savedItems):
-                            savedItems.append((res['parent_id'],res['child_id']))
-                            self.create(cr, uid, res)
+                res = {}
+                res['parent_id'], res['child_id'], res['configuration'], res['link_kind'] = relation
+                if (res['parent_id'] is not None) and (res['child_id'] is not None):
+                    if (len(str(res['parent_id'])) > 0) and (len(str(res['child_id'])) > 0):
+                        if not((res['parent_id'], res['child_id']) in savedItems):
+                            savedItems.append((res['parent_id'], res['child_id']))
+                            self.create(res)
                 else:
-                    logging.error("saveChild : Unable to create a relation between documents. One of documents involved doesn't exist. Arguments(" + str(relation) +") ")
+                    logging.error("saveChild : Unable to create a relation between documents. One of documents involved doesn't exist. Arguments(" + str(relation) + ") ")
                     raise Exception(_("saveChild: Unable to create a relation between documents. One of documents involved doesn't exist."))
-            except Exception,ex:
-                logging.error("saveChild : Unable to create a relation. Arguments (%s) Exception (%s)" %(str(relation), str(ex)))
+            except Exception, ex:
+                logging.error("saveChild : Unable to create a relation. Arguments (%s) Exception (%s)" % (str(relation), str(ex)))
                 raise Exception(_("saveChild: Unable to create a relation."))
 
-        savedItems=[]
-        if len(relations)<1: # no relation to save 
+        savedItems = []
+        if len(relations) < 1:  # no relation to save
             return False
         cleanStructure(relations)
         for relation in relations:

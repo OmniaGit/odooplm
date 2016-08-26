@@ -26,6 +26,7 @@ Created on 11 Aug 2016
 @author: Daniel Smerghetto
 '''
 from openerp.exceptions import UserError
+from openerp import SUPERUSER_ID
 from openerp import models
 from openerp import fields
 from openerp import osv
@@ -57,21 +58,21 @@ class PlmBackupDocument(models.Model):
         'create_date': lambda self, ctx: time.strftime("%Y-%m-%d %H:%M:%S")
     }
 
-    def unlink(self, cr, uid, ids, context=None):
+    @api.multi
+    def unlink(self):
         committed = False
-        if context is not None and context != {}:
-            if uid != 1:
+        if self.env.context:
+            if self.env.uid != SUPERUSER_ID:
                 logging.warning("unlink : Unable to remove the required documents. You aren't authorized in this context.")
                 raise UserError(_("Unable to remove the required document.\n You aren't authorized in this context."))
                 return False
-        documentType = self.pool.get('plm.document')
-        checkObjs = self.browse(cr, uid, ids, context=context)
-        for checkObj in checkObjs:
+        documentType = self.env['plm.document']
+        for checkObj in self:
             if not int(checkObj.documentid):
-                return super(PlmBackupDocument, self).unlink(cr, uid, ids, context=context)
+                return super(PlmBackupDocument, self).unlink()
             currentname = checkObj.documentid.store_fname
             if checkObj.existingfile != currentname:
-                fullname = os.path.join(documentType._get_filestore(cr), checkObj.existingfile)
+                fullname = os.path.join(documentType._get_filestore(self.env.cr), checkObj.existingfile)
                 if os.path.exists(fullname):
                     if os.path.exists(fullname):
                         os.chmod(fullname, stat.S_IWRITE)
@@ -81,7 +82,7 @@ class PlmBackupDocument(models.Model):
                     logging.warning("unlink : Unable to remove the document (" + str(checkObj.documentid.name) + "-" + str(checkObj.documentid.revisionid) + ") from backup set. You can't change writable flag.")
                     raise UserError(_("Unable to remove the document (" + str(checkObj.documentid.name) + "-" + str(checkObj.documentid.revisionid) + ") from backup set.\n It isn't a backup file, it's original current one."))
         if committed:
-            return super(PlmBackupDocument, self).unlink(cr, uid, ids, context=context)
+            return super(PlmBackupDocument, self).unlink()
         else:
             return False
 

@@ -64,32 +64,30 @@ class plm_document(models.Model):
     _table = 'plm_document'
     _inherit = ['mail.thread', 'ir.attachment']
 
-    def create(self, cr, uid, vals, context={}):
-        return super(plm_document, self).create(cr, uid, vals, context)
-
-    def get_checkout_user(self, cr, uid, oid, context={}):
-        checkType = self.pool.get('plm.checkout')
-        lastDoc = self._getlastrev(cr, uid, [oid], context)
+    @api.model
+    def get_checkout_user(self, oid):
+        lastDoc = self._getlastrev([oid])
         if lastDoc:
-            for docID in checkType.search(cr, uid, [('documentid', '=', lastDoc[0])]):
-                objectCheck = checkType.browse(cr, uid, docID)
-                return objectCheck.userid
-        False
+            for docBrws in self.env['plm.checkout'].search([('documentid', '=', lastDoc[0])]):
+                return docBrws.userid
+        return False
 
-    def _is_checkedout_for_me(self, cr, uid, oid, context=None):
+    @api.model
+    def _is_checkedout_for_me(self, oid):
         """
             Get if given document (or its latest revision) is checked-out for the requesting user
         """
-        userBrws = self.get_checkout_user(cr, uid, oid, context=None)
+        userBrws = self.get_checkout_user(oid)
         if userBrws:
-            if userBrws.id == uid:
+            if userBrws.id == self.env.uid:
                 return True
         return False
 
-    def _getlastrev(self, cr, uid, ids, context=None):
+    @api.multi
+    def _getlastrev(self):
         result = []
-        for objDoc in self.browse(cr, uid, ids, context=context):
-            docIds = self.search(cr, uid, [('name', '=', objDoc.name)], order='revisionid', context=context)
+        for objDoc in self:
+            docIds = self.search([('name', '=', objDoc.name)], order='revisionid').ids
             docIds.sort()   # Ids are not surely ordered, but revision are always in creation order.
             if docIds:
                 result.append(docIds[len(docIds) - 1])
@@ -97,30 +95,32 @@ class plm_document(models.Model):
                 logging.warning('[_getlastrev] No documents are found for object with name: "%s"' % (objDoc.name))
         return list(set(result))
 
-    def GetLastNamesFromID(self, cr, uid, ids=[], context={}):
+    @api.multi
+    def GetLastNamesFromID(self):
         """
             get the last rev
         """
-        newIds = self._getlastrev(cr, uid, ids=ids, context=context)
-        return self.read(cr, uid, newIds, ['datas_fname'], context=context)
+        newIds = self._getlastrev(ids=self.env.ids)
+        return self.read(newIds, ['datas_fname'])
 
-    def _data_get_files(self, cr, uid, ids, listedFiles=([], []), forceFlag=False, context=None):
+    @api.multi
+    def _data_get_files(self, listedFiles=([], []), forceFlag=False):
         """
             Get Files to return to Client
         """
         result = []
         datefiles, listfiles = listedFiles
-        for objDoc in self.browse(cr, uid, ids, context=context):
+        for objDoc in self:
             if objDoc.type == 'binary':
-                timeDoc = self.getLastTime(cr, uid, objDoc.id)
+                timeDoc = self.getLastTime(objDoc.id)
                 timeSaved = time.mktime(timeDoc.timetuple())
                 try:
-                    isCheckedOutToMe = self._is_checkedout_for_me(cr, uid, objDoc.id, context)
+                    isCheckedOutToMe = self._is_checkedout_for_me(objDoc.id)
                     if not(objDoc.datas_fname in listfiles):
                         if (not objDoc.store_fname) and (objDoc.db_datas):
                             value = objDoc.db_datas
                         else:
-                            value = file(os.path.join(self._get_filestore(cr), objDoc.store_fname), 'rb').read()
+                            value = file(os.path.join(self._get_filestore(self.env.cr), objDoc.store_fname), 'rb').read()
                         result.append((objDoc.id, objDoc.datas_fname, base64.encodestring(value), isCheckedOutToMe, timeDoc))
                     else:
                         if forceFlag:
@@ -132,26 +132,27 @@ class plm_document(models.Model):
                             if (not objDoc.store_fname) and (objDoc.db_datas):
                                 value = objDoc.db_datas
                             else:
-                                value = file(os.path.join(self._get_filestore(cr), objDoc.store_fname), 'rb').read()
+                                value = file(os.path.join(self._get_filestore(self.env.cr), objDoc.store_fname), 'rb').read()
                             result.append((objDoc.id, objDoc.datas_fname, base64.encodestring(value), isCheckedOutToMe, timeDoc))
                         else:
                             result.append((objDoc.id, objDoc.datas_fname, False, isCheckedOutToMe, timeDoc))
                 except Exception, ex:
                     logging.error("_data_get_files : Unable to access to document (" + str(objDoc.name) + "). Error :" + str(ex))
-                    result.append((objDoc.id, objDoc.datas_fname, False, True, self.getServerTime(cr, uid, ids)))
+                    result.append((objDoc.id, objDoc.datas_fname, False, True, self.getServerTime()))
         return result
 
-    def _data_get(self, cr, uid, ids, name, arg, context):
+    @api.multi
+    def _data_get(self, name, arg):
         result = {}
         value = False
-        for objDoc in self.browse(cr, uid, ids, context=context):
+        for objDoc in self:
             if objDoc.type == 'binary':
                 if not objDoc.store_fname:
                     value = objDoc.db_datas
                     if not value or len(value) < 1:
                         raise UserError(_("Document %s - %s cannot be accessed" % (str(objDoc.name), str(objDoc.revisionid))))
                 else:
-                    filestore = os.path.join(self._get_filestore(cr), objDoc.store_fname)
+                    filestore = os.path.join(self._get_filestore(self.env.cr), objDoc.store_fname)
                     if os.path.exists(filestore):
                         value = file(filestore, 'rb').read()
                 if value and len(value) > 0:
@@ -160,36 +161,33 @@ class plm_document(models.Model):
                     result[objDoc.id] = ''
         return result
 
-    def _data_set(self, cr, uid, oid, name, value, args=None, context=None):
-        oiDocument = self.browse(cr, uid, oid, context)
-        if oiDocument.type == 'binary':
+    @api.multi
+    def _data_set(self, name, value, args=None):
+        if self.type == 'binary':
             if not value:
-                filename = oiDocument.store_fname
+                filename = self.store_fname
                 try:
-                    os.unlink(os.path.join(self._get_filestore(cr), filename))
+                    os.unlink(os.path.join(self._get_filestore(self.env.cr), filename))
                 except:
                     pass
-                cr.execute('update plm_document set store_fname=NULL WHERE id=%s', (oid,))
+                self.env.cr.execute('update plm_document set store_fname=NULL WHERE id=%s', (self.id))
                 return True
             try:
                 printout = False
                 preview = False
-                if oiDocument.printout:
-                    printout = oiDocument.printout
-                if oiDocument.preview:
-                    preview = oiDocument.preview
+                if self.printout:
+                    printout = self.printout
+                if self.preview:
+                    preview = self.preview
                 db_datas = b''                    # Clean storage field.
-                fname, filesize = self._manageFile(cr, uid, oid, binvalue=value, context=context)
-                cr.execute('update plm_document set store_fname=%s,file_size=%s,db_datas=%s where id=%s', (fname, filesize, db_datas, oid))
-                self.pool.get('plm.backupdoc').create(cr,
-                                                      uid,
-                                                      {'userid': uid,
-                                                       'existingfile': fname,
-                                                       'documentid': oid,
-                                                       'printout': printout,
-                                                       'preview': preview
-                                                       },
-                                                      context=context)
+                fname, filesize = self._manageFile(binvalue=value)
+                self.env.cr.execute('update plm_document set store_fname=%s,file_size=%s,db_datas=%s where id=%s', (fname, filesize, db_datas, self.id))
+                self.env['plm.backupdoc'].create({'userid': self.env.uid,
+                                                  'existingfile': fname,
+                                                  'documentid': self.env.oid,
+                                                  'printout': printout,
+                                                  'preview': preview
+                                                  })
 
                 return True
             except Exception, ex:
@@ -197,14 +195,14 @@ class plm_document(models.Model):
         else:
             return True
 
-    def _explodedocs(self, cr, uid, oid, kinds, listed_documents=[], recursion=True):
+    @api.model
+    def _explodedocs(self, oid, kinds, listed_documents=[], recursion=True):
         result = []
-        documentRelation = self.pool.get('plm.document.relation')
+        documentRelation = self.env['plm.document.relation']
 
         def getAllDocumentChildId(fromID, kinds):
-            docRelIds = documentRelation.search(cr, uid, [('parent_id', '=', fromID), ('link_kind', 'in', kinds)])
-            children = documentRelation.browse(cr, uid, docRelIds)
-            for child in children:
+            docRelBrwsList = documentRelation.search([('parent_id', '=', fromID), ('link_kind', 'in', kinds)])
+            for child in docRelBrwsList:
                 idToAdd = child.child_id.id
                 if idToAdd not in result:
                     result.append(idToAdd)
@@ -213,53 +211,54 @@ class plm_document(models.Model):
         getAllDocumentChildId(oid, kinds)
         return result
 
-    def _relateddocs(self, cr, uid, oid, kinds, listed_documents=[], recursion=True):
+    @api.model
+    def _relateddocs(self, oid, kinds, listed_documents=[], recursion=True):
         result = []
         if (oid in listed_documents):
             return result
-        documentRelation = self.pool.get('plm.document.relation')
-        docRelIds = documentRelation.search(cr, uid, [('child_id', '=', oid), ('link_kind', 'in', kinds)])
-        if len(docRelIds) == 0:
-            return result
-        children = documentRelation.browse(cr, uid, docRelIds)
-        for child in children:
+        documentRelation = self.env['plm.document.relation']
+        docBrwsList = documentRelation.search([('child_id', '=', oid), ('link_kind', 'in', kinds)])
+        if len(docBrwsList) == 0:
+            return []
+        for child in docBrwsList:
             if recursion:
                 listed_documents.append(oid)
-                result.extend(self._relateddocs(cr, uid, child.parent_id.id, kinds, listed_documents, recursion))
+                result.extend(self._relateddocs(child.parent_id.id, kinds, listed_documents, recursion))
             if child.parent_id:
                 result.append(child.parent_id.id)
         return list(set(result))
 
-    def _relatedbydocs(self, cr, uid, oid, kinds, listed_documents=[], recursion=True):
+    @api.model
+    def _relatedbydocs(self, oid, kinds, listed_documents=[], recursion=True):
         result = []
         if (oid in listed_documents):
             return result
-        documentRelation = self.pool.get('plm.document.relation')
-        docRelIds = documentRelation.search(cr, uid, [('parent_id', '=', oid), ('link_kind', 'in', kinds)])
-        if len(docRelIds) == 0:
-            return result
-        children = documentRelation.browse(cr, uid, docRelIds)
-        for child in children:
+        documentRelation = self.env['plm.document.relation']
+        docBrwsList = documentRelation.search([('parent_id', '=', oid), ('link_kind', 'in', kinds)])
+        if len(docBrwsList) == 0:
+            return []
+        for child in docBrwsList:
             if recursion:
                 listed_documents.append(oid)
-                result.extend(self._relatedbydocs(cr, uid, child.child_id.id, kinds, listed_documents, recursion))
+                result.extend(self._relatedbydocs(child.child_id.id, kinds, listed_documents, recursion))
             if child.child_id.id:
                 result.append(child.child_id.id)
         return list(set(result))
 
-    def _data_check_files(self, cr, uid, ids, listedFiles=(), forceFlag=False, context=None):
+    @api.multi
+    def _data_check_files(self, listedFiles=(), forceFlag=False):
         result = []
         datefiles, listfiles = listedFiles
-        for objDoc in self.browse(cr, uid, list(set(ids)), context=context):
+        for objDoc in self:
             if objDoc.type == 'binary':
                 checkOutUser = ''
                 isCheckedOutToMe = False
-                timeDoc = self.getLastTime(cr, uid, objDoc.id)
+                timeDoc = self.getLastTime(objDoc.id)
                 timeSaved = time.mktime(timeDoc.timetuple())
-                checkoutUserBrws = self.get_checkout_user(cr, uid, objDoc.id, context=None)
+                checkoutUserBrws = self.get_checkout_user(objDoc.id, context=None)
                 if checkoutUserBrws:
                     checkOutUser = checkoutUserBrws.name
-                    if checkoutUserBrws.id == uid:
+                    if checkoutUserBrws.id == self.env.uid:
                         isCheckedOutToMe = True
                 if (objDoc.datas_fname in listfiles):
                     if forceFlag:
@@ -283,161 +282,158 @@ class plm_document(models.Model):
                 result.append((objDoc.id, objDoc.datas_fname, file_size, collectable, isCheckedOutToMe, checkOutUser))
         return list(set(result))
 
-    def copy(self,cr,uid,oid,defaults={},context=None):
+    @api.multi
+    def copy(self, defaults={}):
         """
             Overwrite the default copy method
         """
-        #get All document relation 
-        documentRelation=self.pool.get('plm.document.relation')
-        docRelIds=documentRelation.search(cr,uid,[('parent_id', '=',oid)],context=context)
-        if len(docRelIds)==0:
-            docRelIds=False 
-        previous_name=self.browse(cr,uid,oid,context=context).name
-        if not 'name' in defaults:
-            new_name='Copy of %s'%previous_name
-            l=self.search(cr,uid,[('name','=',new_name)],order='revisionid',context=context)
-            if len(l)>0:
-                new_name='%s (%s)'%(new_name,len(l)+1)
-            defaults['name']=new_name
-        #manage copy of the file
-        fname,filesize=self._manageFile(cr,uid,oid,context=context)
-        #assign default value
-        defaults['store_fname']=fname
-        defaults['file_size']=filesize
-        defaults['state']='draft'
-        defaults['writable']=True
-        newID=super(plm_document,self).copy(cr,uid,oid,defaults,context=context)
+        documentRelation = self.env['plm.document.relation']
+        docBrwsList = documentRelation.search([('parent_id', '=', self.env.id)])
+        previous_name = self.name
+        if 'name' not in defaults:
+            new_name = 'Copy of %s' % previous_name
+            l = self.search([('name', '=', new_name)], order='revisionid')
+            if len(l) > 0:
+                new_name = '%s (%s)' % (new_name, len(l) + 1)
+            defaults['name'] = new_name
+        fname, filesize = self._manageFile(self.id)
+        defaults['store_fname'] = fname
+        defaults['file_size'] = filesize
+        defaults['state'] = 'draft'
+        defaults['writable'] = True
+        newID = super(plm_document, self).copy(defaults)
         if (newID):
-            self.wf_message_post(cr, uid, [newID], body=_('Copied starting from : %s.' %previous_name))
-        if docRelIds:
-            # create all the document relation
-            brwEnts=documentRelation.browse(cr,uid,docRelIds,context=context)
-            for brwEnt in brwEnts:
-                documentRelation.create(cr,uid, {
-                                          'parent_id':newID,
-                                          'child_id':brwEnt.child_id.id,
-                                          'configuration':brwEnt.configuration,
-                                          'link_kind':brwEnt.link_kind,
-                                         }, context=context)
-        return newID 
+            self.wf_message_post([newID], body=_('Copied starting from : %s.' % previous_name))
+        for brwEnt in docBrwsList:
+            documentRelation.create({
+                                    'parent_id': newID,
+                                    'child_id': brwEnt.child_id.id,
+                                    'configuration': brwEnt.configuration,
+                                    'link_kind': brwEnt.link_kind,
+                                    })
+        return newID
 
-    def _manageFile(self,cr,uid, oid, binvalue=None, context=None):
+    @api.model
+    def _manageFile(self, oid, binvalue=None):
         """
             use given 'binvalue' to save it on physical repository and to read size (in bytes).
         """
-        path = self._get_filestore(cr)
+        path = self._get_filestore(self.env.cr)
         if not os.path.isdir(path):
             try:
                 os.makedirs(path)
             except:
-                raise UserError( _("Permission denied or directory %s cannot be created." %(str(path))))
-        
+                raise UserError(_("Permission denied or directory %s cannot be created." % (str(path))))
         flag = None
         # This can be improved
         for dirs in os.listdir(path):
-            if os.path.isdir(os.path.join(path,dirs)) and len(os.listdir(os.path.join(path,dirs)))<4000:
+            if os.path.isdir(os.path.join(path, dirs)) and len(os.listdir(os.path.join(path, dirs))) < 4000:
                 flag = dirs
                 break
-        if binvalue==None:
-            fileStream=self._data_get(cr, uid, [oid], name=None, arg=None, context=context)
-            binvalue=fileStream[fileStream.keys()[0]]
-        
+        if binvalue is None:
+            fileStream = self._data_get([oid], name=None, arg=None)
+            binvalue = fileStream[fileStream.keys()[0]]
+
         flag = flag or create_directory(path)
         filename = random_name()
         fname = os.path.join(path, flag, filename)
-        fobj = file(fname,'wb')
+        fobj = file(fname, 'wb')
         value = base64.decodestring(binvalue)
         fobj.write(value)
         fobj.close()
-        return (os.path.join(flag,filename),len(value))
+        return (os.path.join(flag, filename), len(value))
 
-    def _iswritable(self, cr, user, oid):
-        checkState=('draft')
-        if not oid.type=='binary':
-            logging.warning("_iswritable : Part ("+str(oid.engineering_code)+"-"+str(oid.engineering_revision)+") not writable as hyperlink.")
+    @api.model
+    def _iswritable(self, oid):
+        checkState = ('draft')
+        if not oid.type == 'binary':
+            logging.warning("_iswritable : Part (" + str(oid.engineering_code) + "-" + str(oid.engineering_revision) + ") not writable as hyperlink.")
             return False
         if not oid.engineering_writable:
-            logging.warning("_iswritable : Part ("+str(oid.engineering_code)+"-"+str(oid.engineering_revision)+") not writable.")
+            logging.warning("_iswritable : Part (" + str(oid.engineering_code) + "-" + str(oid.engineering_revision) + ") not writable.")
             return False
-        if not oid.state in checkState:
-            logging.warning("_iswritable : Part ("+str(oid.engineering_code)+"-"+str(oid.engineering_revision)+") in status ; "+str(oid.state)+".")
+        if oid.state not in checkState:
+            logging.warning("_iswritable : Part (" + str(oid.engineering_code) + "-" + str(oid.engineering_revision) + ") in status ; " + str(oid.state) + ".")
             return False
-        if oid.engineering_code == False:
-            logging.warning("_iswritable : Part ("+str(oid.name)+"-"+str(oid.engineering_revision)+") without Engineering P/N.")
+        if not oid.engineering_code:
+            logging.warning("_iswritable : Part (" + str(oid.name) + "-" + str(oid.engineering_revision) + ") without Engineering P/N.")
             return False
         return True
 
-    def newVersion(self, cr, uid, ids, context=None):
+    @api.multi
+    def newVersion(self):
         """
             create a new version of the document (to WorkFlow calling)
         """
-        if self.NewRevision(cr, uid, ids, context=context) is not None:
+        if self.NewRevision() is not None:
             return True
         return False
 
-    def NewRevision(self, cr, uid, ids, context=None):
+    @api.multi
+    def NewRevision(self):
         """
             create a new revision of the document
         """
         newID = None
-        for tmpObject in self.browse(cr, uid, ids, context=context):
-            latestIDs = self.GetLatestIds(cr, uid, [(tmpObject.name, tmpObject.revisionid, False)], context=context)
-            for oldObject in self.browse(cr, uid, latestIDs, context=context):
-                self.write(cr, uid, [oldObject.id], {'state': 'undermodify'}, context=context, check=False)
-                defaults                = {}
-                defaults['name']        = oldObject.name
-                defaults['revisionid']  = int(oldObject.revisionid) + 1
-                defaults['writable']    = True
-                defaults['state']       = 'draft'
-                newID = super(plm_document, self).copy(cr, uid, oldObject.id, defaults, context=context)
-                self.wf_message_post(cr, uid, [oldObject.id], body=_('Created : New Revision.'))
+        for tmpObject in self:
+            latestIDs = self.GetLatestIds([(tmpObject.name, tmpObject.revisionid, False)])
+            for oldObject in self.browse(latestIDs):
+                oldObject.write({'state': 'undermodify'}, check=False)
+                defaults = {}
+                defaults['name'] = oldObject.name
+                defaults['revisionid'] = int(oldObject.revisionid) + 1
+                defaults['writable'] = True
+                defaults['state'] = 'draft'
+                newID = super(plm_document, self).copy(oldObject.id, defaults)
+                self.wf_message_post([oldObject.id], body=_('Created : New Revision.'))
                 break
             break
         return (newID, defaults['revisionid'])
 
-    def Clone(self, cr, uid, oid, defaults={}, context=None):
+    @api.multi
+    def Clone(self, defaults={}):
         """
             create a new copy of the document
         """
-        defaults    = {}
-        exitValues  = {}
-        newID       = self.copy(cr, uid, oid, defaults, context)
+        defaults = {}
+        exitValues = {}
+        newID = self.copy(defaults)
         if newID is not None:
-            newEnt = self.browse(cr, uid, newID, context=context)
-            exitValues['_id']           = newID
-            exitValues['name']          = newEnt.name
-            exitValues['revisionid']    = newEnt.revisionid
+            newEnt = self.browse(newID)
+            exitValues['_id'] = newID
+            exitValues['name'] = newEnt.name
+            exitValues['revisionid'] = newEnt.revisionid
         return exitValues
 
-    def CheckSaveUpdate(self, cr, uid, documents, default=None, context=None):
+    @api.model
+    def CheckSaveUpdate(self, documents, default=None):
         """
             Save or Update Documents
         """
         retValues = []
         for document in documents:
             hasSaved = False
-            if not ('name' in document) or (not 'revisionid' in document):
-                document['documentID']  = False
-                document['hasSaved']    = hasSaved
+            if not ('name' in document) or ('revisionid' not in document):
+                document['documentID'] = False
+                document['hasSaved'] = hasSaved
                 continue
-            existingID = self.search(cr, uid, [
-                                           ('name', '=', document['name']),
-                                           ('revisionid', '=', document['revisionid'])], order='revisionid')
-            if not existingID:
+            docBrwsList = self.search([('name', '=', document['name']),
+                                      ('revisionid', '=', document['revisionid'])],
+                                      order='revisionid')
+            if not docBrwsList:
                 hasSaved = True
             else:
-                existingID  = existingID[0]
-                objDocument = self.browse(cr, uid, existingID, context=context)
-#               logging.info("CheckSaveUpdate : time db : %s time file : %s" %(str(self.getLastTime(cr,uid,existingID).strftime('%Y-%m-%d %H:%M:%S')), str(document['lastupdate'])))
-                if self.getLastTime(cr, uid, existingID) < datetime.strptime(str(document['lastupdate']), '%Y-%m-%d %H:%M:%S'):
-                    if objDocument.writable:
+                existingID = docBrwsList[0].id
+                if self.getLastTime(existingID) < datetime.strptime(str(document['lastupdate']), '%Y-%m-%d %H:%M:%S'):
+                    if docBrwsList[0].writable:
                         hasSaved = True
             document['documentID'] = existingID
             document['hasSaved'] = hasSaved
             retValues.append(document)
         return retValues
 
-    def SaveOrUpdate(self, cr, uid, documents, default=None, context=None):
+    @api.model
+    def SaveOrUpdate(self, documents, default=None):
         """
             Save or Update Documents
         """
@@ -445,23 +441,22 @@ class plm_document(models.Model):
         for document in documents:
             hasSaved = False
             hasUpdated = False
-            if not ('name' in document) or (not 'revisionid' in document):
+            if not ('name' in document) or ('revisionid' not in document):
                 document['documentID'] = False
                 document['hasSaved'] = hasSaved
                 document['hasUpdated'] = hasUpdated
                 continue
-            existingID = self.search(cr, uid, [('name', '=', document['name']), ('revisionid', '=', document['revisionid'])], order='revisionid')
-            if not existingID:
-                existingID = self.create(cr, uid, document)
+            docBrwsList = self.search([('name', '=', document['name']), ('revisionid', '=', document['revisionid'])], order='revisionid')
+            if not docBrwsList:
+                existingID = self.create(document).id
                 hasSaved = True
             else:
-                existingID = existingID[0]
-                objDocument = self.browse(cr, uid, existingID, context=context)
+                existingID = docBrwsList[0].id
 #                logging.info("SaveOrUpdate : time db : %s time file : %s" %(str(self.getLastTime(cr,uid,existingID).strftime('%Y-%m-%d %H:%M:%S')), str(document['lastupdate'])))
-                if self.getLastTime(cr, uid, existingID) < datetime.strptime(str(document['lastupdate']), '%Y-%m-%d %H:%M:%S'):
-                    if self._iswritable(cr, uid, objDocument):
+                if self.getLastTime(existingID) < datetime.strptime(str(document['lastupdate']), '%Y-%m-%d %H:%M:%S'):
+                    if self._iswritable(docBrwsList[0]):
                         del(document['lastupdate'])
-                        if not self.write(cr, uid, [existingID], document, context=context, check=True):
+                        if not self.browse([existingID]).write(document, check=True):
                             raise UserError(_("Document %s  -  %s cannot be updated" % (str(document['name']), str(document['revisionid']))))
                         hasSaved = True
             document['documentID'] = existingID
@@ -470,15 +465,17 @@ class plm_document(models.Model):
             retValues.append(document)
         return retValues
 
-    def RegMessage(self, cr, uid, request, default=None, context=None):
+    @api.model
+    def RegMessage(self, request, default=None):
         """
             Registers a message for requested document
         """
         oid, message = request
-        self.wf_message_post(cr, uid, [oid], body=_(message))
+        self.wf_message_post([oid], body=_(message))
         return False
 
-    def UpdateDocuments(self, cr, uid, documents, default=None, context=None):
+    @api.model
+    def UpdateDocuments(self, documents, default=None):
         """
             Save or Update Documents
         """
@@ -486,17 +483,19 @@ class plm_document(models.Model):
         for document in documents:
             oid = document['documentID']
             del(document['documentID'])
-            ret = ret and self.write(cr, uid, [oid], document, context=context, check=True)
+            ret = ret and self.browse([oid]).write(document, check=True)
         return ret
 
-    def CleanUp(self, cr, uid, ids, default=None, context=None):
+    @api.multi
+    def CleanUp(self, default=None):
         """
             Remove faked documents
         """
-        cr.execute("delete from plm_document where store_fname=NULL and type='binary'")
+        self.env.cr.execute("delete from plm_document where store_fname=NULL and type='binary'")
         return True
 
-    def QueryLast(self, cr, uid, request=([], []), default=None, context=None):
+    @api.model
+    def QueryLast(self, request=([], []), default=None):
         """
             Query to return values based on columns selected.
         """
@@ -506,10 +505,11 @@ class plm_document(models.Model):
             return expData
         if 'revisionid' in queryFilter:
             del queryFilter['revisionid']
-        allIDs = self.search(cr, uid, queryFilter, order='revisionid', context=context)
-        if len(allIDs) > 0:
+        docBrwsList = self.search(queryFilter, order='revisionid').ids
+        if len(docBrwsList) > 0:
+            allIDs = docBrwsList.ids
             allIDs.sort()
-            tmpData = self.export_data(cr, uid, allIDs, columns)
+            tmpData = self.export_data(allIDs, columns)
             if 'datas' in tmpData:
                 expData = tmpData['datas']
         return expData
@@ -554,7 +554,7 @@ class plm_document(models.Model):
         objId = self.write({'writable': writable,
                             'state': state
                             })
-        if (objId):
+        if objId:
             self.wf_message_post(body=_('Status moved to: %s.' % (USEDIC_STATES[state])))
         return objId
 
@@ -578,10 +578,9 @@ class plm_document(models.Model):
             release the object
         """
         for oldObject in self:
-            last_id = self._getbyrevision(oldObject.name, oldObject.revisionid - 1)
-            if last_id:
-                selfBrws = self.browse([last_id])
-                selfBrws.commonWFAction(False, 'released', False)
+            lastDocBrws = self._getbyrevision(oldObject.name, oldObject.revisionid - 1)
+            if lastDocBrws:
+                lastDocBrws.commonWFAction(False, 'released', False)
         if self.ischecked_in():
             return self.commonWFAction(False, 'released', False)
         return False
@@ -604,17 +603,18 @@ class plm_document(models.Model):
         if self.ischecked_in():
             self.setCheckContextWrite(False)
             objId = self.write(defaults)
-            if (objId):
+            if objId:
                 self.wf_message_post(body=_('Status moved to:%s.' % (USEDIC_STATES[defaults['state']])))
             return objId
         return False
 
-    def blindwrite(self, cr, uid, ids, vals, context=None):
+    @api.multi
+    def blindwrite(self, vals):
         """
             blind write for xml-rpc call for recovering porpouse
             DO NOT USE FOR COMMON USE !!!!
         """
-        return self.write(cr, uid, ids, vals, context=context, check=False)
+        return self.write(vals, check=False)
 
 #   Overridden methods for this entity
     def _get_filestore(self, cr):
@@ -632,23 +632,24 @@ class plm_document(models.Model):
                     return False
         return super(plm_document, self).write(vals)
 
-    def unlink(self, cr, uid, ids, context=None):
+    @api.multi
+    def unlink(self):
         values = {'state': 'released', }
         checkState = ('undermodify', 'obsoleted')
-        for checkObj in self.browse(cr, uid, ids, context=context):
-            existingID = self.search(cr, uid, [('name', '=', checkObj.name), ('revisionid', '=', checkObj.revisionid - 1)])
-            if len(existingID) > 0:
-                oldObject = self.browse(cr, uid, existingID[0], context=context)
+        for checkObj in self:
+            docBrwsList = self.search([('name', '=', checkObj.name), ('revisionid', '=', checkObj.revisionid - 1)])
+            if len(docBrwsList) > 0:
+                oldObject = docBrwsList[0]
                 if oldObject.state in checkState:
-                    self.wf_message_post(cr, uid, [oldObject.id], body=_('Removed : Latest Revision.'))
-                    if not self.write(cr, uid, [oldObject.id], values, context, check=False):
+                    self.wf_message_post([oldObject.id], body=_('Removed : Latest Revision.'))
+                    if not oldObject.write(values, check=False):
                         logging.warning("unlink : Unable to update state to old document (" + str(oldObject.name) + "-" + str(oldObject.revisionid) + ").")
                         return False
-        return super(plm_document, self).unlink(cr, uid, ids, context=context)
+        return super(plm_document, self).unlink()
 
 #   Overridden methods for this entity
-
-    def _check_duplication(self, cr, uid, vals, ids=None, op='create'):
+    @api.model
+    def _check_duplication(self, vals, ids=None, op='create'):
         SUPERUSER_ID = 1
         name = vals.get('name', False)
         parent_id = vals.get('parent_id', False)
@@ -656,7 +657,7 @@ class plm_document(models.Model):
         ressource_id = vals.get('ressource_id', 0)
         revisionid = vals.get('revisionid', 0)
         if op == 'write':
-            for directory in self.browse(cr, SUPERUSER_ID, ids):
+            for directory in self.browse(ids):
                 if not name:
                     name = directory.name
                 if not parent_id:
@@ -666,12 +667,22 @@ class plm_document(models.Model):
                     ressource_parent_type_id = directory.ressource_parent_type_id and directory.ressource_parent_type_id.id or False
                 if not ressource_id:
                     ressource_id = directory.ressource_id and directory.ressource_id or 0
-                res = self.search(cr, uid, [('id', '<>', directory.id), ('name', '=', name), ('parent_id', '=', parent_id), ('ressource_parent_type_id', '=', ressource_parent_type_id), ('ressource_id', '=', ressource_id), ('revisionid', '=', revisionid)])
-                if len(res):
+                docBrwsList = self.search([('id', '<>', directory.id),
+                                           ('name', '=', name),
+                                           ('parent_id', '=', parent_id),
+                                           ('ressource_parent_type_id', '=', ressource_parent_type_id),
+                                           ('ressource_id', '=', ressource_id),
+                                           ('revisionid', '=', revisionid)])
+                if docBrwsList:
                     return False
         if op == 'create':
-            res = self.search(cr, SUPERUSER_ID, [('name', '=', name), ('parent_id', '=', parent_id), ('ressource_parent_type_id', '=', ressource_parent_type_id), ('ressource_id', '=', ressource_id), ('revisionid', '=', revisionid)])
-            if len(res):
+            docBrwsList = self.search(SUPERUSER_ID,
+                              [('name', '=', name),
+                               ('parent_id', '=', parent_id),
+                               ('ressource_parent_type_id', '=', ressource_parent_type_id),
+                               ('ressource_id', '=', ressource_id),
+                               ('revisionid', '=', revisionid)])
+            if docBrwsList:
                 return False
         return True
 #   Overridden methods for this entity
@@ -730,7 +741,8 @@ class plm_document(models.Model):
         ('name_unique', 'unique (name, revisionid)', 'File name has to be unique!')  # qui abbiamo la sicurezza dell'univocita del nome file
     ]
 
-    def CheckedIn(self, cr, uid, files, default=None, context=None):
+    @api.model
+    def CheckedIn(self, files, default=None):
         """
             Get checked status for requested files
         """
@@ -739,25 +751,28 @@ class plm_document(models.Model):
         def getcheckedfiles(files):
             res = []
             for fileName in files:
-                ids = self.search(cr, uid, [('datas_fname', '=', fileName)], order='revisionid')
-                if len(ids) > 0:
+                plmDocList = self.search([('datas_fname', '=', fileName)], order='revisionid')
+                if len(plmDocList) > 0:
+                    ids = plmDocList.ids
                     ids.sort()
-                    res.append([fileName, not (self._is_checkedout_for_me(cr, uid, ids[len(ids) - 1], context))])
+                    res.append([fileName, not (self._is_checkedout_for_me(ids[len(ids) - 1]))])
             return res
 
         if len(files) > 0:  # no files to process
             retValues = getcheckedfiles(files)
         return retValues
 
-    def GetUpdated(self, cr, uid, vals, context=None):
+    @api.model
+    def GetUpdated(self, vals):
         """
             Get Last/Requested revision of given items (by name, revision, update time)
         """
         docData, attribNames = vals
-        ids = self.GetLatestIds(cr, uid, docData, context)
-        return self.read(cr, uid, list(set(ids)), attribNames)
+        ids = self.GetLatestIds(docData)
+        return self.read(list(set(ids)), attribNames)
 
-    def GetLatestIds(self, cr, uid, vals, context=None, forceCADProperties=False):
+    @api.model
+    def GetLatestIds(self, vals, forceCADProperties=False):
         """
             Get Last/Requested revision of given items (by name, revision, update time)
         """
@@ -765,16 +780,16 @@ class plm_document(models.Model):
 
         def getCompIds(docName, docRev):
             if docRev is None or docRev is False:
-                docIds = self.search(cr, uid, [('name', '=', docName)], order='revisionid', context=context)
-                if len(docIds) > 0:
-                    ids.append(docIds[-1])
+                docBrwsList = self.search([('name', '=', docName)], order='revisionid')
+                if len(docBrwsList) > 0:
+                    ids.append(docBrwsList.ids[-1])
             else:
-                ids.extend(self.search(cr, uid, [('name', '=', docName), ('revisionid', '=', docRev)], context=context))
+                ids.extend(self.search([('name', '=', docName), ('revisionid', '=', docRev)]).ids)
 
         for docName, docRev, docIdToOpen in vals:
-            checkOutUser = self.get_checkout_user(cr, uid, docIdToOpen, context)
+            checkOutUser = self.get_checkout_user(docIdToOpen)
             if checkOutUser:
-                isMyDocument = self.isCheckedOutByMe(cr, uid, docIdToOpen, context)
+                isMyDocument = self.isCheckedOutByMe(docIdToOpen)
                 if isMyDocument:
                     return []    # Document properties will be not updated
                 else:
@@ -783,13 +798,15 @@ class plm_document(models.Model):
                 getCompIds(docName, docRev)
         return list(set(ids))
 
-    def isCheckedOutByMe(self, cr, uid, docId, context):
-        checkoutIds = self.pool.get('plm.checkout').search(cr, uid, [('documentid', '=', docId), ('userid', '=', uid)])
-        for checkoutId in checkoutIds:
-            return checkoutId
+    @api.multi
+    def isCheckedOutByMe(self):
+        checkoutBrwsList = self.env['plm.checkout'].search([('documentid', '=', self.id), ('userid', '=', self.env.uid)])
+        for checkoutBrws in checkoutBrwsList:
+            return checkoutBrws.id
         return None
 
-    def CheckAllFiles(self, cr, uid, request, default=None, context=None):
+    @api.model
+    def CheckAllFiles(self, request, default=None):
         """
             Evaluate documents to return
         """
@@ -805,30 +822,31 @@ class plm_document(models.Model):
             forceFlag = True
             selection = selection * (-1)
         # Get relations due to layout connected
-        docArray = self._relateddocs(cr, uid, oid, ['LyTree'], listed_documents)
+        docArray = self._relateddocs(oid, ['LyTree'], listed_documents)
         # Get Hierarchical tree relations due to children
-        modArray = self._explodedocs(cr, uid, oid, ['HiTree'], listed_models)
+        modArray = self._explodedocs(oid, ['HiTree'], listed_models)
         outIds = list(set(outIds + modArray + docArray))
         if selection == 2:  # Case of latest
-            outIds = self._getlastrev(cr, uid, outIds, context)
-        return self._data_check_files(cr, uid, outIds, listedFiles, forceFlag, context)
+            outIds = self._getlastrev(outIds)
+        return self._data_check_files(outIds, listedFiles, forceFlag)
 
-    def CheckInRecursive(self, cr, uid, request, default=None, context=None):
+    @api.model
+    def CheckInRecursive(self, request, default=None):
         """
             Evaluate documents to return
         """
         def getDocId(args):
             docName = args.get('name')
             docRev = args.get('revisionid')
-            docIds = self.search(cr, uid, [('name', '=', docName), ('revisionid', '=', docRev)])
-            if not docIds:
+            docBrwsList = self.search([('name', '=', docName), ('revisionid', '=', docRev)])
+            if not docBrwsList:
                 logging.warning('Document with name "%s" and revision "%s" not found' % (docName, docRev))
                 return False
-            return docIds[0]
+            return docBrwsList[0].id
 
         oid, _listedFiles, selection = request
         oid = getDocId(oid)
-        checkRes = self.isCheckedOutByMe(cr, uid, oid, context)
+        checkRes = self.isCheckedOutByMe(oid)
         if not checkRes:
             return False
         if selection is False:
@@ -843,8 +861,8 @@ class plm_document(models.Model):
                 return
             else:
                 docArray.append(oid)
-            docRelIds = documentRelation.search(cr, uid, ['|', ('parent_id', '=', oid), ('child_id', '=', oid)])
-            for objRel in documentRelation.browse(cr, uid, docRelIds, context):
+            docBrwsList = documentRelation.search(['|', ('parent_id', '=', oid), ('child_id', '=', oid)])
+            for objRel in docBrwsList:
                 if objRel.link_kind in ['LyTree', 'RfTree'] and objRel.child_id.id not in docArray:
                     docArray.append(objRel.child_id.id)
                 else:
@@ -853,142 +871,146 @@ class plm_document(models.Model):
 
         recursionCompute(oid)
         if selection == 2:
-            docArray = self._getlastrev(cr, uid, docArray, context)
+            docArray = self._getlastrev(docArray)
         checkoutObj = self.pool.get('plm.checkout')
         for docId in docArray:
-            checkoutId = checkoutObj.search(cr, uid, [('documentid', '=', docId), ('userid', '=', uid)], context)
-            if checkoutId:
-                checkoutObj.unlink(cr, uid, checkoutId)
-        return self.read(cr, uid, docArray, ['datas_fname'], context)
+            checkOutBrwsList = checkoutObj.search([('documentid', '=', docId), ('userid', '=', self.env.uid)])
+            checkOutBrwsList.unlink()
+        return self.read(docArray, ['datas_fname'])
 
-    def GetSomeFiles(self, cr, uid, request, default=None, context=None):
+    @api.model
+    def GetSomeFiles(self, request, default=None):
         """
-            Extract documents to be returned 
+            Extract documents to be returned
         """
-        forceFlag=False
+        forceFlag = False
         ids, listedFiles, selection = request
-        if selection == False:
-            selection=1
+        if not selection:
+            selection = 1
 
-        if selection<0:
-            forceFlag=True
-            selection=selection*(-1)
+        if selection < 0:
+            forceFlag = True
+            selection = selection * (-1)
 
         if selection == 2:
-            docArray=self._getlastrev(cr, uid, ids, context)
+            docArray = self._getlastrev()
         else:
-            docArray=ids
-        return self._data_get_files(cr, uid, docArray, listedFiles, forceFlag, context)
+            docArray = ids
+        return self._data_get_files(docArray, listedFiles, forceFlag)
 
-    def GetAllFiles(self, cr, uid, request, default=None, context=None):
+    @api.model
+    def GetAllFiles(self, request, default=None):
         """
-            Extract documents to be returned 
+            Extract documents to be returned
         """
-        forceFlag=False
-        listed_models=[]
-        listed_documents=[]
-        modArray=[]
+        forceFlag = False
+        listed_models = []
+        listed_documents = []
+        modArray = []
         oid, listedFiles, selection = request
-        if selection == False:
-            selection=1
+        if not selection:
+            selection = 1
 
-        if selection<0:
-            forceFlag=True
-            selection=selection*(-1)
+        if selection < 0:
+            forceFlag = True
+            selection = selection * -1
 
-        kind='HiTree'                   # Get Hierarchical tree relations due to children
-        docArray=self._explodedocs(cr, uid, oid, [kind], listed_models)
-        
-        if not oid in docArray:
+        kind = 'HiTree'                   # Get Hierarchical tree relations due to children
+        docArray = self._explodedocs(oid, [kind], listed_models)
+        if oid not in docArray:
             docArray.append(oid)        # Add requested document to package
-                
         for item in docArray:
-            kinds=['LyTree','RfTree']               # Get relations due to layout connected
-            modArray.extend(self._relateddocs(cr, uid, item, kinds, listed_documents))
-            modArray.extend(self._explodedocs(cr, uid, item, kinds, listed_documents))
+            kinds = ['LyTree', 'RfTree']               # Get relations due to layout connected
+            modArray.extend(self._relateddocs(item, kinds, listed_documents))
+            modArray.extend(self._explodedocs(item, kinds, listed_documents))
 #             kind='RfTree'               # Get relations due to referred connected
 #             modArray.extend(self._relateddocs(cr, uid, item, kind, listed_documents))
 #             modArray.extend(self._explodedocs(cr, uid, item, kind, listed_documents))
-
         modArray.extend(docArray)
-        docArray=list(set(modArray))    # Get unique documents object IDs
-
+        docArray = list(set(modArray))    # Get unique documents object IDs
         if selection == 2:
-            docArray=self._getlastrev(cr, uid, docArray, context)
-        
-        if not oid in docArray:
+            docArray = self._getlastrev(docArray)
+        if oid not in docArray:
             docArray.append(oid)     # Add requested document to package
-        return self._data_get_files(cr, uid, docArray, listedFiles, forceFlag, context)
+        return self._data_get_files(docArray, listedFiles, forceFlag)
 
-    def GetRelatedDocs(self, cr, uid, ids, default=None, context=None):
+    @api.multi
+    def GetRelatedDocs(self, default=None):
         """
             Extract documents related to current one(s) (layouts, referred models, etc.)
         """
         related_documents = []
         listed_documents = []
         read_docs = []
-        for oid in ids:
+        for oid in self.ids:
             kinds = ['RfTree', 'LyTree']   # Get relations due to referred models
-            read_docs.extend(self._relateddocs(cr, uid, oid, kinds, listed_documents, False))
-            read_docs.extend(self._relatedbydocs(cr, uid, oid, kinds, listed_documents, False))
-        documents = self.browse(cr, uid, read_docs, context=context)
+            read_docs.extend(self._relateddocs(oid, kinds, listed_documents, False))
+            read_docs.extend(self._relatedbydocs(oid, kinds, listed_documents, False))
+        documents = self.browse(read_docs)
         for document in documents:
             related_documents.append([document.id, document.name, document.preview])
         return related_documents
 
-    def getServerTime(self, cr, uid, oid, default=None, context=None):
+    @api.multi
+    def getServerTime(self):
         """
-            calculate the server db time 
+            calculate the server db time
         """
         return datetime.now()
-    
-    def getLastTime(self, cr, uid, oid, default=None, context=None):
-        """
-            get document last modification time 
-        """
-        obj = self.browse(cr, uid, oid, context=context)
-        if(obj.write_date!=False):
-            return datetime.strptime(obj.write_date,'%Y-%m-%d %H:%M:%S')
-        else:
-            return datetime.strptime(obj.create_date,'%Y-%m-%d %H:%M:%S')
 
-    def getUserSign(self, cr, uid, oid, default=None, context=None):
+    @api.model
+    def getLastTime(self, oid, default=None):
+        """
+            get document last modification time
+        """
+        obj = self.browse(oid)
+        if(obj.write_date is not False):
+            return datetime.strptime(obj.write_date, '%Y-%m-%d %H:%M:%S')
+        else:
+            return datetime.strptime(obj.create_date, '%Y-%m-%d %H:%M:%S')
+
+    @api.multi
+    def getUserSign(self, userId):
         """
             get the user name
         """
-        userType=self.pool.get('res.users')
-        uiUser=userType.browse(cr,uid,uid,context=context)
+        userType = self.env['res.users']
+        uiUser = userType.browse(userId)
         return uiUser.name
 
     @api.multi
     def _getbyrevision(self, name, revision):
         result = False
-        results = self.search([('name', '=', name), ('revisionid', '=', revision)])
-        for result in results:
+        for result in self.search([('name', '=', name), ('revisionid', '=', revision)]):
             return result
         return result
 
-    def getCheckedOut(self, cr, uid, oid, default=None, context=None):
-        checkoutType=self.pool.get('plm.checkout')
-        checkoutIDs=checkoutType.search(cr,uid,[('documentid', '=',oid)])
-        for checkoutID in checkoutIDs:
-            objDoc=checkoutType.browse(cr,uid,checkoutID)
-            return(objDoc.documentid.name,objDoc.documentid.revisionid,self.getUserSign(cr,objDoc.userid.id,1),objDoc.hostname)
+    @api.model
+    def getCheckedOut(self, oid, default=None):
+        checkoutType = self.env['plm.checkout']
+        checkoutBrwsList = checkoutType.search([('documentid', '=', oid)])
+        for checkOutBrws in checkoutBrwsList:
+            return(checkOutBrws.documentid.name,
+                   checkOutBrws.documentid.revisionid,
+                   self.getUserSign(checkOutBrws.userid.id),
+                   checkOutBrws.hostname)
         return False
 
-    def _file_delete(self, cr, uid, fname):
+    @api.model
+    def _file_delete(self, fname):
         '''
             Delete file only if is not saved on plm.backupdoc
         '''
-        backupDocIds = self.pool.get('plm.backupdoc').search(cr, uid, [('existingfile', '=', fname)])
-        if not backupDocIds:
-            return super(plm_document, self)._file_delete(cr, uid, fname)
+        backupDocBrwsList = self.env['plm.backupdoc'].search([('existingfile', '=', fname)])
+        if not backupDocBrwsList:
+            return super(plm_document, self)._file_delete(fname)
 
-    def GetNextDocumentName(self, cr, uid, documentName, context={}):
+    @api.model
+    def GetNextDocumentName(self, documentName):
         '''
             Return a new name due to sequence next number.
         '''
-        nextDocNum = self.pool.get('ir.sequence').get(cr, uid, 'plm.document.progress')
+        nextDocNum = self.env['ir.sequence'].next_by_code('plm.document.progress')
         return documentName + '-' + nextDocNum
 
 plm_document()
