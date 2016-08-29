@@ -452,7 +452,6 @@ class plm_document(models.Model):
                 hasSaved = True
             else:
                 existingID = docBrwsList[0].id
-#                logging.info("SaveOrUpdate : time db : %s time file : %s" %(str(self.getLastTime(cr,uid,existingID).strftime('%Y-%m-%d %H:%M:%S')), str(document['lastupdate'])))
                 if self.getLastTime(existingID) < datetime.strptime(str(document['lastupdate']), '%Y-%m-%d %H:%M:%S'):
                     if self._iswritable(docBrwsList[0]):
                         del(document['lastupdate'])
@@ -923,9 +922,6 @@ class plm_document(models.Model):
             kinds = ['LyTree', 'RfTree']               # Get relations due to layout connected
             modArray.extend(self._relateddocs(item, kinds, listed_documents))
             modArray.extend(self._explodedocs(item, kinds, listed_documents))
-#             kind='RfTree'               # Get relations due to referred connected
-#             modArray.extend(self._relateddocs(cr, uid, item, kind, listed_documents))
-#             modArray.extend(self._explodedocs(cr, uid, item, kind, listed_documents))
         modArray.extend(docArray)
         docArray = list(set(modArray))    # Get unique documents object IDs
         if selection == 2:

@@ -133,19 +133,19 @@
 	    		<notebook colspan="6" col="6">
 	    			<page name="techincal_infos" string="Technical Infos">
 	            		<group colspan="4" col="4" name="TechnicalInfos">
-	           				<field name="tmp_material" 	attrs="{'readonly':[('state','in',['released','obsoleted'])]}" on_change="on_change_tmpmater(tmp_material)"/>
-	         				<field name="tmp_surface" 	attrs="{'readonly':[('state','in',['released','obsoleted'])]}" on_change="on_change_tmpsurface(tmp_surface)"/>
+	           				<field name="tmp_material" 	attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+	         				<field name="tmp_surface" 	attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
 	             			<field name="weight"		attrs="{'readonly':[('state','in',['released','obsoleted'])]}" digits="(14, 3)"  	/>
 	             			<field name="uom_id" 		attrs="{'readonly':[('state','in',['released','obsoleted'])]}" />
                             <field name="uom_po_id" 	attrs="{'readonly':[('state','in',['released','obsoleted'])]}" groups="base.group_extended"/>
 	         			</group>
 					    <group col="4" colspan="4">
 					        <field name="std_umc1" 		attrs="{'readonly':[('std_umc1','=',False),('state','in',['released','obsoleted'])]}" />
-					        <field name="std_value1" 	attrs="{'readonly':[('std_umc1','=',False),('state','in',['released','obsoleted'])]}" on_change="on_change_stdvalue(std_description, std_umc1, std_value1, std_umc2, std_value2, std_umc3, std_value3)"/>
+					        <field name="std_value1" 	attrs="{'readonly':[('std_umc1','=',False),('state','in',['released','obsoleted'])]}"/>
 					        <field name="std_umc2"  	attrs="{'readonly':[('std_umc2','=',False),('state','in',['released','obsoleted'])]}" />
-					        <field name="std_value2" 	attrs="{'readonly':[('std_umc2','=',False),('state','in',['released','obsoleted'])]}" on_change="on_change_stdvalue(std_description, std_umc1, std_value1, std_umc2, std_value2, std_umc3, std_value3)"/>
+					        <field name="std_value2" 	attrs="{'readonly':[('std_umc2','=',False),('state','in',['released','obsoleted'])]}"/>
 					        <field name="std_umc3"  	attrs="{'readonly':[('std_umc3','=',False),('state','in',['released','obsoleted'])]}" />
-					        <field name="std_value3" 	attrs="{'readonly':[('std_umc3','=',False),('state','in',['released','obsoleted'])]}" on_change="on_change_stdvalue(std_description, std_umc1, std_value1, std_umc2, std_value2, std_umc3, std_value3)"/>
+					        <field name="std_value3" 	attrs="{'readonly':[('std_umc3','=',False),('state','in',['released','obsoleted'])]}"/>
 					    </group>
 	    			</page>
 	    			<page string="TitleBlock Informations"> 

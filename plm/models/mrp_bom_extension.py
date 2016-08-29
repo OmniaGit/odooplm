@@ -86,7 +86,7 @@ class MrpBomExtension(models.Model):
                 bom_children_lines = bom_line_objType.search([('product_id', '=', bom_obj.product_id.id)])
             else:
                 bom_children_lines = bom_line_objType.search([('product_id', '=', bom_obj.product_id.id),
-                                                        ('type', '=', bom_type)])
+                                                              ('type', '=', bom_type)])
             for bomLineBrws in bom_children_lines:
                 if bomLineBrws.bom_id.id:
                     if not(bomLineBrws.bom_id.id in result):
