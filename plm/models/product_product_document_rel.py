@@ -32,7 +32,7 @@ import logging
 from openerp import _
 
 
-class plm_component_document_rel(models.Model):
+class PlmComponentDocumentRel(models.Model):
     _name = 'plm.component.document.rel'
     _description = "Component Document Relations"
 
@@ -82,6 +82,6 @@ class plm_component_document_rel(models.Model):
             saveChild(relation)
         return False
 
-plm_component_document_rel()
+PlmComponentDocumentRel()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -30,7 +30,7 @@ from openerp import fields
 from openerp import _
 
 
-class plm_material(models.Model):
+class PlmMaterial(models.Model):
     _name = "plm.material"
     _description = "PLM Materials"
 
@@ -46,6 +46,6 @@ class plm_material(models.Model):
         ('name_uniq', 'unique(name)', _('Raw Material has to be unique !')),
     ]
 
-plm_material()
+PlmMaterial()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

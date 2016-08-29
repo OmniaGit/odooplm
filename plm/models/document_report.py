@@ -80,16 +80,31 @@ class report_plm_document_user(models.Model):
                              _('Month'),
                              readonly=True,
                              transalte=True)
-    day = fields.Char(_('Day'), size=64, readonly=True)
-    user_id = fields.Integer(_('Owner'), readonly=True)
-    user = fields.Char(_('User'), size=64, readonly=True)
-    directory = fields.Char(_('Directory'), size=64, readonly=True)
-    datas_fname = fields.Char(_('File'), size=64, readonly=True)
-    create_date = fields.Datetime(_('Date Created'), readonly=True)
-    change_date = fields.Datetime(_('Modified Date'), readonly=True)
-    file_size = fields.Integer(_('File Size'), readonly=True)
-    nbr = fields.Integer(_('# of Files'), readonly=True)
-    type = fields.Char(_('Directory Type'), size=64, readonly=True)
+    day = fields.Char(_('Day'),
+                      size=64,
+                      readonly=True)
+    user_id = fields.Integer(_('Owner'),
+                             readonly=True)
+    user = fields.Char(_('User'),
+                       size=64,
+                       readonly=True)
+    directory = fields.Char(_('Directory'),
+                            size=64,
+                            readonly=True)
+    datas_fname = fields.Char(_('File'),
+                              size=64,
+                              readonly=True)
+    create_date = fields.Datetime(_('Date Created'),
+                                  readonly=True)
+    change_date = fields.Datetime(_('Modified Date'),
+                                  readonly=True)
+    file_size = fields.Integer(_('File Size'),
+                               readonly=True)
+    nbr = fields.Integer(_('# of Files'),
+                         readonly=True)
+    type = fields.Char(_('Directory Type'),
+                       size=64,
+                       readonly=True)
 
 report_plm_document_user()
 
@@ -99,10 +114,17 @@ class report_plm_files_partner(models.Model):
     _description = "Files details by Partners"
     _auto = False
 
-    name = fields.Char(_('Year'), size=64, required=False, readonly=True)
-    file_size = fields.Integer(_('File Size'), readonly=True)
-    nbr = fields.Integer(_('# of Files'), readonly=True)
-    partner = fields.Char(_('Partner'), size=64, readonly=True)
+    name = fields.Char(_('Year'),
+                       size=64,
+                       required=False,
+                       readonly=True)
+    file_size = fields.Integer(_('File Size'),
+                               readonly=True)
+    nbr = fields.Integer(_('# of Files'),
+                         readonly=True)
+    partner = fields.Char(_('Partner'),
+                          size=64,
+                          readonly=True)
     month = fields.Selection([('01', _('January')),
                               ('02', _('February')),
                               ('03', _('March')),
@@ -127,11 +149,18 @@ class report_plm_document_wall(models.Model):
     _description = "Users that did not inserted documents since one month"
     _auto = False
 
-    name = fields.Date(_('Month'), readonly=True)
-    user_id = fields.Many2one('res.users', _('Owner'), readonly=True)
-    user = fields.Char(_('User'), size=64, readonly=True)
-    month = fields.Char(_('Month'), size=24, readonly=True)
-    last = fields.Datetime(_('Last Posted Time'), readonly=True)
+    name = fields.Date(_('Month'),
+                       readonly=True)
+    user_id = fields.Many2one('res.users',
+                              _('Owner'),
+                              readonly=True)
+    user = fields.Char(_('User'), size=64,
+                       readonly=True)
+    month = fields.Char(_('Month'),
+                        size=24,
+                        readonly=True)
+    last = fields.Datetime(_('Last Posted Time'),
+                           readonly=True)
 
 report_plm_document_wall()
 

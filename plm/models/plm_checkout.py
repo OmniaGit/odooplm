@@ -48,7 +48,7 @@ class PlmCheckout(models.Model):
                                  _('Related Document'),
                                  ondelete='cascade')
     createdate = fields.Datetime(_('Date Created'),
-                                 default=lambda self, ctx: time.strftime("%Y-%m-%d %H:%M:%S"),
+                                 default=time.strftime("%Y-%m-%d %H:%M:%S"),
                                  readonly=True)
     rel_doc_rev = fields.Integer(related='documentid.revisionid',
                                  string="Revision",
@@ -79,7 +79,7 @@ class PlmCheckout(models.Model):
             raise UserError(_("Unable to check-out the required document (" + str(docBrws.name) + "-" + str(docBrws.revisionid) + ")."))
         self._adjustRelations([docBrws.id])
         newCheckoutBrws = super(PlmCheckout, self).create(vals)
-        documentType.wf_message_post([docBrws.id], body=_('Checked-Out'))
+        docBrws.wf_message_post(body=_('Checked-Out'))
         return newCheckoutBrws.id
 
     @api.multi
@@ -96,7 +96,7 @@ class PlmCheckout(models.Model):
         self._adjustRelations(docids, False)
         dummy = super(PlmCheckout, self).unlink()
         if dummy:
-            documentType.wf_message_post(docids, body=_('Checked-In'))
+            documentType.browse(docids).wf_message_post(body=_('Checked-In'))
         return dummy
 
 PlmCheckout()

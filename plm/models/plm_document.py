@@ -25,10 +25,8 @@ import base64
 import os
 import time
 from datetime import datetime
-from openerp.osv.orm import except_orm
 import openerp.tools as tools
 from openerp.exceptions import UserError
-from openerp.osv import fields as oldFields
 from openerp import models
 from openerp import fields
 from openerp import api
@@ -59,7 +57,7 @@ def create_directory(path):
     return dir_name
 
 
-class plm_document(models.Model):
+class PlmDocument(models.Model):
     _name = 'plm.document'
     _table = 'plm_document'
     _inherit = ['mail.thread', 'ir.attachment']
@@ -141,59 +139,56 @@ class plm_document(models.Model):
                     result.append((objDoc.id, objDoc.datas_fname, False, True, self.getServerTime()))
         return result
 
-    @api.multi
-    def _data_get(self, name, arg):
-        result = {}
-        value = False
+    @api.depends('store_fname', 'db_datas')
+    def _data_get(self):
+        bin_size = self._context.get('bin_size')
         for objDoc in self:
             if objDoc.type == 'binary':
                 if not objDoc.store_fname:
+                    objDoc.datas = self._file_read(objDoc.store_fname, bin_size)
                     value = objDoc.db_datas
                     if not value or len(value) < 1:
-                        raise UserError(_("Document %s - %s cannot be accessed" % (str(objDoc.name), str(objDoc.revisionid))))
+                        logging.warning(_("Document %s - %s cannot be accessed" % (str(objDoc.name), str(objDoc.revisionid))))
                 else:
-                    filestore = os.path.join(self._get_filestore(self.env.cr), objDoc.store_fname)
-                    if os.path.exists(filestore):
-                        value = file(filestore, 'rb').read()
-                if value and len(value) > 0:
-                    result[objDoc.id] = base64.encodestring(value)
-                else:
-                    result[objDoc.id] = ''
-        return result
+                    objDoc.datas = objDoc.db_datas
 
     @api.multi
-    def _data_set(self, name, value, args=None):
-        if self.type == 'binary':
-            if not value:
-                filename = self.store_fname
+    def _data_set(self):
+        location = self._storage()
+        for attach in self:
+            # compute the fields that depend on datas
+            value = attach.datas
+            bin_data = value and value.decode('base64') or ''
+            vals = {
+                'file_size': len(bin_data),
+                'checksum': self._compute_checksum(bin_data),
+                'index_content': self._index(bin_data, attach.datas_fname, attach.mimetype),
+                'store_fname': False,
+                'db_datas': value,
+            }
+            if value and location != 'db':
+                # save it to the filestore
+                vals['store_fname'] = self._file_write(value, vals['checksum'])
+                vals['db_datas'] = False
                 try:
-                    os.unlink(os.path.join(self._get_filestore(self.env.cr), filename))
-                except:
-                    pass
-                self.env.cr.execute('update plm_document set store_fname=NULL WHERE id=%s', (self.id))
-                return True
-            try:
-                printout = False
-                preview = False
-                if self.printout:
-                    printout = self.printout
-                if self.preview:
-                    preview = self.preview
-                db_datas = b''                    # Clean storage field.
-                fname, filesize = self._manageFile(binvalue=value)
-                self.env.cr.execute('update plm_document set store_fname=%s,file_size=%s,db_datas=%s where id=%s', (fname, filesize, db_datas, self.id))
-                self.env['plm.backupdoc'].create({'userid': self.env.uid,
-                                                  'existingfile': fname,
-                                                  'documentid': self.env.oid,
-                                                  'printout': printout,
-                                                  'preview': preview
-                                                  })
-
-                return True
-            except Exception, ex:
-                raise except_orm(_('Error in _data_set'), str(ex))
-        else:
-            return True
+                    printout = False
+                    preview = False
+                    if attach.printout:
+                        printout = attach.printout
+                    if attach.preview:
+                        preview = attach.preview
+                    db_datas = b''                    # Clean storage field.
+                    fname, filesize = attach._manageFile(binvalue=value)
+                    self.env.cr.execute('update plm_document set store_fname=%s,file_size=%s,db_datas=%s where id=%s', (fname, filesize, db_datas, self.id))
+                    self.env['plm.backupdoc'].create({'userid': self.env.uid,
+                                                      'existingfile': fname,
+                                                      'documentid': self.id,
+                                                      'printout': printout,
+                                                      'preview': preview
+                                                      })
+                    return True
+                except Exception, ex:
+                    raise UserError(_('Error in _data_set: %r' % (str(ex))))
 
     @api.model
     def _explodedocs(self, oid, kinds, listed_documents=[], recursion=True):
@@ -296,29 +291,29 @@ class plm_document(models.Model):
             if len(l) > 0:
                 new_name = '%s (%s)' % (new_name, len(l) + 1)
             defaults['name'] = new_name
-        fname, filesize = self._manageFile(self.id)
+        fname, filesize = self._manageFile()
         defaults['store_fname'] = fname
         defaults['file_size'] = filesize
         defaults['state'] = 'draft'
         defaults['writable'] = True
-        newID = super(plm_document, self).copy(defaults)
-        if (newID):
-            self.wf_message_post([newID], body=_('Copied starting from : %s.' % previous_name))
+        newDocBrws = super(PlmDocument, self).copy(defaults)
+        if newDocBrws:
+            newDocBrws.wf_message_post(body=_('Copied starting from : %s.' % previous_name))
         for brwEnt in docBrwsList:
             documentRelation.create({
-                                    'parent_id': newID,
+                                    'parent_id': newDocBrws.id,
                                     'child_id': brwEnt.child_id.id,
                                     'configuration': brwEnt.configuration,
                                     'link_kind': brwEnt.link_kind,
                                     })
-        return newID
+        return newDocBrws.id
 
-    @api.model
-    def _manageFile(self, oid, binvalue=None):
+    @api.multi
+    def _manageFile(self, binvalue=None):
         """
             use given 'binvalue' to save it on physical repository and to read size (in bytes).
         """
-        path = self._get_filestore(self.env.cr)
+        path = self._get_filestore()
         if not os.path.isdir(path):
             try:
                 os.makedirs(path)
@@ -331,7 +326,7 @@ class plm_document(models.Model):
                 flag = dirs
                 break
         if binvalue is None:
-            fileStream = self._data_get([oid], name=None, arg=None)
+            fileStream = self._data_get(name=None, arg=None)
             binvalue = fileStream[fileStream.keys()[0]]
 
         flag = flag or create_directory(path)
@@ -384,8 +379,8 @@ class plm_document(models.Model):
                 defaults['revisionid'] = int(oldObject.revisionid) + 1
                 defaults['writable'] = True
                 defaults['state'] = 'draft'
-                newID = super(plm_document, self).copy(oldObject.id, defaults)
-                self.wf_message_post([oldObject.id], body=_('Created : New Revision.'))
+                newID = super(PlmDocument, self).copy(oldObject.id, defaults)
+                oldObject.wf_message_post(body=_('Created : New Revision.'))
                 break
             break
         return (newID, defaults['revisionid'])
@@ -470,7 +465,7 @@ class plm_document(models.Model):
             Registers a message for requested document
         """
         oid, message = request
-        self.wf_message_post([oid], body=_(message))
+        self.browse([oid]).wf_message_post(body=_(message))
         return False
 
     @api.model
@@ -629,7 +624,7 @@ class plm_document(models.Model):
                 if customObject.state in checkState:
                     raise UserError(_("The active state does not allow you to make save action"))
                     return False
-        return super(plm_document, self).write(vals)
+        return super(PlmDocument, self).write(vals)
 
     @api.multi
     def unlink(self):
@@ -640,11 +635,11 @@ class plm_document(models.Model):
             if len(docBrwsList) > 0:
                 oldObject = docBrwsList[0]
                 if oldObject.state in checkState:
-                    self.wf_message_post([oldObject.id], body=_('Removed : Latest Revision.'))
+                    oldObject.wf_message_post(body=_('Removed : Latest Revision.'))
                     if not oldObject.write(values, check=False):
                         logging.warning("unlink : Unable to update state to old document (" + str(oldObject.name) + "-" + str(oldObject.revisionid) + ").")
                         return False
-        return super(plm_document, self).unlink()
+        return super(PlmDocument, self).unlink()
 
 #   Overridden methods for this entity
     @api.model
@@ -676,11 +671,11 @@ class plm_document(models.Model):
                     return False
         if op == 'create':
             docBrwsList = self.search(SUPERUSER_ID,
-                              [('name', '=', name),
-                               ('parent_id', '=', parent_id),
-                               ('ressource_parent_type_id', '=', ressource_parent_type_id),
-                               ('ressource_id', '=', ressource_id),
-                               ('revisionid', '=', revisionid)])
+                                      [('name', '=', name),
+                                       ('parent_id', '=', parent_id),
+                                       ('ressource_parent_type_id', '=', ressource_parent_type_id),
+                                       ('ressource_id', '=', ressource_id),
+                                       ('revisionid', '=', revisionid)])
             if docBrwsList:
                 return False
         return True
@@ -730,6 +725,7 @@ class plm_document(models.Model):
                                         'document_id',
                                         'component_id',
                                         _('Linked Parts'))
+    datas = fields.Binary(string='File Content', compute='_compute_datas', inverse='_inverse_datas')
     datas = fields.Binary(string=_('File Content'),
                           compute='_data_get',
                           inverse='_data_set',
@@ -998,7 +994,7 @@ class plm_document(models.Model):
         '''
         backupDocBrwsList = self.env['plm.backupdoc'].search([('existingfile', '=', fname)])
         if not backupDocBrwsList:
-            return super(plm_document, self)._file_delete(fname)
+            return super(PlmDocument, self)._file_delete(fname)
 
     @api.model
     def GetNextDocumentName(self, documentName):
@@ -1008,6 +1004,6 @@ class plm_document(models.Model):
         nextDocNum = self.env['ir.sequence'].next_by_code('plm.document.progress')
         return documentName + '-' + nextDocNum
 
-plm_document()
+PlmDocument()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

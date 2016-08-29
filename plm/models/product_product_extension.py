@@ -40,8 +40,30 @@ USED_STATES = [('draft', _('Draft')),
 USEDIC_STATES = dict(USED_STATES)
 
 
-class plm_component(models.Model):
+class PlmComponent(models.Model):
     _inherit = 'product.product'
+
+    @api.multi
+    def _father_part_compute(self, name='', arg={}):
+        """ Gets father bom.
+        @param self: The object pointer
+        @param cr: The current row, from the database cursor,
+        @param uid: The current user ID for security checks
+        @param ids: List of selected IDs
+        @param name: Name of the field
+        @param arg: User defined argument
+        @param context: A standard dictionary for contextual values
+        @return:  Dictionary of values
+        """
+        bom_line_objType = self.env['mrp.bom.line']
+        prod_objs = self.browse(self.ids)
+        for prod_obj in prod_objs:
+            prod_ids = []
+            bom_line_objs = bom_line_objType.search([('product_id', '=', prod_obj.id)])
+            for bom_line_obj in bom_line_objs:
+                for objPrd in self.search([('product_tmpl_id', '=', bom_line_obj.bom_id.product_tmpl_id.id)]):
+                    prod_ids.append(objPrd.id)
+            prod_obj.father_part_ids = prod_ids
 
     linkeddocuments = fields.Many2many('plm.document',
                                        'plm_component_document_rel',
@@ -301,7 +323,7 @@ class plm_component(models.Model):
             Registers a message for requested component
         """
         oid, message = request
-        self.wf_message_post([oid], body=_(message))
+        self.browse([oid]).wf_message_post(body=_(message))
         return False
 
     @api.model
@@ -379,7 +401,7 @@ class plm_component(models.Model):
                 defaults['engineering_writable'] = False
                 defaults['state'] = 'undermodify'
                 self.write([oldObject.id], defaults)
-                self.wf_message_post([oldObject.id], body=_('Status moved to: %s.' % (USEDIC_STATES[defaults['state']])))
+                oldObject.wf_message_post(body=_('Status moved to: %s.' % (USEDIC_STATES[defaults['state']])))
                 # store updated infos in "revision" object
                 defaults['name'] = oldObject.name                 # copy function needs an explicit name value
                 defaults['engineering_revision'] = newIndex
@@ -387,7 +409,7 @@ class plm_component(models.Model):
                 defaults['state'] = 'draft'
                 defaults['linkeddocuments'] = []                  # Clean attached documents for new revision object
                 newCompBrws = oldObject.copy(defaults)
-                self.wf_message_post([oldObject.id], body=_('Created : New Revision.'))
+                oldObject.wf_message_post(body=_('Created : New Revision.'))
                 newCompBrws.write({'name': oldObject.name})
                 # create a new "old revision" object
                 break
@@ -514,7 +536,7 @@ class plm_component(models.Model):
                                     'ebom_source_id': eBomId,
                                     })
                     self.create_bom_from_ebom(bom_line.product_id, newBomType)
-                self.wf_message_post([objProductProductBrw.id], body=_('Created %r' % newBomType))
+                objProductProductBrw.wf_message_post(body=_('Created %r' % newBomType))
                 break
         if newidBom and eBomId:
             bomBrws = bomType.browse(eBomId)
@@ -625,8 +647,8 @@ class plm_component(models.Model):
         errors = []
         tobeReleasedIDs = []
         if not isinstance(self.ids, (list, tuple)):
-            ids = [self.ids]
-        tobeReleasedIDs.extend(ids)
+            self.ids = [self.ids]
+        tobeReleasedIDs.extend(self.ids)
         for prodBrws in self:
             for childProdBrws in self.browse(self._getChildrenBom(prodBrws, 1)):
                 if (childProdBrws.state not in excludeStatuses) and (childProdBrws.state not in includeStatuses):
@@ -680,26 +702,27 @@ class plm_component(models.Model):
             raise UserError(msg)
 
         if len(docIDs) > 0:
+            docBrws = documentType.browse(docIDs)
             if action_name == 'confirm':
-                documentType.signal_workflow(docIDs, action_name)
+                docBrws.signal_workflow(action_name)
             elif action_name == 'transmit':
-                documentType.signal_workflow(docIDs, 'confirm')
+                docBrws.signal_workflow('confirm')
             elif action_name == 'draft':
-                documentType.signal_workflow(docIDs, 'correct')
+                docBrws.signal_workflow('correct')
             elif action_name == 'correct':
-                documentType.signal_workflow(docIDs, action_name)
+                docBrws.signal_workflow(action_name)
             elif action_name == 'reject':
-                documentType.signal_workflow(docIDs, 'correct')
+                docBrws.signal_workflow('correct')
             elif action_name == 'release':
-                documentType.signal_workflow(docIDs, action_name)
+                docBrws.signal_workflow(action_name)
             elif action_name == 'undermodify':
-                documentType.action_cancel(docIDs)
+                docBrws.action_cancel()
             elif action_name == 'suspend':
-                documentType.action_suspend(docIDs)
+                docBrws.action_suspend()
             elif action_name == 'reactivate':
-                documentType.signal_workflow(docIDs, 'release')
+                docBrws.signal_workflow('release')
             elif action_name == 'obsolete':
-                documentType.signal_workflow(docIDs, action_name)
+                docBrws.signal_workflow(action_name)
         return docIDs
 
     @api.model
@@ -722,8 +745,7 @@ class plm_component(models.Model):
             Writing messages to follower, on multiple objects
         """
         if not (body == ''):
-            for prodId in self.ids:
-                self.message_post([prodId], body=_(body))
+            self.message_post(body=_(body))
 
     @api.multi
     def action_draft(self):
@@ -776,18 +798,18 @@ class plm_component(models.Model):
                 defaults['state'] = 'obsoleted'
                 prodObj = self.browse([last_id])
                 prodObj.write(defaults)
-                self.wf_message_post([last_id], body=_('Status moved to: %s.' % (USEDIC_STATES[defaults['state']])))
+                self.browse(last_id).wf_message_post(body=_('Status moved to: %s.' % (USEDIC_STATES[defaults['state']])))
             defaults['engineering_writable'] = False
             defaults['state'] = 'released'
-        self._action_ondocuments(allIDs, 'release')
+        self._action_ondocuments('release')
         for currId in allProdObjs:
             if not(currId.id in self.ids):
                 tmpl_ids.append(currId.product_tmpl_id.id)
             full_ids.append(currId.product_tmpl_id.id)
-        self.signal_workflow(tmpl_ids, 'release')
+        self.browse(tmpl_ids).signal_workflow(tmpl_ids, 'release')
         objId = self.env['product.template'].browse(full_ids).write(defaults)
         if (objId):
-            self.wf_message_post(allIDs, body=_('Status moved to: %s.' % (USEDIC_STATES[defaults['state']])))
+            self.browse(allIDs).wf_message_post(body=_('Status moved to: %s.' % (USEDIC_STATES[defaults['state']])))
         return objId
 
     @api.multi
@@ -827,16 +849,16 @@ class plm_component(models.Model):
         userErrors, allIDs = self._get_recursive_parts(excludeStatuses, includeStatuses)
         if userErrors:
             raise UserError(userErrors)
-        self._action_ondocuments(allIDs, docaction)
+        self.browse(allIDs)._action_ondocuments(docaction)
         for currId in self:
             if not(currId.id in self.ids):
                 tmpl_ids.append(currId.product_tmpl_id.id)
             full_ids.append(currId.product_tmpl_id.id)
         if action:
-            self.signal_workflow(tmpl_ids, action)
+            self.browse(tmpl_ids).signal_workflow(action)
         objId = self.env['product.template'].browse(full_ids).write(defaults)
         if objId:
-            self.wf_message_post(allIDs, body=_('Status moved to: %s.' % (USEDIC_STATES[defaults['state']])))
+            self.browse(allIDs).wf_message_post(body=_('Status moved to: %s.' % (USEDIC_STATES[defaults['state']])))
         return objId
 
 #  ######################################################################################################################################33
@@ -866,12 +888,13 @@ class plm_component(models.Model):
                 else:
                     return existObj
         try:
-            return super(plm_component, self).create(vals)
+            return super(PlmComponent, self).create(vals)
         except Exception, ex:
             import psycopg2
             if isinstance(ex, psycopg2.IntegrityError):
                 raise ex
-            raise ValidationError(_(" (%r). It has tried to create with values : (%r).") % (ex, vals))
+            logging.error("(%s). It has tried to create with values : (%s)." % (unicode(ex), unicode(vals)))
+            raise Exception(_(" (%r). It has tried to create with values : (%r).") % (ex, vals))
 
     @api.multi
     def copy(self, defaults={}):
@@ -888,7 +911,7 @@ class plm_component(models.Model):
         defaults['engineering_writable'] = True
         defaults['write_date'] = None
         defaults['linkeddocuments'] = []
-        objId = super(plm_component, self).copy(defaults)
+        objId = super(PlmComponent, self).copy(defaults)
         if (objId):
             self.wf_message_post(body=_('Copied starting from : %s.' % previous_name))
         return objId
@@ -903,11 +926,11 @@ class plm_component(models.Model):
             if len(prodBrwsList) > 0:
                 oldObject = prodBrwsList[0]
                 if oldObject.state in checkState:
-                    self.wf_message_post([oldObject.id], body=_('Removed : Latest Revision.'))
+                    oldObject.wf_message_post(body=_('Removed : Latest Revision.'))
                     if not self.browse([oldObject.id]).write(values):
                         logging.warning("unlink : Unable to update state to old component (%r - %d)." % (oldObject.engineering_code, oldObject.engineering_revision))
                         return False
-        return super(plm_component, self).unlink()
+        return super(PlmComponent, self).unlink()
 
     @api.model
     def translateForClient(self, values=[], forcedLang=''):
@@ -963,7 +986,7 @@ class plm_component(models.Model):
                 }
 
         def name_search(self, cr, user, name='', args=None, operator='ilike', context=None, limit=100):
-            result = super(plm_component, self).name_search(cr, user, name, args, operator, context, limit)
+            result = super(PlmComponent, self).name_search(cr, user, name, args, operator, context, limit)
             newResult = []
             for productId, oldName in result:
                 objBrowse = self.browse(cr, user, [productId], context)
@@ -971,29 +994,7 @@ class plm_component(models.Model):
                 newResult.append((productId, newName))
             return newResult
 
-    @api.multi
-    def _father_part_compute(self, name='', arg={}):
-        """ Gets father bom.
-        @param self: The object pointer
-        @param cr: The current row, from the database cursor,
-        @param uid: The current user ID for security checks
-        @param ids: List of selected IDs
-        @param name: Name of the field
-        @param arg: User defined argument
-        @param context: A standard dictionary for contextual values
-        @return:  Dictionary of values
-        """
-        bom_line_objType = self.env['mrp.bom.line']
-        prod_objs = self.browse(self.ids)
-        for prod_obj in prod_objs:
-            prod_ids = []
-            bom_line_objs = bom_line_objType.search([('product_id', '=', prod_obj.id)])
-            for bom_line_obj in bom_line_objs:
-                for objPrd in self.search([('product_tmpl_id', '=', bom_line_obj.bom_id.product_tmpl_id.id)]):
-                    prod_ids.append(objPrd.id)
-            prod_obj.father_part_ids = prod_ids
-
-plm_component()
+PlmComponent()
 
 
 class ProductTemporaryNormalBom(osv.osv.osv_memory):
@@ -1040,12 +1041,12 @@ class ProductTemporaryNormalBom(osv.osv.osv_memory):
 ProductTemporaryNormalBom()
 
 
-class plm_temporary_message(osv.osv.osv_memory):
+class PlmTemporayMessage(osv.osv.osv_memory):
     _name = "plm.temporary.message"
     _description = "Temporary Class"
     name = fields.Text(_('Bom Result'), readonly=True)
 
-plm_temporary_message()
+PlmTemporayMessage()
 
 
 class ProductProductDashboard(models.Model):

@@ -30,7 +30,7 @@ from openerp import fields
 from openerp import _
 
 
-class plm_finishing(models.Model):
+class PlmFinishing(models.Model):
     _name = "plm.finishing"
     _description = "Surface Finishing"
 
@@ -45,6 +45,6 @@ class plm_finishing(models.Model):
     _sql_constraints = [
         ('name_uniq', 'unique(name)', _('Raw Material has to be unique !')),
     ]
-plm_finishing()
+PlmFinishing()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
