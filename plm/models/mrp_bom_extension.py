@@ -43,17 +43,19 @@ class MrpBomExtension(models.Model):
 
 #   Overridden methods for this entity
 
+    # TODO: Da rivedere a causa del cambiamento in odoo
     @api.model
-    def _bom_find(self, product_tmpl_id=None, product_id=None, properties=None):
+    def _bom_find(self, product_tmpl=None, product=None, picking_type=None, company_id=False):
         """ Finds BoM for particular product and product uom.
         @param product_tmpl_id: Selected product.
         @param product_uom: Unit of measure of a product.
         @param properties: List of related properties.
         @return: False or BoM id.
         """
-        objBom = super(MrpBomExtension, self)._bom_find(product_tmpl_id=product_tmpl_id,
-                                                        product_id=product_id,
-                                                        properties=properties)
+        objBom = super(MrpBomExtension, self)._bom_find(product_tmpl=product_tmpl,
+                                                        product=product,
+                                                        picking_type=picking_type,
+                                                        company_id=company_id)
         if objBom:
             odooPLMBom = ['ebom', 'spbom']
             if objBom.type in odooPLMBom:
