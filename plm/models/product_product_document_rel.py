@@ -27,6 +27,7 @@ Created on 25 Aug 2016
 '''
 from openerp import models
 from openerp import fields
+from openerp import api
 import logging
 from openerp import _
 
@@ -82,3 +83,5 @@ class plm_component_document_rel(models.Model):
         return False
 
 plm_component_document_rel()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

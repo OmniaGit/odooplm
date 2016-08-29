@@ -517,3 +517,5 @@ class MrpBomExtension(models.Model):
         return newId
 
 MrpBomExtension()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

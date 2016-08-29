@@ -41,3 +41,5 @@ class PlmConfigSettings(models.Model):
     module_plm_report_language_helper = fields.Boolean(_("Plm Report Language Helper"))
 
 PlmConfigSettings()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

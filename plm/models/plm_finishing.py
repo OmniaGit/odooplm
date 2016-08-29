@@ -46,3 +46,5 @@ class plm_finishing(models.Model):
         ('name_uniq', 'unique(name)', _('Raw Material has to be unique !')),
     ]
 plm_finishing()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
