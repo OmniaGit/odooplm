@@ -87,9 +87,6 @@ class MrpBomLineExtension(models.Model):
     itemlbl = fields.Char(_('CAD Item Position Label'), size=64)
     ebom_source_id = fields.Integer('Source Ebom ID')
 
-    _defaults = {
-        'product_uom_id': 1,
-    }
 
 MrpBomLineExtension()
 

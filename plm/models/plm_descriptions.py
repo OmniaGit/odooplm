@@ -37,6 +37,7 @@ class PlmDescription(models.Model):
     name = fields.Char(_('Note to Description'),
                        size=128)
     description = fields.Char(_('Standard Description'),
+                              default='',
                               size=128)
     description_en = fields.Char(_('Description English'),
                                  size=128)
@@ -45,36 +46,32 @@ class PlmDescription(models.Model):
                        help=_("Allow to specify a unit measure or a label for the feature."))
     fmt1 = fields.Char(_('Format Feature 1'),
                        size=32,
+                       default='',
                        help=_("Allow to represent the measure: %s%s allow to build um and value, %s builds only value, none builds only value."))
     umc2 = fields.Char(_('UM / Feature 2'),
                        size=32,
                        help=_("Allow to specify a unit measure or a label for the feature."))
     fmt2 = fields.Char(_('Format Feature 2'),
                        size=32,
+                       default='',
                        help=_("Allow to represent the measure: %s%s allow to build um and value, %s builds only value, none builds only value."))
     umc3 = fields.Char(_('UM / Feature 3'),
                        size=32,
                        help=_("Allow to specify a unit measure or a label for the feature."))
     fmt3 = fields.Char(_('Format Feature 3'),
                        size=32,
+                       default='',
                        help=_("Allow to represent the measure: %s%s allow to build um and value, %s builds only value, none builds only value."))
     fmtend = fields.Char(_('Format Feature Composed'),
                          size=32,
+                         default='',
                          help=_("Allow to represent a normalized composition of technical features : %s%s allows to build chained values."))
     unitab = fields.Char(_('Normative Rule'),
                          size=32,
+                         default='',
                          help=_("Specify normative rule (UNI, ISO, DIN...). It will be queued to build the product description."))
     sequence = fields.Integer(_('Sequence'),
                               help=_("Assign the sequence order when displaying a list of product categories."))
-
-    _defaults = {
-        'description': lambda *a: False,
-        'fmt1': lambda *a: False,
-        'fmt2': lambda *a: False,
-        'fmt3': lambda *a: False,
-        'fmtend': lambda *a: False,
-        'unitab': lambda *a: False,
-    }
 
 PlmDescription()
 

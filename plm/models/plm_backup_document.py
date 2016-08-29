@@ -44,19 +44,26 @@ class PlmBackupDocument(models.Model):
     '''
     _name = 'plm.backupdoc'
 
-    userid = fields.Many2one('res.users', _('Related User'))
-    createdate = fields.Datetime(_('Date Created'), readonly=True)
-    existingfile = fields.Char(_('Physical Document Location'), size=1024)
-    documentid = fields.Many2one('plm.document', _('Related Document'))
-    revisionid = fields.Integer(related="documentid.revisionid", string=_("Revision"), store=True)
-    state = fields.Selection(related="documentid.state", string=_("Status"), store=True)
-    document_name = fields.Char(related="documentid.name", string=_("Stored Name"), store=True)
+    userid = fields.Many2one('res.users',
+                             _('Related User'))
+    createdate = fields.Datetime(_('Date Created'),
+                                 default=lambda self, ctx: time.strftime("%Y-%m-%d %H:%M:%S"),
+                                 readonly=True)
+    existingfile = fields.Char(_('Physical Document Location'),
+                               size=1024)
+    documentid = fields.Many2one('plm.document',
+                                 _('Related Document'))
+    revisionid = fields.Integer(related="documentid.revisionid",
+                                string=_("Revision"),
+                                store=True)
+    state = fields.Selection(related="documentid.state",
+                             string=_("Status"),
+                             store=True)
+    document_name = fields.Char(related="documentid.name",
+                                string=_("Stored Name"),
+                                store=True)
     printout = fields.Binary(_('Printout Content'))
     preview = fields.Binary(_('Preview Content'))
-
-    _defaults = {
-        'create_date': lambda self, ctx: time.strftime("%Y-%m-%d %H:%M:%S")
-    }
 
     @api.multi
     def unlink(self):

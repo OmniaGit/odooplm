@@ -129,10 +129,6 @@ class MrpBomExtension(models.Model):
                               default=0.0)
     ebom_source_id = fields.Integer('Source Ebom ID')
 
-    _defaults = {
-        'product_uom_id': 1,
-    }
-
     def init(self, cr):
         self._packed = []
 

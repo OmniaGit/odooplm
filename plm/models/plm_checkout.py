@@ -48,14 +48,12 @@ class PlmCheckout(models.Model):
                                  _('Related Document'),
                                  ondelete='cascade')
     createdate = fields.Datetime(_('Date Created'),
+                                 default=lambda self, ctx: time.strftime("%Y-%m-%d %H:%M:%S"),
                                  readonly=True)
     rel_doc_rev = fields.Integer(related='documentid.revisionid',
                                  string="Revision",
                                  store=True)
 
-    _defaults = {
-        'create_date': lambda self, ctx: time.strftime("%Y-%m-%d %H:%M:%S")
-    }
     _sql_constraints = [
         ('documentid', 'unique (documentid)', _('The documentid must be unique !'))
     ]

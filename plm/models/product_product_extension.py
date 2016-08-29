@@ -268,7 +268,8 @@ class plm_component(models.Model):
         product_tmpl_id = self.product_tmpl_id.id
         if product_tmpl_id:
             localCtx = self.env.context.copy()
-            localCtx.update({'default_product_tmpl_id': product_tmpl_id, 'search_default_product_tmpl_id': product_tmpl_id})
+            localCtx.update({'default_product_tmpl_id': product_tmpl_id,
+                             'search_default_product_tmpl_id': product_tmpl_id})
             return {'type': 'ir.actions.act_window',
                     'name': _('Mrp Bom'),
                     'view_type': 'form',

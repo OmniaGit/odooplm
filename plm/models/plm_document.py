@@ -703,10 +703,13 @@ class plm_document(models.Model):
             self.is_checkout = False
 
     usedforspare = fields.Boolean(_('Used for Spare'),
+                                  default=False,
                                   help=_("Drawings marked here will be used printing Spare Part Manual report."))
     revisionid = fields.Integer(_('Revision Index'),
+                                default=0,
                                 required=True)
-    writable = fields.Boolean(_('Writable'))
+    writable = fields.Boolean(_('Writable'),
+                              default=True)
     printout = fields.Binary(_('Printout Content'),
                              help=_("Print PDF content."))
     preview = fields.Binary(_('Preview Content'),
@@ -715,6 +718,7 @@ class plm_document(models.Model):
                              _('Status'),
                              help=_("The status of the product."),
                              readonly="True",
+                             default='draft',
                              required=True)
     checkout_user = fields.Char(string=_("Checked-Out to"),
                                 compute=_get_checkout_state)
@@ -726,15 +730,10 @@ class plm_document(models.Model):
                                         'document_id',
                                         'component_id',
                                         _('Linked Parts'))
-
-    _columns = {'datas': oldFields.function(_data_get, method=True, fnct_inv=_data_set, string=_('File Content'), type="binary"),
-                }
-    _defaults = {'usedforspare': lambda *a: False,
-                 'revisionid': lambda *a: 0,
-                 'writable': lambda *a: True,
-                 'state': lambda *a: 'draft',
-                 'res_id': lambda *a: False,
-                 }
+    datas = fields.Binary(string=_('File Content'),
+                          compute='_data_get',
+                          inverse='_data_set',
+                          method=True)
 
     _sql_constraints = [
         ('name_unique', 'unique (name, revisionid)', 'File name has to be unique!')  # qui abbiamo la sicurezza dell'univocita del nome file

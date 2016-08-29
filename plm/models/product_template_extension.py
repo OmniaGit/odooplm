@@ -25,6 +25,7 @@ Created on 25 Aug 2016
 
 @author: Daniel Smerghetto
 '''
+import odoo.addons.decimal_precision as dp
 from openerp import models
 from openerp import fields
 from openerp import api
@@ -43,15 +44,18 @@ class ProductTemplateExtension(models.Model):
 
     state = fields.Selection(USED_STATES,
                              _('Status'),
+                             default='draft',
                              help=_("The status of the product in its LifeCycle."),
                              readonly="True")
     engineering_code = fields.Char(_('Part Number'),
                                    help=_("This is engineering reference to manage a different P/N from item Name."),
                                    size=64)
     engineering_revision = fields.Integer(_('Revision'),
+                                          default=0,
                                           required=True,
                                           help=_("The revision of the product."))
-    engineering_writable = fields.Boolean(_('Writable'))
+    engineering_writable = fields.Boolean(_('Writable'),
+                                          default=True)
     engineering_material = fields.Char(_('Raw Material'),
                                        size=128,
                                        required=False,
@@ -60,6 +64,20 @@ class ProductTemplateExtension(models.Model):
                                       size=128,
                                       required=False,
                                       help=_("Surface finishing for current product, only description for titleblock."))
+
+#   ####################################    Overload to set default values    ####################################
+    standard_price = fields.Float('Cost',
+                                  compute='_compute_standard_price',
+                                  inverse='_set_standard_price',
+                                  search='_search_standard_price',
+                                  digits=dp.get_precision('Product Price'),
+                                  groups="base.group_user",
+                                  default=0,
+                                  help="Cost of the product, in the default unit of measure of the product.")
+
+    sale_ok = fields.Boolean('Can be Sold',
+                             default=False,
+                             help="Specify if the product can be selected in a sales order line.")
 
 #   Internal methods
     @api.multi
@@ -82,19 +100,6 @@ class ProductTemplateExtension(models.Model):
                 'views': [(form_id, 'form')],
             }
 
-    _defaults = {'state': lambda *a: 'draft',
-                 'engineering_revision': 0,
-                 'engineering_writable': True,
-                 'type': 'product',
-                 'standard_price': 0,
-                 'volume': 0,
-                 'weight': 0,
-                 'cost_method': 0,
-                 'sale_ok': 0,
-                 'state': 'draft',
-                 'mes_type': 'fixed',
-                 'cost_method': 'standard',
-                 }
     _sql_constraints = [
         ('partnumber_uniq', 'unique (engineering_code,engineering_revision)', _('Part Number has to be unique!'))
     ]

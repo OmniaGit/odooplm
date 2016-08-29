@@ -56,6 +56,7 @@ class PlmDocumentRelations(models.Model):
     configuration = fields.Char(_('Configuration Name'),
                                 size=1024)
     link_kind = fields.Char(_('Kind of Link'),
+                            default='HiTree',
                             size=64,
                             required=True)
     create_date = fields.Datetime(_('Date Created'),
@@ -63,11 +64,9 @@ class PlmDocumentRelations(models.Model):
     #  TODO: To remove userid field for version 10
     userid = fields.Many2one('res.users',
                              _('CheckOut User'),
+                             default=False,
                              readonly="True")
 
-    _defaults = {'link_kind': lambda *a: 'HiTree',
-                 'userid': lambda *a: False,
-                 }
     _sql_constraints = [
         ('relation_uniq', 'unique (parent_id,child_id,link_kind)', _('The Document Relation must be unique !'))
     ]
