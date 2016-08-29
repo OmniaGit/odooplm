@@ -87,45 +87,44 @@ class plm_component(models.Model):
     }
 
 #   Internal methods
-    def _packfinalvalues(self,fmt,value=False,value2=False,value3=False):
+    def _packfinalvalues(self, fmt, value=False, value2=False, value3=False):
         """
             Pack a string formatting it like specified in fmt
             mixing both label and value or only label.
         """
-        retvalue=''
-        
+        retvalue = ''
         if value3:
             if (type(value3) is FloatType):
-                svalue3="%g" %value3
+                svalue3 = "%g" % value3
             else:
-                svalue3=value3
+                svalue3 = value3
         else:
-            svalue3=''
+            svalue3 = ''
 
         if value2:
             if (type(value2) is FloatType):
-                svalue2="%g" %value2
+                svalue2 = "%g" % value2
             else:
-                svalue2=value2
+                svalue2 = value2
         else:
-            svalue2=''
+            svalue2 = ''
 
         if value:
             if (type(value) is FloatType):
-                svalue="%g" %value
+                svalue = "%g" % value
             else:
-                svalue=value
+                svalue = value
         else:
-            svalue=''
+            svalue = ''
 
         if svalue or svalue2 or svalue3:
-            cnt=fmt.count('%s')
+            cnt = fmt.count('%s')
             if cnt == 3:
-                retvalue = fmt %(svalue, svalue2, svalue3)
+                retvalue = fmt % (svalue, svalue2, svalue3)
             if cnt == 2:
-                retvalue = fmt %(svalue, svalue2)
+                retvalue = fmt % (svalue, svalue2)
             elif cnt == 1:
-                retvalue = fmt %(svalue)
+                retvalue = fmt % (svalue)
         return retvalue
 
     def _packvalues(self,fmt,label=False,value=False):

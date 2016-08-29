@@ -46,7 +46,8 @@ class plm_component_document_rel(models.Model):
         ('relation_unique', 'unique(component_id,document_id)', _('Component and Document relation has to be unique !')),
     ]
 
-    def SaveStructure(self, cr, uid, relations, level=0, currlevel=0):
+    @api.model
+    def SaveStructure(self, relations, level=0, currlevel=0):
         """
             Save Document relations
         """
@@ -57,9 +58,9 @@ class plm_component_document_rel(models.Model):
                 if latest in res:
                     continue
                 res.append(latest)
-                ids = self.search(cr, uid, [('document_id', '=', document_id), ('component_id', '=', component_id)])
-                if ids:
-                    self.unlink(cr, uid, ids)
+                prodDocBrwsList = self.search([('document_id', '=', document_id), ('component_id', '=', component_id)])
+                if prodDocBrwsList:
+                    prodDocBrwsList.unlink()
 
         def saveChild(args):
             """
@@ -68,7 +69,7 @@ class plm_component_document_rel(models.Model):
             try:
                 res = {}
                 res['document_id'], res['component_id'] = args
-                self.create(cr, uid, res)
+                self.create(res)
             except:
                 logging.warning("saveChild : Unable to create a link. Arguments (%s)." % (str(args)))
                 raise Exception(_("saveChild: Unable to create a link."))
