@@ -117,13 +117,13 @@
                     </button> 
                 </div> 
                  <group colspan="6" col="2">
-                      <field name="name" on_change="on_change_name(name,engineering_code)" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                      <field name="name" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
                  </group>
            		<group colspan="6" col="6" name="PNArea">
              		<group colspan="6" col="6">
               			<field name="engineering_code" 		colspan="4" 			attrs="{'readonly':[('state','!=','draft')]}" 				select="1"/>
                			<field name="engineering_revision" 	colspan="2"				readonly="True" 											/>
-               			<field name="std_description" 		colspan="4"				attrs="{'readonly':[('state','in',['released','obsoleted'])]}" on_change="on_change_stddesc(std_description)" /> 	
+               			<field name="std_description" 		colspan="4"				attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/> 	
                			<field name="state" 				colspan="2" 			readonly="True"/>	
                			<label for="description" 			colspan="6"/>
                			<field name="description" 			colspan="6" 			attrs="{'readonly':[('state','in',['released','obsoleted'])]}" nolabel="1" />
