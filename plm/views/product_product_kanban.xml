@@ -117,9 +117,6 @@
 	                                <a type="object" name="open_engin_bom">
 	                                    <t>Engineering Boms</t>
 	                                </a>
-	                                <a type="object" name="open_spare_bom">
-	                                    <t>Spare Boms</t>
-	                                </a>
 	                            </div>
 	                        </div>
 	                        <div class="col-xs-4 o_kanban_card_manage_section o_kanban_manage_view more_containers" style="width: 100px;">
@@ -129,9 +126,6 @@
 	                            <div>
 	                                <a type="object" name="create_normal_bom">
 	                                    <t>Normal Bom</t>
-	                                </a>
-	                                <a type="object" name="create_spare_bom">
-	                                    <t>Spare Bom</t>
 	                                </a>
 	                            </div>
 	                        </div>
@@ -148,12 +142,6 @@
 	                                </a>
 	                                <a type="action" title="Print Attached PDF Drawings" name="%(plm.report_product_product_pdf)d">
 	                                    <t>Print Attached PDF Drawings</t>
-	                                </a>
-	                                <a type="action" title="Print Spare Parts Manual" name="%(plm.report_product_product_spare_parts_pdf)d">
-	                                    <t>Print Spare Parts Manual</t>
-	                                </a>
-	                                <a type="action" title="Print Spare Parts Manual One Level" name="%(plm.report_product_product_spare_parts_pdf_one)d">
-	                                    <t>Print Spare Parts Manual One Level</t>
 	                                </a>
 	                            </div>
 	                        </div>

@@ -1,4 +1,28 @@
-from openerp import models, api, _, fields
+# -*- encoding: utf-8 -*-
+##############################################################################
+#
+#    OmniaSolutions, Your own solutions
+#    Copyright (C) 2010 OmniaSolutions (<http://omniasolutions.eu>). All Rights Reserved
+#    $Id$
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+##############################################################################
+from openerp import models
+from openerp import api
+from openerp import _
+from openerp import fields
 import json
 import logging
 
@@ -96,12 +120,6 @@ class ProductProductKanban(models.Model):
         return self.common_open(_('Related Boms'), 'mrp.bom', 'tree,form', 'form', boms.ids, self.env.context, domain)
 
     @api.multi
-    def open_spare_bom(self):
-        boms = self.get_related_boms()
-        domain = [('id', 'in', boms.ids), ('type', '=', 'spbom')]
-        return self.common_open(_('Related Boms'), 'mrp.bom', 'tree,form', 'form', boms.ids, self.env.context, domain)
-
-    @api.multi
     def open_new_component(self):
         return self.common_open(_('New Component'), 'product.product', 'form', 'form', False, self.env.context)
 
@@ -121,16 +139,6 @@ class ProductProductKanban(models.Model):
     def create_normal_bom(self):
         context = self.env.context.copy()
         context.update({'default_type': 'normal'})
-        docIds = self.get_related_docs()
-        if docIds:
-            context.update(
-                {'default_product_tmpl_id': self.product_tmpl_id.id})
-        return self.common_open(_('Related Boms'), 'mrp.bom', 'form', 'form', False, context)
-
-    @api.multi
-    def create_spare_bom(self):
-        context = self.env.context.copy()
-        context.update({'default_type': 'spbom'})
         docIds = self.get_related_docs()
         if docIds:
             context.update(

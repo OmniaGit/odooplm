@@ -697,9 +697,6 @@ class PlmDocument(models.Model):
         else:
             self.is_checkout = False
 
-    usedforspare = fields.Boolean(_('Used for Spare'),
-                                  default=False,
-                                  help=_("Drawings marked here will be used printing Spare Part Manual report."))
     revisionid = fields.Integer(_('Revision Index'),
                                 default=0,
                                 required=True)

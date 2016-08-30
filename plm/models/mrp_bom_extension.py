@@ -119,8 +119,7 @@ class MrpBomExtension(models.Model):
                                 help=_('This is the document object that declares this BoM.'))
     type = fields.Selection([('normal', _('Normal BoM')),
                              ('phantom', _('Sets / Phantom')),
-                             ('ebom', _('Engineering BoM')),
-                             ('spbom', _('Spare BoM'))],
+                             ('ebom', _('Engineering BoM'))],
                             _('BoM Type'),
                             required=True,
                             help=_("Phantom BOM: When processing a sales order for this product, the delivery order will contain the raw materials, instead of the finished product."

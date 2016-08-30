@@ -53,9 +53,6 @@
 		 					<group colspan="4" col="4">
 			 					<group colspan="2" col="2">
 				                    <newline/>
-				                    <separator string="Spare Part" 	colspan="2"/>
-				                    <field name="usedforspare" 		colspan="2"	attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
-				                    <newline/>
 				                    <group col="4" colspan="4" string="Created and Modified" name="DocUser">
 					                    <field name="create_uid" 	readonly="1"/>
 			                            <field name="create_date" 	readonly="1"/>
