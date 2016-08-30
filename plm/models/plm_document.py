@@ -942,8 +942,8 @@ class PlmDocument(models.Model):
             related_documents.append([document.id, document.name, document.preview])
         return related_documents
 
-    @api.multi
-    def getServerTime(self):
+    @api.model
+    def getServerTime(self, _unusedVal=False):
         """
             calculate the server db time
         """
@@ -960,7 +960,7 @@ class PlmDocument(models.Model):
         else:
             return datetime.strptime(obj.create_date, '%Y-%m-%d %H:%M:%S')
 
-    @api.multi
+    @api.model
     def getUserSign(self, userId):
         """
             get the user name

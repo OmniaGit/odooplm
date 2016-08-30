@@ -186,16 +186,6 @@
             (0, 0, {'view_mode': 'form', 'view_id': ref('plm.plm_bom_form_view_eng')})]"/>  
     </record>
 
-
-    <record model="ir.actions.act_window" id="plm_action_spare_form">
-        <field name="name">Spare BoMs</field>
-        <field name="type">ir.actions.act_window</field>
-        <field name="res_model">mrp.bom</field>
-        <field name="view_type">form</field>
-        <field name="domain">[('type','=','spbom')]</field>
-        <field name="filter" eval="True"/>
-    </record>
-
 <!-- Overrides standard Search -->
 
         <record id="view_mrp_bom_filter_inherit" model="ir.ui.view">

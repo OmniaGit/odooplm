@@ -131,12 +131,6 @@
     id="menu_relation_normal" 
     parent="plm.plm_menu_relation" /> 
     
-    <menuitem 
-    name="Search on Spare Bill of Materials" 
-    action="plm_action_spare_form" 
-    id="menu_relation_spare" 
-    parent="plm.plm_menu_relation" />
-
    	<menuitem 
     name="Search on Engineering Bill of Materials" 
     action="plm_action_ebom_form" 
