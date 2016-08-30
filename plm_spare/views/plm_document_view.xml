@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data> 
+    
+    <record id="plm_document_spare_extension" model="ir.ui.view">
+        <field name="name">plm.document.spare.extension</field>
+        <field name="model">plm.document</field>
+        <field name="inherit_id" ref="plm.view_plm_document"/>
+        <field name="type">form</field>
+    	<field name="priority" eval="16"/>
+        <field name="arch" type="xml">
+        	<data>
+                <group name="DocUser" position="before">
+                    <separator string="Spare Part" 	colspan="2"/>
+                    <field name="usedforspare" 		colspan="2"	attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                    <newline/>
+                </group>
+        	</data>
+ 		</field>
+    </record>
+		
+ 	</data>
+</openerp>

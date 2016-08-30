@@ -19,26 +19,34 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+{
+    'name': 'PLM Spare Bom',
+    'version': '1.1',
+    'author': 'OmniaSolutions',
+    'website': 'http://www.omniasolutions.eu',
+    'category': 'Product Lifecycle Management',
+    'sequence': 15,
+    'summary': '',
+    'images': [],
+    'depends': ['plm'],
+    'description': """
+Allow to use spare boms
+==============================================
+    """,
+    'data': [
+            'report/bom_structure_report.xml',
+            'report/product_product_report.xml',
 
-'''
-Created on 13 Jun 2016
+            'views/plm_description_extension.xml',
+            'views/sparebom_view.xml',
+            'views/plm_document_view.xml',
+            'views/product_product_kanban.xml',
+    ],
+    'demo': [],
+    'test': [],
+    'installable': True,
+    'application': False,
+    'auto_install': False,
+}
 
-@author: Daniel Smerghetto
-'''
-
-from openerp import models
-from openerp import api
-
-
-class MrpBomExtension(models.Model):
-    _name = 'mrp.bom'
-    _inherit = 'mrp.bom'
-
-    @api.multi
-    def forceComputeBomWeight(self):
-        '''
-            Call plm bom weight calculator function
-        '''
-        self.rebaseBomWeight()
-
-MrpBomExtension()
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

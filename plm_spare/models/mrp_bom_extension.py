@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
 ##############################################################################
 #
-#    OmniaSolutions, Open Source Management Solution    
-#    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
+#    OmniaSolutions, Your own solutions
+#    Copyright (C) 2010 OmniaSolutions (<http://omniasolutions.eu>). All Rights Reserved
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -21,24 +21,25 @@
 ##############################################################################
 
 '''
-Created on 13 Jun 2016
+Created on 30 Aug 2016
 
 @author: Daniel Smerghetto
 '''
-
 from openerp import models
-from openerp import api
+from openerp import fields
+from openerp import _
 
 
 class MrpBomExtension(models.Model):
-    _name = 'mrp.bom'
     _inherit = 'mrp.bom'
 
-    @api.multi
-    def forceComputeBomWeight(self):
-        '''
-            Call plm bom weight calculator function
-        '''
-        self.rebaseBomWeight()
+    type = fields.Selection([('normal', _('Normal BoM')),
+                             ('phantom', _('Sets / Phantom')),
+                             ('ebom', _('Engineering BoM')),
+                             ('spbom', _('Spare BoM'))],
+                            _('BoM Type'),
+                            required=True,
+                            help=_("Phantom BOM: When processing a sales order for this product, the delivery order will contain the raw materials, instead of the finished product."
+                                   "Ship this product as a set of components (kit)."))
 
 MrpBomExtension()

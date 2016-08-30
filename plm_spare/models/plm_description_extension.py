@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
 ##############################################################################
 #
-#    OmniaSolutions, Open Source Management Solution    
-#    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
+#    OmniaSolutions, Your own solutions
+#    Copyright (C) 2010 OmniaSolutions (<http://omniasolutions.eu>). All Rights Reserved
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -21,24 +21,22 @@
 ##############################################################################
 
 '''
-Created on 13 Jun 2016
+Created on 30 Aug 2016
 
 @author: Daniel Smerghetto
 '''
-
 from openerp import models
-from openerp import api
+from openerp import fields
+from openerp import _
 
 
-class MrpBomExtension(models.Model):
-    _name = 'mrp.bom'
-    _inherit = 'mrp.bom'
+class PlmDescriptionExtension(models.Model):
+    _inherit = "plm.description"
 
-    @api.multi
-    def forceComputeBomWeight(self):
-        '''
-            Call plm bom weight calculator function
-        '''
-        self.rebaseBomWeight()
+    bom_tmpl = fields.Many2one('mrp.bom',
+                               _('Choose a BoM'),
+                               required=False,
+                               change_default=True,
+                               help=_("Select a  BoM as template to drive building Spare BoM."))
 
-MrpBomExtension()
+PlmDescriptionExtension()

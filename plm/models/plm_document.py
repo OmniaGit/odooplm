@@ -62,20 +62,20 @@ class PlmDocument(models.Model):
     _table = 'plm_document'
     _inherit = ['mail.thread', 'ir.attachment']
 
-    @api.model
-    def get_checkout_user(self, oid):
-        lastDoc = self._getlastrev([oid])
+    @api.multi
+    def get_checkout_user(self):
+        lastDoc = self._getlastrev()
         if lastDoc:
             for docBrws in self.env['plm.checkout'].search([('documentid', '=', lastDoc[0])]):
                 return docBrws.userid
         return False
 
-    @api.model
-    def _is_checkedout_for_me(self, oid):
+    @api.multi
+    def _is_checkedout_for_me(self):
         """
             Get if given document (or its latest revision) is checked-out for the requesting user
         """
-        userBrws = self.get_checkout_user(oid)
+        userBrws = self.get_checkout_user()
         if userBrws:
             if userBrws.id == self.env.uid:
                 return True
@@ -113,7 +113,7 @@ class PlmDocument(models.Model):
                 timeDoc = self.getLastTime(objDoc.id)
                 timeSaved = time.mktime(timeDoc.timetuple())
                 try:
-                    isCheckedOutToMe = self._is_checkedout_for_me(objDoc.id)
+                    isCheckedOutToMe = objDoc._is_checkedout_for_me()
                     if not(objDoc.datas_fname in listfiles):
                         if (not objDoc.store_fname) and (objDoc.db_datas):
                             value = objDoc.db_datas
@@ -250,7 +250,7 @@ class PlmDocument(models.Model):
                 isCheckedOutToMe = False
                 timeDoc = self.getLastTime(objDoc.id)
                 timeSaved = time.mktime(timeDoc.timetuple())
-                checkoutUserBrws = self.get_checkout_user(objDoc.id, context=None)
+                checkoutUserBrws = objDoc.get_checkout_user()
                 if checkoutUserBrws:
                     checkOutUser = checkoutUserBrws.name
                     if checkoutUserBrws.id == self.env.uid:
@@ -746,7 +746,7 @@ class PlmDocument(models.Model):
                 if len(plmDocList) > 0:
                     ids = plmDocList.ids
                     ids.sort()
-                    res.append([fileName, not (self._is_checkedout_for_me(ids[len(ids) - 1]))])
+                    res.append([fileName, not (self.browse(ids[len(ids) - 1]))])._is_checkedout_for_me()
             return res
 
         if len(files) > 0:  # no files to process
@@ -778,7 +778,7 @@ class PlmDocument(models.Model):
                 ids.extend(self.search([('name', '=', docName), ('revisionid', '=', docRev)]).ids)
 
         for docName, docRev, docIdToOpen in vals:
-            checkOutUser = self.get_checkout_user(docIdToOpen)
+            checkOutUser = self.browse(docIdToOpen).get_checkout_user()
             if checkOutUser:
                 isMyDocument = self.isCheckedOutByMe(docIdToOpen)
                 if isMyDocument:

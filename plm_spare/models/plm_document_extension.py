@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
 ##############################################################################
 #
-#    OmniaSolutions, Open Source Management Solution    
-#    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
+#    OmniaSolutions, Your own solutions
+#    Copyright (C) 2010 OmniaSolutions (<http://omniasolutions.eu>). All Rights Reserved
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -21,24 +21,21 @@
 ##############################################################################
 
 '''
-Created on 13 Jun 2016
+Created on 30 Aug 2016
 
 @author: Daniel Smerghetto
 '''
 
 from openerp import models
-from openerp import api
+from openerp import fields
+from openerp import _
 
 
-class MrpBomExtension(models.Model):
-    _name = 'mrp.bom'
-    _inherit = 'mrp.bom'
+class PlmDocumentExtension(models.Model):
+    _inherit = 'plm.document'
 
-    @api.multi
-    def forceComputeBomWeight(self):
-        '''
-            Call plm bom weight calculator function
-        '''
-        self.rebaseBomWeight()
+    usedforspare = fields.Boolean(_('Used for Spare'),
+                                  default=False,
+                                  help=_("Drawings marked here will be used printing Spare Part Manual report."))
 
-MrpBomExtension()
+PlmDocumentExtension()

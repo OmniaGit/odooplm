@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+<template id="bom_spare_header">
+	<t t-foreach="docs" t-as="compBrws">
+		<t t-call="report.html_container">
+	        <t t-set="data_report_margin_top" t-value="12"/>
+	        <t t-set="data_report_header_spacing" t-value="9"/>
+	        <t t-set="data_report_dpi" t-value="110"/>
+	
+	        <t t-call="report.internal_layout">
+		        <div class="page" align="center">
+					<t t-set="docBrws" t-value="get_document_brws()"/>
+					<table> 
+						<tr><td style="text-align: center;"><b>Spare Parts Report</b></td></tr> 
+						<tr><td style="text-align: center;"><b><span t-esc="compBrws.product_tmpl_id.name or compBrws.product_tmpl_id.default_code"/></b></td></tr>
+						<tr><td style="text-align: center;"><b><span t-esc="compBrws.product_tmpl_id.description"/></b></td></tr>
+					</table>
+					<br></br>
+					<br></br>
+					<!--	to fix in merge pdf
+					<t t-if="docBrws != null">
+						<span t-field="docBrws.preview" t-field-options='{"widget": "image"}'/>
+					</t>
+					-->
+				</div>
+			</t>
+		</t>
+	</t>
+</template>
+
+</odoo>

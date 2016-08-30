@@ -17,7 +17,7 @@
                     <field name="description" select="1" />
                     <field name="description_en" select="1" />
                     <separator/>
-  	               	<group colspan="4" col="4" string="Technical Features">
+  	               	<group colspan="4" col="4" string="Technical Features" name="tech_features">
 	 	                
 	 	                	<group colspan="4" col="4">
 		                    	<separator colspan="4" string="Technical feature label and formatting"/>

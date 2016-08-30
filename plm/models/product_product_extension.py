@@ -375,7 +375,7 @@ class PlmComponent(models.Model):
                                         ('engineering_revision', '=', partRev)]).ids)
 
         for docName, docRev, docIdToOpen in vals:
-            checkOutUser = plmDocObj.get_checkout_user(docIdToOpen)
+            checkOutUser = plmDocObj.browse(docIdToOpen).get_checkout_user()
             if checkOutUser:
                 isMyDocument = plmDocObj.isCheckedOutByMe(docIdToOpen)
                 if isMyDocument and forceCADProperties:
@@ -985,14 +985,22 @@ class PlmComponent(models.Model):
                 'type': 'ir.actions.act_window',
                 }
 
-        def name_search(self, cr, user, name='', args=None, operator='ilike', context=None, limit=100):
-            result = super(PlmComponent, self).name_search(cr, user, name, args, operator, context, limit)
-            newResult = []
-            for productId, oldName in result:
-                objBrowse = self.browse(cr, user, [productId], context)
-                newName = "%r [%r] " % (oldName, objBrowse.engineering_revision)
-                newResult.append((productId, newName))
-            return newResult
+    @api.model
+    def name_search(self, name='', args=None, operator='ilike', limit=100):
+        result = super(PlmComponent, self).name_search(name, args, operator, limit)
+        newResult = []
+        for productId, oldName in result:
+            objBrowse = self.browse([productId])
+            newName = "%r [%r] " % (oldName, objBrowse.engineering_revision)
+            newResult.append((productId, newName))
+        return newResult
+
+    @api.multi
+    def action_view_mos(self):
+        tmplBrws = self.product_tmpl_id
+        if tmplBrws:
+            return tmplBrws.action_view_mos()
+        logging.warning('[action_view_mos] product with id %s does not have a related template' % (self.id))
 
 PlmComponent()
 

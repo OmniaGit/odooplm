@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data> 
+	
+    <record id="plm_description_spare_tree_view" model="ir.ui.view">
+        <field name="name">plm.spare.description.tree</field>
+        <field name="model">plm.description</field>
+        <field name="inherit_id" ref="plm.plm_view_description_tree"/>
+        <field name="type">tree</field>
+        <field name="arch" type="xml">
+    		<field name="sequence" position="after">
+                <field name="bom_tmpl"/>
+    		</field>
+        </field>
+    </record>
+    
+    <record id="plm_description_spare_form_view" model="ir.ui.view">
+        <field name="name">plm.spare.description.form</field>
+        <field name="model">plm.description</field>
+        <field name="inherit_id" ref="plm.view_plm_description"/>
+        <field name="type">form</field>
+    	<field name="priority" eval="16"/>
+        <field name="arch" type="xml">
+        	<data>
+                <group name="tech_features" position="after">
+                	<field name="bom_tmpl"/>
+                </group>
+        	</data>
+ 		</field>
+    </record>
+		
+ 	</data>
+</openerp>

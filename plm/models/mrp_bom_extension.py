@@ -392,7 +392,7 @@ class MrpBomExtension(models.Model):
 
                     saveChild(childName, childID, sourceID, bomID, kindBom='ebom', args=relArgs)
                     toCompute(childName, nexRelation)
-                self.RebaseProductWeight(bomID, self.RebaseBomWeight(bomID))
+                self.RebaseProductWeight(bomID, self.browse(bomID).rebaseBomWeight(bomID))
             return bomID
 
         def repairQty(value):
@@ -474,7 +474,7 @@ class MrpBomExtension(models.Model):
             self.env['product.product'].browse([bomObj.product_id.id]).write({'weight': weight})
 
     @api.multi
-    def RebaseBomWeight(self):
+    def rebaseBomWeight(self):
         """
             Evaluates net weight for assembly, based on BoM ID
         """
@@ -488,30 +488,27 @@ class MrpBomExtension(models.Model):
     def write(self, vals, check=True):
         ret = super(MrpBomExtension, self).write(vals)
         for bomBrws in self:
-            self.RebaseBomWeight(bomBrws.id)
+            bomBrws.rebaseBomWeight()
         return ret
 
-    @api.model
-    def copy(self, oid, defaults={}):
+    @api.multi
+    def copy(self, defaults={}):
         """
             Return new object copied (removing SourceID)
         """
-        newId = super(MrpBomExtension, self).copy(oid, defaults)
-        if newId:
-            compType = self.env['product.product']
-            bomLType = self.env['mrp.bom.line']
-            newBomid = self.browse(newId)
-            for bom_line in newBomid.bom_line_ids:
-                lateRevIdC = compType.GetLatestIds([(bom_line.product_id.product_tmpl_id.engineering_code,
-                                                     False,
-                                                     False)])  # Get Latest revision of each Part
-                bomLType.browse([bom_line.id]).write({'source_id': False,
-                                                      'name': bom_line.product_id.product_tmpl_id.name,
-                                                      'product_id': lateRevIdC[0]})
-            newBomid.write({'source_id': False,
-                            'name': newBomid.product_tmpl_id.name},
-                           check=False)
-        return newId
+        newBomBrws = super(MrpBomExtension, self).copy(defaults)
+        if newBomBrws:
+            for bom_line in newBomBrws.bom_line_ids:
+                lateRevIdC = self.env['product.product'].GetLatestIds([(bom_line.product_id.product_tmpl_id.engineering_code,
+                                                                        False,
+                                                                        False)])  # Get Latest revision of each Part
+                self.env['mrp.bom.line'].browse([bom_line.id]).write({'source_id': False,
+                                                                      'name': bom_line.product_id.product_tmpl_id.name,
+                                                                      'product_id': lateRevIdC[0]})
+            newBomBrws.write({'source_id': False,
+                              'name': newBomBrws.product_tmpl_id.name},
+                             check=False)
+        return newBomBrws
 
 MrpBomExtension()
 
