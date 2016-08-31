@@ -21,23 +21,22 @@
 ##############################################################################
 
 '''
-Created on 25 Aug 2016
+Created on 31 Aug 2016
 
 @author: Daniel Smerghetto
 '''
-import plm_finishing
-import plm_material
-import product_template
-import plm_descriptions             # Has to be before "product_product_extension" due to related field
-import product_product              # Has to be before "plm_document" due to related field
-import plm_document                 # Has to be before "plm_document_relations" due to related field
-import plm_document_relations
-import product_product_document_rel
-import product_product_kanban
-import plm_backup_document
-import plm_checkout
-import plm_config_settings
-import mrp_bom
-import mrp_bom_line
-import mrp_production
-import document_report
+from openerp import models
+from openerp import fields
+from openerp import _
+
+
+class MrpBomLineExtension(models.Model):
+    _inherit = 'mrp.bom.line'
+
+    engineering_revision = fields.Integer(related="product_id.engineering_revision",
+                                          string=_("Revision"),
+                                          help=_("The revision of the product."),
+                                          store=False)
+
+MrpBomLineExtension()
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

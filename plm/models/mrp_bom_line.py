@@ -58,10 +58,6 @@ class MrpBomLineExtension(models.Model):
                              string=_("Status"),
                              help=_("The status of the product in its LifeCycle."),
                              store=False)
-    engineering_revision = fields.Integer(related="product_id.engineering_revision",
-                                          string=_("Revision"),
-                                          help=_("The revision of the product."),
-                                          store=False)
     description = fields.Text(related="product_id.description",
                               string=_("Description"),
                               store=False)

@@ -263,10 +263,6 @@ class PlmComponent(models.Model):
             description = description + " " + thisObject.unitab
         return description
 
-    @api.model
-    def _getbyrevision(self, name, revision):
-        return self.search([('engineering_code', '=', name),
-                            ('engineering_revision', '=', revision)])
 
     @api.multi
     def product_template_open(self):
@@ -343,8 +339,6 @@ class PlmComponent(models.Model):
         if newCompBrws not in (None, False):
             exitValues['_id'] = newCompBrws.id
             exitValues['name'] = newCompBrws.name
-            exitValues['engineering_code'] = newCompBrws.engineering_code
-            exitValues['engineering_revision'] = newCompBrws.engineering_revision
         return exitValues
 
     @api.model
@@ -365,14 +359,7 @@ class PlmComponent(models.Model):
         plmDocObj = self.env['plm.document']
 
         def getCompIds(partName, partRev):
-            if docRev is None or docRev is False:
-                partIds = self.search([('engineering_code', '=', partName)],
-                                      order='engineering_revision').ids
-                if len(partIds) > 0:
-                    ids.append(partIds[-1])
-            else:
-                ids.extend(self.search([('engineering_code', '=', partName),
-                                        ('engineering_revision', '=', partRev)]).ids)
+            ids.extend(self.search([('engineering_code', '=', partName)]).ids)
 
         for docName, docRev, docIdToOpen in vals:
             checkOutUser = plmDocObj.browse(docIdToOpen).get_checkout_user()
@@ -386,36 +373,6 @@ class PlmComponent(models.Model):
                 getCompIds(docName, docRev)
         return list(set(ids))
 
-    @api.multi
-    def NewRevision(self):
-        """
-            create a new revision of current component
-        """
-        newID = None
-        newIndex = 0
-        for tmpObject in self:
-            latestIDs = self.GetLatestIds([(tmpObject.engineering_code, tmpObject.engineering_revision, False)])
-            for oldObject in self.browse(latestIDs):
-                newIndex = int(oldObject.engineering_revision) + 1
-                defaults = {}
-                defaults['engineering_writable'] = False
-                defaults['state'] = 'undermodify'
-                self.write([oldObject.id], defaults)
-                oldObject.wf_message_post(body=_('Status moved to: %s.' % (USEDIC_STATES[defaults['state']])))
-                # store updated infos in "revision" object
-                defaults['name'] = oldObject.name                 # copy function needs an explicit name value
-                defaults['engineering_revision'] = newIndex
-                defaults['engineering_writable'] = True
-                defaults['state'] = 'draft'
-                defaults['linkeddocuments'] = []                  # Clean attached documents for new revision object
-                newCompBrws = oldObject.copy(defaults)
-                oldObject.wf_message_post(body=_('Created : New Revision.'))
-                newCompBrws.write({'name': oldObject.name})
-                # create a new "old revision" object
-                break
-            break
-        return (newID, newIndex)
-
     @api.model
     def SaveOrUpdate(self, vals):
         """
@@ -427,12 +384,11 @@ class PlmComponent(models.Model):
             hasSaved = False
             if partVals.get('engineering_code', '') in listedParts:
                 continue
-            if 'engineering_code' not in partVals or 'engineering_revision' not in partVals:
+            if 'engineering_code' not in partVals:
                 partVals['componentID'] = False
                 partVals['hasSaved'] = hasSaved
                 continue
-            existingCompBrws = self.search([('engineering_code', '=', partVals['engineering_code']),
-                                            ('engineering_revision', '=', partVals['engineering_revision'])])
+            existingCompBrws = self.search([('engineering_code', '=', partVals['engineering_code'])])
             if not existingCompBrws:
                 existingCompBrws = self.create(partVals)
                 hasSaved = True
@@ -460,10 +416,7 @@ class PlmComponent(models.Model):
         queryFilter, columns = request
         if len(columns) < 1:
             return expData
-        if 'engineering_revision' in queryFilter:
-            del queryFilter['engineering_revision']
-        allIDs = self.search(queryFilter,
-                             order='engineering_revision').ids
+        allIDs = self.search(queryFilter).ids
         if len(allIDs) > 0:
             allIDs.sort()
             objId = allIDs[len(allIDs) - 1]
@@ -485,12 +438,8 @@ class PlmComponent(models.Model):
 
         def getPreviousNormalBOM(bomBrws):
             outBomBrws = []
-            engineering_revision = bomBrws.engineering_revision
-            if engineering_revision <= 0:
-                return []
             engineering_code = bomBrws.product_tmpl_id.engineering_code
-            previousRevProductBrwsList = prodTmplObj.search([('engineering_revision', '=', engineering_revision - 1),
-                                                             ('engineering_code', '=', engineering_code)])
+            previousRevProductBrwsList = prodTmplObj.search([('engineering_code', '=', engineering_code)])
             for prodBrws in previousRevProductBrwsList:
                 oldBomBrwsList = bomType.search([('product_tmpl_id', '=', prodBrws.id),
                                                  ('type', '=', newBomType)])
@@ -652,7 +601,7 @@ class PlmComponent(models.Model):
         for prodBrws in self:
             for childProdBrws in self.browse(self._getChildrenBom(prodBrws, 1)):
                 if (childProdBrws.state not in excludeStatuses) and (childProdBrws.state not in includeStatuses):
-                    errors.append(_("Product code: %r revision %r status %r") % (childProdBrws.engineering_code, childProdBrws.engineering_revision, childProdBrws.state))
+                    errors.append(_("Product code: %r status %r") % (childProdBrws.engineering_code, childProdBrws.state))
                     continue
                 if childProdBrws.state in includeStatuses:
                     if childProdBrws.id not in tobeReleasedIDs:
@@ -729,13 +678,13 @@ class PlmComponent(models.Model):
     def _iswritable(self, oid):
         checkState = ('draft')
         if not oid.engineering_writable:
-            logging.warning("_iswritable : Part (%r - %d) is not writable." % (oid.engineering_code, oid.engineering_revision))
+            logging.warning("_iswritable : Part (%r) is not writable." % (oid.engineering_code))
             return False
         if oid.state not in checkState:
-            logging.warning("_iswritable : Part (%r - %d) is in status %r." % (oid.engineering_code, oid.engineering_revision, oid.state))
+            logging.warning("_iswritable : Part (%r) is in status %r." % (oid.engineering_code, oid.state))
             return False
         if not oid.engineering_code:
-            logging.warning("_iswritable : Part (%r - %d) is without Engineering P/N." % (oid.name, oid.engineering_revision))
+            logging.warning("_iswritable : Part (%r) is without Engineering P/N." % (oid.name))
             return False
         return True
 
@@ -791,16 +740,6 @@ class PlmComponent(models.Model):
         if len(allIDs) < 1 or len(errors) > 0:
             raise UserError(errors)
         allProdObjs = self.browse(allIDs)
-        for oldObject in allProdObjs:
-            last_id = self._getbyrevision(oldObject.engineering_code, oldObject.engineering_revision - 1)
-            if last_id is not None:
-                defaults['engineering_writable'] = False
-                defaults['state'] = 'obsoleted'
-                prodObj = self.browse([last_id])
-                prodObj.write(defaults)
-                self.browse(last_id).wf_message_post(body=_('Status moved to: %s.' % (USEDIC_STATES[defaults['state']])))
-            defaults['engineering_writable'] = False
-            defaults['state'] = 'released'
         self._action_ondocuments('release')
         for currId in allProdObjs:
             if not(currId.id in self.ids):
@@ -870,23 +809,14 @@ class PlmComponent(models.Model):
         if ('name' in vals):
             if not vals['name']:
                 return False
-            prodBrwsList = self.search([('name', '=', vals['name'])],
-                                       order='engineering_revision')
+            prodBrwsList = self.search([('name', '=', vals['name'])])
             if 'engineering_code' in vals:
                 if vals['engineering_code'] == False:
                     vals['engineering_code'] = vals['name']
             else:
                 vals['engineering_code'] = vals['name']
             if prodBrwsList:
-                existObj = prodBrwsList[len(prodBrwsList) - 1]
-                if ('engineering_revision' in vals):
-                    if existObj:
-                        if vals['engineering_revision'] > existObj.engineering_revision:
-                            vals['name'] = existObj.name
-                        else:
-                            return existObj
-                else:
-                    return existObj
+                return prodBrwsList[len(prodBrwsList) - 1]
         try:
             return super(PlmComponent, self).create(vals)
         except Exception, ex:
@@ -905,7 +835,6 @@ class PlmComponent(models.Model):
         if not defaults.get('name', False):
             defaults['name'] = '-'                   # If field is required super of clone will fail returning False, this is the case
             defaults['engineering_code'] = '-'
-            defaults['engineering_revision'] = 0
         # assign default value
         defaults['state'] = 'draft'
         defaults['engineering_writable'] = True
@@ -915,22 +844,6 @@ class PlmComponent(models.Model):
         if (objId):
             self.wf_message_post(body=_('Copied starting from : %s.' % previous_name))
         return objId
-
-    @api.multi
-    def unlink(self):
-        values = {'state': 'released'}
-        checkState = ('undermodify', 'obsoleted')
-        for checkObj in self:
-            prodBrwsList = self.search([('engineering_code', '=', checkObj.engineering_code),
-                                        ('engineering_revision', '=', checkObj.engineering_revision - 1)])
-            if len(prodBrwsList) > 0:
-                oldObject = prodBrwsList[0]
-                if oldObject.state in checkState:
-                    oldObject.wf_message_post(body=_('Removed : Latest Revision.'))
-                    if not self.browse([oldObject.id]).write(values):
-                        logging.warning("unlink : Unable to update state to old component (%r - %d)." % (oldObject.engineering_code, oldObject.engineering_revision))
-                        return False
-        return super(PlmComponent, self).unlink()
 
     @api.model
     def translateForClient(self, values=[], forcedLang=''):
@@ -990,8 +903,7 @@ class PlmComponent(models.Model):
         result = super(PlmComponent, self).name_search(name, args, operator, limit)
         newResult = []
         for productId, oldName in result:
-            objBrowse = self.browse([productId])
-            newName = "%r [%r] " % (oldName, objBrowse.engineering_revision)
+            newName = "%r" % (oldName)
             newResult.append((productId, newName))
         return newResult
 

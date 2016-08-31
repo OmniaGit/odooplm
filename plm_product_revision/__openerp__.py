@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
 ##############################################################################
 #
-#    OmniaSolutions, Your own solutions
-#    Copyright (C) 2010 OmniaSolutions (<http://omniasolutions.eu>). All Rights Reserved
+#    OmniaSolutions, Open Source Management Solution    
+#    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -19,25 +19,26 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+{
+    'name': 'Plm Product Revision',
+    'version': '1.1',
+    'author': 'OmniaSolutions',
+    'website': 'http://www.omniasolutions.eu',
+    'category': 'Product Lifecycle Management',
+    'sequence': 15,
+    'summary': 'PLM Integration with main CAD editors',
+    'images': [],
+    'depends': ['plm'],
+    'description': """ This module allows you to manage product revisions""",
+    'data': ['views/mrp_view.xml',
+             'views/product_product.xml',
+             'views/product_template.xml',
+             ],
+    'demo': [],
+    'test': [],
+    'installable': True,
+    'application': False,
+    'auto_install': False,
+}
 
-'''
-Created on 25 Aug 2016
-
-@author: Daniel Smerghetto
-'''
-import plm_finishing
-import plm_material
-import product_template
-import plm_descriptions             # Has to be before "product_product_extension" due to related field
-import product_product              # Has to be before "plm_document" due to related field
-import plm_document                 # Has to be before "plm_document_relations" due to related field
-import plm_document_relations
-import product_product_document_rel
-import product_product_kanban
-import plm_backup_document
-import plm_checkout
-import plm_config_settings
-import mrp_bom
-import mrp_bom_line
-import mrp_production
-import document_report
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

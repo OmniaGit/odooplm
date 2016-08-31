@@ -50,10 +50,6 @@ class ProductTemplateExtension(models.Model):
     engineering_code = fields.Char(_('Part Number'),
                                    help=_("This is engineering reference to manage a different P/N from item Name."),
                                    size=64)
-    engineering_revision = fields.Integer(_('Revision'),
-                                          default=0,
-                                          required=True,
-                                          help=_("The revision of the product."))
     engineering_writable = fields.Boolean(_('Writable'),
                                           default=True)
     engineering_material = fields.Char(_('Raw Material'),
@@ -101,7 +97,7 @@ class ProductTemplateExtension(models.Model):
             }
 
     _sql_constraints = [
-        ('partnumber_uniq', 'unique (engineering_code,engineering_revision)', _('Part Number has to be unique!'))
+        ('partnumber_uniq', 'unique (engineering_code)', _('Part Number has to be unique!'))
     ]
 
     def init(self, cr):
@@ -124,7 +120,7 @@ DROP INDEX IF EXISTS product_template_engcoderev_index;
 CREATE INDEX product_template_engcoderev_index
   ON product_template
   USING btree
-  (engineering_code, engineering_revision);
+  (engineering_code);
   """)
 
 ProductTemplateExtension()

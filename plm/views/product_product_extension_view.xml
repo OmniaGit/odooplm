@@ -44,7 +44,6 @@
             	fonts="bold:state == 'released';">  
                 <field name="name" select="True"/>
                 <field name="engineering_code" select="True"/>
-                <field name="engineering_revision"/>
                 <field name="state" select="True"/>
                 <field name="description" select="True" />
                 <field name="engineering_writable" invisible="1" />
@@ -122,7 +121,6 @@
            		<group colspan="6" col="6" name="PNArea">
              		<group colspan="6" col="6">
               			<field name="engineering_code" 		colspan="4" 			attrs="{'readonly':[('state','!=','draft')]}" 				select="1"/>
-               			<field name="engineering_revision" 	colspan="2"				readonly="True" 											/>
                			<field name="std_description" 		colspan="4"				attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/> 	
                			<field name="state" 				colspan="2" 			readonly="True"/>	
                			<label for="description" 			colspan="6"/>
@@ -186,41 +184,6 @@
     
     <!-- Product Template Overload -->
     
-        <record id="product_template_form_view_plm_custom" model="ir.ui.view">
-            <field name="name">product.template.plm.custom</field>
-            <field name="model">product.template</field>
-            <field name="inherit_id" ref="product.product_template_only_form_view"/>
-            <field name="priority" eval="3"/>
-            <field name="arch" type="xml">
-                <div name="button_box" position="inside">
-                    <button class="oe_stat_button" name="engineering_products_open" type="object" string="Engineering Infos"
-                        icon="fa-gears"> 
-                    </button>
-                </div>
-                <div name="options" position="before"> 
-                	<div style="display: inline-flex;">
-                		<label	for="engineering_code" style="width:200px;"/>
-	                	<field name="engineering_code" />	
-	                	<label	for="engineering_revision" style="padding-left: 40px;"/>	
-	                	<field name="engineering_revision" readonly="1"/> 
-                	</div>		
-                </div>		 
-            </field>
-        </record>
-
-    <record id="plm_template_tree_inherit" model="ir.ui.view">
-        <field name="name">plm.product.template.extension</field>
-        <field name="model">product.template</field>
-        <field name="inherit_id" ref="product.product_template_tree_view"/>
-        <field name="type">tree</field>
-        <field name="priority" eval="15"/>
-        <field name="arch" type="xml">
-            <field name="name" position="after">
-				<field name="engineering_revision" />
-            </field>
-        </field>
-    </record> 
-
 <!--  Tree Structure Where Used on Product -->
 
         <record id="mrp_part_tree_view_where" model="ir.ui.view">
@@ -230,7 +193,6 @@
             <field name="arch" type="xml">
                 <tree string="Bill of Materials">
                     <field name="name" string="Component Name"/>
-                    <field name="engineering_revision" string="Revision"/>
                     <field name="description"/>
                 </tree>
             </field>
