@@ -140,55 +140,49 @@ class PlmDocument(models.Model):
         return result
 
     @api.depends('store_fname', 'db_datas')
-    def _data_get(self):
-        bin_size = self._context.get('bin_size')
+    def _compute_datas(self):
         for objDoc in self:
             if objDoc.type == 'binary':
-                if not objDoc.store_fname:
-                    objDoc.datas = self._file_read(objDoc.store_fname, bin_size)
-                    value = objDoc.db_datas
-                    if not value or len(value) < 1:
-                        logging.warning(_("Document %s - %s cannot be accessed" % (str(objDoc.name), str(objDoc.revisionid))))
+                if objDoc.store_fname:
+                    filestore = os.path.join(self._get_filestore(), objDoc.store_fname)
+                    if os.path.exists(filestore):
+                        objDoc.datas = file(filestore, 'rb').read().encode('base64')
                 else:
                     objDoc.datas = objDoc.db_datas
 
     @api.multi
-    def _data_set(self):
-        location = self._storage()
-        for attach in self:
-            # compute the fields that depend on datas
-            value = attach.datas
-            bin_data = value and value.decode('base64') or ''
-            vals = {
-                'file_size': len(bin_data),
-                'checksum': self._compute_checksum(bin_data),
-                'index_content': self._index(bin_data, attach.datas_fname, attach.mimetype),
-                'store_fname': False,
-                'db_datas': value,
-            }
-            if value and location != 'db':
-                # save it to the filestore
-                vals['store_fname'] = self._file_write(value, vals['checksum'])
-                vals['db_datas'] = False
-                try:
-                    printout = False
-                    preview = False
-                    if attach.printout:
-                        printout = attach.printout
-                    if attach.preview:
-                        preview = attach.preview
-                    db_datas = b''                    # Clean storage field.
-                    fname, filesize = attach._manageFile(binvalue=value)
-                    self.env.cr.execute('update plm_document set store_fname=%s,file_size=%s,db_datas=%s where id=%s', (fname, filesize, db_datas, self.id))
-                    self.env['plm.backupdoc'].create({'userid': self.env.uid,
-                                                      'existingfile': fname,
-                                                      'documentid': self.id,
-                                                      'printout': printout,
-                                                      'preview': preview
-                                                      })
+    def _inverse_datas(self):
+        filestore = self._get_filestore()
+        for docBrws in self:
+            oid = docBrws.id
+            if docBrws.type == 'binary':
+                value = docBrws.datas
+                if not value:
+                    filename = docBrws.store_fname
+                    try:
+                        os.unlink(os.path.join(filestore, filename))
+                    except:
+                        pass
+                    self.env.cr.execute('update plm_document set store_fname=NULL WHERE id=%s', (oid,))
                     return True
-                except Exception, ex:
-                    raise UserError(_('Error in _data_set: %r' % (str(ex))))
+                printout = False
+                preview = False
+                if docBrws.printout:
+                    printout = docBrws.printout
+                if docBrws.preview:
+                    preview = docBrws.preview
+                db_datas = b''                    # Clean storage field.
+                fname, filesize = self._manageFile(filestore, value)
+                self.env.cr.execute('update plm_document set store_fname=%s,file_size=%s,db_datas=%s where id=%s', (fname,
+                                                                                                                    filesize,
+                                                                                                                    db_datas,
+                                                                                                                    oid))
+                self.env['plm.backupdoc'].create({'userid': self.env.uid,
+                                                  'existingfile': fname,
+                                                  'documentid': oid,
+                                                  'printout': printout,
+                                                  'preview': preview
+                                                  })
 
     @api.model
     def _explodedocs(self, oid, kinds, listed_documents=[], recursion=True):
@@ -309,29 +303,23 @@ class PlmDocument(models.Model):
         return newDocBrws.id
 
     @api.multi
-    def _manageFile(self, binvalue=None):
+    def _manageFile(self, filestore, binvalue=None):
         """
             use given 'binvalue' to save it on physical repository and to read size (in bytes).
         """
-        path = self._get_filestore()
-        if not os.path.isdir(path):
-            try:
-                os.makedirs(path)
-            except:
-                raise UserError(_("Permission denied or directory %s cannot be created." % (str(path))))
         flag = None
         # This can be improved
-        for dirs in os.listdir(path):
-            if os.path.isdir(os.path.join(path, dirs)) and len(os.listdir(os.path.join(path, dirs))) < 4000:
+        for dirs in os.listdir(filestore):
+            if os.path.isdir(os.path.join(filestore, dirs)) and len(os.listdir(os.path.join(filestore, dirs))) < 4000:
                 flag = dirs
                 break
         if binvalue is None:
             fileStream = self._data_get(name=None, arg=None)
             binvalue = fileStream[fileStream.keys()[0]]
 
-        flag = flag or create_directory(path)
+        flag = flag or create_directory(filestore)
         filename = random_name()
-        fname = os.path.join(path, flag, filename)
+        fname = os.path.join(filestore, flag, filename)
         fobj = file(fname, 'wb')
         value = base64.decodestring(binvalue)
         fobj.write(value)
@@ -340,18 +328,14 @@ class PlmDocument(models.Model):
 
     @api.model
     def _iswritable(self, oid):
-        checkState = ('draft')
         if not oid.type == 'binary':
-            logging.warning("_iswritable : Part (" + str(oid.engineering_code) + "-" + str(oid.engineering_revision) + ") not writable as hyperlink.")
+            logging.warning("_iswritable : Part (" + str(oid.name) + "-" + str(oid.revisionid) + ") not writable as hyperlink.")
             return False
-        if not oid.engineering_writable:
-            logging.warning("_iswritable : Part (" + str(oid.engineering_code) + "-" + str(oid.engineering_revision) + ") not writable.")
+        if oid.state not in ('draft'):
+            logging.warning("_iswritable : Part (" + str(oid.name) + "-" + str(oid.revisionid) + ") in status ; " + str(oid.state) + ".")
             return False
-        if oid.state not in checkState:
-            logging.warning("_iswritable : Part (" + str(oid.engineering_code) + "-" + str(oid.engineering_revision) + ") in status ; " + str(oid.state) + ".")
-            return False
-        if not oid.engineering_code:
-            logging.warning("_iswritable : Part (" + str(oid.name) + "-" + str(oid.engineering_revision) + ") without Engineering P/N.")
+        if not oid.name:
+            logging.warning("_iswritable : Part (" + str(oid.name) + "-" + str(oid.revisionid) + ") without Engineering P/N.")
             return False
         return True
 
@@ -611,9 +595,19 @@ class PlmDocument(models.Model):
         return self.write(vals, check=False)
 
 #   Overridden methods for this entity
-    def _get_filestore(self, cr):
+    @api.model
+    def _get_filestore(self):
         dms_Root_Path = tools.config.get('document_path', os.path.join(tools.config['root_path'], 'filestore'))
-        return os.path.join(dms_Root_Path, cr.dbname)
+        filestore = os.path.join(dms_Root_Path, self.env.cr.dbname)
+        try:
+            os.makedirs(filestore)
+        except OSError, ex:
+            if ex.errno not in [13, 17]:
+                raise ex
+            if ex.errno == 13:
+                logging.warning(_("Permission denied for folder %r." % (str(filestore))))
+                return ''
+        return filestore
 
     @api.multi
     def write(self, vals):
@@ -724,8 +718,8 @@ class PlmDocument(models.Model):
                                         _('Linked Parts'))
     datas = fields.Binary(string='File Content', compute='_compute_datas', inverse='_inverse_datas')
     datas = fields.Binary(string=_('File Content'),
-                          compute='_data_get',
-                          inverse='_data_set',
+                          compute='_compute_datas',
+                          inverse='_inverse_datas',
                           method=True)
 
     _sql_constraints = [

@@ -59,11 +59,11 @@ class MrpBomExtension(models.Model):
         if objBom:
             odooPLMBom = ['ebom', 'spbom']
             if objBom.type in odooPLMBom:
-                bom_ids = self.search([('product_id', '=', objBom.product_id.id),
-                                       ('product_tmpl_id', '=', objBom.product_tmpl_id.id),
-                                       ('type', 'not in', odooPLMBom)])
-                for _id in bom_ids:
-                    return _id
+                bomBrwsList = self.search([('product_id', '=', objBom.product_id.id),
+                                           ('product_tmpl_id', '=', objBom.product_tmpl_id.id),
+                                           ('type', 'not in', odooPLMBom)])
+                for bomBrws in bomBrwsList:
+                    return bomBrws
         return objBom
 
 #  ######################################################################################################################################33
