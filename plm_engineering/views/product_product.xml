@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data> 
+	
+    <record id="plm_component_create_normalbom" model="ir.ui.view">
+        <field name="name">plm.relation.normal</field>
+        <field name="model">plm.temporary</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+        <form string="Creation of Normal Bom">
+            <label string="Are you sure you want to create a new Normal Bom?" colspan="2"/>
+            <group><field name="summarize"/></group>
+            <separator string="" colspan="4" />
+            <group colspan="2" col="2">
+            	<button icon="gtk-cancel" special="cancel" string="Cancel"/>
+            	<button icon="terp-gtk-go-back-rtl" string="Create Normal Bom" name="action_create_normalBom" type="object"/>
+            </group>
+        </form>
+        </field>
+    </record>
+
+    <act_window name="Create Normal Bom"
+        res_model="plm.temporary"
+        src_model="product.product"
+        view_mode="form"
+        view_id="plm_component_create_normalbom"
+        target="new"
+        key2="client_action_multi"
+        id="act_create_normalBom"/> 
+        	
+</data>
+</openerp>
+        	

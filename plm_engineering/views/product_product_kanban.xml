@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+	<data> 
+		
+    <record id="product_product_kanban_spare_extension" model="ir.ui.view">
+        <field name="name">prod.prod.spare.kanban.extension</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="plm.plm_component_kanban"/>
+        <field name="type">kanban</field>
+        <field name="arch" type="xml">
+        	<data>
+                <a name="open_normal_bom" position="after">
+                    <a type="object" name="open_engin_bom">
+                        <t>Engineering Boms</t>
+                    </a>
+                </a>
+        	</data>
+ 		</field>
+    </record>
+
+	</data>
+</openerp>

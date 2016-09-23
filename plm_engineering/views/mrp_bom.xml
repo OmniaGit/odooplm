@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+	<data> 
+		
+    <record model="ir.actions.act_window" id="plm_action_ebom_form">
+        <field name="name">Engineering BoMs</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">mrp.bom</field>
+         <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('type','=','ebom'),]</field>
+        <field name="filter" eval="True"/>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('plm.plm_bom_tree_view')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('plm.plm_bom_form_view_eng')})]"/>  
+    </record> 
+
+	</data>
+</openerp>
