@@ -64,23 +64,12 @@ def get_bom_report(myObject, recursion=False, flat=False, leaf=False, level=1, s
             if myKey in listed.keys() and summarize:
                 listed[myKey]['pqty'] = listed[myKey].get('pqty', 0) + l.product_qty
             else:
-                res['name'] = product.engineering_code
                 res['item'] = l.itemnum
-                res['pname'] = product.engineering_code
-                res['pdesc'] = _(product.description)
-                res['pcode'] = l.product_id.default_code
-                #res['previ'] = product.engineering_revision
                 res['pqty'] = l.product_qty
-                res['uname'] = l.product_uom_id.name
-                res['pweight'] = product.weight
-                res['code'] = l.product_id.default_code
-                res['prodBrws'] = l.product_id
-                
-                
                 res['level'] = level
                 res['lineBrws'] = l
                 res['prodTmplBrws'] = product
-                if leaf and not 'leaf_' in myKey:
+                if leaf and 'leaf_' not in myKey:
                     continue
                 listed[myKey] = res
                 LL = sortIndex.setdefault(res['item'], [])
@@ -176,7 +165,7 @@ class bom_structure_all_sum_custom_report(report_sxw.rml_parse):
         return get_bom_report(myObject, recursion=True, flat=False, leaf=False, level=level, summarize=True)
 
     def bom_type(self, myObject):
-        result = dict(myObject.fields_get(self.cr, self.uid)['type']['selection']).get(myObject.type, '')
+        result = dict(myObject.fields_get()['type']['selection']).get(myObject.type, '')
         return _(result)
 
 
@@ -195,7 +184,7 @@ class bom_structure_one_sum_custom_report(report_sxw.rml_parse):
         return get_bom_report(myObject, summarize=True)
 
     def bom_type(self, myObject):
-        result = dict(myObject.fields_get(self.cr, self.uid)['type']['selection']).get(myObject.type, '')
+        result = dict(myObject.fields_get()['type']['selection']).get(myObject.type, '')
         return _(result)
 
 
@@ -215,7 +204,7 @@ class bom_structure_leaves_custom_report(report_sxw.rml_parse):
         return get_bom_report(myObject, leaf=True, level=level, summarize=True)
 
     def bom_type(self, myObject):
-        result = dict(myObject.fields_get(self.cr, self.uid)['type']['selection']).get(myObject.type, '')
+        result = dict(myObject.fields_get()['type']['selection']).get(myObject.type, '')
         return _(result)
 
 
@@ -235,7 +224,7 @@ class bom_structure_flat_custom_report(report_sxw.rml_parse):
         return get_bom_report(myObject, recursion=True, flat=True, leaf=False, level=level, summarize=True)
 
     def bom_type(self, myObject):
-        result = dict(myObject.fields_get(self.cr, self.uid)['type']['selection']).get(myObject.type, '')
+        result = dict(myObject.fields_get()['type']['selection']).get(myObject.type, '')
         return _(result)
 
 
