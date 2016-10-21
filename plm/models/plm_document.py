@@ -25,12 +25,12 @@ import base64
 import os
 import time
 from datetime import datetime
-import openerp.tools as tools
-from openerp.exceptions import UserError
-from openerp import models
-from openerp import fields
-from openerp import api
-from openerp import _
+import odoo.tools as tools
+from odoo.exceptions import UserError
+from odoo import models
+from odoo import fields
+from odoo import api
+from odoo import _
 import logging
 _logger = logging.getLogger(__name__)
 
@@ -569,22 +569,6 @@ class PlmDocument(models.Model):
             obsolete the object
         """
         return self.commonWFAction(False, 'obsoleted', False)
-
-    @api.multi
-    def action_reactivate(self):
-        """
-            reactivate the object
-        """
-        defaults = {}
-        defaults['engineering_writable'] = False
-        defaults['state'] = 'released'
-        if self.ischecked_in():
-            self.setCheckContextWrite(False)
-            objId = self.write(defaults)
-            if objId:
-                self.wf_message_post(body=_('Status moved to:%s.' % (USEDIC_STATES[defaults['state']])))
-            return objId
-        return False
 
     @api.multi
     def blindwrite(self, vals):

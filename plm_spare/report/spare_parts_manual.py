@@ -25,15 +25,15 @@ Created on Apr 15, 2016
 @author: Daniel Smerghetto
 '''
 
-from openerp.osv import osv
-from openerp.report import report_sxw
-from openerp.report.interface import report_int
+from odoo.osv import osv
+from odoo.report import report_sxw
+from odoo.report.interface import report_int
 from operator import itemgetter
-from openerp import _
-from openerp import pooler
+from odoo import _
+import odoo
 from odoo.addons.plm.report.book_collector import BookCollector
-from openerp.report.render import render
-from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT
+from odoo.report.render import render
+from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 import time
 import StringIO
 import base64
@@ -188,7 +188,8 @@ class bom_spare_header(report_sxw.rml_parse):
         })
 
     def get_component_brws(self):
-        self.pool = pooler.get_pool(self.cr.dbname)
+        # self.pool = pooler.get_pool(self.cr.dbname)
+        # FIXME: odoo removed pooler fix me
         component_ids = self.context.get('active_ids', [])
         for compBrws in self.pool.get('product.product').browse(self.cr, self.uid, component_ids):
             return compBrws
@@ -223,10 +224,10 @@ class component_spare_parts_report(report_int):
         if self._report_int__name == 'report.product.product.spare.parts.pdf.one':
             recursion = False
         self.processedObjs = []
-        self.pool = pooler.get_pool(cr.dbname)
-        componentType = self.pool.get('product.product')
-        bomType = self.pool.get('mrp.bom')
-        userType = self.pool.get('res.users')
+        env = odoo.api.Environment(cr, uid, context or {})
+        componentType = env['product.product']
+        bomType = env['mrp.bom']
+        userType = env['res.users']
         user = userType.browse(cr, uid, uid, context=context)
         msg = getBottomMessage(user, context)
         output = BookCollector(customTest=(True, msg))

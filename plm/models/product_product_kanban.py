@@ -19,10 +19,10 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from openerp import models
-from openerp import api
-from openerp import _
-from openerp import fields
+from odoo import models
+from odoo import api
+from odoo import _
+from odoo import fields
 import json
 import logging
 
@@ -111,12 +111,6 @@ class ProductProductKanban(models.Model):
     def open_normal_bom(self):
         boms = self.get_related_boms()
         domain = [('id', 'in', boms.ids), ('type', '=', 'normal')]
-        return self.common_open(_('Related Boms'), 'mrp.bom', 'tree,form', 'form', boms.ids, self.env.context, domain)
-
-    @api.multi
-    def open_engin_bom(self):
-        boms = self.get_related_boms()
-        domain = [('id', 'in', boms.ids), ('type', '=', 'ebom')]
         return self.common_open(_('Related Boms'), 'mrp.bom', 'tree,form', 'form', boms.ids, self.env.context, domain)
 
     @api.multi

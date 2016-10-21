@@ -20,22 +20,20 @@
 #
 ##############################################################################
 import StringIO
-import os
-import random
-import string
 import base64
 import logging
 
-from openerp.report.render import render
-from openerp.report.interface import report_int
-from openerp import pooler
+from odoo.report.render import render
+from odoo.report.interface import report_int
+import odoo
 
 try:
     from PyPDF2 import PdfFileWriter, PdfFileReader
 except:
     logging.warning("PyPDF2 not installed ")
     from pyPdf import PdfFileWriter, PdfFileReader
-    
+
+
 class external_pdf(render):
 
     """ Generate External PDF """
@@ -48,23 +46,23 @@ class external_pdf(render):
     def _render(self):
         return self.pdf
 
+
 class checkout_custom_report(report_int):
     """
         Return a pdf report of each printable document.
     """
     def create(self, cr, uid, ids, datas, context=None):
-        self.pool = pooler.get_pool(cr.dbname)
-        checkoutType=self.pool.get('plm.checkout')
+        env = odoo.api.Environment(cr, uid, context or {})
+        checkoutType = env['plm.checkout']
         output = PdfFileWriter()
-        children=[]
-        packed=[]
-        checkouts=checkoutType.browse(cr, uid, ids)
+        packed = []
+        checkouts = checkoutType.browse(cr, uid, ids)
         for checkout in checkouts:
-            document=checkout.documentid
+            document = checkout.documentid
             if document.printout:
-                if not document.id in packed:   
+                if document.id not in packed:
                     input1 = PdfFileReader(StringIO.StringIO(base64.decodestring(document.printout)))
-                    output.addPage(input1.getPage(0),document.state)
+                    output.addPage(input1.getPage(0), document.state)
                     packed.append(document.id)
 
         pdf_string = StringIO.StringIO()

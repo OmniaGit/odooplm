@@ -107,11 +107,8 @@
 	                                <span>View</span>
 	                            </div>
 	                            <div>
-	                                <a type="object" name="open_normal_bom">
+	                                <a type="object" name="open_normal_bom" id="normal_bom">
 	                                    <t>Normal Boms</t>
-	                                </a>
-	                                <a type="object" name="open_engin_bom">
-	                                    <t>Engineering Boms</t>
 	                                </a>
 	                            </div>
 	                        </div>

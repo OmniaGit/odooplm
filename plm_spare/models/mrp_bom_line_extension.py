@@ -28,18 +28,21 @@ Created on 30 Aug 2016
 
 from openerp import models
 from openerp import fields
+from openerp import api
 from openerp import _
 
 
 class MrpBomLineExtension(models.Model):
     _inherit = 'mrp.bom.line'
 
-    type = fields.Selection([('normal', _('Normal BoM')),
-                             ('phantom', _('Sets / Phantom')),
-                             ('ebom', _('Engineering BoM')),
-                             ('spbom', _('Spare BoM'))],
+    @api.model
+    def _get_reference_spare_type(self):
+        return self.env['mrp.bom']._get_reference_spare_type()
+
+    type = fields.Selection('_get_reference_spare_type',
                             _('BoM Type'),
                             required=True,
+                            default='normal',
                             help=_("Phantom BOM: When processing a sales order for this product, the delivery order will contain the raw materials, instead of the finished product."
                                    " Ship this product as a set of components (kit)."))
 

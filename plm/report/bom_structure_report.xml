@@ -18,7 +18,6 @@
 						<th name="bom_pos" style="background-color: #E4EDFB; border: 1px solid rgb(202, 202, 202);"> Pos. </th>
 						<th name="bom_level" style="background-color: #E4EDFB; border: 1px solid rgb(202, 202, 202);"> Level </th> 
 						<th name="bom_prod_name" style="background-color: #E4EDFB; border: 1px solid rgb(202, 202, 202);"> Product Name </th> 
-						<th name="bom_rev" style="background-color: #E4EDFB; border: 1px solid rgb(202, 202, 202);"> Rev. </th> 
 						<th name="bom_description" style="background-color: #E4EDFB; border: 1px solid rgb(202, 202, 202);"> Description </th> 
 						<th name="bom_qty" style="background-color: #E4EDFB; border: 1px solid rgb(202, 202, 202);"> Qty </th> 
 						<th name="bom_uom" style="background-color: #E4EDFB; border: 1px solid rgb(202, 202, 202);"> UoM </th> 
@@ -29,7 +28,6 @@
 						<td name="parent_bom_pos"> <b></b></td>
 						<td name="parent_bom_level"> <b></b></td>
 						<td name="parent_bom_prod_name"> <b><span t-esc="o.product_tmpl_id.name or o.product_tmpl_id.default_code"/> </b></td>
-						<td name="parent_bom_rev"> <b><span t-esc="o.product_tmpl_id.engineering_revision"/> </b></td>
 						<td name="parent_bom_description"> <b><span t-esc="o.product_tmpl_id.description"/> </b></td>
 						<td name="parent_bom_qty"> <b><span t-esc="o.product_qty"/> </b></td>
 						<td name="parent_bom_uom"> <b></b></td>
@@ -37,13 +35,13 @@
 					</tr>
 					<t t-set="i" t-value="1"/>
 						<t t-foreach="get_children(o)" t-as="childDict" name='children_compute'>
+							<t t-set="lineBrws" t-value="childDict.get('lineBrws')"/>
 							<tr>
 								<t t-if="i%2 == 1">
 									<td name="bom_name_value_b" style="background-color: aliceblue;"></td>
-									<td name="bom_pos_value_b" style="background-color: aliceblue;"><span t-esc="childDict.get('item')"/></td>
+									<td name="bom_pos_value_b" style="background-color: aliceblue;"><span t-esc="lineBrws.itemnum"/></td>
 									<td name="bom_level_value_b" style="background-color: aliceblue;"><span t-esc="childDict.get('level')"/></td>
 									<td name="bom_prod_name_value_b" style="background-color: aliceblue;"><span t-esc="childDict.get('pname')"/></td>
-									<td name="bom_rev_value_b" style="background-color: aliceblue;"><span t-esc="childDict.get('previ')"/></td>
 									<td name="bom_description_value_b" style="background-color: aliceblue;"><span t-esc="childDict.get('pdesc')"/></td>
 									<td name="bom_qty_value_b" style="background-color: aliceblue;"><span t-esc="childDict.get('pqty')"/></td>
 									<td name="bom_uom_value_b" style="background-color: aliceblue;"><span t-esc="childDict.get('uname')"/></td>
@@ -54,7 +52,6 @@
 									<td name="bom_pos_value"><span t-esc="childDict.get('item')"/></td>
 									<td name="bom_level_value" ><span t-esc="childDict.get('level')"/></td>
 									<td name="bom_prod_name_value"><span t-esc="childDict.get('pname')"/></td>
-									<td name="bom_rev_value" ><span t-esc="childDict.get('previ')"/></td>
 									<td name="bom_description_value" ><span t-esc="childDict.get('pdesc')"/></td>
 									<td name="bom_qty_value" ><span t-esc="childDict.get('pqty')"/></td>
 									<td name="bom_uom_value" ><span t-esc="childDict.get('uname')"/></td>

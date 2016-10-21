@@ -27,6 +27,7 @@ Created on 31 Aug 2016
 '''
 from openerp import models
 from openerp import fields
+from openerp import api
 from openerp import _
 
 
@@ -37,6 +38,25 @@ class MrpBomExtension(models.Model):
                                           string=_("Revision"),
                                           help=_("The revision of the product."),
                                           store=False)
+
+    @api.multi
+    def copy(self, defaults={}):
+        """
+            Return new object copied (removing SourceID)
+        """
+        newBomBrws = super(MrpBomExtension, self).copy(defaults)
+        if newBomBrws:
+            for bom_line in newBomBrws.bom_line_ids:
+                lateRevIdC = self.env['product.product'].GetLatestIds([(bom_line.product_id.product_tmpl_id.engineering_code,
+                                                                        False,
+                                                                        False)])  # Get Latest revision of each Part
+                self.env['mrp.bom.line'].browse([bom_line.id]).write({'source_id': False,
+                                                                      'name': bom_line.product_id.product_tmpl_id.name,
+                                                                      'product_id': lateRevIdC[0]})
+            newBomBrws.write({'source_id': False,
+                              'name': newBomBrws.product_tmpl_id.name},
+                             check=False)
+        return newBomBrws
 
 MrpBomExtension()
 

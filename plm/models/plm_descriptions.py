@@ -21,9 +21,9 @@
 ##############################################################################
 
 import logging
-from openerp import models
-from openerp import fields
-from openerp import _
+from odoo import models
+from odoo import fields
+from odoo import _
 _logger = logging.getLogger(__name__)
 # Customized Automation to standardize and normalize descriptions and characteristics.
 # It will allow to insert unit of measure (or label) and values, so to allow search on parts

@@ -26,10 +26,10 @@ Created on 25 Aug 2016
 @author: Daniel Smerghetto
 '''
 import odoo.addons.decimal_precision as dp
-from openerp import models
-from openerp import fields
-from openerp import api
-from openerp import _
+from odoo import models
+from odoo import fields
+from odoo import api
+from odoo import _
 
 USED_STATES = [('draft', _('Draft')),
                ('confirmed', _('Confirmed')),
@@ -50,8 +50,6 @@ class ProductTemplateExtension(models.Model):
     engineering_code = fields.Char(_('Part Number'),
                                    help=_("This is engineering reference to manage a different P/N from item Name."),
                                    size=64)
-    engineering_writable = fields.Boolean(_('Writable'),
-                                          default=True)
     engineering_material = fields.Char(_('Raw Material'),
                                        size=128,
                                        required=False,
@@ -75,6 +73,8 @@ class ProductTemplateExtension(models.Model):
                              default=False,
                              help="Specify if the product can be selected in a sales order line.")
 
+    engineering_writable = fields.Boolean(_('Writable'),
+                                          default=True)
 #   Internal methods
     @api.multi
     def engineering_products_open(self):
@@ -100,7 +100,9 @@ class ProductTemplateExtension(models.Model):
         ('partnumber_uniq', 'unique (engineering_code)', _('Part Number has to be unique!'))
     ]
 
-    def init(self, cr):
+    @api.model
+    def init(self):
+        cr = self.env.cr
         cr.execute("""
 -- Index: product_template_engcode_index
 

@@ -20,11 +20,12 @@
 ##############################################################################
 
 
-import openerp.tools as tools
+import odoo.tools as tools
 import logging
-from openerp import models
-from openerp import fields
-from openerp import _
+from odoo import models
+from odoo import fields
+from odoo import api
+from odoo import _
 _logger = logging.getLogger(__name__)
 
 
@@ -43,7 +44,9 @@ class report_plm_document_file(models.Model):
 
     _order = "month"
 
-    def init(self, cr):
+    @api.model
+    def init(self):
+        cr = self.env.cr
         tools.drop_view_if_exists(cr, 'report_plm_document_file')
         cr.execute("""
             create or replace view report_plm_document_file as (

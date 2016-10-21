@@ -19,10 +19,10 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from openerp import models
-from openerp import api
-from openerp import fields
-from openerp import _
+from odoo import models
+from odoo import api
+from odoo import fields
+from odoo import _
 import logging
 
 

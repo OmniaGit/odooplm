@@ -20,7 +20,7 @@
 #
 ##############################################################################
 {
-    'name': 'PLM Spare Bom',
+    'name': 'PLM Spare',
     'version': '1.1',
     'author': 'OmniaSolutions',
     'website': 'http://www.omniasolutions.eu',

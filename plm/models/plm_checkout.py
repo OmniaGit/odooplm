@@ -25,11 +25,11 @@ Created on 25 Aug 2016
 
 @author: Daniel Smerghetto
 '''
-from openerp.exceptions import UserError
-from openerp import models
-from openerp import fields
-from openerp import api
-from openerp import _
+from odoo.exceptions import UserError
+from odoo import models
+from odoo import fields
+from odoo import api
+from odoo import _
 import logging
 import time
 

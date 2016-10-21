@@ -39,5 +39,4 @@ import plm_checkout
 import plm_config_settings
 import mrp_bom
 import mrp_bom_line
-import mrp_production
 import document_report

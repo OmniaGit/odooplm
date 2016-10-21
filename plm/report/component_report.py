@@ -23,9 +23,10 @@ from datetime import datetime
 from dateutil import tz
 
 from book_collector import BookCollector, packDocuments, external_pdf
-from openerp.report.interface import report_int
-from openerp import pooler, _
-from openerp.exceptions import UserError
+from odoo.report.interface import report_int
+from odoo import _
+from odoo.exceptions import UserError
+import odoo
 
 
 def getBottomMessage(user, context):
@@ -38,20 +39,26 @@ def getBottomMessage(user, context):
         return "Printed by " + str(user.name) + " : " + str(localDT.ctime())
 
 
+def commonInfos(cr, uid, ids, context):
+    env = odoo.api.Environment(cr, uid, context or {})
+    docRepository = env['plm.document']._get_filestore()
+    componentType = env['product.product']
+    user = env['res.users'].browse(uid)
+    msg = getBottomMessage(user, context)
+    output = BookCollector(jumpFirst=False,
+                           customTest=(False, msg),
+                           bottomHeight=10)
+    documents = []
+    components = componentType.browse(ids)
+    return components, documents, docRepository, output, componentType
+
+
 class component_custom_report(report_int):
     """
         Return a pdf report of each printable document attached to given Part ( level = 0 one level only, level = 1 all levels)
     """
     def create(self, cr, uid, ids, datas, context=None):
-        self.pool = pooler.get_pool(cr.dbname)
-        docRepository = self.pool.get('plm.document')._get_filestore(cr)
-        componentType = self.pool.get('product.product')
-        user = self.pool.get('res.users').browse(cr, uid, uid, context=context)
-        msg = getBottomMessage(user, context)
-        output = BookCollector(
-            jumpFirst=False, customTest=(False, msg), bottomHeight=10)
-        documents = []
-        components = componentType.browse(cr, uid, ids, context=context)
+        components, documents, docRepository, output, _componentType = commonInfos(cr, uid, ids, context)
         for component in components:
             documents.extend(component.linkeddocuments)
         if len(documents):
@@ -79,20 +86,12 @@ class component_one_custom_report(report_int):
     """
 
     def create(self, cr, uid, ids, datas, context=None):
-        self.pool = pooler.get_pool(cr.dbname)
-        docRepository = self.pool.get('plm.document')._get_filestore(cr)
-        componentType = self.pool.get('product.product')
-        user = self.pool.get('res.users').browse(cr, uid, uid, context=context)
-        msg = getBottomMessage(user, context)
-        output = BookCollector(
-            jumpFirst=False, customTest=(False, msg), bottomHeight=10)
+        components, documents, docRepository, output, componentType = commonInfos(cr, uid, ids, context)
         children = []
-        documents = []
-        components = componentType.browse(cr, uid, ids, context=context)
         for component in components:
             documents.extend(component.linkeddocuments)
-            idcs = componentType._getChildrenBom(cr, uid, component, 0, 1, context=context)
-            children = componentType.browse(cr, uid, idcs, context=context)
+            idcs = componentType._getChildrenBom(component, 0, 1)
+            children = componentType.browse(idcs)
             for child in children:
                 documents.extend(child.linkeddocuments)
         if len(documents):
@@ -109,21 +108,12 @@ class component_all_custom_report(report_int):
     """
 
     def create(self, cr, uid, ids, datas, context=None):
-        self.pool = pooler.get_pool(cr.dbname)
-        docRepository = self.pool.get('plm.document')._get_filestore(cr)
-        componentType = self.pool.get('product.product')
-        user = self.pool.get('res.users').browse(cr, uid, uid, context=context)
-        msg = getBottomMessage(user, context)
-        output = BookCollector(
-            jumpFirst=False, customTest=(False, msg), bottomHeight=10)
+        components, documents, docRepository, output, componentType = commonInfos(cr, uid, ids, context)
         children = []
-        documents = []
-        components = componentType.browse(cr, uid, ids, context=context)
         for component in components:
             documents.extend(component.linkeddocuments)
-            idcs = componentType._getChildrenBom(
-                cr, uid, component, 1, context=context)
-            children = componentType.browse(cr, uid, idcs, context=context)
+            idcs = componentType._getChildrenBom(component, 1)
+            children = componentType.browse(idcs)
             for child in children:
                 documents.extend(child.linkeddocuments)
         if len(documents):
@@ -142,17 +132,7 @@ class component_custom_report_latest(report_int):
     """
 
     def create(self, cr, uid, ids, datas, context={}):
-        self.pool = pooler.get_pool(cr.dbname)
-        objTemplateDoc = self.pool.get('plm.document')
-        docRepository = objTemplateDoc._get_filestore(cr)
-        componentType = self.pool.get('product.product')
-        user = self.pool.get('res.users').browse(cr, uid, uid, context=context)
-        msg = getBottomMessage(user, context)
-        output = BookCollector(jumpFirst=False,
-                               customTest=(False, msg),
-                               bottomHeight=10)
-        documents = []
-        components = componentType.browse(cr, uid, ids, context=context)
+        components, documents, docRepository, output, _componentType = commonInfos(cr, uid, ids, context)
         for component in components:
             for idDoc in component.linkeddocuments:
                 if idDoc.state in ['released', 'undermodify']:

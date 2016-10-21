@@ -27,10 +27,10 @@ Created on 25 Aug 2016
 '''
 
 import odoo.addons.decimal_precision as dp
-from openerp import models
-from openerp import fields
-from openerp import api
-from openerp import _
+from odoo import models
+from odoo import fields
+from odoo import api
+from odoo import _
 import logging
 import sys
 
@@ -114,8 +114,7 @@ class MrpBomExtension(models.Model):
                                 readonly=True,
                                 help=_('This is the document object that declares this BoM.'))
     type = fields.Selection([('normal', _('Normal BoM')),
-                             ('phantom', _('Sets / Phantom')),
-                             ('ebom', _('Engineering BoM'))],
+                             ('phantom', _('Sets / Phantom'))],
                             _('BoM Type'),
                             required=True,
                             help=_("Phantom BOM: When processing a sales order for this product, the delivery order will contain the raw materials, instead of the finished product."
@@ -124,42 +123,30 @@ class MrpBomExtension(models.Model):
                               digits_compute=dp.get_precision(_('Stock Weight')),
                               help=_("The BoM net weight in Kg."),
                               default=0.0)
-    ebom_source_id = fields.Integer('Source Ebom ID')
 
-    def init(self, cr):
+    @api.model
+    def init(self):
         self._packed = []
 
     @api.model
     def _getinbom(self, pid, sid=False):
         bomLType = self.env['mrp.bom.line']
-        bomLineBrwsList = bomLType.search([('product_id', '=', pid), ('source_id', '=', sid), ('type', '=', 'ebom')])
+        bomLineBrwsList = bomLType.search([('product_id', '=', pid), ('source_id', '=', sid), ('type', '=', 'normal')])
         if not bomLineBrwsList:
-            bomLineBrwsList = bomLType.search([('product_id', '=', pid), ('source_id', '=', sid), ('type', '=', 'normal')])
+            bomLineBrwsList = bomLType.search([('product_id', '=', pid), ('source_id', '=', False), ('type', '=', 'normal')])
             if not bomLineBrwsList:
-                bomLineBrwsList = bomLType.search([('product_id', '=', pid), ('source_id', '=', False), ('type', '=', 'ebom')])
-            if not bomLineBrwsList:
-                bomLineBrwsList = bomLType.search([('product_id', '=', pid), ('source_id', '=', False), ('type', '=', 'normal')])
-                if not bomLineBrwsList:
-                    bomLineBrwsList = bomLType.search([('product_id', '=', pid), ('type', '=', 'ebom')])
-                if not bomLineBrwsList:
-                    bomLineBrwsList = bomLType.search([('product_id', '=', pid), ('type', '=', 'normal')])
+                bomLineBrwsList = bomLType.search([('product_id', '=', pid), ('type', '=', 'normal')])
         return bomLineBrwsList
 
     @api.model
     def _getbom(self, pid, sid=False):
         if sid is None:
             sid = False
-        bomBrwsList = self.search([('product_tmpl_id', '=', pid), ('source_id', '=', sid), ('type', '=', 'ebom')])
+        bomBrwsList = self.search([('product_tmpl_id', '=', pid), ('source_id', '=', sid), ('type', '=', 'normal')])
         if not bomBrwsList:
-            bomBrwsList = self.search([('product_tmpl_id', '=', pid), ('source_id', '=', sid), ('type', '=', 'normal')])
+            bomBrwsList = self.search([('product_tmpl_id', '=', pid), ('source_id', '=', False), ('type', '=', 'normal')])
             if not bomBrwsList:
-                bomBrwsList = self.search([('product_tmpl_id', '=', pid), ('source_id', '=', False), ('type', '=', 'ebom')])
-                if not bomBrwsList:
-                    bomBrwsList = self.search([('product_tmpl_id', '=', pid), ('source_id', '=', False), ('type', '=', 'normal')])
-                    if not bomBrwsList:
-                        bomBrwsList = self.search([('product_tmpl_id', '=', pid), ('type', '=', 'ebom')])
-                        if not bomBrwsList:
-                            bomBrwsList = self.search([('product_tmpl_id', '=', pid), ('type', '=', 'normal')])
+                bomBrwsList = self.search([('product_tmpl_id', '=', pid), ('type', '=', 'normal')])
         return bomBrwsList
 
     def getListIdsFromStructure(self, structure):
@@ -498,9 +485,9 @@ class MrpBomExtension(models.Model):
                 lateRevIdC = self.env['product.product'].GetLatestIds([(bom_line.product_id.product_tmpl_id.engineering_code,
                                                                         False,
                                                                         False)])  # Get Latest revision of each Part
-                self.env['mrp.bom.line'].browse([bom_line.id]).write({'source_id': False,
-                                                                      'name': bom_line.product_id.product_tmpl_id.name,
-                                                                      'product_id': lateRevIdC[0]})
+                bom_line.write({'source_id': False,
+                                'name': bom_line.product_id.product_tmpl_id.name,
+                                'product_id': lateRevIdC[0]})
             newBomBrws.write({'source_id': False,
                               'name': newBomBrws.product_tmpl_id.name},
                              check=False)

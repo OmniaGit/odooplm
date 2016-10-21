@@ -50,7 +50,9 @@ class ProductTemplateExtension(models.Model):
         ('partnumber_uniq', 'unique (engineering_code,engineering_revision)', _('Part Number has to be unique!'))
     ]
 
-    def init(self, cr):
+    @api.model
+    def init(self):
+        cr = self.env.cr
         cr.execute("""
 -- Index: product_template_engcode_index
 

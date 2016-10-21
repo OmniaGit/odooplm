@@ -20,21 +20,23 @@
 #
 ##############################################################################
 
-from book_collector     import BookCollector,packDocuments
+from book_collector import BookCollector
+from book_collector import packDocuments
 from datetime import datetime
 from dateutil import tz
 
-from openerp.report.interface import report_int
-from openerp import pooler
+from odoo.report.interface import report_int
+import odoo
+
 
 class document_custom_report(report_int):
     def create(self, cr, uid, ids, datas, context=None):
-        self.pool = pooler.get_pool(cr.dbname)
-        docType=self.pool.get('plm.document')
-        docRepository=docType._get_filestore(cr)
-        documents = docType.browse(cr, uid, ids, context=context)
-        userType=self.pool.get('res.users')
-        user=userType.browse(cr, uid, uid, context=context)
+        env = odoo.api.Environment(cr, uid, context or {})
+        docType = env['plm.document']
+        docRepository = docType._get_filestore()
+        documents = docType.browse(ids)
+        userType = env['res.users']
+        user = userType.browse(uid)
         to_zone = tz.gettz(context.get('tz', 'Europe/Rome'))
         from_zone = tz.tzutc()
         dt = datetime.now()
@@ -42,7 +44,7 @@ class document_custom_report(report_int):
         localDT = dt.astimezone(to_zone)
         localDT = localDT.replace(microsecond=0)
         msg = "Printed by " + str(user.name) + " : " + str(localDT.ctime())
-        output  = BookCollector(jumpFirst=False,customTest=(False,msg),bottomHeight=10)
-        return packDocuments(docRepository,documents,output)
-    
+        output = BookCollector(jumpFirst=False, customTest=(False, msg), bottomHeight=10)
+        return packDocuments(docRepository, documents, output)
+
 document_custom_report('report.plm.document.pdf')
