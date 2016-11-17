@@ -47,9 +47,6 @@ class ProductTemplateExtension(models.Model):
                              default='draft',
                              help=_("The status of the product in its LifeCycle."),
                              readonly="True")
-    engineering_code = fields.Char(_('Part Number'),
-                                   help=_("This is engineering reference to manage a different P/N from item Name."),
-                                   size=64)
     engineering_material = fields.Char(_('Raw Material'),
                                        size=128,
                                        required=False,
@@ -58,6 +55,12 @@ class ProductTemplateExtension(models.Model):
                                       size=128,
                                       required=False,
                                       help=_("Surface finishing for current product, only description for titleblock."))
+
+    engineering_revision = fields.Integer(_('Revision'), required=True, help=_("The revision of the product."))
+
+    engineering_code = fields.Char(_('Part Number'),
+                                   help=_("This is engineering reference to manage a different P/N from item Name."),
+                                   size=64)
 
 #   ####################################    Overload to set default values    ####################################
     standard_price = fields.Float('Cost',
@@ -75,26 +78,6 @@ class ProductTemplateExtension(models.Model):
 
     engineering_writable = fields.Boolean(_('Writable'),
                                           default=True)
-#   Internal methods
-    @api.multi
-    def engineering_products_open(self):
-        product_id = False
-        relatedProductBrwsList = self.env['product.product'].search([('product_tmpl_id', '=', self.id)])
-        for relatedProductBrws in relatedProductBrwsList:
-            product_id = relatedProductBrws.id
-        mod_obj = self.env['ir.model.data']
-        search_res = mod_obj.get_object_reference('plm', 'plm_component_base_form')
-        form_id = search_res and search_res[1] or False
-        if product_id and form_id:
-            return {
-                'type': 'ir.actions.act_window',
-                'name': _('Product Engineering'),
-                'view_type': 'form',
-                'view_mode': 'form',
-                'res_model': 'product.product',
-                'res_id': product_id,
-                'views': [(form_id, 'form')],
-            }
 
     _sql_constraints = [
         ('partnumber_uniq', 'unique (engineering_code)', _('Part Number has to be unique!'))

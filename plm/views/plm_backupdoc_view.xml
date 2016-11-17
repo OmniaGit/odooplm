@@ -10,6 +10,7 @@
         <field name="type">form</field>
         <field name="arch" type="xml">
             <form string="Backup Document">
+            	<sheet>
                 <group colspan="4" col="4">
                 	<field name="document_name" select="1"/>
                     <field name="documentid" readonly="True"/>
@@ -29,6 +30,7 @@
                         	img_height="400"
                         	img_width="400"/>
                 </group>
+                </sheet>
             </form>
         </field>
     </record>

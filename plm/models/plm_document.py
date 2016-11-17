@@ -277,7 +277,7 @@ class PlmDocument(models.Model):
             Overwrite the default copy method
         """
         documentRelation = self.env['plm.document.relation']
-        docBrwsList = documentRelation.search([('parent_id', '=', self.env.id)])
+        docBrwsList = documentRelation.search([('parent_id', '=', self.id)])
         previous_name = self.name
         if 'name' not in defaults:
             new_name = 'Copy of %s' % previous_name
@@ -357,17 +357,17 @@ class PlmDocument(models.Model):
         for tmpObject in self:
             latestIDs = self.GetLatestIds([(tmpObject.name, tmpObject.revisionid, False)])
             for oldObject in self.browse(latestIDs):
-                oldObject.write({'state': 'undermodify'}, check=False)
+                oldObject.with_context({'check': False}).write({'state': 'undermodify'})
                 defaults = {}
                 defaults['name'] = oldObject.name
                 defaults['revisionid'] = int(oldObject.revisionid) + 1
                 defaults['writable'] = True
                 defaults['state'] = 'draft'
-                newID = super(PlmDocument, self).copy(oldObject.id, defaults)
+                newID = super(PlmDocument, oldObject).copy(defaults)
                 oldObject.wf_message_post(body=_('Created : New Revision.'))
                 break
             break
-        return (newID, defaults['revisionid'])
+        return (newID.id, defaults['revisionid'])
 
     @api.multi
     def Clone(self, defaults={}):
@@ -399,6 +399,7 @@ class PlmDocument(models.Model):
             docBrwsList = self.search([('name', '=', document['name']),
                                       ('revisionid', '=', document['revisionid'])],
                                       order='revisionid')
+            existingID = False
             if not docBrwsList:
                 hasSaved = True
             else:
@@ -614,7 +615,7 @@ class PlmDocument(models.Model):
                 oldObject = docBrwsList[0]
                 if oldObject.state in checkState:
                     oldObject.wf_message_post(body=_('Removed : Latest Revision.'))
-                    if not oldObject.write(values, check=False):
+                    if not oldObject.with_context({'check': False}).write(values):
                         logging.warning("unlink : Unable to update state to old document (" + str(oldObject.name) + "-" + str(oldObject.revisionid) + ").")
                         return False
         return super(PlmDocument, self).unlink()
@@ -768,8 +769,8 @@ class PlmDocument(models.Model):
         return list(set(ids))
 
     @api.multi
-    def isCheckedOutByMe(self):
-        checkoutBrwsList = self.env['plm.checkout'].search([('documentid', '=', self.id), ('userid', '=', self.env.uid)])
+    def isCheckedOutByMe(self, docIdToCheck):
+        checkoutBrwsList = self.env['plm.checkout'].search([('documentid', '=', docIdToCheck), ('userid', '=', self.env.uid)])
         for checkoutBrws in checkoutBrwsList:
             return checkoutBrws.id
         return None
@@ -822,7 +823,7 @@ class PlmDocument(models.Model):
             selection = 1
         if selection < 0:
             selection = selection * (-1)
-        documentRelation = self.pool.get('plm.document.relation')
+        documentRelation = self.env['plm.document.relation']
         docArray = []
 
         def recursionCompute(oid):
@@ -841,7 +842,7 @@ class PlmDocument(models.Model):
         recursionCompute(oid)
         if selection == 2:
             docArray = self._getlastrev(docArray)
-        checkoutObj = self.pool.get('plm.checkout')
+        checkoutObj = self.env['plm.checkout']
         for docId in docArray:
             checkOutBrwsList = checkoutObj.search([('documentid', '=', docId), ('userid', '=', self.env.uid)])
             checkOutBrwsList.unlink()

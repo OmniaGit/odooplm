@@ -59,19 +59,21 @@ class PlmComponentDocumentRel(models.Model):
                 if latest in res:
                     continue
                 res.append(latest)
-                prodDocBrwsList = self.search([('document_id', '=', document_id), ('component_id', '=', component_id)])
-                if prodDocBrwsList:
-                    prodDocBrwsList.unlink()
+                compBrws = self.env['product.product'].browse(component_id)
+                if document_id in compBrws.linkeddocuments.ids:
+                    self.env['plm.document'].browse(document_id).unlink()
 
         def saveChild(args):
             """
                 save the relation
             """
             try:
-                res = {}
-                res['document_id'], res['component_id'] = args
-                self.create(res)
-            except:
+                docId, compId = args
+                if compId and docId:
+                    compBrws = self.env['product.product'].browse(compId)
+                    compBrws.write({'linkeddocuments': [(4, docId, False)]})    # Update with existing id
+            except Exception, ex:
+                logging.warning(ex)
                 logging.warning("saveChild : Unable to create a link. Arguments (%s)." % (str(args)))
                 raise Exception(_("saveChild: Unable to create a link."))
 

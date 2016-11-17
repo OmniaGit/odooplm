@@ -595,7 +595,8 @@ class PlmComponent(models.Model):
             if not(currId.id in self.ids):
                 tmpl_ids.append(currId.product_tmpl_id.id)
             full_ids.append(currId.product_tmpl_id.id)
-        self.browse(tmpl_ids).signal_workflow(tmpl_ids, 'release')
+        self.browse(tmpl_ids).signal_workflow('release')
+        defaults['state'] = 'released'
         objId = self.env['product.template'].browse(full_ids).write(defaults)
         if (objId):
             self.browse(allIDs).wf_message_post(body=_('Status moved to: %s.' % (USEDIC_STATES[defaults['state']])))
@@ -754,6 +755,37 @@ class PlmComponent(models.Model):
         if tmplBrws:
             return tmplBrws.action_view_mos()
         logging.warning('[action_view_mos] product with id %s does not have a related template' % (self.id))
+
+    @api.multi
+    def NewRevision(self):
+        """
+            create a new revision of current component
+        """
+        newID = False
+        newIndex = 0
+        for tmpObject in self:
+            latestIDs = self.GetLatestIds([(tmpObject.engineering_code, tmpObject.engineering_revision, False)])
+            for oldObject in self.browse(latestIDs):
+                newIndex = int(oldObject.engineering_revision) + 1
+                defaults = {}
+                defaults['engineering_writable'] = False
+                defaults['state'] = 'undermodify'
+                self.browse([oldObject.id]).write(defaults)
+                oldObject.wf_message_post(body=_('Status moved to: %s.' % (USEDIC_STATES[defaults['state']])))
+                # store updated infos in "revision" object
+                defaults['name'] = oldObject.name                 # copy function needs an explicit name value
+                defaults['engineering_revision'] = newIndex
+                defaults['engineering_writable'] = True
+                defaults['state'] = 'draft'
+                defaults['linkeddocuments'] = []                  # Clean attached documents for new revision object
+                newCompBrws = oldObject.copy(defaults)
+                oldObject.wf_message_post(body=_('Created : New Revision.'))
+                newCompBrws.write({'name': oldObject.name})
+                newID = newCompBrws.id
+                # create a new "old revision" object
+                break
+            break
+        return (newID, newIndex)
 
 PlmComponent()
 

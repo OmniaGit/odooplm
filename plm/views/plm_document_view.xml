@@ -13,94 +13,88 @@
                     <button name="release" 
                     		states="confirmed" 
                     		string="Release Document" 
-                    		icon="gtk-apply" 
                     		class="oe_highlight"  
-                    		attrs="{'invisible': ['|',('is_checkout','=',True)]}" />
+                    		attrs="{'invisible': ['|',('is_checkout','=',True)]}"
+                    	/>
                     <button name="correct" 
                     		states="confirmed" 
                     		string="Correct Document" 
-                    		icon="gtk-cancel"/>
+                    	/> 
                     <button name="confirm" 
                     		states="draft" 
                     		string="Confirm Document" 
-                    		icon="gtk-go-forward" 
                     		class="oe_highlight"  
-                    		attrs="{'invisible': ['|',('is_checkout','=',True)]}" />
+                    		attrs="{'invisible': ['|',('is_checkout','=',True)]}"
+                    	/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,released" statusbar_colors='{"undermodify":"red","obsoleted":"red"}' readonly="1"/>
                </header>
                <sheet>
-	               <label for="name" class="oe_edit_only"/>
-	               <group colspan="4" col="4" name="DocData">
-	               		<strong>
-	               			<field name="name" select="1" readonly='1' colspan="2"/>
-	               		</strong>
-	               		<strong>	
-				        	<field name="revisionid" readonly="True" colspan="2"/>
-				       	</strong>
-	               </group>
-	               <group colspan="4" col="4" name="DocData">
-		               <group col="4" colspan="1">
-                    		<field 
-                        		name="preview"
-                        		widget="image"
-                        		readonly="1"
-                        		nolabel="1"
-                        		colspan="2"
-                        		img_height="400"
-                        		img_width="400"/>
+	               
+	               <group name="DocData">
+		               <group name="main_doc_info">
+	 						<label for="name" class="oe_edit_only"/>	
+		               		<strong>
+		               			<field name="name" select="1" readonly='1'/>
+		               		</strong>
+		               		<label for="revisionid" class="oe_edit_only"/>	
+		               		<strong>	
+					        	<field name="revisionid" readonly="True"/>
+					       	</strong>
+		                    <group string="Created and Modified" name="DocUser">
+			                    <field name="create_uid" 	readonly="1"/>
+	                            <field name="create_date" 	readonly="1"/>
+	                            <field name="write_uid" 	readonly="1"/>
+	                            <field name="write_date" 	readonly="1"/>	
+	                    	</group>
+                        	<group string="Check Out">
+                        		<field name="checkout_user"/>
+                        		<field name="is_checkout"/>
+                        	</group>
 			           </group>
-		               <group colspan="2" col="2" name="DocData">
-		 					<group colspan="4" col="4">
-			 					<group colspan="2" col="2">
-				                    <newline/>
-				                    <group col="4" colspan="4" string="Created and Modified" name="DocUser">
-					                    <field name="create_uid" 	readonly="1"/>
-			                            <field name="create_date" 	readonly="1"/>
-			                            <newline/>	
-			                            <field name="write_uid" 	readonly="1"/>
-			                            <field name="write_date" 	readonly="1"/>	
-			                    	</group>
-		                        	<group col="2" colspan="2">
-		                        		<field name="checkout_user" colspan="2"/>
-		                        		<field name="is_checkout" 	colspan="2"/>
-		                        	</group>
-			                     </group>
-		                    </group>
-		               	</group>
+			           <group name="doc_preview">
+                		<field 
+                    		name="preview"
+                    		widget="image"
+                    		readonly="1"
+                    		nolabel="1"
+                    		img_height="350"
+                    		img_width="350"/>
+                		</group> 
 		            </group>		
 	                <notebook col="4" colspan="4">
 	                <page string="Attachment">
 	                	<group col="4" colspan="4" name="Attachment">
-	                		<group col="4" colspan="2" string="File Data" name="FileData">
-		                        <group col="2" colspan="2" attrs="{'invisible':[('type','=','url')]}">
+	                		<group colspan="4"  string="File Data" name="FileData">
+		                        <group attrs="{'invisible':[('type','=','url')]}" name="group_datas">
 		                            <field name="datas" filename="datas_fname" 	attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
 		                            <field name="datas_fname" select="1"		attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
 		                        </group>
-		                        <group col="2" colspan="2">
+		                        <group name="group_url">
 		                            <field name="url" widget="url" 				attrs="{'invisible':[('type','=','binary')],'readonly':[('state','in',['released','obsoleted'])]}"/>
 		                        	<field name="type"							attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
 		                        </group>
 	                        </group>
-
-                            <group col="2" colspan="2" string="Attached To">
-                        		<newline/>
-                       			<field name="res_id" 	readonly="True"/>
-                                <field name="res_model" readonly="True" />
-                            </group>
-                            <group col="2" colspan="2" string="Related To">
-	                            <newline/>
-                                <field name="res_name" 	readonly="1"/>
-                           	</group>
-                           	<separator/>
+							<group colspan="4">
+	                            <group  string="Attached To" name="group_resurse">
+	                        		<newline/>
+	                       			<field name="res_id" 	readonly="True"/>
+	                                <field name="res_model" readonly="True" />
+	                            </group>
+	                            <group  string="Related To" name="related">
+		                            <newline/>
+	                                <field name="res_name" 	readonly="1"/>
+	                           	</group>
+                           	</group>	
                         </group>
 	                </page>
-	                <page string="Linked Parts">
+	                <page string="Linked Parts" name="page_liked_parts">
 	                    <field colspan="4" name="linkedcomponents" nolabel="1"	attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
 	                </page>
-	                <page string="Indexed Content" groups="base.group_extended">
+	                <page string="Indexed Content" groups="base.group_extended" name="page_indexed_content">
 	                    <field name="index_content" colspan="4" nolabel="1"		attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
 	                </page>
-	                <page string="Notes">
+	                <page string="Notes" name="page_notes">
+	                	<label for="description" class="oe_edit_only"/>	
 	                    <field colspan="4" name="description" nolabel="1"		attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
 	                </page>
 	                </notebook>

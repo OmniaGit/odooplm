@@ -7,11 +7,13 @@
         <field name="type">form</field>
         <field name="arch" type="xml">
             <form string="Material">
+            	<sheet>	
                 <group colspan="4" col="6">
                     <field name="name" select="1" colspan="4"/>
                     <field name="description" select="1"/>
                     <field name="sequence"/>
                 </group>
+               	</sheet> 
             </form>
         </field>
     </record>

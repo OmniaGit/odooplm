@@ -86,7 +86,7 @@ class PlmDocumentRelations(models.Model):
                     criteria = [('child_id', '=', res['child_id'])]
                 else:
                     criteria = [('parent_id', '=', res['parent_id']), ('child_id', '=', res['child_id'])]
-                cleanIds.extend(self.search(criteria + link))
+                cleanIds.extend(self.search(criteria + link).ids)
             self.browse(list(set(cleanIds))).unlink()
 
         def saveChild(relation):

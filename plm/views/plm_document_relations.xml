@@ -8,6 +8,7 @@
         	<field name="priority" eval="10"/>
             <field name="arch" type="xml">
                 <form string="Show Document Relation">
+                <sheet>	
                 <group colspan="4" col="4">
 	               	<separator colspan="4" string="Parent Preview"/>
 	                <group colspan="2" col="2">
@@ -39,6 +40,7 @@
 	                        	img_width="400"/>
 	                </group>
                 </group>
+               	</sheet> 
                </form>
             </field>
         </record>

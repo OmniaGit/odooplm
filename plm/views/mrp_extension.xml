@@ -34,10 +34,10 @@
             <field name="inherit_id" ref="mrp.mrp_bom_tree_view"/>
             <field name="arch" type="xml">
                  <field name="product_id" position="after">
-                	<field name="description" select="True"/>
                     <field name="source_id" string="Source Relation Document"/>
   	            	<field name="type" />
                    	<field name="weight_net"/>
+                   	<field name="description" select="True"/>
           		</field>
         	</field>
         </record>

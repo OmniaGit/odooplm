@@ -93,36 +93,6 @@ class PlmComponent(models.Model):
                 getCompIds(docName, docRev)
         return list(set(ids))
 
-    @api.multi
-    def NewRevision(self):
-        """
-            create a new revision of current component
-        """
-        newID = None
-        newIndex = 0
-        for tmpObject in self:
-            latestIDs = self.GetLatestIds([(tmpObject.engineering_code, tmpObject.engineering_revision, False)])
-            for oldObject in self.browse(latestIDs):
-                newIndex = int(oldObject.engineering_revision) + 1
-                defaults = {}
-                defaults['engineering_writable'] = False
-                defaults['state'] = 'undermodify'
-                self.write([oldObject.id], defaults)
-                oldObject.wf_message_post(body=_('Status moved to: %s.' % (USEDIC_STATES[defaults['state']])))
-                # store updated infos in "revision" object
-                defaults['name'] = oldObject.name                 # copy function needs an explicit name value
-                defaults['engineering_revision'] = newIndex
-                defaults['engineering_writable'] = True
-                defaults['state'] = 'draft'
-                defaults['linkeddocuments'] = []                  # Clean attached documents for new revision object
-                newCompBrws = oldObject.copy(defaults)
-                oldObject.wf_message_post(body=_('Created : New Revision.'))
-                newCompBrws.write({'name': oldObject.name})
-                # create a new "old revision" object
-                break
-            break
-        return (newID, newIndex)
-
     @api.model
     def SaveOrUpdate(self, vals):
         """

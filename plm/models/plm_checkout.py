@@ -67,20 +67,19 @@ class PlmCheckout(models.Model):
             docRelBrwsList = docRelType.search([('child_id', 'in', childDocIds)])
         if docRelBrwsList:
             values = {'userid': userid}
-            docRelType.browse(docRelBrwsList).write(values)
+            docRelBrwsList.write(values)
 
     @api.model
     def create(self, vals):
-        documentType = self.env['plm.document']
-        docBrws = documentType.browse(vals['documentid'])
+        docBrws = self.env['plm.document'].browse(vals['documentid'])
         values = {'writable': True}
-        if not documentType.browse([docBrws.id]).write(values):
+        if not docBrws.write(values):
             logging.warning("create : Unable to check-out the required document (" + str(docBrws.name) + "-" + str(docBrws.revisionid) + ").")
             raise UserError(_("Unable to check-out the required document (" + str(docBrws.name) + "-" + str(docBrws.revisionid) + ")."))
         self._adjustRelations([docBrws.id])
         newCheckoutBrws = super(PlmCheckout, self).create(vals)
         docBrws.wf_message_post(body=_('Checked-Out'))
-        return newCheckoutBrws.id
+        return newCheckoutBrws
 
     @api.multi
     def unlink(self):

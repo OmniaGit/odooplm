@@ -69,9 +69,9 @@
              
              	<field name="type" invisible="1"/>	
              	<header>
-	                <button name="release" states="confirmed" 	string="Release Component" type="workflow" icon="gtk-apply" 		class="oe_highlight"/>
-	                <button name="correct" states="confirmed" 	string="Correct Component" type="workflow" icon="gtk-cancel" />
-	                <button name="confirm" states="draft" 		string="Confirm Component" type="workflow" icon="gtk-go-forward" 	class="oe_highlight"/>
+	                <button name="release" states="confirmed" 	string="Release Component" type="workflow" 		class="oe_highlight"/>
+	                <button name="correct" states="confirmed" 	string="Correct Component" type="workflow"/>
+	                <button name="confirm" states="draft" 		string="Confirm Component" type="workflow" 	class="oe_highlight"/>
 	                <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,released" statusbar_colors='{"undermodify":"red","obsoleted":"red"}' />
 	            </header>
 	           	<sheet>
@@ -88,17 +88,15 @@
                         icon="fa-gears">  
                     </button> 
                 </div> 
-                 <group colspan="6" col="2">
+                 <group colspan="4" col="2" name="group_name">
                       <field name="name" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
                  </group>
-           		<group colspan="6" col="6" name="PNArea">
-             		<group colspan="6" col="6">
-              			<field name="engineering_code" 		colspan="4" 			attrs="{'readonly':[('state','!=','draft')]}" 				select="1"/>
-               			<field name="std_description" 		colspan="4"				attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/> 	
-               			<field name="state" 				colspan="2" 			readonly="True"/>	
-               			<label for="description" 			colspan="6"/>
-               			<field name="description" 			colspan="6" 			attrs="{'readonly':[('state','in',['released','obsoleted'])]}" nolabel="1" />
-           			</group>
+           		<group name="PNArea">
+          			<field name="engineering_code" attrs="{'readonly':[('state','!=','draft')]}" select="1"/>
+           			<field name="state" readonly="True"/>	
+          			<field name="std_description" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/> 	
+           			<label for="description"/>
+           			<field name="description" attrs="{'readonly':[('state','in',['released','obsoleted'])]}" nolabel="1" />
            		</group>
 
 	    		<notebook colspan="6" col="6">
