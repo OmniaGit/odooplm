@@ -40,6 +40,16 @@ USED_STATES = [('draft', _('Draft')),
 USEDIC_STATES = dict(USED_STATES)
 
 
+def emptyStringIfFalse(value):
+    """
+        return an empty string if the value is False
+    """
+    if value:
+        return unicode(value)
+    else:
+        return ''
+
+
 class PlmComponent(models.Model):
     _inherit = 'product.product'
 
@@ -361,16 +371,16 @@ class PlmComponent(models.Model):
         def getCompIds(partName, partRev):
             ids.extend(self.search([('engineering_code', '=', partName)]).ids)
 
-        for docName, docRev, docIdToOpen in vals:
+        for engineering_code, engineering_revision, docIdToOpen in vals:
             checkOutUser = plmDocObj.browse(docIdToOpen).get_checkout_user()
             if checkOutUser:
                 isMyDocument = plmDocObj.isCheckedOutByMe(docIdToOpen)
                 if isMyDocument and forceCADProperties:
                     return []    # Document properties will be not updated
                 else:
-                    getCompIds(docName, docRev)
+                    getCompIds(engineering_code, engineering_revision)
             else:
-                getCompIds(docName, docRev)
+                getCompIds(engineering_code, engineering_revision)
         return list(set(ids))
 
     @api.model
@@ -544,93 +554,98 @@ class PlmComponent(models.Model):
             Writing messages to follower, on multiple objects
         """
         if not (body == ''):
-            self.message_post(body=_(body))
+            for compObj in self:
+                compObj.message_post(body=_(body))
 
     @api.multi
     def action_draft(self):
         """
             release the object
         """
-        defaults = {}
-        status = 'draft'
-        action = 'draft'
-        docaction = 'draft'
-        defaults['engineering_writable'] = True
-        defaults['state'] = status
-        excludeStatuses = ['draft', 'released', 'undermodify', 'obsoleted']
-        includeStatuses = ['confirmed', 'transmitted']
-        return self._action_to_perform(status, action, docaction, defaults, excludeStatuses, includeStatuses)
+        for compObj in self:
+            defaults = {}
+            status = 'draft'
+            action = 'draft'
+            docaction = 'draft'
+            defaults['engineering_writable'] = True
+            defaults['state'] = status
+            excludeStatuses = ['draft', 'released', 'undermodify', 'obsoleted']
+            includeStatuses = ['confirmed', 'transmitted']
+            compObj._action_to_perform(status, action, docaction, defaults, excludeStatuses, includeStatuses)
 
     @api.multi
     def action_confirm(self):
         """
             action to be executed for Draft state
         """
-        defaults = {}
-        status = 'confirmed'
-        action = 'confirm'
-        docaction = 'confirm'
-        defaults['engineering_writable'] = False
-        defaults['state'] = status
-        excludeStatuses = ['confirmed', 'transmitted', 'released', 'undermodify', 'obsoleted']
-        includeStatuses = ['draft']
-        return self._action_to_perform(status, action, docaction, defaults, excludeStatuses, includeStatuses)
+        for compObj in self:
+            defaults = {}
+            status = 'confirmed'
+            action = 'confirm'
+            docaction = 'confirm'
+            defaults['engineering_writable'] = False
+            defaults['state'] = status
+            excludeStatuses = ['confirmed', 'transmitted', 'released', 'undermodify', 'obsoleted']
+            includeStatuses = ['draft']
+            compObj._action_to_perform(status, action, docaction, defaults, excludeStatuses, includeStatuses)
 
     @api.multi
     def action_release(self):
         """
            action to be executed for Released state
         """
-        tmpl_ids = []
-        full_ids = []
-        defaults = {}
-        excludeStatuses = ['released', 'undermodify', 'obsoleted']
-        includeStatuses = ['confirmed']
-        errors, allIDs = self._get_recursive_parts(excludeStatuses, includeStatuses)
-        if len(allIDs) < 1 or len(errors) > 0:
-            raise UserError(errors)
-        allProdObjs = self.browse(allIDs)
-        self._action_ondocuments('release')
-        for currId in allProdObjs:
-            if not(currId.id in self.ids):
-                tmpl_ids.append(currId.product_tmpl_id.id)
-            full_ids.append(currId.product_tmpl_id.id)
-        self.browse(tmpl_ids).signal_workflow('release')
-        defaults['state'] = 'released'
-        objId = self.env['product.template'].browse(full_ids).write(defaults)
-        if (objId):
-            self.browse(allIDs).wf_message_post(body=_('Status moved to: %s.' % (USEDIC_STATES[defaults['state']])))
-        return objId
+        for compObj in self:
+            tmpl_ids = []
+            full_ids = []
+            defaults = {}
+            excludeStatuses = ['released', 'undermodify', 'obsoleted']
+            includeStatuses = ['confirmed']
+            errors, allIDs = compObj._get_recursive_parts(excludeStatuses, includeStatuses)
+            if len(allIDs) < 1 or len(errors) > 0:
+                raise UserError(errors)
+            allProdObjs = self.browse(allIDs)
+            compObj._action_ondocuments('release')
+            for currId in allProdObjs:
+                if not(currId.id in compObj.ids):
+                    tmpl_ids.append(currId.product_tmpl_id.id)
+                full_ids.append(currId.product_tmpl_id.id)
+            self.browse(tmpl_ids).signal_workflow('release')
+            defaults['state'] = 'released'
+            objId = self.env['product.template'].browse(full_ids).write(defaults)
+            if (objId):
+                self.browse(allIDs).wf_message_post(body=_('Status moved to: %s.' % (USEDIC_STATES[defaults['state']])))
 
     @api.multi
     def action_obsolete(self):
         """
             obsolete the object
         """
-        defaults = {}
-        status = 'obsoleted'
-        action = 'obsolete'
-        docaction = 'obsolete'
-        defaults['engineering_writable'] = False
-        defaults['state'] = status
-        excludeStatuses = ['draft', 'confirmed', 'transmitted', 'undermodify', 'obsoleted']
-        includeStatuses = ['released']
-        return self._action_to_perform(status, action, docaction, defaults, excludeStatuses, includeStatuses)
+        for compObj in self:
+            defaults = {}
+            status = 'obsoleted'
+            action = 'obsolete'
+            docaction = 'obsolete'
+            defaults['engineering_writable'] = False
+            defaults['state'] = status
+            excludeStatuses = ['draft', 'confirmed', 'transmitted', 'undermodify', 'obsoleted']
+            includeStatuses = ['released']
+            compObj._action_to_perform(status, action, docaction, defaults, excludeStatuses, includeStatuses)
 
     @api.multi
     def action_reactivate(self):
         """
             reactivate the object
         """
-        defaults = {}
-        status = 'released'
-        action = ''
-        docaction = 'release'
-        defaults['engineering_writable'] = True
-        defaults['state'] = status
-        excludeStatuses = ['draft', 'confirmed', 'transmitted', 'released', 'undermodify', 'obsoleted']
-        includeStatuses = ['obsoleted']
-        return self._action_to_perform(status, action, docaction, defaults, excludeStatuses, includeStatuses)
+        for compObj in self:
+            defaults = {}
+            status = 'released'
+            action = ''
+            docaction = 'release'
+            defaults['engineering_writable'] = True
+            defaults['state'] = status
+            excludeStatuses = ['draft', 'confirmed', 'transmitted', 'released', 'undermodify', 'obsoleted']
+            includeStatuses = ['obsoleted']
+            compObj._action_to_perform(status, action, docaction, defaults, excludeStatuses, includeStatuses)
 
     @api.multi
     def _action_to_perform(self, status, action, docaction, defaults=[], excludeStatuses=[], includeStatuses=[]):
@@ -639,8 +654,9 @@ class PlmComponent(models.Model):
         userErrors, allIDs = self._get_recursive_parts(excludeStatuses, includeStatuses)
         if userErrors:
             raise UserError(userErrors)
-        self.browse(allIDs)._action_ondocuments(docaction)
-        for currId in self:
+        allIdsBrwsList = self.browse(allIDs)
+        allIdsBrwsList._action_ondocuments(docaction)
+        for currId in allIdsBrwsList:
             if not(currId.id in self.ids):
                 tmpl_ids.append(currId.product_tmpl_id.id)
             full_ids.append(currId.product_tmpl_id.id)
@@ -678,20 +694,20 @@ class PlmComponent(models.Model):
             raise Exception(_(" (%r). It has tried to create with values : (%r).") % (ex, vals))
 
     @api.multi
-    def copy(self, defaults={}):
+    def copy(self, default={}):
         """
             Overwrite the default copy method
         """
         previous_name = self.name
-        if not defaults.get('name', False):
-            defaults['name'] = '-'                   # If field is required super of clone will fail returning False, this is the case
-            defaults['engineering_code'] = '-'
+        if not default.get('name', False):
+            default['name'] = '-'                   # If field is required super of clone will fail returning False, this is the case
+            default['engineering_code'] = '-'
         # assign default value
-        defaults['state'] = 'draft'
-        defaults['engineering_writable'] = True
-        defaults['write_date'] = None
-        defaults['linkeddocuments'] = []
-        objId = super(PlmComponent, self).copy(defaults)
+        default['state'] = 'draft'
+        default['engineering_writable'] = True
+        default['write_date'] = None
+        default['linkeddocuments'] = []
+        objId = super(PlmComponent, self).copy(default=default)
         if (objId):
             self.wf_message_post(body=_('Copied starting from : %s.' % previous_name))
         return objId
@@ -761,31 +777,96 @@ class PlmComponent(models.Model):
         """
             create a new revision of current component
         """
-        newID = False
-        newIndex = 0
+        newComponentId = False
+        engineering_revision = 0
         for tmpObject in self:
             latestIDs = self.GetLatestIds([(tmpObject.engineering_code, tmpObject.engineering_revision, False)])
             for oldObject in self.browse(latestIDs):
-                newIndex = int(oldObject.engineering_revision) + 1
-                defaults = {}
-                defaults['engineering_writable'] = False
-                defaults['state'] = 'undermodify'
-                self.browse([oldObject.id]).write(defaults)
-                oldObject.wf_message_post(body=_('Status moved to: %s.' % (USEDIC_STATES[defaults['state']])))
+                engineering_revision = int(oldObject.engineering_revision) + 1
+                oldProdVals = {'engineering_writable': False,
+                               'state': 'undermodify'}
+                self.browse([oldObject.id]).write(oldProdVals)
+                oldObject.wf_message_post(body=_('Status moved to: %s.' % (USEDIC_STATES[oldProdVals['state']])))
                 # store updated infos in "revision" object
+                defaults = {}
                 defaults['name'] = oldObject.name                 # copy function needs an explicit name value
-                defaults['engineering_revision'] = newIndex
+                defaults['engineering_code'] = oldObject.engineering_code
+                defaults['engineering_revision'] = engineering_revision
                 defaults['engineering_writable'] = True
                 defaults['state'] = 'draft'
                 defaults['linkeddocuments'] = []                  # Clean attached documents for new revision object
-                newCompBrws = oldObject.copy(defaults)
+                newCompBrws = oldObject.copy(default=defaults)
                 oldObject.wf_message_post(body=_('Created : New Revision.'))
-                newCompBrws.write({'name': oldObject.name})
-                newID = newCompBrws.id
-                # create a new "old revision" object
+                newComponentId = newCompBrws.id
                 break
             break
-        return (newID, newIndex)
+        return (newComponentId, engineering_revision)
+
+    @api.model
+    def wf_message_post_client(self, args):
+        '''
+            args = [objId, objMessage]
+        '''
+        objId, objMessage = args
+        self.browse(objId).wf_message_post(objMessage)
+        return True
+
+    @api.model
+    def getBomRowCad(self, bomLineBrowse):
+        """
+        give back the lines
+        """
+        return [bomLineBrowse.itemnum,
+                emptyStringIfFalse(bomLineBrowse.product_id.description),
+                self._translate(emptyStringIfFalse(bomLineBrowse.product_id.description), 'english'),
+                bomLineBrowse.product_id.engineering_code,
+                bomLineBrowse.product_qty]
+
+    @api.model
+    def getNormalBomStd(self, args):
+        """
+            get the normal bom from the given name and revision
+            RELPOS,
+            $G{COMPDES="-"} / $G{COMPDES_L2="-"},
+            $G{COMPNAME:f("#clear(<undef>@)")},
+            $G{RELQTY},
+            $G{COMPR1="-"}
+            $G{COMPR2="-"}
+        """
+        componentName, componentRev, bomType = args
+        logging.info('getNormalBom for compoent: %s, componentRev: %s' % (componentName, componentRev))
+        out = []
+        searchFilter = [('engineering_code', '=', componentName),
+                        ('engineering_revision', '=', componentRev)]
+        compBrwsList = self.search(searchFilter)
+        for objBrowse in compBrwsList:
+            for bomBrowse in objBrowse.bom_ids:
+                if str(bomBrowse.type).lower() == bomType:
+                    for bomLineBrowse in bomBrowse.bom_line_ids:
+                        out.append(self.getBomRowCad(bomLineBrowse))
+        return out
+
+    def _translate(self, cr, uid, dataValue="", languageName=""):
+        _LOCALLANGS = {'french': ('French_France', 'fr_FR',),
+                       'italian': ('Italian_Italy', 'it_IT',),
+                       'polish': ('Polish_Poland', 'pl_PL',),
+                       'svedish': ('Svedish_Svenska', 'sw_SE',),
+                       'russian': ('Russian_Russia', 'ru_RU',),
+                       'english': ('English UK', 'en_GB',),
+                       'spanish': ('Spanish_Spain', 'es_ES',),
+                       'german': ('German_Germany', 'de_DE',),
+                       }
+        if not dataValue:
+            return ""
+        if languageName in _LOCALLANGS:
+            language = _LOCALLANGS[languageName][1]
+            transObj = self.pool.get('ir.translation')
+            resIds = transObj.search(cr, uid,
+                                     [('src', '=', dataValue),
+                                      ('lang', '=', language)])
+            for trans in transObj.browse(cr, uid, resIds):
+                return trans.value
+        return ""
 
 PlmComponent()
 

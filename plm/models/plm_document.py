@@ -24,6 +24,7 @@ import string
 import base64
 import os
 import time
+import json
 from datetime import datetime
 import odoo.tools as tools
 from odoo.exceptions import UserError
@@ -32,6 +33,7 @@ from odoo import fields
 from odoo import api
 from odoo import _
 import logging
+from __builtin__ import False
 _logger = logging.getLogger(__name__)
 
 
@@ -64,7 +66,7 @@ class PlmDocument(models.Model):
 
     @api.multi
     def get_checkout_user(self):
-        lastDoc = self._getlastrev()
+        lastDoc = self._getlastrev(self.ids)
         if lastDoc:
             for docBrws in self.env['plm.checkout'].search([('documentid', '=', lastDoc[0])]):
                 return docBrws.userid
@@ -82,9 +84,9 @@ class PlmDocument(models.Model):
         return False
 
     @api.multi
-    def _getlastrev(self):
+    def _getlastrev(self, resIds):
         result = []
-        for objDoc in self:
+        for objDoc in self.browse(resIds):
             docIds = self.search([('name', '=', objDoc.name)], order='revisionid').ids
             docIds.sort()   # Ids are not surely ordered, but revision are always in creation order.
             if docIds:
@@ -235,10 +237,10 @@ class PlmDocument(models.Model):
         return list(set(result))
 
     @api.multi
-    def _data_check_files(self, listedFiles=(), forceFlag=False):
+    def _data_check_files(self, targetIds, listedFiles=(), forceFlag=False):
         result = []
         datefiles, listfiles = listedFiles
-        for objDoc in self:
+        for objDoc in self.browse(targetIds):
             if objDoc.type == 'binary':
                 checkOutUser = ''
                 isCheckedOutToMe = False
@@ -863,10 +865,10 @@ class PlmDocument(models.Model):
             selection = selection * (-1)
 
         if selection == 2:
-            docArray = self._getlastrev()
+            docArray = self._getlastrev(self.ids)
         else:
             docArray = ids
-        return self._data_get_files(docArray, listedFiles, forceFlag)
+        return self.browse(docArray)._data_get_files(listedFiles, forceFlag)
 
     @api.model
     def GetAllFiles(self, request, default=None):
@@ -899,7 +901,7 @@ class PlmDocument(models.Model):
             docArray = self._getlastrev(docArray)
         if oid not in docArray:
             docArray.append(oid)     # Add requested document to package
-        return self._data_get_files(docArray, listedFiles, forceFlag)
+        return self.browse(docArray)._data_get_files(listedFiles, forceFlag)
 
     @api.multi
     def GetRelatedDocs(self, default=None):
@@ -979,6 +981,217 @@ class PlmDocument(models.Model):
         '''
         nextDocNum = self.env['ir.sequence'].next_by_code('plm.document.progress')
         return documentName + '-' + nextDocNum
+
+    @api.model
+    def canBeSaved(self, raiseError=False):
+        """
+        check if the document can be saved and raise exception in case is not possible
+        """
+        msg = ''
+        if self.state in ['released', 'obsoleted']:
+            msg = _("Document is released and cannot be saved")
+            if raiseError:
+                raise UserError(msg)
+        checkOutObject = self.getCheckOutObject()
+        if checkOutObject:
+            if checkOutObject.userid.id != self.env.uid:
+                msg = _("Document is Check-Out from User %r", checkOutObject.name)
+                if raiseError:
+                    raise UserError(msg)
+        else:
+            msg = _("Document in check-In unable to save !")
+            if raiseError:
+                raise UserError(msg)
+        if len(msg) > 0:
+            return False, msg
+        return True, ''
+
+    @api.model
+    def getCheckOutObject(self):
+        checkoutIDs = self.env['plm.checkout'].search([('documentid', '=', self.id)])
+        for checkoutID in checkoutIDs:
+            return checkoutID
+        return None
+
+    @api.model
+    def saveStructure(self, arguments):
+        """
+        save the structure passed
+        self['FILE_PATH'] = ''
+        self['PDF_PATH'] = ''
+        self['PRODUCT_ATTRIBUTES'] = []
+        self['DOCUMENT_ATTRIBUTES'] = []
+        self['RELATION_ATTRIBUTES'] = []
+        self['RELATIONS'] = [] # tutte le relazioni vanno qui ma devo metterci un attributo che mi identifica il tipo
+                                # 2d2d 3d3d 3d2d o niente
+        self['DOCUMENT_DATE'] = None
+        """
+        cPickleStructure, hostName, hostPws = arguments
+        documentAttributes = {}
+        documentRelations = {}
+        productAttributes = {}
+        productRelations = {}
+        productDocumentRelations = {}
+        objStructure = json.loads(cPickleStructure)
+
+        documentAttribute = objStructure.get('DOCUMENT_ATTRIBUTES', {})
+        for brwItem in self.search([('name', '=', documentAttribute.get('name', '')),
+                                    ('revisionid', '=', documentAttribute.get('revisionid', -1))]):
+            brwItem.canBeSaved(raiseError=True)
+
+        def populateStructure(parentItem=False, structure={}):
+            documentId = False
+            productId = False
+            documentProperty = structure.get('DOCUMENT_ATTRIBUTES', False)
+            if documentProperty and structure.get('FILE_PATH', False):
+                documentId = id(documentProperty)
+                documentAttributes[documentId] = documentProperty
+            productProperty = structure.get('PRODUCT_ATTRIBUTES', False)
+            if productProperty:
+                productId = id(productProperty)
+                productAttributes[productId] = productProperty
+            if productId and documentId:
+                listRelated = productDocumentRelations.get(productId, [])
+                listRelated.append(documentId)
+                productDocumentRelations[productId] = listRelated
+            if parentItem:
+                parentDocumentId, parentProductId = parentItem
+                relationAttributes = structure.get('MRP_ATTRIBUTES', {})
+                childRelations = documentRelations.get(parentDocumentId, [])
+                childRelations.append((documentId, relationAttributes.get('TYPE', '')))
+                if parentDocumentId:
+                    documentRelations[parentDocumentId] = childRelations
+                if parentProductId:
+                    if not documentId:
+                        documentId = parentDocumentId
+                    itemTuple = (productId, documentId, relationAttributes)
+                    listItem = productRelations.get(parentProductId, [])
+                    listItem.append(itemTuple)
+                    productRelations[parentProductId] = listItem
+            for subStructure in structure.get('RELATIONS', []):
+                populateStructure((documentId, productId), subStructure)
+        populateStructure(structure=objStructure)
+
+        # Save the document
+        logging.info("Savind Document")
+        for documentAttribute in documentAttributes.values():
+            documentAttribute['TO_UPDATE'] = False
+            docId = False
+            for brwItem in self.search([('name', '=', documentAttribute.get('name')),
+                                        ('revisionid', '=', documentAttribute.get('revisionid'))]):
+                if brwItem.state not in ['released', 'obsoleted']:
+                    if brwItem.needUpdate():
+                        brwItem.write(documentAttribute)
+                        documentAttribute['TO_UPDATE'] = True
+                docId = brwItem
+            if not docId:
+                docId = self.create(documentAttribute)
+                docId.checkout(hostName, hostPws)
+                documentAttribute['TO_UPDATE'] = True
+            documentAttribute['id'] = docId.id
+
+        # Save the product
+        logging.info("Saving Product")
+        productTemplate = self.env['product.product']
+        for refId, productAttribute in productAttributes.items():
+            linkedDocuments = set()
+            for refDocId in productDocumentRelations.get(refId, []):
+                linkedDocuments.add((4, documentAttributes[refDocId].get('id', 0)))
+            prodId = False
+            for brwItem in productTemplate.search([('engineering_code', '=', productAttribute.get('engineering_code')),
+                                                   ('engineering_revision', '=', productAttribute.get('engineering_revision'))]):
+                if brwItem.state not in ['released', 'obsoleted']:
+                    brwItem.write(productAttribute)
+                prodId = brwItem
+                break
+            if not prodId:
+                if not productAttribute.get('name', False):
+                    productAttribute['name'] = productAttribute.get('engineering_code', False)
+                prodId = productTemplate.create(productAttribute)
+            prodId.linkeddocuments
+            if linkedDocuments:
+                prodId.write({'linkeddocuments': list(linkedDocuments)})
+            productAttribute['id'] = prodId.id
+
+        # Save the document relation
+        logging.info("Saving Document Relations")
+        documentRelationTemplate = self.env['plm.document.relation']
+        for parentId, childrenRelations in documentRelations.items():
+            trueParentId = documentAttributes[parentId].get('id', 0)
+            itemFound = set()
+            for objBrw in documentRelationTemplate.search([('parent_id', '=', trueParentId)]):
+                found = False
+                for childId, relationType in childrenRelations:
+                    trueChildId = documentAttributes.get(childId, {}).get('id', 0)
+                    if objBrw.parent_id == trueParentId and objBrw.child_id == trueChildId and objBrw.type == relationType:
+                        found = True
+                        itemFound.add((childId, relationType))
+                        break
+                if not found:
+                    objBrw.unlink()
+            for childId, relationType in set(childrenRelations).difference(itemFound):
+                trueChildId = documentAttributes.get(childId, {}).get('id', 0)
+                documentRelationTemplate.create({'parent_id': trueParentId,
+                                                 'child_id': trueChildId,
+                                                 'type': relationType})
+        # Save the product relation
+        domain = [('state', 'in', ['installed', 'to upgrade', 'to remove']), ('name', '=', 'plm_engineering')]
+        apps = self.env['ir.module.module'].sudo().search_read(domain, ['name'])
+        bomType = 'normal'
+        if apps:
+            bomType = 'ebom'
+        logging.info("Saving Product Relations")
+        mrpBomTemplate = self.env['mrp.bom']
+        for parentId, childRelations in productRelations.items():
+            trueParentId = productAttributes[parentId].get('id')
+            brwProduct = productTemplate.search([('id', '=', trueParentId)])
+            productTempId = brwProduct.product_tmpl_id.id
+            brwBoml = mrpBomTemplate.search([('product_tmpl_id', '=', productTempId)])
+            if not brwBoml:
+                brwBoml = mrpBomTemplate.create({'product_tmpl_id': productTempId,
+                                                 'type': bomType})
+            # delete rows
+            for _, documentId, _ in childRelations:
+                trueDocumentId = documentAttributes.get(documentId, {}).get('id', 0)
+                if trueDocumentId:  # seems strange this .. but i will delete only the bom with the right source id
+                    for brwBom in brwBoml:
+                        brwBom.deleteChildRow(trueDocumentId)
+                    break
+            # add rows
+            for childId, documentId, relationAttributes in childRelations:
+                if not (childId and documentId):
+                    logging.warning("Bed relation request %r, %r" % (childId, documentId))
+                    continue
+                trueChildId = productAttributes[childId].get('id')
+                trueDocumentId = documentAttributes[documentId].get('id')
+                brwBom.addChildRow(trueChildId, trueDocumentId, relationAttributes, bomType)
+        return json.dumps(objStructure)
+
+    @api.model
+    def checkout(self, hostName, hostPws):
+        """
+        check out the current document
+        """
+        if self.is_checkout:
+            raise UserError(_("Unable to check-Out a document that is already checked id by user %r" % self.checkout_user))
+        if self.state in ['released', 'obsoleted']:
+            raise UserError(_("Unable to check-Outcheck-Out a document that is in state %r" % self.state))
+        values = {'userid': self.env.uid,
+                  'hostname': hostName,
+                  'hostpws': hostPws,
+                  'documentid': self.id}
+        self.env['plm.checkout'].create(values)
+
+    @api.model
+    def needUpdate(self):
+        """
+        check if the file need to be updated
+        """
+        checkoutIds = self.env['plm.checkout'].search([('documentid', '=', self.id),
+                                                       ('userid', '=', self.env.uid)])
+        for _brw in checkoutIds:
+            return True
+        return False
 
 PlmDocument()
 

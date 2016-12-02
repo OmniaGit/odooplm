@@ -493,6 +493,26 @@ class MrpBomExtension(models.Model):
                              check=False)
         return newBomBrws
 
+    @api.one
+    def deleteChildRow(self, documentId):
+        """
+        delete the bom child row
+        """
+        for bomLine in self.bom_line_ids:
+            if bomLine.source_id.id == documentId and bomLine.type == self.type:
+                bomLine.unlink()
+
+    @api.model
+    def addChildRow(self, childId, sourceDocumentId, relationAttributes, bomType='normal'):
+        """
+        add children rows
+        """
+        relationAttributes.update({'bom_id': self.id,
+                                   'product_id': childId,
+                                   'source_id': sourceDocumentId,
+                                   'type': bomType})
+        self.bom_line_ids.ids.append(self.env['mrp.bom.line'].create(relationAttributes).id)
+
 MrpBomExtension()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

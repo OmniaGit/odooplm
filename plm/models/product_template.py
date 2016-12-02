@@ -56,7 +56,7 @@ class ProductTemplateExtension(models.Model):
                                       required=False,
                                       help=_("Surface finishing for current product, only description for titleblock."))
 
-    engineering_revision = fields.Integer(_('Revision'), required=True, help=_("The revision of the product."))
+    engineering_revision = fields.Integer(_('Revision'), required=True, help=_("The revision of the product."), default=0)
 
     engineering_code = fields.Char(_('Part Number'),
                                    help=_("This is engineering reference to manage a different P/N from item Name."),

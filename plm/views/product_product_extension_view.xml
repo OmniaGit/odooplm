@@ -15,13 +15,14 @@
             	rgb(230,100,0):state == 'undermodify';
             	rgb(231, 43, 26):state == 'obsoleted';"
             	fonts="bold:state == 'released';">  
-                <field name="name" select="True"/>
-                <field name="engineering_code" select="True"/>
-                <field name="state" select="True"/>
-                <field name="description" select="True" />
+                <field name="name"/>
+                <field name="engineering_code"/>
+                <field name="engineering_revision"/>
+                <field name="state"/>
+                <field name="description"/>
                 <field name="engineering_writable" invisible="1" />
-                <field name="engineering_material" select="True"/>
-                <field name="engineering_surface" select="True"/>
+                <field name="engineering_material"/>
+                <field name="engineering_surface"/>
                 <field name="linkeddocuments" invisible="True"/>
             </tree>
         </field>
@@ -90,6 +91,7 @@
                 </div> 
                  <group colspan="4" col="2" name="group_name">
                       <field name="name" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                      <field name="engineering_revision" readonly="True"/>
                  </group>
            		<group name="PNArea">
           			<field name="engineering_code" attrs="{'readonly':[('state','!=','draft')]}" select="1"/>
