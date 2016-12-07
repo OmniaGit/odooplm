@@ -398,11 +398,11 @@ class PlmComponent(models.Model):
                 partVals['componentID'] = False
                 partVals['hasSaved'] = hasSaved
                 continue
-            existingCompBrws = self.search([('engineering_code', '=', partVals['engineering_code'])])
-            if not existingCompBrws:
-                existingCompBrws = self.create(partVals)
+            existingCompBrwsList = self.search([('engineering_code', '=', partVals['engineering_code'])])
+            if not existingCompBrwsList:
+                existingCompBrwsList = [self.create(partVals)]
                 hasSaved = True
-            else:
+            for existingCompBrws in existingCompBrwsList:
                 partVals['name'] = existingCompBrws.name
                 if (self.getUpdTime(existingCompBrws) < datetime.strptime(partVals['lastupdate'], '%Y-%m-%d %H:%M:%S')):
                     if self._iswritable(existingCompBrws):
@@ -676,14 +676,18 @@ class PlmComponent(models.Model):
         if ('name' in vals):
             if not vals['name']:
                 return False
-            prodBrwsList = self.search([('name', '=', vals['name'])])
             if 'engineering_code' in vals:
                 if vals['engineering_code'] == False:
                     vals['engineering_code'] = vals['name']
             else:
                 vals['engineering_code'] = vals['name']
-            if prodBrwsList:
-                return prodBrwsList[len(prodBrwsList) - 1]
+            if 'engineering_revision' in vals:
+                prodBrwsList = self.search([('engineering_code', '=', vals['engineering_code']),
+                                            ('engineering_revision', '=', vals['engineering_revision'])
+                                            ])
+                if prodBrwsList:
+                    raise UserError('Component %r already exists' % (vals['engineering_code']))
+                    #return prodBrwsList[len(prodBrwsList) - 1]
         try:
             return super(PlmComponent, self).create(vals)
         except Exception, ex:

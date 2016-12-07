@@ -80,13 +80,15 @@ class ProductTemplateExtension(models.Model):
                                           default=True)
 
     _sql_constraints = [
-        ('partnumber_uniq', 'unique (engineering_code)', _('Part Number has to be unique!'))
+        ('partnumber_uniq', 'unique (engineering_code,engineering_revision)', _('Part Number has to be unique!'))
     ]
 
     @api.model
     def init(self):
         cr = self.env.cr
         cr.execute("""
+-- Index: product_template_engcode_index
+
 -- Index: product_template_engcode_index
 
 DROP INDEX IF EXISTS product_template_engcode_index;
@@ -105,7 +107,7 @@ DROP INDEX IF EXISTS product_template_engcoderev_index;
 CREATE INDEX product_template_engcoderev_index
   ON product_template
   USING btree
-  (engineering_code);
+  (engineering_code, engineering_revision);
   """)
 
 ProductTemplateExtension()
