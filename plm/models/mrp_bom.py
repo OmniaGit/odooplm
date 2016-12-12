@@ -445,7 +445,7 @@ class MrpBomExtension(models.Model):
         """
         weight = 0.0
         for bom_line in bomObj.bom_line_ids:
-            weight += (bom_line.product_qty * bom_line.product_id.product_tmpl_id.weight)
+            weight += (bom_line.product_qty * bom_line.product_id.weight)
         return weight
 
     @api.model

@@ -8,7 +8,7 @@
             <field name="type">ir.actions.server</field>
             <field name="model_id" ref="model_mrp_bom"/>
             <field name="state">code</field>
-            <field name="code">self.forceComputeBomWeight(cr, uid, context.get('active_ids', []), context=context)</field>
+            <field name="code">env['mrp.bom'].browse(context.get('active_ids', [])).forceComputeBomWeight()</field>
         </record>
 
         <record model="ir.values" id="action_force_bom_weight_calculation_value">
