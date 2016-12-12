@@ -79,7 +79,7 @@ class PlmBackupDocument(models.Model):
                 return super(PlmBackupDocument, self).unlink()
             currentname = checkObj.documentid.store_fname
             if checkObj.existingfile != currentname:
-                fullname = os.path.join(documentType._get_filestore(self.env.cr), checkObj.existingfile)
+                fullname = os.path.join(documentType._get_filestore(), checkObj.existingfile)
                 if os.path.exists(fullname):
                     if os.path.exists(fullname):
                         os.chmod(fullname, stat.S_IWRITE)

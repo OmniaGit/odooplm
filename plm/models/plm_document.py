@@ -120,7 +120,7 @@ class PlmDocument(models.Model):
                         if (not objDoc.store_fname) and (objDoc.db_datas):
                             value = objDoc.db_datas
                         else:
-                            value = file(os.path.join(self._get_filestore(self.env.cr), objDoc.store_fname), 'rb').read()
+                            value = file(os.path.join(self._get_filestore(), objDoc.store_fname), 'rb').read()
                         result.append((objDoc.id, objDoc.datas_fname, base64.encodestring(value), isCheckedOutToMe, timeDoc))
                     else:
                         if forceFlag:
@@ -132,7 +132,7 @@ class PlmDocument(models.Model):
                             if (not objDoc.store_fname) and (objDoc.db_datas):
                                 value = objDoc.db_datas
                             else:
-                                value = file(os.path.join(self._get_filestore(self.env.cr), objDoc.store_fname), 'rb').read()
+                                value = file(os.path.join(self._get_filestore(), objDoc.store_fname), 'rb').read()
                             result.append((objDoc.id, objDoc.datas_fname, base64.encodestring(value), isCheckedOutToMe, timeDoc))
                         else:
                             result.append((objDoc.id, objDoc.datas_fname, False, isCheckedOutToMe, timeDoc))
@@ -596,6 +596,14 @@ class PlmDocument(models.Model):
                 return ''
         return filestore
 
+    @api.model
+    def search(self, args, offset=0, limit=None, order=None, count=False):
+        return super(PlmDocument, self).search(args, offset, limit, order, count)
+
+    @api.model
+    def create(self, vals):
+        return super(PlmDocument, self).create(vals)
+
     @api.multi
     def write(self, vals):
         checkState = ('confirmed', 'released', 'undermodify', 'obsoleted')
@@ -848,7 +856,7 @@ class PlmDocument(models.Model):
         for docId in docArray:
             checkOutBrwsList = checkoutObj.search([('documentid', '=', docId), ('userid', '=', self.env.uid)])
             checkOutBrwsList.unlink()
-        return self.read(docArray, ['datas_fname'])
+        return self.browse(docArray).read(['datas_fname'])
 
     @api.model
     def GetSomeFiles(self, request, default=None):
