@@ -574,6 +574,22 @@ class PlmDocument(models.Model):
         return self.commonWFAction(False, 'obsoleted', False)
 
     @api.multi
+    def action_reactivate(self):
+        """
+            reactivate the object
+        """
+        defaults = {}
+        defaults['engineering_writable'] = False
+        defaults['state'] = 'released'
+        if self.ischecked_in():
+            self.setCheckContextWrite(False)
+            objId = self.write(defaults)
+            if objId:
+                self.wf_message_post(body=_('Status moved to:%s.' % (USEDIC_STATES[defaults['state']])))
+            return objId
+        return False
+
+    @api.multi
     def blindwrite(self, vals):
         """
             blind write for xml-rpc call for recovering porpouse

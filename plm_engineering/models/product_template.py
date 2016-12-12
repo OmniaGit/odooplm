@@ -54,13 +54,5 @@ class ProductTemplateExtension(models.Model):
                 'views': [(form_id, 'form')],
             }
 
-    @api.multi
-    def name_get(self):
-        result = []
-        for inv in self:
-            newName = "%s [Rev %r]" % (inv.name, inv.engineering_revision)
-            result.append((inv.id, newName))
-        return result
-
 ProductTemplateExtension()
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

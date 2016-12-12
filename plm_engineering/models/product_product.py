@@ -188,14 +188,6 @@ class ProductProductExtension(models.Model):
                     self._create_normalBom(bom_line.product_id.id)
         return False
 
-    @api.multi
-    def name_get(self):
-        result = []
-        for inv in self:
-            newName = "%s [Rev %r]" % (inv.name, inv.engineering_revision)
-            result.append((inv.id, newName))
-        return result
-
 ProductProductExtension()
 
 

@@ -392,7 +392,7 @@ class MrpBomExtension(models.Model):
                 if kindBom is not None:
                     res['type'] = kindBom
                 else:
-                    res['type'] = 'ebom'
+                    res['type'] = 'normal'
                 objPart = t_product_product.with_context({}).browse(partID)
                 res['product_tmpl_id'] = objPart.product_tmpl_id.id
                 res['product_id'] = partID

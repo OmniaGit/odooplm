@@ -152,7 +152,7 @@ class MrpBomExtension(models.Model):
 
                     saveChild(childName, childID, sourceID, bomID, kindBom='ebom', args=relArgs)
                     toCompute(childName, nexRelation)
-                self.RebaseProductWeight(bomID, self.browse(bomID).rebaseBomWeight(bomID))
+                self.RebaseProductWeight(bomID, self.browse(bomID).rebaseBomWeight())
             return bomID
 
         def repairQty(value):
@@ -179,7 +179,7 @@ class MrpBomExtension(models.Model):
                         res[str(arg)] = args[str(arg)]
                 if ('product_qty' in res):
                     res['product_qty'] = repairQty(res['product_qty'])
-                return self.create(res)
+                return self.create(res).id
             except:
                 logging.error("saveParent :  unable to create a relation for part (%s) with source (%d) : %s." % (name, sourceID, str(args)))
                 raise AttributeError(_("saveParent :  unable to create a relation for part (%s) with source (%d) : %s." % (name, sourceID, str(sys.exc_info()))))
@@ -204,7 +204,8 @@ class MrpBomExtension(models.Model):
                 if ('product_qty' in res):
                     res['product_qty'] = repairQty(res['product_qty'])
                 return t_bom_line.create(res)
-            except:
+            except Exception, ex:
+                logging.error(ex)
                 logging.error("saveChild :  unable to create a relation for part (%s) with source (%d) : %s." % (name, sourceID, str(args)))
                 raise AttributeError(_("saveChild :  unable to create a relation for part (%s) with source (%d) : %s." % (name, sourceID, str(sys.exc_info()))))
 
