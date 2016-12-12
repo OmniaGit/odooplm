@@ -358,7 +358,7 @@ class PlmComponent(models.Model):
         """
         partData, attribNames, forceCADProperties = vals
         ids = self.GetLatestIds(partData, forceCADProperties=forceCADProperties)
-        return self.read(list(set(ids)), attribNames)
+        return self.browse(list(set(ids))).read(attribNames)
 
     @api.model
     def GetLatestIds(self, vals, forceCADProperties=False):
