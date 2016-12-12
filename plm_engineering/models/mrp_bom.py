@@ -30,6 +30,8 @@ from openerp import models
 from openerp import fields
 from openerp import api
 from openerp import _
+import logging
+import sys
 
 
 class MrpBomExtension(models.Model):
@@ -88,6 +90,130 @@ class MrpBomExtension(models.Model):
                         if not bomBrwsList:
                             bomBrwsList = self.search([('product_tmpl_id', '=', pid), ('type', '=', 'normal')])
         return bomBrwsList
+
+    @api.model
+    def SaveStructure(self, relations, level=0, currlevel=0):
+        """
+            Save EBom relations
+        """
+        t_bom_line = self.env['mrp.bom.line']
+        t_product_product = self.env['product.product']
+
+        def cleanStructure(parentID=None, sourceID=None):
+            """
+                Clean relations having sourceID
+            """
+            if parentID is None or sourceID is None:
+                return False
+            objPart = t_product_product.with_context({}).browse(parentID)
+            bomBrwsList = self.search(["|",
+                                       ('product_id', '=', parentID),
+                                       ('product_tmpl_id', '=', objPart.product_tmpl_id.id),
+                                       ('source_id', '=', sourceID)])
+
+            bomBrwsList2 = t_bom_line.search([('bom_id', 'in', bomBrwsList.ids),
+                                              ('source_id', '=', sourceID)])
+            bomBrwsList.unlink()
+            bomBrwsList2.unlink()
+            return True
+
+        def toCleanRelations(relations):
+            """
+                Processes relations
+            """
+            listedSource = []
+            for _parentName, parentID, _ChildName, _ChildID, sourceID, _RelArgs in relations:
+                if sourceID not in listedSource and cleanStructure(parentID, sourceID):
+                    listedSource.append(sourceID)
+            return False
+
+        def toCompute(parentName, relations):
+            """
+                Processes relations
+            """
+            bomID = False
+            nexRelation = []
+
+            def divedeByParent(element):
+                if element[0] == parentName:
+                    return True
+                nexRelation.append(element)
+            subRelations = filter(divedeByParent, relations)
+            if len(subRelations) < 1:  # no relation to save
+                return
+            parentName, parentID, _ChildName, _ChildID, sourceID, _RelArgs = subRelations[0]
+            if not self.search([('product_id', '=', parentID),
+                                ('source_id', '=', sourceID)]):
+                bomID = saveParent(parentName, parentID, sourceID, kindBom='ebom')
+                for parentName, parentID, childName, childID, sourceID, relArgs in subRelations:
+                    if parentName == childName:
+                        logging.error('toCompute : Father (%s) refers to himself' % (str(parentName)))
+                        raise Exception(_('saveChild.toCompute : Father "%s" refers to himself' % (str(parentName))))
+
+                    saveChild(childName, childID, sourceID, bomID, kindBom='ebom', args=relArgs)
+                    toCompute(childName, nexRelation)
+                self.RebaseProductWeight(bomID, self.browse(bomID).rebaseBomWeight(bomID))
+            return bomID
+
+        def repairQty(value):
+            if(not isinstance(value, float) or (value < 1e-6)):
+                return 1.0
+            return value
+
+        def saveParent(name, partID, sourceID, kindBom=None, args=None):
+            """
+                Saves the relation ( parent side in mrp.bom )
+            """
+            try:
+                res = {}
+                if kindBom is not None:
+                    res['type'] = kindBom
+                else:
+                    res['type'] = 'ebom'
+                objPart = t_product_product.with_context({}).browse(partID)
+                res['product_tmpl_id'] = objPart.product_tmpl_id.id
+                res['product_id'] = partID
+                res['source_id'] = sourceID
+                if args is not None:
+                    for arg in args:
+                        res[str(arg)] = args[str(arg)]
+                if ('product_qty' in res):
+                    res['product_qty'] = repairQty(res['product_qty'])
+                return self.create(res)
+            except:
+                logging.error("saveParent :  unable to create a relation for part (%s) with source (%d) : %s." % (name, sourceID, str(args)))
+                raise AttributeError(_("saveParent :  unable to create a relation for part (%s) with source (%d) : %s." % (name, sourceID, str(sys.exc_info()))))
+
+        def saveChild(name, partID, sourceID, bomID=None, kindBom=None, args=None):
+            """
+                Saves the relation ( child side in mrp.bom.line )
+            """
+            try:
+                res = {}
+                if bomID is not None:
+                    res['bom_id'] = bomID
+                if kindBom is not None:
+                    res['type'] = kindBom
+                else:
+                    res['type'] = 'ebom'
+                res['product_id'] = partID
+                res['source_id'] = sourceID
+                if args is not None:
+                    for arg in args:
+                        res[str(arg)] = args[str(arg)]
+                if ('product_qty' in res):
+                    res['product_qty'] = repairQty(res['product_qty'])
+                return t_bom_line.create(res)
+            except:
+                logging.error("saveChild :  unable to create a relation for part (%s) with source (%d) : %s." % (name, sourceID, str(args)))
+                raise AttributeError(_("saveChild :  unable to create a relation for part (%s) with source (%d) : %s." % (name, sourceID, str(sys.exc_info()))))
+
+        if len(relations) < 1:  # no relation to save
+            return False
+        parentName, _parentID, _childName, _childID, _sourceID, _relArgs = relations[0]
+        toCleanRelations(relations)
+        toCompute(parentName, relations)
+        return False
 
 MrpBomExtension()
 
