@@ -165,12 +165,6 @@ class PlmComponent(models.Model):
             if self.tmp_material.name:
                 self.engineering_material = unicode(self.tmp_material.name)
 
-    @api.onchange('tmp_treatment')
-    def on_change_tmptreatment(self):
-        if self.tmp_treatment:
-            if self.tmp_treatment.name:
-                self.engineering_treatment = unicode(self.tmp_treatment.name)
-
     @api.onchange('tmp_surface')
     def on_change_tmpsurface(self):
         if self.tmp_surface:

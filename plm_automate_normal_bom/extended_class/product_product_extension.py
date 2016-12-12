@@ -34,9 +34,6 @@ class ProdProdExtension(models.Model):
     _name = 'product.product'
     _inherit = 'product.product'
 
-    def generateAutomatedNBomsScheduler(self, cr, uid, context={}):
-        return self.generateAutomatedNBoms(cr, uid, context)
-
     @api.multi
     def generateAutomatedNBoms(self):
         '''
