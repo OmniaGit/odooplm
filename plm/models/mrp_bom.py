@@ -328,7 +328,7 @@ class MrpBomExtension(models.Model):
             """
             if parentID is None or sourceID is None:
                 return False
-            objPart = t_product_product.browse(parentID, context=None)
+            objPart = t_product_product.with_context({}).browse(parentID)
             bomBrwsList = self.search(["|",
                                        ('product_id', '=', parentID),
                                        ('product_tmpl_id', '=', objPart.product_tmpl_id.id),
@@ -367,15 +367,15 @@ class MrpBomExtension(models.Model):
             parentName, parentID, _ChildName, _ChildID, sourceID, _RelArgs = subRelations[0]
             if not self.search([('product_id', '=', parentID),
                                 ('source_id', '=', sourceID)]):
-                bomID = saveParent(parentName, parentID, sourceID, kindBom='ebom')
+                bomID = saveParent(parentName, parentID, sourceID, kindBom='normal')
                 for parentName, parentID, childName, childID, sourceID, relArgs in subRelations:
                     if parentName == childName:
                         logging.error('toCompute : Father (%s) refers to himself' % (str(parentName)))
                         raise Exception(_('saveChild.toCompute : Father "%s" refers to himself' % (str(parentName))))
 
-                    saveChild(childName, childID, sourceID, bomID, kindBom='ebom', args=relArgs)
+                    saveChild(childName, childID, sourceID, bomID, kindBom='normal', args=relArgs)
                     toCompute(childName, nexRelation)
-                self.RebaseProductWeight(bomID, self.browse(bomID).rebaseBomWeight(bomID))
+                self.RebaseProductWeight(bomID, self.browse(bomID).rebaseBomWeight())
             return bomID
 
         def repairQty(value):
@@ -393,7 +393,7 @@ class MrpBomExtension(models.Model):
                     res['type'] = kindBom
                 else:
                     res['type'] = 'ebom'
-                objPart = t_product_product.browse(partID, context=None)
+                objPart = t_product_product.with_context({}).browse(partID)
                 res['product_tmpl_id'] = objPart.product_tmpl_id.id
                 res['product_id'] = partID
                 res['source_id'] = sourceID
@@ -402,7 +402,7 @@ class MrpBomExtension(models.Model):
                         res[str(arg)] = args[str(arg)]
                 if ('product_qty' in res):
                     res['product_qty'] = repairQty(res['product_qty'])
-                return self.create(res)
+                return self.create(res).id
             except:
                 logging.error("saveParent :  unable to create a relation for part (%s) with source (%d) : %s." % (name, sourceID, str(args)))
                 raise AttributeError(_("saveParent :  unable to create a relation for part (%s) with source (%d) : %s." % (name, sourceID, str(sys.exc_info()))))
@@ -418,7 +418,7 @@ class MrpBomExtension(models.Model):
                 if kindBom is not None:
                     res['type'] = kindBom
                 else:
-                    res['type'] = 'ebom'
+                    res['type'] = 'normal'
                 res['product_id'] = partID
                 res['source_id'] = sourceID
                 if args is not None:
@@ -427,7 +427,8 @@ class MrpBomExtension(models.Model):
                 if ('product_qty' in res):
                     res['product_qty'] = repairQty(res['product_qty'])
                 return t_bom_line.create(res)
-            except:
+            except Exception, ex:
+                logging.error(ex)
                 logging.error("saveChild :  unable to create a relation for part (%s) with source (%d) : %s." % (name, sourceID, str(args)))
                 raise AttributeError(_("saveChild :  unable to create a relation for part (%s) with source (%d) : %s." % (name, sourceID, str(sys.exc_info()))))
 
@@ -453,7 +454,7 @@ class MrpBomExtension(models.Model):
             Evaluates net weight for assembly, based on product ID
         """
         if not(parentBomID is None) or parentBomID:
-            bomObj = self.browse(parentBomID, context=None)
+            bomObj = self.with_context({}).browse(parentBomID)
             self.env['product.product'].browse([bomObj.product_id.id]).write({'weight': weight})
 
     @api.multi
@@ -466,6 +467,10 @@ class MrpBomExtension(models.Model):
             weight = bomBrws._sumBomWeight(bomBrws)
             super(MrpBomExtension, bomBrws).write({'weight_net': weight})
         return weight
+
+    @api.model
+    def create(self, vals):
+        return super(MrpBomExtension, self).create(vals)
 
     @api.multi
     def write(self, vals, check=True):
