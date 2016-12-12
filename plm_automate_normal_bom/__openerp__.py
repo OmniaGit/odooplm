@@ -28,7 +28,7 @@
     'sequence': 15,
     'summary': '',
     'images': [],
-    'depends': ['plm'],
+    'depends': ['plm', 'plm_engineering'],
     'description': """
 Allow to create normal boms if not exists and product are released.
 ==============================================
