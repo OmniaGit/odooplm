@@ -59,9 +59,8 @@ class PlmComponentDocumentRel(models.Model):
                 if latest in res:
                     continue
                 res.append(latest)
-                compBrws = self.env['product.product'].browse(component_id)
-                if document_id in compBrws.linkeddocuments.ids:
-                    self.env['plm.document'].browse(document_id).unlink()
+                prodProdObj = self.env['product.product']
+                prodProdObj.write({'linkeddocuments': [(3, document_id, False)]})   # Clear link between component and document
 
         def saveChild(args):
             """
