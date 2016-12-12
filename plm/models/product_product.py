@@ -398,7 +398,7 @@ class PlmComponent(models.Model):
                 partVals['componentID'] = False
                 partVals['hasSaved'] = hasSaved
                 continue
-            existingCompBrwsList = self.search([('engineering_code', '=', partVals['engineering_code'])])
+            existingCompBrwsList = self.search([('engineering_code', '=', partVals['engineering_code'])], order='engineering_revision ASC')
             if not existingCompBrwsList:
                 existingCompBrwsList = [self.create(partVals)]
                 hasSaved = True
@@ -785,7 +785,7 @@ class PlmComponent(models.Model):
         engineering_revision = 0
         for tmpObject in self:
             latestIDs = self.GetLatestIds([(tmpObject.engineering_code, tmpObject.engineering_revision, False)])
-            for oldObject in self.browse(latestIDs):
+            for oldObject in self.browse(latestIDs[-1]):
                 engineering_revision = int(oldObject.engineering_revision) + 1
                 oldProdVals = {'engineering_writable': False,
                                'state': 'undermodify'}
