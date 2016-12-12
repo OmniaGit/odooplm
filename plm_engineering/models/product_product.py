@@ -192,10 +192,7 @@ ProductProductExtension()
 
 
 class ProductTemporaryNormalBom(osv.osv.osv_memory):
-    _name = "plm.temporary"
-    _description = "Temporary Class"
-    name = fields.Char(_('Temp'), size=128)
-    summarize = fields.Boolean('Summarize Bom Lines if needed.', help="If set as true, when a Bom line comes from EBOM was in the old normal BOM two lines where been summarized.")
+    _inherit = "plm.temporary"
 
     @api.multi
     def action_create_normalBom(self):

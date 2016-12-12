@@ -21,23 +21,21 @@
 ##############################################################################
 
 '''
-Created on 25 Aug 2016
+Created on 12 Dec 2016
 
 @author: Daniel Smerghetto
 '''
-import plm_finishing
-import plm_material
-import product_template
-import plm_descriptions             # Has to be before "product_product_extension" due to related field
-import product_product              # Has to be before "plm_document" due to related field
-import plm_document                 # Has to be before "plm_document_relations" due to related field
-import plm_document_relations
-import product_product_document_rel
-import product_product_kanban
-import plm_backup_document
-import plm_checkout
-import plm_config_settings
-import mrp_bom
-import mrp_bom_line
-import document_report
-import plm_temporary
+from openerp import fields
+from openerp import osv
+from openerp import _
+
+
+class ProductTemporary(osv.osv.osv_memory):
+    _name = "plm.temporary"
+    _description = "Temporary Class"
+    name = fields.Char(_('Temp'), size=128)
+    summarize = fields.Boolean('Summarize Bom Lines if needed.', help="If set as true, when a Bom line comes from EBOM was in the old normal BOM two lines where been summarized.")
+
+ProductTemporary()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
