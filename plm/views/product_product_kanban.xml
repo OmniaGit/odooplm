@@ -8,6 +8,7 @@
                 <field name="name"/>
                 <field name="engineering_code"/>
                 <field name="description"/>
+                <field name="engineering_revision"/>
                 <field name="engineering_writable"/>
                 <field name="engineering_material"/>
                 <field name="engineering_surface"/> 
@@ -41,6 +42,9 @@
                                 <div class="o_primary" id='prod_name_div'>
                                     <a type="object" name="open_action"><field name="name"/></a>
                                 </div>
+		                        <div class="o_secondary">
+		                            <span title="Revision Number">Engineering revision:  <field name="engineering_revision"/></span>
+		                        </div>
                             </div>
                             <div style="display: flex;">
                                 <div class="o_secondary"> 

@@ -124,6 +124,11 @@ class MrpBomExtension(models.Model):
                               help=_("The BoM net weight in Kg."),
                               default=0.0)
 
+    engineering_revision = fields.Integer(related="product_tmpl_id.engineering_revision",
+                                          string=_("Revision"),
+                                          help=_("The revision of the product."),
+                                          store=False)
+
     @api.model
     def init(self):
         self._packed = []

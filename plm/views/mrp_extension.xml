@@ -14,6 +14,7 @@
                     <field name="itemnum"/>
         		</field>
                  <field name="product_id" position="after">
+                 	<field name="engineering_revision" readonly="True"/>	
 	                <field name="state" readonly="True"/>
 	            	<field name="description" select="True"/>
 	                <field name="source_id" string="Source Relation Document"/>
@@ -37,6 +38,7 @@
                     <field name="source_id" string="Source Relation Document"/>
   	            	<field name="type" />
                    	<field name="weight_net"/>
+                   	<field name="engineering_revision"/>
                    	<field name="description" select="True"/>
           		</field>
         	</field>
@@ -78,7 +80,8 @@
                                     <field name="product_qty"/>
                                     <field name="product_uom_id" options="{'no_open':True,'no_create':True}" groups="product.group_uom"/>
                                     <field name="attribute_value_ids" widget="many2many_tags" domain="[('product_ids.product_tmpl_id', '=', parent.product_tmpl_id)]" groups="product.group_product_variant"/>
-					                <field name="state" readonly="True"/>
+					                <field name="engineering_revision" readonly="True"/>
+                                    <field name="state" readonly="True"/>
 					            	<field name="description" readonly="True"/>
 					                <field name="source_id" string="Source Relation Document"/>
 			 	            		<field name="type" />
@@ -130,6 +133,7 @@
             <field name="arch" type="xml">
             	<data>
 	                <field name="product_id" position="after">
+	                	<field name="engineering_revision" readonly="True"/>	
 	                	<field name="description" readonly="True"/>
 	                	<field name="weight_net" readonly="True"/>
 	                </field>
@@ -141,6 +145,7 @@
              	</data>
             	<data>
 	            	<xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_id']" position="after">
+	            		<field name="engineering_revision" readonly="True"/>	
 		                <field name="state" readonly="True"/>
 		            	<field name="description" readonly="True"/>
 		                <field name="source_id" string="Source Relation Document"/>
@@ -211,6 +216,7 @@
                 <tree string="Where Used Bill of Materials">
                     <field name="product_id" string="Component Name"/>
                     <field name="code" string="BoM Name"/>
+                    <field name="engineering_revision" string="Revision"/>
                     <field name="description"/>
                     <field name="source_id" string="Source Relation Document"/>
                     <field name="product_qty"/>
@@ -230,6 +236,7 @@
                 <tree string="Bill of Materials">
                     <field name="itemnum" string="Position"/>
                     <field name="product_id" string="Component Name"/>
+                    <field name="engineering_revision" string="Revision"/>
                     <field name="description"/>
                     <field name="source_id" string="Source Relation Document"/>
                     <field name="product_qty"/>

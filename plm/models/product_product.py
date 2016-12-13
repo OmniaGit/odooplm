@@ -343,6 +343,8 @@ class PlmComponent(models.Model):
         if newCompBrws not in (None, False):
             exitValues['_id'] = newCompBrws.id
             exitValues['name'] = newCompBrws.name
+            exitValues['engineering_code'] = newCompBrws.engineering_code
+            exitValues['engineering_revision'] = newCompBrws.engineering_revision
         return exitValues
 
     @api.model
@@ -363,18 +365,25 @@ class PlmComponent(models.Model):
         plmDocObj = self.env['plm.document']
 
         def getCompIds(partName, partRev):
-            ids.extend(self.search([('engineering_code', '=', partName)]).ids)
+            if docRev is None or docRev is False:
+                partIds = self.search([('engineering_code', '=', partName)],
+                                      order='engineering_revision').ids
+                if len(partIds) > 0:
+                    ids.append(partIds[-1])
+            else:
+                ids.extend(self.search([('engineering_code', '=', partName),
+                                        ('engineering_revision', '=', partRev)]).ids)
 
-        for engineering_code, engineering_revision, docIdToOpen in vals:
+        for docName, docRev, docIdToOpen in vals:
             checkOutUser = plmDocObj.browse(docIdToOpen).get_checkout_user()
             if checkOutUser:
                 isMyDocument = plmDocObj.isCheckedOutByMe(docIdToOpen)
                 if isMyDocument and forceCADProperties:
                     return []    # Document properties will be not updated
                 else:
-                    getCompIds(engineering_code, engineering_revision)
+                    getCompIds(docName, docRev)
             else:
-                getCompIds(engineering_code, engineering_revision)
+                getCompIds(docName, docRev)
         return list(set(ids))
 
     @api.model
@@ -392,7 +401,8 @@ class PlmComponent(models.Model):
                 partVals['componentID'] = False
                 partVals['hasSaved'] = hasSaved
                 continue
-            existingCompBrwsList = self.search([('engineering_code', '=', partVals['engineering_code'])], order='engineering_revision ASC')
+            existingCompBrwsList = self.search([('engineering_code', '=', partVals['engineering_code']),
+                                                ('engineering_revision', '=', partVals['engineering_revision'])], order='engineering_revision ASC')
             if not existingCompBrwsList:
                 existingCompBrwsList = [self.create(partVals)]
                 hasSaved = True
@@ -420,7 +430,10 @@ class PlmComponent(models.Model):
         queryFilter, columns = request
         if len(columns) < 1:
             return expData
-        allIDs = self.search(queryFilter).ids
+        if 'engineering_revision' in queryFilter:
+            del queryFilter['engineering_revision']
+        allIDs = self.search(queryFilter,
+                             order='engineering_revision').ids
         if len(allIDs) > 0:
             allIDs.sort()
             objId = allIDs[len(allIDs) - 1]
@@ -455,7 +468,7 @@ class PlmComponent(models.Model):
         for prodBrws in self:
             for childProdBrws in self.browse(self._getChildrenBom(prodBrws, 1)):
                 if (childProdBrws.state not in excludeStatuses) and (childProdBrws.state not in includeStatuses):
-                    errors.append(_("Product code: %r status %r") % (childProdBrws.engineering_code, childProdBrws.state))
+                    errors.append(_("Product code: %r revision %r status %r") % (childProdBrws.engineering_code, childProdBrws.engineering_revision, childProdBrws.state))
                     continue
                 if childProdBrws.state in includeStatuses:
                     if childProdBrws.id not in tobeReleasedIDs:
@@ -532,13 +545,13 @@ class PlmComponent(models.Model):
     def _iswritable(self, oid):
         checkState = ('draft')
         if not oid.engineering_writable:
-            logging.warning("_iswritable : Part (%r) is not writable." % (oid.engineering_code))
+            logging.warning("_iswritable : Part (%r - %d) is not writable." % (oid.engineering_code, oid.engineering_revision))
             return False
         if oid.state not in checkState:
-            logging.warning("_iswritable : Part (%r) is in status %r." % (oid.engineering_code, oid.state))
+            logging.warning("_iswritable : Part (%r - %d) is in status %r." % (oid.engineering_code, oid.engineering_revision, oid.state))
             return False
         if not oid.engineering_code:
-            logging.warning("_iswritable : Part (%r) is without Engineering P/N." % (oid.name))
+            logging.warning("_iswritable : Part (%r - %d) is without Engineering P/N." % (oid.name, oid.engineering_revision))
             return False
         return True
 
@@ -550,6 +563,22 @@ class PlmComponent(models.Model):
         if not (body == ''):
             for compObj in self:
                 compObj.message_post(body=_(body))
+
+    @api.multi
+    def unlink(self):
+        values = {'state': 'released'}
+        checkState = ('undermodify', 'obsoleted')
+        for checkObj in self:
+            prodBrwsList = self.search([('engineering_code', '=', checkObj.engineering_code),
+                                        ('engineering_revision', '=', checkObj.engineering_revision - 1)])
+            if len(prodBrwsList) > 0:
+                oldObject = prodBrwsList[0]
+                if oldObject.state in checkState:
+                    oldObject.wf_message_post(body=_('Removed : Latest Revision.'))
+                    if not self.browse([oldObject.id]).write(values):
+                        logging.warning("unlink : Unable to update state to old component (%r - %d)." % (oldObject.engineering_code, oldObject.engineering_revision))
+                        return False
+        return super(PlmComponent, self).unlink()
 
     @api.multi
     def action_draft(self):
@@ -583,31 +612,47 @@ class PlmComponent(models.Model):
             includeStatuses = ['draft']
             compObj._action_to_perform(status, action, docaction, defaults, excludeStatuses, includeStatuses)
 
+    @api.model
+    def _getbyrevision(self, name, revision):
+        return self.search([('engineering_code', '=', name),
+                            ('engineering_revision', '=', revision)])
+
     @api.multi
     def action_release(self):
         """
            action to be executed for Released state
         """
         for compObj in self:
-            tmpl_ids = []
-            full_ids = []
+            childrenProductToEmit = []
+            product_tmpl_ids = []
             defaults = {}
+            prodTmplType = self.env['product.template']
             excludeStatuses = ['released', 'undermodify', 'obsoleted']
             includeStatuses = ['confirmed']
-            errors, allIDs = compObj._get_recursive_parts(excludeStatuses, includeStatuses)
-            if len(allIDs) < 1 or len(errors) > 0:
+            errors, product_ids = compObj._get_recursive_parts(excludeStatuses, includeStatuses)
+            if len(product_ids) < 1 or len(errors) > 0:
                 raise UserError(errors)
-            allProdObjs = self.browse(allIDs)
-            compObj._action_ondocuments('release')
-            for currId in allProdObjs:
-                if not(currId.id in compObj.ids):
-                    tmpl_ids.append(currId.product_tmpl_id.id)
-                full_ids.append(currId.product_tmpl_id.id)
-            self.browse(tmpl_ids).signal_workflow('release')
-            defaults['state'] = 'released'
-            objId = self.env['product.template'].browse(full_ids).write(defaults)
+            allProdObjs = self.browse(product_ids)
+            for oldProductBrw in allProdObjs:
+                last_id = self._getbyrevision(oldProductBrw.engineering_code, oldProductBrw.engineering_revision - 1)
+                if last_id is not None:
+                    defaults['engineering_writable'] = False
+                    defaults['state'] = 'obsoleted'
+                    prodObj = self.browse([last_id])
+                    prodTmplType.write([prodObj.product_tmpl_id.id], defaults)
+                    self.wf_message_post([last_id], body=_('Status moved to: %s.' % (USEDIC_STATES[defaults['state']])))
+                defaults['engineering_writable'] = False
+                defaults['state'] = 'released'
+            product_ids._action_ondocuments('release')
+            for currentProductId in allProdObjs:
+                if not(currentProductId.id in self.env.ids):
+                    childrenProductToEmit.append(currentProductId.id)
+                product_tmpl_ids.append(currentProductId.product_tmpl_id.id)
+            self.browse(childrenProductToEmit).signal_workflow('release')
+            objId = prodTmplType.browse(product_tmpl_ids).write(defaults)
             if (objId):
-                self.browse(allIDs).wf_message_post(body=_('Status moved to: %s.' % (USEDIC_STATES[defaults['state']])))
+                self.browse(product_ids).wf_message_post(body=_('Status moved to: %s.' % (USEDIC_STATES[defaults['state']])))
+            return objId
 
     @api.multi
     def action_obsolete(self):
@@ -692,20 +737,21 @@ class PlmComponent(models.Model):
             raise Exception(_(" (%r). It has tried to create with values : (%r).") % (ex, vals))
 
     @api.multi
-    def copy(self, default={}):
+    def copy(self, defaults={}):
         """
             Overwrite the default copy method
         """
         previous_name = self.name
-        if not default.get('name', False):
-            default['name'] = '-'                   # If field is required super of clone will fail returning False, this is the case
-            default['engineering_code'] = '-'
+        if not defaults.get('name', False):
+            defaults['name'] = '-'                   # If field is required super of clone will fail returning False, this is the case
+            defaults['engineering_code'] = '-'
+            defaults['engineering_revision'] = 0
         # assign default value
-        default['state'] = 'draft'
-        default['engineering_writable'] = True
-        default['write_date'] = None
-        default['linkeddocuments'] = []
-        objId = super(PlmComponent, self).copy(default=default)
+        defaults['state'] = 'draft'
+        defaults['engineering_writable'] = True
+        defaults['write_date'] = None
+        defaults['linkeddocuments'] = []
+        objId = super(PlmComponent, self).copy(defaults)
         if (objId):
             self.wf_message_post(body=_('Copied starting from : %s.' % previous_name))
         return objId

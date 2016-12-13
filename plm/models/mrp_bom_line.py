@@ -80,6 +80,11 @@ class MrpBomLineExtension(models.Model):
     itemnum = fields.Integer(_('CAD Item Position'), help=_("This is the item reference position into the CAD document that declares this BoM."))
     itemlbl = fields.Char(_('CAD Item Position Label'), size=64)
 
+    engineering_revision = fields.Integer(related="product_id.engineering_revision",
+                                          string=_("Revision"),
+                                          help=_("The revision of the product."),
+                                          store=False)
+
 MrpBomLineExtension()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

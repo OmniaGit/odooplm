@@ -91,10 +91,10 @@
                 </div> 
                  <group colspan="4" col="2" name="group_name">
                       <field name="name" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
-                      <field name="engineering_revision" readonly="True"/>
                  </group>
            		<group name="PNArea">
           			<field name="engineering_code" attrs="{'readonly':[('state','!=','draft')]}" select="1"/>
+          			<field name="engineering_revision" 	colspan="2" readonly="True"/>
            			<field name="state" readonly="True"/>	
           			<field name="std_description" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/> 	
            			<label for="description"/>
@@ -166,6 +166,7 @@
             <field name="arch" type="xml">
                 <tree string="Bill of Materials">
                     <field name="name" string="Component Name"/>
+                    <field name="engineering_revision" string="Revision"/>
                     <field name="description"/>
                 </tree>
             </field>
