@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 ##############################################################################
 #
-#    OmniaSolutions, Open Source Management Solution    
+#    OmniaSolutions, Open Source Management Solution
 #    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
 #    $Id$
 #
@@ -44,9 +44,9 @@ class PackAndGo(osv.osv.osv_memory):
         """
         return self._context.get('active_id', 0)
 
-    component_id    = fields.Many2one('product.product', _('Component'), default=setComponentFromContext)
-    name            = fields.Char('Attachment Name', required=True, default=' ')
-    type            = fields.Selection( [ ('url','URL'), ('binary','File'), ], 'Type', help="You can either upload a file from your computer or copy/paste an internet link to your file", required=True, change_default=True, default='binary')
+    component_id = fields.Many2one('product.product', _('Component'), default=setComponentFromContext)
+    name = fields.Char('Attachment Name', required=True, default=' ')
+    type = fields.Selection([('url', 'URL'), ('binary', 'File')], 'Type', help="You can either upload a file from your computer or copy/paste an internet link to your file", required=True, change_default=True, default='binary')
 
     def computeDocFiles(self, compBrws, tmpSubFolder, filestorePath=''):
         for docBws in compBrws.linkeddocuments:
@@ -55,11 +55,6 @@ class PackAndGo(osv.osv.osv_memory):
                 if os.path.exists(fileName):
                     outFilePath = os.path.join(tmpSubFolder, docBws.datas_fname)
                     shutil.copyfile(fileName, outFilePath)
-        #Commented because now we take pure file instead read it from database
-        
-#             outFilePath = os.path.join(tmpSubFolder, docBws.datas_fname)
-#             with open(outFilePath, 'wb') as outDocFile:
-#                 outDocFile.write(docBws.datas)
 
     @api.multi
     def action_export_zip(self):
