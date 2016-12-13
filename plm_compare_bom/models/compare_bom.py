@@ -27,7 +27,7 @@ _logger = logging.getLogger(__name__)
 
 def _moduleName():
     path = os.path.dirname(__file__)
-    return os.path.basename(os.path.dirname(os.path.dirname(path)))
+    return os.path.basename(os.path.dirname(path))
 openerpModule = _moduleName()
 
 
@@ -107,9 +107,9 @@ class plm_compare_bom(osv.osv.osv_memory):
         if len(ids) < 1:
             return False
 
-        adding_obj = self.pool.get('plm.adding.bom')
-        missing_obj = self.pool.get('plm.missing.bom')
-        data_obj = self.pool.get('ir.model.data')
+        adding_obj = self.env['plm.adding.bom']
+        missing_obj = self.env['plm.missing.bom']
+        data_obj = self.env['ir.model.data']
 
         checkObj = self.browse(ids[0])
         differs, changes = self._compare_Bom(checkObj.bom_id1, checkObj.bom_id2)
@@ -188,7 +188,8 @@ class plm_compare_bom(osv.osv.osv_memory):
             'type': 'ir.actions.act_window',
         }
 
-    def _compare_Bom(self, cr, uid, oid1=False, oid2=False, context={}):
+    @api.model
+    def _compare_Bom(self, oid1=False, oid2=False):
         """
             Create a new Normal Bom (recursive on all EBom children)
         """
@@ -198,8 +199,8 @@ class plm_compare_bom(osv.osv.osv_memory):
         fields = ['name', 'engineering_revision']                   # Evaluate differences
         boolfields = ['name', 'itemnum', 'product_qty']             # Evaluate changes
 
-        differs = self._differs_Bom(cr, uid, oid1, oid2, fields)
-        changes = self._differs_Bom(cr, uid, oid1, oid2, boolfields)
+        differs = self._differs_Bom(oid1, oid2, fields)
+        changes = self._differs_Bom(oid1, oid2, boolfields)
         if len(differs) < 1 and len(changes) < 1:
             return ((changesA, changesB), (changesA, changesB))
 
@@ -223,7 +224,8 @@ class plm_compare_bom(osv.osv.osv_memory):
 
         return (differs, (changesA, changesB))
 
-    def _unpackData(self, cr, uid, oid, fields=[]):
+    @api.model
+    def _unpackData(self, oid, fields=[]):
         """
             Export data about products and BoM, formatting as required to match.
         """
@@ -233,8 +235,8 @@ class plm_compare_bom(osv.osv.osv_memory):
         objProd = []
         dictData = {}
         if len(oid.bom_line_ids):
-            prod_names = oid.bom_line_ids[0].product_id._all_columns.keys()
-            bom_names = oid.bom_line_ids[0]._all_columns.keys()
+            prod_names = oid.bom_line_ids[0].product_id._fields.keys()
+            bom_names = oid.bom_line_ids[0]._fields.keys()
             for bom_line in oid.bom_line_ids:
                 idList.append(bom_line.id)
                 objList.append(bom_line)
@@ -252,15 +254,16 @@ class plm_compare_bom(osv.osv.osv_memory):
                     dictData[bom_line.id] = row_data
         return (idList, listData, objList, objProd, dictData)
 
-    def _differs_Bom(self, cr, uid, oid1=False, oid2=False, fields=[]):
+    @api.model
+    def _differs_Bom(self, oid1=False, oid2=False, fields=[]):
         """
             Create a new Normal Bom (recursive on all EBom children)
         """
         if not oid1 or not oid2 or not fields:
-            return False
+            return ()
 
-        idList1, listData1, objList1, objProd1, dictData1 = self._unpackData(cr, uid, oid1, fields)
-        idList2, listData2, objList2, objProd2, dictData2 = self._unpackData(cr, uid, oid2, fields)
+        idList1, listData1, objList1, objProd1, dictData1 = self._unpackData(oid1, fields)
+        idList2, listData2, objList2, objProd2, dictData2 = self._unpackData(oid2, fields)
 
         index = 0
         counted = len(listData1)
