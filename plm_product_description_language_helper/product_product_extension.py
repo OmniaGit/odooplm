@@ -35,12 +35,15 @@ from openerp import _
 class ProductProductExtension(models.Model):
     _inherit = 'product.product'
 
-    def copy(self, cr, uid, _id, default=None, context={}):
+    @api.multi
+    def copy(self, default=None):
         '''
             Set flag to skip translation creation because super copy function makes the trick
         '''
-        context['skip_translations'] = True
-        return super(ProductProductExtension, self).copy(cr, uid, _id, default, context)
+        for prodBrws in self:
+            newContext = self.env.context.copy()
+            newContext['skip_translations'] = True
+            return super(ProductProductExtension, prodBrws.with_context(newContext)).copy(default)
 
     @api.model
     def create(self, vals):
