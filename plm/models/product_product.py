@@ -793,7 +793,7 @@ class PlmComponent(models.Model):
                 defaults['engineering_writable'] = True
                 defaults['state'] = 'draft'
                 defaults['linkeddocuments'] = []                  # Clean attached documents for new revision object
-                newCompBrws = oldObject.copy(default=defaults)
+                newCompBrws = oldObject.copy(defaults)
                 oldObject.wf_message_post(body=_('Created : New Revision.'))
                 newComponentId = newCompBrws.id
                 break

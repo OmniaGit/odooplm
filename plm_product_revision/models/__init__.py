@@ -29,6 +29,5 @@ Created on 31 Aug 2016
 import mrp_bom
 import mrp_bom_line
 import product_product
-import product_template
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
