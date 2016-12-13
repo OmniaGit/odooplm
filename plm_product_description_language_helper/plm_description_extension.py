@@ -33,11 +33,10 @@ from openerp import _
 class PlmDescriptionExtension(models.Model):
     _name = 'plm.description'
     _inherit = 'plm.description'
-    name            = fields.Char(_('Note to Description'), size=128, translate=True)
-    description     = fields.Char(_('Standard Description'), size=128, translate=True)
-    umc1            = fields.Char(_('UM / Feature 1'), size=32,  help=_("Allow to specify a unit measure or a label for the feature."), translate=True)
-    umc2            = fields.Char(_('UM / Feature 2'), size=32, help=_("Allow to specify a unit measure or a label for the feature."), translate=True)
-    umc3            = fields.Char(_('UM / Feature 3'), size=32, help=_("Allow to specify a unit measure or a label for the feature."), translate=True)
-    
-    
+    name = fields.Char(_('Note to Description'), size=128, translate=True)
+    description = fields.Char(_('Standard Description'), size=128, translate=True)
+    umc1 = fields.Char(_('UM / Feature 1'), size=32, help=_("Allow to specify a unit measure or a label for the feature."), translate=True)
+    umc2 = fields.Char(_('UM / Feature 2'), size=32, help=_("Allow to specify a unit measure or a label for the feature."), translate=True)
+    umc3 = fields.Char(_('UM / Feature 3'), size=32, help=_("Allow to specify a unit measure or a label for the feature."), translate=True)
+
 PlmDescriptionExtension()
