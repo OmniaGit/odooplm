@@ -180,6 +180,7 @@ class bom_spare_header(report_sxw.rml_parse):
         super(bom_spare_header, self).__init__(cr, uid, name, context=context)
         self.cr = cr
         self.uid = uid
+        self.env = odoo.api.Environment(cr, uid, context or {})
         self.context = context
         self.localcontext.update({
             'time': time,
@@ -191,7 +192,7 @@ class bom_spare_header(report_sxw.rml_parse):
         # self.pool = pooler.get_pool(self.cr.dbname)
         # FIXME: odoo removed pooler fix me
         component_ids = self.context.get('active_ids', [])
-        for compBrws in self.pool.get('product.product').browse(self.cr, self.uid, component_ids):
+        for compBrws in self.env['product.product'].browse(component_ids):
             return compBrws
         return ''
 
@@ -224,14 +225,13 @@ class component_spare_parts_report(report_int):
         if self._report_int__name == 'report.product.product.spare.parts.pdf.one':
             recursion = False
         self.processedObjs = []
-        env = odoo.api.Environment(cr, uid, context or {})
-        componentType = env['product.product']
-        bomType = env['mrp.bom']
-        userType = env['res.users']
-        user = userType.browse(cr, uid, uid, context=context)
+        self.env = odoo.api.Environment(cr, uid, context or {})
+        componentType = self.env['product.product']
+        bomType = self.env['mrp.bom']
+        user = self.env['res.users'].browse(uid)
         msg = getBottomMessage(user, context)
         output = BookCollector(customTest=(True, msg))
-        components = componentType.browse(cr, uid, ids, context=context)
+        components = componentType.browse(ids)
         for component in components:
             self.processedObjs = []
             buf = self.getFirstPage(cr, uid, [component.id], context)
@@ -252,14 +252,13 @@ class component_spare_parts_report(report_int):
         packedIds = []
         if product in self.processedObjs:
             return
-        bomIds = bomTemplate.search(cr, uid, [('product_id', '=', product.id), ('type', '=', 'spbom')])
-        if len(bomIds) < 1:
-            bomIds = bomTemplate.search(cr, uid, [('product_tmpl_id', '=', product.product_tmpl_id.id), ('type', '=', 'spbom')])
-        if len(bomIds) > 0:
-            BomObject = bomTemplate.browse(cr, uid, bomIds[0], context=context)
-            if BomObject:
+        bomBrwsIds = bomTemplate.search([('product_id', '=', product.id), ('type', '=', 'spbom')])
+        if len(bomBrwsIds) < 1:
+            bomBrwsIds = bomTemplate.search([('product_tmpl_id', '=', product.product_tmpl_id.id), ('type', '=', 'spbom')])
+        if len(bomBrwsIds) > 0:
+            if bomBrwsIds:
                 self.processedObjs.append(product)
-                for bom_line in BomObject.bom_line_ids:
+                for bom_line in bomBrwsIds.bom_line_ids:
                     packedObjs.append(bom_line.product_id)
                     packedIds.append(bom_line.id)
                 if len(packedIds) > 0:
@@ -270,10 +269,10 @@ class component_spare_parts_report(report_int):
                             logging.error(ex)
                             raise ex
                     context['starting_model'] = 'product.product'
-                    context['active_ids'] = bomIds
+                    context['active_ids'] = bomBrwsIds.ids
                     context['active_model'] = 'mrp.bom'
-                    template_ids = self.pool.get('ir.ui.view').search(cr, uid, [('name', '=', 'bom_structure_one')])
-                    pdf = self.pool.get('report').get_pdf(cr, uid, template_ids, 'plm.bom_structure_one', context=context)
+                    template_ids = self.env['ir.ui.view'].search([('name', '=', 'plm.bom_structure_one')])
+                    pdf = self.env['report'].with_context(context).get_pdf(template_ids, 'plm.bom_structure_one')
                     pageStream = StringIO.StringIO()
                     pageStream.write(pdf)
                     output.addPage((pageStream, ''))
@@ -284,7 +283,7 @@ class component_spare_parts_report(report_int):
 
     def getPdfComponentLayout(self, cr, component):
         ret = []
-        docRepository = self.pool.get('plm.document')._get_filestore(cr)
+        docRepository = self.env['plm.document']._get_filestore()
         for document in component.linkeddocuments:
             if (document.usedforspare) and (document.type == 'binary'):
                 if document.printout and str(document.printout) != 'None':
@@ -297,10 +296,10 @@ class component_spare_parts_report(report_int):
 
     def getFirstPage(self, cr, uid, ids, context):
         strbuffer = StringIO.StringIO()
-        template_ids = self.pool.get('ir.ui.view').search(cr, uid, [('name', '=', 'bom_spare_header')])
+        template_ids = self.env['ir.ui.view'].search([('name', '=', 'bom_spare_header')])
         context['active_ids'] = ids
         context['active_model'] = 'product.product'
-        pdf = self.pool.get('report').get_pdf(cr, uid, template_ids, 'plm_spare.bom_spare_header', context=context)
+        pdf = self.env['report'].get_pdf(template_ids, 'plm_spare.bom_spare_header')
         strbuffer.write(pdf)
         return strbuffer
 

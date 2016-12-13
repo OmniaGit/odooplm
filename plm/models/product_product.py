@@ -638,14 +638,13 @@ class PlmComponent(models.Model):
                 if last_id is not None:
                     defaults['engineering_writable'] = False
                     defaults['state'] = 'obsoleted'
-                    prodObj = self.browse([last_id])
-                    prodTmplType.write([prodObj.product_tmpl_id.id], defaults)
-                    self.wf_message_post([last_id], body=_('Status moved to: %s.' % (USEDIC_STATES[defaults['state']])))
+                    last_id.product_tmpl_id.write(defaults)
+                    last_id.wf_message_post(body=_('Status moved to: %s.' % (USEDIC_STATES[defaults['state']])))
                 defaults['engineering_writable'] = False
                 defaults['state'] = 'released'
-            product_ids._action_ondocuments('release')
+            self.browse(product_ids)._action_ondocuments('release')
             for currentProductId in allProdObjs:
-                if not(currentProductId.id in self.env.ids):
+                if not(currentProductId.id in self.ids):
                     childrenProductToEmit.append(currentProductId.id)
                 product_tmpl_ids.append(currentProductId.product_tmpl_id.id)
             self.browse(childrenProductToEmit).signal_workflow('release')
