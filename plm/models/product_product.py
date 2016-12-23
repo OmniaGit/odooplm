@@ -595,6 +595,7 @@ class PlmComponent(models.Model):
             excludeStatuses = ['draft', 'released', 'undermodify', 'obsoleted']
             includeStatuses = ['confirmed', 'transmitted']
             compObj._action_to_perform(status, action, docaction, defaults, excludeStatuses, includeStatuses)
+        return True
 
     @api.multi
     def action_confirm(self):
@@ -611,6 +612,7 @@ class PlmComponent(models.Model):
             excludeStatuses = ['confirmed', 'transmitted', 'released', 'undermodify', 'obsoleted']
             includeStatuses = ['draft']
             compObj._action_to_perform(status, action, docaction, defaults, excludeStatuses, includeStatuses)
+        return True
 
     @api.model
     def _getbyrevision(self, name, revision):
@@ -652,6 +654,7 @@ class PlmComponent(models.Model):
             if (objId):
                 self.browse(product_ids).wf_message_post(body=_('Status moved to: %s.' % (USEDIC_STATES[defaults['state']])))
             return objId
+        return False
 
     @api.multi
     def action_obsolete(self):
@@ -668,6 +671,7 @@ class PlmComponent(models.Model):
             excludeStatuses = ['draft', 'confirmed', 'transmitted', 'undermodify', 'obsoleted']
             includeStatuses = ['released']
             compObj._action_to_perform(status, action, docaction, defaults, excludeStatuses, includeStatuses)
+        return True
 
     @api.multi
     def action_reactivate(self):
@@ -684,6 +688,7 @@ class PlmComponent(models.Model):
             excludeStatuses = ['draft', 'confirmed', 'transmitted', 'released', 'undermodify', 'obsoleted']
             includeStatuses = ['obsoleted']
             compObj._action_to_perform(status, action, docaction, defaults, excludeStatuses, includeStatuses)
+        return True
 
     @api.multi
     def _action_to_perform(self, status, action, docaction, defaults=[], excludeStatuses=[], includeStatuses=[]):
