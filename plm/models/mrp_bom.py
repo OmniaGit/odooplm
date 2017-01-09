@@ -523,6 +523,32 @@ class MrpBomExtension(models.Model):
                                    'type': bomType})
         self.bom_line_ids.ids.append(self.env['mrp.bom.line'].create(relationAttributes).id)
 
+    @api.multi      # Don't change me with @api.one or I don't work!!!
+    def open_related_bom_lines(self):
+        for bomBrws in self:
+            def recursion(bomBrwsList):
+                outBomLines = []
+                for bomBrws in bomBrwsList:
+                    lineBrwsList = bomBrws.bom_line_ids
+                    outBomLines.extend(lineBrwsList.ids)
+                    for lineBrws in lineBrwsList:
+                        bomsFound = self.search([('product_tmpl_id', '=', lineBrws.product_id.product_tmpl_id.id),
+                                                 ('type', '=', lineBrws.type),
+                                                 ('active', '=', True)])
+                        bottomLineIds = recursion(bomsFound)
+                        outBomLines.extend(bottomLineIds)
+                return outBomLines
+
+            bomLineIds = recursion(self)
+            return {'name': _('B.O.M. Lines'),
+                    'res_model': 'mrp.bom.line',
+                    'view_type': 'form',
+                    'view_mode': 'tree',
+                    'type': 'ir.actions.act_window',
+                    'domain': [('id', 'in', bomLineIds)],
+                    'context': {"group_by": ['bom_id']},
+                    }
+
 MrpBomExtension()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
