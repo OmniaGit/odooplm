@@ -54,6 +54,42 @@ class MrpBomLineExtension(models.Model):
             else:
                 self.child_line_ids = False
 
+    @api.one
+    @api.depends('product_id')
+    def _related_boms(self):
+        for bom_line in self:
+            if not self.product_id:
+                self.related_bom_id = []
+            else:
+                bomObjs = self.env['mrp.bom'].search([('product_tmpl_id', '=', bom_line.product_id.product_tmpl_id.id),
+                                                      ('type', '=', bom_line.type),
+                                                      ('active', '=', True)])
+                if not bomObjs:
+                    self.related_bom_ids = []
+                else:
+                    self.related_bom_ids = bomObjs.ids
+
+    @api.multi
+    def openRelatedBoms(self):
+        domain = [('id', 'in', self.related_bom_ids.ids)]
+        outActDict = {'name': _('B.O.M.'),
+                      'view_type': 'form',
+                      'res_model': 'mrp.bom',
+                      'type': 'ir.actions.act_window',
+                      'view_mode': 'tree,form'}
+        for lineBrws in self:
+            if lineBrws.type == 'normal':
+                domain.append(('type', '=', 'normal'))
+            elif lineBrws.type == 'ebom':
+                domain.append(('type', '=', 'ebom'))
+                outActDict['view_ids'] = [(5, 0, 0),
+                                          (0, 0, {'view_mode': 'tree', 'view_id': self.env.ref('plm.plm_bom_tree_view').id}),
+                                          (0, 0, {'view_mode': 'form', 'view_id': self.env.ref('plm.plm_bom_form_view_eng').id})]
+            elif lineBrws.type == 'spbom':
+                domain.append(('type', '=', 'spbom'))
+        outActDict['domain'] = domain
+        return outActDict
+
     state = fields.Selection(related="product_id.state",
                              string=_("Status"),
                              help=_("The status of the product in its LifeCycle."),
@@ -84,6 +120,11 @@ class MrpBomLineExtension(models.Model):
                                           string=_("Revision"),
                                           help=_("The revision of the product."),
                                           store=False)
+    related_bom_ids = fields.One2many(compute='_related_boms',
+                                      string='Related BOMs',
+                                      digits=0,
+                                      readonly=True)
+
 
 MrpBomLineExtension()
 
