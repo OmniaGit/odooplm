@@ -121,6 +121,7 @@ class MrpBomLineExtension(models.Model):
                                           help=_("The revision of the product."),
                                           store=False)
     related_bom_ids = fields.One2many(compute='_related_boms',
+                                      comodel_name='mrp.bom',
                                       string='Related BOMs',
                                       digits=0,
                                       readonly=True)
