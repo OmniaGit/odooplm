@@ -15,11 +15,11 @@
             	rgb(230,100,0):state == 'undermodify';
             	rgb(231, 43, 26):state == 'obsoleted';"
             	fonts="bold:state == 'released';">  
-                <field name="name"/>
-                <field name="engineering_code"/>
-                <field name="engineering_revision"/>
-                <field name="state"/>
-                <field name="description"/>
+                <field name="name" select="1"/>		<!-- Koo search for "select" attribute to use it as filter, so do not remove it-->
+                <field name="engineering_code" select="1"/>
+                <field name="engineering_revision" select="1"/>
+                <field name="state" select="1"/>
+                <field name="description" select="1"/>
                 <field name="engineering_writable" invisible="1" />
                 <field name="engineering_material"/>
                 <field name="engineering_surface"/>
