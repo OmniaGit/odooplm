@@ -889,7 +889,7 @@ class PlmDocument(models.Model):
             selection = selection * (-1)
 
         if selection == 2:
-            docArray = self._getlastrev(self.ids)
+            docArray = self._getlastrev(ids)
         else:
             docArray = ids
         return self.browse(docArray)._data_get_files(listedFiles, forceFlag)
