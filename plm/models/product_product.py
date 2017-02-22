@@ -954,12 +954,12 @@ class ProductProductDashboard(models.Model):
         cr.execute("""
             CREATE OR REPLACE VIEW report_plm_component AS (
                 SELECT
-                    (SELECT min(id) FROM product_template) as id,
-                    (SELECT count(*) FROM product_template WHERE state = 'draft') AS count_component_draft,
-                    (SELECT count(*) FROM product_template WHERE state = 'confirmed') AS count_component_confirmed,
-                    (SELECT count(*) FROM product_template WHERE state = 'released') AS count_component_released,
-                    (SELECT count(*) FROM product_template WHERE state = 'undermodify') AS count_component_modified,
-                    (SELECT count(*) FROM product_template WHERE state = 'obsoleted') AS count_component_obsoleted
+                    (SELECT min(id) FROM product_template where engineering_code<>'') as id,
+                    (SELECT count(*) FROM product_template WHERE state = 'draft' and  engineering_code<>'') AS count_component_draft,
+                    (SELECT count(*) FROM product_template WHERE state = 'confirmed' and  engineering_code<>'') AS count_component_confirmed,
+                    (SELECT count(*) FROM product_template WHERE state = 'released' and  engineering_code<>'') AS count_component_released,
+                    (SELECT count(*) FROM product_template WHERE state = 'undermodify' and  engineering_code<>'') AS count_component_modified,
+                    (SELECT count(*) FROM product_template WHERE state = 'obsoleted' and  engineering_code<>'') AS count_component_obsoleted
              )
         """)
 
