@@ -34,11 +34,17 @@ class PlmConfigSettings(models.Model):
     _name = 'plm.config.settings'
     _inherit = 'res.config.settings'
 
-    module_plm_automatic_weight = fields.Boolean(_("Plm Automatic Weight"))
-    module_plm_cutted_parts = fields.Boolean(_("Plm Cutted Parts"))
-    module_plm_pack_and_go = fields.Boolean(_("Plm Pack and go"))
-    module_product_description_language_helper = fields.Boolean(_("Plm Product Description Language Helper"))
-    module_plm_report_language_helper = fields.Boolean(_("Plm Report Language Helper"))
+    module_plm_automate_normal_bom = fields.Boolean(_("Allow to create normal BOM if not exists and product are released."))
+    module_plm_automatic_weight = fields.Boolean(_("PLM Automatic Weight"))
+    module_plm_compare_bom = fields.Boolean(_("Allow to compare two BOM"))
+    module_plm_cutted_parts = fields.Boolean(_("Manage BOM explosion for cutted parts"))
+    module_plm_date_bom = fields.Boolean(_("Manage BOM due to date"))
+    module_plm_engineering = fields.Boolean(_("Allow to use engineering BOM"))
+    module_plm_pack_and_go = fields.Boolean(_("PLM Pack and go"))
+    module_plm_product_description_language_helper = fields.Boolean(_("Plm Product Description Language Helper"))
+    module_plm_report_language_helper = fields.Boolean(_("Manage Multi Language PLM reports"))
+    module_plm_spare = fields.Boolean(_("Add spare BOM and Spare Parts Manual"))
+    module_plm_web_revision = fields.Boolean(_("Allow to create new revision from WEB"))
 
 PlmConfigSettings()
 

@@ -1,14 +1,205 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
         <data>
-                <record id="group_plm_viewuser" model="res.groups">
-                        <field name="name">PLM / View User</field>
+                <record id="odooplm_module_category" model="ir.module.category">
+                        <field name="name">OdooPLM</field>
                 </record>
+<!-- View User  -->
+                <record id="group_plm_view_user" model="res.groups">
+                        <field name="name">View User</field>
+                        <field name="category_id" ref="odooplm_module_category"/>
+                </record>
+                <record id="plm_document" model="ir.model.access">
+		            <field name="name">PLM Document</field>
+		            <field name="model_id" ref="model_plm_document"/>
+		            <field name="group_id" eval="group_plm_view_user"/>
+		            <field name="perm_read" eval="True"/>
+		            <field name="perm_write" eval="False"/>
+		            <field name="perm_create" eval="False"/>
+		            <field name="perm_unlink" eval="False"/>
+        		</record>
+                <record id="report_plm_document" model="ir.model.access">
+		            <field name="name">PLM Document report</field>
+		            <field name="model_id" ref="model_report_plm_document_file"/>
+		            <field name="group_id" eval="group_plm_view_user"/>
+		            <field name="perm_read" eval="True"/>
+		            <field name="perm_write" eval="False"/>
+		            <field name="perm_create" eval="False"/>
+		            <field name="perm_unlink" eval="False"/>
+        		</record>  
+                <record id="report_plm_document_user" model="ir.model.access">
+		            <field name="name">PLM Document report user</field>
+		            <field name="model_id" ref="model_report_plm_document_user"/>
+		            <field name="group_id" eval="group_plm_view_user"/>
+		            <field name="perm_read" eval="True"/>
+		            <field name="perm_write" eval="False"/>
+		            <field name="perm_create" eval="False"/>
+		            <field name="perm_unlink" eval="False"/>
+        		</record>              
+                <record id="report_plm_files_partner" model="ir.model.access">
+		            <field name="name">PLM Document report partner</field>
+		            <field name="model_id" ref="model_report_plm_files_partner"/>
+		            <field name="group_id" eval="group_plm_view_user"/>
+		            <field name="perm_read" eval="True"/>
+		            <field name="perm_write" eval="False"/>
+		            <field name="perm_create" eval="False"/>
+		            <field name="perm_unlink" eval="False"/>
+        		</record>                 
+                <record id="report_plm_document_wall" model="ir.model.access">
+		            <field name="name">PLM Document report wall</field>
+		            <field name="model_id" ref="model_report_plm_document_wall"/>
+		            <field name="group_id" eval="group_plm_view_user"/>
+		            <field name="perm_read" eval="True"/>
+		            <field name="perm_write" eval="False"/>
+		            <field name="perm_create" eval="False"/>
+		            <field name="perm_unlink" eval="False"/>
+        		</record>
+                <record id="plm_backupdoc" model="ir.model.access">
+		            <field name="name">PLM Back Up Document</field>
+		            <field name="model_id" ref="model_plm_backupdoc"/>
+		            <field name="group_id" eval="group_plm_view_user"/>
+		            <field name="perm_read" eval="True"/>
+		            <field name="perm_write" eval="False"/>
+		            <field name="perm_create" eval="False"/>
+		            <field name="perm_unlink" eval="False"/>
+        		</record>             
+                <record id="plm_checkout" model="ir.model.access">
+		            <field name="name">PLM Check Out</field>
+		            <field name="model_id" ref="model_plm_checkout"/>
+		            <field name="group_id" eval="group_plm_view_user"/>
+		            <field name="perm_read" eval="True"/>
+		            <field name="perm_write" eval="False"/>
+		            <field name="perm_create" eval="False"/>
+		            <field name="perm_unlink" eval="False"/>
+        		</record>      
+                <record id="plm_description" model="ir.model.access">
+		            <field name="name">PLM Description</field>
+		            <field name="model_id" ref="model_plm_description"/>
+		            <field name="group_id" eval="group_plm_view_user"/>
+		            <field name="perm_read" eval="True"/>
+		            <field name="perm_write" eval="False"/>
+		            <field name="perm_create" eval="False"/>
+		            <field name="perm_unlink" eval="False"/>
+        		</record>        		
+        		<record id="plm_document_relation" model="ir.model.access">
+		            <field name="name">PLM Document relation</field>
+		            <field name="model_id" ref="model_plm_document_relation"/>
+		            <field name="group_id" eval="group_plm_view_user"/>
+		            <field name="perm_read" eval="True"/>
+		            <field name="perm_write" eval="False"/>
+		            <field name="perm_create" eval="False"/>
+		            <field name="perm_unlink" eval="False"/>
+        		</record>
+        		<record id="plm_finishing" model="ir.model.access">
+		            <field name="name">PLM Finishing</field>
+		            <field name="model_id" ref="model_plm_finishing"/>
+		            <field name="group_id" eval="group_plm_view_user"/>
+		            <field name="perm_read" eval="True"/>
+		            <field name="perm_write" eval="False"/>
+		            <field name="perm_create" eval="False"/>
+		            <field name="perm_unlink" eval="False"/>
+        		</record>
+        		<record id="plm_material" model="ir.model.access">
+		            <field name="name">PLM Material</field>
+		            <field name="model_id" ref="model_plm_material"/>
+		            <field name="group_id" eval="group_plm_view_user"/>
+		            <field name="perm_read" eval="True"/>
+		            <field name="perm_write" eval="False"/>
+		            <field name="perm_create" eval="False"/>
+		            <field name="perm_unlink" eval="False"/>
+        		</record> 
+        		<record id="plm_component_document_rel" model="ir.model.access">
+		            <field name="name">PLM Product Document Rel</field>
+		            <field name="model_id" ref="model_plm_component_document_rel"/>
+		            <field name="group_id" eval="group_plm_view_user"/>
+		            <field name="perm_read" eval="True"/>
+		            <field name="perm_write" eval="False"/>
+		            <field name="perm_create" eval="False"/>
+		            <field name="perm_unlink" eval="False"/>
+        		</record>  
+        		<record id="report_plm_component" model="ir.model.access">
+		            <field name="name">PLM Report Component</field>
+		            <field name="model_id" ref="model_report_plmcomponent"/>
+		            <field name="group_id" eval="group_plm_view_user"/>
+		            <field name="perm_read" eval="True"/>
+		            <field name="perm_write" eval="True"/>
+		            <field name="perm_create" eval="True"/>
+		            <field name="perm_unlink" eval="True"/>
+        		</record>  
+<!-- Integration User  -->
                 <record id="group_plm_integrationuser" model="res.groups">
-                        <field name="name">PLM / Integration User</field>
+                        <field name="name">Integration User</field>
+                        <field name="category_id" ref="odooplm_module_category"/>
+                        <field name="implied_ids" eval="[(4, ref('group_plm_view_user'))]"/>
                 </record>
+                <record id="plm_component_document_rel" model="ir.model.access">
+		            <field name="name">PLM Product Document Rel</field>
+		            <field name="model_id" ref="model_plm_component_document_rel"/>
+		            <field name="group_id" eval="group_plm_view_user"/>
+		            <field name="perm_read" eval="True"/>
+		            <field name="perm_write" eval="True"/>
+		            <field name="perm_create" eval="True"/>
+		            <field name="perm_unlink" eval="True"/>
+        		</record>  
+        		<record id="plm_document_relation" model="ir.model.access">
+		            <field name="name">PLM Document relation</field>
+		            <field name="model_id" ref="model_plm_document_relation"/>
+		            <field name="group_id" eval="group_plm_view_user"/>
+		            <field name="perm_read" eval="True"/>
+		            <field name="perm_write" eval="True"/>
+		            <field name="perm_create" eval="True"/>
+		            <field name="perm_unlink" eval="True"/>
+        		</record>
+                <record id="plm_backupdoc" model="ir.model.access">
+		            <field name="name">PLM Back Up Document</field>
+		            <field name="model_id" ref="model_plm_backupdoc"/>
+		            <field name="group_id" eval="group_plm_view_user"/>
+		            <field name="perm_read" eval="True"/>
+		            <field name="perm_write" eval="True"/>
+		            <field name="perm_create" eval="True"/>
+		            <field name="perm_unlink" eval="False"/>
+        		</record>             
+                <record id="plm_checkout" model="ir.model.access">
+		            <field name="name">PLM Check Out</field>
+		            <field name="model_id" ref="model_plm_checkout"/>
+		            <field name="group_id" eval="group_plm_view_user"/>
+		            <field name="perm_read" eval="True"/>
+		            <field name="perm_write" eval="True"/>
+		            <field name="perm_create" eval="True"/>
+		            <field name="perm_unlink" eval="True"/>
+        		</record>  
+                <record id="plm_document" model="ir.model.access">
+		            <field name="name">PLM Document</field>
+		            <field name="model_id" ref="model_plm_document"/>
+		            <field name="group_id" eval="group_plm_view_user"/>
+		            <field name="perm_read" eval="True"/>
+		            <field name="perm_write" eval="True"/>
+		            <field name="perm_create" eval="True"/>
+		            <field name="perm_unlink" eval="False"/>
+        		</record>
+<!-- Administrator  -->
                 <record id="group_plm_admin" model="res.groups">
-                        <field name="name">PLM / Administrator</field>
+                        <field name="name">Administrator</field>
+                        <field name="category_id" ref="odooplm_module_category"/>
+                        <field name="implied_ids" eval="[(4, ref('group_plm_integrationuser'))]"/>
                 </record>
+                <record id="plm_backupdoc" model="ir.model.access">
+		            <field name="name">PLM Back Up Document</field>
+		            <field name="model_id" ref="model_plm_backupdoc"/>
+		            <field name="group_id" eval="group_plm_view_user"/>
+		            <field name="perm_read" eval="True"/>
+		            <field name="perm_write" eval="True"/>
+		            <field name="perm_create" eval="True"/>
+		            <field name="perm_unlink" eval="True"/>
+        		</record> 
+        		<record id="plm_document" model="ir.model.access">
+		            <field name="name">PLM Document</field>
+		            <field name="model_id" ref="model_plm_document"/>
+		            <field name="group_id" eval="group_plm_view_user"/>
+		            <field name="perm_read" eval="True"/>
+		            <field name="perm_write" eval="True"/>
+		            <field name="perm_create" eval="True"/>
+		            <field name="perm_unlink" eval="True"/>
+        		</record>
         </data>
 </openerp>

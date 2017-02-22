@@ -30,7 +30,7 @@
     'images': [],
     'depends': ['plm'],
     'description': """
-Allow to use spare boms
+Add spare BOM and Spare Parts Manual
 ==============================================
     """,
     'data': [

@@ -928,7 +928,7 @@ PlmTemporayMessage()
 
 
 class ProductProductDashboard(models.Model):
-    _name = "report.plm_component"
+    _name = "report.plmcomponent"
     _description = "Report Component"
     _auto = False
     count_component_draft = fields.Integer(_('Draft'),
@@ -952,7 +952,7 @@ class ProductProductDashboard(models.Model):
         cr = self.env.cr
         tools.drop_view_if_exists(cr, 'report_plm_component')
         cr.execute("""
-            CREATE OR REPLACE VIEW report_plm_component AS (
+            CREATE OR REPLACE VIEW report_plmcomponent AS (
                 SELECT
                     (SELECT min(id) FROM product_template where engineering_code<>'') as id,
                     (SELECT count(*) FROM product_template WHERE state = 'draft' and  engineering_code<>'') AS count_component_draft,

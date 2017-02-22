@@ -29,7 +29,7 @@
     'summary': 'PLM Revision from web side',
     'images': [],
     'depends': ['plm'],
-    'description': """ """,
+    'description': """Allow to create new revision from WEB""",
     'data': ['views/component_view_extension.xml',
              ],
     'installable': True,

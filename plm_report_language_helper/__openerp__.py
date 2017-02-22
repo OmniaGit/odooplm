@@ -29,7 +29,7 @@
     'summary': '',
     'images': [],
     'depends': ['plm', 'plm_spare'],
-    'description': """
+    'description': """Manage multilanguage PLM reports
     """,
     'data': [
             'views/plm_component_action_extended.xml'

@@ -11,21 +11,17 @@
                         <button string="Cancel" type="object" name="cancel" class="oe_link"/>
                     </header>
                     <group string="Settings">
-                        <group>
-		                    <field name="module_plm_automatic_weight" />
-		                </group>
-		                <group>
-		                    <field name="module_plm_cutted_parts" />
-		                </group>
-		                <group>
-		                    <field name="module_plm_pack_and_go" />
-		                </group>
-		                <group>
-		                    <field name="module_product_description_language_helper" />
-		                </group>
-                        <group>
-		                    <field name="module_plm_report_language_helper" />
-		                </group>
+	                    <field name="module_plm_automate_normal_bom" />
+	                    <field name="module_plm_automatic_weight" />
+	                    <field name="module_plm_compare_bom" />
+	                    <field name="module_plm_cutted_parts" />
+	                    <field name="module_plm_date_bom" />
+	                    <field name="module_plm_engineering" />
+	                    <field name="module_plm_pack_and_go" />
+	                    <field name="module_plm_product_description_language_helper" />
+	                    <field name="module_plm_report_language_helper" />
+	                    <field name="module_plm_spare" />
+	                    <field name="module_plm_web_revision" />
                     </group>
                 </form>
             </field>

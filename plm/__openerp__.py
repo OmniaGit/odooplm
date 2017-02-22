@@ -74,7 +74,9 @@ Supported Editors :
         * SPAC 2013 (needs SDProget connector license)
     """,
     'data': [
+            # security
             'security/base_plm_security.xml',
+            # views
             'views/import_stylesheet.xml',
             'views/mrp_extension.xml',
             'views/plm_backupdoc_view.xml',
@@ -90,20 +92,17 @@ Supported Editors :
             'views/product_template.xml',
             'views/sequence.xml',
             'views/menu.xml',
-
+            # WorkFlows
             'views/workflow/plm_document_workflow.xml',
             'views/workflow/product_product_workflow.xml',
-
+            # Report
             'report/bom_structure_report.xml',
             'report/bom_structure.xml',
             'report/checkout_report.xml',
             'report/component_report.xml',
             'report/document_report.xml',
-            'views/product_product_kanban.xml',  # After component_report.xml
-            # security
-            'security/res.groups.csv',
-            # TODO: reenable'security/ir.model.access.csv',
-            ],
+            'views/product_product_kanban.xml'],  # After component_report.xml
+
     'demo': [],
     'test': [],
     'installable': True,
