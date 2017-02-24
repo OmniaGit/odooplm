@@ -27,27 +27,26 @@
                 </graph>
             </field>
     </record>
-    
-    <record model="ir.ui.view" id="view_file_month">
+        
+    <record model="ir.ui.view" id="view_file_month_all">
             <field name="name">report.plm_document.user.graph</field>
             <field name="model">report.plm_document.file</field>
             <field name="type">graph</field>
-            <field name="domain">[('write_uid', '=', uid)]</field>
             <field name="arch" type="xml">
-                <graph string="Files by Month" type="bar" interval="month">
-                    <field name="nbr"/>
+                <graph string="Files by Month" type="bar">
+                    <field name="month"/>
+                    <field name="nbr" type="measure"/>
                 </graph>
             </field>
-    </record>
-    
-        <record model="ir.actions.act_window" id="action_view_file_month">
+    </record> 
+        
+        <record model="ir.actions.act_window" id="action_view_file_month_all">
             <field name="name">Files by Month</field>
             <field name="res_model">report.plm_document.file</field>
-            <field name="view_id" ref="view_file_month"></field>
+            <field name="view_id" ref="view_file_month_all"></field>
             <field name="view_type">form</field>
             <field name="view_mode">graph</field>
         </record>
-
         <record model="ir.actions.act_window" id="action_view_component_status_graph">
             <field name="name">Components Status</field>
             <field name="res_model">product.template</field>
@@ -76,6 +75,16 @@
             <field name="search_view_id" ref="plm.plm_document_search"/>
         </record>
         
+        <record model="ir.actions.act_window" id="action_view_documents_custom_admin">
+            <field name="name">Document Status</field>
+            <field name="res_model">plm.document</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{'group_by': ['create_date']}</field>
+            <field name="search_view_id" ref="plm.plm_document_search"/>
+        </record>
+        
  	    <record model="ir.actions.act_window" id="action_view_checkout_custom">
             <field name="name">CheckOut Documents</field>
             <field name="res_model">plm.checkout</field>
@@ -86,6 +95,16 @@
             <field name="context">{'group_by': ['create_date']}</field>
             <field name="search_view_id" ref="plm.plm_checkout_search"/>
         </record>
+ 	    
+ 	    <record model="ir.actions.act_window" id="action_view_checkout_custom_admin">
+            <field name="name">CheckOut Documents</field>
+            <field name="res_model">plm.checkout</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{'group_by': ['create_date']}</field>
+            <field name="search_view_id" ref="plm.plm_checkout_search"/>
+        </record>        
         
         <record model="ir.ui.view" id="board_plm_manager_form">
             <field name="name">board.plm.manager.form</field>
@@ -94,29 +113,43 @@
              <field name="arch" type="xml">
                 <form string="Document board">
                      <board style="1-1" >
-						
                      	<column>
+                               
+                            <action string="All Files by Month"
+                                	name="%(action_view_file_month_all)d"
+                                	groups="plm.group_plm_admin"
+                                	view_mode="graph"/>
+                             
                             <action string="My Documents"
-                                name="%(action_view_documents_custom)d"
-                                view_mode="tree,form"/>
-                            <action string="My Component Status"
-                                name="%(action_view_component_status)d"
-                                view_mode="tree"/>
+                            		groups="plm.group_plm_integrationuser"
+                                	name="%(action_view_documents_custom)d"
+                                	view_mode="tree,form"/>
+
+                            <action string="All Documents"
+                            		groups="plm.group_plm_admin"
+                                	name="%(action_view_documents_custom_admin)d"
+                                	view_mode="tree,form"/>
+
                             <action string="My Checked Out Documents"
-                                name="%(action_view_checkout_custom)d"
-                                view_mode="tree,form"/>
+                                	name="%(action_view_checkout_custom)d"
+                                	view_mode="tree,form"
+                                	groups="plm.group_plm_integrationuser"/>
 
+                            <action string="All Checked Out Documents"
+                                	name="%(action_view_checkout_custom_admin)d"
+                                	view_mode="tree,form"
+                                	groups="plm.group_plm_admin"/>
+                                	
                         </column>
-                     	
                      	<column>
-                            <action string="Files by Month"
-                                name="%(action_view_file_month)d"
-                                view_mode="graph"/>
-
                             <action string="Component Status"
-                                name="%(action_view_component_status_graph)d"
-                                domain="[('engineering_code', '!=', '')]"
-                                view_mode="graph"/>  
+                                	name="%(action_view_component_status_graph)d"
+                                	domain="[('engineering_code', '!=', '')]"
+                                	view_mode="graph"
+                                	groups="plm.group_plm_admin"/>  
+                            <action string="My Component Status"
+                                	name="%(action_view_component_status)d"
+                                	view_mode="tree"/>
                         </column>
                         
                      </board>

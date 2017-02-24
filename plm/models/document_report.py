@@ -41,7 +41,8 @@ class report_plm_document_file(models.Model):
     month = fields.Char(_('Month'),
                         size=24,
                         readonly=True)
-
+    write_uid = fields.Integer(_('Write User'),
+                               readonly=True)
     _order = "month"
 
     @api.model
@@ -52,10 +53,11 @@ class report_plm_document_file(models.Model):
             create or replace view report_plm_document_file as (
                 select min(f.id) as id,
                        count(*) as nbr,
-                       min(EXTRACT(MONTH FROM f.create_date)||'-'||to_char(f.create_date,'Month')) as month,
-                       sum(f.file_size) as file_size
+                       min(EXTRACT(YEAR FROM f.create_date)||'-'||EXTRACT(MONTH FROM f.create_date)) as month,
+                       sum(f.file_size) as file_size,
+                       f.write_uid as write_uid
                 from plm_document f
-                group by EXTRACT(MONTH FROM f.create_date)
+                group by EXTRACT(MONTH FROM f.create_date), write_uid
              )
         """)
 

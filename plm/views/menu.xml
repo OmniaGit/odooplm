@@ -9,6 +9,7 @@
     web_icon="plm,static/src/img/PLMmodule-hover.png" 
     web_icon_hover="plm,static/src/img/PLMmodule-hover.png" 
 	action = "plm.open_board_plm_manager"  
+	groups="plm.group_plm_view_user"
     />
     
     
@@ -19,6 +20,7 @@
     id="plm_dashboard_menu" 
     parent="plm.plm_menu" 
 	sequence="1" 
+	groups="plm.group_plm_integrationuser"
     name="Dashboard" />
     	
 	<menuitem 	
@@ -70,7 +72,8 @@
     name="Search on Checked-Out Documents" 
     action="plm.action_plm_checkout" 
     id="menu_checkout" 
-    parent="plm.plm_document_form" 
+    parent="plm.plm_document_form"
+    groups="plm.group_plm_integrationuser"
 	sequence="12"  
     />
 		
