@@ -39,7 +39,7 @@ class MrpBomExtension(models.Model):
 
     @api.model
     def _get_reference_eng_type(self):
-        moduleBrwsList = self.env['ir.module.module'].search([('name', '=', 'plm_spare')])
+        moduleBrwsList = self.env['ir.module.module'].sudo().search([('name', '=', 'plm_spare')])
         for modbrws in moduleBrwsList:
             if modbrws.state == 'installed':
                 return [('normal', _('Normal BoM')),
@@ -180,9 +180,9 @@ class MrpBomExtension(models.Model):
                 if ('product_qty' in res):
                     res['product_qty'] = repairQty(res['product_qty'])
                 return self.create(res).id
-            except:
-                logging.error("saveParent :  unable to create a relation for part (%s) with source (%d) : %s." % (name, sourceID, str(args)))
-                raise AttributeError(_("saveParent :  unable to create a relation for part (%s) with source (%d) : %s." % (name, sourceID, str(sys.exc_info()))))
+            except Exception, ex:
+                logging.error("saveParent :  unable to create a relation for part (%r) with source (%d) : %r. \n Error: %r" % (name, sourceID, str(args), ex))
+                raise AttributeError(_("saveParent :  unable to create a relation for part (%r) with source (%d) : %r. \n" % (name, sourceID, str(sys.exc_info()))))
 
         def saveChild(name, partID, sourceID, bomID=None, kindBom=None, args=None):
             """
