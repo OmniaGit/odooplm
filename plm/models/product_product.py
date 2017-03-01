@@ -757,7 +757,6 @@ class PlmComponent(models.Model):
         defaults['linkeddocuments'] = []
         objId = super(PlmComponent, self).copy(defaults)
         if (objId):
-            self.write({'state': 'draft'})
             self.wf_message_post(body=_('Copied starting from : %s.' % previous_name))
         return objId
 
