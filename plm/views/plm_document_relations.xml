@@ -104,5 +104,13 @@
         <field name="view_mode">tree,form</field>
     </record>
 
+    <act_window name="View Document Relations"
+        res_model="plm.document.relation"
+        src_model="plm.document"
+        view_mode="tree,form"
+        key2="client_action_multi"
+    	domain="['|', ('child_id', 'in', context.get('active_ids', [])), ('parent_id', '=', context.get('active_ids', []))]"
+        id="act_view_doc_related"/>
+
 </data>
 </openerp>
