@@ -9,7 +9,6 @@
             <field name="model">mrp.bom</field>
             <field name="inherit_id" ref="plm.plm_bom_form_view"/>
             <field name="type">form</field>
-        	<field name="priority" eval="18"/>
             <field name="arch" type="xml">
             	<data>
 	            	<xpath expr="//field[@name='bom_line_ids']/tree/field[@name='type']" position="after">

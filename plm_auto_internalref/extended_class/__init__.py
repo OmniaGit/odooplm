@@ -1,8 +1,9 @@
+# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
-#    Copyright (C) 25/mag/2016 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
-#    info@omniasolutions.eu
+#    Copyright (C) 2010 OmniaSolutions (<http://omniasolutions.eu>). All Rights Reserved
+#    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -18,22 +19,13 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+
 '''
-Created on 25/mag/2016
+Created on 9 Dec 2016
 
-@author: mboscolo
+@author: Daniel Smerghetto
 '''
-import logging
 
-from openerp import models, fields, api, SUPERUSER_ID, _, osv
-from openerp import tools
+import product_product
 
-_logger = logging.getLogger(__name__)
-
-
-class mrpBomLine_templateCuttedParts(models.Model):
-    _inherit = 'mrp.bom.line'
-    x_leght = fields.Float("X Lenght", default=0.0)
-    y_leght = fields.Float("Y Lenght", default=0.0)
-
-mrpBomLine_templateCuttedParts()
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

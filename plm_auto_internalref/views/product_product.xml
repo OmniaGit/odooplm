@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+<!-- Views -->		
+
+	    <record id="plm_product_product_internal_ref" model="ir.ui.view">
+            <field name="name">plm.internal.ref</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="plm.plm_component_base_form"/>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+            	<data>
+	            	<xpath expr="//field[@name='type']" position="after"> 
+		               	<field name="default_code" invisible='True'/>
+		           	</xpath>
+	           	</data>
+			</field>
+        </record>
+
+    </data>
+</openerp>

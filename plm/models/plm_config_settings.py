@@ -45,6 +45,7 @@ class PlmConfigSettings(models.Model):
     module_plm_report_language_helper = fields.Boolean(_("Manage Multi Language PLM reports"))
     module_plm_spare = fields.Boolean(_("Add spare BOM and Spare Parts Manual"))
     module_plm_web_revision = fields.Boolean(_("Allow to create new revision from WEB"))
+    module_plm_auto_internalref = fields.Boolean("Populate internal reference with engineering infos")
 
 PlmConfigSettings()
 

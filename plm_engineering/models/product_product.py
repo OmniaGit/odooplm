@@ -46,6 +46,10 @@ class ProductProductExtension(models.Model):
         bomType = self.env['mrp.bom']
         bomLType = self.env['mrp.bom.line']
         prodTmplObj = self.env['product.template']
+        stockConfigSettings = self.env['stock.config.settings']
+        variantIsInstalled = False
+        if len(stockConfigSettings.search([('group_product_variant', '=', 1)])) > 0:
+            variantIsInstalled = True
         collectList = []
 
         def getPreviousNormalBOM(bomBrws):
@@ -79,12 +83,16 @@ class ProductProductExtension(models.Model):
                 UserError(_("No Enginnering bom provided"))
             for eBomBrws in engBomBrwsList:
                 newBomBrws = eBomBrws.copy({})
-                newBomBrws.write({'name': objProductProductBrw.name,
-                                  'product_tmpl_id': product_template_id,
-                                  'type': newBomType,
-                                  'ebom_source_id': eBomId,
-                                  },
+                values = {'name': objProductProductBrw.name,
+                          'product_tmpl_id': product_template_id,
+                          'type': newBomType,
+                          'ebom_source_id': eBomId,
+                          }
+                if not variantIsInstalled:
+                    values['product_id'] = False
+                newBomBrws.write(values,
                                  check=False)
+
                 ok_rows = self._summarizeBom(newBomBrws.bom_line_ids)
                 # remove not summarized lines
                 for bom_line in list(set(newBomBrws.bom_line_ids) ^ set(ok_rows)):

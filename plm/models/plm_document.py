@@ -239,7 +239,10 @@ class PlmDocument(models.Model):
     @api.multi
     def _data_check_files(self, targetIds, listedFiles=(), forceFlag=False):
         result = []
-        datefiles, listfiles = listedFiles
+        datefiles = []
+        listfiles = []
+        if len(listedFiles) > 0:
+            datefiles, listfiles = listedFiles
         for objDoc in self.browse(targetIds):
             if objDoc.type == 'binary':
                 checkOutUser = ''

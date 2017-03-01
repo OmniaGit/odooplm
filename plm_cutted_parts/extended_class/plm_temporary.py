@@ -25,11 +25,10 @@ Created on 25/mag/2016
 '''
 
 import logging
-from openerp import models, fields, api, SUPERUSER_ID, _, osv
-from openerp import tools
-import base64
-import os
-import shutil
+from openerp import models
+from openerp import fields
+from openerp import osv
+from openerp import _
 _logger = logging.getLogger(__name__)
 
 
@@ -55,11 +54,21 @@ class plm_temporary_cutted(models.Model):
             mrp_bom_line_type_object = self.pool.get('mrp.bom.line')
 
             def cuttedPartAction(bomLine):
-                addedMaterial = (1 + bomLine.product_id.wastage_percent) + bomLine.product_id.material_added
-                commonValues = {'x_leght': (bomLine.product_id.row_material_xlenght * addedMaterial) / bomLine.product_id.row_material.row_material_xlenght,
-                                'y_leght': (bomLine.product_id.row_material_ylenght * addedMaterial) / bomLine.product_id.row_material.row_material_ylenght,
-                                'product_id': bomLine.product_id.row_material.id}
+                materiaPercentage = (1 + bomLine.product_id.wastage_percent)
+                xMaterial = (bomLine.product_id.row_material_xlenght * materiaPercentage) + bomLine.product_id.material_added
+                yMaterial = (bomLine.product_id.row_material_ylenght * materiaPercentage) + bomLine.product_id.material_added
+                xRawMaterialLenght = bomLine.product_id.row_material.row_material_xlenght
+                yRawMaterialLenght = bomLine.product_id.row_material.row_material_ylenght
+                xQty = xMaterial / (1 if xRawMaterialLenght == 0 else xRawMaterialLenght)
+                yQty = yMaterial / (1 if yRawMaterialLenght == 0 else yRawMaterialLenght)
+                qty = xQty * yQty
+                commonValues = {'x_leght': xMaterial,
+                                'y_leght': yMaterial,
+                                'product_qty': 1 if qty == 0 else qty,  # set to 1 because odoo dose not manage qty==0
+                                'product_id': bomLine.product_id.row_material.id,
+                                'product_rounding': bomLine.product_id.bom_rounding}
                 if explosion_action == 'replace':
+                    commonValues['product_qty'] = bomLine.product_qty * commonValues['product_qty']
                     mrp_bom_line_type_object.write(cr, uid, [bomLine.id], commonValues)
                 else:
                     idTemplate = bomLine.product_id.product_tmpl_id.id
@@ -76,6 +85,8 @@ class plm_temporary_cutted(models.Model):
                         mrp_bom_line_type_object.create(cr, uid, values)
                     else:
                         for bomId in mrp_bom_type_object.browse(cr, uid, bomIds):
+                            if len(bomId.bom_line_ids) > 1:
+                                raise osv.osv.except_osv(_('Bom Generation Error'), 'Bom "%s" has more than one line, please check better.' % (bomId.product_tmpl_id.engineering_code))
                             for bomLineId in bomId.bom_line_ids:
                                 logging.info("Bom line updated %r" % bomLineId)
                                 mrp_bom_line_type_object.write(cr, uid, [bomLineId.id], commonValues)

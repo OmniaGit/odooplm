@@ -8,10 +8,20 @@
         <field name="arch" type="xml">
         <form string="Export Form">
         	<group>
-        		<field name="component_id" />
-        		<field name="datas_fname" readonly="1"/>
-	            <field name="datas" readonly="1" filename="datas_fname"/>
-			</group>    
+        			<field name="component_id" colspan="2"/>
+        			<button string="ComputeBom" name="computeExportRelField" type="object" colspan="2"/>
+	        		<field name="datas_fname" readonly="1"/>
+		            <field name="datas" readonly="1" filename="datas_fname"/>
+		            <field name="export_type" />
+		            <field name="export_rel" >
+			            <tree>
+			                <field name="component_id"/>
+			                <field name="comp_rev"/>
+			                <field name="document_id"/>
+			                <field name="doc_rev"/>
+			            </tree>
+			        </field>
+			</group>
             <separator string=""/>
             <group colspan="4" col="4">
             	<button icon="gtk-cancel" special="cancel" string="Cancel"/>
@@ -30,5 +40,47 @@
         key2="client_action_multi"
         id="act_pack_and_go_action" 
         	/>
+    
+    <record model="ir.ui.view" id="view_pack_and_go_view_form">
+        <field name="name">pack.and.go.view.form</field>
+        <field name="model">pack_and_go_view</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form>
+            	<sheet>
+                <group >
+            		<field 
+                		name="preview"
+                		widget="image"
+                		readonly="1"
+                		nolabel="1"
+                		colspan="2"
+                		img_height="400"
+                		img_width="400"/>
+                    <field name="component_id" readonly="True"/>
+                    <field name="comp_rev" readonly="True"/>
+                    <field name="document_id" readonly="True"/>
+                    <field name="doc_rev" readonly="True"/>
+                </group>
+               	</sheet>	 
+            </form>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="view_pack_and_go_view_tree">
+        <field name="name">pack.and.go.view.tree</field>
+        <field name="model">pack_and_go_view</field>
+        <field name="type">tree</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="component_id"/>
+                <field name="comp_rev"/>
+                <field name="document_id"/>
+                <field name="doc_rev"/>
+            </tree>
+        </field>
+    </record>
+        		
+        		
 	</data>
 </openerp>

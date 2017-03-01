@@ -46,9 +46,6 @@ class PlmBackupDocument(models.Model):
 
     userid = fields.Many2one('res.users',
                              _('Related User'))
-    createdate = fields.Datetime(_('Date Created'),
-                                 default=time.strftime("%Y-%m-%d %H:%M:%S"),
-                                 readonly=True)
     existingfile = fields.Char(_('Physical Document Location'),
                                size=1024)
     documentid = fields.Many2one('plm.document',

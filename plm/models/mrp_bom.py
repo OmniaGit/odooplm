@@ -217,18 +217,19 @@ class MrpBomExtension(models.Model):
         return (relDatas, prtDatas, self._getpackreldatas(relDatas, prtDatas))
 
     @api.multi
-    def GetExplose(self):
+    def GetExplose(self, values=[]):
         """
             Returns a list of all children in a Bom (all levels)
         """
         self._packed = []
+        objId, _sourceID, lastRev = values
         # get all ids of the children product in structured way like [[id,childids]]
-        relDatas = [self.ids[0], self._explodebom(self._getbom(self.ids[0]), False)]
+        relDatas = [objId, self._explodebom(self._getbom(objId), False, lastRev)]
         prtDatas = self._getpackdatas(relDatas)
         return (relDatas, prtDatas, self._getpackreldatas(relDatas, prtDatas))
 
     @api.model
-    def _explodebom(self, bids, check=True):
+    def _explodebom(self, bids, check=True, lastRev=False):
         """
             Explodes a bom entity  ( check=False : all levels, check=True : one level )
         """
@@ -238,10 +239,27 @@ class MrpBomExtension(models.Model):
             for bom_line in bid.bom_line_ids:
                 if check and (bom_line.product_id.id in self._packed):
                     continue
-                innerids = self._explodebom(self._getbom(bom_line.product_id.product_tmpl_id.id), check)
-                self._packed.append(bom_line.product_id.id)
-                output.append([bom_line.product_id.id, innerids])
+                tmpl_id = bom_line.product_id.product_tmpl_id.id
+                prod_id = bom_line.product_id.id
+                if lastRev:
+                    newerCompBrws = self.getLastCompId(prod_id)
+                    if newerCompBrws:
+                        prod_id = newerCompBrws.id
+                        tmpl_id = newerCompBrws.product_tmpl_id.id
+                innerids = self._explodebom(self._getbom(tmpl_id), check)
+                self._packed.append(prod_id)
+                output.append([prod_id, innerids])
         return(output)
+
+    @api.multi
+    def getLastCompId(self, compId):
+        prodProdObj = self.env['product.product']
+        compBrws = prodProdObj.browse(compId)
+        if compBrws:
+            prodBrwsList = prodProdObj.search([('engineering_code', '=', compBrws.engineering_code)], order='engineering_revision DESC')
+            for prodBrws in prodBrwsList:
+                return prodBrws
+        return False
 
     @api.model
     def GetTmpltIdFromProductId(self, product_id=False):
@@ -254,15 +272,16 @@ class MrpBomExtension(models.Model):
         return False
 
     @api.multi
-    def GetExploseSum(self):
+    def GetExploseSum(self, values):
         """
             Return a list of all children in a Bom taken once (all levels)
         """
+        compId, _source_id, latestFlag = values
         self._packed = []
-        prodTmplId = self.GetTmpltIdFromProductId(self.ids[0])
+        prodTmplId = self.GetTmpltIdFromProductId(compId)
         bomId = self._getbom(prodTmplId)
-        explosedBomIds = self._explodebom(bomId, True)
-        relDatas = [self.ids[0], explosedBomIds]
+        explosedBomIds = self._explodebom(bomId, True, latestFlag)
+        relDatas = [compId, explosedBomIds]
         prtDatas = self._getpackdatas(relDatas)
         return (relDatas, prtDatas, self._getpackreldatas(relDatas, prtDatas))
 
@@ -485,11 +504,11 @@ class MrpBomExtension(models.Model):
         return ret
 
     @api.multi
-    def copy(self, defaults={}):
+    def copy(self, default={}):
         """
             Return new object copied (removing SourceID)
         """
-        newBomBrws = super(MrpBomExtension, self).copy(defaults)
+        newBomBrws = super(MrpBomExtension, self).copy(default)
         if newBomBrws:
             for bom_line in newBomBrws.bom_line_ids:
                 lateRevIdC = self.env['product.product'].GetLatestIds([(bom_line.product_id.product_tmpl_id.engineering_code,
