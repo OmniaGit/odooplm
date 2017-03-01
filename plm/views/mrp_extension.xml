@@ -86,8 +86,8 @@
 					            	<field name="description" readonly="True"/>
 					                <field name="source_id" string="Source Relation Document"/>
 			 	            		<field name="type" />
-                                    <field name="related_bom_ids" invisible="True"/>
-			                        <button name="openRelatedBoms" type="object" string="Related BOM" attrs="{'invisible':[('related_bom_ids', '=', [])]}"/>
+                                    <field name="hasChildBoms" invisible="True"/>
+			                        <button name="openRelatedBoms" type="object" string="Related BOM" attrs="{'invisible':[('hasChildBoms', '=', False)]}"/>
                                 </tree>
                             </field>
                         </page>
@@ -160,8 +160,8 @@
 	            	<xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_qty']" position="after">
 		               	<field name="weight_net" readonly="True"/>
 		    			<field name="create_date" select="True" readonly="True"/>
-                        <field name="related_bom_ids" invisible="True"/>
-                        <button name="openRelatedBoms" type="object" string="Related BOM" attrs="{'invisible':[('related_bom_ids', '=', [])]}"/>
+                        <field name="hasChildBoms" invisible="True"/>
+                        <button name="openRelatedBoms" type="object" string="Related BOM" attrs="{'invisible':[('hasChildBoms', '=', False)]}"/>
 	           		</xpath>
              	</data>
      		</field>

@@ -50,7 +50,7 @@ def get_bom_report(myObject, recursion=False, flat=False, leaf=False, level=1, s
             myKey = product.name
             if recursion or leaf or flat:
                 myNewBom = None
-                for bomBws in l.related_bom_ids:
+                for bomBws in l.get_related_boms():
                     if bomBws.type == l.type:
                         myNewBom = bomBws
                         break
