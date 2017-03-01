@@ -485,11 +485,11 @@ class MrpBomExtension(models.Model):
         return ret
 
     @api.multi
-    def copy(self, defaults={}):
+    def copy(self, default={}):
         """
             Return new object copied (removing SourceID)
         """
-        newBomBrws = super(MrpBomExtension, self).copy(defaults)
+        newBomBrws = super(MrpBomExtension, self).copy(default)
         if newBomBrws:
             for bom_line in newBomBrws.bom_line_ids:
                 lateRevIdC = self.env['product.product'].GetLatestIds([(bom_line.product_id.product_tmpl_id.engineering_code,
