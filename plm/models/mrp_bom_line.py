@@ -25,6 +25,7 @@ Created on 25 Aug 2016
 
 @author: Daniel Smerghetto
 '''
+from odoo.exceptions import UserError
 from odoo import models
 from odoo import fields
 from odoo import api
@@ -54,24 +55,42 @@ class MrpBomLineExtension(models.Model):
             else:
                 self.child_line_ids = False
 
-    @api.one
-    @api.depends('product_id')
-    def _related_boms(self):
+    @api.multi
+    def get_related_boms(self):
         for bom_line in self:
             if not self.product_id:
                 self.related_bom_id = []
             else:
-                bomObjs = self.env['mrp.bom'].search([('product_tmpl_id', '=', bom_line.product_id.product_tmpl_id.id),
+                if not self.hasChildBoms:
+                    return []
+                return self.env['mrp.bom'].search([('product_tmpl_id', '=', bom_line.product_id.product_tmpl_id.id),
                                                       ('type', '=', bom_line.type),
                                                       ('active', '=', True)])
-                if not bomObjs:
-                    self.related_bom_ids = []
-                else:
-                    self.related_bom_ids = bomObjs.ids
 
+    @api.one
+    @api.depends('product_id')
+    def _has_children_boms(self):
+        for bom_line in self:
+            if not self.product_id:
+                self.hasChildBoms = False
+            else:
+                numBoms = self.env['mrp.bom'].search_count([('product_tmpl_id', '=', bom_line.product_id.product_tmpl_id.id),
+                                                      ('type', '=', bom_line.type),
+                                                      ('active', '=', True)])
+                if numBoms:
+                    self.hasChildBoms = True
+                else:
+                    self.hasChildBoms = False
+        
     @api.multi
     def openRelatedBoms(self):
-        domain = [('id', 'in', self.related_bom_ids.ids)]
+        relatedBoms = self.get_related_boms()
+        if not relatedBoms:
+            raise UserError(_("There aren't related boms to this line."))
+        idsToOpen = []
+        for brws in relatedBoms:
+            idsToOpen.append(brws.id)
+        domain = [('id', 'in', idsToOpen)]
         outActDict = {'name': _('B.O.M.'),
                       'view_type': 'form',
                       'res_model': 'mrp.bom',
@@ -120,12 +139,7 @@ class MrpBomLineExtension(models.Model):
                                           string=_("Revision"),
                                           help=_("The revision of the product."),
                                           store=False)
-    related_bom_ids = fields.One2many(compute='_related_boms',
-                                      comodel_name='mrp.bom',
-                                      string='Related BOMs',
-                                      digits=0,
-                                      readonly=True)
-
+    hasChildBoms = fields.Boolean(compute='_has_children_boms', string='Has Children Boms')
 
 MrpBomLineExtension()
 
