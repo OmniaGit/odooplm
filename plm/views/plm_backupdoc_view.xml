@@ -15,7 +15,7 @@
                 	<field name="document_name" select="1"/>
                     <field name="documentid" readonly="True"/>
                     <field name="revisionid" readonly="True"/>
-                    <field name="createdate" readonly="True"/>
+                    <field name="create_date" readonly="True"/>
                     <field name="userid" readonly="True"/>
                 	<field name="state" select="1"/>
                 	<field name="existingfile" select="1"/>
@@ -43,19 +43,19 @@
         <field name="arch" type="xml">
             <search string="Backup Document Set">
                 <filter icon="terp-go-month" string="  Last Month  " separator="1"
-                         domain="[('createdate','&lt;=', (datetime.date.today() - relativedelta(day=31,months=1)).strftime('%%Y-%%m-%%d')),('createdate','&gt;=',(datetime.date.today() - relativedelta(day=1,months=1)).strftime('%%Y-%%m-%%d'))]"
+                         domain="[('create_date','&lt;=', (datetime.date.today() - relativedelta(day=31,months=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today() - relativedelta(day=1,months=1)).strftime('%%Y-%%m-%%d'))]"
                          help="Checked-Out in last month"/>
                 <filter icon="terp-go-month" string="  Last Week  " separator="1"
-                         domain="[('createdate','&lt;=', (datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d')),('createdate','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"
+                         domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"
                          help="Checked-Out in last week"/>
                 <filter icon="terp-go-month" string="  Latest 7 Days  " separator="1"
-                         domain="[('createdate','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('createdate','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
+                         domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
                          help="Checked-Out in latest 7 days"/>
                  <filter icon="terp-go-month" string="  Yesterday  " separator="1"
-                         domain="[('createdate','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('createdate','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
+                         domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
                          help="Checked-Out Yesterday"/>
                  <filter icon="terp-go-month" string="  Today  " separator="1"
-                         domain="[('createdate','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('createdate','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
+                         domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
                          help="Checked-Out today"/>
                 <separator orientation="vertical"/>
             	<field name="document_name"/>
@@ -67,7 +67,7 @@
                 </field>
                 <group expand="0" string="Group By...">
                     <filter string="Document Name" icon="terp-personal" domain="[]" context="{'group_by':'documentid'}"/>
-                    <filter string="Create by Month" icon="terp-personal" domain="[]" context="{'group_by':'createdate'}"/>
+                    <filter string="Create by Month" icon="terp-personal" domain="[]" context="{'group_by':'create_date'}"/>
                     <filter string="Creator" icon="terp-personal" domain="[]" context="{'group_by':'userid'}"/>
                 </group>
             </search>
@@ -82,7 +82,7 @@
         <field name="arch" type="xml">
             <tree string="Documents in Check-Out">
                 <field name="userid" select="1"/>
-                <field name="createdate" select="1"/>
+                <field name="create_date" select="1"/>
                 <field name="document_name" select="1"/>
                 <field name="revisionid" select="1"/>
                 <field name="state" select="1"/>

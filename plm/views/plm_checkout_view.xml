@@ -10,19 +10,19 @@
         <field name="arch" type="xml">
             <search string="Checked-Out Document">
                 <filter icon="terp-go-month" string="  Last Month  " separator="1"
-                         domain="[('createdate','&lt;=', (datetime.date.today() - datetime.timedelta(day=31,months=1)).strftime('%%Y-%%m-%%d')),('createdate','&gt;=',(datetime.date.today() - datetime.timedelta(day=1,months=1)).strftime('%%Y-%%m-%%d'))]"
+                         domain="[('create_date','&lt;=', (datetime.date.today() - datetime.timedelta(day=31,months=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today() - datetime.timedelta(day=1,months=1)).strftime('%%Y-%%m-%%d'))]"
                          help="Checked-Out in last month"/>
                 <filter icon="terp-go-month" string="  Last Week  " separator="1"
-                         domain="[('createdate','&lt;=', (datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d')),('createdate','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"
+                         domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"
                          help="Checked-Out in last week"/>
                 <filter icon="terp-go-month" string="  Latest 7 Days  " separator="1"
-                         domain="[('createdate','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('createdate','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
+                         domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
                          help="Checked-Out in last week"/>
                  <filter icon="terp-go-month" string="  Yesterday  " separator="1"
-                         domain="[('createdate','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('createdate','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
+                         domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
                          help="Checked-Out Yesterday"/>
                  <filter icon="terp-go-month" string="  Today  " separator="1"
-                         domain="[('createdate','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('createdate','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
+                         domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
                          help="Checked-Out today"/>
                 <newline/>
                	<separator orientation="vertical"/>
@@ -34,7 +34,7 @@
                 </field>
                 <group expand="0" string="Group By...">
                     <filter string="Hostname" icon="terp-personal" domain="[]" context="{'group_by':'hostname'}"/>
-                    <filter string="Create by Month" icon="terp-personal" domain="[]" context="{'group_by':'createdate'}"/>
+                    <filter string="Create by Month" icon="terp-personal" domain="[]" context="{'group_by':'create_date'}"/>
                     <filter string="Creator" icon="terp-personal" domain="[]" context="{'group_by':'userid'}"/>
                 </group>
             </search>
@@ -100,7 +100,7 @@
                 <field name="hostpws" select="1"/>
                 <field name="documentid" select="1"/>
                 <field name="rel_doc_rev"/>
-                <field name="createdate" select="1"/>
+                <field name="create_date" select="1"/>
             </tree>
         </field>
     </record>

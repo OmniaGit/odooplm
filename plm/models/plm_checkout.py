@@ -47,9 +47,6 @@ class PlmCheckout(models.Model):
     documentid = fields.Many2one('plm.document',
                                  _('Related Document'),
                                  ondelete='cascade')
-    createdate = fields.Datetime(_('Date Created'),
-                                 default=time.strftime("%Y-%m-%d %H:%M:%S"),
-                                 readonly=True)
     rel_doc_rev = fields.Integer(related='documentid.revisionid',
                                  string="Revision",
                                  store=True)
