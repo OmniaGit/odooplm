@@ -41,6 +41,26 @@
      	</field>
     </record>
 
+    <record model="ir.ui.view" id="view_plm_checkout_form">
+        <field name="name">plm.checkout</field>
+        <field name="model">plm.checkout</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Plm checkout">
+            	<sheet>	
+                <group >
+	                <field name="userid" readonly="1"/>
+	                <field name="hostname" readonly="1"/>
+	                <field name="hostpws" readonly="1"/>
+	                <field name="documentid" readonly="1"/>
+	                <field name="rel_doc_rev" readonly="1"/>
+	                <field name="create_date" readonly="1"/>
+                </group>
+               	</sheet> 
+            </form>
+        </field>
+    </record>
+
     <record model="ir.ui.view" id="plm_checkout_tree">
         <field name="name">plm.checkout</field>
         <field name="model">plm.checkout</field>
@@ -62,8 +82,7 @@
         <field name="name">Check-Out</field>
         <field name="res_model">plm.checkout</field>
         <field name="view_type">form</field>
-        <field name="view_mode">tree</field>
-        <field eval="False" name="filter"/>
+        <field name="view_mode">tree,form</field>
         <field name="view_id" ref="plm_checkout_tree"/>
         <field name="search_view_id" ref="plm_checkout_search"/>
     </record>
