@@ -150,9 +150,9 @@ class bom_structure_one_sum_custom_report(report_sxw.rml_parse):
                     res['pqty'] = res['pqty'] + l.product_qty
                     tmp_result[listed[product.name]] = res
                 else:
-                    res['name'] = product.name
+                    res['name'] = product.engineering_code
                     res['item'] = l.itemnum
-                    res['pname'] = l.product_id.name
+                    res['pname'] = l.product_id.engineering_code
                     res['pdesc'] = product.description
                     res['pcode'] = l.product_id.default_code
                     res['previ'] = product.engineering_revision
