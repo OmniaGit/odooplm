@@ -41,7 +41,8 @@ class product_templateCuttedParts(models.Model):
     row_material_ylenght = fields.Float(_("Raw Material y lenght"), default=1.0)
     wastage_percent = fields.Float(_("Percent Wastage"), default=0.0)
     material_added = fields.Float(_("Material Wastage"), default=0.0)
-    is_row_material = fields.Boolean(_("Is Row Material"))
+    is_row_material = fields.Boolean(_("Is Raw Material"))
+    bom_rounding = fields.Float(_("Product Rounding"), default=0.0)
 
 product_templateCuttedParts()
 

@@ -20,6 +20,7 @@
 					<field name="row_material_ylenght" attrs="{'readonly':[('is_row_material', '=', False)]}"></field>
 					<field name="wastage_percent"></field>
 					<field name="material_added"></field>
+					<field name="bom_rounding"></field>
 				</group>
 			</field>
 		</field>

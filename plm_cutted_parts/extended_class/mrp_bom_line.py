@@ -24,6 +24,7 @@ Created on 25/mag/2016
 @author: mboscolo
 '''
 import logging
+
 from openerp import models, fields, api, SUPERUSER_ID, _, osv
 from openerp import tools
 
