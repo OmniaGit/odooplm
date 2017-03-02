@@ -298,7 +298,7 @@ class MrpBomExtension(models.Model):
             if bomObj.bom_id.id in self._packed:
                 continue
             self._packed.append(bomObj.bom_id.id)
-            bomFthObj = self.browse([bomObj.bom_id.id], context=None)
+            bomFthObj = self.browse([bomObj.bom_id.id]).with_context({})
             innerids = self._implodebom(self._getinbom(bomFthObj.product_id.id))
             pids.append((bomFthObj.product_id.id, innerids))
         return (pids)
