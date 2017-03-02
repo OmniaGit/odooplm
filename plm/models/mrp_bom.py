@@ -172,7 +172,7 @@ class MrpBomExtension(models.Model):
         if len(tmpids) < 1:
             return prtDatas
         compType = self.env['product.product']
-        tmpDatas = compType.read(tmpids)
+        tmpDatas = compType.browse(tmpids).read()
         for tmpData in tmpDatas:
             for keyData in tmpData.keys():
                 if tmpData[keyData] is None:
@@ -195,7 +195,7 @@ class MrpBomExtension(models.Model):
         if len(relids) < 1:
             return relationDatas
         for keyData in relids.keys():
-            relationDatas[keyData] = self.read(relids[keyData])
+            relationDatas[keyData] = self.browse(relids[keyData]).read()[0]
         return relationDatas
 
     @api.multi
@@ -216,7 +216,7 @@ class MrpBomExtension(models.Model):
         prtDatas = self._getpackdatas(relDatas)
         return (relDatas, prtDatas, self._getpackreldatas(relDatas, prtDatas))
 
-    @api.multi
+    @api.model
     def GetExplose(self, values=[]):
         """
             Returns a list of all children in a Bom (all levels)
@@ -265,14 +265,15 @@ class MrpBomExtension(models.Model):
     def GetTmpltIdFromProductId(self, product_id=False):
         if not product_id:
             return False
-        tmplDict = self.env['product.product'].read(product_id, ['product_tmpl_id'])  # tmplDict = {'product_tmpl_id': (tmpl_id, u'name'), 'id': product_product_id}
-        tmplTuple = tmplDict.get('product_tmpl_id', {})
-        if len(tmplTuple) == 2:
-            return tmplTuple[0]
+        tmplDictList = self.env['product.product'].browse(product_id).read(['product_tmpl_id'])  # tmplDict = {'product_tmpl_id': (tmpl_id, u'name'), 'id': product_product_id}
+        for tmplDict in tmplDictList:
+            tmplTuple = tmplDict.get('product_tmpl_id', {})
+            if len(tmplTuple) == 2:
+                return tmplTuple[0]
         return False
 
-    @api.multi
-    def GetExploseSum(self, values):
+    @api.model
+    def GetExploseSum(self, values=[]):
         """
             Return a list of all children in a Bom taken once (all levels)
         """
