@@ -92,13 +92,12 @@
                  <group colspan="4" col="2" name="group_name">
                       <field name="name" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
                  </group>
-           		<group name="PNArea">
+           		<group name="PNArea" colspan="4" col="2">
           			<field name="engineering_code" attrs="{'readonly':[('state','!=','draft')]}" select="1"/>
           			<field name="engineering_revision" 	colspan="2" readonly="True"/>
            			<field name="state" readonly="True"/>	
           			<field name="std_description" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/> 	
-           			<label for="description"/>
-           			<field name="description" attrs="{'readonly':[('state','in',['released','obsoleted'])]}" nolabel="1" />
+           			<field name="description" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
            		</group>
 
 	    		<notebook colspan="6" col="6">
