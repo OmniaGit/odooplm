@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+        <data>
+<!-- View User  -->
+
+                <record id="plm_rev_wizard_view" model="ir.model.access">
+		            <field name="name">PLM Rev Wizard View</field>
+		            <field name="model_id" ref="model_product_rev_wizard"/>
+		            <field name="group_id" ref="plm.group_plm_view_user"/>
+		            <field name="perm_read" eval="True"/>
+		            <field name="perm_write" eval="False"/>
+		            <field name="perm_create" eval="False"/>
+		            <field name="perm_unlink" eval="False"/>
+        		</record>
+
+<!-- Integration User  -->
+
+                <record id="plm_rev_wizard_integration" model="ir.model.access">
+		            <field name="name">PLM Rev Wizard View Integration</field>
+		            <field name="model_id" ref="model_product_rev_wizard"/>
+		            <field name="group_id" ref="plm.group_plm_integrationuser"/>
+		            <field name="perm_read" eval="True"/>
+		            <field name="perm_write" eval="True"/>
+		            <field name="perm_create" eval="True"/>
+		            <field name="perm_unlink" eval="True"/>
+        		</record>
+
+ <!-- Administrator  -->
+                <record id="plm_rev_wizard_admin" model="ir.model.access">
+		            <field name="name">PLM Rev Wizard Admin</field>
+		            <field name="model_id" ref="model_product_rev_wizard"/>
+		            <field name="group_id" ref="plm.group_plm_admin"/>
+		            <field name="perm_read" eval="True"/>
+		            <field name="perm_write" eval="True"/>
+		            <field name="perm_create" eval="True"/>
+		            <field name="perm_unlink" eval="True"/>
+        		</record> 
+        		
+        </data>
+</openerp>
