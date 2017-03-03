@@ -346,6 +346,7 @@ class MrpBomExtension(models.Model):
         """
         t_bom_line = self.env['mrp.bom.line']
         t_product_product = self.env['product.product']
+        ECOModuleInstalled = self.env.get('mrp.eco', None)
 
         def cleanStructure(parentID=None, sourceID=None):
             """
@@ -386,51 +387,73 @@ class MrpBomExtension(models.Model):
                 if element[0] == parentName:
                     return True
                 nexRelation.append(element)
+
             subRelations = filter(divedeByParent, relations)
             if len(subRelations) < 1:  # no relation to save
                 return
             parentName, parentID, _ChildName, _ChildID, sourceID, _RelArgs = subRelations[0]
-            if not self.search([('product_id', '=', parentID),
-                                ('source_id', '=', sourceID)]):
+            existingBoms = self.search([('product_id', '=', parentID),
+                                        ('source_id', '=', sourceID),
+                                        ('active', '=', True)])
+            if existingBoms and ECOModuleInstalled != None:
+                newBomBrws = existingBoms[0]
+                parentVals = getParentVals(parentName, parentID, sourceID, kindBom='normal')
+                parentVals.update({'bom_line_ids': [(5, 0, 0)]})
+                newBomBrws.write(parentVals)
+                saveChildrenBoms(subRelations, newBomBrws.id, nexRelation)
+                for ecoBrws in self.env['mrp.eco'].search([('bom_id', '=', newBomBrws.id)]):
+                    ecoBrws._compute_bom_change_ids()
+            elif not existingBoms:
                 bomID = saveParent(parentName, parentID, sourceID, kindBom='normal')
-                for parentName, parentID, childName, childID, sourceID, relArgs in subRelations:
-                    if parentName == childName:
-                        logging.error('toCompute : Father (%s) refers to himself' % (str(parentName)))
-                        raise Exception(_('saveChild.toCompute : Father "%s" refers to himself' % (str(parentName))))
-
-                    saveChild(childName, childID, sourceID, bomID, kindBom='normal', args=relArgs)
-                    toCompute(childName, nexRelation)
-                self.RebaseProductWeight(bomID, self.browse(bomID).rebaseBomWeight())
+                saveChildrenBoms(subRelations, bomID, nexRelation)
+                
+                
             return bomID
 
+        def saveChildrenBoms(subRelations, bomID, nexRelation):
+            for parentName, _parentID, childName, childID, sourceID, relArgs in subRelations:
+                if parentName == childName:
+                    logging.error('toCompute : Father (%s) refers to himself' % (str(parentName)))
+                    raise Exception(_('saveChild.toCompute : Father "%s" refers to himself' % (str(parentName))))
+
+                saveChild(childName, childID, sourceID, bomID, kindBom='normal', args=relArgs)
+                toCompute(childName, nexRelation)
+            self.RebaseProductWeight(bomID, self.browse(bomID).rebaseBomWeight())
+            
         def repairQty(value):
             if(not isinstance(value, float) or (value < 1e-6)):
                 return 1.0
             return value
 
-        def saveParent(name, partID, sourceID, kindBom=None, args=None):
+        def getParentVals(name, partID, sourceID, kindBom=None, args=None):
             """
                 Saves the relation ( parent side in mrp.bom )
             """
+            res = {}
+            if kindBom is not None:
+                res['type'] = kindBom
+            else:
+                res['type'] = 'normal'
+            objPart = t_product_product.with_context({}).browse(partID)
+            res['product_tmpl_id'] = objPart.product_tmpl_id.id
+            res['product_id'] = partID
+            res['source_id'] = sourceID
+            if args is not None:
+                for arg in args:
+                    res[str(arg)] = args[str(arg)]
+            if ('product_qty' in res):
+                res['product_qty'] = repairQty(res['product_qty'])
+            return res
+
+
+        def saveParent(name, partID, sourceID, kindBom=None, args=None):
             try:
-                res = {}
-                if kindBom is not None:
-                    res['type'] = kindBom
-                else:
-                    res['type'] = 'normal'
-                objPart = t_product_product.with_context({}).browse(partID)
-                res['product_tmpl_id'] = objPart.product_tmpl_id.id
-                res['product_id'] = partID
-                res['source_id'] = sourceID
-                if args is not None:
-                    for arg in args:
-                        res[str(arg)] = args[str(arg)]
-                if ('product_qty' in res):
-                    res['product_qty'] = repairQty(res['product_qty'])
-                return self.create(res).id
+                vals = getParentVals(name, partID, sourceID, kindBom, args)
+                return self.create(vals).id
             except:
                 logging.error("saveParent :  unable to create a relation for part (%s) with source (%d) : %s." % (name, sourceID, str(args)))
                 raise AttributeError(_("saveParent :  unable to create a relation for part (%s) with source (%d) : %s." % (name, sourceID, str(sys.exc_info()))))
+
 
         def saveChild(name, partID, sourceID, bomID=None, kindBom=None, args=None):
             """
@@ -460,7 +483,8 @@ class MrpBomExtension(models.Model):
         if len(relations) < 1:  # no relation to save
             return False
         parentName, _parentID, _childName, _childID, _sourceID, _relArgs = relations[0]
-        toCleanRelations(relations)
+        if ECOModuleInstalled == None:
+            toCleanRelations(relations)
         toCompute(parentName, relations)
         return False
 
