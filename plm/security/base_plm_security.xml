@@ -11,6 +11,24 @@
                         <field name="implied_ids" eval="[(4, ref('mrp.group_mrp_user'))]"/>
                 </record>
                 
+                <record id="plm_product_product_view" model="ir.model.access">
+		            <field name="name">PLM Product Product</field>
+		            <field name="model_id" ref="model_product_product"/>
+		            <field name="group_id" eval="group_plm_view_user"/>
+		            <field name="perm_read" eval="True"/>
+		            <field name="perm_write" eval="False"/>
+		            <field name="perm_create" eval="False"/>
+		            <field name="perm_unlink" eval="False"/>
+        		</record>
+                <record id="plm_mrp_bom_view" model="ir.model.access">
+		            <field name="name">PLM Mrp Bom</field>
+		            <field name="model_id" ref="model_mrp_bom"/>
+		            <field name="group_id" eval="group_plm_view_user"/>
+		            <field name="perm_read" eval="True"/>
+		            <field name="perm_write" eval="False"/>
+		            <field name="perm_create" eval="False"/>
+		            <field name="perm_unlink" eval="False"/>
+        		</record>
                 <record id="plm_document_view" model="ir.model.access">
 		            <field name="name">PLM Document</field>
 		            <field name="model_id" ref="model_plm_document"/>
