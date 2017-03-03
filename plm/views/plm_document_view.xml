@@ -34,7 +34,7 @@
 		               <group name="main_doc_info">
 	 						<label for="name" class="oe_edit_only"/>	
 		               		<strong>
-		               			<field name="name" select="1" readonly='1'/>
+		               			<field name="name" select="1" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
 		               		</strong>
 		               		<label for="revisionid" class="oe_edit_only"/>	
 		               		<strong>	
@@ -111,7 +111,7 @@
             <field name="name">plm.document.plm.admin</field>
             <field name="model">plm.document</field>
             <field name="inherit_id" ref="plm.view_plm_document" />
-            <field name="groups_id" eval="[(6, 0, [ref('plm.group_plm_admin') ])]" />                
+            <field name="groups_id" eval="[(6, 0, [ref('plm.group_plm_admin')])]" />                
             <field name="arch" type="xml">                                   
                 <field name="name" position="attributes">
                    <attribute name="readonly">0</attribute>                   
