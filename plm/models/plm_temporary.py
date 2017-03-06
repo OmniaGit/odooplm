@@ -25,9 +25,9 @@ Created on 12 Dec 2016
 
 @author: Daniel Smerghetto
 '''
-from openerp import fields
-from openerp import osv
-from openerp import _
+from odoo import fields
+from odoo import osv
+from odoo import _
 
 
 class ProductTemporary(osv.osv.osv_memory):

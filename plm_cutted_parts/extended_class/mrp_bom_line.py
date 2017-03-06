@@ -25,15 +25,14 @@ Created on 25/mag/2016
 '''
 import logging
 
-from openerp import models, fields, api, SUPERUSER_ID, _, osv
-from openerp import tools
+from odoo import models, fields, _
 
 _logger = logging.getLogger(__name__)
 
 
 class mrpBomLine_templateCuttedParts(models.Model):
     _inherit = 'mrp.bom.line'
-    x_leght = fields.Float("X Lenght", default=0.0)
-    y_leght = fields.Float("Y Lenght", default=0.0)
+    x_leght = fields.Float(_("X Lenght"), default=0.0)
+    y_leght = fields.Float(_("Y Lenght"), default=0.0)
 
 mrpBomLine_templateCuttedParts()

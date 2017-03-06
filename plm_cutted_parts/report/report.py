@@ -23,9 +23,9 @@ Created on 28/mag/2016
 
 @author: mboscolo
 '''
-from openerp import _
-from openerp.osv import osv
-from openerp.report import report_sxw
+from odoo import _
+from odoo.osv import osv
+from odoo.report import report_sxw
 
 
 class bom_structure_cutted_parts(report_sxw.rml_parse):

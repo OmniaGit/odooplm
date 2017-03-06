@@ -26,11 +26,11 @@ Created on Mar 30, 2016
 @author: Daniel Smerghetto
 '''
 import logging
-from openerp import models
-from openerp import fields
-from openerp import api
-from openerp import _
-from openerp.exceptions import UserError
+from odoo import models
+from odoo import fields
+from odoo import api
+from odoo import _
+from odoo.exceptions import UserError
 _logger = logging.getLogger(__name__)
 
 
@@ -58,31 +58,11 @@ class product_productCuttedParts(models.Model):
     @api.onchange('row_material_xlenght')
     def onchange_row_material_xlenght(self):
         if not self.row_material_xlenght or self.row_material_xlenght == 0.0:
-            raise UserError('"Raw Material x lenght" cannot have zero value.')
+            raise UserError(_('"Raw Material x lenght" cannot have zero value.'))
 
     @api.onchange('row_material_ylenght')
     def onchange_row_material_ylenght(self):
         if not self.row_material_ylenght or self.row_material_xlenght == 0.0:
-            raise UserError('"Raw Material y lenght" cannot have zero value.')
-
-#     def verifyRowMatLenght(self, vals):
-#         if 'row_material_xlenght' in vals:
-#             row_material_xlenght = vals.get('row_material_xlenght')
-#             if not row_material_xlenght or row_material_xlenght == 0.0:
-#                 raise UserError('"Raw Material x lenght" cannot have zero value.')
-#         if 'row_material_ylenght' in vals:
-#             row_material_ylenght = vals.get('row_material_ylenght')
-#             if not row_material_ylenght or row_material_xlenght == 0.0:
-#                 raise UserError('"Raw Material y lenght" cannot have zero value.')
-
-#     @api.multi
-#     def write(self, vals):
-#         self.verifyRowMatLenght(vals)
-#         return super(product_productCuttedParts, self).write(vals)
-# 
-#     @api.model
-#     def create(self, vals):
-#         self.verifyRowMatLenght(vals)
-#         return super(product_productCuttedParts, self).create(vals)
+            raise UserError(_('"Raw Material y lenght" cannot have zero value.'))
 
 product_productCuttedParts()

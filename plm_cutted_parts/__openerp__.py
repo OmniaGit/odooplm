@@ -28,7 +28,7 @@
     'sequence': 15,
     'summary': '',
     'images': [],
-    'depends': ['plm'],
+    'depends': ['plm', 'plm_engineering'],
     'description': """
 Manage bom explosion for cutted parts
 ==============================================

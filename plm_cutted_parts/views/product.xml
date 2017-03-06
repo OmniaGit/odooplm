@@ -29,7 +29,7 @@
 	<record id="plm_cutted_normalbom" model="ir.ui.view">
 		<field name="name">plm.relation.normal</field>
 		<field name="model">plm.temporary</field>
-		<field name="inherit_id" ref="plm.plm_component_create_normalbom"/>
+		<field name="inherit_id" ref="plm_engineering.plm_component_create_normalbom"/>
 		<field name="type">form</field>
 		<field name="arch" type="xml">
 			<field name="summarize" position="after">
