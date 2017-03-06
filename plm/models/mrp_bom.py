@@ -340,7 +340,7 @@ class MrpBomExtension(models.Model):
         return result
 
     @api.model
-    def SaveStructure(self, relations, level=0, currlevel=0):
+    def SaveStructure(self, relations, level=0, currlevel=0, kindBom='normal'):
         """
             Save EBom relations
         """
@@ -397,14 +397,14 @@ class MrpBomExtension(models.Model):
                                         ('active', '=', True)])
             if existingBoms and ECOModuleInstalled != None:
                 newBomBrws = existingBoms[0]
-                parentVals = getParentVals(parentName, parentID, sourceID, kindBom='normal')
+                parentVals = getParentVals(parentName, parentID, sourceID)
                 parentVals.update({'bom_line_ids': [(5, 0, 0)]})
                 newBomBrws.write(parentVals)
                 saveChildrenBoms(subRelations, newBomBrws.id, nexRelation)
                 for ecoBrws in self.env['mrp.eco'].search([('bom_id', '=', newBomBrws.id)]):
                     ecoBrws._compute_bom_change_ids()
             elif not existingBoms:
-                bomID = saveParent(parentName, parentID, sourceID, kindBom='normal')
+                bomID = saveParent(parentName, parentID, sourceID)
                 saveChildrenBoms(subRelations, bomID, nexRelation)
                 
                 
@@ -416,7 +416,7 @@ class MrpBomExtension(models.Model):
                     logging.error('toCompute : Father (%s) refers to himself' % (str(parentName)))
                     raise Exception(_('saveChild.toCompute : Father "%s" refers to himself' % (str(parentName))))
 
-                saveChild(childName, childID, sourceID, bomID, kindBom='normal', args=relArgs)
+                saveChild(childName, childID, sourceID, bomID, args=relArgs)
                 toCompute(childName, nexRelation)
             self.RebaseProductWeight(bomID, self.browse(bomID).rebaseBomWeight())
             
@@ -425,15 +425,12 @@ class MrpBomExtension(models.Model):
                 return 1.0
             return value
 
-        def getParentVals(name, partID, sourceID, kindBom=None, args=None):
+        def getParentVals(name, partID, sourceID, args=None):
             """
                 Saves the relation ( parent side in mrp.bom )
             """
             res = {}
-            if kindBom is not None:
-                res['type'] = kindBom
-            else:
-                res['type'] = 'normal'
+            res['type'] = kindBom
             objPart = t_product_product.with_context({}).browse(partID)
             res['product_tmpl_id'] = objPart.product_tmpl_id.id
             res['product_id'] = partID
@@ -446,16 +443,16 @@ class MrpBomExtension(models.Model):
             return res
 
 
-        def saveParent(name, partID, sourceID, kindBom=None, args=None):
+        def saveParent(name, partID, sourceID, args=None):
             try:
-                vals = getParentVals(name, partID, sourceID, kindBom, args)
+                vals = getParentVals(name, partID, sourceID, args)
                 return self.create(vals).id
             except:
                 logging.error("saveParent :  unable to create a relation for part (%s) with source (%d) : %s." % (name, sourceID, str(args)))
                 raise AttributeError(_("saveParent :  unable to create a relation for part (%s) with source (%d) : %s." % (name, sourceID, str(sys.exc_info()))))
 
 
-        def saveChild(name, partID, sourceID, bomID=None, kindBom=None, args=None):
+        def saveChild(name, partID, sourceID, bomID=None, args=None):
             """
                 Saves the relation ( child side in mrp.bom.line )
             """
@@ -463,10 +460,7 @@ class MrpBomExtension(models.Model):
                 res = {}
                 if bomID is not None:
                     res['bom_id'] = bomID
-                if kindBom is not None:
-                    res['type'] = kindBom
-                else:
-                    res['type'] = 'normal'
+                res['type'] = kindBom
                 res['product_id'] = partID
                 res['source_id'] = sourceID
                 if args is not None:
