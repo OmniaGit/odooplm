@@ -80,7 +80,8 @@ class ProductProductExtension(models.Model):
             engBomBrwsList = bomType.search([('product_tmpl_id', '=', product_template_id),
                                              ('type', '=', 'ebom')])
             if not engBomBrwsList:
-                UserError(_("No Enginnering bom provided"))
+                logging.info('No EBOM or NBOM found for template id: %r' % (product_template_id))
+                return []
             for eBomBrws in engBomBrwsList:
                 newBomBrws = eBomBrws.copy({})
                 values = {'name': objProductProductBrw.name,
@@ -93,18 +94,22 @@ class ProductProductExtension(models.Model):
                 newBomBrws.write(values,
                                  check=False)
 
-                ok_rows = self._summarizeBom(newBomBrws.bom_line_ids)
-                # remove not summarized lines
-                for bom_line in list(set(newBomBrws.bom_line_ids) ^ set(ok_rows)):
-                    bom_line.unlink()
-                # update the quantity with the summarized values
-                for bom_line in ok_rows:
-                    bom_line.write({'type': newBomType,
-                                    'source_id': False,
-                                    'product_qty': bom_line.product_qty,
-                                    'ebom_source_id': eBomId,
-                                    })
-                    self.create_bom_from_ebom(bom_line.product_id, newBomType)
+                if summarize:
+                    ok_rows = self._summarizeBom(newBomBrws.bom_line_ids)
+                    # remove not summarized lines
+                    for bom_line in list(set(newBomBrws.bom_line_ids) ^ set(ok_rows)):
+                        bom_line.unlink()
+                    # update the quantity with the summarized values
+                    for bom_line in ok_rows:
+                        bom_line.write({'type': newBomType,
+                                        'source_id': False,
+                                        'product_qty': bom_line.product_qty,
+                                        'ebom_source_id': eBomId,
+                                        })
+                        self.create_bom_from_ebom(bom_line.product_id, newBomType, summarize=summarize)
+                else:
+                    for lineBrws in newBomBrws.bom_line_ids:
+                        self.create_bom_from_ebom(lineBrws.product_id, newBomType, summarize=summarize)
                 objProductProductBrw.wf_message_post(body=_('Created %r' % newBomType))
                 break
         if newidBom and eBomId:

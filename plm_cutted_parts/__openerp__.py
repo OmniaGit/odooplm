@@ -36,6 +36,7 @@ Manage bom explosion for cutted parts
     'data': ['views/product.xml',
              'views/mrp_bom_lines.xml',
              'report/mrp_bom.xml',
+             'security/base_plm_security.xml',
              ],
     'demo': [],
     'test': [],

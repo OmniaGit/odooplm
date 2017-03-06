@@ -27,11 +27,11 @@ Created on 18 Jul 2016
 '''
 
 import logging
-from openerp import models
-from openerp import fields
-from openerp import api
-from openerp import _
-from openerp.exceptions import UserError
+from odoo import models
+from odoo import fields
+from odoo import api
+from odoo import _
+from odoo.exceptions import UserError
 
 
 class mrp_bom_extension_data(models.Model):
@@ -172,7 +172,7 @@ class mrp_bom_data_compute(models.Model):
         '''
         bomObject = self.env['mrp.bom']
         for bomId in bomIds:
-            newBomBrws = bomObject.copy(bomId)
+            newBomBrws = bomObject.browse(bomId).copy()
             self.updateObsoleteBom(newBomBrws.ids)
         bomObject.browse(bomIds).write({'active': False})
         return {
