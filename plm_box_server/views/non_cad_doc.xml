@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data>
+
+        <record id="plm_box_form_view" model="ir.ui.view">
+            <field name="name">plm.box.form</field>
+            <field name="model">plm.box</field>
+            <field name="type">form</field>
+        	<field name="priority" eval="10"/>
+            <field name="arch" type="xml">
+                <form string="Show Non CAD Document Relation" version="7.0">
+	               <header>
+	                    <button name="release" states="confirmed" string="Release Box" icon="gtk-apply" class="oe_highlight"/>
+	                    <button name="correct" states="confirmed" string="Correct Box" icon="gtk-cancel"/>
+	                    <button name="confirm" states="draft" string="Confirm Box" icon="gtk-go-forward" class="oe_highlight"/>
+	                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,released" statusbar_colors='{"undermodify":"red","obsoleted":"red"}' readonly="0"/>
+	               </header>
+                <sheet>
+                <group colspan="4" col="4">
+	                <group colspan="2" col="2">
+	                	<field name="name" readonly="1"/>
+	                	<field name="write_date" readonly="1"/>
+	                	<field name="create_date" readonly="1"/>
+	                    <field name="description" widget="link"/>
+	                    <field name="version" />
+	                    <field name="document_rel" />
+	                    <!--
+	                    <field name="obj_rel" editable="bottom" widget="one2many_list">
+							<tree string="Relation" editable="bottom">
+			                    <field name="model_id" on_change="onchange_model_id(model_id)" domain="[('name', 'in', ['Project','Users','Analytic Account','Task','Sales Order','Product','Work Order','Work Center','Bill of Material'])]"/>
+								<field name="name"/>
+			                    <field name="obj_type"/>
+			                    <field name="obj_id" invisible="1"/>
+			                    <field name="product_id" attrs="{'invisible':[('obj_type','!=','product.product')]}"
+			                    	on_change="onchange_product_id(product_id)"/>
+			                    <field name="project_id" attrs="{'invisible':[('obj_type','!=','project.project')]}"
+			                    	on_change="onchange_project_id(project_id)"/>
+			                    <field name="task_id" attrs="{'invisible':[('obj_type','!=','project.task')]}"
+			                    	on_change="onchange_task_id(task_id)"/>
+			                    <field name="sale_ord_id" attrs="{'invisible':[('obj_type','!=','sale.order')]}"
+			                    	on_change="onchange_sale_ord_id(sale_ord_id)" />
+			                    <field name="acc_an_acc_id" attrs="{'invisible':[('obj_type','!=','account.analytic.account')]}"
+			                    	on_change="onchange_acc_an_acc_id(acc_an_acc_id)"/>
+			                    <field name="user_rel_id" attrs="{'invisible':[('obj_type','!=','res.users')]}"
+			                    	on_change="onchange_user_rel_id(user_rel_id)"/>
+			                    <field name="bom_id" attrs="{'invisible':[('obj_type','!=','mrp.bom')]}"
+			                    	on_change="onchange_bom_id(bom_id)"/>
+			                    <field name="wc_id" attrs="{'invisible':[('obj_type','!=','mrp.workcenter')]}"
+			                    	on_change="onchange_wc_id(wc_id)"/>
+			                    <field name="work_ord_id" attrs="{'invisible':[('obj_type','!=','mrp.production.workcenter.line')]}"
+			                    	on_change="onchange_work_ord_id(work_ord_id)"/>
+							</tree>
+						</field>
+						-->
+	                    <field name="plm_box_rel" />
+	                    <field name="groups_rel" />
+	                    <!--<button type="button" string="Schiacciami" class="oe_button oe_list_add oe_highlight" >Select</button>-->
+	                </group>
+                </group>
+                <notebook>
+                    <page string="Products">
+                    	<label for="product_id"/>
+	                    <field name="product_id"/>
+                    </page>
+                    <page string="Projects">
+                    	<label for="project_id"/>
+	                    <field name="project_id"/>
+                    </page>
+                    <page string="Tasks">
+                    	<label for="task_id"/>
+	                    <field name="task_id"/>
+                    </page>
+                    <page string="Sale Orders">
+                    	<label for="sale_ord_id"/>
+	                    <field name="sale_ord_id"/>
+                    </page>
+                    <page string="Contracts">
+                    	<label for="acc_an_acc_id"/>
+	                    <field name="acc_an_acc_id"/>
+                    </page>
+                    <page string="Users">
+                    	<label for="user_rel_id"/>
+	                    <field name="user_rel_id"/>
+                    </page>
+                    <page string="Boms">
+                    	<label for="bom_id"/>
+	                    <field name="bom_id"/>
+                    </page>
+                    <page string="Workcenters">
+                    	<label for="wc_id"/>
+	                    <field name="wc_id"/>
+                    </page>
+                    <page string="Work Orders">
+                    	<label for="work_ord_id"/>
+	                    <field name="work_ord_id"/>
+                    </page>
+                </notebook>
+                </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+               </form>
+            </field>
+        </record>
+        
+       <record id="plm_box_tree" model="ir.ui.view">
+            <field name="name">plm.box.tree</field>
+            <field name="model">plm.box</field>
+            <field name="type">tree</field>
+        	<field name="priority" eval="10"/>
+            <field name="arch" type="xml">
+                <tree string="Non CAD Document Relations">
+                	<field name="name" />
+                    <field name="description" />
+                    <field name="document_rel" />
+                    <field name="plm_box_rel" />
+                    <field name="version" />
+                </tree>
+            </field>
+        </record>
+
+    <record model="ir.actions.act_window" id="action_non_cad_doc">
+    	<field name="name">Non CAD Document Relations</field>
+    	 <field name="res_model">plm.box</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="plm_box_tree"/>
+    </record>
+
+    <menuitem
+        name="Search on Non CAD Document Relations"
+        action="action_non_cad_doc"
+        id="menu_non_cad_doc_relations"
+        parent="plm.plm_document_form"/>
+        
+        
+        <record id="view_stock_config_settings_custom" model="ir.ui.view">
+            <field name="name">stock.config.settings.custom</field>
+            <field name="model">stock.config.settings</field>
+            <field name="inherit_id" ref="stock.view_stock_config_settings"/>
+            <field name="type">form</field>
+        	<field name="priority" eval="10"/>
+            <field name="arch" type="xml">
+            <field name="group_uos" position="after">
+            	<label for="module_stock_plm_box"/>
+                <field name="module_stock_plm_box"/>
+            </field>
+            </field>
+        </record>
+        
+</data>
+</openerp>

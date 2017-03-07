@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <record id="seq_type_plm_box_name" model="ir.sequence.type">
+            <field name="name">PLMBOX</field>
+            <field name="code">plm.box</field>
+        </record>
+        
+        <record id="seq_plm_box" model="ir.sequence">
+            <field name="name">PLMBOX</field>
+            <field name="code">plm.box</field>
+            <field name="prefix">PlmBox_</field>
+        </record>
+        
+        <record id="seq_type_doc_name" model="ir.sequence.type">
+            <field name="name">DOC</field>
+            <field name="code">plm.document</field>
+        </record>
+        <record id="seq_ddt" model="ir.sequence">
+            <field name="name">DOC</field>
+            <field name="code">plm.document</field>
+            <field name="prefix">BoxDoc_</field>
+        </record>
+        
+    </data>
+</openerp>

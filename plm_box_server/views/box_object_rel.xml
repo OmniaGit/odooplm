@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data>
+
+    <act_window name="View Reated Boxis"
+    	domain="[('product_id.id', '=', active_id)]"
+    	res_model="plm.box"
+        src_model="product.product"
+        view_id="plm_box_tree"
+        id="act_product_boxis"/>
+    
+    <act_window name="View Reated Boxis"
+    	domain="[('project_id.id', '=', active_id)]"
+    	res_model="plm.box"
+        src_model="project.project"
+        view_id="plm_box_tree"
+        id="act_project_boxis"/>
+    
+    <act_window name="View Reated Boxis"
+    	domain="[('task_id.id','=',active_id)]"
+    	res_model="plm.box"
+        src_model="project.task"
+        view_id="plm_box_tree"
+        id="act_task_boxis"/>
+    	
+    <act_window name="View Reated Boxis"
+    	domain="[('sale_ord_id.id','=',active_id)]"
+    	res_model="plm.box"
+        src_model="sale.order"
+        view_id="plm_box_tree"
+        id="act_sale_order_boxis"/>
+    
+    <act_window name="View Reated Boxis"
+    	domain="[('acc_an_acc_id.id','=',active_id)]"
+    	res_model="plm.box"
+        src_model="account.analytic.account"
+        view_id="plm_box_tree"
+        id="act_acc_an_acc_boxis"/>
+    	
+    <act_window name="View Reated Boxis"	
+    	domain="[('user_rel_id.id','=',active_id)]" 
+    	res_model="plm.box"
+        src_model="res.users"
+        view_id="plm_box_tree"
+        id="act_users_boxis"/>
+
+    <act_window name="View Reated Boxis"
+    	domain="[('bom_id.id','=',active_id)]"
+    	res_model="plm.box"
+        src_model="mrp.bom"
+        view_id="plm_box_tree"
+        id="act_bom_boxis"/>
+    
+    <act_window name="View Reated Boxis"
+    	domain="[('wc_id.id','=',active_id)]"
+    	res_model="plm.box"
+        src_model="mrp.workcenter"
+        view_id="plm_box_tree"
+        id="act_wc_boxis"/>
+    	
+    <act_window name="View Reated Boxis"	
+    	domain="[('work_ord_id.id','=',active_id)]" 
+    	res_model="plm.box"
+        src_model="mrp.production.workcenter.line"
+        view_id="plm_box_tree"
+        id="act_work_order_boxis"/>
+	</data>
+</openerp>

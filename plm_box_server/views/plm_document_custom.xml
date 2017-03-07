@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data> 
+
+        <record id="plm_document_plm_box_view" model="ir.ui.view">
+            <field name="name">plm.box.document.form.custom</field>
+            <field name="model">plm.document</field>
+            <field name="inherit_id" ref="plm.view_plm_document"/>
+            <field name="type">form</field>
+            <field name="priority" eval="1"/>
+            <field name="arch" type="xml">
+            	<xpath expr="//field[@name='name']" position="replace">
+	            	<field name="name" select="1" attrs="{'readonly':[('state','!=','draft')]}" colspan="2" readonly="1"/>
+           		</xpath>
+     		</field>
+        </record>
+        
+</data>
+</openerp>
