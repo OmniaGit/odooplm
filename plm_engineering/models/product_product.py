@@ -26,12 +26,11 @@ Created on 31 Aug 2016
 @author: Daniel Smerghetto
 '''
 
-from openerp import models
-from openerp import api
-from openerp import fields
-from openerp import osv
-from openerp import _
-from openerp.exceptions import UserError
+from odoo import models
+from odoo import api
+from odoo import osv
+from odoo import _
+from odoo.exceptions import UserError
 import logging
 
 
