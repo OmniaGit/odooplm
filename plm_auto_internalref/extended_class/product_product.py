@@ -26,8 +26,8 @@ Created on 9 Dec 2016
 @author: Daniel Smerghetto
 '''
 
-from openerp import models
-from openerp import api
+from odoo import models
+from odoo import api
 import logging
 
 
