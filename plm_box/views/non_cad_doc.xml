@@ -8,7 +8,7 @@
             <field name="type">form</field>
         	<field name="priority" eval="10"/>
             <field name="arch" type="xml">
-                <form string="Show Non CAD Document Relation" version="7.0">
+                <form string="Show Non CAD Document Relation">
 	               <header>
 	                    <button name="release" states="confirmed" string="Release Box" icon="gtk-apply" class="oe_highlight"/>
 	                    <button name="correct" states="confirmed" string="Correct Box" icon="gtk-cancel"/>
@@ -16,8 +16,7 @@
 	                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,released" statusbar_colors='{"undermodify":"red","obsoleted":"red"}' readonly="0"/>
 	               </header>
                 <sheet>
-                <group colspan="4" col="4">
-	                <group colspan="2" col="2">
+                <group>
 	                	<field name="name" readonly="1"/>
 	                	<field name="write_date" readonly="1"/>
 	                	<field name="create_date" readonly="1"/>
@@ -27,7 +26,8 @@
 	                    <!--
 	                    <field name="obj_rel" editable="bottom" widget="one2many_list">
 							<tree string="Relation" editable="bottom">
-			                    <field name="model_id" on_change="onchange_model_id(model_id)" domain="[('name', 'in', ['Project','Users','Analytic Account','Task','Sales Order','Product','Work Order','Work Center','Bill of Material'])]"/>
+			                    <field name="model_id" on_change="onchange_model_id(model_id)"
+			                    	domain="[('name', 'in', ['Project','Users','Analytic Account','Task','Sales Order','Product','Work Order','Work Center','Bill of Material'])]"/>
 								<field name="name"/>
 			                    <field name="obj_type"/>
 			                    <field name="obj_id" invisible="1"/>
@@ -53,7 +53,6 @@
 	                    <field name="plm_box_rel" />
 	                    <field name="groups_rel" />
 	                    <!--<button type="button" string="Schiacciami" class="oe_button oe_list_add oe_highlight" >Select</button>-->
-	                </group>
                 </group>
                 <notebook>
                     <page string="Products">
