@@ -25,8 +25,7 @@ from odoo import fields
 from odoo import _
 
 
-class stock_config_settings(models.Model):
-    _name = 'stock.config.settings'
+class stock_config_settings(models.TransientModel):
     _inherit = 'stock.config.settings'
 
     module_stock_plm_box = fields.Boolean(_("Allow plm_box relation"), help=_("""Adds plm_box relation to Warehouse."""))

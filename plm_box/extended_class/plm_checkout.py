@@ -26,6 +26,7 @@ Created on Mar 8, 2017
 ##############################################################################
 from odoo import models
 from odoo import fields
+from odoo import _
 
 
 class Plm_checkout_custom(models.Model):

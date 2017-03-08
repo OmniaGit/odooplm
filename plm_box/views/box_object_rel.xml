@@ -57,12 +57,6 @@
         src_model="mrp.workcenter"
         view_id="plm_box_tree"
         id="act_wc_boxis"/>
-    	
-    <act_window name="View Reated Boxis"	
-    	domain="[('work_ord_id.id','=',active_id)]" 
-    	res_model="plm.box"
-        src_model="mrp.production.workcenter.line"
-        view_id="plm_box_tree"
-        id="act_work_order_boxis"/>
+
 	</data>
 </openerp>

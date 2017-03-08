@@ -47,8 +47,6 @@
 			                    	on_change="onchange_bom_id(bom_id)"/>
 			                    <field name="wc_id" attrs="{'invisible':[('obj_type','!=','mrp.workcenter')]}"
 			                    	on_change="onchange_wc_id(wc_id)"/>
-			                    <field name="work_ord_id" attrs="{'invisible':[('obj_type','!=','mrp.production.workcenter.line')]}"
-			                    	on_change="onchange_work_ord_id(work_ord_id)"/>
 							</tree>
 						</field>
 						-->
@@ -89,10 +87,6 @@
                     <page string="Workcenters">
                     	<label for="wc_id"/>
 	                    <field name="wc_id"/>
-                    </page>
-                    <page string="Work Orders">
-                    	<label for="work_ord_id"/>
-	                    <field name="work_ord_id"/>
                     </page>
                 </notebook>
                 </sheet>
@@ -142,7 +136,7 @@
             <field name="type">form</field>
         	<field name="priority" eval="10"/>
             <field name="arch" type="xml">
-            <field name="group_uos" position="after">
+            <field name="module_quality" position="after">
             	<label for="module_stock_plm_box"/>
                 <field name="module_stock_plm_box"/>
             </field>

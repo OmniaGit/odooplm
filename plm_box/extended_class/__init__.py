@@ -27,7 +27,6 @@ Created on Mar 7, 2017
 '''
 import plm_box
 import settings
-import plm_config_settings
 import plm_document
 import plm_checkout
 

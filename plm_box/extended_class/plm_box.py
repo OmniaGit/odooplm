@@ -72,8 +72,8 @@ class Plm_box(models.Model):
                                   'group_id',
                                   _('Groups Allowed')
                                   )
-    create_date = fields.datetime(_('Date Created'), readonly=True)
-    write_date = fields.datetime(_('Date Modified'), readonly=True)
+    create_date = fields.Datetime(_('Date Created'), readonly=True)
+    write_date = fields.Datetime(_('Date Modified'), readonly=True)
     state = fields.Selection(USED_STATES, _('Status'), help=_("The status of the box."), readonly="True", required=True, default='draft')
     product_id = fields.Many2many('product.product', 'plm_box_products_rel', 'box_id', 'product_id', _('Product'))
     project_id = fields.Many2many('project.project', 'plm_box_proj_rel', 'box_id', 'project_id', _('Project'))
@@ -83,7 +83,6 @@ class Plm_box(models.Model):
     user_rel_id = fields.Many2many('res.users', 'plm_box_user_rel', 'box_id', 'user_id', _('User'))
     bom_id = fields.Many2many('mrp.bom', 'plm_box_bom_rel', 'box_id', 'bom_id', _('Bill Of Material'))
     wc_id = fields.Many2many('mrp.workcenter', 'plm_box_wc_rel', 'box_id', 'wc_id', _('Work Center'))
-    work_ord_id = fields.Many2many('mrp.production.workcenter.line', 'plm_box_work_ord_rel', 'box_id', 'work_ord_id', _('Work Order'))
 
     @api.multi
     def unlink(self):
@@ -212,9 +211,6 @@ class Plm_box(models.Model):
         for brws in parentBrws.wc_id:
             outName = brws.name
             objRelList.append({'obj_name': 'Work Center', 'obj_type': 'mrp.workcenter', 'obj_rel_name': outName})
-        for brws in parentBrws.work_ord_id:
-            outName = brws.name
-            objRelList.append({'obj_name': 'Work Order', 'obj_type': 'mrp.production.workcenter.line', 'obj_rel_name': outName})
         return objRelList
 
     @api.model
