@@ -20,32 +20,27 @@
 #
 ##############################################################################
 {
-    'name': 'Plm Box Server',
+    'name': 'Plm Box',
     'version': '1.1',
     'author': 'OmniaSolutions',
     'website': 'http://www.omniasolutions.eu',
     'category': 'Custom',
     'sequence': 1,
     'summary': '',
-    #'images': ['images/EngineeringPart.jpeg','images/OpenComponent.jpeg','images/OpenDocument.jpeg'],
-    'depends': ['base', 
-                'plm', 
-                'account',  #to work with plm box entities
-                'project',  #to work with plm box entities
-                'sale',     #to work with plm box entities
+    'depends': ['base',
+                'plm',
+                'account',  # to work with plm box entities
+                'project',  # to work with plm box entities
+                'sale',     # to work with plm box entities
                 ],
     'description': '',
-    'data': [
-        'views/non_cad_doc.xml',
-        'views/box_object_rel.xml',
-        'views/plm_box_sequence_data.xml',
-        'views/boxWorkflow.xml',
-        #'views/plm_document_custom.xml',        # this view force new document name to be automatically generated
-        ],
-    'demo': [
-        ],
-    'test': [
-        ],
+    'data': ['views/non_cad_doc.xml',
+             'views/box_object_rel.xml',
+             'views/plm_box_sequence_data.xml',
+             'views/boxWorkflow.xml',
+             ],
+    'demo': [],
+    'test': [],
     'installable': True,
     'application': True,
     'auto_install': False,
