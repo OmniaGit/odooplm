@@ -1,8 +1,13 @@
+'''
+Created on Mar 8, 2017
+
+@author: daniel
+'''
 # -*- encoding: utf-8 -*-
 ##############################################################################
 #
-#    OmniaSolutions, Your own solutions
-#    Copyright (C) 2010 OmniaSolutions (<http://omniasolutions.eu>). All Rights Reserved
+#    OmniaSolutions, Open Source Management Solution
+#    Copyright (C) 2010-2017 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -19,16 +24,25 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+from odoo import models
+from odoo import api
 
-'''
-Created on Mar 7, 2017
 
-@author: daniel
-'''
-import plm_box
-import settings
-import plm_config_settings
-import plm_document
-import plm_checkout
+class Plm_config_settings(models.Model):
+    _name = 'plm.config.settings'
+
+    @api.model
+    def GetActiveServiceId(self, vals):
+        return ['30']
+
+    @api.model
+    def RegisterActiveId(self, vals):
+        return True
+
+    @api.model
+    def GetServiceIds(self, vals):
+        return ['30']
+
+Plm_config_settings()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

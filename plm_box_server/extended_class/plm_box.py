@@ -21,8 +21,8 @@
 ##############################################################################
 from odoo import models
 from odoo import fields
+from odoo import _
 from odoo import api
-import logging
 
 import datetime
 from dateutil import parser
@@ -32,11 +32,11 @@ DEFAULT_SERVER_DATE_FORMAT = "%Y-%m-%d"
 DEFAULT_SERVER_TIME_FORMAT = "%H:%M:%S"
 DEFAULT_SERVER_DATETIME_FORMAT = "%s %s" % (DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_TIME_FORMAT)
 
-USED_STATES = [('draft', 'Draft'),
-               ('confirmed', 'Confirmed'),
-               ('released', 'Released'),
-               ('undermodify', 'UnderModify'),
-               ('obsoleted', 'Obsoleted')]
+USED_STATES = [('draft', _('Draft')),
+               ('confirmed', _('Confirmed')),
+               ('released', _('Released')),
+               ('undermodify', _('UnderModify')),
+               ('obsoleted', _('Obsoleted'))]
 
 
 def correctDate(fromTimeStr, context):
@@ -49,41 +49,41 @@ class Plm_box(models.Model):
     _name = 'plm.box'
     _inherit = 'mail.thread'
 
-    name = fields.Char('Code')
-    box_id = fields.Integer('Box ID')
-    version = fields.Integer('Version')
-    description = fields.Text('Description')
+    name = fields.Char(_('Code'))
+    box_id = fields.Integer(_('Box ID'))
+    version = fields.Integer(_('Version'))
+    description = fields.Text(_('Description'))
     document_rel = fields.Many2many('plm.document',
                                     'plm_document_rel',
                                     'name',
                                     'plm_document_id',
-                                    'Documents'
+                                    _('Documents')
                                     )
     plm_box_rel = fields.Many2many('plm.box',
                                    'plm_box_box_rel',
                                    'plm_box_parent_id',
                                    'plm_box_child_id',
-                                   'Children Box'
+                                   _('Children Box')
                                    )
-    state = fields.Char('State')
+    state = fields.Char(_('State'))
     groups_rel = fields.Many2many('res.groups',
                                   'plm_box_groups_rel',
                                   'plm_box_id',
                                   'group_id',
-                                  'Groups Allowed'
+                                  _('Groups Allowed')
                                   )
-    create_date = fields.datetime('Date Created', readonly=True)
-    write_date = fields.datetime('Date Modified', readonly=True)
-    state = fields.Selection(USED_STATES, 'Status', help="The status of the box.", readonly="True", required=True, default='draft')
-    product_id = fields.Many2many('product.product', 'plm_box_products_rel', 'box_id', 'product_id', 'Product')
-    project_id = fields.Many2many('project.project', 'plm_box_proj_rel', 'box_id', 'project_id', 'Project')
-    task_id = fields.Many2many('project.task', 'plm_box_task_rel', 'box_id', 'task_id', 'Task')
-    sale_ord_id = fields.Many2many('sale.order', 'plm_box_sale_ord_rel', 'box_id', 'sale_ord_id', 'Sale Order')
-    acc_an_acc_id = fields.Many2many('account.analytic.account', 'plm_box_acc_an_acc_rel', 'box_id', 'acc_an_acc_id', 'Contract')
-    user_rel_id = fields.Many2many('res.users', 'plm_box_user_rel', 'box_id', 'user_id', 'User')
-    bom_id = fields.Many2many('mrp.bom', 'plm_box_bom_rel', 'box_id', 'bom_id', 'Bill Of Material')
-    wc_id = fields.Many2many('mrp.workcenter', 'plm_box_wc_rel', 'box_id', 'wc_id', 'Work Center')
-    work_ord_id = fields.Many2many('mrp.production.workcenter.line', 'plm_box_work_ord_rel', 'box_id', 'work_ord_id', 'Work Order')
+    create_date = fields.datetime(_('Date Created'), readonly=True)
+    write_date = fields.datetime(_('Date Modified'), readonly=True)
+    state = fields.Selection(USED_STATES, _('Status'), help=_("The status of the box."), readonly="True", required=True, default='draft')
+    product_id = fields.Many2many('product.product', 'plm_box_products_rel', 'box_id', 'product_id', _('Product'))
+    project_id = fields.Many2many('project.project', 'plm_box_proj_rel', 'box_id', 'project_id', _('Project'))
+    task_id = fields.Many2many('project.task', 'plm_box_task_rel', 'box_id', 'task_id', _('Task'))
+    sale_ord_id = fields.Many2many('sale.order', 'plm_box_sale_ord_rel', 'box_id', 'sale_ord_id', _('Sale Order'))
+    acc_an_acc_id = fields.Many2many('account.analytic.account', 'plm_box_acc_an_acc_rel', 'box_id', 'acc_an_acc_id', _('Contract'))
+    user_rel_id = fields.Many2many('res.users', 'plm_box_user_rel', 'box_id', 'user_id', _('User'))
+    bom_id = fields.Many2many('mrp.bom', 'plm_box_bom_rel', 'box_id', 'bom_id', _('Bill Of Material'))
+    wc_id = fields.Many2many('mrp.workcenter', 'plm_box_wc_rel', 'box_id', 'wc_id', _('Work Center'))
+    work_ord_id = fields.Many2many('mrp.production.workcenter.line', 'plm_box_work_ord_rel', 'box_id', 'work_ord_id', _('Work Order'))
 
     @api.multi
     def unlink(self):
@@ -173,7 +173,7 @@ class Plm_box(models.Model):
         '''
             Return ids of avaible groups for user
         '''
-        return self.env.get('res.groups').search([('users.id', '=', self.env.uid)])
+        return self.env.get('res.groups').search([('users.id', '=', self.env.uid)]).ids
 
     @api.model
     def setRelatedDocs(self, parentBrws):
@@ -259,7 +259,7 @@ class Plm_box(models.Model):
         userBrws = self.env.get('res.users').browse(self.env.uid)
         if userBrws:
             if userBrws.partner_id:
-                avaibleIds = self.search([('message_follower_ids.id', '=', userBrws.partner_id.id)])
+                avaibleIds = self.search([('message_follower_ids.id', '=', userBrws.partner_id.id)]).ids
                 for idd in avaibleIds:
                     if idd not in avaibleBoxIds:
                         avaibleBoxIds.append(idd)
@@ -290,8 +290,7 @@ class Plm_box(models.Model):
         if boxes:
             for boxName in boxes.keys():
                 boxBrwsList = self.search([('name', '=', boxName)])
-                for boxBrws in boxBrwsList:
-                    avaibleBoxIds.append(boxBrws.id)
+                avaibleBoxIds.extend(boxBrwsList.ids)
         for boxId in avaibleBoxIds:
             boxBrws = self.browse(boxId)
             self.setRelatedDocs(boxBrws)
@@ -344,8 +343,8 @@ class Plm_box(models.Model):
                 docBrwsList = plmDocObj.search([('name', '=', doc[0])])
                 if not docBrwsList:
                     outDocDict[doc[0]] = {}
-                for docBrws in docBrwsList:
-                    docIds.append(docBrws.id)
+                else:
+                    docIds.extend(docBrwsList.ids)
         elif docsToUpdate == 'all':
             docIds = plmDocObj.search([]).ids
         else:
@@ -376,22 +375,20 @@ class Plm_box(models.Model):
 
     @api.model
     def userInAdminOrPlmItegration(self, docBrws):
-        groupsObj = self.env.get('res.groups')
-        plmUserGroupId = groupsObj.search([
-            ('name', '=', 'PLM / Integration User')])[0]
+        plmUserGroupBrwsList = self.env.get('res.groups').search([('name', '=', 'PLM / Integration User')])
         if self.env._is_superuser():
             return True
         else:
-            for brwsUser in groupsObj.browse(plmUserGroupId).users:
-                if self.env.uid == brwsUser.id:
-                    return True
+            for plmUserGroupBrws in plmUserGroupBrwsList:
+                for brwsUser in plmUserGroupBrws.users:
+                    if self.env.uid == brwsUser.id:
+                        return True
         return False
 
     @api.model
     def userInTheFollowers(self, docBrws):
         for elem in docBrws.message_follower_ids:
-            userBrwsList = self.env.get('res.users').search([
-                ('partner_id', '=', elem.id)])
+            userBrwsList = self.env.get('res.users').search([('partner_id', '=', elem.id)])
             for userBrws in userBrwsList:
                 if self.env.uid == userBrws.id:
                     return True
@@ -436,7 +433,7 @@ class Plm_box(models.Model):
     def getAvaiableBoxIds(self):
         avaibleBoxIds = []
         groupsIds = self.getAvaibleGroupsByUser()
-        avaibleBoxIds = avaibleBoxIds + self.search([('groups_rel.id', 'in', groupsIds)])
+        avaibleBoxIds = avaibleBoxIds + self.search([('groups_rel.id', 'in', groupsIds)]).ids
         avaibleBoxIds = avaibleBoxIds + self.getBoxesByAvaibleParent(avaibleBoxIds, [])
         avaibleBoxIds = self.getBoxesByFollower(avaibleBoxIds)
         return avaibleBoxIds
@@ -500,10 +497,10 @@ class Plm_box(models.Model):
     @api.model
     def checkIfBoxChanged(self, values):
         name, typee, datetimee = values
-        boxId = self.search([('name', '=', name)]).ids
-        if boxId:
-            boxId = boxId[0]
-            wr_date = self.browse(boxId).write_date
+        boxBrwsList = self.search([('name', '=', name)])
+        for boxBrws in boxBrwsList:
+            boxId = boxBrws.id
+            wr_date = boxBrws.write_date
             if wr_date != 'n/a':
                 wr_date = wr_date.split('.')[0]
                 serverDatetime = datetime.datetime.strptime(wr_date, DEFAULT_SERVER_DATETIME_FORMAT)
@@ -521,12 +518,12 @@ class Plm_box(models.Model):
     def checkIfDocChanged(self, values):
         name, typee, datetimee = values
         docObj = self.env.get('plm.document')
-        docId = docObj.search([('name', '=', name)]).ids
-        if docId:
-            docId = docId[0]
+        docBrwsList = docObj.search([('name', '=', name)])
+        for docBrws in docBrwsList:
+            docId = docBrws.id
             if docObj.getDocumentState({'docName': name}) != 'check-in':
                 return [], docId
-            wr_date = docObj.browse(docId).write_date
+            wr_date = docBrws.write_date
             if wr_date != 'n/a':
                 wr_date = wr_date.split('.')[0]
                 serverDatetime = datetime.datetime.strptime(wr_date, DEFAULT_SERVER_DATETIME_FORMAT)
@@ -580,152 +577,4 @@ class Plm_box(models.Model):
 
 Plm_box()
 
-
-class plm_box_view_custom(models.Model):
-    _name = 'plm.box_view_custom'
-    _inherit = 'account.invoice'
-    
-    def selectObjectButton(self,cr,uid,ids,vals,context=None):
-        pass
-    
-plm_box_view_custom()
-
-class Plm_checkout_custom(models.Model):
-    _inherit = 'plm.checkout'
-    _columns = {
-                'write_uid' : fields.Integer('Write User Id')
-                }
-Plm_checkout_custom()
-    
-class Plm_box_document(models.Model):
-    _inherit = 'plm.document'
-    
-    _columns = {
-                'name': fields.Char('Attachment Name', required = False, readonly=True)
-                }
-
-    def create(self, cr, uid, vals, context={}):
-        if not vals.get('name',False):
-            name = self.getNewSequencedName(cr, uid, context)
-            vals ['name'] = name
-        return super(Plm_box_document, self).create(cr, uid, vals, context)
-    
-    def getCheckOutUser(self, cr, uid, docId,context={}):
-        checkOutObj = self.pool.get('plm.checkout')
-        checkOutIds = checkOutObj.search(cr, uid, [('documentid','=',docId)])
-        for checkOutId in checkOutIds:
-            checkOutBrwse = checkOutObj.browse(cr, uid, checkOutId, context)
-            if checkOutBrwse:
-                userId = checkOutBrwse.write_uid
-                return self.pool.get('res.users').browse(cr, uid, userId, context).name
-        
-    
-    def getNewSequencedName(self,cr,uid,vals,context=None):
-        return self.pool.get('ir.sequence').get(cr, uid, 'plm.document')
-        
-    def getFilesFromName(self,cr,uid,vals,context=None):
-        docName, docRevision = vals
-        docIds = self.search(cr, uid, [('name','=',docName),('revisionid','=',docRevision)])
-        if docIds:
-            files = self.GetSomeFiles(cr, uid, (docIds,[[],[]],False))
-            if files:
-                files[0] = list(files[0])
-                files[0][0] = docName
-                return files
-            
-    def checkInOrFalse(self, cr, uid, docDict, context={}):
-        docName = docDict.get('name','')
-        docRev  = docDict.get('revisionId','')
-        docContent = docDict.get('fileContent','')
-        force = docDict.get('force',False)
-        docId = self.search(cr, uid, [('name','=',docName)], context)
-        docBrowse = self.browse(cr, uid, docId, context)
-        #print force
-        if docBrowse and not force:
-            if docBrowse[0].datas != docContent:
-                print 'File changed'
-                return 'File changed'
-        plmCheckOutObj = self.pool.get('plm.checkout')
-        docIds = self.search(cr, uid, [('name', '=', docName),('revisionid','=',docRev)] , context)
-        if len(docIds) == 1:        #can check-in
-            chckOutDocs = plmCheckOutObj.search(cr, uid,  [('documentid', '=', docIds[0]), ('userid', '=', uid)], context)
-            res = plmCheckOutObj.unlink(cr, uid, chckOutDocs, context)
-            return True
-        return False
-            
-    def checkOutOrFalse(self, cr, uid, docDict, context={}):
-        docName = docDict.get('name','')
-        docRev  = docDict.get('revisionId','')
-        plmCheckOutObj = self.pool.get('plm.checkout')
-        docIds = self.search(cr, uid, [('name', '=', docName),('revisionid','=',docRev)] , context)
-        if len(docIds) == 1:     #problem user
-            docState = self.browse(cr, uid, docIds[0], context).state
-            if not docState or docState != 'draft':
-                return False
-            if plmCheckOutObj.search(cr, uid, [('documentid','=',docIds[0]),('userid','=',uid)]):
-                return True
-            res = plmCheckOutObj.create(cr, uid,  {'documentid':docIds[0], 'userid':uid}, context)
-            if res:
-                return True
-        return False
-    
-    def saveBoxDocRel(self, cr, uid, docDict, context):
-        docName  = docDict.get('docName','')
-        boxName  = docDict.get('boxName','')
-        boxObj = self.pool.get('plm.box')
-        boxId = boxObj.search(cr, uid, [('name','=',boxName)])
-        if boxId:
-            docId = self.search(cr, uid, [('name','=',docName)])
-            if docId:
-                res = boxObj.write(cr, uid, boxId[0], {'document_rel':[(4,docId[0])]})
-                return res
-        return False
-        
-    def updateDocValues(self, cr, uid, valuesDict, context):
-        docId = self.search(cr, uid, [('name' ,'=', valuesDict.get('docName',''))], context)
-        if docId:
-            del valuesDict['docName']
-            if self.write(cr, uid, docId, valuesDict, context):
-                docBrws = self.browse(cr, uid, docId[0])
-                writeVal = datetime.datetime.strptime(docBrws.write_date,DEFAULT_SERVER_DATETIME_FORMAT)
-                return correctDate(writeVal, context)
-        return False
-        
-    def returnDocsOfFilesChanged(self, cr, uid, valuesDict, context):
-        outDocs = []
-        for docName, (docContent,writeDateClient) in valuesDict.items():
-            if self.getDocumentState(cr, uid, {'docName':docName}, context) == 'check-out-by-me':
-                docId = self.search(cr, uid, [('name','=',docName)], context)
-                docBrowse = self.browse(cr, uid, docId, context)
-                if docBrowse:
-                    if docBrowse[0].datas != docContent:
-                        outDocs.append(docName)
-        return outDocs
-
-    def getDocumentState(self, cr, uid, vals, context):
-        docName = vals.get('docName','')
-        docIds = self.search(cr, uid, [('name','=',docName)],context)
-        if len(docIds)>0:
-            checkedOutByMe = self._is_checkedout_for_me(cr, uid, docIds[0], context)
-            checkedIn = self.ischecked_in(cr, uid,docIds, context)
-            if checkedOutByMe:
-                return 'check-out-by-me'
-            if not checkedIn:
-                return 'check-out'
-            else:
-                return 'check-in'
-        return 'check-out-by-me'
-    
-class Plm_config_settings(models.Model):
-    _name = 'plm.config.settings'
-
-    def GetActiveServiceId(self, cr, uid, vals, context={}):
-        return ['30']
-
-    def RegisterActiveId(self, cr, uid, vals, context={}):
-        return True
-    
-    def GetServiceIds(self, cr, uid, vals, context={}):
-        return ['30']
-        
-Plm_config_settings()
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

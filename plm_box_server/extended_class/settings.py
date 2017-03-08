@@ -20,18 +20,16 @@
 #
 ##############################################################################
 
-from openerp.osv import fields, osv
+from odoo import models
+from odoo import fields
+from odoo import _
 
-class stock_config_settings(osv.osv_memory):
+
+class stock_config_settings(models.Model):
     _name = 'stock.config.settings'
     _inherit = 'stock.config.settings'
-    
-    _columns = {
-        'module_stock_plm_box': fields.boolean("Allow plm_box relation",
-            help="""Adds plm_box relation to Warehouse."""),
-                
-        'module_plm_box_widget': fields.boolean("Plm Widget",
-            help="""Adds plm_box relation to Warehouse."""),
-                }
-    
+
+    module_stock_plm_box = fields.Boolean(_("Allow plm_box relation"), help=_("""Adds plm_box relation to Warehouse."""))
+    module_plm_box_widget = fields.Boolean(_("Plm Widget"), help=_("""Adds plm_box relation to Warehouse."""))
+
 stock_config_settings()

@@ -1,8 +1,13 @@
+'''
+Created on Mar 8, 2017
+
+@author: daniel
+'''
 # -*- encoding: utf-8 -*-
 ##############################################################################
 #
-#    OmniaSolutions, Your own solutions
-#    Copyright (C) 2010 OmniaSolutions (<http://omniasolutions.eu>). All Rights Reserved
+#    OmniaSolutions, Open Source Management Solution
+#    Copyright (C) 2010-2017 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -19,16 +24,14 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+from odoo import models
+from odoo import fields
 
-'''
-Created on Mar 7, 2017
 
-@author: daniel
-'''
-import plm_box
-import settings
-import plm_config_settings
-import plm_document
-import plm_checkout
+class Plm_checkout_custom(models.Model):
+    _inherit = 'plm.checkout'
+    write_uid = fields.Integer(_('Write User Id'))
+
+Plm_checkout_custom()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
