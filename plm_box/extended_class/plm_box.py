@@ -19,6 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+from odoo.exceptions import UserError
 from odoo import models
 from odoo import fields
 from odoo import _
@@ -89,7 +90,7 @@ class Plm_box(models.Model):
         for boxBrws in self:
             if not self.boxUnlinkPossible(boxBrws):
                 continue
-            return super(Plm_box, self).browse(boxBrws.id).unlink()
+            super(Plm_box, boxBrws).unlink()
         return True
 
     @api.model
@@ -99,7 +100,7 @@ class Plm_box(models.Model):
                 return False
         for docBrws in boxBrws.document_rel:
             if not docBrws.ischecked_in():
-                return False
+                raise UserError(_('Document %r of box %r is in check-in state, so could not delete') % (docBrws.name, boxBrws.name))
         return True
 
     @api.model
@@ -279,6 +280,9 @@ class Plm_box(models.Model):
 
     @api.model
     def getBoxes(self, boxes={}):
+        '''
+            *** CLIENT ***
+        '''
         outBoxDict = {}
         avaibleBoxIds = []
         if not boxes:
@@ -300,7 +304,7 @@ class Plm_box(models.Model):
             outBoxDict[boxBrws.name] = {'boxVersion': boxBrws.version,
                                         'boxDesc': boxBrws.description,
                                         'boxState': boxBrws.state,
-                                        'boxReadonly': self.boxReadonlyCompute([boxId]),
+                                        'boxReadonly': boxBrws.boxReadonlyCompute(),
                                         'boxWriteDate': correctDate(writeVal, self.env.context),
                                         'boxPrimary': False,
                                         }
@@ -537,21 +541,28 @@ class Plm_box(models.Model):
 
     @api.model
     def getBoxesStructureFromServer(self, primaryBoxes):
+        '''
+            *** CLIENT ***
+            Function called by "Add" button in the plm client
+        '''
         outDict = {}
         notFoundBoxes = []
         if not primaryBoxes:
             return (outDict, notFoundBoxes)
         for boxName in primaryBoxes:
-            print 'boxName %s' % (str(boxName))
-            boxIds = self.search([('name', '=', boxName)]).ids
-            if boxIds:
-                outDict[boxName] = self.getBoxStructure(boxIds[0], True)
+            boxBrwsList = self.search([('name', '=', boxName)])
+            if boxBrwsList:
+                outDict[boxName] = boxBrwsList[0].getBoxStructure(True)
             else:
                 notFoundBoxes.append(boxName)
         return (outDict, notFoundBoxes)
 
     @api.multi
     def getBoxStructure(self, primary=False):
+        '''
+            *** CLIENT ***
+            Used in the client in "Add" button procedure
+        '''
         outDict = {'children': {},
                    'documents': {},
                    'entities': [],
@@ -562,13 +573,13 @@ class Plm_box(models.Model):
                    }
         for boxBrws in self:
             for boxChildBrws in boxBrws.plm_box_rel:
-                outDict['children'][boxChildBrws.name] = self.getBoxStructure(boxChildBrws.id)
+                outDict['children'][boxChildBrws.name] = boxChildBrws.getBoxStructure(primary)
             for docBrws in boxBrws.document_rel:
-                outDict['documents'][docBrws.name] = self.getDocDictValues(docBrws, {})
-            outDict['entities'] = self.getRelatedEntities(boxBrws, {})
+                outDict['documents'][docBrws.name] = self.getDocDictValues(docBrws)
+            outDict['entities'] = self.getRelatedEntities(boxBrws)
             outDict['description'] = boxBrws.description
             outDict['state'] = boxBrws.state
-            outDict['readonly'] = self.boxReadonlyCompute([boxBrws.id], {})
+            outDict['readonly'] = boxBrws.boxReadonlyCompute()
         return outDict
 
 Plm_box()

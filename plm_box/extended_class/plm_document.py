@@ -28,7 +28,7 @@ from odoo import models
 from odoo import fields
 from odoo import _
 from odoo import api
-
+import logging
 import datetime
 from dateutil import parser
 import pytz
@@ -56,14 +56,23 @@ class Plm_box_document(models.Model):
             vals['name'] = name
         return super(Plm_box_document, self).create(vals)
 
-    @api.model
-    def getCheckOutUser(self, docId):
-        checkOutObj = self.env.get('plm.checkout')
-        checkOutBrwsList = checkOutObj.search([('documentid', '=', docId)])
-        for checkOutBrws in checkOutBrwsList:
-            if checkOutBrws:
-                return checkOutBrws.write_uid.name
+    @api.multi
+    def getCheckOutUser(self):
+        for docBrws in self:
+            checkOutObj = self.env.get('plm.checkout')
+            checkOutBrwsList = checkOutObj.search([('documentid', '=', docBrws.id)])
+            for checkOutBrws in checkOutBrwsList:
+                if checkOutBrws:
+                    return self.getUserNameFromId(checkOutBrws.write_uid)
         return ''
+
+    @api.model
+    def getUserNameFromId(self, userId):
+        userBrws = self.env.get('res.users').browse(userId)
+        if not userBrws:
+            logging.warning("[getUserNameFromId] Couldn able to find user name with id %r" % (userId))
+            return ''
+        return userBrws.name
 
     @api.model
     def getNewSequencedName(self, vals):
@@ -120,7 +129,7 @@ class Plm_box_document(models.Model):
         docName = docDict.get('docName', '')
         boxName = docDict.get('boxName', '')
         boxObj = self.env.get('plm.box')
-        boxBrwsList = boxObj.search([('name', '=', boxName)]).ids
+        boxBrwsList = boxObj.search([('name', '=', boxName)])
         for boxBrws in boxBrwsList:
             docId = self.search([('name', '=', docName)]).ids
             if docId:
@@ -130,7 +139,7 @@ class Plm_box_document(models.Model):
 
     @api.model
     def updateDocValues(self, valuesDict):
-        docBrwsList = self.search([('name', '=', valuesDict.get('docName', ''))]).ids
+        docBrwsList = self.search([('name', '=', valuesDict.get('docName', ''))])
         for docBrws in docBrwsList:
             del valuesDict['docName']
             if docBrws.write(valuesDict):
