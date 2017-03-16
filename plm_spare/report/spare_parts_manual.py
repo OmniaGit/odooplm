@@ -127,6 +127,7 @@ def getBottomMessage(user, context):
 
 class bom_structure_one_sum_custom_report(report_sxw.rml_parse):
     def __init__(self, cr, uid, name, context):
+        self.env = odoo.api.Environment(cr, uid, context or {})
         super(bom_structure_one_sum_custom_report, self).__init__(cr, uid, name, context=context)
         self.localcontext.update({
             'time': time,
@@ -171,7 +172,7 @@ class bom_structure_one_sum_custom_report(report_sxw.rml_parse):
         return result
 
     def bom_type(self, myObject):
-        result = dict(self.pool.get(myObject._model._name).fields_get(self.cr, self.uid)['type']['selection']).get(myObject.type, '')
+        result = dict(self.env.get(myObject._model._name).fields_get(self.cr, self.uid)['type']['selection']).get(myObject.type, '')
         return _(result)
 
 
