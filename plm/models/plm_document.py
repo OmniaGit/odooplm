@@ -312,6 +312,8 @@ class PlmDocument(models.Model):
         """
             use given 'binvalue' to save it on physical repository and to read size (in bytes).
         """
+        if not filestore:
+            raise UserError(_('Filestore not set!'))
         flag = None
         # This can be improved
         for dirs in os.listdir(filestore):
