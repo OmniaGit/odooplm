@@ -100,8 +100,8 @@ class PlmDocument(models.Model):
         """
             get the last rev
         """
-        newIds = self._getlastrev(ids=self.env.ids)
-        return self.read(newIds, ['datas_fname'])
+        newIds = self._getlastrev(self.ids)
+        return self.browse(newIds).read(['datas_fname'])
 
     @api.multi
     def _data_get_files(self, listedFiles=([], []), forceFlag=False):
@@ -491,11 +491,9 @@ class PlmDocument(models.Model):
             return expData
         if 'revisionid' in queryFilter:
             del queryFilter['revisionid']
-        docBrwsList = self.search(queryFilter, order='revisionid').ids
+        docBrwsList = self.search(queryFilter, order='revisionid')
         if len(docBrwsList) > 0:
-            allIDs = docBrwsList.ids
-            allIDs.sort()
-            tmpData = self.export_data(allIDs, columns)
+            tmpData = docBrwsList.export_data(columns)
             if 'datas' in tmpData:
                 expData = tmpData['datas']
         return expData
@@ -600,7 +598,7 @@ class PlmDocument(models.Model):
             blind write for xml-rpc call for recovering porpouse
             DO NOT USE FOR COMMON USE !!!!
         """
-        return self.write(vals, check=False)
+        return self.with_context({'check': False}).write(vals)
 
 #   Overridden methods for this entity
     @api.model
