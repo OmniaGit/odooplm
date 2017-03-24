@@ -753,7 +753,6 @@ class PlmComponent(models.Model):
         # assign default value
         defaults['state'] = 'draft'
         defaults['engineering_writable'] = True
-        defaults['write_date'] = None
         defaults['linkeddocuments'] = []
         objId = super(PlmComponent, self).copy(defaults)
         if (objId):

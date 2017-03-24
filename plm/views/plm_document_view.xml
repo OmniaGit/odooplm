@@ -61,20 +61,19 @@
                     		img_width="350"/>
                 		</group> 
 		            </group>		
-	                <notebook col="4" colspan="4">
+	                <notebook >
 	                <page string="Attachment">
-	                	<group col="4" colspan="4" name="Attachment">
-	                		<group colspan="4"  string="File Data" name="FileData">
-		                        <group attrs="{'invisible':[('type','=','url')]}" name="group_datas">
+	                		<group  string="File Data" name="FileData" >
+		                        <group attrs="{'invisible':[('type','=','url')]}" name="group_datas" colspan="4" col="2">
 		                            <field name="datas" filename="datas_fname" 	attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
 		                            <field name="datas_fname" select="1"		attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
 		                        </group>
-		                        <group name="group_url">
-		                            <field name="url" widget="url" 				attrs="{'invisible':[('type','=','binary')],'readonly':[('state','in',['released','obsoleted'])]}"/>
-		                        	<field name="type"							attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+		                        <group name="group_url" colspan="4">
+		                            <field name="url" widget="url" attrs="{'invisible':[('type','=','binary')],'readonly':[('state','in',['released','obsoleted'])]}"/>
+		                        	<field name="type" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
 		                        </group>
 	                        </group>
-							<group colspan="4">
+							<group>
 	                            <group  string="Attached To" name="group_resurse">
 	                        		<newline/>
 	                       			<field name="res_id" 	readonly="True"/>
@@ -85,7 +84,6 @@
 	                                <field name="res_name" 	readonly="1"/>
 	                           	</group>
                            	</group>	
-                        </group>
 	                </page>
 	                <page string="Linked Parts" name="page_liked_parts">
 	                    <field colspan="4" name="linkedcomponents" nolabel="1"	attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>

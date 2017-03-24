@@ -24,13 +24,15 @@ Created on 28/mag/2016
 @author: mboscolo
 '''
 from odoo import _
-from odoo.osv import osv
+from odoo import api
+from odoo import models
 from odoo.report import report_sxw
 
 
 class bom_structure_cutted_parts(report_sxw.rml_parse):
 
     def __init__(self, cr, uid, name, context):
+        self.env = api.Environment(cr, uid, context or {})
         super(bom_structure_cutted_parts, self).__init__(cr, uid, name, context=context)
         self.localcontext.update({
             'get_children': self.get_children,
@@ -76,11 +78,11 @@ class bom_structure_cutted_parts(report_sxw.rml_parse):
         return children
 
     def bom_type(self, myObject):
-        result = dict(self.pool.get(myObject._model._name).fields_get(self.cr, self.uid)['type']['selection']).get(myObject.type, '')
+        result = dict(self.env.get(myObject._model._name).fields_get(self.cr, self.uid)['type']['selection']).get(myObject.type, '')
         return _(result)
 
 
-class bom_structure_all_cutted(osv.AbstractModel):
+class bom_structure_all_cutted(models.AbstractModel):
     _name = 'report.plm_cutted_parts.bom_structure_all_cutted'
     _inherit = 'report.abstract_report'
     _template = 'plm_cutted_parts.bom_structure_all_cutted'
