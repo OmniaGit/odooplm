@@ -103,13 +103,6 @@ class BackupDocWizard(osv.osv.osv_memory):
 
     @api.multi
     def action_restore_document(self):
-        def cleanAndLog(message, documentId, values, toRemove=[]):
-            for fieldName in toRemove:
-                if fieldName in values:
-                    del values[fieldName]
-            message = message + ' documentId: %r, values: %r' % (documentId, values)
-            logging.info(message)
-
         documentId = False
         backupDocIds = self.env.context.get('active_ids', [])
         backupDocObj = self.env['plm.backupdoc']
@@ -126,9 +119,9 @@ class BackupDocWizard(osv.osv.osv_memory):
                 documentId = relDocBrws.id
                 writeRes = relDocBrws.write(values)
                 if writeRes:
-                    cleanAndLog('[action_restore_document] Updated document', documentId, values, ['printout', 'preview'])
+                    logging.info('[action_restore_document] Updated document %r' % (documentId))
                 else:
-                    cleanAndLog('[action_restore_document] Updated document failed for', documentId, values, ['printout', 'preview'])
+                    logging.warning('[action_restore_document] Updated document failed for %r' % (documentId))
             else:
                 # Note that if I don't have a document I can't relate it to it's component
                 # User have to do it hand made
@@ -139,9 +132,9 @@ class BackupDocWizard(osv.osv.osv_memory):
                               )
                 documentId = plmDocObj.create(values)
                 if documentId:
-                    cleanAndLog('[action_restore_document] Created document', documentId, values, ['printout', 'preview'])
+                    logging.info('[action_restore_document] Created document %r' % (documentId))
                 else:
-                    cleanAndLog('[action_restore_document] Create document failed for', documentId, values, ['printout', 'preview'])
+                    logging.warning('[action_restore_document] Create document failed for %r' % (documentId))
         if documentId:
             return {'name': _('Document'),
                     'view_type': 'form',
