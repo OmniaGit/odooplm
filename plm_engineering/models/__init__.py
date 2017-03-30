@@ -23,5 +23,4 @@ import mrp_bom
 import mrp_bom_line
 import mrp_production
 import product_product_kanban
-import product_template
 import product_product

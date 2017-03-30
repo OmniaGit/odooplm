@@ -745,11 +745,22 @@ class PlmComponent(models.Model):
         """
             Overwrite the default copy method
         """
+        def clearBrokenComponents():
+            """
+                Remove broken components before make the copy. So the procedure will not fail
+            """
+            brokenComponents = self.search([('engineering_code', '=', '-')])
+            for brokenComp in brokenComponents:
+                brokenComp.unlink()
+            
         previous_name = self.name
         if not defaults.get('name', False):
             defaults['name'] = '-'                   # If field is required super of clone will fail returning False, this is the case
             defaults['engineering_code'] = '-'
             defaults['engineering_revision'] = 0
+            clearBrokenComponents()
+        if defaults.get('engineering_code', '') == '-':
+            clearBrokenComponents()
         # assign default value
         defaults['state'] = 'draft'
         defaults['engineering_writable'] = True

@@ -40,6 +40,7 @@
                    	<field name="weight_net"/>
                    	<field name="engineering_revision"/>
                    	<field name="description" select="True"/>
+                   	<field name="state" select="True"/>
           		</field>
         	</field>
         </record>
@@ -52,25 +53,16 @@
                 <form string="Bill of Material" edit="false">
                     <sheet>
                     <group>
-                        <group>
-                        	<button name="open_related_bom_lines" type="object" string="Related BOM Lines"/>	
-                            <field name="product_tmpl_id"/>
-                            <field name="product_id" groups="product.group_product_variant"/>
-                            <label for="product_qty" string="Quantity"/>
-                            <div>
-                                <field name="product_qty" class="oe_inline"/>
-                                <field name="product_uom_id" options="{'no_open':True,'no_create':True}" class="oe_inline" groups="product.group_uom"/>
-                            </div>
-                            <label for="routing_id" class="oe_inline" groups="mrp.group_mrp_routings"/>
-                            <div groups="mrp.group_mrp_routings">
-                                <field name="routing_id" class="oe_inline"/>
-                            </div>
-                        </group>
-                        <group>
-                            <field name="code"/>
-                            <field name="type" widget="radio"/>
-                            <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
-                        </group>
+                    	<button name="open_related_bom_lines" type="object" string="Related BOM Lines"/>	
+                        <field name="product_tmpl_id"/>
+                        <field name="product_id" groups="product.group_product_variant"/>
+                        <field name="state" readonly="True"/>
+                        <field name="product_qty" class="oe_inline"/>
+                        <field name="product_uom_id" options="{'no_open':True,'no_create':True}" class="oe_inline" groups="product.group_uom"/>
+                        <field name="routing_id" class="oe_inline" groups="mrp.group_mrp_routings"/>
+                        <field name="code"/>
+                        <field name="type" widget="radio"/>
+                        <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
                     </group>
                     <notebook>
                         <page string="Components">
@@ -135,10 +127,16 @@
         	<field name="priority" eval="16"/>
             <field name="arch" type="xml">
             	<data>
+            		
+            		<field name="product_tmpl_id" position="before">
+            			<label for="id" string=""/>
+            			<button name="open_related_bom_lines" type="object" string="Related BOM Lines"/>
+            		</field>
+            		
 	                <field name="product_id" position="after">
-	                	<button name="open_related_bom_lines" type="object" string="Related BOM Lines"/>	
 	                	<field name="engineering_revision" readonly="True"/>	
 	                	<field name="description" readonly="True"/>
+	                	<field name="state" readonly="True"/>
 	                	<field name="weight_net" readonly="True"/>
 	                </field>
             	</data>
