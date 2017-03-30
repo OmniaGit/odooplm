@@ -183,6 +183,7 @@ class PackAndGo(osv.osv.osv_memory):
         """
             action to import the data
         """
+        docIds = []
         if self.export_type == 'all':
             docIds = self.getAll()
         elif self.export_type == 'only_drawings' or self.export_type == 'only_pdf' or self.export_type == 'drawings_and_pdf':
