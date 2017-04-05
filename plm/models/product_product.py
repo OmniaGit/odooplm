@@ -28,6 +28,7 @@ from odoo import _
 from odoo.exceptions import ValidationError
 from odoo.exceptions import UserError
 from odoo import osv
+from odoo import SUPERUSER_ID
 import odoo.tools as tools
 
 _logger = logging.getLogger(__name__)
@@ -767,7 +768,13 @@ class PlmComponent(models.Model):
         defaults['linkeddocuments'] = []
         objId = super(PlmComponent, self).copy(defaults)
         if (objId):
-            self.wf_message_post(body=_('Copied starting from : %s.' % previous_name))
+            newContext = self.env.context.copy()
+            newContext['uid'] = SUPERUSER_ID
+            try:
+                self.with_context(newContext).wf_message_post(body=_('Copied starting from : %s.' % previous_name))
+            except Exception, ex:
+                logging.error(ex)
+                logging.info('Copied starting from : %s.' % previous_name)
         return objId
 
     @api.model
