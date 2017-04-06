@@ -75,7 +75,7 @@ class PlmCheckout(models.Model):
             raise UserError(_("Unable to check-out the required document (" + str(docBrws.name) + "-" + str(docBrws.revisionid) + ")."))
         self._adjustRelations([docBrws.id])
         newCheckoutBrws = super(PlmCheckout, self).create(vals)
-        docBrws.wf_message_post(body=_('Checked-Out'))
+        docBrws.wf_message_post(body=_('Checked-Out ID %r' % (newCheckoutBrws.id)))
         return newCheckoutBrws
 
     @api.multi

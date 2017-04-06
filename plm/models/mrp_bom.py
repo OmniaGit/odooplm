@@ -533,10 +533,11 @@ class MrpBomExtension(models.Model):
                 lateRevIdC = self.env['product.product'].GetLatestIds([(bom_line.product_id.product_tmpl_id.engineering_code,
                                                                         False,
                                                                         False)])  # Get Latest revision of each Part
+                bom_line.sudo().write({'state': 'draft'})
                 bom_line.write({'source_id': False,
                                 'name': bom_line.product_id.product_tmpl_id.name,
                                 'product_id': lateRevIdC[0]})
-            newBomBrws.write({'source_id': False,
+            newBomBrws.sudo().write({'source_id': False,
                               'name': newBomBrws.product_tmpl_id.name},
                              check=False)
         return newBomBrws

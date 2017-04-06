@@ -98,10 +98,11 @@ class ProductProductExtended(models.Model):
         newProdBrws = prodProdEnv.browse(newID)
         for bomBrws in bomObj.search([('product_tmpl_id', '=', oldProdBrws.product_tmpl_id.id), ('type', '=', bomType)]):
             newBomBrws = bomBrws.copy()
-            newBomBrws.product_tmpl_id = newProdBrws.product_tmpl_id.id
-            newBomBrws.source_id = False
+            source_id = False
             if newProdBrws.linkeddocuments.ids:
-                newBomBrws.source_id = newProdBrws.linkeddocuments.ids[0]
+                source_id = newProdBrws.linkeddocuments.ids[0]
+            newBomBrws.sudo().write({'product_tmpl_id': newProdBrws.product_tmpl_id.id, 'source_id': source_id})
+
 
 ProductProductExtended()
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

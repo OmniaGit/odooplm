@@ -563,7 +563,7 @@ class PlmComponent(models.Model):
         """
         if not (body == ''):
             for compObj in self:
-                compObj.message_post(body=_(body))
+                compObj.sudo().message_post(body=_(body))
 
     @api.multi
     def unlink(self):
@@ -770,11 +770,7 @@ class PlmComponent(models.Model):
         if (objId):
             newContext = self.env.context.copy()
             newContext['uid'] = SUPERUSER_ID
-            try:
-                self.with_context(newContext).wf_message_post(body=_('Copied starting from : %s.' % previous_name))
-            except Exception, ex:
-                logging.error(ex)
-                logging.info('Copied starting from : %s.' % previous_name)
+            self.wf_message_post(body=_('Copied starting from : %s.' % previous_name))
         return objId
 
     @api.model
@@ -850,7 +846,7 @@ class PlmComponent(models.Model):
                 engineering_revision = int(oldObject.engineering_revision) + 1
                 oldProdVals = {'engineering_writable': False,
                                'state': 'undermodify'}
-                self.browse([oldObject.id]).write(oldProdVals)
+                self.browse([oldObject.id]).sudo().write(oldProdVals)
                 oldObject.wf_message_post(body=_('Status moved to: %s.' % (USEDIC_STATES[oldProdVals['state']])))
                 # store updated infos in "revision" object
                 defaults = {}
