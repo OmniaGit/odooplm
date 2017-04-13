@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record model="ir.config_parameter" id="plm_convetion_server">
+            <field name="key">plm_convetion_server</field>
+            <field name="value">my.servrer.com:5000</field>
+        </record>
+        <record model="ir.config_parameter" id="plm_convertion_folder">
+            <field name="key">plm_convertion_folder</field>
+            <field name="value">/srv/converted_data</field>
+        </record>
+
+    </data>
+</odoo>

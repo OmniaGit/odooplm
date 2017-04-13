@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		<record id="act_plm_convert_form" model="ir.ui.view">
+        	<field name="name">plm.convert.form</field>
+        	<field name="model">plm.convert</field>
+        	<field name="type">form</field>
+        	<field name="arch" type="xml">
+	        	<form string="Convert Form">
+	        		<group colspan="4" col="4">
+		        		<field string = "Documento Origine" name="document_id" />
+						<field string = "Convertion Format" name="targetFormat" />
+		        		<field string = "Converted File" name="downloadDatas" readonly="1" filename="datas_fname"/>
+	            	</group>	
+	        		<separator string=""/>
+            		<group colspan="4" col="4">
+            			<button icon="gtk-cancel" special="cancel" string="Cancel"/>
+            			<button icon="terp-gtk-go-back-rtl" string="Convert to folder" name="action_create_coversion" type="object"/>
+            			<button icon="terp-gtk-go-back-rtl" string="Convert and Downlaod" name="action_create_convert_download" type="object"/>
+            		</group>	        		
+				</form>
+			</field>
+		</record>
+		
+		<record id="plm_batch_convertion_plm_document" model="ir.ui.view">
+			<field name="name">plm.batch.convertion.plm.document</field>
+			<field name="model">plm.document</field>
+			<field name="inherit_id" ref="plm.plm_document_tree"/>
+			<field name="priority" eval="3"/>
+			<field name="arch" type="xml">
+				<field name="name" position="before">
+					<button icon="fa-openid" string="Convert" name="show_convert_wizard" type="object"/>	
+				</field>
+			</field>
+		</record>
+		
+	</data>
+</openerp>
+          
