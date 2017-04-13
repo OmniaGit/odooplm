@@ -219,7 +219,7 @@ class report_spare_parts_header(osv.AbstractModel):
 
 class component_spare_parts_report(report_int):
     """
-        Calculates the bom structure spare parts manual
+    Calculates the bom structure spare parts manual
     """
     def create(self, cr, uid, ids, datas, context=None):
         recursion = True
@@ -269,11 +269,12 @@ class component_spare_parts_report(report_int):
                         except Exception, ex:
                             logging.error(ex)
                             raise ex
-                    context['starting_model'] = 'product.product'
-                    context['active_ids'] = bomBrwsIds.ids
-                    context['active_model'] = 'mrp.bom'
+                    NewContext = context.copy()
+                    NewContext['starting_model'] = 'product.product'
+                    NewContext['active_ids'] = bomBrwsIds.ids
+                    NewContext['active_model'] = 'mrp.bom'
                     template_ids = self.env['ir.ui.view'].search([('name', '=', 'plm.bom_structure_one')])
-                    pdf = self.env['report'].with_context(context).get_pdf(template_ids, 'plm.bom_structure_one')
+                    pdf = self.env['report'].with_context(NewContext).get_pdf(template_ids, 'plm.bom_structure_one')
                     pageStream = StringIO.StringIO()
                     pageStream.write(pdf)
                     output.addPage((pageStream, ''))
@@ -298,9 +299,10 @@ class component_spare_parts_report(report_int):
     def getFirstPage(self, cr, uid, ids, context):
         strbuffer = StringIO.StringIO()
         template_ids = self.env['ir.ui.view'].search([('name', '=', 'bom_spare_header')])
-        context['active_ids'] = ids
-        context['active_model'] = 'product.product'
-        pdf = self.env['report'].get_pdf(template_ids, 'plm_spare.bom_spare_header')
+        newContext = context.copy()
+        newContext['active_ids'] = ids
+        newContext['active_model'] = 'product.product'
+        pdf = self.env['report'].with_context(newContext).get_pdf(template_ids, 'plm_spare.bom_spare_header')
         strbuffer.write(pdf)
         return strbuffer
 
