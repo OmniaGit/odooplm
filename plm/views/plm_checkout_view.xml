@@ -9,19 +9,19 @@
         <field name="priority" eval="1"/>
         <field name="arch" type="xml">
             <search string="Checked-Out Document">
-                <filter icon="terp-go-month" string="  Last Month  " separator="1"
+                <filter string="  Last Month  " separator="1"
                          domain="[('create_date','&lt;=', (datetime.date.today() - datetime.timedelta(day=31,months=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today() - datetime.timedelta(day=1,months=1)).strftime('%%Y-%%m-%%d'))]"
                          help="Checked-Out in last month"/>
-                <filter icon="terp-go-month" string="  Last Week  " separator="1"
+                <filter string="  Last Week  " separator="1"
                          domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"
                          help="Checked-Out in last week"/>
-                <filter icon="terp-go-month" string="  Latest 7 Days  " separator="1"
+                <filter string="  Latest 7 Days  " separator="1"
                          domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
                          help="Checked-Out in last week"/>
-                 <filter icon="terp-go-month" string="  Yesterday  " separator="1"
+                 <filter string="  Yesterday  " separator="1"
                          domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
                          help="Checked-Out Yesterday"/>
-                 <filter icon="terp-go-month" string="  Today  " separator="1"
+                 <filter string="  Today  " separator="1"
                          domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
                          help="Checked-Out today"/>
                 <newline/>
@@ -30,12 +30,12 @@
             	<field name="hostname"/>
                	<separator orientation="vertical"/>
                 <field name="userid" nolabel="1">
- 					<filter string="Created by me" icon="terp-personal" domain="[('userid', '=', uid)]"/>
+ 					<filter string="Created by me" domain="[('userid', '=', uid)]"/>
                 </field>
                 <group expand="0" string="Group By...">
-                    <filter string="Hostname" icon="terp-personal" domain="[]" context="{'group_by':'hostname'}"/>
-                    <filter string="Create by Month" icon="terp-personal" domain="[]" context="{'group_by':'create_date'}"/>
-                    <filter string="Creator" icon="terp-personal" domain="[]" context="{'group_by':'userid'}"/>
+                    <filter string="Hostname" domain="[]" context="{'group_by':'hostname'}"/>
+                    <filter string="Create by Month" domain="[]" context="{'group_by':'create_date'}"/>
+                    <filter string="Creator" domain="[]" context="{'group_by':'userid'}"/>
                 </group>
             </search>
      	</field>

@@ -12,8 +12,8 @@
             <group><field name="summarize"/></group>
             <separator string="" colspan="4" />
             <group colspan="2" col="2">
-            	<button icon="gtk-cancel" special="cancel" string="Cancel"/>
-            	<button icon="terp-gtk-go-back-rtl" string="Create Normal Bom" name="action_create_normalBom" type="object"/>
+            	<button special="cancel" string="Cancel"/>
+            	<button string="Create Normal Bom" name="action_create_normalBom" type="object"/>
             </group>
         </form>
         </field>

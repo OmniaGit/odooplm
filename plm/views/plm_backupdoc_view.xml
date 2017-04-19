@@ -42,19 +42,19 @@
         <field name="priority" eval="1"/>
         <field name="arch" type="xml">
             <search string="Backup Document Set">
-                <filter icon="terp-go-month" string="  Last Month  " separator="1"
+                <filter string="  Last Month  " separator="1"
                          domain="[('create_date','&lt;=', (datetime.date.today() - relativedelta(day=31,months=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today() - relativedelta(day=1,months=1)).strftime('%%Y-%%m-%%d'))]"
                          help="Checked-Out in last month"/>
-                <filter icon="terp-go-month" string="  Last Week  " separator="1"
+                <filter string="  Last Week  " separator="1"
                          domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"
                          help="Checked-Out in last week"/>
-                <filter icon="terp-go-month" string="  Latest 7 Days  " separator="1"
+                <filter string="  Latest 7 Days  " separator="1"
                          domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
                          help="Checked-Out in latest 7 days"/>
-                 <filter icon="terp-go-month" string="  Yesterday  " separator="1"
+                 <filter string="  Yesterday  " separator="1"
                          domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
                          help="Checked-Out Yesterday"/>
-                 <filter icon="terp-go-month" string="  Today  " separator="1"
+                 <filter string="  Today  " separator="1"
                          domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
                          help="Checked-Out today"/>
                 <separator orientation="vertical"/>
@@ -63,12 +63,12 @@
             	<field name="documentid"/>
                	<separator orientation="vertical"/>
                 <field name="userid" nolabel="1">
-					<filter string="Created by me" icon="terp-personal" domain="[('userid', '=', uid)]"/>
+					<filter string="Created by me" domain="[('userid', '=', uid)]"/>
                 </field>
                 <group expand="0" string="Group By...">
-                    <filter string="Document Name" icon="terp-personal" domain="[]" context="{'group_by':'documentid'}"/>
-                    <filter string="Create by Month" icon="terp-personal" domain="[]" context="{'group_by':'create_date'}"/>
-                    <filter string="Creator" icon="terp-personal" domain="[]" context="{'group_by':'userid'}"/>
+                    <filter string="Document Name" domain="[]" context="{'group_by':'documentid'}"/>
+                    <filter string="Create by Month" domain="[]" context="{'group_by':'create_date'}"/>
+                    <filter string="Creator" domain="[]" context="{'group_by':'userid'}"/>
                 </group>
             </search>
      	</field>
@@ -109,8 +109,8 @@
             <label string="Are you sure you want to restore this document?" colspan="4"/>
             <separator string="" colspan="4" />
             <group colspan="4" col="6">
-            	<button icon="gtk-cancel" special="cancel" string="Cancel"/>
-            	<button icon="terp-gtk-go-back-rtl" string="Restore Entry" name="action_restore_document" type="object"/>
+            	<button special="cancel" string="Cancel"/>
+            	<button string="Restore Entry" name="action_restore_document" type="object"/>
             </group>
         </form>
         </field>

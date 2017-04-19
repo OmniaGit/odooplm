@@ -54,9 +54,9 @@
                     <newline/>
                     <separator colspan="4"/>
                     <group col="2" colspan="4">
-                        <button icon='gtk-cancel' special="cancel" string="Cancel" />
+                        <button special="cancel" string="Cancel" />
                         <button name="action_compare_Bom" string="Compare selected BoMs"
-                            colspan="1" type="object" icon="gtk-ok" />
+                            colspan="1" type="object"/>
                     </group>
                 </form>
             </field>

@@ -186,25 +186,25 @@
             <field name="type">search</field>
             <field name="arch" type="xml">
                 <field name="code" position="before">
-	               	<filter name="filter_latest_2_weeks" icon="terp-go-month" string="Latest 2 Weeks" separator="1"
+	               	<filter name="filter_latest_2_weeks" string="Latest 2 Weeks" separator="1"
 	                       	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"
 	                      	help="Created latest 2 Weeks"/>
-	               	<filter name="filter_latest_7" icon="terp-go-month" string="Latest 7 Days" separator="1"
+	               	<filter name="filter_latest_7" string="Latest 7 Days" separator="1"
 	                       	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
 	                      	help="Created latest 7 Days"/>
-	             	<filter name="filter_yesterday" icon="terp-go-month" string="Yesterday" separator="1"
+	             	<filter name="filter_yesterday" string="Yesterday" separator="1"
 	                     	domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
 	                		help="Created yesterday"/>
-	            	<filter name="filter_today" icon="terp-go-month" string="Today" separator="1"
+	            	<filter name="filter_today" string="Today" separator="1"
 	                     	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
 	                     	help="Created today"/>
 	               	<separator orientation="vertical"/>
         		</field>
 				<xpath expr="//group" position="after">
 					string="Group By..."
-                    <filter string="BoM Name" icon="terp-stock_symbol-selection" domain="[]" context="{'group_by':'code'}"/>
-                    <filter string="Variant Name" icon="terp-stock_symbol-selection" domain="[]" context="{'group_by':'product_id'}"/>
-                    <filter string="Source Relationship" icon="terp-stock_symbol-selection" domain="[]" context="{'group_by':'source_id'}"/>
+                    <filter string="BoM Name" domain="[]" context="{'group_by':'code'}"/>
+                    <filter string="Variant Name" domain="[]" context="{'group_by':'product_id'}"/>
+                    <filter string="Source Relationship" domain="[]" context="{'group_by':'source_id'}"/>
 	            </xpath>
 	        </field>
         </record>

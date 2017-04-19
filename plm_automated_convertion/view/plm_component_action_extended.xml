@@ -14,9 +14,9 @@
 	            	</group>	
 	        		<separator string=""/>
             		<group colspan="4" col="4">
-            			<button icon="gtk-cancel" special="cancel" string="Cancel"/>
-            			<button icon="terp-gtk-go-back-rtl" string="Convert to folder" name="action_create_coversion" type="object"/>
-            			<button icon="terp-gtk-go-back-rtl" string="Convert and Downlaod" name="action_create_convert_download" type="object"/>
+            			<button special="cancel" string="Cancel"/>
+            			<button string="Convert to folder" name="action_create_coversion" type="object"/>
+            			<button string="Convert and Downlaod" name="action_create_convert_download" type="object"/>
             		</group>	        		
 				</form>
 			</field>
