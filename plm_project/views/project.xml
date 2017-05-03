@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data>
+
+
+        <record id="plm_edit_project" model="ir.ui.view">
+            <field name="name">plm.edit.project</field>
+            <field name="model">project.project</field>
+            <field name="inherit_id" ref="project.edit_project"/>
+            <field name="priority" eval="3"/>
+            <field name="arch" type="xml">
+            	<field name="use_tasks" position="before">
+            		<field name="plm_use_plm" class="oe_inline"/>
+            		<label for="plm_use_plm" class="oe_inline" string="PLM"/>
+            	</field>
+            	<field name="partner_id" position="after">
+            		<field name="plm_completed"  widget="progressbar"/>
+            	</field>            	
+            	<xpath expr="//notebook" position="inside">
+	            	<page string="PLM" >
+	            		<group>		
+	            			<label string="Products" colspan="4"></label>												
+							<field name="plm_product_ids" nolabel="1"/>
+	                    </group>
+	            	</page>
+            	</xpath>
+            </field>
+        </record> 
+	
+ </data>
+</openerp>
+        

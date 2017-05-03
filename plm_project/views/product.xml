@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data>
+
+    <record model="ir.ui.view" id="plm_project_product_extend">
+        <field name="name">plm.project.product.extend</field>
+        <field name="model">product.product</field>
+        <field name="type">form</field>
+        <field name="inherit_id" ref="plm.plm_component_base_form"/>
+        <field name="priority" eval="6"/>
+        <field name="arch" type="xml">
+            <page name="techincal_infos" position="after">
+           		<page name="project_infos" string="Project">
+           			<group name="project_infos">
+   						<field name="project_ids" nolabel="1"></field>      
+   					</group>  			
+           		</page>
+            </page>
+           </field>
+	</record>
+ </data>
+</openerp>

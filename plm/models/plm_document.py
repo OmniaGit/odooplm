@@ -754,9 +754,9 @@ class PlmDocument(models.Model):
                 if len(plmDocList) > 0:
                     ids = plmDocList.ids
                     ids.sort()
-                    res.append([fileName, not self.browse(ids[len(ids) - 1])._is_checkedout_for_me()])
-            return res
-
+                    docBrws = self.browse(ids[len(ids) - 1])
+                    checkoutFlag = docBrws._is_checkedout_for_me()
+                    res.append([fileName, not checkoutFlag])
         if len(files) > 0:  # no files to process
             retValues = getcheckedfiles(files)
         return retValues
