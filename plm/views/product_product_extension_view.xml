@@ -35,16 +35,16 @@
         <field name="priority" eval="15"/>
         <field name="arch" type="xml">
 		 	<search string="Parts">
-               	<filter icon="terp-go-month" string="Latest 2 Weeks" separator="1"
+               	<filter string="Latest 2 Weeks" separator="1"
                        	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"
                       	help="Created latest 2 Weeks"/>
-               	<filter icon="terp-go-month" string="Latest 7 Days" separator="1"
+               	<filter string="Latest 7 Days" separator="1"
                        	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
                       	help="Created latest 7 Days"/>
-             	<filter icon="terp-go-month" string="Yesterday" separator="1"
+             	<filter string="Yesterday" separator="1"
                      	domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
                 		help="Created yesterday"/>
-            	<filter icon="terp-go-month" string="Today" separator="1"
+            	<filter string="Today" separator="1"
                      	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
                      	help="Created today"/>
                	<separator orientation="vertical"/>
@@ -52,10 +52,10 @@
             	<field name="description"/>
             	<field name="name"/>
                	<separator orientation="vertical"/>
-               	<filter string="Confirmed" icon="terp-stock_symbol-selection" domain="[('state', '=', 'confirmed')]"/>
-               	<filter string="Released" icon="terp-stock_symbol-selection" domain="[('state', 'in', ['released','undermodify'])]"/>
-               	<filter string="Obsoleted" icon="terp-stock_symbol-selection" domain="[('state', '=', 'obsoleted')]"/>
-               	<filter string="Latest" icon="terp-stock_symbol-selection" domain="[('state', 'not in', ['obsoleted','undermodify'])]"/>
+               	<filter string="Confirmed" domain="[('state', '=', 'confirmed')]"/>
+               	<filter string="Released" domain="[('state', 'in', ['released','undermodify'])]"/>
+               	<filter string="Obsoleted" domain="[('state', '=', 'obsoleted')]"/>
+               	<filter string="Latest" domain="[('state', 'not in', ['obsoleted','undermodify'])]"/>
         	</search>
     	</field>
     </record>

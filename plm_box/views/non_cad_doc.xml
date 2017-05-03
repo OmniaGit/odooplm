@@ -10,9 +10,9 @@
             <field name="arch" type="xml">
                 <form string="Show Non CAD Document Relation">
 	               <header>
-	                    <button name="release" states="confirmed" string="Release Box" icon="gtk-apply" class="oe_highlight"/>
-	                    <button name="correct" states="confirmed" string="Correct Box" icon="gtk-cancel"/>
-	                    <button name="confirm" states="draft" string="Confirm Box" icon="gtk-go-forward" class="oe_highlight"/>
+	                    <button name="release" states="confirmed" string="Release Box" class="oe_highlight"/>
+	                    <button name="correct" states="confirmed" string="Correct Box" />
+	                    <button name="confirm" states="draft" string="Confirm Box" class="oe_highlight"/>
 	                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,released" statusbar_colors='{"undermodify":"red","obsoleted":"red"}' readonly="0"/>
 	               </header>
                 <sheet>

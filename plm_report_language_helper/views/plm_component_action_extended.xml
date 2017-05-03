@@ -15,8 +15,8 @@
         	<field name="datas" filename="datas_name"/>
         <field name="datas_name" invisible="1"/>
             <group colspan="4" col="4">
-            	<button icon="gtk-cancel" special="cancel" string="Cancel"/>
-            	<button icon="terp-gtk-go-back-rtl" string="Create Spare Report" name="print_report" type="object"/>
+            	<button special="cancel" string="Cancel"/>
+            	<button string="Create Spare Report" name="print_report" type="object"/>
             </group>
         </form>
         </field>
@@ -46,8 +46,8 @@
         	<field name="datas" filename="datas_name"/>
         <field name="datas_name" invisible="1"/>
             <group colspan="4" col="4">
-            	<button icon="gtk-cancel" special="cancel" string="Cancel"/>
-            	<button icon="terp-gtk-go-back-rtl" string="Create Spare Report" name="print_report" type="object"/>
+            	<button special="cancel" string="Cancel"/>
+            	<button string="Create Spare Report" name="print_report" type="object"/>
             </group>
         </form>
         </field>

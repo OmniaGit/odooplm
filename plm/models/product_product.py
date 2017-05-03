@@ -157,7 +157,7 @@ class PlmComponent(models.Model):
             results = self.search([('name', '=', self.name)])
             if len(results) > 0:
                 raise UserError(_("Part %s already exists.\nClose with OK to reuse, with Cancel to discharge." % (self.name)))
-            if not self.engineering_code:
+            if not self.engineering_code or self.engineering_code == '-':
                 self.engineering_code = self.name
 
     @api.onchange('tmp_material')

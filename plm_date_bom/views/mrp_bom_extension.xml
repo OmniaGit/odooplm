@@ -70,8 +70,8 @@
             	<field name='compute_type'/>
             </group>
             <group colspan="4" col="4">
-            	<button icon="gtk-cancel" special="cancel" string="Cancel"/>
-            	<button icon="terp-gtk-go-back-rtl" string="Compute Bom" name="action_compute_bom" type="object"/>
+            	<button special="cancel" string="Cancel"/>
+            	<button string="Compute Bom" name="action_compute_bom" type="object"/>
             </group>
         </form>
         </field>
@@ -85,7 +85,7 @@
         <field name="inherit_id" ref="plm.view_mrp_bom_filter_inherit"/>
         <field name="arch" type="xml">
         	<xpath expr="//filter[@name='filter_today']" position="after"> 
-                   	<filter icon="terp-go-month" string="  Boms To Update  " separator="1"
+                   	<filter string="  Boms To Update  " separator="1"
                            	domain="[('obsolete_presents','=', True)]" />
             </xpath>
          </field>

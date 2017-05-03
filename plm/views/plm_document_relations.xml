@@ -74,13 +74,13 @@
         	<field name="priority" eval="10"/>
             <field name="arch" type="xml">
 				<search string="Search on Document Relations">
-                   	<filter icon="terp-go-month" string="  Last Week  " separator="1"
+                   	<filter string="  Last Week  " separator="1"
                          	domain="[('create_date','&lt;=', (datetime.date.today()-relativedelta(weeks=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-relativedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"
                           	help="Created last week"/>
-                 	<filter icon="terp-go-month" string="  Yesterday  " separator="1"
+                 	<filter string="  Yesterday  " separator="1"
                            	domain="[('create_date','&lt;', (datetime.date.today()).strftime('%%Y-%%m-%%d 00:00:00')),('create_date','&gt;=',(datetime.date.today()-relativedelta(days=1)).strftime('%%Y-%%m-%%d 00:00:00'))]"
                     		help="Created yesterday"/>
-                	<filter icon="terp-go-month" string="  Today  " separator="1"
+                	<filter string="  Today  " separator="1"
                           	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d 23:59:59')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d 00:00:00'))]"
                          	help="Created today"/>
                    	<separator orientation="vertical"/>
@@ -89,9 +89,9 @@
                     <field name="link_kind"  string="Document Relation Kind"/>
                     <newline/>
                     <group expand="0" string="Group by...">
-                        <filter string="Parent" icon="terp-accessories-archiver" domain="[]" context="{'group_by':'parent_id'}"/>
-                        <filter string="Child" icon="terp-mrp" domain="[]" context="{'group_by' : 'child_id'}"/>
-                        <filter string="Kind" icon="terp-stock_align_left_24" domain="[]" context="{'group_by':'link_kind'}"/>
+                        <filter string="Parent" domain="[]" context="{'group_by':'parent_id'}"/>
+                        <filter string="Child" context="{'group_by' : 'child_id'}"/>
+                        <filter string="Kind" domain="[]" context="{'group_by':'link_kind'}"/>
                    </group>
                 </search>
             </field>
