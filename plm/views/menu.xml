@@ -9,7 +9,6 @@
     web_icon="plm,static/src/img/PLMmodule-hover.png" 
     web_icon_hover="plm,static/src/img/PLMmodule-hover.png" 
 	action = "plm.open_board_plm_manager"  
-	groups="plm.group_plm_view_user"
     />
     
     
