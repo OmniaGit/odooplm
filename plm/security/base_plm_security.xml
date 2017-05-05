@@ -158,7 +158,7 @@
 		            <field name="model_id" ref="model_mrp_bom"/>
 		            <field name="group_id" eval="group_plm_integrationuser"/>
 		            <field name="perm_read" eval="True"/>
-		            <field name="perm_PLM Documentwrite" eval="True"/>
+		            <field name="perm_write" eval="True"/>
 		            <field name="perm_create" eval="True"/>
 		            <field name="perm_unlink" eval="True"/>
         		</record>
