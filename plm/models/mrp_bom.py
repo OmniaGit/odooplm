@@ -199,19 +199,19 @@ class MrpBomExtension(models.Model):
             relationDatas[keyData] = self.browse(relids[keyData]).read()[0]
         return relationDatas
 
-    @api.multi
-    def GetWhereUsed(self):
+    @api.model
+    def GetWhereUsed(self, resIds):
         """
             Return a list of all fathers of a Part (all levels)
         """
         self._packed = []
         relDatas = []
-        if len(self.ids) < 1:
+        if len(resIds) < 1:
             return None
         sid = False
-        if len(self.ids) > 1:
-            sid = self.ids[1]
-        oid = self.ids[0]
+        if len(resIds) > 1:
+            sid = resIds[1]
+        oid = resIds[0]
         relDatas.append(oid)
         relDatas.append(self._implodebom(self._getinbom(oid, sid)))
         prtDatas = self._getpackdatas(relDatas)
