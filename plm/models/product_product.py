@@ -30,6 +30,7 @@ from odoo.exceptions import UserError
 from odoo import osv
 from odoo import SUPERUSER_ID
 import odoo.tools as tools
+from sqlalchemy.sql.expression import false
 
 _logger = logging.getLogger(__name__)
 
@@ -376,9 +377,10 @@ class PlmComponent(models.Model):
                                         ('engineering_revision', '=', partRev)]).ids)
 
         for docName, docRev, docIdToOpen in vals:
-            checkOutUser = plmDocObj.browse(docIdToOpen).get_checkout_user()
+            docBrw = plmDocObj.browse(docIdToOpen)
+            checkOutUser = docBrw.get_checkout_user()
             if checkOutUser:
-                isMyDocument = plmDocObj.isCheckedOutByMe(docIdToOpen)
+                isMyDocument = docBrw.isCheckedOutByMe()
                 if isMyDocument and forceCADProperties:
                     return []    # Document properties will be not updated
                 else:
@@ -386,6 +388,18 @@ class PlmComponent(models.Model):
             else:
                 getCompIds(docName, docRev)
         return list(set(ids))
+
+    @api.model
+    def isDocumentWritable(self, infoDict):
+        docName = infoDict.get('name')
+        docRev = infoDict.get('revisionid')
+        if docName and docRev:
+            for document in self.env['plm.document'].search([('name', '=', docName),
+                                                             ('revisionid', '=', docRev)]):
+                if not document.isCheckedOutByMe():
+                    return False
+                return True
+        return False
 
     @api.model
     def SaveOrUpdate(self, vals):
@@ -401,6 +415,7 @@ class PlmComponent(models.Model):
             if 'engineering_code' not in partVals:
                 partVals['componentID'] = False
                 partVals['hasSaved'] = hasSaved
+                retValues.append(partVals)
                 continue
             existingCompBrwsList = self.search([('engineering_code', '=', partVals['engineering_code']),
                                                 ('engineering_revision', '=', partVals['engineering_revision'])], order='engineering_revision ASC')
@@ -408,15 +423,25 @@ class PlmComponent(models.Model):
                 existingCompBrwsList = [self.create(partVals)]
                 hasSaved = True
             for existingCompBrws in existingCompBrwsList:
-                partVals['name'] = existingCompBrws.name
-                if (self.getUpdTime(existingCompBrws) < datetime.strptime(partVals['lastupdate'], '%Y-%m-%d %H:%M:%S')):
-                    if self._iswritable(existingCompBrws):
-                        del(partVals['lastupdate'])
-                        if not existingCompBrws.write(partVals):
-                            raise UserError(_("Part %r cannot be updated" % (partVals['engineering_code'])))
-                        hasSaved = True
-            partVals['componentID'] = existingCompBrws.id
-            partVals['hasSaved'] = hasSaved
+                if not hasSaved:
+                    partVals['name'] = existingCompBrws.name
+                    if self.isDocumentWritable(partVals):
+                        if self._iswritable(existingCompBrws):
+                            if (self.getUpdTime(existingCompBrws) < datetime.strptime(partVals['lastupdate'], '%Y-%m-%d %H:%M:%S')):
+                                del(partVals['lastupdate'])
+                                if not existingCompBrws.write(partVals):
+                                    raise UserError(_("Part %r cannot be updated" % (partVals['engineering_code'])))
+                                hasSaved = True
+                            else:
+                                weight = partVals.get('weight')
+                                if (weight):
+                                    if not self.write({'weight': weight}):
+                                        raise UserError(_("Part %r cannot be updated" % (partVals['engineering_code'])))
+                                else:
+                                    logging.warning("No Weight property set unable to update !!")
+                partVals['componentID'] = existingCompBrws.id
+                partVals['hasSaved'] = hasSaved
+                break
             retValues.append(partVals)
             listedParts.append(partVals['engineering_code'])
         return retValues

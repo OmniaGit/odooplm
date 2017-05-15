@@ -816,9 +816,10 @@ class PlmDocument(models.Model):
                 ids.extend(self.search([('name', '=', docName), ('revisionid', '=', docRev)]).ids)
 
         for docName, docRev, docIdToOpen in vals:
-            checkOutUser = self.browse(docIdToOpen).get_checkout_user()
+            docBrowse = self.browse(docIdToOpen)
+            checkOutUser = docBrowse.get_checkout_user()
             if checkOutUser:
-                isMyDocument = self.isCheckedOutByMe(docIdToOpen)
+                isMyDocument = docBrowse.isCheckedOutByMe()
                 if isMyDocument:
                     return []    # Document properties will be not updated
                 else:
@@ -828,8 +829,8 @@ class PlmDocument(models.Model):
         return list(set(ids))
 
     @api.multi
-    def isCheckedOutByMe(self, docIdToCheck):
-        checkoutBrwsList = self.env['plm.checkout'].search([('documentid', '=', docIdToCheck), ('userid', '=', self.env.uid)])
+    def isCheckedOutByMe(self):
+        checkoutBrwsList = self.env['plm.checkout'].search([('documentid', '=', self.id), ('userid', '=', self.env.uid)])
         for checkoutBrws in checkoutBrwsList:
             return checkoutBrws.id
         return None
@@ -875,7 +876,7 @@ class PlmDocument(models.Model):
 
         oid, _listedFiles, selection = request
         oid = getDocId(oid)
-        checkRes = self.isCheckedOutByMe(oid)
+        checkRes = self.browse(oid).isCheckedOutByMe()
         if not checkRes:
             return False
         if selection is False:
