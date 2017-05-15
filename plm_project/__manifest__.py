@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 ##############################################################################
 #
-#    OmniaSolutions, Open Source Management Solution    
+#    OmniaSolutions, Open Source Management Solution
 #    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
 #    $Id$
 #
@@ -18,15 +18,16 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+# Developed: matteo.boscolo@omniasolutions.eu (2017)
 ##############################################################################
 {
     'name': 'PLM Project',
-    'version': '1.1',
+    'version': '0.1',
     'author': 'OmniaSolutions',
     'website': 'http://www.omniasolutions.eu',
     'category': 'Product Lifecycle Management',
     'sequence': 15,
-    'summary': '',
+    'summary': 'Connect odoo project with odooPLM',
     'images': [],
     'depends': ['plm', 'project'],
     'description': """
@@ -34,9 +35,6 @@ Allows to connect to project model in order to control products and data
 ========================================================================
     """,
     'data': [
-            # reports
-            #'report/my_report.xml',
-            # views
             'views/project.xml',
             'views/product.xml',
     ],

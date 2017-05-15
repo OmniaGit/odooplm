@@ -1,0 +1,77 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* plm_project
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 10.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-05-04 07:48+0000\n"
+"PO-Revision-Date: 2017-05-04 10:07+0100\n"
+"Last-Translator: <>\n"
+"Language-Team: OmniaSolutions <info@omniasolutions.eu>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: it_IT\n"
+"X-Generator: Poedit 1.6.10\n"
+
+#. module: plm_project
+#: code:addons/plm_project/models/project.py:54
+#: model:ir.model.fields,help:plm_project.field_project_project_plm_use_plm
+#, python-format
+msgid "Check this box to manage plm data into project"
+msgstr ""
+"Attiva la spunta per visualizzare le informazioni plm all'interno del "
+"progetto"
+
+#. module: plm_project
+#: code:addons/plm_project/models/project.py:63
+#: model:ir.model.fields,field_description:plm_project.field_project_project_plm_product_count
+#, python-format
+msgid "Number of product related"
+msgstr "Numero di prodotti relazionati"
+
+#. module: plm_project
+#: model:ir.ui.view,arch_db:plm_project.plm_edit_project
+msgid "PLM"
+msgstr "PLM"
+
+#. module: plm_project
+#: code:addons/plm_project/models/project.py:55
+#: model:ir.model.fields,field_description:plm_project.field_project_project_plm_completed
+#, python-format
+msgid "Plm Complete"
+msgstr "Percentuale di completamento (PLM)"
+
+#. module: plm_project
+#: model:ir.model,name:plm_project.model_product_product
+msgid "Product"
+msgstr "Prodotto"
+
+#. module: plm_project
+#: code:addons/plm_project/models/project.py:61
+#: model:ir.model.fields,field_description:plm_project.field_project_project_plm_product_ids
+#: model:ir.ui.view,arch_db:plm_project.plm_edit_project
+#, python-format
+msgid "Products"
+msgstr "Prodotti"
+
+#. module: plm_project
+#: model:ir.model,name:plm_project.model_project_project
+#: model:ir.ui.view,arch_db:plm_project.plm_project_product_extend
+msgid "Project"
+msgstr "Projetto"
+
+#. module: plm_project
+#: code:addons/plm_project/models/product.py:38
+#: model:ir.model.fields,field_description:plm_project.field_product_product_project_ids
+#, python-format
+msgid "Projects"
+msgstr "Progetti"
+
+#. module: plm_project
+#: model:ir.model.fields,field_description:plm_project.field_project_project_plm_use_plm
+msgid "Use PLM"
+msgstr "Usa PLM"

@@ -24,6 +24,7 @@
 	                    <field name="module_plm_web_revision" />
 	                    <field name="module_plm_auto_internalref" />
 	                    <field name="module_plm_automated_convertion"/>
+	                    <field name="module_plm_project"/>
                     </group>
                 </form>
             </field>

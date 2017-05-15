@@ -47,6 +47,7 @@ class PlmConfigSettings(models.Model):
     module_plm_web_revision = fields.Boolean(_("Create new revision from WEB"))
     module_plm_auto_internalref = fields.Boolean("Populate internal reference with engineering infos")
     module_plm_automated_convertion = fields.Boolean("Activate the server convertion tool")
+    module_plm_project = fields.Boolean("Activate the PLM Project connection")
 PlmConfigSettings()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
