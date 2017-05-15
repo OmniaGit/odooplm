@@ -308,12 +308,14 @@ class PlmDocument(models.Model):
         return newDocBrws.id
 
     @api.multi
-    def _manageFile(self, filestore, binvalue=None):
+    def _manageFile(self, filestore=False, binvalue=None):
         """
             use given 'binvalue' to save it on physical repository and to read size (in bytes).
         """
         if not filestore:
-            raise UserError(_('Filestore not set!'))
+            filestore = self._get_filestore()
+            if not filestore:
+                raise UserError(_('Filestore not set!'))
         flag = None
         # This can be improved
         for dirs in os.listdir(filestore):
@@ -757,6 +759,7 @@ class PlmDocument(models.Model):
                     docBrws = self.browse(ids[len(ids) - 1])
                     checkoutFlag = docBrws._is_checkedout_for_me()
                     res.append([fileName, not checkoutFlag])
+            return res
         if len(files) > 0:  # no files to process
             retValues = getcheckedfiles(files)
         return retValues

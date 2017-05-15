@@ -160,7 +160,8 @@ class MrpBomExtension(models.Model):
         '''
         outList = []
         if isinstance(structure, (list, tuple)) and len(structure) == 2:
-            outList.append(structure[0])
+            if structure[0]:
+                outList.append(structure[0])
             for item in structure[1]:
                 outList.extend(self.getListIdsFromStructure(item))
         return list(set(outList))
@@ -198,19 +199,19 @@ class MrpBomExtension(models.Model):
             relationDatas[keyData] = self.browse(relids[keyData]).read()[0]
         return relationDatas
 
-    @api.multi
-    def GetWhereUsed(self):
+    @api.model
+    def GetWhereUsed(self, resIds):
         """
             Return a list of all fathers of a Part (all levels)
         """
         self._packed = []
         relDatas = []
-        if len(self.ids) < 1:
+        if len(resIds) < 1:
             return None
         sid = False
-        if len(self.ids) > 1:
-            sid = self.ids[1]
-        oid = self.ids[0]
+        if len(resIds) > 1:
+            sid = resIds[1]
+        oid = resIds[0]
         relDatas.append(oid)
         relDatas.append(self._implodebom(self._getinbom(oid, sid)))
         prtDatas = self._getpackdatas(relDatas)
@@ -300,22 +301,29 @@ class MrpBomExtension(models.Model):
             self._packed.append(bomObj.bom_id.id)
             bomFthObj = self.browse([bomObj.bom_id.id]).with_context({})
             innerids = self._implodebom(self._getinbom(bomFthObj.product_id.id))
-            pids.append((bomFthObj.product_id.id, innerids))
+            prodId = bomFthObj.product_id.id
+            if not prodId:
+                prodBrwsIds = bomFthObj.product_tmpl_id.product_variant_ids
+                if len(prodBrwsIds) == 1:
+                    prodId = prodBrwsIds[0].id
+                else:
+                    logging.error('[_implodebom] Unable to compute product ID, more than one product found: %r' % (prodBrwsIds))
+            pids.append((prodId, innerids))
         return (pids)
 
-    @api.multi
-    def GetWhereUsedSum(self):
+    @api.model
+    def GetWhereUsedSum(self, resIds):
         """
             Return a list of all fathers of a Part (all levels)
         """
         self._packed = []
         relDatas = []
-        if len(self.ids) < 1:
+        if len(resIds) < 1:
             return None
         sid = False
-        if len(self.ids) > 1:
-            sid = self.ids[1]
-        oid = self.ids[0]
+        if len(resIds) > 1:
+            sid = resIds[1]
+        oid = resIds[0]
         relDatas.append(oid)
         bomId = self._getinbom(oid, sid)
         relDatas.append(self._implodebom(bomId))
