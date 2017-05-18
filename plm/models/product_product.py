@@ -100,6 +100,8 @@ class PlmComponent(models.Model):
                                   readonly=True)
     write_date = fields.Datetime(_('Date Modified'),
                                  readonly=True)
+    release_date = fields.Datetime(_('Release Date'),
+                                   readonly=True)
     std_description = fields.Many2one('plm.description',
                                       _('Standard Description'),
                                       required=False,
@@ -661,17 +663,19 @@ class PlmComponent(models.Model):
             if len(product_ids) < 1 or len(errors) > 0:
                 raise UserError(errors)
             allProdObjs = self.browse(product_ids)
-            for oldProductBrw in allProdObjs:
-                last_id = self._getbyrevision(oldProductBrw.engineering_code, oldProductBrw.engineering_revision - 1)
-                if last_id is not None:
+            for productBrw in allProdObjs:
+                old_revision = self._getbyrevision(productBrw.engineering_code, productBrw.engineering_revision - 1)
+                if old_revision is not None:
                     defaults['engineering_writable'] = False
                     defaults['state'] = 'obsoleted'
-                    last_id.product_tmpl_id.write(defaults)
-                    last_id.wf_message_post(body=_('Status moved to: %s.' % (USEDIC_STATES[defaults['state']])))
-                defaults['engineering_writable'] = False
-                defaults['state'] = 'released'
+                    old_revision.product_tmpl_id.write(defaults)
+                    old_revision.wf_message_post(body=_('Status moved to: %s.' % (USEDIC_STATES[defaults['state']])))
+            defaults['engineering_writable'] = False
+            defaults['state'] = 'released'
             self.browse(product_ids)._action_ondocuments('release')
             for currentProductId in allProdObjs:
+                if not currentProductId.release_date:
+                    currentProductId.release_date = datetime.now()
                 if not(currentProductId.id in self.ids):
                     childrenProductToEmit.append(currentProductId.id)
                 product_tmpl_ids.append(currentProductId.product_tmpl_id.id)
