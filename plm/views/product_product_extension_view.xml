@@ -124,7 +124,7 @@
 	        				<field name="engineering_surface" 	attrs="{'readonly':[('state','in',['released','obsoleted'])]}" colspan="2"/> 
 	        			</group>		
 	    			</page>	
-	    			<page string="Linked Documents"> 
+	    			<page string="Linked Documents" name="linkeddocuments"> 
 	    				<group>
 	    					<button class="oe_inline oe_stat_button"   type="object" icon="fa-list-alt" name="action_rev_docs" string="Revision Rel Docs"></button>	
 	               		</group>
