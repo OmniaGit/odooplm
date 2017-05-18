@@ -255,22 +255,6 @@
 
 
 <!-- Tree Structure Actions on MRP -->
- 
-        <record id="action20" model="ir.actions.act_window">
-            <field name="name">Where Used Bill of Materials Structure</field>
-            <field name="type">ir.actions.act_window</field>
-            <field name="res_model">mrp.bom</field>
-            <field name="domain">[('id', 'in', active_ids)]</field>
-            <field name="view_type">tree</field>
-            <field name="view_id" ref="mrp_bom_tree_view_where"/>
-        </record>
-        
-        <record id="ir_BOM_structureWhere" model="ir.values">
-            <field eval="'client_action_multi'" name="key2"/>
-            <field eval="'mrp.bom'" name="model"/>
-            <field name="name">Where Used Bill of Materials Structure</field>
-            <field eval="'ir.actions.act_window,'+str(action20)" name="value"/>
-        </record>
         
 
         <record id="action2" model="ir.actions.act_window">
