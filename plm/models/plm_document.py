@@ -335,6 +335,33 @@ class PlmDocument(models.Model):
         fobj.close()
         return (os.path.join(flag, filename), len(value))
 
+    @api.multi
+    def _data_get(self, name, arg):
+        result = {}
+        for objDoc in self:
+            if objDoc.type == 'binary':
+                value = ''
+                if not objDoc.store_fname:
+                    value = objDoc.db_datas
+                else:
+                    filestore = os.path.join(self._get_filestore(), objDoc.store_fname)
+                    if os.path.exists(filestore):
+                        value = file(filestore, 'rb').read()
+                    else:
+                        msg = "Document %s-%s is not in %r" % (str(objDoc.name),
+                                                               str(objDoc.revisionid),
+                                                               filestore)
+
+                        logging.error(msg)
+                if value and len(value) > 0:
+                    result[objDoc.id] = base64.encodestring(value)
+                else:
+                    result[objDoc.id] = ''
+                    msg = "Document %s - %s cannot be accessed" % (str(objDoc.name),
+                                                                   str(objDoc.revisionid))
+                    logging.warning(msg)
+        return result
+
     @api.model
     def _iswritable(self, oid):
         if not oid.type == 'binary':
