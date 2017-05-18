@@ -103,6 +103,16 @@ class plm_compare_bom(osv.osv.osv_memory):
         """
             Create a new Spare Bom if doesn't exist (action callable from views)
         """
+        def getProductId(bomBrws):
+            prodBrws = bomBrws.product_id
+            prodId = False
+            if prodBrws:
+                prodId = prodBrws.id
+            else:
+                if bomBrws.product_tmpl_id.product_variant_count == 1:
+                    prodId = bomBrws.product_tmpl_id.product_variant_ids.ids[0]
+            return prodId
+            
         ids = self.ids
         if len(ids) < 1:
             return False
@@ -116,11 +126,13 @@ class plm_compare_bom(osv.osv.osv_memory):
         ANotInB, BNotInA = differs
         changesInA, changesInB = changes
 
+        product_id_1 = getProductId(checkObj.bom_id1)
+        product_id_2 = getProductId(checkObj.bom_id2)
         defaults = {'name': checkObj.bom_id1.product_id.name,
                     'type_id1': checkObj.bom_id1.type,
-                    'part_id1': checkObj.bom_id1.product_id.id,
+                    'part_id1': product_id_1,
                     'type_id2': checkObj.bom_id2.type,
-                    'part_id2': checkObj.bom_id2.product_id.id}
+                    'part_id2': product_id_2}
         self.browse(ids).write(defaults)
 
         idList1, objList1, objProd1, _dictData1, AminusB = ANotInB
