@@ -85,12 +85,10 @@ class PlmComponent(models.Model):
     tmp_material = fields.Many2one('plm.material',
                                    _('Raw Material'),
                                    required=False,
-                                   change_default=True,
                                    help=_("Select raw material for current product"))
     tmp_surface = fields.Many2one('plm.finishing',
                                   _('Surface Finishing'),
                                   required=False,
-                                  change_default=True,
                                   help=_("Select surface finishing for current product"))
     father_part_ids = fields.Many2many('product.product',
                                        compute=_father_part_compute,
@@ -103,7 +101,6 @@ class PlmComponent(models.Model):
     std_description = fields.Many2one('plm.description',
                                       _('Standard Description'),
                                       required=False,
-                                      change_default=True,
                                       default=False,
                                       help=_("Select standard description for current product."))
     std_umc1 = fields.Char(_('UM / Feature 1'),
