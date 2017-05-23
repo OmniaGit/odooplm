@@ -81,7 +81,22 @@ class MrpBomLineExtension(models.Model):
                     self.hasChildBoms = True
                 else:
                     self.hasChildBoms = False
-        
+
+    @api.one
+    @api.depends('product_id')
+    def _related_boms(self):
+        for bom_line in self:
+            if not self.product_id:
+                self.related_bom_id = []
+            else:
+                bomObjs = self.env['mrp.bom'].search([('product_tmpl_id', '=', bom_line.product_id.product_tmpl_id.id),
+                                                      ('type', '=', bom_line.type),
+                                                      ('active', '=', True)])
+                if not bomObjs:
+                    self.related_bom_ids = []
+                else:
+                    self.related_bom_ids = bomObjs.ids
+
     @api.multi
     def openRelatedBoms(self):
         relatedBoms = self.get_related_boms()
@@ -140,6 +155,7 @@ class MrpBomLineExtension(models.Model):
                                           help=_("The revision of the product."),
                                           store=False)
     hasChildBoms = fields.Boolean(compute='_has_children_boms', string='Has Children Boms')
+    related_bom_ids = fields.One2many(compute='_related_boms', comodel_name='mrp.bom', string='Related BOMs', digits=0, readonly=True)
 
 MrpBomLineExtension()
 
