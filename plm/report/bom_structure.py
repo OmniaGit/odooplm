@@ -41,53 +41,115 @@ def _translate(value):
 
 def get_bom_report(myObject, recursion=False, flat=False, leaf=False, level=1, summarize=False):
 
-    def summarize_level(bomObj, recursion=False, flat=False, level=1, leaf=False, parentKey='', summarize=False, parentQty=1):
-        if leaf:
-            recursion = True
+    def getBom(bomLineObj):
+        newBom = None
+        for bomBws in bomLineObj.related_bom_ids:
+            if bomBws.type == bomLineObj.type:
+                newBom = bomBws
+                break
+        return newBom
+    
+    def getOutLineInfos(bomLineBrws, productTmplBrws, prodQty):
+        res = {}
+        res['row_bom_line'] = bomLineBrws
+        res['name'] = productTmplBrws.engineering_code
+        res['item'] = bomLineBrws.itemnum
+        res['pname'] = productTmplBrws.engineering_code
+        res['pdesc'] = _(productTmplBrws.description)
+        res['pcode'] = bomLineBrws.product_id.default_code
+        res['previ'] = productTmplBrws.engineering_revision
+        res['pqty'] = prodQty
+        res['uname'] = bomLineBrws.product_uom.name
+        res['pweight'] = productTmplBrws.weight
+        res['code'] = bomLineBrws.product_id.default_code
+        res['level'] = level
+        res['prodBrws'] = bomLineBrws.product_id
+        res['prodTmplBrws'] = productTmplBrws
+        return res
+        
+        
+    def leafComputeRecursion(bomObj, parentQty=1):
         for l in bomObj.bom_line_ids:
-            res = {}
-            product = l.product_id.product_tmpl_id
-            myKey = product.name
-            if recursion or leaf or flat:
-                myNewBom = None
-                for bomBws in l.get_related_boms():
-                    if bomBws.type == l.type:
-                        myNewBom = bomBws
-                        break
-                if leaf and not myNewBom:
-                    myKey = 'leaf_' + myKey
-                elif not flat:
-                    myKey = parentKey + myKey + '_' + str(level)
+            lineQty = l.product_qty
+            productTmplObj = l.product_id.product_tmpl_id
+            prodTmlId = productTmplObj.id
+            prodQty = parentQty * lineQty
+            myNewBom = getBom(l)
+            if myNewBom:
+                leafComputeRecursion(myNewBom, prodQty)
+            else:
+                if prodTmlId not in leafRes.keys():
+                    resDict = getOutLineInfos(l, productTmplObj, prodQty)
+                    resDict['level'] = ''
+                    leafRes[prodTmlId] = resDict
+                else:
+                    leafRes[prodTmlId]['pqty'] = leafRes[prodTmlId]['pqty'] + prodQty
+        
+    if leaf:
+        leafRes = {}
+        leafComputeRecursion(myObject)
+        return leafRes.values()
+
+
+    def summarize_level(bomObj, recursion=False, flat=False, level=1, summarize=False, parentQty=1):
+        
+        def updateQty(tmplId, qtyToAdd):
+            for localIndex, valsList in orderDict.items():
+                count = 0
+                for res in valsList:
+                    tmplBrws = res.get('prodTmplBrws', False)
+                    if not tmplBrws:
+                        logging.error('Template browse not found printing bom: %r' % (res))
+                        continue
+                    if tmplBrws.id == tmplId:
+                        newQty = orderDict[localIndex][count]['pqty'] + qtyToAdd
+                        orderDict[localIndex][count]['pqty'] = newQty
+                        return
+                    count = count + 1
+        
+        orderDict = {}
+        levelListed = []
+        for l in bomObj.bom_line_ids:
+            index = l.itemnum
+            if index not in orderDict.keys():
+                orderDict[index] = []
+            children = {}
+            productTmplObj = l.product_id.product_tmpl_id
+            prodTmlId = productTmplObj.id
+            if recursion or flat:
+                myNewBom = getBom(l)
                 if myNewBom:
-                    if flat or myKey not in listed.keys():
-                        summarize_level(myNewBom, recursion, flat, level + 1, leaf, myKey, summarize, l.product_qty)
-            if myKey in listed.keys() and summarize:
-                listed[myKey]['pqty'] = listed[myKey].get('pqty', 0) + l.product_qty * parentQty
+                    children = summarize_level(myNewBom, recursion, flat, level + 1, summarize, l.product_qty * parentQty)
+            
+            if prodTmlId in levelListed and summarize:
+                qty = l.product_qty
+                updateQty(prodTmlId, qty)
             else:
                 prodQty = l.product_qty
-                if flat or leaf:
-                    prodQty = prodQty * parentQty
-                res['item'] = l.itemnum
-                res['pqty'] = prodQty
+                res = getOutLineInfos(l, productTmplObj, prodQty)
+                res['children'] = children
                 res['level'] = level
-                res['lineBrws'] = l
-                res['prodTmplBrws'] = product
-                if leaf and 'leaf_' not in myKey:
-                    continue
-                listed[myKey] = res
-                LL = sortIndex.setdefault(res['item'], [])
-                LL.append(myKey)
-                sortIndex[res['item']] = LL
+                levelListed.append(prodTmlId)
+                orderDict[index].append(res)
+        return orderDict
 
-    listed = {}
-    sortIndex = {}
-    summarize_level(myObject, recursion, flat, level, leaf, '', summarize)
-    kkk = sortIndex.keys()
-    kkk.sort()
     out = []
-    for i in kkk:
-        for pName in sortIndex.get(i, []):
-            out.append(listed.get(pName, {}))
+    def getOutList(outDict, parentQty=1):
+        itemNums = outDict.keys()
+        for itemNum in itemNums:
+            valsDict = outDict.get(itemNum, {})
+            for valDict in valsDict:
+                children = valDict.get('children', {}).copy()
+                localQty = valDict['pqty']
+                if flat:
+                    localQty = localQty * parentQty
+                    valDict['pqty'] = localQty
+                del valDict['children']
+                out.append(valDict)
+                getOutList(children, localQty)
+
+    outDict = summarize_level(myObject, recursion, flat, level, summarize)
+    getOutList(outDict)
     return out
 
 
