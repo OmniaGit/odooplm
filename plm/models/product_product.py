@@ -85,12 +85,10 @@ class PlmComponent(models.Model):
     tmp_material = fields.Many2one('plm.material',
                                    _('Raw Material'),
                                    required=False,
-                                   change_default=True,
                                    help=_("Select raw material for current product"))
     tmp_surface = fields.Many2one('plm.finishing',
                                   _('Surface Finishing'),
                                   required=False,
-                                  change_default=True,
                                   help=_("Select surface finishing for current product"))
     father_part_ids = fields.Many2many('product.product',
                                        compute=_father_part_compute,
@@ -105,7 +103,6 @@ class PlmComponent(models.Model):
     std_description = fields.Many2one('plm.description',
                                       _('Standard Description'),
                                       required=False,
-                                      change_default=True,
                                       default=False,
                                       help=_("Select standard description for current product."))
     std_umc1 = fields.Char(_('UM / Feature 1'),
@@ -782,7 +779,7 @@ class PlmComponent(models.Model):
             brokenComponents = self.search([('engineering_code', '=', '-')])
             for brokenComp in brokenComponents:
                 brokenComp.unlink()
-            
+
         previous_name = self.name
         if not defaults.get('name', False):
             defaults['name'] = '-'                   # If field is required super of clone will fail returning False, this is the case
@@ -795,6 +792,7 @@ class PlmComponent(models.Model):
         defaults['state'] = 'draft'
         defaults['engineering_writable'] = True
         defaults['linkeddocuments'] = []
+        defaults['release_date'] = False
         objId = super(PlmComponent, self).copy(defaults)
         if (objId):
             newContext = self.env.context.copy()
@@ -913,17 +911,17 @@ class PlmComponent(models.Model):
                 bomLineBrowse.product_qty]
 
     @api.model
-    def getNormalBomStd(self, args):
+    def getNormalBomStd(self):
         """
             get the normal bom from the given name and revision
             RELPOS,
             $G{COMPDES="-"} / $G{COMPDES_L2="-"},
             $G{COMPNAME:f("#clear(<undef>@)")},
             $G{RELQTY},
-            $G{COMPR1="-"}
-            $G{COMPR2="-"}
         """
-        componentName, componentRev, bomType = args
+        componentName = self.env.context.get('componentName', '')
+        componentRev = self.env.context.get('componentRev', 0)
+        bomType = 'normal'
         logging.info('getNormalBom for compoent: %s, componentRev: %s' % (componentName, componentRev))
         out = []
         searchFilter = [('engineering_code', '=', componentName),
