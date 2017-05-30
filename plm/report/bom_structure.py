@@ -122,7 +122,6 @@ def get_bom_report(myObject, recursion=False, flat=False, leaf=False, level=1, s
                 myNewBom = getBom(l)
                 if myNewBom:
                     children = summarize_level(myNewBom, recursion, flat, level + 1, summarize, l.product_qty * parentQty)
-            
             if prodTmlId in levelListed and summarize:
                 qty = l.product_qty
                 updateQty(prodTmlId, qty)
@@ -136,8 +135,10 @@ def get_bom_report(myObject, recursion=False, flat=False, leaf=False, level=1, s
         return orderDict
 
     out = []
+
     def getOutList(outDict, parentQty=1):
         itemNums = outDict.keys()
+        itemNums.sort()
         for itemNum in itemNums:
             valsDict = outDict.get(itemNum, {})
             for valDict in valsDict:
