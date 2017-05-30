@@ -427,24 +427,29 @@ class PlmDocument(models.Model):
         """
         retValues = []
         for document in documents:
-            hasSaved = False
+            hasToBeSaved = False
             if not ('name' in document) or ('revisionid' not in document):
                 document['documentID'] = False
-                document['hasSaved'] = hasSaved
+                document['hasSaved'] = hasToBeSaved
                 continue
             docBrwsList = self.search([('name', '=', document['name']),
                                       ('revisionid', '=', document['revisionid'])],
                                       order='revisionid')
             existingID = False
             if not docBrwsList:
-                hasSaved = True
+                hasToBeSaved = True
             else:
-                existingID = docBrwsList[0].id
-                if self.getLastTime(existingID) < datetime.strptime(str(document['lastupdate']), '%Y-%m-%d %H:%M:%S'):
-                    if docBrwsList[0].writable:
-                        hasSaved = True
+                for existingBrws in docBrwsList:
+                    existingID = existingBrws.id
+                    if existingBrws.writable:
+                        if existingBrws.file_size > 0:
+                            if self.getLastTime(existingID) < datetime.strptime(str(document['lastupdate']), '%Y-%m-%d %H:%M:%S'):
+                                hasToBeSaved = True
+                        else:
+                            hasToBeSaved = True
+                    break
             document['documentID'] = existingID
-            document['hasSaved'] = hasSaved
+            document['hasSaved'] = hasToBeSaved
             retValues.append(document)
         return retValues
 
@@ -725,6 +730,20 @@ class PlmDocument(models.Model):
             self.checkout_user = str(chechRes[2])
         else:
             self.checkout_user = ''
+
+    @api.model
+    def CheckIn(self, attrs):
+        documentName = attrs.get('name', '')
+        revisionId = attrs.get('revisionid', False)
+        docBrwsList = self.search([('name', '=', documentName),
+                                   ('revisionid', '=', revisionId)])
+        for docBrws in docBrwsList:
+            checkOutId = docBrws.isCheckedOutByMe()
+            if not checkOutId:
+                return False
+            self.env['plm.checkout'].browse(checkOutId).unlink()
+            return docBrws.id
+        return False
 
     @api.one
     def _is_checkout(self):
