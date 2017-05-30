@@ -442,7 +442,7 @@ class PlmDocument(models.Model):
                 for existingBrws in docBrwsList:
                     existingID = existingBrws.id
                     if existingBrws.writable:
-                        if existingBrws.file_size > 0:
+                        if existingBrws.file_size > 0 and existingBrws.datas_fname:
                             if self.getLastTime(existingID) < datetime.strptime(str(document['lastupdate']), '%Y-%m-%d %H:%M:%S'):
                                 hasToBeSaved = True
                         else:
@@ -742,7 +742,7 @@ class PlmDocument(models.Model):
             if not checkOutId:
                 logging.info('Document %r is not in check out by user %r so cannot be checked-in' % (docBrws.id, self.env.user_id))
                 return False
-            if not docBrws.file_size:
+            if docBrws.file_size <= 0 or not docBrws.datas_fname:
                 logging.warning('Document %r has not document content so cannot be checked-in' % (docBrws.id))
                 return False
             self.env['plm.checkout'].browse(checkOutId).unlink()
@@ -904,7 +904,7 @@ class PlmDocument(models.Model):
         if not checkRes:
             logging.info('Document %r is not in check out by user %r so cannot be checked-in recursively' % (oid, self.env.uid))
             return False
-        if docBrws.file_size <= 0:
+        if docBrws.file_size <= 0 or not docBrws.datas_fname:
             logging.warning('Document %r has not document content so cannot be checked-in recirsively' % (oid))
             return False
         if selection is False:
