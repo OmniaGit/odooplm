@@ -54,7 +54,7 @@
                     <sheet>
                     <group>
                     	<button name="open_related_bom_lines" type="object" string="Related BOM Lines"/>	
-                        <field name="product_tmpl_id" options="{'create': false, 'create_edit': false}"/>
+                        <field name="product_tmpl_id" options="{'no_open':True,'no_create':True}"/>
                         <field name="product_id" groups="product.group_product_variant"/>
                         <field name="state" readonly="True"/>
                         <field name="product_qty" class="oe_inline"/>
