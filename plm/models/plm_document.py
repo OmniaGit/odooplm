@@ -427,24 +427,29 @@ class PlmDocument(models.Model):
         """
         retValues = []
         for document in documents:
-            hasSaved = False
+            hasToBeSaved = False
             if not ('name' in document) or ('revisionid' not in document):
                 document['documentID'] = False
-                document['hasSaved'] = hasSaved
+                document['hasSaved'] = hasToBeSaved
                 continue
             docBrwsList = self.search([('name', '=', document['name']),
                                       ('revisionid', '=', document['revisionid'])],
                                       order='revisionid')
             existingID = False
             if not docBrwsList:
-                hasSaved = True
+                hasToBeSaved = True
             else:
-                existingID = docBrwsList[0].id
-                if self.getLastTime(existingID) < datetime.strptime(str(document['lastupdate']), '%Y-%m-%d %H:%M:%S'):
-                    if docBrwsList[0].writable:
-                        hasSaved = True
+                for existingBrws in docBrwsList:
+                    existingID = existingBrws.id
+                    if existingBrws.writable:
+                        if existingBrws.file_size > 0 and existingBrws.datas_fname:
+                            if self.getLastTime(existingID) < datetime.strptime(str(document['lastupdate']), '%Y-%m-%d %H:%M:%S'):
+                                hasToBeSaved = True
+                        else:
+                            hasToBeSaved = True
+                    break
             document['documentID'] = existingID
-            document['hasSaved'] = hasSaved
+            document['hasSaved'] = hasToBeSaved
             retValues.append(document)
         return retValues
 
@@ -726,6 +731,24 @@ class PlmDocument(models.Model):
         else:
             self.checkout_user = ''
 
+    @api.model
+    def CheckIn(self, attrs):
+        documentName = attrs.get('name', '')
+        revisionId = attrs.get('revisionid', False)
+        docBrwsList = self.search([('name', '=', documentName),
+                                   ('revisionid', '=', revisionId)])
+        for docBrws in docBrwsList:
+            checkOutId = docBrws.isCheckedOutByMe()
+            if not checkOutId:
+                logging.info('Document %r is not in check out by user %r so cannot be checked-in' % (docBrws.id, self.env.user_id))
+                return False
+            if docBrws.file_size <= 0 or not docBrws.datas_fname:
+                logging.warning('Document %r has not document content so cannot be checked-in' % (docBrws.id))
+                return False
+            self.env['plm.checkout'].browse(checkOutId).unlink()
+            return docBrws.id
+        return False
+
     @api.one
     def _is_checkout(self):
         chechRes = self.getCheckedOut(self.id, None)
@@ -876,8 +899,13 @@ class PlmDocument(models.Model):
 
         oid, _listedFiles, selection = request
         oid = getDocId(oid)
+        docBrws = self.browse(oid)
         checkRes = self.browse(oid).isCheckedOutByMe()
         if not checkRes:
+            logging.info('Document %r is not in check out by user %r so cannot be checked-in recursively' % (oid, self.env.uid))
+            return False
+        if docBrws.file_size <= 0 or not docBrws.datas_fname:
+            logging.warning('Document %r has not document content so cannot be checked-in recirsively' % (oid))
             return False
         if selection is False:
             selection = 1
