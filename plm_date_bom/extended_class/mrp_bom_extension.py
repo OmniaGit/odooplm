@@ -49,8 +49,8 @@ class mrp_bom_extension_data(models.Model):
                 if bomLine.product_id.state == 'obsoleted':
                     obsoleteFlag = True
                     break
-            bomObj.obsolete_presents = obsoleteFlag
-            bomObj.write({'obsolete_presents': obsoleteFlag})   # don't remove this force write or when form is opened the value is not updated
+            bomObj.sudo().obsolete_presents = obsoleteFlag
+            bomObj.sudo().write({'obsolete_presents': obsoleteFlag})   # don't remove this force write or when form is opened the value is not updated
 
     # If store = True is set you need to provide @api.depends because odoo has to know when to compute that field.
     # If you decide to compute that field each time without store you have always to put it in the view or the field will not be computed
