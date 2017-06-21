@@ -30,7 +30,6 @@ from odoo.exceptions import UserError
 from odoo import osv
 from odoo import SUPERUSER_ID
 import odoo.tools as tools
-from sqlalchemy.sql.expression import false
 
 _logger = logging.getLogger(__name__)
 
