@@ -67,6 +67,7 @@
 		                        <group attrs="{'invisible':[('type','=','url')]}" name="group_datas" colspan="4" col="2">
 		                            <field name="datas" filename="datas_fname" 	attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
 		                            <field name="datas_fname" select="1"		attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+		                            <field name="document_type"					attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
 		                        </group>
 		                        <group name="group_url" colspan="4">
 		                            <field name="url" widget="url" attrs="{'invisible':[('type','=','binary')],'readonly':[('state','in',['released','obsoleted'])]}"/>

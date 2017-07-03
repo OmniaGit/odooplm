@@ -88,7 +88,7 @@ class plm_temporary_batch_converter(osv.osv.osv_memory):
                                  files=self.getAllFiles(document))
         if response.status_code != 200:
             raise UserError("Conversion of cad server failed, check the cad server log")
-        if newFileName:
+        if not newFileName:
             newFileName = document.datas_fname + targetExtention
         newTarget = os.path.join(tempfile.gettempdir(), newFileName)
         with open(newTarget, 'wb') as f:
