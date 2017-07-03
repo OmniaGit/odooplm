@@ -66,7 +66,7 @@ class AdvancedPackView(osv.osv.osv_memory):
     def _getDocumentFileName(self):
         for row in self:
             row.doc_file_name = row.document_id.datas_fname
-        
+
     component_id = fields.Many2one('product.product', _('Component'))
     document_id = fields.Many2one('plm.document', _('Document'))
     comp_rev = fields.Integer(_('Component Revision'))
@@ -92,7 +92,7 @@ class PackAndGo(osv.osv.osv_memory):
         """
             set the default value from getting the value from the context
         """
-        return self._context.get('active_id', 0)
+        return self._context.get('active_id', False)
 
     component_id = fields.Many2one('product.product',
                                    _('Component'),
@@ -137,8 +137,7 @@ class PackAndGo(osv.osv.osv_memory):
         export_3d = []
         export_other = []
         export_pdf = []
-        
-        checkedDocumentIds = [] # To know if the same document has been already analyzed
+        checkedDocumentIds = []  # To know if the same document has been already analyzed
         objProduct = self.env['product.product']
         objPackView = self.env['pack_and_go_view']
 
@@ -180,8 +179,7 @@ class PackAndGo(osv.osv.osv_memory):
                 checkedDocumentIds.append(docBrws2.id)
                 docCheckCreate(docBrws2)
                 recursionDocuments(docBrws2)
-            
-        self.getAllAvailableTypes() # Setup available types
+        self.getAllAvailableTypes()   # Setup available types
         compIds = self.getBomCompIds()
         for compBrws in objProduct.browse(compIds):
             for docBrws in compBrws.linkeddocuments:
@@ -201,11 +199,9 @@ class PackAndGo(osv.osv.osv_memory):
     def getDocumentsByLinks(self, docBrws):
         docId = docBrws.id
         docRelObj = self.env['plm.document.relation']
-        docRels = docRelObj.search([
-                                    '|',
+        docRels = docRelObj.search(['|',
                                     ('parent_id', '=', docId),
-                                    ('child_id', '=', docId),
-                                    ])
+                                    ('child_id', '=', docId)])
         outBrwsList = []
         for relation in docRels:
             parenBrws = relation.parent_id
@@ -226,7 +222,7 @@ class PackAndGo(osv.osv.osv_memory):
                 'res_id': self.ids[0],
                 'type': 'ir.actions.act_window',
                 'domain': "[]"}
-        
+
     @api.multi
     def clear2d(self):
         self.write({'export_2d': [(5, 0, 0)]})
@@ -246,7 +242,7 @@ class PackAndGo(osv.osv.osv_memory):
     def clearother(self):
         self.write({'export_other': [(5, 0, 0)]})
         return self.returnWizard()
-               
+
     @api.multi
     def clearAll(self):
         '''
@@ -262,21 +258,21 @@ class PackAndGo(osv.osv.osv_memory):
         '''
         try:
             typesObj = self.env['pack_and_go_types']
-    
+
             def checkCreateType(typeStr):
                 res = typesObj.search([('name', '=', typeStr)])
                 if not res:
                     typesObj.create({'name': typeStr})
-            
             # Read from flask server
             paramObj = self.env['ir.config_parameter']
             serverAddress = paramObj._get_param('plm_convetion_server')
             if serverAddress is None:
-                paramObj.create({'key':'plm_convetion_server', 'value':'my.servrer.com:5000'})
+                paramObj.create({'key': 'plm_convetion_server',
+                                 'value': 'my.servrer.com:5000'})
                 serverAddress = 'no_host_in_odoo_parameter"plm_convetion_server"!'
             fileExtensionsRes = requests.get('http://' + serverAddress + '/odooplm/api/v1.0/getAvailableExtention')
             res = json.loads(fileExtensionsRes.content)
-            
+
             # Create all extensions
             for fileExtension, tupleConversion in res.items():
                 checkCreateType(fileExtension)
@@ -354,14 +350,14 @@ class PackAndGo(osv.osv.osv_memory):
                     exportConverted(lineBrws.document_id, lineBrws.available_types)
                 else:
                     exportSingle(lineBrws.document_id)
-        
+
         def export3D():
             for lineBrws in self.export_3d:
                 if lineBrws.available_types and convetionModuleInstalled:
                     exportConverted(lineBrws.document_id, lineBrws.available_types)
                 else:
                     exportSingle(lineBrws.document_id)
-        
+
         def exportPdf():
             srv = report.interface.report_int._reports['report.' + 'plm.document.pdf']
             for lineBrws in self.export_pdf:
@@ -370,7 +366,7 @@ class PackAndGo(osv.osv.osv_memory):
                 outFilePath = os.path.join(outZipFile, docBws.name + '.' + fileExtention)
                 fileObj = file(outFilePath, 'wb')
                 fileObj.write(datas)
-        
+
         def exportOther():
             for lineBrws in self.export_other:
                 exportSingle(lineBrws.document_id)
@@ -379,11 +375,11 @@ class PackAndGo(osv.osv.osv_memory):
             paramObj = self.env['ir.config_parameter']
             relStr = paramObj._get_param('extension_integration_rel')
             try:
-                rel = eval(relStr)
+                rel = eval(unicode(relStr).lower())
             except Exception, ex:
                 logging.error('Unable to get extension_integration_rel parameter. EX: %r' % (ex))
                 rel = {}
-            integration = rel.get(self.getFileExtension(docBws), '')
+            integration = rel.get(unicode(self.getFileExtension(docBws)).lower(), '')
             convertObj = self.env['plm.convert']
             filePath = convertObj.getFileConverted(docBws, integration, extentionBrws.name)
             if not os.path.exists(filePath):
