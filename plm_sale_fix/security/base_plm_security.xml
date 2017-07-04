@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+        <data>
+
+        		<record id="report_sale_report_view" model="ir.model.access">
+		            <field name="name">PLM Sale Report View</field>
+		            <field name="model_id" ref="sale.model_sale_report"/>
+		            <field name="group_id" ref="plm.group_plm_view_user"/>
+		            <field name="perm_read" eval="True"/>
+		            <field name="perm_write" eval="False"/>
+		            <field name="perm_create" eval="False"/>
+		            <field name="perm_unlink" eval="False"/>
+        		</record>  
+
+<!-- Integration User  -->
+                <record id="plm_sale_report_integration" model="ir.model.access">
+		            <field name="name">PLM Sale Report</field>
+		            <field name="model_id" ref="sale.model_sale_report"/>
+		            <field name="group_id" ref="plm.group_plm_integrationuser"/>
+		            <field name="perm_read" eval="True"/>
+		            <field name="perm_write" eval="False"/>
+		            <field name="perm_create" eval="False"/>
+		            <field name="perm_unlink" eval="False"/>
+        		</record>
+
+<!-- Administrator  -->
+                <record id="plm_sale_report_admin" model="ir.model.access">
+		            <field name="name">PLM Sale Report Admin</field>
+		            <field name="model_id" ref="sale.model_sale_report"/>
+		            <field name="group_id" ref="plm.group_plm_admin"/>
+		            <field name="perm_read" eval="True"/>
+		            <field name="perm_write" eval="False"/>
+		            <field name="perm_create" eval="False"/>
+		            <field name="perm_unlink" eval="False"/>
+        		</record>
+
+        </data>
+</openerp>

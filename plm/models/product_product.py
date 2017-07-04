@@ -26,6 +26,7 @@ from odoo import fields
 from odoo import api
 from odoo import _
 from odoo.exceptions import ValidationError
+from odoo.exceptions import AccessError
 from odoo.exceptions import UserError
 from odoo import osv
 from odoo import SUPERUSER_ID
@@ -765,6 +766,18 @@ class PlmComponent(models.Model):
                 raise ex
             logging.error("(%s). It has tried to create with values : (%s)." % (unicode(ex), unicode(vals)))
             raise Exception(_(" (%r). It has tried to create with values : (%r).") % (ex, vals))
+
+    @api.multi
+    def read(self, fields=None, load='_classic_read'):
+        try:
+            return super(PlmComponent, self).read(fields=fields, load=load)
+        except Exception, ex:
+            if isinstance(ex, AccessError) and 'sale.report' in ex.name:
+                return '''
+Your user does not have enough permissions to make this operation. Error: \n
+%r\n
+Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fix module to solve the problem.''' % (ex)
+            raise ex
 
     @api.multi
     def copy(self, defaults={}):
