@@ -197,13 +197,29 @@ class PackAndGo(osv.osv.osv_memory):
 
     @api.multi
     def getDocumentsByLinks(self, docBrws):
-        docId = docBrws.id
         docRelObj = self.env['plm.document.relation']
+        
+        def checkIfCorrectRaw(docRel, docInBrws):
+            if docRel.link_kind == 'HiTree' and docInBrws.id == docRel.child_id.id:  # Wrong Raw component by child
+                # This search is needed because model - drawing relation also creates HiTree relation like this
+                # So I need to be sure that this relation is a wrong raw relation 
+                docRels = docRelObj.search([
+                                    ('link_kind', '=', 'RfTree'),
+                                    ('parent_id', '=', docInBrws.id)])
+                if docRels:
+                    return False
+            elif docRel.link_kind == 'RfTree' and docInBrws.id == docRel.parent_id.id:  # Wrong Raw component by parent
+                return False
+            return True
+            
+        docId = docBrws.id
         docRels = docRelObj.search(['|',
                                     ('parent_id', '=', docId),
                                     ('child_id', '=', docId)])
         outBrwsList = []
         for relation in docRels:
+            if not checkIfCorrectRaw(relation, docBrws):
+                continue
             parenBrws = relation.parent_id
             childBrws = relation.child_id
             if parenBrws not in outBrwsList and parenBrws.id != docId:
