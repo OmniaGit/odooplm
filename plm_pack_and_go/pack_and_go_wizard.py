@@ -140,6 +140,7 @@ class PackAndGo(osv.osv.osv_memory):
         checkedDocumentIds = []  # To know if the same document has been already analyzed
         objProduct = self.env['product.product']
         objPackView = self.env['pack_and_go_view']
+        plmDocObject = self.env['plm.document']
 
         def docCheckCreate(doc, comp=False):
             compId = False
@@ -179,8 +180,23 @@ class PackAndGo(osv.osv.osv_memory):
                 checkedDocumentIds.append(docBrws2.id)
                 docCheckCreate(docBrws2)
                 recursionDocuments(docBrws2)
+
         self.getAllAvailableTypes()   # Setup available types
         compIds = self.getBomCompIds()
+        for docBrws in self.component_id.linkeddocuments:
+            res = plmDocObject.CheckAllFiles([docBrws.id, [], False])   # Get all related documents to root documents
+            for singleRes in res:
+                docId = singleRes[0]
+                if docId in checkedDocumentIds:
+                    continue
+                relDocBrws = plmDocObject.browse(docId)
+                compBrws = False
+                for compBrwsRes in relDocBrws.linkedcomponents:
+                    compBrws = compBrwsRes
+                    break
+                docCheckCreate(relDocBrws, compBrws)
+                checkedDocumentIds.append(docId)
+            
         for compBrws in objProduct.browse(compIds):
             for docBrws in compBrws.linkeddocuments:
                 if docBrws.id in checkedDocumentIds:
@@ -327,11 +343,12 @@ class PackAndGo(osv.osv.osv_memory):
                     outCompIds.append(prodId)
             return list(set(outCompIds))
 
+        compIds = []
         startingBom = self.getBomFromTemplate(self.component_id.product_tmpl_id)
         if not startingBom:
             return [self.component_id.id]
-        compIds = recursion(startingBom)
         compIds.append(self.component_id.id)
+        compIds.extend(recursion(startingBom))
         return compIds
 
     @api.multi
