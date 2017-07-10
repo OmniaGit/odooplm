@@ -172,38 +172,26 @@ class PackAndGo(osv.osv.osv_memory):
                 newViewObj = objPackView.create(singleCreateDict)
                 export_other.append(newViewObj.id)
 
-        def recursionDocuments(docBrws):
-            docBrwsList = self.getDocumentsByLinks(docBrws)
-            for docBrws2 in docBrwsList:
-                if docBrws2.id in checkedDocumentIds:
-                    continue
-                checkedDocumentIds.append(docBrws2.id)
-                docCheckCreate(docBrws2)
-                recursionDocuments(docBrws2)
+        def recursionDocuments(docBrwsList):
+            for docBrws in docBrwsList:
+                res = plmDocObject.CheckAllFiles([docBrws.id, [], False])   # Get all related documents to root documents
+                for singleRes in res:
+                    docId = singleRes[0]
+                    if docId in checkedDocumentIds:
+                        continue
+                    relDocBrws = plmDocObject.browse(docId)
+                    compBrws = False
+                    for compBrwsRes in relDocBrws.linkedcomponents:
+                        compBrws = compBrwsRes
+                        break
+                    docCheckCreate(relDocBrws, compBrws)
+                    checkedDocumentIds.append(docId)
 
         self.getAllAvailableTypes()   # Setup available types
         compIds = self.getBomCompIds()
-        for docBrws in self.component_id.linkeddocuments:
-            res = plmDocObject.CheckAllFiles([docBrws.id, [], False])   # Get all related documents to root documents
-            for singleRes in res:
-                docId = singleRes[0]
-                if docId in checkedDocumentIds:
-                    continue
-                relDocBrws = plmDocObject.browse(docId)
-                compBrws = False
-                for compBrwsRes in relDocBrws.linkedcomponents:
-                    compBrws = compBrwsRes
-                    break
-                docCheckCreate(relDocBrws, compBrws)
-                checkedDocumentIds.append(docId)
-            
-        for compBrws in objProduct.browse(compIds):
-            for docBrws in compBrws.linkeddocuments:
-                if docBrws.id in checkedDocumentIds:
-                    continue
-                checkedDocumentIds.append(docBrws.id)
-                docCheckCreate(docBrws, compBrws)
-                recursionDocuments(docBrws)
+        recursionDocuments(self.component_id.linkeddocuments)     # Check / Create ROOT structure
+        for compBrws in objProduct.browse(compIds):                         # Check / Create BOM structure
+            recursionDocuments(compBrws.linkeddocuments)
 
         self.export_2d = export_2d
         self.export_3d = export_3d
