@@ -389,18 +389,6 @@ class PlmComponent(models.Model):
         return list(set(ids))
 
     @api.model
-    def isDocumentWritable(self, infoDict):
-        docName = infoDict.get('name')
-        docRev = infoDict.get('revisionid')
-        if docName and docRev:
-            for document in self.env['plm.document'].search([('name', '=', docName),
-                                                             ('revisionid', '=', docRev)]):
-                if not document.isCheckedOutByMe():
-                    return False
-                return True
-        return False
-
-    @api.model
     def SaveOrUpdate(self, vals):
         """
             Save or Update Parts
@@ -424,20 +412,15 @@ class PlmComponent(models.Model):
             for existingCompBrws in existingCompBrwsList:
                 if not hasSaved:
                     partVals['name'] = existingCompBrws.name
-                    if self.isDocumentWritable(partVals):
-                        if self._iswritable(existingCompBrws):
-                            if (self.getUpdTime(existingCompBrws) < datetime.strptime(partVals['lastupdate'], '%Y-%m-%d %H:%M:%S')):
-                                del(partVals['lastupdate'])
-                                if not existingCompBrws.write(partVals):
-                                    raise UserError(_("Part %r cannot be updated" % (partVals['engineering_code'])))
-                                hasSaved = True
-                            else:
-                                weight = partVals.get('weight')
-                                if (weight):
-                                    if not self.write({'weight': weight}):
-                                        raise UserError(_("Part %r cannot be updated" % (partVals['engineering_code'])))
-                                else:
-                                    logging.warning("No Weight property set unable to update !!")
+                    if self._iswritable(existingCompBrws):
+                        hasSaved = True
+                        existingCompBrws.write(partVals)
+                        weight = partVals.get('weight')
+                        if (weight):
+                            if not self.write({'weight': weight}):
+                                raise UserError(_("Part %r cannot be updated" % (partVals['engineering_code'])))
+                        else:
+                            logging.warning("No Weight property set unable to update !!")
                 partVals['componentID'] = existingCompBrws.id
                 partVals['hasSaved'] = hasSaved
                 break
