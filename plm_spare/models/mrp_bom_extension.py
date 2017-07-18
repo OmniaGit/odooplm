@@ -36,7 +36,7 @@ class MrpBomExtension(models.Model):
 
     @api.model
     def _get_reference_spare_type(self):
-        moduleBrwsList = self.env['ir.module.module'].search([('name', '=', 'plm_engineering')])
+        moduleBrwsList = self.sudo().env['ir.module.module'].search([('name', '=', 'plm_engineering')])
         for modbrws in moduleBrwsList:
             if modbrws.state == 'installed':
                 return [('normal', _('Normal BoM')),
