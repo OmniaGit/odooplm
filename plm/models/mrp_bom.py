@@ -455,8 +455,8 @@ class MrpBomExtension(models.Model):
             try:
                 vals = getParentVals(name, partID, sourceID, args)
                 return self.create(vals).id
-            except:
-                logging.error("saveParent :  unable to create a relation for part (%s) with source (%d) : %s." % (name, sourceID, str(args)))
+            except Exception, ex:
+                logging.error("saveParent :  unable to create a relation for part (%s) with source (%d) : %s. ex: %r" % (name, sourceID, str(args), ex))
                 raise AttributeError(_("saveParent :  unable to create a relation for part (%s) with source (%d) : %s." % (name, sourceID, str(sys.exc_info()))))
 
 

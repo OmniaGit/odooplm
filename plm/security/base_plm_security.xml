@@ -20,6 +20,15 @@
 		            <field name="perm_create" eval="False"/>
 		            <field name="perm_unlink" eval="False"/>
         		</record>
+                <record id="plm_mrp_bom_line_view" model="ir.model.access">
+		            <field name="name">PLM Mrp Bom Line</field>
+		            <field name="model_id" ref="model_mrp_bom_line"/>
+		            <field name="group_id" eval="group_plm_view_user"/>
+		            <field name="perm_read" eval="True"/>
+		            <field name="perm_write" eval="False"/>
+		            <field name="perm_create" eval="False"/>
+		            <field name="perm_unlink" eval="False"/>
+        		</record>
                 <record id="plm_mrp_bom_view" model="ir.model.access">
 		            <field name="name">PLM Mrp Bom</field>
 		            <field name="model_id" ref="model_mrp_bom"/>
@@ -146,7 +155,7 @@
 		            <field name="perm_create" eval="True"/>
 		            <field name="perm_unlink" eval="True"/>
         		</record>  
-        		
+
 <!-- Integration User  -->
                 <record id="group_plm_integrationuser" model="res.groups">
                         <field name="name">Integration User</field>
@@ -156,6 +165,15 @@
                 <record id="mrp_bom_integration" model="ir.model.access">
 		            <field name="name">MRP Bom</field>
 		            <field name="model_id" ref="model_mrp_bom"/>
+		            <field name="group_id" eval="group_plm_integrationuser"/>
+		            <field name="perm_read" eval="True"/>
+		            <field name="perm_write" eval="True"/>
+		            <field name="perm_create" eval="True"/>
+		            <field name="perm_unlink" eval="True"/>
+        		</record>
+                <record id="mrp_bom_line_integration" model="ir.model.access">
+		            <field name="name">MRP Bom Line</field>
+		            <field name="model_id" ref="model_mrp_bom_line"/>
 		            <field name="group_id" eval="group_plm_integrationuser"/>
 		            <field name="perm_read" eval="True"/>
 		            <field name="perm_write" eval="True"/>
@@ -207,6 +225,7 @@
 		            <field name="perm_create" eval="True"/>
 		            <field name="perm_unlink" eval="False"/>
         		</record>
+
 <!-- Administrator  -->
                 <record id="group_plm_admin" model="res.groups">
                         <field name="name">Administrator</field>
@@ -273,5 +292,6 @@
 		            <field name="domain_force" eval="[('state','in',['draft', 'confirmed'])]"/>
 		            <field name="groups" eval="[(4, ref('group_plm_readonly_released'))]"/>
         		</record> 
+
         </data>
 </openerp>

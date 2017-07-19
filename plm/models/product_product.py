@@ -26,6 +26,7 @@ from odoo import fields
 from odoo import api
 from odoo import _
 from odoo.exceptions import ValidationError
+from odoo.exceptions import AccessError
 from odoo.exceptions import UserError
 from odoo import osv
 from odoo import SUPERUSER_ID
@@ -388,18 +389,6 @@ class PlmComponent(models.Model):
         return list(set(ids))
 
     @api.model
-    def isDocumentWritable(self, infoDict):
-        docName = infoDict.get('name')
-        docRev = infoDict.get('revisionid')
-        if docName and docRev:
-            for document in self.env['plm.document'].search([('name', '=', docName),
-                                                             ('revisionid', '=', docRev)]):
-                if not document.isCheckedOutByMe():
-                    return False
-                return True
-        return False
-
-    @api.model
     def SaveOrUpdate(self, vals):
         """
             Save or Update Parts
@@ -423,20 +412,15 @@ class PlmComponent(models.Model):
             for existingCompBrws in existingCompBrwsList:
                 if not hasSaved:
                     partVals['name'] = existingCompBrws.name
-                    if self.isDocumentWritable(partVals):
-                        if self._iswritable(existingCompBrws):
-                            if (self.getUpdTime(existingCompBrws) < datetime.strptime(partVals['lastupdate'], '%Y-%m-%d %H:%M:%S')):
-                                del(partVals['lastupdate'])
-                                if not existingCompBrws.write(partVals):
-                                    raise UserError(_("Part %r cannot be updated" % (partVals['engineering_code'])))
-                                hasSaved = True
-                            else:
-                                weight = partVals.get('weight')
-                                if (weight):
-                                    if not self.write({'weight': weight}):
-                                        raise UserError(_("Part %r cannot be updated" % (partVals['engineering_code'])))
-                                else:
-                                    logging.warning("No Weight property set unable to update !!")
+                    if self._iswritable(existingCompBrws):
+                        hasSaved = True
+                        existingCompBrws.write(partVals)
+                        weight = partVals.get('weight')
+                        if (weight):
+                            if not self.write({'weight': weight}):
+                                raise UserError(_("Part %r cannot be updated" % (partVals['engineering_code'])))
+                        else:
+                            logging.warning("No Weight property set unable to update !!")
                 partVals['componentID'] = existingCompBrws.id
                 partVals['hasSaved'] = hasSaved
                 break
@@ -765,6 +749,18 @@ class PlmComponent(models.Model):
                 raise ex
             logging.error("(%s). It has tried to create with values : (%s)." % (unicode(ex), unicode(vals)))
             raise Exception(_(" (%r). It has tried to create with values : (%r).") % (ex, vals))
+
+    @api.multi
+    def read(self, fields=None, load='_classic_read'):
+        try:
+            return super(PlmComponent, self).read(fields=fields, load=load)
+        except Exception, ex:
+            if isinstance(ex, AccessError) and 'sale.report' in ex.name:
+                return '''
+Your user does not have enough permissions to make this operation. Error: \n
+%r\n
+Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fix module to solve the problem.''' % (ex)
+            raise ex
 
     @api.multi
     def copy(self, defaults={}):

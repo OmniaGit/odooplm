@@ -757,6 +757,30 @@ class PlmDocument(models.Model):
         else:
             self.is_checkout = False
 
+    def getFileExtension(self, docBrws):
+        fileExtension = ''
+        datas_fname = docBrws.datas_fname
+        if datas_fname:
+            fileExtension = '.' + datas_fname.split('.')[-1]
+        return fileExtension
+
+    @api.multi
+    def _compute_document_type(self):
+        configParamObj = self.env['ir.config_parameter']
+        str2DExtensions = configParamObj._get_param('file_exte_type_rel_2D')
+        str3DExtensions = configParamObj._get_param('file_exte_type_rel_3D')
+        for docBrws in self:
+            try:
+                fileExtension = docBrws.getFileExtension(docBrws)
+                extensions2D = eval(str2DExtensions)
+                extensions3D = eval(str3DExtensions)
+                if fileExtension in extensions2D:
+                    docBrws.document_type = '2d'
+                elif fileExtension in extensions3D:
+                    docBrws.document_type = '3d'
+            except Exception, ex:
+                logging.error('Unable to compute document type for document %r, error %r' % (docBrws.id, ex))
+
     revisionid = fields.Integer(_('Revision Index'),
                                 default=0,
                                 required=True)
@@ -787,6 +811,11 @@ class PlmDocument(models.Model):
                           compute='_compute_datas',
                           inverse='_inverse_datas',
                           method=True)
+    document_type = fields.Selection([('2d', _('2D')),
+                                      ('3d', _('3D')),
+                                      ], 
+                                     compute=_compute_document_type,
+                                     string= _('Document Type'))
 
     _sql_constraints = [
         ('name_unique', 'unique (name, revisionid)', 'File name has to be unique!')  # qui abbiamo la sicurezza dell'univocita del nome file
