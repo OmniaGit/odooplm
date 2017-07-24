@@ -390,20 +390,23 @@ class PlmDocument(models.Model):
             create a new revision of the document
         """
         newID = None
+        newRevIndex = False
         for tmpObject in self:
             latestIDs = self.GetLatestIds([(tmpObject.name, tmpObject.revisionid, False)])
             for oldObject in self.browse(latestIDs):
                 oldObject.with_context({'check': False}).write({'state': 'undermodify'})
                 defaults = {}
+                newRevIndex = int(oldObject.revisionid) + 1
                 defaults['name'] = oldObject.name
-                defaults['revisionid'] = int(oldObject.revisionid) + 1
+                defaults['revisionid'] = newRevIndex
                 defaults['writable'] = True
                 defaults['state'] = 'draft'
-                newID = super(PlmDocument, oldObject).copy(defaults)
+                res = super(PlmDocument, oldObject).copy(defaults)
+                newID = res.id
                 oldObject.wf_message_post(body=_('Created : New Revision.'))
                 break
             break
-        return (newID.id, defaults['revisionid'])
+        return (newID, newRevIndex)
 
     @api.multi
     def Clone(self, defaults={}):
@@ -550,7 +553,8 @@ class PlmDocument(models.Model):
             Writing messages to follower, on multiple objects
         """
         if body:
-            self.message_post(body=_(body))
+            for elem in self:
+                elem.message_post(body=_(body))
 
     @api.multi
     def setCheckContextWrite(self, checkVal=True):
@@ -778,6 +782,8 @@ class PlmDocument(models.Model):
                     docBrws.document_type = '2d'
                 elif fileExtension in extensions3D:
                     docBrws.document_type = '3d'
+                else:
+                    docBrws.document_type = 'other'
             except Exception, ex:
                 logging.error('Unable to compute document type for document %r, error %r' % (docBrws.id, ex))
 
@@ -811,7 +817,8 @@ class PlmDocument(models.Model):
                           compute='_compute_datas',
                           inverse='_inverse_datas',
                           method=True)
-    document_type = fields.Selection([('2d', _('2D')),
+    document_type = fields.Selection([('other', _('Other')),
+                                      ('2d', _('2D')),
                                       ('3d', _('3D')),
                                       ], 
                                      compute=_compute_document_type,
