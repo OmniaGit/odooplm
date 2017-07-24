@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data>
+
+	    <record id="plm_document_new_revision" model="ir.ui.view">
+	        <field name="name">plm.document.new.revision</field>
+	        <field name="model">document.rev_wizard</field>
+	        <field name="type">form</field>
+	        <field name="arch" type="xml">
+	        <form string="Creation of New Revision">
+	        	<separator string="" colspan="4" />
+	        	<label string="Are you sure you want to create a new Revision?" colspan="2"/>
+	            <separator string="" colspan="4" />
+	            <group colspan="2" col="2">
+	            	<button special="cancel" string="Cancel"/>
+	            	<button string="Create New Revision" name="new_document_revision_by_server" type="object"/>
+	            </group>
+	        </form>
+	        </field>
+	    </record>
+ 	
+        <act_window
+            id="action_document_new_revision"
+            name="New Document Revision" 
+            view_type="form"
+        	target="new"
+        	domain="[('id','in',active_ids)]" 
+            context="{'default_document_id': active_id}"
+            view_id="plm_document_new_revision"
+            res_model="document.rev_wizard"
+            src_model="plm.document"/>	<!-- Do not remove src_model. It is used to get action only in component form -->
+
+        
+</data>
+</openerp>
+

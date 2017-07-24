@@ -25,12 +25,12 @@ Created on 22 Aug 2016
 
 @author: Daniel Smerghetto
 '''
-from openerp.exceptions import UserError
-from openerp import models
-from openerp import fields
-from openerp import api
-from openerp import SUPERUSER_ID
-from openerp import _
+from odoo.exceptions import UserError
+from odoo import models
+from odoo import fields
+from odoo import api
+from odoo import SUPERUSER_ID
+from odoo import _
 import logging
 
 
@@ -51,8 +51,7 @@ class ProductProductExtended(models.Model):
         prodBrws = prodProdEnv.browse(product_id)
         if self.stateAllows(prodBrws, 'Component'):
             revRes = prodBrws.NewRevision()
-            newID, newIndex = revRes
-            newIndex
+            newID, _newIndex = revRes
             if not newID:
                 logging.error('[action_create_new_revision_by_server] newID: %r' % (newID))
                 raise UserError(_('Something wrong happens during new component revision process.'))
