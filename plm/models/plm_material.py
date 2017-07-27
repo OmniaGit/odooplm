@@ -27,6 +27,7 @@ Created on 25 Aug 2016
 '''
 from odoo import models
 from odoo import fields
+from odoo import api
 from odoo import _
 
 
@@ -45,6 +46,11 @@ class PlmMaterial(models.Model):
     _sql_constraints = [
         ('name_uniq', 'unique(name)', _('Raw Material has to be unique !')),
     ]
+
+    @api.multi
+    def copy(self, default=None):
+        default['name'] = self.name + ' (copy)' 
+        return super(PlmMaterial, self).copy(default=default)
 
 PlmMaterial()
 
