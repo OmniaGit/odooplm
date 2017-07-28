@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data> 
+	
+        <record id="res_groups_plm_extension" model="ir.ui.view">
+            <field name="name">res.groups.plm.extension</field>
+            <field name="model">res.groups</field>
+            <field name="inherit_id" ref="base.view_groups_form"/>
+            <field name="arch" type="xml">
+			    <notebook position="inside">
+                	<page name="omnia_custom" string="Omnia Custom Module">
+		                <group name="omnia_plm" string="CustomProcedure">
+		                    <field name="custom_procedure" filename="custom_procedure_fname"/>
+		                    <field name="custom_procedure_fname"/>
+		                </group>
+		            </page>
+			    </notebook>
+             
+            </field>
+        </record> 
+        
+</data>
+</openerp>

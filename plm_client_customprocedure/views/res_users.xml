@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data> 
+	
+        <record id="res_users_plm_extension" model="ir.ui.view">
+            <field name="name">res.users.plm.extension</field>
+            <field name="model">res.users</field>
+            <field name="inherit_id" ref="base.view_users_form"/>
+            <field name="arch" type="xml">
+                <page name="access_rights" position="after">
+                	<page name="omnia_custom" string="Omnia Custom Module">
+		                <group name="omnia_plm" string="CustomProcedure">
+		                    <field name="custom_procedure" filename="custom_procedure_fname"/>
+		                    <field name="custom_procedure_fname"/>
+		                </group>
+		            </page>
+                </page>
+
+            </field>
+        </record> 
+        
+</data>
+</openerp>
