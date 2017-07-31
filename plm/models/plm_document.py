@@ -1157,9 +1157,10 @@ class PlmDocument(models.Model):
         objStructure = json.loads(cPickleStructure)
 
         documentAttribute = objStructure.get('DOCUMENT_ATTRIBUTES', {})
-        for brwItem in self.search([('name', '=', documentAttribute.get('name', '')),
-                                    ('revisionid', '=', documentAttribute.get('revisionid', -1))]):
-            brwItem.canBeSaved(raiseError=True)
+        if documentAttribute:
+            for brwItem in self.search([('name', '=', documentAttribute.get('name', '')),
+                                        ('revisionid', '=', documentAttribute.get('revisionid', -1))]):
+                brwItem.canBeSaved(raiseError=True)
 
         def populateStructure(parentItem=False, structure={}):
             documentId = False
@@ -1183,13 +1184,18 @@ class PlmDocument(models.Model):
                 childRelations.append((documentId, relationAttributes.get('TYPE', '')))
                 if parentDocumentId:
                     documentRelations[parentDocumentId] = childRelations
-                if parentProductId:
+                if parentProductId: # Case of part - assembly
                     if not documentId:
                         documentId = parentDocumentId
                     itemTuple = (productId, documentId, relationAttributes)
                     listItem = productRelations.get(parentProductId, [])
                     listItem.append(itemTuple)
                     productRelations[parentProductId] = listItem
+                else:   # Case of drawing - model relation
+                    if productId and parentDocumentId:
+                        listRelated = productDocumentRelations.get(productId, [])
+                        listRelated.append(parentDocumentId)
+                        productDocumentRelations[productId] = listRelated
             for subStructure in structure.get('RELATIONS', []):
                 populateStructure((documentId, productId), subStructure)
         populateStructure(structure=objStructure)
@@ -1213,6 +1219,7 @@ class PlmDocument(models.Model):
             documentAttribute['id'] = docId.id
 
         # Save the product
+        # Save product - document relation
         logging.info("Saving Product")
         productTemplate = self.env['product.product']
         for refId, productAttribute in productAttributes.items():

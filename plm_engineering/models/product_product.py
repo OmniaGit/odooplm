@@ -38,7 +38,7 @@ class ProductProductExtension(models.Model):
     _inherit = 'product.product'
 
     @api.model
-    def create_bom_from_ebom(self, objProductProductBrw, newBomType, summarize=False):
+    def create_bom_from_ebom(self, objProductProductBrw, newBomType, summarize=False, migrate_custom_lines=True):
         """
             create a new bom starting from ebom
         """
@@ -82,7 +82,9 @@ class ProductProductExtension(models.Model):
                 logging.info('No EBOM or NBOM found for template id: %r' % (product_template_id))
                 return []
             for eBomBrws in engBomBrwsList:
+                eBomId = eBomBrws.id
                 newBomBrws = eBomBrws.copy({})
+                newidBom = newBomBrws
                 values = {'name': objProductProductBrw.name,
                           'product_tmpl_id': product_template_id,
                           'type': newBomType,
@@ -111,7 +113,7 @@ class ProductProductExtension(models.Model):
                         self.create_bom_from_ebom(lineBrws.product_id, newBomType, summarize=summarize)
                 objProductProductBrw.wf_message_post(body=_('Created %r' % newBomType))
                 break
-        if newidBom and eBomId:
+        if newidBom and eBomId and migrate_custom_lines:
             bomBrws = bomType.browse(eBomId)
             oldBomList = getPreviousNormalBOM(bomBrws)
             for oldNBom in oldBomList:
@@ -211,35 +213,37 @@ class ProductTemporaryNormalBom(osv.osv.osv_memory):
         """
             Create a new Normal Bom if doesn't exist (action callable from views)
         """
-        selectdIds = self.env.context.get('active_ids', [])
-        objType = self.env.context.get('active_model', '')
-        if objType != 'product.product':
-            raise UserError(_("The creation of the normalBom works only on product_product object"))
-        if not selectdIds:
-            raise UserError(_("Select a product before to continue"))
-        objType = self.env.context.get('active_model', False)
-        product_product_type_object = self.env[objType]
-        for productBrowse in product_product_type_object.browse(selectdIds):
-            idTemplate = productBrowse.product_tmpl_id.id
-            objBoms = self.env['mrp.bom'].search([('product_tmpl_id', '=', idTemplate),
-                                                  ('type', '=', 'normal')])
-            if objBoms:
-                raise UserError(_("Normal BoM for Part %r already exists." % (objBoms)))
-            lineMessaggesList = product_product_type_object.create_bom_from_ebom(productBrowse, 'normal', self.summarize)
-            if lineMessaggesList:
-                outMess = ''
-                for mess in lineMessaggesList:
-                    outMess = outMess + '\n' + mess
-                t_mess_obj = self.env["plm.temporary.message"]
-                t_mess_id = t_mess_obj.create({'name': outMess})
-                return {'name': _('Result'),
-                        'view_type': 'form',
-                        "view_mode": 'form',
-                        'res_model': "plm.temporary.message",
-                        'res_id': t_mess_id,
-                        'type': 'ir.actions.act_window',
-                        'target': 'new',
-                        }
+        for objBrws in self:
+            migrate_custom_lines = objBrws.migrate_custom_lines
+            selectdIds = objBrws.env.context.get('active_ids', [])
+            objType = objBrws.env.context.get('active_model', '')
+            if objType != 'product.product':
+                raise UserError(_("The creation of the normalBom works only on product_product object"))
+            if not selectdIds:
+                raise UserError(_("Select a product before to continue"))
+            objType = objBrws.env.context.get('active_model', False)
+            product_product_type_object = objBrws.env[objType]
+            for productBrowse in product_product_type_object.browse(selectdIds):
+                idTemplate = productBrowse.product_tmpl_id.id
+                objBoms = objBrws.env['mrp.bom'].search([('product_tmpl_id', '=', idTemplate),
+                                                      ('type', '=', 'normal')])
+                if objBoms:
+                    raise UserError(_("Normal BoM for Part %r already exists." % (objBoms)))
+                lineMessaggesList = product_product_type_object.create_bom_from_ebom(productBrowse, 'normal', objBrws.summarize, migrate_custom_lines)
+                if lineMessaggesList:
+                    outMess = ''
+                    for mess in lineMessaggesList:
+                        outMess = outMess + '\n' + mess
+                    t_mess_obj = objBrws.env["plm.temporary.message"]
+                    t_mess_id = t_mess_obj.create({'name': outMess})
+                    return {'name': _('Result'),
+                            'view_type': 'form',
+                            "view_mode": 'form',
+                            'res_model': "plm.temporary.message",
+                            'res_id': t_mess_id.id,
+                            'type': 'ir.actions.act_window',
+                            'target': 'new',
+                            }
         return {}
 
 ProductTemporaryNormalBom()
