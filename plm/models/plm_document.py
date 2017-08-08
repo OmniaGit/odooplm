@@ -1105,6 +1105,16 @@ class PlmDocument(models.Model):
         return documentName + '-' + nextDocNum
 
     @api.model
+    def canBeSavedClient(self, documentValues={}):
+        docName = documentValues.get('name')
+        docRev = documentValues.get('revisionid')
+        for docBrws in self.search([('name', '=', docName),
+                                    ('revisionid', '=', docRev)
+                                    ]):
+            return docBrws.canBeSaved(False)
+        return True, _('Document %r with revision %r not present in Odoo.') % (docName, docRev)
+        
+    @api.model
     def canBeSaved(self, raiseError=False):
         """
         check if the document can be saved and raise exception in case is not possible
@@ -1121,7 +1131,7 @@ class PlmDocument(models.Model):
                 if raiseError:
                     raise UserError(msg)
         else:
-            msg = _("Document in check-In unable to save !")
+            msg = _("Document in check-In unable to save!")
             if raiseError:
                 raise UserError(msg)
         if len(msg) > 0:
@@ -1148,6 +1158,7 @@ class PlmDocument(models.Model):
                                 # 2d2d 3d3d 3d2d o niente
         self['DOCUMENT_DATE'] = None
         """
+        start = time.time()
         cPickleStructure, hostName, hostPws = arguments
         documentAttributes = {}
         documentRelations = {}
@@ -1183,7 +1194,7 @@ class PlmDocument(models.Model):
                 childRelations = documentRelations.get(parentDocumentId, [])
                 childRelations.append((documentId, relationAttributes.get('TYPE', '')))
                 if parentDocumentId:
-                    documentRelations[parentDocumentId] = childRelations
+                    documentRelations[parentDocumentId] = list(set(childRelations))
                 if parentProductId: # Case of part - assembly
                     if not documentId:
                         documentId = parentDocumentId
@@ -1202,49 +1213,63 @@ class PlmDocument(models.Model):
 
         # Save the document
         logging.info("Savind Document")
+        alreadyEvaluated = []
         for documentAttribute in documentAttributes.values():
             documentAttribute['TO_UPDATE'] = False
-            docId = False
+            docBrws = False
             for brwItem in self.search([('name', '=', documentAttribute.get('name')),
                                         ('revisionid', '=', documentAttribute.get('revisionid'))]):
+                if brwItem.id in alreadyEvaluated:
+                    docBrws = brwItem   # To skip creation
+                    documentAttribute['TO_UPDATE'] = False  # To skip same document preview/pdf uploading by the client
+                    break
                 if brwItem.state not in ['released', 'obsoleted']:
                     if brwItem.needUpdate():
                         brwItem.write(documentAttribute)
                         documentAttribute['TO_UPDATE'] = True
-                docId = brwItem
-            if not docId:
-                docId = self.create(documentAttribute)
-                docId.checkout(hostName, hostPws)
+                docBrws = brwItem
+                alreadyEvaluated.append(docBrws.id)
+            if not docBrws:
+                docBrws = self.create(documentAttribute)
+                alreadyEvaluated.append(docBrws.id)
+                docBrws.checkout(hostName, hostPws)
                 documentAttribute['TO_UPDATE'] = True
-            documentAttribute['id'] = docId.id
+            documentAttribute['id'] = docBrws.id
 
         # Save the product
         # Save product - document relation
         logging.info("Saving Product")
+        productsEvaluated = []
         productTemplate = self.env['product.product']
         for refId, productAttribute in productAttributes.items():
             linkedDocuments = set()
             for refDocId in productDocumentRelations.get(refId, []):
                 linkedDocuments.add((4, documentAttributes[refDocId].get('id', 0)))
-            prodId = False
+            prodBrws = False
             for brwItem in productTemplate.search([('engineering_code', '=', productAttribute.get('engineering_code')),
                                                    ('engineering_revision', '=', productAttribute.get('engineering_revision'))]):
+                if brwItem.id in productsEvaluated:
+                    prodBrws = brwItem
+                    break
                 if brwItem.state not in ['released', 'obsoleted']:
                     brwItem.write(productAttribute)
-                prodId = brwItem
+                prodBrws = brwItem
+                productsEvaluated.append(brwItem.id)
                 break
-            if not prodId:
+            if not prodBrws:
                 if not productAttribute.get('name', False):
                     productAttribute['name'] = productAttribute.get('engineering_code', False)
-                prodId = productTemplate.create(productAttribute)
-            prodId.linkeddocuments
+                prodBrws = productTemplate.create(productAttribute)
+                productsEvaluated.append(prodBrws.id)
+            prodBrws.linkeddocuments
             if linkedDocuments:
-                prodId.write({'linkeddocuments': list(linkedDocuments)})
-            productAttribute['id'] = prodId.id
+                prodBrws.write({'linkeddocuments': list(linkedDocuments)})
+            productAttribute['id'] = prodBrws.id
 
         # Save the document relation
         logging.info("Saving Document Relations")
         documentRelationTemplate = self.env['plm.document.relation']
+        createdDocRels = []
         for parentId, childrenRelations in documentRelations.items():
             trueParentId = documentAttributes[parentId].get('id', 0)
             itemFound = set()
@@ -1252,7 +1277,7 @@ class PlmDocument(models.Model):
                 found = False
                 for childId, relationType in childrenRelations:
                     trueChildId = documentAttributes.get(childId, {}).get('id', 0)
-                    if objBrw.parent_id == trueParentId and objBrw.child_id == trueChildId and objBrw.type == relationType:
+                    if objBrw.parent_id.id == trueParentId and objBrw.child_id.id == trueChildId and objBrw.link_kind == relationType:
                         found = True
                         itemFound.add((childId, relationType))
                         break
@@ -1260,9 +1285,13 @@ class PlmDocument(models.Model):
                     objBrw.unlink()
             for childId, relationType in set(childrenRelations).difference(itemFound):
                 trueChildId = documentAttributes.get(childId, {}).get('id', 0)
+                key = '%s_%s_%s' % (trueParentId, trueChildId, relationType)
+                if key in createdDocRels:
+                    continue
+                createdDocRels.append(key)
                 documentRelationTemplate.create({'parent_id': trueParentId,
                                                  'child_id': trueChildId,
-                                                 'type': relationType})
+                                                 'link_kind': relationType})
         # Save the product relation
         domain = [('state', 'in', ['installed', 'to upgrade', 'to remove']), ('name', '=', 'plm_engineering')]
         apps = self.env['ir.module.module'].sudo().search_read(domain, ['name'])
@@ -1289,12 +1318,15 @@ class PlmDocument(models.Model):
             # add rows
             for childId, documentId, relationAttributes in childRelations:
                 if not (childId and documentId):
-                    logging.warning("Bed relation request %r, %r" % (childId, documentId))
+                    logging.warning("Bad relation request %r, %r" % (childId, documentId))
                     continue
                 trueChildId = productAttributes[childId].get('id')
                 trueDocumentId = documentAttributes[documentId].get('id')
                 brwBom.addChildRow(trueChildId, trueDocumentId, relationAttributes, bomType)
-        return json.dumps(objStructure)
+        jsonify = json.dumps(objStructure)
+        end = time.time()
+        logging.debug("Time Spend For save structure is: %s" % (str(end - start)))
+        return jsonify
 
     @api.model
     def checkout(self, hostName, hostPws):
