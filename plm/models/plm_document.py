@@ -1176,6 +1176,7 @@ class PlmDocument(models.Model):
         def populateStructure(parentItem=False, structure={}):
             documentId = False
             productId = False
+            createBom = structure.get('CREATE_BOM', True)
             documentProperty = structure.get('DOCUMENT_ATTRIBUTES', False)
             if documentProperty and structure.get('FILE_PATH', False):
                 documentId = id(documentProperty)
@@ -1195,7 +1196,7 @@ class PlmDocument(models.Model):
                 childRelations.append((documentId, relationAttributes.get('TYPE', '')))
                 if parentDocumentId:
                     documentRelations[parentDocumentId] = list(set(childRelations))
-                if parentProductId: # Case of part - assembly
+                if parentProductId and createBom: # Case of part - assembly
                     if not documentId:
                         documentId = parentDocumentId
                     itemTuple = (productId, documentId, relationAttributes)
