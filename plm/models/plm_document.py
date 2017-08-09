@@ -1290,9 +1290,13 @@ class PlmDocument(models.Model):
                 if key in createdDocRels:
                     continue
                 createdDocRels.append(key)
-                documentRelationTemplate.create({'parent_id': trueParentId,
-                                                 'child_id': trueChildId,
-                                                 'link_kind': relationType})
+                try:
+                    documentRelationTemplate.create({'parent_id': trueParentId,
+                                                     'child_id': trueChildId,
+                                                     'link_kind': relationType})
+                except Exception, ex:
+                    logging.error(ex)
+                    raise ex
         # Save the product relation
         domain = [('state', 'in', ['installed', 'to upgrade', 'to remove']), ('name', '=', 'plm_engineering')]
         apps = self.env['ir.module.module'].sudo().search_read(domain, ['name'])
