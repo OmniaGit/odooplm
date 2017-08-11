@@ -1273,18 +1273,20 @@ class PlmDocument(models.Model):
         createdDocRels = []
         for parentId, childrenRelations in documentRelations.items():
             trueParentId = documentAttributes[parentId].get('id', 0)
-            itemFound = set()
             for objBrw in documentRelationTemplate.search([('parent_id', '=', trueParentId)]):
                 found = False
                 for childId, relationType in childrenRelations:
                     trueChildId = documentAttributes.get(childId, {}).get('id', 0)
                     if objBrw.parent_id.id == trueParentId and objBrw.child_id.id == trueChildId and objBrw.link_kind == relationType:
                         found = True
-                        itemFound.add((childId, relationType))
+                        key = '%s_%s_%s' % (trueParentId, trueChildId, relationType)
+                        if key in createdDocRels:
+                            continue
+                        createdDocRels.append(key)
                         break
-                if not found:
+                if not found:   # Line removed from previous save
                     objBrw.unlink()
-            for childId, relationType in set(childrenRelations).difference(itemFound):
+            for childId, relationType in childrenRelations:
                 trueChildId = documentAttributes.get(childId, {}).get('id', 0)
                 key = '%s_%s_%s' % (trueParentId, trueChildId, relationType)
                 if key in createdDocRels:
