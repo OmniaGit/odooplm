@@ -1034,13 +1034,33 @@ class PlmDocument(models.Model):
         listed_documents = []
         read_docs = []
         for oid in self.ids:
-            kinds = ['RfTree', 'LyTree']   # Get relations due to referred models
+            kinds = ['RfTree',
+                     'LyTree',
+                     '']   # Fix for new style document relations
             read_docs.extend(self._relateddocs(oid, kinds, listed_documents, False))
             read_docs.extend(self._relatedbydocs(oid, kinds, listed_documents, False))
-        documents = self.browse(read_docs)
-        for document in documents:
+        for document in self.browse(read_docs):
             related_documents.append([document.id, document.name, document.preview])
         return related_documents
+
+    @api.model
+    def GetRelatedDocsByAttrs(self, docPropsList=[]):
+        """
+            Extract documents related to current one(s) (layouts, referred models, etc.)
+        """
+        if not docPropsList:
+            return False
+        docProps = docPropsList[0]
+        docRev = docProps.get('revisionid', None)
+        if docRev is None:
+            logging.warning('Current document has not revisionid attribute %r.\n Cannot get related documents.' % (docProps))
+            return False
+        docName = docProps.get('name', '')
+        documentBrws = self.search([('name', '=', docName), ('revisionid', '=', docRev)])
+        if not documentBrws:
+            logging.warning('Unbale to find document %r with revision %r.\n Cannot get related documents.' % (docName, docRev))
+            return False
+        return documentBrws.GetRelatedDocs()
 
     @api.model
     def getServerTime(self, _unusedVal=False):
