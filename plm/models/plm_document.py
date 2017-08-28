@@ -413,7 +413,6 @@ class PlmDocument(models.Model):
         """
             create a new copy of the document
         """
-        defaults = {}
         exitValues = {}
         newID = self.copy(defaults)
         if newID is not None:
@@ -823,6 +822,7 @@ class PlmDocument(models.Model):
                                       ], 
                                      compute=_compute_document_type,
                                      string= _('Document Type'))
+    desc_modify = fields.Text(_('Modification Description'), default='')
 
     _sql_constraints = [
         ('name_unique', 'unique (name, revisionid)', 'File name has to be unique!')  # qui abbiamo la sicurezza dell'univocita del nome file
@@ -1280,9 +1280,10 @@ class PlmDocument(models.Model):
             if not prodBrws:
                 if not productAttribute.get('name', False):
                     productAttribute['name'] = productAttribute.get('engineering_code', False)
+                if not productAttribute.get('engineering_code', False):     # I could have a document without component, so not create product
+                    continue
                 prodBrws = productTemplate.create(productAttribute)
                 productsEvaluated.append(prodBrws.id)
-            prodBrws.linkeddocuments
             if linkedDocuments:
                 prodBrws.write({'linkeddocuments': list(linkedDocuments)})
             productAttribute['id'] = prodBrws.id
@@ -1379,6 +1380,33 @@ class PlmDocument(models.Model):
                                                        ('userid', '=', self.env.uid)])
         for _brw in checkoutIds:
             return True
+        return False
+
+    @api.multi
+    def getDocumentInfos(self):
+        '''
+            Document infos for clone/revision procedure
+        '''
+        return {'name': self.name or '',
+                'revisionid': self.revisionid,
+                'description': self.description or '',
+                'desc_modify': self.desc_modify or '',
+                'doc_type': self.document_type,
+                'datas_fname': self.datas_fname,
+                '_id': self.id,
+                'can_revise': self.canBeRevised(),
+                }
+
+    @api.model
+    def getCloneRevisionStructure(self, values=[]):
+        if not values:
+            return {}
+
+    @api.multi
+    def canBeRevised(self):
+        for docBrws in self:
+            if docBrws.state == 'released' and docBrws.ischecked_in():
+                return True
         return False
 
 PlmDocument()

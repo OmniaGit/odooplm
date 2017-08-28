@@ -31,6 +31,9 @@ from odoo.exceptions import UserError
 from odoo import osv
 from odoo import SUPERUSER_ID
 import odoo.tools as tools
+import copy
+import os
+from __builtin__ import False
 
 _logger = logging.getLogger(__name__)
 
@@ -127,6 +130,7 @@ class PlmComponent(models.Model):
                               default=0,
                               help=_("Assign value to the second characteristic."))
 
+    desc_modify = fields.Text(_('Modification Description'), default='')
     # Don't overload std_umc1, std_umc2, std_umc3 setting them related to std_description because odoo try to set value
     # of related fields and integration users doesn't have write permissions in std_description. The result is that
     # integration users can't create products if in changed values there is std_description
@@ -950,6 +954,218 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             for trans in transObj.browse(cr, uid, resIds):
                 return trans.value
         return ""
+
+    @api.model
+    def _getChildrenBomWithDocuments(self, component, level=0, currlevel=0):
+        """
+            Return a flat list of each child, listed once, in a Bom ( level = 0 one level only, level = 1 all levels)
+        """
+        result = []
+        bufferdata = []
+        if level == 0 and currlevel > 1:
+            return bufferdata
+        for bomid in component.product_tmpl_id.bom_ids: # TODO: Bom type??
+            for bomline in bomid.bom_line_ids:
+                levelDict = {}
+                prodBrws = bomline.product_id
+                levelDict['root_props'] = prodBrws.getComponentInfos()
+                levelDict['documents'] = self.computeLikedDocuments(prodBrws)
+                levelDict['bom'] = self._getChildrenBom(bomline.product_id, level, currlevel + 1)
+                bufferdata.append(levelDict)
+            break
+        result.extend(bufferdata)
+        return list(set(result))
+
+    def computeLikedDocuments(self, prodBrws):
+        docList = []
+        compInfos = prodBrws.getComponentInfos()
+        for docBrws in prodBrws.linkeddocuments:
+            docList.append({'component': compInfos, 'document': docBrws.getDocumentInfos()})
+        return docList
+
+    def getComponentInfos(self):
+        return {'engineering_code': self.engineering_code or '',
+                'engineering_revision': self.engineering_revision,
+                'description': self.description or '',
+                'desc_modify': self.desc_modify or '',    # To be created
+                'name': self.name,
+                '_id': self.id,
+                'can_revise': self.canBeRevised(),
+                }
+
+    @api.model
+    def getCloneRevisionStructure(self, values=[]):
+        '''
+            out = {
+                'root_props': {},
+                'documents': [],
+                'bom': [
+                    {
+                    'documents': [],
+                    'bom': []
+                    },
+                ]
+                }
+        '''
+            
+        def computeBomAllLevels(prodBrws):
+            return prodBrws._getChildrenBomWithDocuments(prodBrws, level=1)
+
+        def computeBomOneLevel(prodBrws):
+            return prodBrws._getChildrenBomWithDocuments(prodBrws, level=0)
+
+        if not values:
+            return {}
+        componentDict = values[0]
+        computeType = values[1] # Possible values = 'no-bom' / 'bom-all-levels' / 'bom-one-level'
+        eng_code = componentDict.get('engineering_code', '')
+        eng_rev = componentDict.get('engineering_revision', None)
+        if not eng_code:
+            logging.warning('No engineering code passed by the client %r' % (componentDict))
+            return {}
+        if eng_rev is None:
+            logging.warning('No engineering revision passed by the client %r' % (componentDict))
+            return {}
+        componentId = componentDict.get('_id', None)
+        if not componentId:
+            prodBrws = self.search([('engineering_code', '=', eng_code),
+                                    ('engineering_revision', '=', eng_rev)])
+        else:
+            prodBrws = self.browse(componentId)
+        if not prodBrws:
+            logging.warning('No component found for arguments %r' % (componentDict))
+            return {}
+        if computeType == 'no-bom':
+            rootProps = prodBrws.getComponentInfos()
+            rootProps['can_revise'] = True   # Because cames from previous new revision. So it can be revised
+            return {
+                'root_props': rootProps,
+                'documents': self.computeLikedDocuments(prodBrws),
+                'bom': [],
+                }
+        elif computeType == 'bom-all-levels':
+            return computeBomAllLevels(prodBrws)
+        elif computeType == 'bom-one-level':
+            return computeBomOneLevel(prodBrws)
+        else:
+            logging.warning('Unable to find computation type %r' % (componentDict))
+            return {}
+        return {}
+
+    @api.multi
+    def canBeRevised(self):
+        for compBrws in self:
+            if compBrws.state == 'released':
+                return True
+        return False
+        
+    @api.model
+    def reviseCompAndDoc(self, elementsToClone):
+        outList = []
+        docEnv = self.env['plm.document']
+        componentFieldsToRead = copy.deepcopy(elementsToClone[1])
+        documentFieldsToRead = copy.deepcopy(elementsToClone[2])
+        hostName = elementsToClone[3]
+        hostPws = elementsToClone[4]
+
+        def evalCompNode(rootnode, root=False):
+            rootProps = rootnode.get('root_props', {})
+            childrenDocuments = rootnode.get('documents', [])
+            compId = rootProps.get('_id')
+            revisedCompBrws = None
+            if root:    # Root component has already been revised in the client
+                revisedCompBrws = self.browse(compId)
+            else:
+                if not compId or not revisedCompBrws:  # Non root components have a wrong id inside, so I need to search
+                    oldCompBrws = self.search([('enginering_code', '=', rootProps.get('engineering_code')),
+                                            ('engineering_revision', '=', rootProps.get('engineering_revision'))])
+                if not oldCompBrws:
+                    raise Exception(_('Unable to complete new revision because component with properties %r not found') % (rootProps))
+                newComponentId, _engineering_revision = oldCompBrws.NewRevision()
+                revisedCompBrws = self.browse(newComponentId)
+                revisedCompBrws.write({'linkeddocuments': [(5, 0, 0)]})
+            reviseChildDocuments(revisedCompBrws, childrenDocuments)
+            
+        def reviseChildDocuments(revisedCompBrws, childrenDocuments):
+            revisedCompBrws.write({'linkeddocuments': [(5, 0, 0)]}) # Clean copied links
+            for childDocDict in childrenDocuments:
+                docInfos = childDocDict.get('document', {})
+                docName = docInfos.get('name', '')
+                docRevision = docInfos.get('revisionid', None)
+                docBrws = docEnv.search([('name', '=', docName),
+                                         ('revisionid', '=', docRevision)])
+                if docBrws:
+                    revisedDocId, _newDocIndex = docBrws.NewRevision()
+                    newDocBrws = docEnv.browse(revisedDocId)
+                    revisedCompBrws.write({'linkeddocuments': [(4, revisedDocId, False)]})
+                    if newDocBrws.document_type.upper() == 'OTHER':
+                        continue
+                    newDocBrws.checkout(hostName, hostPws)
+                    outList.append({'doc_vals': newDocBrws.getDocumentInfos(),
+                                    'comp_vals': revisedCompBrws.getComponentInfos()})
+                else:
+                    logging.warning('unable to find document to revise %r' % (childDocDict))
+            
+        rootNodeDict = elementsToClone[0]
+        evalCompNode(rootNodeDict, root=True)
+        return outList
+        
+        
+    @api.model
+    def cloneCompAndDoc(self, elementsToClone):
+        if not elementsToClone:
+            return []
+        listToClone = elementsToClone[0]
+        componentFieldsToRead = copy.deepcopy(elementsToClone[1])
+        documentFieldsToRead = copy.deepcopy(elementsToClone[2])
+        hostName = elementsToClone[3]
+        hostPws = elementsToClone[4]
+        out = []
+        docEnv = self.env['plm.document']
+        isRoot = True
+        for compId, docId in listToClone:
+            if isRoot:  # Skip cloning of root component because Edit Parts has already done it
+                isRoot = False
+                continue
+            if not docId:
+                raise Exception(_('Unable to clone because there is a file without document id'))
+            oldDocBrws = docEnv.browse(docId)
+            if compId:
+                compBrws = self.browse(compId)
+                startingComputeName = compBrws.engineering_code
+            else:
+                startingComputeName = oldDocBrws.name
+            
+            _filename, file_extension = os.path.splitext(oldDocBrws.datas_fname)
+            newDocName = docEnv.GetNextDocumentName(startingComputeName)
+            docDefaultVals = {
+                'revisionid': 0,
+                'name': newDocName,
+                'datas_fname': '%s%s' % (newDocName, file_extension),
+                'checkout_user': self.env.uid,
+                }
+            newDocVals = oldDocBrws.Clone(docDefaultVals)
+            newDocId = newDocVals.get('_id')
+            newDocBrws = docEnv.browse(newDocId)
+            
+            if newDocBrws.document_type.upper() != 'OTHER': # Skip update properties of other documents. Only CAD documents has to be updated
+                newDocBrws.checkout(hostName, hostPws)  # Check out only non CAD files because next time file will be need to be revised workflow can go on
+                documentFieldsToRead.append('datas_fname')
+                outdocInfos = newDocBrws.read(documentFieldsToRead)[0]
+                outdocInfos['old_file_name'] = oldDocBrws.datas_fname
+                outdocInfos['check_out_by_me'] = oldDocBrws._is_checkedout_for_me()
+                compBrws = self.browse(compId)
+                out.append({
+                    'comp_id': compId,
+                    'comp_vals': compBrws.read(componentFieldsToRead)[0],
+                    'doc_id': newDocId,
+                    'doc_vals': outdocInfos,
+                    })
+            newDocBrws.write({'linkedcomponents': [(5, 0, 0)]}) # Clean copied links
+            if compId: # Add link to component
+                compBrws.write({'linkeddocuments': [(4, newDocId, False)]})  
+
+        return out
 
 PlmComponent()
 

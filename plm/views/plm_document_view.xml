@@ -95,6 +95,8 @@
 	                <page string="Notes" name="page_notes">
 	                	<label for="description" class="oe_edit_only"/>	
 	                    <field colspan="4" name="description" nolabel="1"		attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+	                	<label for="desc_modify" class="oe_edit_only"/>	
+	                    <field colspan="4" name="desc_modify" nolabel="1"		attrs="{'readonly':[('state','in',['released','obsoleted'])], 'invisible': [('revisionid', '=', 0)]}"/>
 	                </page>
 	                </notebook>
                 </sheet>
