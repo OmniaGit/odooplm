@@ -78,14 +78,14 @@ Supported Editors :
             'security/base_plm_security.xml',
             # views
             'views/import_stylesheet.xml',
-            'views/mrp_extension.xml',
+            #'views/mrp_extension.xml',
             'views/plm_backupdoc_view.xml',
             'views/plm_checkout_view.xml',
             'views/plm_config_settings.xml',
             'views/plm_description_view.xml',
             'views/plm_document_relations.xml',
             'views/plm_document_view.xml',
-            'views/plm_dashboard_view.xml',     # After plm_document_view.xml
+            #'views/plm_dashboard_view.xml',     # After plm_document_view.xml
             'views/plm_finishing_view.xml',
             'views/plm_material_view.xml',
             'views/product_product_extension_view.xml',
@@ -93,15 +93,16 @@ Supported Editors :
             'views/sequence.xml',
             'views/menu.xml',
             # WorkFlows
-            'views/workflow/plm_document_workflow.xml',
-            'views/workflow/product_product_workflow.xml',
+            #'views/workflow/plm_document_workflow.xml',
+            #'views/workflow/product_product_workflow.xml',
             # Report
             'report/bom_structure_report.xml',
             'report/bom_structure.xml',
-            'report/checkout_report.xml',
-            'report/component_report.xml',
-            'report/document_report.xml',
-            'views/product_product_kanban.xml'],  # After component_report.xml
+            #'report/checkout_report.xml',
+            #'report/component_report.xml',
+            #'report/document_report.xml',
+            #'views/product_product_kanban.xml'
+            ],  # After component_report.xml
 
     'demo': [],
     'test': [],

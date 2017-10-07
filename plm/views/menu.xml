@@ -3,17 +3,16 @@
 	<data> 
 
     <menuitem 
-	id="plm_menu" 
-	name="PLM Module" 
-	icon="terp-stock" 
-    web_icon="plm,static/src/img/PLMmodule-hover.png" 
-    web_icon_hover="plm,static/src/img/PLMmodule-hover.png" 
-	action = "plm.open_board_plm_manager"  
-    />
-    
-    
+		id="plm_menu" 
+		name="PLM Module" 
+		icon="terp-stock" 
+    	web_icon="plm,static/src/img/PLMmodule-hover.png" 
+    	web_icon_hover="plm,static/src/img/PLMmodule-hover.png" 
+		
+    	/>
+    <!-- action = "plm.open_board_plm_manager"  -->
     <!-- Parent menu "PLM Module"  -->
-
+<!--
     <menuitem 
     action="plm.open_board_plm_manager" 
     id="plm_dashboard_menu" 
@@ -21,7 +20,7 @@
 	sequence="1" 
 	groups="plm.group_plm_integrationuser"
     name="Dashboard" />
-    	
+    	-->
 	<menuitem 	
 	id		="plm_component_menu_view" 
 	name	="Components" 
@@ -132,9 +131,9 @@
     
     <menuitem 
     name="Search on Normal Bill of Materials" 
-    action="plm_action_normal_form" 
+     
     id="menu_relation_normal" 
     parent="plm.plm_menu_relation" /> 
-    
+    <!--action="plm_action_normal_form"-->
 	</data>
 </openerp>
