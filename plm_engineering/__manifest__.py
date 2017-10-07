@@ -20,21 +20,29 @@
 #
 ##############################################################################
 {
-    'name': 'PLM Web Revision',
+    'name': 'PLM Engineering',
     'version': '1.1',
     'author': 'OmniaSolutions',
     'website': 'http://www.omniasolutions.eu',
     'category': 'Product Lifecycle Management',
     'sequence': 15,
-    'summary': 'PLM Revision from web side',
+    'summary': '',
     'images': [],
     'depends': ['plm'],
-    'description': """Allow to create new revision from WEB""",
-    'data': ['views/component_view_extension.xml',
-             'views/plm_document_revision.xml',
-             'security/base_plm_web_rev_security.xml',
-             ],
-    'installable': True,
+    'description': """
+Allow to use engineering boms
+==============================================
+    """,
+    'data': [
+            'views/plm_description.xml',
+            'views/mrp_bom.xml',
+            'views/product_product_kanban.xml',
+            'views/menu.xml',
+            'views/product_product.xml',
+    ],
+    'demo': [],
+    'test': [],
+    'installable': False,
     'application': False,
     'auto_install': False,
 }

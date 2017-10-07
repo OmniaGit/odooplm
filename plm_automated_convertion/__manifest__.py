@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution    
-#    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
+#    Copyright (C) 2016-2016 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -20,31 +20,27 @@
 #
 ##############################################################################
 {
-    'name': 'PLM Spare',
+    'name': 'Product Lifecycle Management Batch conversion',
     'version': '1.1',
     'author': 'OmniaSolutions',
     'website': 'http://www.omniasolutions.eu',
     'category': 'Product Lifecycle Management',
     'sequence': 15,
-    'summary': '',
-    'images': [],
+    'summary': 'PLM Integration with main CAD editors batch conversion tool',
     'depends': ['plm'],
     'description': """
-Add spare BOM and Spare Parts Manual
+Manage Product Lifecycle Management in OpenERP
 ==============================================
+Batch conversion tool
+Improve the plm module adding feature for converting cad files in different formats using a cad server machine
+in order to properly set this module you need a cad server machine.
+for more information send an e mail at info@omniasolutions.eu
     """,
-    'data': [
-            'report/bom_structure_report.xml',
-            'report/product_product_report.xml',
-
-            'views/plm_description_extension.xml',
-            'views/sparebom_view.xml',
-            'views/plm_document_view.xml',
-            'views/product_product_kanban.xml',
-    ],
+    'data': ['view/plm_component_action_extended.xml',
+             'view/data.xml'],
     'demo': [],
     'test': [],
-    'installable': True,
+    'installable': False,
     'application': False,
     'auto_install': False,
 }

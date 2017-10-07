@@ -20,7 +20,7 @@
 #
 ##############################################################################
 {
-    'name': 'PLM Compare Bom',
+    'name': 'PLM Spare',
     'version': '1.1',
     'author': 'OmniaSolutions',
     'website': 'http://www.omniasolutions.eu',
@@ -30,15 +30,21 @@
     'images': [],
     'depends': ['plm'],
     'description': """
-Allow to compare two boms
+Add spare BOM and Spare Parts Manual
 ==============================================
     """,
     'data': [
-            'views/compare_bom_view.xml',
+            'report/bom_structure_report.xml',
+            'report/product_product_report.xml',
+
+            'views/plm_description_extension.xml',
+            'views/sparebom_view.xml',
+            'views/plm_document_view.xml',
+            'views/product_product_kanban.xml',
     ],
     'demo': [],
     'test': [],
-    'installable': True,
+    'installable': False,
     'application': False,
     'auto_install': False,
 }

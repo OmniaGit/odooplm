@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution    
-#    Copyright (C) 2016-2016 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
+#    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -20,27 +20,25 @@
 #
 ##############################################################################
 {
-    'name': 'Product Lifecycle Management Batch conversion',
+    'name': 'Plm Report Language Helper',
     'version': '1.1',
     'author': 'OmniaSolutions',
     'website': 'http://www.omniasolutions.eu',
     'category': 'Product Lifecycle Management',
     'sequence': 15,
-    'summary': 'PLM Integration with main CAD editors batch conversion tool',
-    'depends': ['plm'],
-    'description': """
-Manage Product Lifecycle Management in OpenERP
-==============================================
-Batch conversion tool
-Improve the plm module adding feature for converting cad files in different formats using a cad server machine
-in order to properly set this module you need a cad server machine.
-for more information send an e mail at info@omniasolutions.eu
+    'summary': '',
+    'images': [],
+    'depends': ['plm', 'plm_spare'],
+    'description': """Manage multilanguage PLM reports
     """,
-    'data': ['view/plm_component_action_extended.xml',
-             'view/data.xml'],
-    'demo': [],
-    'test': [],
-    'installable': True,
+    'data': [
+            'views/plm_component_action_extended.xml'
+       ],
+    'demo': [
+        ],
+    'test': [
+        ],
+    'installable': False,
     'application': False,
     'auto_install': False,
 }

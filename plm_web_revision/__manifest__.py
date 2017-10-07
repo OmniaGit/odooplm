@@ -20,25 +20,21 @@
 #
 ##############################################################################
 {
-    'name': 'Plm Report Language Helper',
+    'name': 'PLM Web Revision',
     'version': '1.1',
     'author': 'OmniaSolutions',
     'website': 'http://www.omniasolutions.eu',
     'category': 'Product Lifecycle Management',
     'sequence': 15,
-    'summary': '',
+    'summary': 'PLM Revision from web side',
     'images': [],
-    'depends': ['plm', 'plm_spare'],
-    'description': """Manage multilanguage PLM reports
-    """,
-    'data': [
-            'views/plm_component_action_extended.xml'
-       ],
-    'demo': [
-        ],
-    'test': [
-        ],
-    'installable': True,
+    'depends': ['plm'],
+    'description': """Allow to create new revision from WEB""",
+    'data': ['views/component_view_extension.xml',
+             'views/plm_document_revision.xml',
+             'security/base_plm_web_rev_security.xml',
+             ],
+    'installable': False,
     'application': False,
     'auto_install': False,
 }

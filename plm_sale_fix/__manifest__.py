@@ -1,8 +1,8 @@
-# -*- coding: utf-8 -*-
+# -*- encoding: utf-8 -*-
 ##############################################################################
 #
-#    OmniaSolutions, Your own solutions
-#    Copyright (C) 2010 OmniaSolutions (<http://omniasolutions.eu>). All Rights Reserved
+#    OmniaSolutions, Open Source Management Solution    
+#    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -19,11 +19,27 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-#import component_report
-#import document_report
-#import checkout_report
-#import bom_structure
+{
+    'name': 'Plm Sale Fix',
+    'version': '1.1',
+    'author': 'OmniaSolutions',
+    'website': 'http://www.omniasolutions.eu',
+    'category': 'Product Lifecycle Management',
+    'sequence': 15,
+    'summary': '',
+    'images': [],
+    'depends': ['plm', 'sale'],
+    'description': """
+    """,
+    'data': [
+            # security
+            'security/base_plm_security.xml',],  # After component_report.xml
 
+    'demo': [],
+    'test': [],
+    'installable': False,
+    'application': False,
+    'auto_install': False,
+}
 
-
-#import new_reports   # To Delete when reports are working
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

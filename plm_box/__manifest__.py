@@ -17,28 +17,31 @@
 #
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#http://www.spamhaus.org/query/bl?ip=93.66.161.145
+#
 ##############################################################################
 {
-    'name': 'PLM Product Description Language Helper',
+    'name': 'Plm Box',
     'version': '1.1',
     'author': 'OmniaSolutions',
     'website': 'http://www.omniasolutions.eu',
-    'category': 'Product Lifecycle Management',
-    'sequence': 15,
-    'summary': 'PLM Product Description Language Helper',
-    'images': [],
-    'depends': ['plm'],
-    'description': """ """,
-    'data': [
-             'views/translation.xml',
-             'views/plm_description_extension.xml',
-       ],
-    'demo': [
-        ],
-    'test': [
-        ],
-    'installable': True,
+    'category': 'Custom',
+    'sequence': 1,
+    'summary': '',
+    'depends': ['base',
+                'plm',
+                'account',  # to work with plm box entities
+                'project',  # to work with plm box entities
+                'sale',     # to work with plm box entities
+                ],
+    'description': '',
+    'data': ['views/non_cad_doc.xml',
+             'views/box_object_rel.xml',
+             'views/plm_box_sequence_data.xml',
+             'views/boxWorkflow.xml',
+             ],
+    'demo': [],
+    'test': [],
+    'installable': False,
     'application': False,
     'auto_install': False,
 }

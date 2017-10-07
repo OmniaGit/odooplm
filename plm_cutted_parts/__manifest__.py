@@ -20,7 +20,7 @@
 #
 ##############################################################################
 {
-    'name': 'Plm Pack and Go',
+    'name': 'PLM Cutted Parts',
     'version': '1.1',
     'author': 'OmniaSolutions',
     'website': 'http://www.omniasolutions.eu',
@@ -28,20 +28,19 @@
     'sequence': 15,
     'summary': '',
     'images': [],
-    'depends': ['plm'],
+    'depends': ['plm', 'plm_engineering'],
     'description': """
-Download BOM structure files from a component
+Manage bom explosion for cutted parts
 ==============================================
     """,
-    'data': [
-             'views/plm_component_action_extended.xml',
-             'views/ir_parameters.xml',
-       ],
-    'demo': [
-        ],
-    'test': [
-        ],
-    'installable': True,
+    'data': ['views/product.xml',
+             'views/mrp_bom_lines.xml',
+             'report/mrp_bom.xml',
+             'security/base_plm_security.xml',
+             ],
+    'demo': [],
+    'test': [],
+    'installable': False,
     'application': False,
     'auto_install': False,
 }

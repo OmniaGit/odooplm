@@ -32,7 +32,7 @@ from operator import itemgetter
 from odoo import _
 import odoo
 from odoo.addons.plm.report.book_collector import BookCollector
-from odoo.report.render import render
+#from odoo.report.render import render
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 import time
 import StringIO
@@ -72,15 +72,15 @@ def getDocumentStream(docRepository, objDoc):
     return content
 
 
-class external_pdf(render):
-    """ Generate External PDF """
-    def __init__(self, pdf):
-        render.__init__(self)
-        self.pdf = pdf
-        self.output_type = 'pdf'
-
-    def _render(self):
-        return self.pdf
+# class external_pdf(render):
+#     """ Generate External PDF """
+#     def __init__(self, pdf):
+#         render.__init__(self)
+#         self.pdf = pdf
+#         self.output_type = 'pdf'
+# 
+#     def _render(self):
+#         return self.pdf
 
 
 def _translate(value):

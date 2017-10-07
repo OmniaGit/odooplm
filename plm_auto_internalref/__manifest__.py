@@ -20,28 +20,25 @@
 #
 ##############################################################################
 {
-    'name': 'Plm Box',
+    'name': 'PLM Auto Internal Reference',
     'version': '1.1',
     'author': 'OmniaSolutions',
     'website': 'http://www.omniasolutions.eu',
-    'category': 'Custom',
-    'sequence': 1,
+    'category': 'Product Lifecycle Management',
+    'sequence': 15,
     'summary': '',
-    'depends': ['base',
-                'plm',
-                'account',  # to work with plm box entities
-                'project',  # to work with plm box entities
-                'sale',     # to work with plm box entities
-                ],
-    'description': '',
-    'data': ['views/non_cad_doc.xml',
-             'views/box_object_rel.xml',
-             'views/plm_box_sequence_data.xml',
-             'views/boxWorkflow.xml',
-             ],
+    'images': [],
+    'depends': ['plm'],
+    'description': """
+Allow to compute boms due to date
+==============================================
+    """,
+    'data': [
+            
+    ],
     'demo': [],
     'test': [],
-    'installable': True,
+    'installable': False,
     'application': False,
     'auto_install': False,
 }

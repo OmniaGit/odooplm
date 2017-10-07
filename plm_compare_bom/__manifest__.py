@@ -20,7 +20,7 @@
 #
 ##############################################################################
 {
-    'name': 'Plm Sale Fix',
+    'name': 'PLM Compare Bom',
     'version': '1.1',
     'author': 'OmniaSolutions',
     'website': 'http://www.omniasolutions.eu',
@@ -28,16 +28,17 @@
     'sequence': 15,
     'summary': '',
     'images': [],
-    'depends': ['plm', 'sale'],
+    'depends': ['plm'],
     'description': """
+Allow to compare two boms
+==============================================
     """,
     'data': [
-            # security
-            'security/base_plm_security.xml',],  # After component_report.xml
-
+            'views/compare_bom_view.xml',
+    ],
     'demo': [],
     'test': [],
-    'installable': True,
+    'installable': False,
     'application': False,
     'auto_install': False,
 }

@@ -20,7 +20,7 @@
 #
 ##############################################################################
 {
-    'name': 'PLM Auto Internal Reference',
+    'name': 'Plm Pack and Go',
     'version': '1.1',
     'author': 'OmniaSolutions',
     'website': 'http://www.omniasolutions.eu',
@@ -30,15 +30,18 @@
     'images': [],
     'depends': ['plm'],
     'description': """
-Allow to compute boms due to date
+Download BOM structure files from a component
 ==============================================
     """,
     'data': [
-            
-    ],
-    'demo': [],
-    'test': [],
-    'installable': True,
+             'views/plm_component_action_extended.xml',
+             'views/ir_parameters.xml',
+       ],
+    'demo': [
+        ],
+    'test': [
+        ],
+    'installable': False,
     'application': False,
     'auto_install': False,
 }

@@ -20,7 +20,7 @@
 #
 ##############################################################################
 {
-    'name': 'PLM Cutted Parts',
+    'name': 'PLM Automate Normal Bom',
     'version': '1.1',
     'author': 'OmniaSolutions',
     'website': 'http://www.omniasolutions.eu',
@@ -30,17 +30,15 @@
     'images': [],
     'depends': ['plm', 'plm_engineering'],
     'description': """
-Manage bom explosion for cutted parts
+Allow to create normal boms if not exists and product are released.
 ==============================================
     """,
-    'data': ['views/product.xml',
-             'views/mrp_bom_lines.xml',
-             'report/mrp_bom.xml',
-             'security/base_plm_security.xml',
-             ],
+    'data': [
+            'views/settings.xml',
+    ],
     'demo': [],
     'test': [],
-    'installable': True,
+    'installable': False,
     'application': False,
     'auto_install': False,
 }

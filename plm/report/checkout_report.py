@@ -23,7 +23,7 @@ import StringIO
 import base64
 import logging
 
-from odoo.report.render import render
+#from odoo.report.render import render
 from odoo.report.interface import report_int
 import odoo
 
@@ -34,17 +34,17 @@ except:
     from pyPdf import PdfFileWriter, PdfFileReader
 
 
-class external_pdf(render):
-
-    """ Generate External PDF """
-
-    def __init__(self, pdf):
-        render.__init__(self)
-        self.pdf = pdf
-        self.output_type = 'pdf'
-
-    def _render(self):
-        return self.pdf
+# class external_pdf(render):
+# 
+#     """ Generate External PDF """
+# 
+#     def __init__(self, pdf):
+#         render.__init__(self)
+#         self.pdf = pdf
+#         self.output_type = 'pdf'
+# 
+#     def _render(self):
+#         return self.pdf
 
 
 class checkout_custom_report(report_int):
