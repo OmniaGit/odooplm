@@ -40,4 +40,5 @@ class ResUsers(models.Model):
     custom_procedure = fields.Binary(string=_('Client CustomProcedure'))
     custom_procedure_fname = fields.Char(_("New File name"))
 
+
 ResUsers()

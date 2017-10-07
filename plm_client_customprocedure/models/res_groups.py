@@ -26,11 +26,11 @@ Created on Apr 19, 2017
 @author: daniel
 '''
 
+import logging
 from odoo import models
 from odoo import fields
 from odoo import api
 from odoo import _
-import logging
 
 
 class ResGroups(models.Model):
