@@ -130,10 +130,10 @@
 	<!-- Parent menu "Component Relations" -->
     
     <menuitem 
-    name="Search on Normal Bill of Materials" 
-     
-    id="menu_relation_normal" 
-    parent="plm.plm_menu_relation" /> 
-    <!--action="plm_action_normal_form"-->
+    	name="Search on Normal Bill of Materials" 
+    	id="menu_relation_normal" 
+    	parent="plm.plm_menu_relation"  
+    	action="plm_action_normal_form"
+    	/>
 	</data>
 </openerp>
