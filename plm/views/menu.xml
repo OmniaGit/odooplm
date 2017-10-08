@@ -6,8 +6,8 @@
 		id="plm_menu" 
 		name="PLM Module" 
 		icon="terp-stock" 
-    	web_icon="plm,static/src/img/PLMmodule-hover.png" 
-    	web_icon_hover="plm,static/src/img/PLMmodule-hover.png" 
+    	web_icon="plm,static/src/img/PLMmodule.png" 
+    	web_icon_hover="plm,static/src/img/PLMmodule-hoover.png" 
 		
     	/>
     <!-- action = "plm.open_board_plm_manager"  -->

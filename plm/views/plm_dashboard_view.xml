@@ -27,7 +27,7 @@
                 </graph>
             </field>
     </record>
-        
+ 
     <record model="ir.ui.view" id="view_file_month_all">
             <field name="name">report.plm_document.user.graph</field>
             <field name="model">report.plm_document.file</field>
@@ -47,14 +47,14 @@
             <field name="view_type">form</field>
             <field name="view_mode">graph</field>
         </record>
+        <!--
         <record model="ir.actions.act_window" id="action_view_component_status_graph">
             <field name="name">Components Status</field>
             <field name="res_model">product.template</field>
             <field name="view_id" ref="view_component_status_graph"></field>
             <field name="view_type">form</field>
             <field name="view_mode">graph</field>
-        </record>
-        
+        </record>-->
         <record model="ir.actions.act_window" id="action_view_component_status">
             <field name="name">Component Status</field>
             <field name="res_model">report.plmcomponent</field>
@@ -142,11 +142,7 @@
                                 	
                         </column>
                      	<column>
-                            <action string="Component Status"
-                                	name="%(action_view_component_status_graph)d"
-                                	domain="[('engineering_code', '!=', '')]"
-                                	view_mode="graph"
-                                	groups="plm.group_plm_admin"/>  
+
                             <action string="My Component Status"
                                 	name="%(action_view_component_status)d"
                                 	view_mode="tree"/>
@@ -156,7 +152,13 @@
                  </form>
              </field>
          </record>
-
+                     	<!-- to-11
+                            <action string="Component Status"
+                                	name="%(action_view_component_status_graph)d"
+                                	domain="[('engineering_code', '!=', '')]"
+                                	view_mode="graph"
+                                	groups="plm.group_plm_admin"/>  
+                            -->
         <record model="ir.actions.act_window" id="open_board_plm_manager">
              <field name="name">PLM Dashboard</field>
              <field name="res_model">board.board</field>

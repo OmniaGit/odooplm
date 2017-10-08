@@ -75,7 +75,9 @@
 	                <button name="confirm" states="draft" 		string="Confirm Component" type="workflow" 	class="oe_highlight"/>
 	                <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,released" statusbar_colors='{"undermodify":"red","obsoleted":"red"}' />
 	            </header>
+	           	
 	           	<sheet>
+	           
                 <div name="button_box" class="oe_button_box">
  					<button class="oe_stat_button" name="open_boms" type="object"
                         attrs="{'invisible':[('type', 'not in', ['product', 'consu'])]}" icon="fa-flask">
@@ -100,13 +102,14 @@
            			<field name="description" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
 	                <field name="desc_modify" attrs="{'readonly':[('state','in',['released','obsoleted'])], 'invisible': [('engineering_revision', '=', 0)]}"/>
            		</group>
+           			
 
 	    		<notebook colspan="6" col="6">
 	    			<page name="techincal_infos" string="Technical Infos">
 	            		<group colspan="4" col="4" name="TechnicalInfos">
 	           				<field name="tmp_material" 	attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
 	         				<field name="tmp_surface" 	attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
-	             			<field name="weight"		attrs="{'readonly':[('state','in',['released','obsoleted'])]}" digits="(14, 3)"  	/>
+	             			<field name="weight"		attrs="{'readonly':[('state','in',['released','obsoleted'])]}" digits="[14,3]" />
 	             			<field name="uom_id" 		attrs="{'readonly':[('state','in',['released','obsoleted'])]}" />
                             <field name="uom_po_id" 	attrs="{'readonly':[('state','in',['released','obsoleted'])]}" groups="base.group_extended"/>
 	         			</group>
@@ -119,6 +122,7 @@
 					        <field name="std_value3" 	attrs="{'readonly':[('std_umc3','=',False),('state','in',['released','obsoleted'])]}"/>
 					    </group>
 	    			</page>
+	    			
 	    			<page string="TitleBlock Informations"> 
 	    				<group name="TBlock">
 	               			<field name="engineering_material" 	attrs="{'readonly':[('state','in',['released','obsoleted'])]}" colspan="2"/>
@@ -133,8 +137,10 @@
 	    					<field name="linkeddocuments" nolabel="1"/>
         				</group>	
 	    			</page>	
+	    			
 	    		</notebook> 
-	    	</sheet> 	
+	    		
+	    	</sheet> 
 	    	<div class="oe_chatter">
 				<field name="message_follower_ids" widget="mail_followers" modifiers="{}"/>
 				<field name="message_ids" widget="mail_thread" modifiers="{}"/>
