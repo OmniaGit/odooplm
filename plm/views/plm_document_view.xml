@@ -10,18 +10,21 @@
         <field name="arch" type="xml">
             <form string="Document"  version="7.0">
                <header>
-                    <button name="release" 
+                    <button name="action_release" 
                     		states="confirmed" 
                     		string="Release Document" 
                     		class="oe_highlight"  
+                    		type="object"
                     		attrs="{'invisible': ['|',('is_checkout','=',True)]}"
                     	/>
-                    <button name="correct" 
+                    <button name="action_reactivate" 
                     		states="confirmed" 
+                    		type="object"
                     		string="Correct Document" 
                     	/> 
-                    <button name="confirm" 
+                    <button name="action_confirm" 
                     		states="draft" 
+                    		type="object"
                     		string="Confirm Document" 
                     		class="oe_highlight"  
                     		attrs="{'invisible': ['|',('is_checkout','=',True)]}"

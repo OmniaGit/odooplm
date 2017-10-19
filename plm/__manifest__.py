@@ -92,9 +92,6 @@ Supported Editors :
             'views/product_template.xml',
             'views/sequence.xml',
             'views/menu.xml',
-            # WorkFlows
-            #'views/workflow/plm_document_workflow.xml',
-            #'views/workflow/product_product_workflow.xml',
             # Report
             'report/bom_structure_report.xml',
             'report/bom_structure.xml',
