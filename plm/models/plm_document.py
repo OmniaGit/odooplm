@@ -1125,38 +1125,49 @@ class PlmDocument(models.Model):
         return documentName + '-' + nextDocNum
 
     @api.model
-    def canBeSavedClient(self, documentValues={}):
+    def canBeSavedClient(self, documentValues={}, returnCode=False):
         docName = documentValues.get('name')
         docRev = documentValues.get('revisionid')
         for docBrws in self.search([('name', '=', docName),
                                     ('revisionid', '=', docRev)
                                     ]):
-            return docBrws.canBeSaved(False)
+            return docBrws.canBeSaved(False, returnCode=returnCode)
+        if returnCode:
+            return True, _('Document %r with revision %r not present in Odoo.') % (docName, docRev), 'NO_ERROR'
         return True, _('Document %r with revision %r not present in Odoo.') % (docName, docRev)
-        
+
     @api.model
-    def canBeSaved(self, raiseError=False):
+    def canBeSaved(self, raiseError=False, returnCode=False):
         """
         check if the document can be saved and raise exception in case is not possible
         """
-        msg = ''
+        outMessage = ''
+        outCode = 'NO_ERROR'
         if self.state in ['released', 'obsoleted']:
-            msg = _("Document is released and cannot be saved")
+            outMessage = _("Document is released and cannot be saved")
+            outCode = 'DOC_RELEASED'
             if raiseError:
-                raise UserError(msg)
+                raise UserError(outMessage)
         checkOutObject = self.getCheckOutObject()
         if checkOutObject:
             if checkOutObject.userid.id != self.env.uid:
-                msg = _("Document is Check-Out from User %r", checkOutObject.name)
+                outMessage = _("Document is Check-Out from User %r", checkOutObject.name)
+                outCode = 'DOC_CHECKOUT_FROM_USER'
                 if raiseError:
-                    raise UserError(msg)
+                    raise UserError(outMessage)
         else:
-            msg = _("Document in check-In unable to save!")
+            outMessage = _("Document in check-In unable to save!")
+            outCode = 'DOC_CHECKIN'
             if raiseError:
-                raise UserError(msg)
-        if len(msg) > 0:
-            return False, msg
-        return True, ''
+                raise UserError(outMessage)
+
+        def returnTuple():
+            if len(outMessage) > 0:
+                return False, outMessage
+            return True, ''
+        if returnCode:
+            return returnTuple() + (outCode,)
+        return returnTuple()
 
     @api.model
     def getCheckOutObject(self):
