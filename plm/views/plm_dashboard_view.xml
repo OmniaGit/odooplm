@@ -16,7 +16,7 @@
                 </tree>
             </field>
     </record>
-
+	<!--
     <record model="ir.ui.view" id="view_component_status_graph">
             <field name="name">report.prod.prod</field>
             <field name="model">product.template</field>
@@ -27,7 +27,7 @@
                 </graph>
             </field>
     </record>
- 
+ -->
     <record model="ir.ui.view" id="view_file_month_all">
             <field name="name">report.plm_document.user.graph</field>
             <field name="model">report.plm_document.file</field>
@@ -47,6 +47,7 @@
             <field name="view_type">form</field>
             <field name="view_mode">graph</field>
         </record>
+        
         <!--
         <record model="ir.actions.act_window" id="action_view_component_status_graph">
             <field name="name">Components Status</field>
@@ -55,6 +56,7 @@
             <field name="view_type">form</field>
             <field name="view_mode">graph</field>
         </record>-->
+        
         <record model="ir.actions.act_window" id="action_view_component_status">
             <field name="name">Component Status</field>
             <field name="res_model">report.plmcomponent</field>
@@ -114,8 +116,29 @@
                 <form string="Document board">
                      <board style="1-1" >
                      	<column>
-                               
-                            <action string="All Files by Month"
+                               <p>
+                    			<b>Your personal dashboard is empty.</b>
+                  				</p>
+
+                                	
+                        </column>
+
+                        
+                     </board>
+                 </form>
+             </field>
+         </record>
+                     	<!-- to-11
+
+							<action string="My Checked Out Documents"
+                                	name="%(action_view_checkout_custom)d"
+                                 	view_mode="tree,form"
+                                	groups="plm.group_plm_integrationuser"/>
+                            <action string="All Checked Out Documents"
+                                	name="%(action_view_checkout_custom_admin)d"
+                                	view_mode="tree,form"
+                                	groups="plm.group_plm_admin"/>
+                     	                            <action string="All Files by Month"
                                 	name="%(action_view_file_month_all)d"
                                 	groups="plm.group_plm_admin"
                                 	view_mode="graph"/>
@@ -131,28 +154,16 @@
                                 	view_mode="tree,form"/>
 
                             <action string="My Checked Out Documents"
-                                	name="%(action_view_checkout_custom)d"
-                                	view_mode="tree,form"
-                                	groups="plm.group_plm_integrationuser"/>
-
-                            <action string="All Checked Out Documents"
-                                	name="%(action_view_checkout_custom_admin)d"
-                                	view_mode="tree,form"
-                                	groups="plm.group_plm_admin"/>
-                                	
-                        </column>
-                     	<column>
+                                        <action string="All Documents"
+                            		groups="plm.group_plm_admin"
+                                	name="%(action_view_documents_custom_admin)d"
+                                	view_mode="tree,form"/>
+                     	                     	<column>
 
                             <action string="My Component Status"
                                 	name="%(action_view_component_status)d"
                                 	view_mode="tree"/>
                         </column>
-                        
-                     </board>
-                 </form>
-             </field>
-         </record>
-                     	<!-- to-11
                             <action string="Component Status"
                                 	name="%(action_view_component_status_graph)d"
                                 	domain="[('engineering_code', '!=', '')]"

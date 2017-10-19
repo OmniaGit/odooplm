@@ -20,7 +20,7 @@
 	sequence="1" 
 	groups="plm.group_plm_integrationuser"
     name="Dashboard" />
-    	-->
+    -->
 	<menuitem 	
 	id		="plm_component_menu_view" 
 	name	="Components" 
