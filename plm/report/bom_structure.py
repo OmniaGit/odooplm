@@ -328,61 +328,33 @@ class ReportBomStructureLevels(models.AbstractModel):
                 'bom_type': self.bom_type,
                 'get_children': self.get_children}
 
-# 
-# 
-# class bom_structure_flat_custom_report(report_sxw.rml_parse):
-#     def __init__(self, cr, uid, name, context):
-#         super(bom_structure_flat_custom_report, self).__init__(cr, uid, name, context=context)
-#         self.keyIndex = 0
-#         self.localcontext.update({
-#             'time': time,
-#             'get_children': self.get_children,
-#             'bom_type': self.bom_type,
-#             'trans': _translate,
-#             'context': context,
-#         })
-# 
-#     def get_children(self, myObject, level=1):
-#         return get_bom_report(myObject, recursion=True, flat=True, leaf=False, level=level, summarize=True)
-# 
-#     def bom_type(self, myObject):
-#         result = dict(myObject.fields_get()['type']['selection']).get(myObject.type, '')
-#         return _(result)
-# 
-# 
-# # class report_plm_bom_all(osv.AbstractModel):
-# # #     _name = 'report.plm.bom_structure_all'
-# # #     _inherit = 'report.abstract_report'
-# # #     _template = 'plm.bom_structure_all'
-# #     _wrapped_report_class = bom_structure_all_custom_report
-# 
-# 
-# class report_plm_bom_one(osv.AbstractModel):
-#     _name = 'report.plm.bom_structure_one'                          # May it is equal to "_template" keyword
-#     _inherit = 'report.abstract_report'                             # Every time inherit from abstract report
-#     _template = 'plm.bom_structure_one'                             # Searched as "report_name" in ir.actions.act.window
-#     _wrapped_report_class = bom_structure_one_custom_report
-# 
-# 
-# class report_plm_bom_all_sum(osv.AbstractModel):
-#     _name = 'report.plm.bom_structure_all_sum'
-#     _inherit = 'report.abstract_report'
-#     _template = 'plm.bom_structure_all_sum'
-#     _wrapped_report_class = bom_structure_all_sum_custom_report
-# 
-# 
-# class report_plm_bom_one_sum(osv.AbstractModel):
-#     _name = 'report.plm.bom_structure_one_sum'
-#     _inherit = 'report.abstract_report'
-#     _template = 'plm.bom_structure_one_sum'
-#     _wrapped_report_class = bom_structure_one_sum_custom_report
-# 
-# 
 
-# 
-# 
-# class report_plm_bom_flat(osv.AbstractModel):
-#     _name = 'report.plm.bom_structure_flat'
-#     _inherit = 'report.abstract_report'
-#     _template = 'plm.bom_structure_flat'
-#     _wrapped_report_class = bom_structure_flat_custom_report
+class ReportBomStructureFlat(models.AbstractModel):
+    _name = 'report.plm.bom_structure_flat'
+
+    @api.model
+    def render_html(self, docids, data=None):
+        report_obj = self.env['report']
+        report = report_obj._get_report_from_name('plm.bom_structure_flat')
+        docargs = {
+            'doc_model': report.model,
+            'docs': self,
+            'data': data,
+            'doc_ids': docids}
+        return report_obj.render('plm.bom_structure_flat', docargs)
+
+    @api.multi
+    def get_children(self, myObject, level=1):
+        return get_bom_report(myObject, recursion=True, flat=True, leaf=False, level=level, summarize=True)
+
+    @api.multi
+    def bom_type(self, myObject):
+        result = dict(myObject.fields_get()['type']['selection']).get(myObject.type, '')
+        return _(result)
+
+    @api.model
+    def get_report_values(self, docids, data=None):
+        boms = self.env['mrp.bom'].browse(docids)
+        return {'docs': boms,
+                'bom_type': self.bom_type,
+                'get_children': self.get_children}
