@@ -704,6 +704,15 @@ class PlmComponent(models.Model):
             compObj._action_to_perform(status, action, docaction, defaults, excludeStatuses, includeStatuses)
         return True
 
+    def perform_action(self, action):
+        actions = {'reactivate': self.action_reactivate,
+                   'obsolete': self.action_obsolete,
+                   'release': self.action_release,
+                   'confirm': self.action_confirm,
+                   'draft': self.action_draft}
+        toCall = actions.get(action)
+        return toCall()
+
     @api.multi
     def _action_to_perform(self, status, action, docaction, defaults=[], excludeStatuses=[], includeStatuses=[]):
         tmpl_ids = []
@@ -718,7 +727,7 @@ class PlmComponent(models.Model):
                 tmpl_ids.append(currId.product_tmpl_id.id)
             full_ids.append(currId.product_tmpl_id.id)
         if action:
-            self.browse(tmpl_ids).signal_workflow(action)
+            self.browse(tmpl_ids).perform_action(action)
         objId = self.env['product.template'].browse(full_ids).write(defaults)
         if objId:
             self.browse(allIDs).wf_message_post(body=_('Status moved to: %s.' % (USEDIC_STATES[defaults['state']])))

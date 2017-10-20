@@ -67,12 +67,23 @@
         <field name="priority" eval="6"/>
         <field name="arch" type="xml">
              <form string="Engineering Product">
-             
              	<field name="type" invisible="1"/>	
              	<header>
-	                <button name="release" states="confirmed" 	string="Release Component" type="workflow" 		class="oe_highlight"/>
-	                <button name="correct" states="confirmed" 	string="Correct Component" type="workflow"/>
-	                <button name="confirm" states="draft" 		string="Confirm Component" type="workflow" 	class="oe_highlight"/>
+	                <button name="action_release"
+	                		type="object"
+	                		states="confirmed"
+	                		string="Release Component"
+	                		class="oe_highlight"/>
+	                <button name="action_draft"
+	                		type="object"
+	                		states="confirmed"
+	                		string="Correct Component"
+	                		/>
+	                <button name="action_confirm"
+	                		type="object"
+	                		states="draft" 		
+	                		string="Confirm Component" 
+	                		class="oe_highlight"/>	
 	                <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,released" statusbar_colors='{"undermodify":"red","obsoleted":"red"}' />
 	            </header>
 	           	

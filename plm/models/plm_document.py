@@ -620,7 +620,7 @@ class PlmDocument(models.Model):
         """
         defaults = {}
         defaults['engineering_writable'] = False
-        defaults['state'] = 'draft'
+        defaults['state'] = 'released'
         if self.ischecked_in():
             self.setCheckContextWrite(False)
             objId = self.write(defaults)

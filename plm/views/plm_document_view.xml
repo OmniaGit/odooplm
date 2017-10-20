@@ -17,7 +17,7 @@
                     		type="object"
                     		attrs="{'invisible': ['|',('is_checkout','=',True)]}"
                     	/>
-                    <button name="action_reactivate" 
+                    <button name="action_draft" 
                     		states="confirmed" 
                     		type="object"
                     		string="Correct Document" 
