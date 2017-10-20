@@ -95,12 +95,10 @@ Supported Editors :
             # Report
             'report/bom_structure_report.xml',
             'report/bom_structure.xml',
-            #'report/checkout_report.xml',
-            #'report/component_report.xml',
-            #'report/document_report.xml',
-            #'views/product_product_kanban.xml'
-            ],  # After component_report.xml
-
+            'report/component_report.xml',
+            'report/document_report.xml',
+            # 'views/product_product_kanban.xml'
+            ],
     'demo': [],
     'test': [],
     'installable': True,

@@ -6,42 +6,42 @@
             id="report_plm_bom_structure_all"
             model="mrp.bom"
             string="BOM All Levels" 
-            report_type="qweb-pdf"  
+            report_type="qweb-html"  
             name="plm.bom_structure_all"  
         />
         
         <report id="report_plm_bom_structure_one"
                 model="mrp.bom"
                 string="BOM One Level"
-        		report_type="qweb-pdf"   
+        		report_type="qweb-html"   
                 name="plm.bom_structure_one"   
                  />
         
         <report id="report_plm_bom_structure_all_sum"
                 model="mrp.bom"
                 string="BOM All Levels Summarized"
-        		report_type="qweb-pdf"   
+        		report_type="qweb-html"   
                 name="plm.bom_structure_all_sum"   
                  /> 
           
         <report id="report_plm_bom_structure_one_sum"
                 model="mrp.bom"
                 string="BOM One Level Summarized"
-        		report_type="qweb-pdf"     
+        		report_type="qweb-html"     
                 name="plm.bom_structure_one_sum"   
                  /> 
                  	
         <report id="report_plm_bom_structure_leaves"
                 model="mrp.bom"
                 string="BOM Only Leaves Summarized"
-        		report_type="qweb-pdf"    
+        		report_type="qweb-html"    
                 name="plm.bom_structure_leaves"   
                  /> 
                  	
         <report id="report_plm_bom_structure_flat"
                 model="mrp.bom"
                 string="BOM Flat Summarized"
-        		report_type="qweb-pdf"    
+        		report_type="qweb-html"    
                 name="plm.bom_structure_flat"   
                  />
         

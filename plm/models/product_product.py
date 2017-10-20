@@ -272,7 +272,6 @@ class PlmComponent(models.Model):
             description = description + " " + thisObject.unitab
         return description
 
-
     @api.multi
     def product_template_open(self):
         product_id = self.product_tmpl_id.id
@@ -743,7 +742,7 @@ class PlmComponent(models.Model):
             if not vals['name']:
                 return False
             if 'engineering_code' in vals:
-                if vals['engineering_code'] == False:
+                if vals['engineering_code'] is False:
                     vals['engineering_code'] = vals['name']
             else:
                 vals['engineering_code'] = vals['name']
@@ -753,7 +752,6 @@ class PlmComponent(models.Model):
                                             ])
                 if prodBrwsList:
                     raise UserError('Component %r already exists' % (vals['engineering_code']))
-                    #return prodBrwsList[len(prodBrwsList) - 1]
         try:
             return super(PlmComponent, self).create(vals)
         except Exception, ex:
@@ -973,7 +971,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         bufferdata = []
         if level == 0 and currlevel > 1:
             return bufferdata
-        for bomid in component.product_tmpl_id.bom_ids: # TODO: Bom type??
+        for bomid in component.product_tmpl_id.bom_ids:  # TODO: Bom type??
             for bomline in bomid.bom_line_ids:
                 levelDict = {}
                 prodBrws = bomline.product_id
@@ -1016,7 +1014,6 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                 ]
                 }
         '''
-            
         def computeBomAllLevels(prodBrws):
             return prodBrws._getChildrenBomWithDocuments(prodBrws, level=1)
 
@@ -1026,7 +1023,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         if not values:
             return {}
         componentDict = values[0]
-        computeType = values[1] # Possible values = 'no-bom' / 'bom-all-levels' / 'bom-one-level'
+        computeType = values[1]  # Possible values = 'no-bom' / 'bom-all-levels' / 'bom-one-level'
         eng_code = componentDict.get('engineering_code', '')
         eng_rev = componentDict.get('engineering_revision', None)
         if not eng_code:
@@ -1050,8 +1047,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             return {
                 'root_props': rootProps,
                 'documents': self.computeLikedDocuments(prodBrws),
-                'bom': [],
-                }
+                'bom': []}
         elif computeType == 'bom-all-levels':
             return computeBomAllLevels(prodBrws)
         elif computeType == 'bom-one-level':
@@ -1067,7 +1063,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             if compBrws.state == 'released':
                 return True
         return False
-        
+
     @api.model
     def reviseCompAndDoc(self, elementsToClone):
         outList = []
@@ -1087,16 +1083,16 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             else:
                 if not compId or not revisedCompBrws:  # Non root components have a wrong id inside, so I need to search
                     oldCompBrws = self.search([('enginering_code', '=', rootProps.get('engineering_code')),
-                                            ('engineering_revision', '=', rootProps.get('engineering_revision'))])
+                                               ('engineering_revision', '=', rootProps.get('engineering_revision'))])
                 if not oldCompBrws:
                     raise Exception(_('Unable to complete new revision because component with properties %r not found') % (rootProps))
                 newComponentId, _engineering_revision = oldCompBrws.NewRevision()
                 revisedCompBrws = self.browse(newComponentId)
                 revisedCompBrws.write({'linkeddocuments': [(5, 0, 0)]})
             reviseChildDocuments(revisedCompBrws, childrenDocuments)
-            
+
         def reviseChildDocuments(revisedCompBrws, childrenDocuments):
-            revisedCompBrws.write({'linkeddocuments': [(5, 0, 0)]}) # Clean copied links
+            revisedCompBrws.write({'linkeddocuments': [(5, 0, 0)]})  # Clean copied links
             for childDocDict in childrenDocuments:
                 docInfos = childDocDict.get('document', {})
                 docName = docInfos.get('name', '')
@@ -1114,12 +1110,11 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                                     'comp_vals': revisedCompBrws.getComponentInfos()})
                 else:
                     logging.warning('unable to find document to revise %r' % (childDocDict))
-            
+
         rootNodeDict = elementsToClone[0]
         evalCompNode(rootNodeDict, root=True)
         return outList
-        
-        
+
     @api.model
     def cloneCompAndDoc(self, elementsToClone):
         if not elementsToClone:
@@ -1144,20 +1139,19 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                 startingComputeName = compBrws.engineering_code
             else:
                 startingComputeName = oldDocBrws.name
-            
+
             _filename, file_extension = os.path.splitext(oldDocBrws.datas_fname)
             newDocName = docEnv.GetNextDocumentName(startingComputeName)
             docDefaultVals = {
                 'revisionid': 0,
                 'name': newDocName,
                 'datas_fname': '%s%s' % (newDocName, file_extension),
-                'checkout_user': self.env.uid,
-                }
+                'checkout_user': self.env.uid}
             newDocVals = oldDocBrws.Clone(docDefaultVals)
             newDocId = newDocVals.get('_id')
             newDocBrws = docEnv.browse(newDocId)
-            
-            if newDocBrws.document_type.upper() != 'OTHER': # Skip update properties of other documents. Only CAD documents has to be updated
+
+            if newDocBrws.document_type.upper() != 'OTHER':  # Skip update properties of other documents. Only CAD documents has to be updated
                 newDocBrws.checkout(hostName, hostPws)  # Check out only non CAD files because next time file will be need to be revised workflow can go on
                 documentFieldsToRead.append('datas_fname')
                 outdocInfos = newDocBrws.read(documentFieldsToRead)[0]
@@ -1168,13 +1162,13 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                     'comp_id': compId,
                     'comp_vals': compBrws.read(componentFieldsToRead)[0],
                     'doc_id': newDocId,
-                    'doc_vals': outdocInfos,
-                    })
-            newDocBrws.write({'linkedcomponents': [(5, 0, 0)]}) # Clean copied links
-            if compId: # Add link to component
-                compBrws.write({'linkeddocuments': [(4, newDocId, False)]})  
+                    'doc_vals': outdocInfos})
+            newDocBrws.write({'linkedcomponents': [(5, 0, 0)]})  # Clean copied links
+            if compId:  # Add link to component
+                compBrws.write({'linkeddocuments': [(4, newDocId, False)]})
 
         return out
+
 
 PlmComponent()
 
@@ -1183,6 +1177,7 @@ class PlmTemporayMessage(osv.osv.osv_memory):
     _name = "plm.temporary.message"
     _description = "Temporary Class"
     name = fields.Text(_('Bom Result'), readonly=True)
+
 
 PlmTemporayMessage()
 
@@ -1222,6 +1217,7 @@ class ProductProductDashboard(models.Model):
                     (SELECT count(*) FROM product_template WHERE state = 'obsoleted' and  engineering_code<>'') AS count_component_obsoleted
              )
         """)
+
 
 ProductProductDashboard()
 

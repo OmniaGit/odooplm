@@ -5,7 +5,7 @@
                 string="Print Bom All Levels PDF Drawings"
                 model="product.product"
                 name="all.product.product.pdf"
-                report_type="sxw"
+                report_type="qweb-pdf"
                 file=""
                 header="False"
                 />
@@ -15,7 +15,7 @@
                 string="Print Bom One Level PDF Drawings"
                 model="product.product"
                 name="one.product.product.pdf"
-                report_type="sxw"
+                report_type="qweb-pdf"
                 file=""
                 header="False"
                 />
@@ -25,7 +25,7 @@
                 string="Print Attached PDF Drawings"
                 model="product.product"
                 name="product.product.pdf"
-                report_type="sxw"
+                report_type="qweb-pdf"
                 file=""
                 header="False"
                 />
@@ -35,7 +35,7 @@
                 string="Print All Production PDF Drawings" 
                 model="product.product"
                 name="product.product.pdf.latest"
-                report_type="sxw"
+                report_type="qweb-pdf"
                 file=""
                 header="False"
                 />

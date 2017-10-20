@@ -22,7 +22,7 @@
 #import component_report
 #import document_report
 #import checkout_report
-#import bom_structure
+import bom_structure
 
 
 
