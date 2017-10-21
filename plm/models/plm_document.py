@@ -33,7 +33,6 @@ from odoo import fields
 from odoo import api
 from odoo import _
 import logging
-from __builtin__ import False
 _logger = logging.getLogger(__name__)
 
 
@@ -136,7 +135,7 @@ class PlmDocument(models.Model):
                             result.append((objDoc.id, objDoc.datas_fname, base64.encodestring(value), isCheckedOutToMe, timeDoc))
                         else:
                             result.append((objDoc.id, objDoc.datas_fname, False, isCheckedOutToMe, timeDoc))
-                except Exception, ex:
+                except Exception as ex:
                     logging.error("_data_get_files : Unable to access to document (" + str(objDoc.name) + "). Error :" + str(ex))
                     result.append((objDoc.id, objDoc.datas_fname, False, True, self.getServerTime()))
         return result
@@ -267,7 +266,7 @@ class PlmDocument(models.Model):
                 objDatas = False
                 try:
                     objDatas = objDoc.datas
-                except Exception, ex:
+                except Exception as ex:
                     logging.error('Document with "id": %s  and "name": %s may contains no data!!         Exception: %s' % (objDoc.id, objDoc.name, ex))
                 if (objDoc.file_size < 1) and (objDatas):
                     file_size = len(objDoc.datas)
@@ -644,7 +643,7 @@ class PlmDocument(models.Model):
         filestore = os.path.join(dms_Root_Path, self.env.cr.dbname)
         try:
             os.makedirs(filestore)
-        except OSError, ex:
+        except OSError as ex:
             if ex.errno not in [13, 17]:
                 raise ex
             if ex.errno == 13:
@@ -783,7 +782,7 @@ class PlmDocument(models.Model):
                     docBrws.document_type = '3d'
                 else:
                     docBrws.document_type = 'other'
-            except Exception, ex:
+            except Exception as ex:
                 logging.error('Unable to compute document type for document %r, error %r' % (docBrws.id, ex))
 
     revisionid = fields.Integer(_('Revision Index'),
@@ -1328,7 +1327,7 @@ class PlmDocument(models.Model):
                     documentRelationTemplate.create({'parent_id': trueParentId,
                                                      'child_id': trueChildId,
                                                      'link_kind': relationType})
-                except Exception, ex:
+                except Exception as ex:
                     logging.error(ex)
                     raise ex
         # Save the product relation

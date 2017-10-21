@@ -51,7 +51,7 @@ class ProdProdExtension(models.Model):
                     if engBoms:
                         prodBrws.action_create_normalBom_WF()
                         logging.info('Created Normal bom of %s component on %s' % (releasedComponents.ids.index(prodBrws.id), len(releasedComponents.ids)))
-            except Exception, ex:
+            except Exception as ex:
                 errors.append(ex)
         logging.info('[Automate Nbom scheduler ended]')
         if errors:

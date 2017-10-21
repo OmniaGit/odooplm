@@ -32,10 +32,10 @@ from operator import itemgetter
 from odoo import _
 import odoo
 from odoo.addons.plm.report.book_collector import BookCollector
-#from odoo.report.render import render
+from odoo.addons.plm.report.book_collector import external_pdf
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 import time
-import StringIO
+from io import StringIO
 import base64
 import os
 import logging
@@ -45,8 +45,8 @@ from dateutil import tz
 try:
     from PyPDF2 import PdfFileWriter
     from PyPDF2 import PdfFileReader
-except:
-    logging.warning("PyPDF2 not installed ")
+except Exception as ex:
+    logging.warning("PyPDF2 not installed %r" % unicode(ex))
     from pyPdf import PdfFileWriter
     from pyPdf import PdfFileReader
 
@@ -67,20 +67,9 @@ def getDocumentStream(docRepository, objDoc):
             content = base64.decodestring(objDoc.db_datas)
         else:
             content = file(os.path.join(docRepository, objDoc.store_fname), 'rb').read()
-    except Exception, ex:
-        print "getFileStream : Exception (%s)reading  stream on file : %s." % (str(ex), objDoc.datas_fname)
+    except Exception as ex:
+        logging.error("getFileStream : Exception (%s)reading  stream on file : %s." % (str(ex), objDoc.datas_fname))
     return content
-
-
-# class external_pdf(render):
-#     """ Generate External PDF """
-#     def __init__(self, pdf):
-#         render.__init__(self)
-#         self.pdf = pdf
-#         self.output_type = 'pdf'
-# 
-#     def _render(self):
-#         return self.pdf
 
 
 def _translate(value):
@@ -266,7 +255,7 @@ class component_spare_parts_report(report_int):
                     for pageStream in self.getPdfComponentLayout(cr, product):
                         try:
                             output.addPage((pageStream, ''))
-                        except Exception, ex:
+                        except Exception as ex:
                             logging.error(ex)
                             raise ex
                     NewContext = context.copy()

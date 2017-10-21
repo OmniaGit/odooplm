@@ -33,7 +33,6 @@ from odoo import SUPERUSER_ID
 import odoo.tools as tools
 import copy
 import os
-from __builtin__ import False
 
 _logger = logging.getLogger(__name__)
 
@@ -754,7 +753,7 @@ class PlmComponent(models.Model):
                     raise UserError('Component %r already exists' % (vals['engineering_code']))
         try:
             return super(PlmComponent, self).create(vals)
-        except Exception, ex:
+        except Exception as ex:
             import psycopg2
             if isinstance(ex, psycopg2.IntegrityError):
                 raise ex
@@ -765,7 +764,7 @@ class PlmComponent(models.Model):
     def read(self, fields=None, load='_classic_read'):
         try:
             return super(PlmComponent, self).read(fields=fields, load=load)
-        except Exception, ex:
+        except Exception as ex:
             if isinstance(ex, AccessError) and 'sale.report' in ex.name:
                 return '''
 Your user does not have enough permissions to make this operation. Error: \n

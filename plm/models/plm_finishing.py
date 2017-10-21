@@ -46,12 +46,8 @@ class PlmFinishing(models.Model):
     _sql_constraints = [
         ('name_uniq', 'unique(name)', _('Raw Material has to be unique !')),
     ]
-    
+
     @api.multi
     def copy(self, default=None):
-        default['name'] = self.name + ' (copy)' 
+        default['name'] = self.name + ' (copy)'
         return super(PlmFinishing, self).copy(default=default)
-
-PlmFinishing()
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

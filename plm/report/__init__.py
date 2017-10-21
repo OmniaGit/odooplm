@@ -20,9 +20,8 @@
 #
 ##############################################################################
 #import component_report
-#import document_report
-#import checkout_report
-import bom_structure
+from . import document_report
+from . import bom_structure
 
 
 

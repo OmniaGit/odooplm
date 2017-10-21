@@ -267,7 +267,7 @@ class PackAndGo(osv.osv.osv_memory):
                     checkCreateType(ext)
             self.convertion_server_available = True
             return res
-        except Exception, ex:
+        except Exception as ex:
             logging.error('Error during call server to get available types: %r' % (ex))
             return {}
 
@@ -364,7 +364,7 @@ class PackAndGo(osv.osv.osv_memory):
             relStr = paramObj._get_param('extension_integration_rel')
             try:
                 rel = eval(unicode(relStr).lower())
-            except Exception, ex:
+            except Exception as ex:
                 logging.error('Unable to get extension_integration_rel parameter. EX: %r' % (ex))
                 rel = {}
             integration = rel.get(unicode(self.getFileExtension(docBws)).lower(), '')
@@ -397,7 +397,7 @@ class PackAndGo(osv.osv.osv_memory):
                 self.datas = base64.encodestring(fileContent)
         try:
             shutil.rmtree(outZipFile)
-        except Exception, ex:
+        except Exception as ex:
             logging.error("Unable to delete file from export function %r %r" % (outZipFile, unicode(ex)))
         fileName = os.path.basename(outZipFile2)
         self.datas_fname = fileName

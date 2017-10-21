@@ -77,6 +77,7 @@ class component_custom_report(report_int):
             pdf_string.close()
             return (obj.pdf, 'pdf')
 
+
 component_custom_report('report.product.product.pdf')
 
 
@@ -98,6 +99,7 @@ class component_one_custom_report(report_int):
             return packDocuments(docRepository, list(set(documents)), output)
         if context.get("raise_report_warning", True):
             raise UserError(_("No Document found"))
+
 
 component_one_custom_report('report.one.product.product.pdf')
 
@@ -123,6 +125,7 @@ class component_all_custom_report(report_int):
         if context.get("raise_report_warning", True):
             raise UserError(_("No Document found"))
 
+
 component_all_custom_report('report.all.product.product.pdf')
 
 
@@ -142,5 +145,6 @@ class component_custom_report_latest(report_int):
         if context.get("raise_report_warning", True):
             raise UserError(_("No Document found"))
         return False, False
+
 
 component_custom_report_latest('report.product.product.pdf.latest')

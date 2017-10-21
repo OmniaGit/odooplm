@@ -20,24 +20,24 @@
 #
 ##############################################################################
 
-from book_collector import BookCollector
-from book_collector import packDocuments
+from .book_collector import BookCollector
+from .book_collector import packDocuments
 from datetime import datetime
 from dateutil import tz
+from odoo import api
+from odoo import models
 
-from odoo.report.interface import report_int
-import odoo
 
+class ReportBomStructureAll(models.AbstractModel):
+    _name = 'report.plm.document_pdf'
 
-class document_custom_report(report_int):
-    def create(self, cr, uid, ids, datas, context=None):
-        env = odoo.api.Environment(cr, uid, context or {})
-        docType = env['plm.document']
+    @api.model
+    def render_qweb_pdf(self, documents=None, data=None):
+        docType = self.env['plm.document']
         docRepository = docType._get_filestore()
-        documents = docType.browse(ids)
-        userType = env['res.users']
-        user = userType.browse(uid)
-        to_zone = tz.gettz(context.get('tz', 'Europe/Rome'))
+        userType = self.env['res.users']
+        user = userType.browse(self.env.uid)
+        to_zone = tz.gettz(self.env.context.get('tz', 'Europe/Rome'))
         from_zone = tz.tzutc()
         dt = datetime.now()
         dt = dt.replace(tzinfo=from_zone)
@@ -47,4 +47,7 @@ class document_custom_report(report_int):
         output = BookCollector(jumpFirst=False, customTest=(False, msg), bottomHeight=10)
         return packDocuments(docRepository, documents, output)
 
-document_custom_report('report.plm.document.pdf')
+    @api.model
+    def get_report_values(self, docids, data=None):
+        documents = self.env['plm.document'].browse(docids)
+        return self.render_qweb_pdf(documents, data)

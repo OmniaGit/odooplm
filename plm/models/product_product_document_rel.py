@@ -71,7 +71,7 @@ class PlmComponentDocumentRel(models.Model):
                 if compId and docId:
                     compBrws = self.env['product.product'].browse(compId)
                     compBrws.write({'linkeddocuments': [(4, docId, False)]})    # Update with existing id
-            except Exception, ex:
+            except Exception as ex:
                 logging.warning(ex)
                 logging.warning("saveChild : Unable to create a link. Arguments (%s)." % (str(args)))
                 raise Exception(_("saveChild: Unable to create a link."))

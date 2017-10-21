@@ -104,7 +104,7 @@ class PlmDocumentRelations(models.Model):
                 else:
                     logging.error("saveChild : Unable to create a relation between documents. One of documents involved doesn't exist. Arguments(" + str(relation) + ") ")
                     raise Exception(_("saveChild: Unable to create a relation between documents. One of documents involved doesn't exist."))
-            except Exception, ex:
+            except Exception as ex:
                 logging.error("saveChild : Unable to create a relation. Arguments (%s) Exception (%s)" % (str(relation), str(ex)))
                 raise Exception(_("saveChild: Unable to create a relation."))
 

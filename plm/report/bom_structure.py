@@ -132,7 +132,7 @@ def get_bom_report(myObject, recursion=False, flat=False, leaf=False, level=1, s
     out = []
 
     def getOutList(outDict, parentQty=1):
-        itemNums = outDict.keys()
+        itemNums = list(outDict.keys())
         itemNums.sort()
         for itemNum in itemNums:
             valsDict = outDict.get(itemNum, {})
@@ -176,17 +176,6 @@ def BomSort(myObject):
 
 class ReportBomStructureAll(models.AbstractModel):
     _name = 'report.plm.bom_structure_all'
-
-    @api.model
-    def render_html(self, docids, data=None):
-        report_obj = self.env['report']
-        report = report_obj._get_report_from_name('plm.bom_structure_all')
-        docargs = {
-            'doc_model': report.model,
-            'docs': self,
-            'data': data,
-            'doc_ids': docids}
-        return report_obj.render('plm.bom_structure_all', docargs)
 
     @api.multi
     def get_children(self, myObject, level=0):

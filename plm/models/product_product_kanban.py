@@ -62,7 +62,7 @@ class ProductProductKanban(models.Model):
                     if tmplTuple:
                         product_tmpl_id = tmplTuple[0]
             return self.env['mrp.bom'].search([('product_tmpl_id', '=', product_tmpl_id)])
-        except Exception, ex:
+        except Exception as ex:
             logging.warning(ex)
             return self.env['mrp.bom'].browse()
 
@@ -75,7 +75,7 @@ class ProductProductKanban(models.Model):
                     brws = self.browse(brws)
                 out.extend(brws.linkeddocuments.ids)
             return list(set(out))
-        except Exception, ex:
+        except Exception as ex:
             logging.warning(ex)
             return []
 
@@ -141,7 +141,7 @@ class ProductProductKanban(models.Model):
 
     @api.multi
     def openDocument(self, vals=False):
-        print 'Open document'
+        print('Open document')
 
     @api.multi
     def report_components(self):
