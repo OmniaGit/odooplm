@@ -120,7 +120,7 @@ class PlmDocument(models.Model):
                             value = objDoc.db_datas
                         else:
                             value = file(os.path.join(self._get_filestore(), objDoc.store_fname), 'rb').read()
-                        result.append((objDoc.id, objDoc.datas_fname, base64.encodestring(value), isCheckedOutToMe, timeDoc))
+                        result.append((objDoc.id, objDoc.datas_fname, base64.b64encode(value), isCheckedOutToMe, timeDoc))
                     else:
                         if forceFlag:
                             isNewer = True
@@ -132,7 +132,7 @@ class PlmDocument(models.Model):
                                 value = objDoc.db_datas
                             else:
                                 value = file(os.path.join(self._get_filestore(), objDoc.store_fname), 'rb').read()
-                            result.append((objDoc.id, objDoc.datas_fname, base64.encodestring(value), isCheckedOutToMe, timeDoc))
+                            result.append((objDoc.id, objDoc.datas_fname, base64.b64encode(value), isCheckedOutToMe, timeDoc))
                         else:
                             result.append((objDoc.id, objDoc.datas_fname, False, isCheckedOutToMe, timeDoc))
                 except Exception as ex:
@@ -147,7 +147,7 @@ class PlmDocument(models.Model):
                 if objDoc.store_fname:
                     filestore = os.path.join(self._get_filestore(), objDoc.store_fname)
                     if os.path.exists(filestore):
-                        objDoc.datas = file(filestore, 'rb').read().encode('base64')
+                        objDoc.datas = base64.b64encode(open(filestore, 'rb').read())
                 else:
                     objDoc.datas = objDoc.db_datas
 
@@ -328,8 +328,8 @@ class PlmDocument(models.Model):
         flag = flag or create_directory(filestore)
         filename = random_name()
         fname = os.path.join(filestore, flag, filename)
-        fobj = file(fname, 'wb')
-        value = base64.decodestring(binvalue)
+        fobj = open(fname, 'wb')
+        value = base64.b64decode(binvalue)
         fobj.write(value)
         fobj.close()
         return (os.path.join(flag, filename), len(value))
@@ -353,7 +353,7 @@ class PlmDocument(models.Model):
 
                         logging.error(msg)
                 if value and len(value) > 0:
-                    result[objDoc.id] = base64.encodestring(value)
+                    result[objDoc.id] = base64.b64encode(value)
                 else:
                     result[objDoc.id] = ''
                     msg = "Document %s - %s cannot be accessed" % (str(objDoc.name),
