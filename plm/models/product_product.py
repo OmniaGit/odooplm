@@ -661,7 +661,7 @@ class PlmComponent(models.Model):
                 if not(currentProductId.id in self.ids):
                     childrenProductToEmit.append(currentProductId.id)
                 product_tmpl_ids.append(currentProductId.product_tmpl_id.id)
-            self.browse(childrenProductToEmit).signal_workflow('release')
+            self.browse(childrenProductToEmit).action_release()
             objId = prodTmplType.browse(product_tmpl_ids).write(defaults)
             if (objId):
                 self.browse(product_ids).wf_message_post(body=_('Status moved to: %s.' % (USEDIC_STATES[defaults['state']])))
