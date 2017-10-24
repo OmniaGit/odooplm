@@ -175,7 +175,7 @@
     <!-- Product Template Overload -->
     
 <!--  Tree Structure Where Used on Product -->
-
+ <!-- on v11 seems not to work properly un amptu product form appear
         <record id="mrp_part_tree_view_where" model="ir.ui.view">
             <field name="name">mrp.part.tree.where</field>
             <field name="model">product.product</field>
@@ -185,19 +185,24 @@
                     <field name="name" string="Component Name"/>
                     <field name="engineering_revision" string="Revision"/>
                     <field name="description"/>
+                    <field name="father_part_ids"/>
                 </tree>
             </field>
         </record>
+        
 
+       
         <act_window
             id="action_product_bom_structure_where"
             name="Product BoM Where Used Structure"
             domain="[('id','in',active_ids)]" 
             context="{'default_product_id': active_id}"
             view_type="tree"
-            view_id="mrp_part_tree_view_where"
+            view_id="plm.mrp_part_tree_view_where"
             res_model="product.product"
-            src_model="product.product"/>	<!-- Do not remove src_model. It is used to get action only in component form -->
+            src_model="product.product"/>	
+            -->
+            <!-- Do not remove src_model. It is used to get action only in component form -->
     
 </data>
 </openerp>

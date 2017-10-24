@@ -110,14 +110,14 @@ class PlmComponent(models.Model):
     std_umc1 = fields.Char(_('UM / Feature 1'),
                            size=32,
                            default='',
-                           help=_("Allow to specifiy a unit measure for the first feature."))
+                           help=_("Allow to specify a unit measure for the first feature."))
     std_value1 = fields.Float(_('Value 1'),
                               default=0,
                               help=_("Assign value to the first characteristic."))
     std_umc2 = fields.Char(_('UM / Feature 2'),
                            size=32,
                            default='',
-                           help=_("Allow to specifiy a unit measure for the second feature."))
+                           help=_("Allow to specify a unit measure for the second feature."))
     std_value2 = fields.Float(_('Value 2'),
                               default=0,
                               help=_("Assign value to the second characteristic."))
