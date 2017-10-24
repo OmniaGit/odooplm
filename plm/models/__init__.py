@@ -41,4 +41,3 @@ from . import mrp_bom
 from . import mrp_bom_line
 from . import document_report
 from . import plm_temporary
-from . import ir_action_report
