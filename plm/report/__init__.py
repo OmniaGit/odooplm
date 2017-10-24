@@ -19,7 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-#import component_report
+from . import component_report
 from . import document_report
 from . import bom_structure
 

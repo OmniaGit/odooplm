@@ -29,7 +29,7 @@ from odoo import api
 from odoo import models
 
 
-class ReportBomStructureAll(models.AbstractModel):
+class ReportDocumentPdf(models.AbstractModel):
     _name = 'report.plm.document_pdf'
 
     @api.model
@@ -44,7 +44,7 @@ class ReportBomStructureAll(models.AbstractModel):
         dt = dt.replace(tzinfo=from_zone)
         localDT = dt.astimezone(to_zone)
         localDT = localDT.replace(microsecond=0)
-        msg = "Printed by " + str(user.name) + " : " + str(localDT.ctime())
+        msg = "Printed by %r : %r " % (user.name, localDT.ctime())
         output = BookCollector(jumpFirst=False, customTest=(False, msg), bottomHeight=10)
         documentContent = packDocuments(docRepository, documents, output)
         byteString = b"data:application/pdf;base64," + base64.b64encode(documentContent[0])
