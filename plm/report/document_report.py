@@ -24,6 +24,8 @@ from .book_collector import BookCollector
 from .book_collector import packDocuments
 from datetime import datetime
 from dateutil import tz
+import base64
+import io
 from odoo import api
 from odoo import models
 
@@ -45,9 +47,21 @@ class ReportBomStructureAll(models.AbstractModel):
         localDT = localDT.replace(microsecond=0)
         msg = "Printed by " + str(user.name) + " : " + str(localDT.ctime())
         output = BookCollector(jumpFirst=False, customTest=(False, msg), bottomHeight=10)
-        return packDocuments(docRepository, documents, output)
+        documentContent = packDocuments(docRepository, documents, output)
+        byteString = b"data:application/pdf;base64," + base64.b64encode(documentContent[0])
+        return byteString.decode('UTF-8')
+
+#     @api.model
+#     def render_qweb_pdf(self, documents=None, data=None):
+# #         import binascii
+# #         bStream = binascii.a2b_base64(base64.b64decode(documents.printout))
+# #         from PyPDF2 import PdfFileWriter, PdfFileReader
+# #         r = PdfFileReader(bStream)
+#         byteString = b"data:application/pdf;base64," + documents.printout
+#         return byteString.decode('UTF-8')
 
     @api.model
     def get_report_values(self, docids, data=None):
         documents = self.env['plm.document'].browse(docids)
-        return self.render_qweb_pdf(documents, data)
+        return {'docs': documents,
+                'get_content': self.render_qweb_pdf}

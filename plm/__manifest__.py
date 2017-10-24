@@ -92,8 +92,10 @@ Supported Editors :
             'views/product_template.xml',
             'views/sequence.xml',
             'views/menu.xml',
+            # Reports Template
+            'report/bom_structure_report_template.xml',
+            'report/document_report_templates.xml',
             # Report
-            'report/bom_structure_report.xml',
             'report/bom_structure.xml',
             'report/component_report.xml',
             'report/document_report.xml',
