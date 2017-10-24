@@ -3,12 +3,7 @@ import base64
 from io import BytesIO
 import logging
 from reportlab.pdfgen import canvas
-
-try:
-    from PyPDF2 import PdfFileWriter, PdfFileReader
-except Exception as ex:
-    logging.warning("PyPDF2 not installed %r" % unicode(ex))
-    from pyPdf import PdfFileWriter, PdfFileReader
+from PyPDF2 import PdfFileWriter, PdfFileReader
 
 
 def isPdf(fileName):
@@ -34,23 +29,13 @@ def getDocumentStream(docRepository, objDoc):
     return content
 
 
-class external_pdf(object):
-    """ Generate External PDF """
-    def __init__(self, pdf):
-        self.pdf = pdf
-        self.output_type = 'pdf'
-
-    def _render(self):
-        return self.pdf
-
-
 class BookCollector(object):
     def __init__(self, jumpFirst=True, customTest=False, bottomHeight=20):
         """
             jumpFirst = (True/False)
                 jump to add number at the first page
             customTest=(True/False,message) / False
-                Add page number -> True/Fale, Custom Message)
+                Add page number -> True/False, Custom Message)
         """
         self.jumpFirst = jumpFirst
         self.collector = PdfFileWriter()
@@ -76,7 +61,7 @@ class BookCollector(object):
 
         pagetNumberBuffer = BytesIO()
         c = canvas.Canvas(pagetNumberBuffer)
-        x, y, x1, y1 = mediaBox
+        x, _y, x1, y1 = mediaBox
         fontSize = computeFont(x1, y1)
         c.setFont("Helvetica", fontSize)
         if isinstance(self.customTest, tuple):
