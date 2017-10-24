@@ -45,7 +45,7 @@ class ProductProductExtension(models.Model):
         bomType = self.env['mrp.bom']
         bomLType = self.env['mrp.bom.line']
         prodTmplObj = self.env['product.template']
-        stockConfigSettings = self.env['stock.config.settings']
+        stockConfigSettings = self.env['res.config.settings']
         variantIsInstalled = False
         if len(stockConfigSettings.search([('group_product_variant', '=', 1)])) > 0:
             variantIsInstalled = True
@@ -202,8 +202,6 @@ class ProductProductExtension(models.Model):
                     self._create_normalBom(bom_line.product_id.id)
         return False
 
-ProductProductExtension()
-
 
 class ProductTemporaryNormalBom(osv.osv.osv_memory):
     _inherit = "plm.temporary"
@@ -226,7 +224,7 @@ class ProductTemporaryNormalBom(osv.osv.osv_memory):
             for productBrowse in product_product_type_object.browse(selectdIds):
                 idTemplate = productBrowse.product_tmpl_id.id
                 objBoms = objBrws.env['mrp.bom'].search([('product_tmpl_id', '=', idTemplate),
-                                                      ('type', '=', 'normal')])
+                                                         ('type', '=', 'normal')])
                 if objBoms:
                     raise UserError(_("Normal BoM for Part %r already exists." % (objBoms)))
                 lineMessaggesList = product_product_type_object.create_bom_from_ebom(productBrowse, 'normal', objBrws.summarize, migrate_custom_lines)
@@ -245,7 +243,5 @@ class ProductTemporaryNormalBom(osv.osv.osv_memory):
                             'target': 'new',
                             }
         return {}
-
-ProductTemporaryNormalBom()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
