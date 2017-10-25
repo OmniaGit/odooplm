@@ -1,45 +1,66 @@
 <?xml version="1.0"?>
 <openerp>
-    <data>
+  	<data>
+   
         <report id="report_all_product_product_pdf"
-                string="Print Bom All Levels PDF Drawings"
+                string="Bom All Levels PDF Drawings"
                 model="product.product"
-                name="all.product.product.pdf"
-                report_type="qweb-pdf"
+                name="plm.all_product_pdf"
+                report_type="qweb-html"
                 file=""
                 header="False"
                 />
     </data>
     <data>
         <report id="report_one_product_product_pdf"
-                string="Print Bom One Level PDF Drawings"
+                string="Bom One Level PDF Drawings"
                 model="product.product"
-                name="one.product.product.pdf"
-                report_type="qweb-pdf"
+                name="plm.one_product_pdf"
+                report_type="qweb-html"
                 file=""
                 header="False"
                 />
     </data>
     <data>
         <report id="report_product_product_pdf"
-                string="Print Attached PDF Drawings"
+                string="PDF Drawings"
                 model="product.product"
-                name="product.product.pdf"
-                report_type="qweb-pdf"
+                name="plm.product_pdf"
+                report_type="qweb-html"
                 file=""
                 header="False"
                 />
     </data>
+
     <data>
         <report id="report_product_product_pdf_latest"
-                string="Print All Production PDF Drawings" 
+                string="Production PDF Drawings" 
                 model="product.product"
-                name="product.product.pdf.latest"
-                report_type="qweb-pdf"
+                name="plm.product_production_pdf_latest"
+                report_type="qweb-html"
                 file=""
                 header="False"
                 />
     </data>   
-   
-
+    
+    <data>
+        <report id="report_product_product_one_pdf_latest"
+                string="Production First Level PDF Drawings" 
+                model="product.product"
+                name="plm.product_production_one_pdf_latest"
+                report_type="qweb-html"
+                file=""
+                header="False"
+                />
+    </data>   
+    <data>
+        <report id="report_product_product_all_pdf_latest"
+                string="Production All Level PDF Drawings" 
+                model="product.product"
+                name="plm.product_production_all_pdf_latest"
+                report_type="qweb-html"
+                file=""
+                header="False"
+                />
+    </data>   
 </openerp>

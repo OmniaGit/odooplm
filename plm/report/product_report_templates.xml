@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<template id="plm.product_pdf">
+	   <t t-foreach="docs" t-as="o">
+	   		<div class="o_composer_container">
+	   			<embed width="100%" height="100%" t-att-src="get_content(o, -1)"/>
+	   		</div> 
+	   </t>
+	</template>
+	
+	<template id="plm.one_product_pdf">
+	   <t t-foreach="docs" t-as="o">
+	   		<div class="o_composer_container">
+	   			<embed width="100%" height="100%" t-att-src="get_content(o, 0)"/>
+	   		</div> 
+	   </t>
+	</template>
+	
+	<template id="plm.all_product_pdf">
+	   <t t-foreach="docs" t-as="o">
+	   		<div class="o_composer_container">
+	   			<embed width="100%" height="100%" t-att-src="get_content(o, 1)"/>
+	   		</div> 
+	   </t>
+	</template>
+	
+	<template id="plm.product_production_pdf_latest">
+	   <t t-foreach="docs" t-as="o">
+	   		<div class="o_composer_container">
+	   			<embed width="100%" height="100%" t-att-src="get_content(o, -1, True)"/>
+	   		</div> 
+	   </t>
+	</template>	
+	
+	<template id="plm.product_production_one_pdf_latest">
+	   <t t-foreach="docs" t-as="o">
+	   		<div class="o_composer_container">
+	   			<embed width="100%" height="100%" t-att-src="get_content(o, 0, True)"/>
+	   		</div> 
+	   </t>
+	</template>	
+	
+	<template id="plm.product_production_all_pdf_latest">
+	   <t t-foreach="docs" t-as="o">
+	   		<div class="o_composer_container">
+	   			<embed width="100%" height="100%" t-att-src="get_content(o, 1, True)"/>
+	   		</div> 
+	   </t>
+	</template>	
+
+</odoo>
