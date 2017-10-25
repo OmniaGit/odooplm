@@ -40,4 +40,12 @@ class ResGroups(models.Model):
     custom_procedure = fields.Binary(string=_('Client CustomProcedure'))
     custom_procedure_fname = fields.Char(_("New File name"))
 
+    @api.multi
+    def getCustomProcedure(self):
+        for groupBrws in self:
+            logging.info('Request CustomProcedure file for user %r and group %r' % (groupBrws.env.uid, groupBrws.id))
+            if groupBrws.custom_procedure:
+                return True, groupBrws.custom_procedure, groupBrws.custom_procedure_fname
+        return False, '', groupBrws.custom_procedure_fname
+
 ResGroups()
