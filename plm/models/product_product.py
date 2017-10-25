@@ -530,25 +530,25 @@ class PlmComponent(models.Model):
         if len(docIDs) > 0:
             docBrws = documentType.browse(docIDs)
             if action_name == 'confirm':
-                docBrws.signal_workflow(action_name)
-            elif action_name == 'transmit':
-                docBrws.signal_workflow('confirm')
+                docBrws.action_confirm()
+            elif action_name == 'transmit': # TODO: Why is used? Is correct?
+                docBrws.action_confirm()
             elif action_name == 'draft':
-                docBrws.signal_workflow('correct')
-            elif action_name == 'correct':
-                docBrws.signal_workflow(action_name)
+                docBrws.action_draft()
+            elif action_name == 'correct':  # TODO: Why is used? Is correct?
+                docBrws.action_draft()
             elif action_name == 'reject':
-                docBrws.signal_workflow('correct')
+                docBrws.action_draft()
             elif action_name == 'release':
-                docBrws.signal_workflow(action_name)
+                docBrws.action_release()
             elif action_name == 'undermodify':
                 docBrws.action_cancel()
             elif action_name == 'suspend':
                 docBrws.action_suspend()
             elif action_name == 'reactivate':
-                docBrws.signal_workflow('release')
+                docBrws.action_reactivate()
             elif action_name == 'obsolete':
-                docBrws.signal_workflow(action_name)
+                docBrws.action_obsolete()
         return docIDs
 
     @api.model
@@ -661,7 +661,7 @@ class PlmComponent(models.Model):
                 if not(currentProductId.id in self.ids):
                     childrenProductToEmit.append(currentProductId.id)
                 product_tmpl_ids.append(currentProductId.product_tmpl_id.id)
-            self.browse(childrenProductToEmit).signal_workflow('release')
+            self.browse(childrenProductToEmit).action_release()
             objId = prodTmplType.browse(product_tmpl_ids).write(defaults)
             if (objId):
                 self.browse(product_ids).wf_message_post(body=_('Status moved to: %s.' % (USEDIC_STATES[defaults['state']])))
