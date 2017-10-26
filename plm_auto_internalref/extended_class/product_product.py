@@ -44,6 +44,5 @@ class ProductProductExtension(models.Model):
             logging.info('Internal ref set value %s on engineering_code: %r' % (vals['default_code'], engineering_code))
         return super(ProductProductExtension, self).create(vals)
 
-ProductProductExtension()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data>
+
+    <record model="ir.ui.view" id="view_plm_description">
+        <field name="name">plm.description.view</field>
+        <field name="model">plm.description</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+             <form string="Description"  version="7.0"> 
+             	<sheet>	
+                <group colspan="4" col="4">
+                    <separator colspan="4" string="Note to help selection"/>
+                	<field name="name" select="1" colspan="1"/>
+                    <field name="sequence"/>
+                    <newline/>
+                    <field name="description" select="1" />
+                    <field name="description_en" select="1" />
+                    <separator/>
+  	               	<group colspan="4" col="4" string="Technical Features" name="tech_features">
+	 	                
+	 	                	<group colspan="4" col="4">
+		                    	<separator colspan="4" string="Technical feature label and formatting"/>
+		                    	<field name="umc1"/>
+		                    	<field name="fmt1"/>
+		                    	<newline/>
+		                    	<separator colspan="4" string="Technical feature label and formatting"/>
+		                    	<field name="umc2"/>
+		                    	<field name="fmt2"/>
+		                    	<newline/>
+		                    	<separator colspan="4" string="Technical feature label and formatting"/>
+		                    	<field name="umc3"/>
+		                    	<field name="fmt3"/>
+		                    	<newline/>
+		                	</group>
+		               		<separator colspan="4" string="Normalization Section"/>
+ 	 	                	<group colspan="4" col="4">
+			                    	<separator colspan="4" string="Normalized features formatting"/>
+			                    	<field name="fmtend"/>
+			                    	<newline/>
+			                    	<separator colspan="4" string="Normative reference"/>
+			                    	<field name="unitab"/>
+		                    	<newline/>
+   	               			</group>
+  	                </group>
+               </group> 
+              </sheet> 
+            </form>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="plm_view_description_tree">
+        <field name="name">plm.view.description.tree</field>
+        <field name="model">plm.description</field>
+        <field name="type">tree</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+        	<tree string="Descriptions">
+            		<field name="name"/>
+                   	<field name="description"/>
+                   	<field name="description_en"/>
+                   	<field name="umc1"/>
+                   	<field name="fmt1"/>
+                   	<field name="umc2"/>
+                  	<field name="fmt2"/>
+                   	<field name="umc3"/>
+                  	<field name="fmt3"/>
+                   	<field name="fmtend"/>
+                    <field name="unitab"/>
+                   	<field name="sequence"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="plm_action_description_form">
+        <field name="name">Descriptions</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">plm.description</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="plm_view_description_tree"/>
+    </record>
+
+
+</data>
+</openerp>
+

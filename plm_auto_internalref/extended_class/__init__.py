@@ -26,6 +26,6 @@ Created on 9 Dec 2016
 @author: Daniel Smerghetto
 '''
 
-import product_product
+from . import product_product
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
