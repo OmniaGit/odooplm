@@ -178,12 +178,7 @@ class ReportSpareDocumentOne(models.AbstractModel):
                         except Exception as ex:
                             logging.error(ex)
                             raise ex
-                    NewContext = self.env.context.copy()
-                    NewContext['starting_model'] = 'product.product'
-                    NewContext['active_ids'] = bomBrwsIds.ids
-                    NewContext['active_model'] = 'mrp.bom'
-                    template_ids = self.env['ir.ui.view'].search([('name', '=', 'plm.bom_structure_one')])
-                    pdf = self.env['report'].with_context(NewContext).get_pdf(template_ids, 'plm.bom_structure_one')
+                    pdf = self.env.ref('plm.report_plm_bom_structure_one').sudo().render_qweb_pdf(bomBrwsIds.ids)[0]
                     pageStream = BytesIO()
                     pageStream.write(pdf)
                     output.addPage((pageStream, ''))
@@ -207,12 +202,8 @@ class ReportSpareDocumentOne(models.AbstractModel):
 
     def getFirstPage(self, ids):
         strbuffer = BytesIO()
-        template_ids = self.env['ir.ui.view'].search([('name', '=', 'bom_spare_header')])
-        newContext = self.env.context.copy()
-        newContext['active_ids'] = ids
-        newContext['active_model'] = 'product.product'
         # todo: si rompe qui con v11 .. capire come fare il report da codice 
-        pdf = self.env['report'].with_context(newContext).get_pdf(template_ids, 'plm_spare.bom_spare_header')
+        pdf = self.env.ref('plm_spare.report_product_product_spare_header').sudo().render_qweb_pdf(ids)[0]
         strbuffer.write(pdf)
         return strbuffer
 
