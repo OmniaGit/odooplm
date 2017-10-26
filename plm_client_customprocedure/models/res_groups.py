@@ -43,7 +43,7 @@ class ResGroups(models.Model):
     @api.multi
     def getCustomProcedure(self):
         for groupBrws in self:
-            logging.info('Request CustomProcedure file for user %r and group %r' % (groupBrws.env.uid, groupBrws.id))
+            logging.info('Request CustomProcedure file for user %r and group %r-%r and id %r' % (groupBrws.env.uid, groupBrws.category_id.name, groupBrws.name, groupBrws.id))
             if groupBrws.custom_procedure:
                 return True, groupBrws.custom_procedure, groupBrws.custom_procedure_fname
         return False, '', groupBrws.custom_procedure_fname
