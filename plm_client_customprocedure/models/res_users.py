@@ -56,5 +56,10 @@ class ResUsers(models.Model):
                         return fileContent, fileName
         return '', ''
         
+    @api.multi
+    def open_custommodule_edit(self):
+        for userBrws in self:
+            if userBrws.custom_procedure:
+                pass
 
 ResUsers()

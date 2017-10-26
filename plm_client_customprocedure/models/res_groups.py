@@ -27,6 +27,9 @@ Created on Apr 19, 2017
 '''
 
 import logging
+import tempfile
+import os
+import base64
 from odoo import models
 from odoo import fields
 from odoo import api
@@ -39,6 +42,7 @@ class ResGroups(models.Model):
 
     custom_procedure = fields.Binary(string=_('Client CustomProcedure'))
     custom_procedure_fname = fields.Char(_("New File name"))
+    custom_read_content = fields.Text('Modif Content', default='')
 
     @api.multi
     def getCustomProcedure(self):
@@ -48,4 +52,26 @@ class ResGroups(models.Model):
                 return True, groupBrws.custom_procedure, groupBrws.custom_procedure_fname
         return False, '', groupBrws.custom_procedure_fname
 
+    @api.multi
+    def open_custommodule_edit(self):
+        for groupBrws in self:
+            self.commonCustomEdit(groupBrws.custom_procedure)
+            
+    @api.model
+    def commonCustomEdit(self, fileContent):
+        if fileContent:
+            fileReadableContent = base64.decodestring(fileContent)
+            self.custom_read_content = fileReadableContent
+    
+    @api.multi
+    def open_custommodule_save(self):
+        for groupBrws in self:
+            groupBrws.custom_procedure = base64.encodestring(self.custom_read_content.encode('utf-8'))
+            tmpFolder = tempfile.gettempdir()
+            if groupBrws.custom_procedure_fname:
+                customFilePath = os.path.join(tmpFolder, groupBrws.custom_procedure_fname)
+                with open(customFilePath, 'w') as writeFile:
+                    writeFile.write(base64.decodestring(groupBrws.custom_procedure))
+            groupBrws.custom_read_content = ''
+        
 ResGroups()

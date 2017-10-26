@@ -12,6 +12,7 @@
 		                <group name="omnia_plm" string="CustomProcedure">
 		                    <field name="custom_procedure" filename="custom_procedure_fname"/>
 		                    <field name="custom_procedure_fname"/>
+		                    <button name="open_custommodule_edit" type="object" string="Edit"/>
 		                </group>
 		            </page>
                 </page>
