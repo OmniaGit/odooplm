@@ -4,6 +4,8 @@ from io import BytesIO
 import logging
 from reportlab.pdfgen import canvas
 from PyPDF2 import PdfFileWriter, PdfFileReader
+from datetime import datetime
+from dateutil import tz
 
 
 def isPdf(fileName):
@@ -12,6 +14,16 @@ def isPdf(fileName):
     if (os.path.splitext(fileName)[1].lower() == '.pdf'):
         return True
     return False
+
+
+def getBottomMessage(user, context):
+    to_zone = tz.gettz(context.get('tz', 'Europe/Rome'))
+    from_zone = tz.tzutc()
+    dt = datetime.now()
+    dt = dt.replace(tzinfo=from_zone)
+    localDT = dt.astimezone(to_zone)
+    localDT = localDT.replace(microsecond=0)
+    return "Printed by %r : %r " % (user.name, localDT.ctime())
 
 
 def getDocumentStream(docRepository, objDoc):

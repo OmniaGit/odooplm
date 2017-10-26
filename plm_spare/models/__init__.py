@@ -19,10 +19,10 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-import mrp_bom_extension
-import mrp_bom_line_extension
-import plm_document_extension
-import plm_temporary
-import product_product_kanban_extension
-import product_product_extension
-import plm_description_extension
+from . import mrp_bom_extension
+from . import mrp_bom_line_extension
+from . import plm_document_extension
+from . import plm_temporary
+from . import product_product_kanban_extension
+from . import product_product_extension
+from . import plm_description_extension

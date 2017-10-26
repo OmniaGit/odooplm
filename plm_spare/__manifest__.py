@@ -40,11 +40,11 @@ Add spare BOM and Spare Parts Manual
             'views/plm_description_extension.xml',
             'views/sparebom_view.xml',
             'views/plm_document_view.xml',
-            'views/product_product_kanban.xml',
+            #'views/product_product_kanban.xml',
     ],
     'demo': [],
     'test': [],
-    'installable': False,
+    'installable': True,
     'application': False,
     'auto_install': False,
 }

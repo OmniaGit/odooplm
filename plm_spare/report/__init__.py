@@ -26,4 +26,4 @@ Created on 30 Aug 2016
 @author: Daniel Smerghetto
 '''
 
-import spare_parts_manual
+from . import spare_parts_manual
