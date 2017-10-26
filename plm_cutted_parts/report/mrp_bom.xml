@@ -3,12 +3,12 @@
     <data>
         <template id="plm_cutted_parts.bom_structure_all_cutted">
         	<t t-foreach="docs" t-as="o">
-				<t t-call="report.html_container">
+				<t t-call="web.html_container">
 			        <t t-set="data_report_margin_top" t-value="12"/>
 			        <t t-set="data_report_header_spacing" t-value="9"/>
 			        <t t-set="data_report_dpi" t-value="110"/>
 
-        			<t t-call="report.internal_layout">
+        			<t t-call="web.internal_layout">
         				<div style="border-bottom: 1px solid black;"></div>
             			<div class="page" align="center">
 							<table style="width: 100%; border: 1px solid rgb(202, 202, 202);"  class="table">

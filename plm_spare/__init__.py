@@ -26,5 +26,5 @@ Created on 24 Aug 2016
 @author: Daniel Smerghetto
 '''
 
-import models
-import report
+from . import models
+from . import report

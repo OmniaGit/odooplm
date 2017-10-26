@@ -26,29 +26,26 @@ Created on Apr 15, 2016
 '''
 
 from odoo.osv import osv
-from odoo.report import report_sxw
-from odoo.report.interface import report_int
 from operator import itemgetter
 from odoo import _
 import odoo
+from odoo import api
+from odoo import models
 from odoo.addons.plm.report.book_collector import BookCollector
-from odoo.addons.plm.report.book_collector import external_pdf
+from odoo.addons.plm.report.book_collector import getBottomMessage
+
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 import time
-from io import StringIO
+from io import BytesIO
 import base64
 import os
 import logging
 from datetime import datetime
 from dateutil import tz
 
-try:
-    from PyPDF2 import PdfFileWriter
-    from PyPDF2 import PdfFileReader
-except Exception as ex:
-    logging.warning("PyPDF2 not installed %r" % unicode(ex))
-    from pyPdf import PdfFileWriter
-    from pyPdf import PdfFileReader
+
+from PyPDF2 import PdfFileWriter
+from PyPDF2 import PdfFileReader
 
 
 def isPdf(fileName):
@@ -64,11 +61,12 @@ def getDocumentStream(docRepository, objDoc):
     content = False
     try:
         if (not objDoc.store_fname) and (objDoc.db_datas):
-            content = base64.decodestring(objDoc.db_datas)
+            content = base64.b64decode(objDoc.db_datas)
         else:
-            content = file(os.path.join(docRepository, objDoc.store_fname), 'rb').read()
+            with open(os.path.join(docRepository, objDoc.store_fname), 'rb') as f:
+                content = f.read()
     except Exception as ex:
-        logging.error("getFileStream : Exception (%s)reading  stream on file : %s." % (str(ex), objDoc.datas_fname))
+        logging.error("getFileStream : Exception (%s)reading  stream on file : %s." % (ex, objDoc.datas_fname))
     return content
 
 
@@ -104,140 +102,62 @@ def get_parent(myObject):
             ]
 
 
-def getBottomMessage(user, context):
-        to_zone = tz.gettz(context.get('tz', 'Europe/Rome'))
-        from_zone = tz.tzutc()
-        dt = datetime.now()
-        dt = dt.replace(tzinfo=from_zone)
-        localDT = dt.astimezone(to_zone)
-        localDT = localDT.replace(microsecond=0)
-        return "Printed by " + str(user.name) + " : " + str(localDT.ctime())
+class report_spare_parts_header(models.AbstractModel):
+    _name = 'report.plm_spare.bom_spare_header'
 
-
-class bom_structure_one_sum_custom_report(report_sxw.rml_parse):
-    def __init__(self, cr, uid, name, context):
-        self.env = odoo.api.Environment(cr, uid, context or {})
-        super(bom_structure_one_sum_custom_report, self).__init__(cr, uid, name, context=context)
-        self.localcontext.update({
-            'time': time,
-            'get_children': self.get_children,
-            'bom_type': self.bom_type,
-        })
-
-    def get_children(self, myObject, level=0):
-        result = []
-
-        def _get_rec(bomobject, level):
-            myObject = BomSort(bomobject)
-            tmp_result = []
-            listed = {}
-            keyIndex = 0
-            for l in myObject:
-                res = {}
-                product = l.product_id.product_tmpl_id
-                if product.name in listed.keys():
-                    res = tmp_result[listed[product.name]]
-                    res['pqty'] = res['pqty'] + l.product_qty
-                    tmp_result[listed[product.name]] = res
-                else:
-                    res['name'] = product.engineering_code
-                    res['item'] = l.itemnum
-                    res['pname'] = l.product_id.engineering_code
-                    res['pdesc'] = product.description
-                    res['pcode'] = l.product_id.default_code
-                    res['previ'] = product.engineering_revision
-                    res['pqty'] = l.product_qty
-                    res['uname'] = l.product_uom_id.name
-                    res['pweight'] = product.weight
-                    res['code'] = l.product_id.default_code
-                    res['level'] = level
-                    tmp_result.append(res)
-                    listed[product.name] = keyIndex
-                    keyIndex += 1
-            return result.extend(tmp_result)
-
-        _get_rec(myObject, level + 1)
-
-        return result
-
-    def bom_type(self, myObject):
-        result = dict(self.env.get(myObject._model._name).fields_get(self.cr, self.uid)['type']['selection']).get(myObject.type, '')
-        return _(result)
-
-
-class bom_spare_header(report_sxw.rml_parse):
-    def __init__(self, cr, uid, name, context):
-        super(bom_spare_header, self).__init__(cr, uid, name, context=context)
-        self.cr = cr
-        self.uid = uid
-        self.env = odoo.api.Environment(cr, uid, context or {})
-        self.context = context
-        self.localcontext.update({
-            'time': time,
-            'get_component_brws': self.get_component_brws,
-            'get_document_brws': self.get_document_brws,
-        })
-
-    def get_component_brws(self):
-        # self.pool = pooler.get_pool(self.cr.dbname)
-        # FIXME: odoo removed pooler fix me
-        component_ids = self.context.get('active_ids', [])
-        for compBrws in self.env['product.product'].browse(component_ids):
-            return compBrws
-        return ''
-
-    def get_document_brws(self):
-        productBrws = self.get_component_brws()
-        oldest_dt = datetime.now()
+    def get_document_brws(self, objProduct):
         oldest_obj = None
-        for linkedBrwsDoc in productBrws.linkeddocuments:
-            create_date_str = linkedBrwsDoc.create_date
-            create_date = datetime.strptime(create_date_str, DEFAULT_SERVER_DATETIME_FORMAT)
-            if create_date < oldest_dt:
-                oldest_dt = create_date
-                oldest_obj = linkedBrwsDoc
+        oldest_dt = None
+        if objProduct:
+            for linkedBrwsDoc in objProduct.linkeddocuments:
+                create_date_str = linkedBrwsDoc.create_date
+                create_date = datetime.strptime(create_date_str, DEFAULT_SERVER_DATETIME_FORMAT)
+                if oldest_dt is None or create_date < oldest_dt:
+                    oldest_dt = create_date
+                    oldest_obj = linkedBrwsDoc
         return oldest_obj
 
+    def get_report_values(self, docids, data=None):
+        products = self.env['product.product'].browse(docids)
+        return {'docs': products,
+                'time': time,
+                'get_document_brws': self.get_document_brws}
 
-class report_spare_parts_header(osv.AbstractModel):
-    _name = 'report.plm_spare.bom_spare_header'
-    _inherit = 'report.abstract_report'
-    _template = 'plm_spare.bom_spare_header'
-    _wrapped_report_class = bom_spare_header
 
-
-class component_spare_parts_report(report_int):
+class ReportSpareDocumentOne(models.AbstractModel):
+    _name = 'report.plm_spare.pdf_one'
     """
     Calculates the bom structure spare parts manual
     """
-    def create(self, cr, uid, ids, datas, context=None):
+
+    @api.model
+    def create(self, components):
         recursion = True
-        if self._report_int__name == 'report.product.product.spare.parts.pdf.one':
+        if ReportSpareDocumentOne._name == 'report.plm_spare.pdf_one':
             recursion = False
         self.processedObjs = []
-        self.env = odoo.api.Environment(cr, uid, context or {})
+
         componentType = self.env['product.product']
         bomType = self.env['mrp.bom']
-        user = self.env['res.users'].browse(uid)
-        msg = getBottomMessage(user, context)
-        output = BookCollector(customTest=(True, msg))
-        components = componentType.browse(ids)
+        user = self.env['res.users'].browse(self.env.uid)
+        msg = getBottomMessage(user, self.env.context)
+        mainBookCollector = BookCollector(customTest=(True, msg))
         for component in components:
             self.processedObjs = []
-            buf = self.getFirstPage(cr, uid, [component.id], context)
-            output.addPage((buf, ''))
-            self.getSparePartsPdfFile(cr, uid, context, component, output, componentType, bomType, recursion)
-        if output is not None:
-            pdf_string = StringIO.StringIO()
-            output.collector.write(pdf_string)
-            self.obj = external_pdf(pdf_string.getvalue())
-            self.obj.render()
+            buf = self.getFirstPage([component.id])
+            mainBookCollector.addPage((buf, ''))
+            self.getSparePartsPdfFile(component, mainBookCollector, componentType, bomType, recursion)
+        if mainBookCollector is not None:
+            pdf_string = BytesIO()
+            mainBookCollector.collector.write(pdf_string)
+            out = pdf_string.getvalue()
             pdf_string.close()
-            return (self.obj.pdf, 'pdf')
+            byteString = b"data:application/pdf;base64," + base64.b64encode(out)
+            return byteString.decode('UTF-8')
         logging.warning('Unable to create PDF')
         return (False, '')
 
-    def getSparePartsPdfFile(self, cr, uid, context, product, output, componentTemplate, bomTemplate, recursion):
+    def getSparePartsPdfFile(self, product, output, componentTemplate, bomTemplate, recursion):
         packedObjs = []
         packedIds = []
         if product in self.processedObjs:
@@ -252,51 +172,56 @@ class component_spare_parts_report(report_int):
                     packedObjs.append(bom_line.product_id)
                     packedIds.append(bom_line.id)
                 if len(packedIds) > 0:
-                    for pageStream in self.getPdfComponentLayout(cr, product):
+                    for pageStream in self.getPdfComponentLayout(product):
                         try:
                             output.addPage((pageStream, ''))
                         except Exception as ex:
                             logging.error(ex)
                             raise ex
-                    NewContext = context.copy()
+                    NewContext = self.env.context.copy()
                     NewContext['starting_model'] = 'product.product'
                     NewContext['active_ids'] = bomBrwsIds.ids
                     NewContext['active_model'] = 'mrp.bom'
                     template_ids = self.env['ir.ui.view'].search([('name', '=', 'plm.bom_structure_one')])
                     pdf = self.env['report'].with_context(NewContext).get_pdf(template_ids, 'plm.bom_structure_one')
-                    pageStream = StringIO.StringIO()
+                    pageStream = BytesIO()
                     pageStream.write(pdf)
                     output.addPage((pageStream, ''))
                     if recursion:
                         for packedObj in packedObjs:
                             if packedObj not in self.processedObjs:
-                                self.getSparePartsPdfFile(cr, uid, context, packedObj, output, componentTemplate, bomTemplate, recursion)
+                                self.getSparePartsPdfFile(packedObj, output, componentTemplate, bomTemplate, recursion)
 
-    def getPdfComponentLayout(self, cr, component):
+    def getPdfComponentLayout(self, component):
         ret = []
         docRepository = self.env['plm.document']._get_filestore()
         for document in component.linkeddocuments:
             if (document.usedforspare) and (document.type == 'binary'):
                 if document.printout and str(document.printout) != 'None':
-                    ret.append(StringIO.StringIO(base64.decodestring(document.printout)))
+                    ret.append(BytesIO(base64.b64decode(document.printout)))
                 elif isPdf(document.datas_fname):
                     value = getDocumentStream(docRepository, document)
                     if value:
-                        ret.append(StringIO.StringIO(value))
+                        ret.append(BytesIO(value))
         return ret
 
-    def getFirstPage(self, cr, uid, ids, context):
-        strbuffer = StringIO.StringIO()
+    def getFirstPage(self, ids):
+        strbuffer = BytesIO()
         template_ids = self.env['ir.ui.view'].search([('name', '=', 'bom_spare_header')])
-        newContext = context.copy()
+        newContext = self.env.context.copy()
         newContext['active_ids'] = ids
         newContext['active_model'] = 'product.product'
+        # todo: si rompe qui con v11 .. capire come fare il report da codice 
         pdf = self.env['report'].with_context(newContext).get_pdf(template_ids, 'plm_spare.bom_spare_header')
         strbuffer.write(pdf)
         return strbuffer
 
+    @api.model
+    def get_report_values(self, docids, data=None):
+        documents = self.env['product.product'].browse(docids)
+        return {'docs': documents,
+                'get_content': self.create}
 
-component_spare_parts_report('report.product.product.spare.parts.pdf')
 
-
-component_spare_parts_report('report.product.product.spare.parts.pdf.one')
+class ReportSpareDocumentAll(ReportSpareDocumentOne):
+    _name = 'report.plm_spare.pdf_all'

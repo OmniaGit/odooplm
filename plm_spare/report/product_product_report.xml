@@ -4,33 +4,30 @@
         <report id="report_product_product_spare_parts_pdf"
                 string="Print Spare Parts Manual"
                 model="product.product"
-                name="product.product.spare.parts.pdf"
-                report_type="sxw"
+                name="plm_spare.pdf_all"
+                report_type="qweb-html"
                 file=""
                 header="False"
                 />
     </data>
- 
     <data>
         <report id="report_product_product_spare_parts_pdf_one"
                 string="Print Spare Parts Manual One Level"
                 model="product.product"
-                name="product.product.spare.parts.pdf.one"
-                report_type="sxw"
+                name="plm_spare.pdf_one"
+                report_type="qweb-html"
                 file=""
                 header="False"
                 />
     </data>
-
     <data>
         <report id="report_product_product_spare_header"
                 model="product.product"
                 string="Print Spare Header"
-        		report_type="qweb-pdf"    
+        		report_type="qweb-html"    
                 name="plm_spare.bom_spare_header"  
                 file="plm_spare.bom_spare_header"   
         		groups="plm.group_plm_admin" 
                   />
     </data>
-
 </openerp>

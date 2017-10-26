@@ -28,6 +28,7 @@ from odoo import _
 from odoo import api
 from odoo import models
 from odoo.exceptions import UserError
+from odoo.addons.plm.report.book_collector import getBottomMessage
 
 
 def getEmptyDocument():
@@ -193,16 +194,6 @@ NSAwMDAwMCBuIAowMDAwMDA4NTAyIDAwMDAwIG4gCnRyYWlsZXIKPDwvU2l6ZSAxNC9Sb290IDEy
 IDAgUgovSW5mbyAxMyAwIFIKL0lEIFsgPEMzRDZBMzFBMTcxNkU1QjAyMjkxN0Y4QzkxQUM1MDk3
 Pgo8QzNENkEzMUExNzE2RTVCMDIyOTE3RjhDOTFBQzUwOTc+IF0KL0RvY0NoZWNrc3VtIC8wQjMy
 RjYxNzJGNDFCNzYwNjRBM0NDQjFEMTgxOTFCQgo+PgpzdGFydHhyZWYKODc0NwolJUVPRgo=""")
-
-
-def getBottomMessage(user, context):
-    to_zone = tz.gettz(context.get('tz', 'Europe/Rome'))
-    from_zone = tz.tzutc()
-    dt = datetime.now()
-    dt = dt.replace(tzinfo=from_zone)
-    localDT = dt.astimezone(to_zone)
-    localDT = localDT.replace(microsecond=0)
-    return "Printed by %r : %r " % (user.name, localDT.ctime())
 
 
 def commonInfos(env):
