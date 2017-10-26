@@ -28,8 +28,10 @@
     'sequence': 15,
     'summary': 'PLM Client Custom Procedure',
     'images': [],
-    'depends': [],
-    'description': """ """,
+    'depends': ['plm'],
+    'description': """ 
+    Allow to use custom client properties mapping
+    """,
     'data': [
         'views/res_users.xml',
         'views/res_groups.xml',
@@ -38,7 +40,7 @@
         ],
     'test': [
         ],
-    'installable': False,
+    'installable': True,
     'application': False,
     'auto_install': False,
 }

@@ -40,5 +40,21 @@ class ResUsers(models.Model):
     custom_procedure = fields.Binary(string=_('Client CustomProcedure'))
     custom_procedure_fname = fields.Char(_("New File name"))
 
+    @api.multi
+    def getCustomProcedure(self):
+        for userBrws in self.browse(self.env.uid):
+            logging.info('Request CustomProcedure file for user %r' % (userBrws.env.uid))
+            if userBrws.custom_procedure:
+                return userBrws.custom_procedure, userBrws.custom_procedure_fname
+            else:
+                for groupBrws in userBrws.groups_id:
+                    res, fileContent, fileName = groupBrws.getCustomProcedure()
+                    if not res:
+                        continue
+                    else:
+                        logging.info('Got CustomProcedure file from group %r-%r with ID %r' % (groupBrws.category_id.name, groupBrws.name, groupBrws.id))
+                        return fileContent, fileName
+        return '', ''
+        
 
 ResUsers()

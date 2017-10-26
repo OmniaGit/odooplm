@@ -25,6 +25,7 @@ import base64
 import os
 import time
 import json
+import copy
 from datetime import datetime
 import odoo.tools as tools
 from odoo.exceptions import UserError
@@ -753,8 +754,8 @@ class PlmDocument(models.Model):
 
     @api.one
     def _is_checkout(self):
-        chechRes = self.getCheckedOut(self.id, None)
-        if chechRes:
+        _docName, _docRev, chekOutUser, _hostName = self.getCheckedOut(self.id, None)
+        if chekOutUser:
             self.is_checkout = True
         else:
             self.is_checkout = False
@@ -1104,7 +1105,7 @@ class PlmDocument(models.Model):
                    checkOutBrws.documentid.revisionid,
                    self.getUserSign(checkOutBrws.userid.id),
                    checkOutBrws.hostname)
-        return False
+        return ('', False, '', '')
 
     @api.model
     def _file_delete(self, fname):
@@ -1212,7 +1213,7 @@ class PlmDocument(models.Model):
                 documentId = id(documentProperty)
                 documentAttributes[documentId] = documentProperty
             productProperty = structure.get('PRODUCT_ATTRIBUTES', False)
-            if productProperty:
+            if productProperty and productProperty.get('engineering_code', ''):
                 productId = id(productProperty)
                 productAttributes[productId] = productProperty
             if productId and documentId:
@@ -1233,11 +1234,12 @@ class PlmDocument(models.Model):
                     listItem = productRelations.get(parentProductId, [])
                     listItem.append(itemTuple)
                     productRelations[parentProductId] = listItem
-                else:   # Case of drawing - model relation
+                else:
                     if productId and parentDocumentId:
-                        listRelated = productDocumentRelations.get(productId, [])
-                        listRelated.append(parentDocumentId)
-                        productDocumentRelations[productId] = listRelated
+                        if not parentProductId: # Case of drawing - model relation
+                            listRelated = productDocumentRelations.get(productId, [])
+                            listRelated.append(parentDocumentId)
+                            productDocumentRelations[productId] = listRelated
             for subStructure in structure.get('RELATIONS', []):
                 populateStructure((documentId, productId), subStructure)
         populateStructure(structure=objStructure)
@@ -1366,21 +1368,35 @@ class PlmDocument(models.Model):
         logging.debug("Time Spend For save structure is: %s" % (str(end - start)))
         return jsonify
 
-    @api.model
+    @api.multi
     def checkout(self, hostName, hostPws):
         """
         check out the current document
         """
-        if self.is_checkout:
-            raise UserError(_("Unable to check-Out a document that is already checked id by user %r" % self.checkout_user))
-        if self.state in ['released', 'obsoleted']:
-            raise UserError(_("Unable to check-Outcheck-Out a document that is in state %r" % self.state))
+        self.canCheckOut(showError=True)
         values = {'userid': self.env.uid,
                   'hostname': hostName,
                   'hostpws': hostPws,
                   'documentid': self.id}
-        self.env['plm.checkout'].create(values)
+        res = self.env['plm.checkout'].create(values)
+        return res.id
 
+    @api.multi
+    def canCheckOut(self, showError=False):
+        for docBrws in self:
+            if docBrws.is_checkout:
+                msg = _("Unable to check-Out a document that is already checked id by user %r" % docBrws.checkout_user)
+                if showError:
+                    raise UserError(msg)
+                return False, msg
+            if docBrws.state != 'draft':
+                msg = _("Unable to check-Outcheck-Out a document that is in state %r" % docBrws.state)
+                if showError:
+                    raise UserError(msg)
+                return False, msg
+            return True, ''
+        return False, 'No document provided'
+        
     @api.model
     def needUpdate(self):
         """
@@ -1405,12 +1421,46 @@ class PlmDocument(models.Model):
                 'datas_fname': self.datas_fname,
                 '_id': self.id,
                 'can_revise': self.canBeRevised(),
+                'DOC_TYPE': self.document_type
                 }
 
     @api.model
     def getCloneRevisionStructure(self, values=[]):
         if not values:
             return {}
+        docProps = values[0]
+        docName = docProps.get('name', '')
+        docRev = docProps.get('revisionid', None)
+        if not docName or docRev is None:
+            logging.warning('No name or not revision passed by the client %r' % (docProps))
+            return {}
+        docBrws = self.search([
+            ('name', '=', docName),
+            ('revisionid', '=', docRev)
+            ])
+        
+        rootDocInfos = docBrws.getDocumentInfos()
+        rootDocInfos['root_document'] = True
+        linkedDocs = [{'component': {}, 'document': rootDocInfos}]
+        linkedDocs.extend(docBrws.computeLikedDocuments())
+        return {
+            'root_props': docBrws.getDocumentInfos(),
+            'documents': linkedDocs,
+            'bom': [],
+            }
+
+    @api.multi
+    def computeLikedDocuments(self):
+        '''
+            Get child documents in document relations
+        '''
+        # Check dei grezzi e delle relazioni parte modello. Non devono comparire nella vista
+        docList = []
+        linkedDocEnv = self.env['plm.document.relation']
+        for linkedBrws in linkedDocEnv.search([('child_id', '=', self.id)]):
+            if linkedBrws.parent_id.document_type.upper() == '2D':  # Append only 2D relations
+                docList.append({'component': {}, 'document': linkedBrws.parent_id.getDocumentInfos()})
+        return docList
 
     @api.multi
     def canBeRevised(self):
@@ -1419,6 +1469,122 @@ class PlmDocument(models.Model):
                 return True
         return False
 
+    @api.multi
+    def cleanDocumentRelations(self):
+        linkedDocEnv = self.env['plm.document.relation']
+        for docBrws in self:
+            for linkedBrws in linkedDocEnv.search([('child_id', '=', docBrws.id), ('parent_id', '=', docBrws.id)]):
+                linkedBrws.unlink()
+
+    def getDocumentBrws(self, docVals):
+        docName = docVals.get('name', '')
+        docRev = docVals.get('revisionid', None)
+        if not docName or docRev is None:
+            return self.browse()
+        return self.search([
+            ('name', '=', docName),
+            ('revisionid', '=', docRev),
+            ])
+        
+    @api.model
+    def checkStructureExistance(self, args):
+        prodProdEnv = self.env['product.product']
+        jsonNode = args[0]
+        rootNode = json.loads(jsonNode)
+        
+        def getLinkedDocumentsByComponent(node, compBrws):
+            '''
+                Append in the node relations documents taken by linkeddocuments
+            '''
+            if compBrws.id:
+                # In this case I start to clone a part/assembly which has a related drawing,
+                # I don't have in the CAD structure the link between them...
+                for docBrws in compBrws.linkeddocuments:
+                    if docBrws.id == node['DOCUMENT_ATTRIBUTES'].get('_id'):
+                        # I'm evaluating root part/document
+                        continue
+                    newNode = copy.deepcopy(node)
+                    newNode['DOCUMENT_ATTRIBUTES'] = docBrws.getDocumentInfos()
+                    newNode['DOCUMENT_ATTRIBUTES']['CAN_BE_REVISED'] = docBrws.canBeRevised()
+                    node['RELATIONS'].append(newNode)
+        
+        def getLinkedDocumentsByDocument(node, docBrws):
+            '''
+                Append in the node relations documents taken by plm.document.relation
+            '''
+            linkedDocEnv = self.env['plm.document.relation']
+            if docBrws.id:
+                typeDoc = ''
+                if docBrws.document_type.upper() == '3D':
+                    typeDoc = 'child_id'
+                else:
+                    typeDoc = 'parent_id'
+                for docLinkBrws in linkedDocEnv.search([(typeDoc, '=', docBrws.id)]):
+                    relatedDocBrws = False
+                    if docLinkBrws.child_id.id == docBrws.id:
+                        relatedDocBrws = docLinkBrws.parent_id
+                    else:
+                        relatedDocBrws = docLinkBrws.child_id
+                    if relatedDocBrws and relatedDocBrws.document_type.upper() == '2D': # If not 2D is a raw part
+                        newNode = copy.deepcopy(node)
+                        newNode['DOCUMENT_ATTRIBUTES'] = relatedDocBrws.getDocumentInfos()
+                        newNode['DOCUMENT_ATTRIBUTES']['CAN_BE_REVISED'] = relatedDocBrws.canBeRevised()
+                        node['RELATIONS'].append(newNode)
+                    
+        def recursionUpdate(node, isRoot=False):
+            # Update root component and document ids
+            compVals = node.get('PRODUCT_ATTRIBUTES', {})
+            compBrws = prodProdEnv.getComponentBrws(compVals)
+            node['PRODUCT_ATTRIBUTES'] = compBrws.getComponentInfos()
+            node['PRODUCT_ATTRIBUTES']['CAN_BE_REVISED'] = compBrws.canBeRevised()
+            rootDocVals = node.get('DOCUMENT_ATTRIBUTES', {})
+            rootDocBrws = self.getDocumentBrws(rootDocVals)
+            node['DOCUMENT_ATTRIBUTES'] = rootDocBrws.getDocumentInfos()
+            node['DOCUMENT_ATTRIBUTES']['CAN_BE_REVISED'] = rootDocBrws.canBeRevised()
+            if isRoot:
+                node['PRODUCT_ATTRIBUTES']['CAN_BE_REVISED'] = True # Has already been revised
+                engcode = compVals.get('engineering_code')
+                if not engcode: # Has already been revised and contains only document props
+                    node['PRODUCT_ATTRIBUTES']['CAN_BE_REVISED'] = False
+                    node['DOCUMENT_ATTRIBUTES']['CAN_BE_REVISED'] = True
+            compId = compBrws.id
+            for relatedNode in node.get('RELATIONS', []):   # Caso grezzo
+                recursionUpdate(relatedNode)
+            if compId:
+                getLinkedDocumentsByComponent(node, compBrws)   # Only if component infos
+            else:
+                getLinkedDocumentsByDocument(node, rootDocBrws) # Only for document infos
+
+        recursionUpdate(rootNode, True)
+        return json.dumps(rootNode)
+
+    @api.model
+    def getCheckedOutAttrs(self, vals):
+        outDict = {}
+        attrsList, hostname, hostpws = vals
+        for fileDict in attrsList:
+            outLocalDict = fileDict.copy()
+            file_path = fileDict.get('file_path', '')
+            docBrwsList = self.getDocumentBrws(fileDict)
+            outLocalDict['can_checkout'] = False
+            outLocalDict['hostname'] = hostname
+            outLocalDict['hostpws'] = hostpws
+            outLocalDict['state'] = ''
+            outLocalDict['_id'] = False
+            if not docBrwsList:
+                outLocalDict['help_checkout'] = _('Unable to find document to check-out. Please save it.') 
+            else:
+                for docBrws in docBrwsList:
+                    outLocalDict['_id'] = docBrws.id
+                    outLocalDict['state'] = docBrws.state
+                    flag, msg = docBrws.canCheckOut(showError=False)
+                    if flag:
+                        outLocalDict['can_checkout'] = True
+                    outLocalDict['help_checkout'] = msg
+                    break
+            outDict[file_path] = outLocalDict
+        return outDict
+        
 PlmDocument()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

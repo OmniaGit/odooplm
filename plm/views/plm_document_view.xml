@@ -129,7 +129,13 @@
         <field name="type">tree</field>
         <field name="priority" eval="1"/>
         <field name="arch" type="xml">
-			<tree string="Documents">
+			<tree string="Documents" 
+				decoration-bf="state != ''"
+            	decoration-info="state == 'confirmed'"
+            	decoration-success="state == 'released'"
+            	decoration-warning="state == 'undermodify'"
+            	decoration-muted="state == 'obsoleted'">
+
                 <field name="name" 			select="True"/>
                 <field name="revisionid" 	select="True"/>
                 <field name="state" 		select="True"/>

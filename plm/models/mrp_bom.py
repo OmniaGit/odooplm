@@ -288,19 +288,30 @@ class MrpBomExtension(models.Model):
         return (relDatas, prtDatas, self._getpackreldatas(relDatas, prtDatas))
 
     @api.model
-    def _implodebom(self, bomObjs):
+    def _implodebom(self, bomLineObjs):
         """
             Execute implosion for a a bom object
         """
+        def getProductId(bomLocalObj):
+            prodId = bomLocalObj.product_id.id
+            if not prodId:
+                trmplBrws = bomLocalObj.product_tmpl_id
+                if trmplBrws:
+                    for variantBrws in trmplBrws.product_variant_ids:
+                        return variantBrws.id
+            return False
+            
         pids = []
-        for bomObj in bomObjs:
-            if not bomObj.bom_id:
+        for bomLineObj in bomLineObjs:
+            if not bomLineObj.bom_id:
                 continue
-            if bomObj.bom_id.id in self._packed:
+            bomObj = bomLineObj.bom_id
+            parentBomId = bomObj.id
+            if parentBomId in self._packed:
                 continue
-            self._packed.append(bomObj.bom_id.id)
-            bomFthObj = self.browse([bomObj.bom_id.id]).with_context({})
-            innerids = self._implodebom(self._getinbom(bomFthObj.product_id.id))
+            self._packed.append(parentBomId)
+            bomFthObj = bomObj.with_context({})
+            innerids = self._implodebom(self._getinbom(getProductId(bomFthObj)))
             prodId = bomFthObj.product_id.id
             if not prodId:
                 prodBrwsIds = bomFthObj.product_tmpl_id.product_variant_ids
@@ -325,8 +336,8 @@ class MrpBomExtension(models.Model):
             sid = resIds[1]
         oid = resIds[0]
         relDatas.append(oid)
-        bomId = self._getinbom(oid, sid)
-        relDatas.append(self._implodebom(bomId))
+        bomLineBrwsList = self._getinbom(oid, sid)
+        relDatas.append(self._implodebom(bomLineBrwsList))
         prtDatas = self._getpackdatas(relDatas)
         return (relDatas, prtDatas, self._getpackreldatas(relDatas, prtDatas))
 
