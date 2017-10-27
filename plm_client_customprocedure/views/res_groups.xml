@@ -14,7 +14,7 @@
 		                    <field name="custom_procedure_fname"/>
 		                    <button name="open_custommodule_edit" type="object" string="Edit"/>
 		                    <button name="open_custommodule_save" type="object" string="Save"/>
-		                    <field name="custom_read_content" nolabel="1" attrs="{'invisible': [('custom_read_content', 'in', [False, ''])]}" style="min-height:1000px;width:100%"/>
+		                    <field name="custom_read_content" nolabel="1" colspan="2" attrs="{'invisible': [('custom_read_content', 'in', [False, ''])]}" style="min-height:1000px;width:100%"/>
 		                </group>
 		            </page>
 			    </notebook>

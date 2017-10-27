@@ -31,12 +31,16 @@ from odoo import fields
 from odoo import api
 from odoo import _
 import logging
+import base64
+import tempfile
+import os
 
 
 class ResUsers(models.Model):
     _name = 'res.users'
     _inherit = 'res.users'
 
+    custom_read_content = fields.Text(_('Modif Content'), default='')
     custom_procedure = fields.Binary(string=_('Client CustomProcedure'))
     custom_procedure_fname = fields.Char(_("New File name"))
 
@@ -59,7 +63,22 @@ class ResUsers(models.Model):
     @api.multi
     def open_custommodule_edit(self):
         for userBrws in self:
-            if userBrws.custom_procedure:
-                pass
+            self.commonCustomEdit(userBrws.custom_procedure)
 
-ResUsers()
+    @api.model
+    def commonCustomEdit(self, fileContent):
+        if fileContent:
+            fileReadableContent = base64.decodestring(fileContent)
+            self.custom_read_content = fileReadableContent
+     
+    @api.multi
+    def open_custommodule_save(self):
+        for userBrws in self:
+            userBrws.custom_procedure = base64.encodestring(self.custom_read_content.encode('utf-8'))
+            tmpFolder = tempfile.gettempdir()
+            if userBrws.custom_procedure_fname:
+                customFilePath = os.path.join(tmpFolder, userBrws.custom_procedure_fname)
+                with open(customFilePath, 'w') as writeFile:
+                    writeFile.write(base64.decodestring(userBrws.custom_procedure))
+            userBrws.custom_read_content = ''
+
