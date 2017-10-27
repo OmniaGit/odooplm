@@ -25,9 +25,9 @@ Created on Mar 7, 2017
 
 @author: daniel
 '''
-import plm_box
-import settings
-import plm_document
-import plm_checkout
+from . import plm_box
+from . import settings
+from . import plm_document
+from . import plm_checkout
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
