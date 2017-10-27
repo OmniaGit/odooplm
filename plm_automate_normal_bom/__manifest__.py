@@ -21,7 +21,7 @@
 ##############################################################################
 {
     'name': 'PLM Automate Normal Bom',
-    'version': '1.1',
+    'version': '11.0',
     'author': 'OmniaSolutions',
     'website': 'http://www.omniasolutions.eu',
     'category': 'Product Lifecycle Management',

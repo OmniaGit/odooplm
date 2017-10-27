@@ -1,2 +1,2 @@
-import plm_temporary
-import plm_document
+from . import plm_temporary
+from . import plm_document

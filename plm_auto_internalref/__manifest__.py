@@ -21,7 +21,7 @@
 ##############################################################################
 {
     'name': 'PLM Auto Internal Reference',
-    'version': '1.1',
+    'version': '11.0',
     'author': 'OmniaSolutions',
     'website': 'http://www.omniasolutions.website',
     'category': 'Product Lifecycle Management',

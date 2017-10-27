@@ -49,6 +49,7 @@ class PlmConfigSettings(models.TransientModel):
     module_plm_automated_convertion = fields.Boolean("Activate the server convertion tool")
     module_plm_project = fields.Boolean("Activate the PLM Project connection")
     module_plm_client_customprocedure = fields.Boolean("Activate the PLM Client mapping")
+
 PlmConfigSettings()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
