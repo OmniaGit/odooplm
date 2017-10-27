@@ -601,7 +601,7 @@ class MrpBomExtension(models.Model):
             return {'name': _('B.O.M. Lines'),
                     'res_model': 'mrp.bom.line',
                     'view_type': 'form',
-                    'view_mode': 'tree',
+                    'view_mode': 'pivot,tree',
                     'type': 'ir.actions.act_window',
                     'domain': [('id', 'in', bomLineIds)],
                     'context': {"group_by": ['bom_id']},
