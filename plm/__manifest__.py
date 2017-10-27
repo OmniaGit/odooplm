@@ -69,6 +69,8 @@ Supported Editors :
         * SolidWorks 2011 (and above)
         * Inventor 2011 (and above)
         * SolidEdge ST3 (and above)
+        * Autocad 2013 (and above)
+        * FreeCAD 0.16 (and above)
 
     * Category : CAE / Electrical CAD
         * SPAC 2013 (needs SDProget connector license)

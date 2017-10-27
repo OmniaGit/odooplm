@@ -39,5 +39,5 @@ from . import plm_checkout
 from . import plm_config_settings
 from . import mrp_bom
 from . import mrp_bom_line
-from . import document_report
+from . import report_on_document
 from . import plm_temporary

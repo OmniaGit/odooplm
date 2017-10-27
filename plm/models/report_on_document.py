@@ -61,8 +61,6 @@ class report_plm_document_file(models.Model):
              )
         """)
 
-report_plm_document_file()
-
 
 class report_plm_document_user(models.Model):
     _name = "report.plm_document.user"
@@ -111,8 +109,6 @@ class report_plm_document_user(models.Model):
                        size=64,
                        readonly=True)
 
-report_plm_document_user()
-
 
 class report_plm_files_partner(models.Model):
     _name = "report.plm_files.partner"
@@ -146,8 +142,6 @@ class report_plm_files_partner(models.Model):
                              readonly=True,
                              translate=True)
 
-report_plm_files_partner()
-
 
 class report_plm_document_wall(models.Model):
     _name = "report.plm_document.wall"
@@ -167,6 +161,5 @@ class report_plm_document_wall(models.Model):
     last = fields.Datetime(_('Last Posted Time'),
                            readonly=True)
 
-report_plm_document_wall()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
