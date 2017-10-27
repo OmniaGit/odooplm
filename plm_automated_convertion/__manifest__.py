@@ -21,7 +21,7 @@
 ##############################################################################
 {
     'name': 'Product Lifecycle Management Batch conversion',
-    'version': '1.1',
+    'version': '11.0',
     'author': 'OmniaSolutions',
     'website': 'http://www.omniasolutions.eu',
     'category': 'Product Lifecycle Management',
@@ -40,7 +40,7 @@ for more information send an e mail at info@omniasolutions.eu
              'view/data.xml'],
     'demo': [],
     'test': [],
-    'installable': False,
+    'installable': True,
     'application': False,
     'auto_install': False,
 }
