@@ -26,18 +26,9 @@
             <field name="condition">True</field>
             <field name="type">ir.actions.server</field>
             <field name="model_id" ref="model_product_product"/>
+            <field name="binding_model_id" ref="product.model_product_product"/>
             <field name="state">code</field>
-            <field name="code">env['product.product'].browse(context['active_ids']).computeBomWeightAction()</field>
-        </record>
-
-        <record model="ir.values" id="action_bom_weight_computed_value">
-            <field name="name">action_bom_weight_computed</field>
-            <field name="action_id" ref="action_bom_weight_computed" />
-            <field name="value" eval="'ir.actions.server,' + str(ref('action_bom_weight_computed'))" />
-            <field name="key">action</field>
-            <field name="model_id" ref="model_product_product" />
-            <field name="model">product.product</field>
-            <field name="key2">client_action_multi</field>
+            <field name="code">env['product.product'].browse(env.context['active_ids']).computeBomWeightAction()</field>
         </record>
         
 	</data>
