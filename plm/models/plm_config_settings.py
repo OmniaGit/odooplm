@@ -30,8 +30,8 @@ from odoo import fields
 from odoo import _
 
 
-class PlmConfigSettings(models.Model):
-    _name = 'plm.config.settings'
+class PlmConfigSettings(models.TransientModel):
+    _name = 'res.config.settings'
     _inherit = 'res.config.settings'
 
     module_plm_automate_normal_bom = fields.Boolean(_("Allow to create normal BOM if not exists and product are released."))
@@ -48,6 +48,7 @@ class PlmConfigSettings(models.Model):
     module_plm_auto_internalref = fields.Boolean("Populate internal reference with engineering infos")
     module_plm_automated_convertion = fields.Boolean("Activate the server convertion tool")
     module_plm_project = fields.Boolean("Activate the PLM Project connection")
+    module_plm_client_customprocedure = fields.Boolean("Activate the PLM Client mapping")
 PlmConfigSettings()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
