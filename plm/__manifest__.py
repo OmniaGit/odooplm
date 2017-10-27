@@ -69,6 +69,8 @@ Supported Editors :
         * SolidWorks 2011 (and above)
         * Inventor 2011 (and above)
         * SolidEdge ST3 (and above)
+        * Autocad 2013 (and above)
+        * FreeCAD 0.16 (and above)
 
     * Category : CAE / Electrical CAD
         * SPAC 2013 (needs SDProget connector license)
@@ -85,7 +87,6 @@ Supported Editors :
             'views/plm_description_view.xml',
             'views/plm_document_relations.xml',
             'views/plm_document_view.xml',
-            #  'views/plm_dashboard_view.xml',     # After plm_document_view.xml
             'views/plm_finishing_view.xml',
             'views/plm_material_view.xml',
             'views/product_product_extension_view.xml',

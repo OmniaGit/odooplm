@@ -26,5 +26,5 @@ Created on Apr 19, 2017
 @author: daniel
 '''
 
-import res_users
-import res_groups
+from . import res_users
+from . import res_groups

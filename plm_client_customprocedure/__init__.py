@@ -26,4 +26,4 @@ Created on Apr 19, 2017
 @author: Daniel Smerghetto
 '''
 
-import models
+from . import models

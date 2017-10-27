@@ -23,7 +23,7 @@
     'name': 'PLM Auto Internal Reference',
     'version': '1.1',
     'author': 'OmniaSolutions',
-    'website': 'http://www.omniasolutions.eu',
+    'website': 'http://www.omniasolutions.website',
     'category': 'Product Lifecycle Management',
     'sequence': 15,
     'summary': '',
@@ -34,11 +34,10 @@ Allow to compute boms due to date
 ==============================================
     """,
     'data': [
-            
     ],
     'demo': [],
     'test': [],
-    'installable': False,
+    'installable': True,
     'application': False,
     'auto_install': False,
 }

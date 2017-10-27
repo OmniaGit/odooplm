@@ -913,7 +913,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         """
         return [bomLineBrowse.itemnum,
                 emptyStringIfFalse(bomLineBrowse.product_id.description),
-                self._translate(emptyStringIfFalse(bomLineBrowse.product_id.description), 'english'),
+                bomLineBrowse.product_id.with_context({'lang': 'en_GB'}).description,
                 bomLineBrowse.product_id.engineering_code,
                 bomLineBrowse.product_qty]
 
@@ -940,28 +940,6 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                     for bomLineBrowse in bomBrowse.bom_line_ids:
                         out.append(self.getBomRowCad(bomLineBrowse))
         return out
-
-    def _translate(self, cr, uid, dataValue="", languageName=""):
-        _LOCALLANGS = {'french': ('French_France', 'fr_FR',),
-                       'italian': ('Italian_Italy', 'it_IT',),
-                       'polish': ('Polish_Poland', 'pl_PL',),
-                       'svedish': ('Svedish_Svenska', 'sw_SE',),
-                       'russian': ('Russian_Russia', 'ru_RU',),
-                       'english': ('English UK', 'en_GB',),
-                       'spanish': ('Spanish_Spain', 'es_ES',),
-                       'german': ('German_Germany', 'de_DE',),
-                       }
-        if not dataValue:
-            return ""
-        if languageName in _LOCALLANGS:
-            language = _LOCALLANGS[languageName][1]
-            transObj = self.pool.get('ir.translation')
-            resIds = transObj.search(cr, uid,
-                                     [('src', '=', dataValue),
-                                      ('lang', '=', language)])
-            for trans in transObj.browse(cr, uid, resIds):
-                return trans.value
-        return ""
 
     @api.model
     def _getChildrenBomWithDocuments(self, component, level=0, currlevel=0):
