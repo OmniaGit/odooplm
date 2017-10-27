@@ -52,8 +52,10 @@
             		
                 <form string="Bill of Material" edit="false">
                     <sheet>
-                    <group>
-                    	<button name="open_related_bom_lines" type="object" string="Related BOM Lines"/>	
+                    <div class="oe_button_box" name="button_box">
+                        <button name="open_related_bom_lines" type="object" string="Related BOM Lines" class="oe_stat_button" icon="fa-tasks"/>
+                    </div>
+                    <group>	
                         <field name="product_tmpl_id" options="{'no_open':True,'no_create':True}"/>
                         <field name="product_id" groups="product.group_product_variant"/>
                         <field name="state" readonly="True"/>
@@ -130,11 +132,9 @@
         	<field name="priority" eval="16"/>
             <field name="arch" type="xml">
             	<data>
-            		
-            		<field name="product_tmpl_id" position="before">
-            			<label for="id" string=""/>
-            			<button name="open_related_bom_lines" type="object" string="Related BOM Lines"/>
-            		</field>
+                    <div class="oe_button_box" name="button_box" position="inside">
+                        <button name="open_related_bom_lines" type="object" string="Related BOM Lines" class="oe_stat_button" icon="fa-tasks"/>
+                    </div>
             		<field name="product_tmpl_id" position="replace">
             			<field name="product_tmpl_id" context="{'default_type': 'product'}" options="{'no_open':True,'no_create':True}"/>
             		</field>
@@ -184,39 +184,6 @@
         <field name="domain">[('type','=','normal'),]</field>
         <field name="filter" eval="True"/>
     </record>
-
-<!-- Overrides standard Search -->
-<!--
-        <record id="view_mrp_bom_filter_inherit" model="ir.ui.view">
-            <field name="name">plm.bom.select</field>
-            <field name="model">mrp.bom</field>
-         	<field name="inherit_id" ref="mrp.view_mrp_bom_filter"/>
-            <field name="type">search</field>
-            <field name="arch" type="xml">
-                <field name="code" position="before">
-	               	<filter name="filter_latest_2_weeks" string="Latest 2 Weeks" separator="1"
-	                       	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"
-	                      	help="Created latest 2 Weeks"/>
-	               	<filter name="filter_latest_7" string="Latest 7 Days" separator="1"
-	                       	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
-	                      	help="Created latest 7 Days"/>
-	             	<filter name="filter_yesterday" string="Yesterday" separator="1"
-	                     	domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
-	                		help="Created yesterday"/>
-	            	<filter name="filter_today" string="Today" separator="1"
-	                     	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
-	                     	help="Created today"/>
-	               	<separator orientation="vertical"/>
-        		</field>
-				<xpath expr="//group" position="after">
-					string="Group By..."
-                    <filter string="BoM Name" domain="[]" context="{'group_by':'code'}"/>
-                    <filter string="Variant Name" domain="[]" context="{'group_by':'product_id'}"/>
-                    <filter string="Source Relationship" domain="[]" context="{'group_by':'source_id'}"/>
-	            </xpath>
-	        </field>
-        </record>
--->
 
  <!-- Tree Structure Views on MRP -->
  
