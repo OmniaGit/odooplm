@@ -531,7 +531,7 @@ class PlmComponent(models.Model):
             docBrws = documentType.browse(docIDs)
             if action_name == 'confirm':
                 docBrws.action_confirm()
-            elif action_name == 'transmit': # TODO: Why is used? Is correct?
+            elif action_name == 'transmit':  # TODO: Why is used? Is correct?
                 docBrws.action_confirm()
             elif action_name == 'draft':
                 docBrws.action_draft()
@@ -993,7 +993,6 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                 ]
                 }
         '''
-            
         def computeBomAllLevels(prodBrws):
             return prodBrws._getChildrenBomWithDocuments(prodBrws, level=1)
 
@@ -1003,7 +1002,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         if not values:
             return {}
         componentDict = values[0]
-        computeType = values[1] # Possible values = 'no-bom' / 'bom-all-levels' / 'bom-one-level'
+        computeType = values[1]  # Possible values = 'no-bom' / 'bom-all-levels' / 'bom-one-level'
         eng_code = componentDict.get('engineering_code', '')
         eng_rev = componentDict.get('engineering_revision', None)
         if not eng_code:
@@ -1052,7 +1051,6 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         hostName, hostPws = elementsToClone[1], elementsToClone[2]
         _oldRootCompVals, _oldRootDocVals = elementsToClone[3]
 
-
         def updateDocAttrs(node, datasName):
             node['DOCUMENT_ATTRIBUTES']['OLD_FILE_NAME'] = datasName
             node['DOCUMENT_ATTRIBUTES']['CHECK_OUT_BY_ME'] = True
@@ -1071,21 +1069,21 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
 
         def restorePreviousDocumentRevision(node):
             node['DOCUMENT_ATTRIBUTES']['revisionid'] = node['DOCUMENT_ATTRIBUTES']['revisionid'] - 1
-            return docEnv.getDocumentBrws(node['DOCUMENT_ATTRIBUTES']) # Try to restore previous revision (case of only document revision)
+            return docEnv.getDocumentBrws(node['DOCUMENT_ATTRIBUTES'])  # Try to restore previous revision (case of only document revision)
 
         def restorePreviousComponentRevision(node):
             node['PRODUCT_ATTRIBUTES']['engineering_revision'] = node['PRODUCT_ATTRIBUTES']['engineering_revision'] - 1
-            return self.getCompBrws(node['PRODUCT_ATTRIBUTES']) # Try to restore previous revision (case of only document revision)
-        
+            return self.getCompBrws(node['PRODUCT_ATTRIBUTES'])  # Try to restore previous revision (case of only document revision)
+
         def updateCompDescModify(newCompBrwse, node):
             newCompBrwse.desc_modify = node['PRODUCT_ATTRIBUTES'].get('desc_modify', '')
 
         def updateDocDescModify(newDocBrws, node):
             newDocBrws.desc_modify = node['DOCUMENT_ATTRIBUTES'].get('desc_modify', '')
-        
+
         def updateDocNodeByBrws(node, newDocBrws):
             node['DOCUMENT_ATTRIBUTES'].update(newDocBrws.getDocumentInfos())
-            
+
         def updateCompNodeByBrws(node, newCompBrwse):
             node['PRODUCT_ATTRIBUTES'].update(newCompBrwse.getComponentInfos())
 
@@ -1097,7 +1095,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                 newDocBrws.desc_modify = node['DOCUMENT_ATTRIBUTES'].get('desc_modify', '')
                 return newDocBrws
             return False
-            
+
         def reviseCompObj(compBrws, node):
             # Raw component because BOM is not managed
             newCompId, _newCompRev = compBrws.NewRevision()
@@ -1105,7 +1103,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             updateCompDescModify(newCompBrwse, node)
             updateCompNodeByBrws(node, newCompBrwse)
             return newCompBrwse
-        
+
         def reviseDocObj(docBrws, node):
             newDocId, _newDocIndex = docBrws.NewRevision()
             newDocBrws = docEnv.browse(newDocId)
@@ -1134,7 +1132,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             if reviseDocument:
                 newDocBrws = reviseDocObj(docBrws, node)
             return newCompBrwse, newDocBrws
-        
+
         def reviseDoc(node, reviseDocument, docBrws, isRoot):
             newDocBrws = False
             if not reviseDocument:
@@ -1151,10 +1149,10 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
 
         def setupRelations(newDocBrws, newCompBrwse):
             if newDocBrws:
-                newDocBrws.write({'linkedcomponents': [(5, 0, 0)]}) # Clean copied links
+                newDocBrws.write({'linkedcomponents': [(5, 0, 0)]})  # Clean copied links
                 if newCompBrwse:
-                    newCompBrwse.write({'linkeddocuments': [(4, newDocBrws.id, False)]}) # Add link to component
-            
+                    newCompBrwse.write({'linkeddocuments': [(4, newDocBrws.id, False)]})  # Add link to component
+
         def nodeResursionUpdate(node, isRoot=False):
             newDocBrws = False
             newCompBrwse = False
@@ -1188,7 +1186,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         else:
             oldDocBrws = docEnv.getDocumentBrws(docProps)
         return oldDocBrws
-    
+
     def getCompBrws(self, compProps):
         compId = compProps.get('_id', None)
         compBrws = False
@@ -1196,8 +1194,8 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             compBrws = self.browse(compId)
         else:
             compBrws = self.getComponentBrws(compProps)
-        return compBrws  
-        
+        return compBrws
+
     @api.model
     def cloneCompAndDoc(self, elementsToClone):
         docEnv = self.env['plm.document']
@@ -1214,13 +1212,13 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
 
         def cleanDocumentAttrs(node):
             node['DOCUMENT_ATTRIBUTES'] = {}
-            
+
         def cleanRootComponent(compBrws, node):
             # User made and edit parts in the client but he unchecked the component in the interface
             # So I need to delete it and clone only the document
             compBrws.unlink()
             cleanEngCode(node)
-            
+
         def cleanEngCode(node):
             node['PRODUCT_ATTRIBUTES'] = {'engineering_code': ''}
 
@@ -1255,12 +1253,12 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             node['DOCUMENT_ATTRIBUTES']['OLD_FILE_NAME'] = rootOldDocBrws.datas_fname
             clonedDocBrws.checkout(hostName, hostPws)
             return clonedDocBrws
-            
+
         def cloneWithComp(cloneComponent, cloneDocument, rootEngCode, oldDocBrws, compBrws, node, isRoot=False):
             newDocBrws = False
             newRawComponent = False
             if not cloneComponent:
-                if compBrws and isRoot: # Only root component has to be deleted
+                if compBrws and isRoot:  # Only root component has to be deleted
                     cleanRootComponent(compBrws, node)
                 else:
                     cleanEngCode(node)
@@ -1289,10 +1287,10 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
 
         def cleanAndSetupRelations(newDocBrws, compBrws):
             if newDocBrws:
-                newDocBrws.write({'linkedcomponents': [(5, 0, 0)]}) # Clean copied links
+                newDocBrws.write({'linkedcomponents': [(5, 0, 0)]})  # Clean copied links
                 if compBrws:
-                    compBrws.write({'linkeddocuments': [(4, newDocBrws.id, False)]}) # Add link to component
-            
+                    compBrws.write({'linkeddocuments': [(4, newDocBrws.id, False)]})  # Add link to component
+
         def nodeResursionUpdate(node, isRoot=False):
             cloneDocument = node.get('DOCUMENT_CHECKED', False)
             compProps = node.get('PRODUCT_ATTRIBUTES', {})
@@ -1327,7 +1325,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                 if childNode.get('DOCUMENT_ATTRIBUTES', {}).get('DOC_TYPE').upper() == '2D':
                     childNode['PRODUCT_ATTRIBUTES'] = {'engineering_code': ''}
                 nodeResursionUpdate(childNode)
-        
+
         nodeResursionUpdate(updatedNode, True)
         return json.dumps(updatedNode)
 
@@ -1338,8 +1336,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             'revisionid': 0,
             'name': newDocName,
             'datas_fname': '%s%s' % (newDocName, file_extension),
-            'checkout_user': self.env.uid,
-            }
+            'checkout_user': self.env.uid}
         newDocVals = oldDocBrws.Clone(docDefaultVals)
         newDocId = newDocVals.get('_id')
         newDocBrws = docEnv.browse(newDocId)
@@ -1352,10 +1349,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             return self.browse()
         return self.search([
             ('engineering_code', '=', engCode),
-            ('engineering_revision', '=', engRev),
-            ])
-
-PlmComponent()
+            ('engineering_revision', '=', engRev)])
 
 
 class PlmTemporayMessage(osv.osv.osv_memory):

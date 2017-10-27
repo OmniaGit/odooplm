@@ -38,7 +38,7 @@ Allow to create normal boms if not exists and product are released.
     ],
     'demo': [],
     'test': [],
-    'installable': False,
+    'installable': True,
     'application': False,
     'auto_install': False,
 }
