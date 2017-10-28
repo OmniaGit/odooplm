@@ -26,19 +26,10 @@ Created on 28/mag/2016
 from odoo import _
 from odoo import api
 from odoo import models
-from odoo.report import report_sxw
 
 
-class bom_structure_cutted_parts(report_sxw.rml_parse):
-
-    def __init__(self, cr, uid, name, context):
-        self.env = api.Environment(cr, uid, context or {})
-        super(bom_structure_cutted_parts, self).__init__(cr, uid, name, context=context)
-        self.localcontext.update({
-            'get_children': self.get_children,
-            'bom_type': self.bom_type,
-            'context': context,
-        })
+class ReportDocumentPdf(models.AbstractModel):
+    _name = 'report.plm_cutted_parts.bom_structure_all_cutted'
 
     def get_children(self, myObject, level=0):
         result = {}
@@ -81,9 +72,10 @@ class bom_structure_cutted_parts(report_sxw.rml_parse):
         result = dict(self.env.get(myObject._model._name).fields_get(self.cr, self.uid)['type']['selection']).get(myObject.type, '')
         return _(result)
 
-
-class bom_structure_all_cutted(models.AbstractModel):
-    _name = 'report.plm_cutted_parts.bom_structure_all_cutted'
-    _inherit = 'report.abstract_report'
-    _template = 'plm_cutted_parts.bom_structure_all_cutted'
-    _wrapped_report_class = bom_structure_cutted_parts
+    @api.model
+    def get_report_values(self, docids, data=None):
+        documents = self.env['mrp.bom'].browse(docids)
+        return {'docs': documents,
+                'get_children': self.get_children,
+                'bom_type': self.bom_type,
+                'context': self.env.context}
