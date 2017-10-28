@@ -39,4 +39,3 @@ class PlmDescriptionExtension(models.Model):
     umc2 = fields.Char(_('UM / Feature 2'), size=32, help=_("Allow to specify a unit measure or a label for the feature."), translate=True)
     umc3 = fields.Char(_('UM / Feature 3'), size=32, help=_("Allow to specify a unit measure or a label for the feature."), translate=True)
 
-PlmDescriptionExtension()
