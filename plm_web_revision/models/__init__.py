@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 ##############################################################################
 #
-#    OmniaSolutions, Open Source Management Solution    
+#    OmniaSolutions, Open Source Management Solution
 #    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
 #    $Id$
 #
@@ -19,24 +19,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-{
-    'name': 'PLM Web Revision',
-    'version': '1.1',
-    'author': 'OmniaSolutions',
-    'website': 'http://www.omniasolutions.eu',
-    'category': 'Product Lifecycle Management',
-    'sequence': 15,
-    'summary': 'PLM Revision from web side',
-    'images': [],
-    'depends': ['plm'],
-    'description': """Allow to create new revision from WEB""",
-    'data': ['views/component_view_extension.xml',
-             'views/plm_document_revision.xml',
-             'security/base_plm_web_rev_security.xml',
-             ],
-    'installable': True,
-    'application': False,
-    'auto_install': False,
-}
-
+from . import product_product_extended
+from . import plm_document_extended
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
