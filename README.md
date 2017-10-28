@@ -2,10 +2,10 @@
 
 This is the develompent repository of odoo plm starting from version v11 of odoo
 
-This series of module increse the capability of odoo in the plm field.
-for any issiues you may have send un e-mail to info@omniasolutions.eu
+This series of modules increase the capability of odoo in the plm field.
+for any issues you may send an e-mail to info@omniasolutions.eu
 
-The old repository for the version before 11 ramain at the following link:
+The old repository for the version before 11 remain at the following link:
 https://sourceforge.net/projects/openerpplm/
-at the some address you can also find more information regarding the solution
+at the same address you can also find more information regarding the solution
 
