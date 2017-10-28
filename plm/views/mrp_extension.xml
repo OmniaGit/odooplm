@@ -186,7 +186,7 @@
     </record>
 
 <!-- Overrides standard Search -->
-<!--
+
         <record id="view_mrp_bom_filter_inherit" model="ir.ui.view">
             <field name="name">plm.bom.select</field>
             <field name="model">mrp.bom</field>
@@ -209,14 +209,13 @@
 	               	<separator orientation="vertical"/>
         		</field>
 				<xpath expr="//group" position="after">
-					string="Group By..."
                     <filter string="BoM Name" domain="[]" context="{'group_by':'code'}"/>
                     <filter string="Variant Name" domain="[]" context="{'group_by':'product_id'}"/>
                     <filter string="Source Relationship" domain="[]" context="{'group_by':'source_id'}"/>
 	            </xpath>
 	        </field>
         </record>
--->
+
 
  <!-- Tree Structure Views on MRP -->
  

@@ -105,8 +105,6 @@ class mrp_bom_extension_data(models.Model):
         '''
         return self.search([('product_tmpl_id', '=', prodTmplBrws.id), ('type', '=', bomType)])
 
-mrp_bom_extension_data()
-
 
 class mrp_bom_data_compute(models.Model):
     _name = 'plm.temporary_date_compute'
@@ -184,8 +182,6 @@ class mrp_bom_data_compute(models.Model):
             'domain': [('id', 'in', newBomBrws.id)],
         }
 
-mrp_bom_data_compute()
-
 
 class bom_line_obsoleted_extension(models.Model):
     _name = 'mrp.bom.line'
@@ -199,5 +195,3 @@ class bom_line_obsoleted_extension(models.Model):
         for bomLineObj in self:
             bomBrws = bomLineObj.bom_id
             bomBrws._obsolete_compute()
-
-bom_line_obsoleted_extension()
