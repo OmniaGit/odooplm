@@ -167,13 +167,13 @@ class PlmComponent(models.Model):
     def on_change_tmpmater(self):
         if self.tmp_material:
             if self.tmp_material.name:
-                self.engineering_material = unicode(self.tmp_material.name)
+                self.engineering_material = self.tmp_material.name
 
     @api.onchange('tmp_surface')
     def on_change_tmpsurface(self):
         if self.tmp_surface:
             if self.tmp_surface.name:
-                self.engineering_surface = unicode(self.tmp_surface.name)
+                self.engineering_surface = self.tmp_surface.name
 
 #   Internal methods
     def _packfinalvalues(self, fmt, value=False, value2=False, value3=False):
