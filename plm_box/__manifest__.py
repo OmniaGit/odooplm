@@ -37,11 +37,10 @@
     'data': ['views/non_cad_doc.xml',
              'views/box_object_rel.xml',
              'views/plm_box_sequence_data.xml',
-             'views/boxWorkflow.xml',
              ],
     'demo': [],
     'test': [],
-    'installable': False,
+    'installable': True,
     'application': False,
     'auto_install': False,
 }

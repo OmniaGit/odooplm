@@ -30,15 +30,11 @@
     'images': [],
     'depends': ['plm'],
     'description': """ """,
-    'data': [
-             'views/translation.xml',
-             'views/plm_description_extension.xml',
-       ],
-    'demo': [
-        ],
-    'test': [
-        ],
-    'installable': False,
+    'data': ['views/translation.xml',
+             'views/plm_description_extension.xml'],
+    'demo': [],
+    'test': [],
+    'installable': True,
     'application': False,
     'auto_install': False,
 }

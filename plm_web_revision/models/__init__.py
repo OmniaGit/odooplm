@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
 ##############################################################################
 #
-#    OmniaSolutions, Your own solutions
-#    Copyright (C) 2010 OmniaSolutions (<http://omniasolutions.eu>). All Rights Reserved
+#    OmniaSolutions, Open Source Management Solution
+#    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -19,21 +19,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
-'''
-Created on 19 Jul 2016
-
-@author: Daniel Smerghetto
-'''
-from openerp.osv import osv
-from openerp.report import report_sxw
-from openerp import _
-import time
-from openerp.addons.plm.report.bom_structure import bom_structure_all_custom_report
-
-
-class report_plm_bom_obsoleted(osv.AbstractModel):
-    _name = 'report.plm_date_bom.plm_bom_obsoleted'
-    _inherit = 'report.abstract_report'
-    _template = 'plm_date_bom.plm_bom_obsoleted'
-    _wrapped_report_class = bom_structure_all_custom_report
+from . import product_product_extended
+from . import plm_document_extended
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

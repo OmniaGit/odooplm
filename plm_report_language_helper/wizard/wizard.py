@@ -27,10 +27,15 @@ Created on Mar 30, 2016
 '''
 import base64
 import logging
-import openerp
 
-from openerp.exceptions import UserError
-from openerp import models, fields, api, SUPERUSER_ID, _, osv
+from odoo.exceptions import UserError
+from odoo import models
+from odoo import fields
+from odoo import api
+from odoo import SUPERUSER_ID
+from odoo import _
+from odoo import osv
+
 _logger = logging.getLogger(__name__)
 
 #
@@ -62,14 +67,13 @@ class plm_spareChoseLanguage(osv.osv.osv_memory):
             mids = modobj.search([('state', '=', 'installed')])
             if not mids:
                 raise UserError("Language not Installed")
-            reportName = 'product.product.spare.parts.pdf'
+            reportName = 'plm_spare.report_product_product_spare_parts_pdf'
             if self.onelevel:
-                reportName = 'product.product.spare.parts.pdf.one'
-            srv = openerp.report.interface.report_int._reports['report.' + reportName]
+                reportName = 'plm_spare.report_product_product_spare_parts_pdf_one'
             productProductId = self.env.context.get('active_id')
             newContext = self.env.context.copy()
             newContext['lang'] = lang
-            stream, fileExtention = srv.create(self.env.cr, self.env.uid, [productProductId, ], {'raise_report_warning': False}, context=newContext)
+            stream, fileExtention = self.env.ref(reportName).sudo().with_context(newContext).render_qweb_pdf(productProductId)
             self.datas = base64.encodestring(stream)
             tProductProduct = self.env['product.product']
             brwProduct = tProductProduct.browse(productProductId)
@@ -103,19 +107,17 @@ class plm_spareChoseLanguage(osv.osv.osv_memory):
     _defaults = {
         'onelevel': False
     }
-plm_spareChoseLanguage()
-
-
 #
 #  ************************** BOM REPORTS *****************
 #
+
+
 AVAILABLE_REPORT = [("plm.bom_structure_all", "BOM All Levels"),
                     ("plm.bom_structure_one", "BOM One Level"),
                     ("plm.bom_structure_all_sum", "BOM All Levels Summarized"),
                     ("plm.bom_structure_one_sum", "BOM One Level Summarized"),
                     ("plm.bom_structure_leaves", "BOM Only Leaves Summarized"),
-                    ("plm.bom_structure_flat", "BOM All Flat Summarized"),
-                    ]
+                    ("plm.bom_structure_flat", "BOM All Flat Summarized")]
 
 
 class plm_bomChoseLanguage(osv.osv.osv_memory):
@@ -145,8 +147,7 @@ class plm_bomChoseLanguage(osv.osv.osv_memory):
             reportName = self.bom_type
             newContext = self.env.context.copy()    # Used to update and generate pdf
             newContext['lang'] = lang
-            template_ids = self.env['ir.ui.view'].search([('name', '=', reportName)])
-            stream, fileExtention = self.env['report'].with_context(newContext).get_pdf(template_ids, reportName), 'pdf'
+            stream, fileExtention = self.env.ref(reportName).sudo().with_context(newContext).render_qweb_pdf(self.ids)
             bomId = self.env.context.get('active_id')
             self.datas = base64.encodestring(stream)
             tMrpBom = self.env['mrp.bom']
@@ -183,4 +184,4 @@ class plm_bomChoseLanguage(osv.osv.osv_memory):
     _defaults = {
         'bom_type': False
     }
-plm_bomChoseLanguage()
+

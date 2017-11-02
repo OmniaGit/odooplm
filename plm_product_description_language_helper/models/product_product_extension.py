@@ -166,5 +166,3 @@ class ProductProductExtension(models.Model):
                                           'type': 'model',
                                           'lang': transDescBrws.lang,
                                           'value': transDescBrws.value})
-
-ProductProductExtension()

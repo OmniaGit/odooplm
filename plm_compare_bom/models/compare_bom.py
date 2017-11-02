@@ -28,16 +28,22 @@ _logger = logging.getLogger(__name__)
 def _moduleName():
     path = os.path.dirname(__file__)
     return os.path.basename(os.path.dirname(path))
+
+
 openerpModule = _moduleName()
 
 
 def _modulePath():
     return os.path.dirname(__file__)
+
+
 openerpModulePath = _modulePath()
 
 
 def _customPath():
     return os.path.join(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'custom'), 'report')
+
+
 customModulePath = _customPath()
 
 BOM_SHOW_FIELDS = ['Position',
@@ -112,7 +118,7 @@ class plm_compare_bom(osv.osv.osv_memory):
                 if bomBrws.product_tmpl_id.product_variant_count == 1:
                     prodId = bomBrws.product_tmpl_id.product_variant_ids.ids[0]
             return prodId
-            
+
         ids = self.ids
         if len(ids) < 1:
             return False
@@ -295,8 +301,6 @@ class plm_compare_bom(osv.osv.osv_memory):
             index += 1
         return ((idList1, objList1, objProd1, dictData1, AminusB), (idList2, objList2, objProd2, dictData2, BminusA))
 
-plm_compare_bom()
-
 
 class plm_missing_bom(osv.osv.osv_memory):
     _name = "plm.missing.bom"
@@ -313,7 +317,6 @@ class plm_missing_bom(osv.osv.osv_memory):
 
     _defaults = {
     }
-plm_missing_bom()
 
 
 class plm_adding_bom(osv.osv.osv_memory):
@@ -331,4 +334,3 @@ class plm_adding_bom(osv.osv.osv_memory):
 
     _defaults = {
     }
-plm_adding_bom()

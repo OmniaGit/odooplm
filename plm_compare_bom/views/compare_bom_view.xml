@@ -7,7 +7,9 @@
             <field name="type">tree</field>
         	<field name="priority" eval="10"/>
             <field name="arch" type="xml">
-                <tree colors="red:reason in ('Removed');darkgray:reason in ('Changed')" string="BoM Relations in Bom 2">
+                <tree string="BoM Relations in Bom 2"
+            		  decoration-info="reason in ('Changed')"
+            	      decoration-danger="reason in ('Removed')">
                     <field name="itemnum" select="True"/>
                     <field name="bom_idrow" invisible="True"/>
                     <field name="part_id" select="True"/>
@@ -26,7 +28,9 @@
             <field name="type">tree</field>
             <field name="priority" eval="10"/>
             <field name="arch" type="xml">
-                <tree colors="darkgreen:reason in ('Added');darkgray:reason in ('Changed')" string="BoM Relations in Bom 1">
+                <tree string="BoM Relations in Bom 1"
+            		  decoration-info="reason in ('Changed')"
+            		  decoration-success="reason in ('Added')">
                     <field name="itemnum" select="True"/>
                     <field name="bom_idrow" invisible="True"/>
                     <field name="part_id" select="True"/>

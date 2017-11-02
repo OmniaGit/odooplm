@@ -31,14 +31,10 @@
     'depends': ['plm', 'plm_spare'],
     'description': """Manage multilanguage PLM reports
     """,
-    'data': [
-            'views/plm_component_action_extended.xml'
-       ],
-    'demo': [
-        ],
-    'test': [
-        ],
-    'installable': False,
+    'data': ['views/plm_component_action_extended.xml'],
+    'demo': [],
+    'test': [],
+    'installable': True,
     'application': False,
     'auto_install': False,
 }

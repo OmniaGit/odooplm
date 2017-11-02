@@ -1,25 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp> 
 	<data> 
-		
         <record id="action_force_bom_weight_calculation" model="ir.actions.server">
             <field name="name">Calculate Bom Weight</field>
             <field name="condition">True</field>
             <field name="type">ir.actions.server</field>
             <field name="model_id" ref="model_mrp_bom"/>
             <field name="state">code</field>
-            <field name="code">env['mrp.bom'].browse(context.get('active_ids', [])).forceComputeBomWeight()</field>
+            <field name="binding_model_id" ref="mrp.model_mrp_bom"/>
+            <field name="code">env['mrp.bom'].browse(env.context.get('active_ids', [])).forceComputeBomWeight()</field>
         </record>
-
-        <record model="ir.values" id="action_force_bom_weight_calculation_value">
-            <field name="name">action_force_bom_weight_calculation</field>
-            <field name="action_id" ref="action_force_bom_weight_calculation" />
-            <field name="value" eval="'ir.actions.server,' + str(ref('action_force_bom_weight_calculation'))" />
-            <field name="key">action</field>
-            <field name="model_id" ref="model_mrp_bom"/>
-            <field name="model">mrp.bom</field>
-            <field name="key2">client_action_multi</field>
-        </record>
-        
 	</data>
 </openerp>

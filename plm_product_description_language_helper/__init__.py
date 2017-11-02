@@ -19,6 +19,5 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-import plm_description_extension
-import product_product_extension
+from . import models
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

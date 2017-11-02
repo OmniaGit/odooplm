@@ -19,27 +19,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-{
-    'name': 'Plm Pack and Go',
-    'version': '1.1',
-    'author': 'OmniaSolutions',
-    'website': 'http://www.omniasolutions.eu',
-    'category': 'Product Lifecycle Management',
-    'sequence': 15,
-    'summary': '',
-    'images': [],
-    'depends': ['plm'],
-    'description': """
-Download BOM structure files from a component
-==============================================
-    """,
-    'data': ['views/plm_component_action_extended.xml',
-             'views/ir_parameters.xml'],
-    'demo': [],
-    'test': [],
-    'installable': True,
-    'application': False,
-    'auto_install': False,
-}
-
+from . import plm_description_extension
+from . import product_product_extension
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

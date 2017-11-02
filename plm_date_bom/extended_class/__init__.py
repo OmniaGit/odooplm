@@ -26,7 +26,6 @@ Created on 18 Jul 2016
 @author: Daniel Smerghetto
 '''
 
-import mrp_bom_extension
-import bom_obsoleted_report
+from . import mrp_bom_extension
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

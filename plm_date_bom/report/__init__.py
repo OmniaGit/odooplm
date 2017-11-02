@@ -21,22 +21,10 @@
 ##############################################################################
 
 '''
-Created on 15 Jun 2016
+Created on 18 Jul 2016
 
 @author: Daniel Smerghetto
 '''
-from openerp import models
-from openerp import fields
-from openerp import _
+from . import bom_obsoleted_report
 
-
-class PlmDescriptionExtension(models.Model):
-    _name = 'plm.description'
-    _inherit = 'plm.description'
-    name = fields.Char(_('Note to Description'), size=128, translate=True)
-    description = fields.Char(_('Standard Description'), size=128, translate=True)
-    umc1 = fields.Char(_('UM / Feature 1'), size=32, help=_("Allow to specify a unit measure or a label for the feature."), translate=True)
-    umc2 = fields.Char(_('UM / Feature 2'), size=32, help=_("Allow to specify a unit measure or a label for the feature."), translate=True)
-    umc3 = fields.Char(_('UM / Feature 3'), size=32, help=_("Allow to specify a unit measure or a label for the feature."), translate=True)
-
-PlmDescriptionExtension()
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

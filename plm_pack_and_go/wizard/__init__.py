@@ -19,29 +19,5 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-{
-    'name': 'PLM Automatic Weight',
-    'version': '11.0',
-    'author': 'OmniaSolutions',
-    'website': 'http://www.omniasolutions.eu',
-    'category': 'Product Lifecycle Management',
-    'sequence': 15,
-    'summary': 'PLM Weight Automatic Calculation',
-    'images': [],
-    'depends': ['plm'],
-    'description': """ """,
-    'data': [
-             'settings_and_data/datas.xml',
-             'views/component_extension.xml',
-             'views/bom_extension.xml',
-       ],
-    'demo': [
-        ],
-    'test': [
-        ],
-    'installable': True,
-    'application': False,
-    'auto_install': False,
-}
-
+from . import pack_and_go_wizard
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

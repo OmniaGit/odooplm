@@ -24,4 +24,4 @@ Created on 30/mag/2016
 @author: mboscolo
 '''
 
-import report
+from . import report

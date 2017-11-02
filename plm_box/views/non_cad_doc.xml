@@ -71,10 +71,6 @@
                     	<label for="sale_ord_id"/>
 	                    <field name="sale_ord_id"/>
                     </page>
-                    <page string="Contracts">
-                    	<label for="acc_an_acc_id"/>
-	                    <field name="acc_an_acc_id"/>
-                    </page>
                     <page string="Users">
                     	<label for="user_rel_id"/>
 	                    <field name="user_rel_id"/>
@@ -127,7 +123,7 @@
         id="menu_non_cad_doc_relations"
         parent="plm.plm_document_form"/>
         
-        
+        <!--
         <record id="view_stock_config_settings_custom" model="ir.ui.view">
             <field name="name">stock.config.settings.custom</field>
             <field name="model">stock.config.settings</field>
@@ -141,6 +137,6 @@
             </field>
             </field>
         </record>
-        
+        -->
 </data>
 </openerp>

@@ -27,14 +27,13 @@ Created on Mar 30, 2016
 @author: Daniel Smerghetto
 '''
 import logging
-from openerp import models
-from openerp import fields
-from openerp import api
-from openerp import _
-from openerp import osv
-from openerp import report
-from openerp import tools
-from openerp.exceptions import UserError
+from odoo import models
+from odoo import fields
+from odoo import api
+from odoo import _
+from odoo import osv
+from odoo import tools
+from odoo.exceptions import UserError
 import os
 import base64
 import shutil
@@ -322,7 +321,7 @@ class PackAndGo(osv.osv.osv_memory):
         def checkCreateFolder(path):
             if os.path.exists(path):
                 shutil.rmtree(path, ignore_errors=True)
-            os.makedirs(path, 0777)
+            os.makedirs(path, 777)
 
         convetionModuleInstalled = self.checkPlmConvertionInstalled()
         tmpSubFolder = tools.config.get('document_path', os.path.join(tools.config['root_path'], 'filestore'))
@@ -347,10 +346,9 @@ class PackAndGo(osv.osv.osv_memory):
                     exportSingle(lineBrws.document_id)
 
         def exportPdf():
-            srv = report.interface.report_int._reports['report.' + 'plm.document.pdf']
             for lineBrws in self.export_pdf:
                 docBws = lineBrws.document_id
-                datas, fileExtention = srv.create(self.env.cr, self.env.uid, [docBws.id], False, context=self.env.context)
+                datas, fileExtention = self.env.ref('plm.document_pdf').sudo().render_qweb_pdf(docBws.id)
                 outFilePath = os.path.join(outZipFile, docBws.name + '.' + fileExtention)
                 fileObj = file(outFilePath, 'wb')
                 fileObj.write(datas)
@@ -360,8 +358,7 @@ class PackAndGo(osv.osv.osv_memory):
                 exportSingle(lineBrws.document_id)
 
         def exportConverted(docBws, extentionBrws):
-            paramObj = self.env['ir.config_parameter']
-            relStr = paramObj._get_param('extension_integration_rel')
+            relStr = self.env['ir.config_parameter']._get_param('extension_integration_rel')
             try:
                 rel = eval(unicode(relStr).lower())
             except Exception as ex:
@@ -442,6 +439,5 @@ class PackAndGo(osv.osv.osv_memory):
                 line.available_types = res.ids[0]
         return self.returnWizard()
 
-PackAndGo()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

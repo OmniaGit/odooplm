@@ -9,7 +9,7 @@
             <field name="inherit_id" ref="project.edit_project"/>
             <field name="priority" eval="3"/>
             <field name="arch" type="xml">
-            	<field name="use_tasks" position="before">
+            	<field name="label_tasks" position="after">
             		<field name="plm_use_plm" class="oe_inline"/>
             		<label for="plm_use_plm" class="oe_inline" string="PLM"/>
             	</field>
@@ -17,7 +17,7 @@
             		<field name="plm_completed"  widget="progressbar"/>
             	</field>            	
             	<xpath expr="//notebook" position="inside">
-	            	<page string="PLM" >
+	            	<page string="PLM" attrs="{'invisible':[('plm_use_plm', '=', False)]}">
 	            		<group>		
 	            			<label string="Products" colspan="4"></label>												
 							<field name="plm_product_ids" nolabel="1"/>

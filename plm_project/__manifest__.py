@@ -40,7 +40,7 @@ Allows to connect to project model in order to control products and data
     ],
     'demo': [],
     'test': [],
-    'installable': False,
+    'installable': True,
     'application': False,
     'auto_install': False,
 }

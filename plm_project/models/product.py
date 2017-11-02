@@ -36,4 +36,3 @@ class ProductExtension(models.Model):
                                    'product_id',
                                    'project_id',
                                    string=_('Projects'))
-ProductExtension()

@@ -21,13 +21,21 @@
 ##############################################################################
 
 '''
-Created on Mar 7, 2017
+Created on 15 Jun 2016
 
-@author: daniel
+@author: Daniel Smerghetto
 '''
-from . import plm_box
-from . import settings
-from . import plm_document
-from . import plm_checkout
+from openerp import models
+from openerp import fields
+from openerp import _
 
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+
+class PlmDescriptionExtension(models.Model):
+    _name = 'plm.description'
+    _inherit = 'plm.description'
+    name = fields.Char(_('Note to Description'), size=128, translate=True)
+    description = fields.Char(_('Standard Description'), size=128, translate=True)
+    umc1 = fields.Char(_('UM / Feature 1'), size=32, help=_("Allow to specify a unit measure or a label for the feature."), translate=True)
+    umc2 = fields.Char(_('UM / Feature 2'), size=32, help=_("Allow to specify a unit measure or a label for the feature."), translate=True)
+    umc3 = fields.Char(_('UM / Feature 3'), size=32, help=_("Allow to specify a unit measure or a label for the feature."), translate=True)
+

@@ -137,14 +137,13 @@ class plm_temporary_batch_converter(osv.osv.osv_memory):
             out.append(newFilePath)
         return out
 
-    def action_create_coversion(self, cr, uid, ids, context={}):
+    @api.multi
+    def action_create_coversion(self):
         """
         convert the file to the give format
         """
-        convertionFolder = self.pool.get('ir.config_parameter').get_param(cr,
-                                                                          uid,
-                                                                          'plm_convertion_folder')
-        converted = self.convert(cr, uid, ids, context)
+        convertionFolder = self.env['ir.config_parameter'].get_param('plm_convertion_folder')
+        converted = self.convert()
         for newFilePath in converted:
             try:
                 shutil.move(newFilePath, convertionFolder)
@@ -154,16 +153,17 @@ class plm_temporary_batch_converter(osv.osv.osv_memory):
                 shutil.move(newFilePath, convertionFolder)
         UserError(_("File Converted check the shared folder"))
 
-    def action_create_convert_download(self, cr, uid, ids, context={}):
+    @api.multi
+    def action_create_convert_download(self):
         """
         Convert file in the given format and return it to the web page
         """
-        for convertedFile in self.convert(cr, uid, ids, context):
+        for convertedFile in self.convert():
             with open(convertedFile, 'rb') as f:
                 fileContent = f.read()
                 if fileContent:
-                    self.write(cr, uid, ids, {'downloadDatas': base64.encodestring(fileContent),
-                                              'datas_fname': os.path.basename(convertedFile)})
+                    self.write({'downloadDatas': base64.b64encode(fileContent),
+                                'datas_fname': os.path.basename(convertedFile)})
                     break
             break
         return {'name': _('File Converted'),
@@ -171,7 +171,6 @@ class plm_temporary_batch_converter(osv.osv.osv_memory):
                 "view_mode": 'form',
                 'res_model': self._name,
                 'target': 'new',
-                'res_id': ids[0],
+                'res_id': self.id[0],
                 'type': 'ir.actions.act_window',
                 'domain': "[]"}
-plm_temporary_batch_converter()

@@ -26,5 +26,4 @@ Created on May 25, 2016
 @author: Daniel Smerghetto
 '''
 
-import component_extension
-import bom_extension
+from . import models

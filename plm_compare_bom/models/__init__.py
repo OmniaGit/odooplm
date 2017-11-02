@@ -26,4 +26,4 @@ Created on 30 Aug 2016
 @author: Daniel Smerghetto
 '''
 
-import compare_bom
+from . import compare_bom

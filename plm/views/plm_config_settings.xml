@@ -13,15 +13,28 @@
                         <div class="row mt16 o_settings_container">
                             <div class="col-md-6 col-xs-12 o_setting_box">
                                 <div class="o_setting_left_pane"><field name="module_plm_automatic_weight"/></div>
-                                <div class="o_setting_right_pane"><label for="module_plm_automatic_weight"/></div>
+                                <div class="o_setting_right_pane"><label for="module_plm_automatic_weight"/>
+                                	<div class="text-muted">
+                                		Compute product weight due to Normal BOM calculation, using CAD weight or setting a custom weight.
+                                	</div>
+                                </div>
+                                
                             </div>
                             <div class="col-md-6 col-xs-12 o_setting_box">
                                 <div class="o_setting_left_pane"><field name="module_plm_product_description_language_helper"/></div>
-                                <div class="o_setting_right_pane"><label for="module_plm_product_description_language_helper"/></div>
+                                <div class="o_setting_right_pane"><label for="module_plm_product_description_language_helper"/>
+                                	 <div class="text-muted">
+                                		Use translations in product description providing also a view to manage plm description translations.
+                                	</div>
+                                </div>
                             </div>
                             <div class="col-md-6 col-xs-12 o_setting_box">
                                 <div class="o_setting_left_pane"><field name="module_plm_web_revision"/></div>
-                                <div class="o_setting_right_pane"><label for="module_plm_web_revision"/></div>
+                                <div class="o_setting_right_pane"><label for="module_plm_web_revision"/>
+	                                <div class="text-muted">
+	                                Revise a product / plm document from the web interface
+	                                </div>
+                                </div>
                             </div>
                             <div class="col-md-6 col-xs-12 o_setting_box">
                                 <div class="o_setting_left_pane"><field name="module_plm_auto_internalref"/></div>
@@ -37,13 +50,28 @@
                                     Allow converting files in different format. 
                                     In order to make it run you will need the convertion sarver provided by OmniaSolutions.
                                 </div>
-                                <form>
-									<input type="submit"
-										   value="More Info"
-										   onclick="window.location.href='http://www.omniasolutions.website/page/plm-convertion-server'"
-										   class="o_input form-control" />
-								</form>
+                                	<form>
+										<input type="submit"
+											   value="More Info"
+											   onclick="window.location.href='http://www.omniasolutions.website/page/plm-convertion-server'"
+											   class="o_input form-control" />
+									</form>
                                 </div>
+                          	</div>
+                          	<div class="col-md-6 col-xs-12 o_setting_box">
+                                <div class="o_setting_left_pane"><field name="module_plm_box"/></div>
+                                <div class="o_setting_right_pane"><label for="module_plm_box"/>
+                                <div class="text-muted">
+                                    Advanced linking and organize your document with electonic box
+                                </div>
+                                	<form>
+										<input type="submit"
+											   value="More Info"
+											   onclick="window.location.href='http://www.omniasolutions.eu/page/plm-box'"
+											   class="o_input form-control" />
+									</form>
+                                </div>
+                                		
                             </div>
                         </div>
                         <h2>BOM</h2>
@@ -54,15 +82,27 @@
                             </div>
                             <div class="col-md-6 col-xs-12 o_setting_box">
                                 <div class="o_setting_left_pane"><field name="module_plm_compare_bom"/></div>
-                                <div class="o_setting_right_pane"><label for="module_plm_compare_bom"/></div>
+                                <div class="o_setting_right_pane"><label for="module_plm_compare_bom"/>
+                               		<div class="text-muted">
+                                    Compare two bom from the bom tree interface
+                                	</div>
+                                </div>
                             </div>
                             <div class="col-md-6 col-xs-12 o_setting_box">
                                 <div class="o_setting_left_pane"><field name="module_plm_date_bom"/></div>
-                                <div class="o_setting_right_pane"><label for="module_plm_date_bom"/></div>
+                                <div class="o_setting_right_pane"><label for="module_plm_date_bom"/>
+                                	<div class="text-muted">
+                                	Allows view and/or update obsoleted components in a Normal Bill Of Materials using released components.
+                                	</div>
+                                </div>
                             </div>
                             <div class="col-md-6 col-xs-12 o_setting_box">
                                 <div class="o_setting_left_pane"><field name="module_plm_cutted_parts"/></div>
-                                <div class="o_setting_right_pane"><label for="module_plm_cutted_parts"/></div>
+                                <div class="o_setting_right_pane"><label for="module_plm_cutted_parts"/>
+                                	<div class="text-muted">
+                                	This module allows you to improve the capability of your odoo plm for managing the cutted parts 
+                                	</div>
+                                </div>
                             </div>
                             <div class="col-md-6 col-xs-12 o_setting_box">
                                 <div class="o_setting_left_pane"><field name="module_plm_engineering"/></div>
@@ -77,7 +117,11 @@
                         <div class="row mt16 o_settings_container">
                             <div class="col-md-6 col-xs-12 o_setting_box">
                                 <div class="o_setting_left_pane"><field name="module_plm_project"/></div>
-                                <div class="o_setting_right_pane"><label for="module_plm_project"/></div>
+                                <div class="o_setting_right_pane"><label for="module_plm_project"/>
+	                                <div class="text-muted">
+	                                	Add a progress bar to check the progress of the project based on the status of the products
+	                                </div>
+                                </div>
                             </div>
                         </div>
                         <h2>Client</h2>
@@ -92,11 +136,19 @@
                         	
                             <div class="col-md-6 col-xs-12 o_setting_box">
                                 <div class="o_setting_left_pane"><field name="module_plm_pack_and_go"/></div>
-                                <div class="o_setting_right_pane"><label for="module_plm_pack_and_go"/></div>
+                                <div class="o_setting_right_pane"><label for="module_plm_pack_and_go"/>
+                                	<div class="text-muted">
+                                		Download a zip file containing all documents/and printout attached to a product or BOM.
+                                	</div>
+                                </div>
                             </div>
                             <div class="col-md-6 col-xs-12 o_setting_box">
                                 <div class="o_setting_left_pane"><field name="module_plm_report_language_helper"/></div>
-                                <div class="o_setting_right_pane"><label for="module_plm_report_language_helper"/></div>
+                                <div class="o_setting_right_pane"><label for="module_plm_report_language_helper"/>
+	                                <div class="text-muted">
+	                   					Using a simple wizard interfaces for printing PLM report's in different languages
+									</div>
+                                </div>
                             </div>
                         </div>
 

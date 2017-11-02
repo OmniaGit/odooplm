@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
 ##############################################################################
 #
-#    OmniaSolutions, Open Source Management Solution    
-#    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
+#    OmniaSolutions, Your own solutions
+#    Copyright (C) 2010 OmniaSolutions (<http://omniasolutions.eu>). All Rights Reserved
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -19,27 +19,14 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-{
-    'name': 'Plm Pack and Go',
-    'version': '1.1',
-    'author': 'OmniaSolutions',
-    'website': 'http://www.omniasolutions.eu',
-    'category': 'Product Lifecycle Management',
-    'sequence': 15,
-    'summary': '',
-    'images': [],
-    'depends': ['plm'],
-    'description': """
-Download BOM structure files from a component
-==============================================
-    """,
-    'data': ['views/plm_component_action_extended.xml',
-             'views/ir_parameters.xml'],
-    'demo': [],
-    'test': [],
-    'installable': True,
-    'application': False,
-    'auto_install': False,
-}
 
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+'''
+Created on 19 Jul 2016
+
+@author: Daniel Smerghetto
+'''
+from openerp.addons.plm.report.bom_structure import ReportBomStructureAll
+
+
+class ReportDocumentPdf(ReportBomStructureAll):
+    _name = 'report.plm_date_bom.plm_bom_obsoleted'

@@ -80,7 +80,6 @@ class Plm_box(models.Model):
     project_id = fields.Many2many('project.project', 'plm_box_proj_rel', 'box_id', 'project_id', _('Project'))
     task_id = fields.Many2many('project.task', 'plm_box_task_rel', 'box_id', 'task_id', _('Task'))
     sale_ord_id = fields.Many2many('sale.order', 'plm_box_sale_ord_rel', 'box_id', 'sale_ord_id', _('Sale Order'))
-    acc_an_acc_id = fields.Many2many('account.analytic.account', 'plm_box_acc_an_acc_rel', 'box_id', 'acc_an_acc_id', _('Contract'))
     user_rel_id = fields.Many2many('res.users', 'plm_box_user_rel', 'box_id', 'user_id', _('User'))
     bom_id = fields.Many2many('mrp.bom', 'plm_box_bom_rel', 'box_id', 'bom_id', _('Bill Of Material'))
     wc_id = fields.Many2many('mrp.workcenter', 'plm_box_wc_rel', 'box_id', 'wc_id', _('Work Center'))
@@ -200,9 +199,6 @@ class Plm_box(models.Model):
         for brws in parentBrws.sale_ord_id:
             outName = brws.name
             objRelList.append({'obj_name': 'Sale Order', 'obj_type': 'sale.order', 'obj_rel_name': outName})
-        for brws in parentBrws.acc_an_acc_id:
-            outName = brws.name
-            objRelList.append({'obj_name': 'Contract', 'obj_type': 'account.analytic.account', 'obj_rel_name': outName})
         for brws in parentBrws.user_rel_id:
             outName = brws.name
             objRelList.append({'obj_name': 'User', 'obj_type': 'res.users', 'obj_rel_name': outName})
@@ -582,6 +578,5 @@ class Plm_box(models.Model):
             outDict['readonly'] = boxBrws.boxReadonlyCompute()
         return outDict
 
-Plm_box()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

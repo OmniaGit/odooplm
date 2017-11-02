@@ -48,7 +48,7 @@
             id="report_bom_structure_all_cutted"
             model="mrp.bom"
             string="Cutted Parts" 
-            report_type="qweb-pdf"  
+            report_type="qweb-html"  
             name="plm_cutted_parts.bom_structure_all_cutted" 
         />
     </data>
