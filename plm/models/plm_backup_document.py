@@ -32,7 +32,6 @@ from odoo import fields
 from odoo import osv
 from odoo import api
 from odoo import _
-import time
 import logging
 import os
 import stat
@@ -117,7 +116,7 @@ class BackupDocWizard(osv.osv.osv_memory):
                       }
             if relDocBrws:
                 documentId = relDocBrws.id
-                writeRes = relDocBrws.write(values)
+                writeRes = relDocBrws.sudo().with_context({'check': False}).write(values)
                 if writeRes:
                     logging.info('[action_restore_document] Updated document %r' % (documentId))
                 else:
@@ -130,7 +129,7 @@ class BackupDocWizard(osv.osv.osv_memory):
                                'name': backupDocBrws.document_name,
                                }
                               )
-                documentId = plmDocObj.create(values)
+                documentId = plmDocObj.sudo().create(values)
                 if documentId:
                     logging.info('[action_restore_document] Created document %r' % (documentId))
                 else:
