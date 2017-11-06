@@ -101,7 +101,7 @@ Supported Editors :
             'report/bom_structure.xml',
             'report/component_report.xml',
             'report/document_report.xml',
-            # 'views/product_product_kanban.xml'
+            'views/product_product_kanban.xml'
             ],
     'demo': [],
     'test': [],
