@@ -202,30 +202,71 @@
             <field name="model">plm.document</field>
             <field name="arch" type="xml">
                 <kanban>
+                	<field name="id"/>	<!-- Necessary to render previews -->
                     <field name="name"/>
                     <field name="revisionid"/>
                     <field name="description"/>
+                    <field name="state"/>
                     <templates>
                         <t t-name="kanban-box">
+                        <t t-value="record.state.raw_value" t-set="stateToUse"/>
                             <div class="oe_kanban_global_click">
-                                <div >
-                                	<t t-if="record.id">
-                                    	<img t-att-src="kanban_image('plm.document', 'preview', record.id.value)" height="95%" width="95%"/>
-                                    </t>
-                                </div>
-								<div class="oe_kanban_details">
-									<strong>
-                                        <field name="name"/>
-                                   	</strong>
-                                   	<strong> 
-                                   		- <field name="revisionid"/> 
-                                   	</strong>
-                                   <strong> 
-                                   		<field name="state"/>
-                                   	</strong>	
-                                   	<div name="tags"/> 
-                                   	<field name="description"/> 
-								</div>
+                            	<table>
+                            	<tr>
+                            		<td>
+                            			<img t-att-src="kanban_image('plm.document', 'preview', record.id.raw_value)" height="150" width="150"/>
+                            		</td>
+                            		<td style="padding-left:10px; vertical-align: middle;">
+                            			<table>
+                            			<tr>
+                            				<td>
+											<strong>Name: </strong>
+											<field name="name"/>
+		                                   	</td>
+		                                </tr>
+		                                <tr>
+                            				<td>
+		                                   	<strong> 
+		                                   		Revision: 
+		                                   	</strong>
+		                                   	<field name="revisionid"/> 
+		                                   	</td>
+		                                </tr>
+		                                <tr>
+                            				<td>
+		                                   	<strong> 
+		                                   		State: 
+		                                   	</strong>
+			                                	<t t-if="stateToUse == 'draft'">
+			                            			<b><span style="color: rgb(110, 51, 197);padding-left: 5px;"><field name="state" /></span></b>
+			                                    </t>
+			                                	<t t-if="stateToUse == 'confirmed'">
+			                            			<b><span style="color: blue;padding-left: 5px;"><field name="state" /></span></b>
+			                                    </t>
+			                                	<t t-if="stateToUse == 'released'">
+			                            			<b><span style="color: rgba(0, 170, 34, 0.66);padding-left: 5px;"><field name="state" /></span></b>
+			                                    </t>
+			                                	<t t-if="stateToUse == 'undermodify'">
+			                            			<b><span style="color: rgb(218, 159, 34);padding-left: 5px;"><field name="state" /></span></b>
+			                                    </t>
+			                                	<t t-if="stateToUse == 'obsoleted'">
+			                            			<b><span style="color: rgb(231, 43, 26);padding-left: 5px;"><field name="state"/></span></b>
+			                                    </t>
+		                                   	
+		                                   	</td>
+		                                </tr>
+		                                <tr>
+                            				<td>
+                            				<strong> 
+		                                   		Description: 
+		                                   	</strong>
+		                                   		<field name="description"/> 
+		                                   	</td>
+		                                </tr>
+		                                </table>
+                                   	</td>
+                                </tr>
+								</table>
 							</div>
                         </t>
                     </templates>
