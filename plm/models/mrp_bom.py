@@ -217,6 +217,45 @@ class MrpBomExtension(models.Model):
         prtDatas = self._getpackdatas(relDatas)
         return (relDatas, prtDatas, self._getpackreldatas(relDatas, prtDatas))
 
+    def whereUsedHeader(self, mprBomLineId):
+        """
+        overloadable function in order to customise the where used bom
+        :mprBomLineId mrp_bom_line browse object
+        """
+        product_id = mprBomLineId.product_id
+        out = {'bom_type': mprBomLineId.type,
+               'bom_qty': mprBomLineId.product_qty}
+        out.update(self.whereUsedHeaderP(product_id))
+        return out
+
+    def whereUsedHeaderP(self, product_id):
+        """
+        overloadable function in order to customise the where used bom
+        :product_id mrp_bom_line browse object
+        """
+        return {'name': product_id.name,
+                'product_id': product_id.id,
+                'lable_product_id': "c" + str(product_id.id),
+                'part_number': product_id.engineering_code,
+                'part_revision': product_id.engineering_revision,
+                'part_description': product_id.description}
+
+    @api.model
+    def getWhereUsedStructure(self):
+        out = []
+        for product in self.env['product.product'].search([('product_tmpl_id', '=', self.product_tmpl_id.id)]):
+            parentLines = self.env['mrp.bom.line'].search([('product_id', '=', product.id)])
+            if parentLines:
+                for parentLine in parentLines:
+                    row = self.whereUsedHeader(parentLine)
+                    children = parentLine.bom_id.getWhereUsedStructure()
+                    out.append((row, children))
+            else:
+                row = {'bom_type': self.type}
+                row.update(self.whereUsedHeaderP(product))
+                out.append((row, ()))
+        return out
+
     @api.model
     def GetExplose(self, values=[]):
         """
@@ -300,7 +339,7 @@ class MrpBomExtension(models.Model):
                     for variantBrws in trmplBrws.product_variant_ids:
                         return variantBrws.id
             return False
-            
+
         pids = []
         for bomLineObj in bomLineObjs:
             if not bomLineObj.bom_id:
@@ -407,27 +446,25 @@ class MrpBomExtension(models.Model):
                     return True
                 nexRelation.append(element)
 
-            subRelations = filter(divedeByParent, relations)
-            if len(subRelations) < 1:  # no relation to save
-                return
-            parentName, parentID, _ChildName, _ChildID, sourceID, _RelArgs = subRelations[0]
-            existingBoms = self.search([('product_id', '=', parentID),
-                                        ('source_id', '=', sourceID),
-                                        ('active', '=', True)])
-            if existingBoms and ECOModuleInstalled != None:
-                newBomBrws = existingBoms[0]
-                parentVals = getParentVals(parentName, parentID, sourceID)
-                parentVals.update({'bom_line_ids': [(5, 0, 0)]})
-                newBomBrws.write(parentVals)
-                saveChildrenBoms(subRelations, newBomBrws.id, nexRelation)
-                for ecoBrws in self.env['mrp.eco'].search([('bom_id', '=', newBomBrws.id)]):
-                    ecoBrws._compute_bom_change_ids()
-            elif not existingBoms:
-                bomID = saveParent(parentName, parentID, sourceID)
-                saveChildrenBoms(subRelations, bomID, nexRelation)
-                
-                
-            return bomID
+            subRelations = list(filter(divedeByParent, relations))
+            for subRelation in subRelations:
+                parentName, parentID, _ChildName, _ChildID, sourceID, _RelArgs = subRelation
+                existingBoms = self.search([('product_id', '=', parentID),
+                                            ('source_id', '=', sourceID),
+                                            ('active', '=', True)])
+                if existingBoms and ECOModuleInstalled is not None:
+                    newBomBrws = existingBoms[0]
+                    parentVals = getParentVals(parentName, parentID, sourceID)
+                    parentVals.update({'bom_line_ids': [(5, 0, 0)]})
+                    newBomBrws.write(parentVals)
+                    saveChildrenBoms(subRelations, newBomBrws.id, nexRelation)
+                    for ecoBrws in self.env['mrp.eco'].search([('bom_id', '=', newBomBrws.id)]):
+                        ecoBrws._compute_bom_change_ids()
+                elif not existingBoms:
+                    bomID = saveParent(parentName, parentID, sourceID)
+                    saveChildrenBoms(subRelations, bomID, nexRelation)
+                return bomID
+            return
 
         def saveChildrenBoms(subRelations, bomID, nexRelation):
             for parentName, _parentID, childName, childID, sourceID, relArgs in subRelations:
@@ -438,7 +475,7 @@ class MrpBomExtension(models.Model):
                 saveChild(childName, childID, sourceID, bomID, args=relArgs)
                 toCompute(childName, nexRelation)
             self.RebaseProductWeight(bomID, self.browse(bomID).rebaseBomWeight())
-            
+
         def repairQty(value):
             if(not isinstance(value, float) or (value < 1e-6)):
                 return 1.0
@@ -461,7 +498,6 @@ class MrpBomExtension(models.Model):
                 res['product_qty'] = repairQty(res['product_qty'])
             return res
 
-
         def saveParent(name, partID, sourceID, args=None):
             try:
                 vals = getParentVals(name, partID, sourceID, args)
@@ -469,7 +505,6 @@ class MrpBomExtension(models.Model):
             except Exception as ex:
                 logging.error("saveParent :  unable to create a relation for part (%s) with source (%d) : %s. ex: %r" % (name, sourceID, str(args), ex))
                 raise AttributeError(_("saveParent :  unable to create a relation for part (%s) with source (%d) : %s." % (name, sourceID, str(sys.exc_info()))))
-
 
         def saveChild(name, partID, sourceID, bomID=None, args=None):
             """
@@ -496,7 +531,7 @@ class MrpBomExtension(models.Model):
         if len(relations) < 1:  # no relation to save
             return False
         parentName, _parentID, _childName, _childID, _sourceID, _relArgs = relations[0]
-        if ECOModuleInstalled == None:
+        if ECOModuleInstalled is None:
             toCleanRelations(relations)
         toCompute(parentName, relations)
         return False
@@ -557,8 +592,8 @@ class MrpBomExtension(models.Model):
                                 'name': bom_line.product_id.product_tmpl_id.name,
                                 'product_id': lateRevIdC[0]})
             newBomBrws.sudo().write({'source_id': False,
-                              'name': newBomBrws.product_tmpl_id.name},
-                             check=False)
+                                     'name': newBomBrws.product_tmpl_id.name},
+                                    check=False)
         return newBomBrws
 
     @api.one
@@ -607,6 +642,5 @@ class MrpBomExtension(models.Model):
                     'context': {"group_by": ['bom_id']},
                     }
 
-MrpBomExtension()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
