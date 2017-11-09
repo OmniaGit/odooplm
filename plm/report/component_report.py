@@ -228,7 +228,7 @@ class ReportProductPdf(models.AbstractModel):
         for product in products:
             documents.extend(getDocument(product, checkState))
             if level > -1:
-                for childProduct in product._getChildrenBom(product, level):
+                for childProduct in self.env['product.product'].browse(product._getChildrenBom(product, level)):
                     documents.extend(getDocument(childProduct, checkState))
         if len(documents) == 0:
             content = getEmptyDocument()
