@@ -27,7 +27,7 @@
 	                            	<t t-call="Previews"/>
 	                            </div>
 		                    </div>
-							<div class="container o_kanban_view o_kanban_card_manage_pane o_invisible" style="position: absolute;background-color:#dae9fb;">
+							<div class="container o_kanban_view o_kanban_card_manage_pane o_invisible" style="position: absolute;">
                                 <t t-call="ComponentManage"/>
                             </div>
                         </div>
@@ -73,6 +73,16 @@
 	                            			</div>
 	                                    </t>
                                     </div>
+	                                 <div>
+			                             <a type="object" name="open_related_docs_action" >
+			                                 <span title="Number Related Documents"><b><t t-esc="dashboard.number_documents"/> Docs</b></span>
+			                             </a>
+		                             </div>
+		                             <div>
+			                             <a type="object" name="open_related_boms_action" >
+			                                 <span title="Number Related Boms"><b><t t-esc="dashboard.number_boms"/> Boms</b></span>
+			                             </a>
+		                             </div>
                                 </div>
 	                            <div class="o_kanban_manage_button_section">
 	                                <a class="o_kanban_manage_toggle_button" href="#">More <i class="fa fa-caret-down"/></a>
@@ -136,34 +146,18 @@
 		            			<t t-foreach="record.linkeddocuments.raw_value" t-as="documentId">
 		            				<t t-debug="plm"/> <!-- To debug qweb -->
 		            				<!-- <t t-value="documentId" t-set="context"/> -->
+		            				<div>
 		                            <a type="action" class="a_preview" data-context='{"xml_id":"plm_action_document_form", "id":8}'> 
+		                            	
 		                            	<!-- context="{'io':'state', 'documentId':'documentId', 'docId':'docId'}" -->
 		                            	<!-- data-name="return_action_to_open" href="#" data-context='{"xml_id":"plm_action_document_form"}' -->
-		                                <img t-att-src="kanban_image('plm.document', 'preview', documentId)" class="img-responsive image_component_kanban"/>
+		                                <img  class="image_component_kanban" t-att-src="kanban_image('plm.document', 'preview', documentId)"/>
+		                                
 		                            </a>
+		                            </div>
 		            			</t>
 	            			</div>
 	            			</td>
-							<td>
-	                     	<div>
-	                    		<table>
-	                    		<tr>
-	                    		<td>
-	                             <a type="object" name="open_related_docs_action" >
-	                                 <span title="Number Related Documents"><b><t t-esc="dashboard.number_documents"/> Docs</b></span>
-	                             </a>
-		            			</td>
-		            			</tr>
-		            			<tr>
-								<td>
-	                             <a type="object" name="open_related_boms_action" >
-	                                 <span title="Number Related Boms"><b><t t-esc="dashboard.number_boms"/> Boms</b></span>
-	                             </a>
-	                            </td>
-	            				</tr>
-	            				</table>
-	                         </div>
-	                         </td>
 	                         </tr>
 							</table>
 	                    </div>
