@@ -15,3 +15,31 @@ div.more_containers{
 	padding-left: 8px;
 	padding-right: 8px;
 }
+
+.image_component_kanban {
+-webkit-transition: .5s all;   
+-webkit-transition-delay: 5s; 
+-moz-transition: .5s all;   
+-moz-transition-delay: 5s; 
+-ms-transition: .5s all;   
+-ms-transition-delay: 5s; 
+-o-transition: .5s all;   
+-o-transition-delay: 5s; 
+transition: .5s all;   
+transition-delay: 0.1s; 
+z-index:990;
+}
+.image_component_kanban:hover {
+width:70%;
+-webkit-transition-delay: 0s;
+-moz-transition-delay: 0s;
+-ms-transition-delay: 0s;
+-o-transition-delay: 0s;
+transition-delay: 0s;
+z-index:99999999;
+}
+a{
+    color: #7c7bad;
+}
+
+

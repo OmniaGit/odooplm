@@ -168,12 +168,12 @@
         
         <record id="file_extention_type_rel_2D" model="ir.config_parameter">
             <field name="key">file_exte_type_rel_2D</field>
-            <field name="value">['.dwg', '.idw', '.e2']</field>
+            <field name="value">['.dwg', '.idw', '.e2', '.slddrw']</field>
         </record>
 
         <record id="file_extention_type_rel_3D" model="ir.config_parameter">
             <field name="key">file_exte_type_rel_3D</field>
-            <field name="value">['.e3', '.iam', '.ipt']</field>
+            <field name="value">['.e3', '.iam', '.ipt', '.sldasm', '.sldprt']</field>
         </record>
 
     </data>

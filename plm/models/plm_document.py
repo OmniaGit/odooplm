@@ -26,6 +26,7 @@ import os
 import time
 import json
 import copy
+from odoo import SUPERUSER_ID
 from datetime import datetime
 import odoo.tools as tools
 from odoo.exceptions import UserError
@@ -669,7 +670,15 @@ class PlmDocument(models.Model):
                 if customObject.state in checkState:
                     raise UserError(_("The active state does not allow you to make save action"))
                     return False
+        self.writeCheckDatas(vals)
         return super(PlmDocument, self).write(vals)
+
+    @api.multi
+    def writeCheckDatas(self, vals):
+        if 'datas' in vals.keys() or 'datas_fname' in vals.keys():
+            for docBrws in self:
+                if not docBrws._is_checkedout_for_me() and self.env.uid != SUPERUSER_ID:
+                    raise UserError(_("You cannot edit a file not in check-out by you! User ID %s" % (self.env.uid)))
 
     @api.multi
     def unlink(self):
@@ -689,7 +698,6 @@ class PlmDocument(models.Model):
 #   Overridden methods for this entity
     @api.model
     def _check_duplication(self, vals, ids=None, op='create'):
-        SUPERUSER_ID = 1
         name = vals.get('name', False)
         parent_id = vals.get('parent_id', False)
         ressource_parent_type_id = vals.get('ressource_parent_type_id', False)

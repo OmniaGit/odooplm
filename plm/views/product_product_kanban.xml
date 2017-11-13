@@ -24,9 +24,6 @@
 		                    <t t-call="ComponentTop"/>
 		                    <div class="container o_kanban_view o_kanban_card_content o_visible"> 
 	                            <div class="row">
-	                                <t t-call="ComponentInfo"/>
-	                            </div>
-	                            <div class="row">
 	                            	<t t-call="Previews"/>
 	                            </div>
 		                    </div>
@@ -76,6 +73,16 @@
 	                            			</div>
 	                                    </t>
                                     </div>
+	                                 <div>
+			                             <a type="object" name="open_related_docs_action" >
+			                                 <span title="Number Related Documents"><b><t t-esc="dashboard.number_documents"/> Docs</b></span>
+			                             </a>
+		                             </div>
+		                             <div>
+			                             <a type="object" name="open_related_boms_action" >
+			                                 <span title="Number Related Boms"><b><t t-esc="dashboard.number_boms"/> Boms</b></span>
+			                             </a>
+		                             </div>
                                 </div>
 	                            <div class="o_kanban_manage_button_section">
 	                                <a class="o_kanban_manage_toggle_button" href="#">More <i class="fa fa-caret-down"/></a>
@@ -84,25 +91,6 @@
                         </div>
                     </t>
                     
-                    <t t-name="ComponentInfo">
-                        <div class="col-xs-6 o_kanban_primary_left">
-                                <div>
-                                    <button type="object" name="create_component" class="btn btn-primary btn-sm">New Component</button>
-                                </div>
-                        </div>
-                        <div class="col-xs-6 o_kanban_primary_right">
-                            <div class="row">
-                            	<div class="col-xs-6" style="margin-left: 140px;">
-                                    <a type="object" name="open_related_docs_action" >
-                                        <span title="Number Related Documents"><b><t t-esc="dashboard.number_documents"/> Docs</b></span>
-                                    </a>
-                                    <a type="object" name="open_related_boms_action" >
-                                        <span title="Number Related Boms"><b><t t-esc="dashboard.number_boms"/> Boms</b></span>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </t>
                     
                     <t t-name="ComponentManage"> 
                     	<div class="row">
@@ -110,63 +98,69 @@
 	                            <div class="o_kanban_card_manage_title">
 	                                <span>View</span>
 	                            </div>
-	                            <div>
-	                                <a type="object" name="open_normal_bom" id="normal_bom">
-	                                    <t>Normal Boms</t>
-	                                </a>
+	                            <div style="margin-bottom: 10px;">
+	                            	<button type="object" id="normal_bom" name="open_normal_bom" class="btn btn-primary btn-sm">Normal Boms</button>
 	                            </div>
 	                        </div>
 	                        <div class="col-xs-4 o_kanban_card_manage_section o_kanban_manage_view more_containers" style="width: 100px;">
 	                            <div class="o_kanban_card_manage_title">
 	                                <span>New</span>
 	                            </div>
-	                            <div>
-	                                <a type="object" name="create_normal_bom">
-	                                    <t>Normal Bom</t>
-	                                </a>
+	                            <div style="margin-bottom: 10px;">
+	                            	<button type="object" id="normal_bom" name="create_normal_bom" class="btn btn-primary btn-sm">Normal Bom</button>
 	                            </div>
 	                        </div>
+	                   </div>
+	                   <div class="row">
 	                        <div class="col-xs-4 o_kanban_card_manage_section o_kanban_manage_view more_containers" style="width: 230px;">
 	                            <div class="o_kanban_card_manage_title">
 	                                <span>Report</span>
 	                            </div>
-	                            <div>
-	                                <a type="action" title="Print Bom All Levels PDF Drawings" name="%(plm.report_all_product_product_pdf)d">
-	                                    <t>Print Bom All Levels PDF Drawings</t>
-	                                </a>
-	                                <a type="action" title="Print Bom One Level PDF Drawings" name="%(plm.report_one_product_product_pdf)d">
-	                                    <t>Print Bom One Level PDF Drawings</t>
-	                                </a>
-	                                <a type="action" title="Print Attached PDF Drawings" id="attached_PDF" name="%(plm.report_product_product_pdf)d">
-	                                    <t>Print Attached PDF Drawings</t>
-	                                </a>
+	                            <div style="margin-bottom: 10px;">
+	                            	<button type="action" name="plm.report_all_product_product_pdf" class="btn btn-primary btn-sm">Print Bom All Levels</button>
+	                           	</div>
+	                           	<div style="margin-bottom: 10px;">
+									<button type="action" name="plm.report_one_product_product_pdf" class="btn btn-primary btn-sm">Print Bom One Level</button>
+								</div>
+								<div style="margin-bottom: 10px;">	
+									<button type="action" name="plm.report_product_product_pdf" class="btn btn-primary btn-sm">Print Attached PDF</button>
 	                            </div>
 	                        </div>
 	                        <div class="col-xs-4 o_kanban_card_manage_section o_kanban_manage_view more_containers" style="min-width: 250px;">
 	                            <div class="o_kanban_card_manage_title">
 	                                <span>Action</span>
 	                            </div>
-	                            <div>
-	                                <a type="action" title="Product BoM Where Used Structure" name="%(action_product_bom_structure_where)d">
-	                                    <t>Product BoM Where Used Structure</t>
-	                                </a>
+	                            <div style="margin-bottom: 10px;">
+	                            	<button type="action" name="plm.action_product_bom_structure_where" class="btn btn-primary btn-sm">Product Where Used</button>
 	                            </div>
 	                        </div>
                         </div>
                     </t>
                     
                     <t t-name="Previews">
-                    	<div style="display: -webkit-inline-box;">
-            			<t t-foreach="record.linkeddocuments.raw_value" t-as="documentId">
-            				<t t-debug="plm"/> <!-- To debug qweb -->
-            				<!-- <t t-value="documentId" t-set="context"/> -->
-                            <a type="action" class="a_preview" data-context='{"xml_id":"plm_action_document_form", "id":8}'> 
-                            	<!-- context="{'io':'state', 'documentId':'documentId', 'docId':'docId'}" -->
-                            	<!-- data-name="return_action_to_open" href="#" data-context='{"xml_id":"plm_action_document_form"}' -->
-                                <img t-att-src="kanban_image('plm.document', 'preview', documentId)" class="img-responsive image_component_kanban"/>
-                            </a>
-            			</t>
-            			</div>
+                    	<div>
+                    		<table style="width: 100%;">
+                    		<tr>
+                    		<td style="width: 84%;">
+	                    	<div style="display: -webkit-inline-box;">
+		            			<t t-foreach="record.linkeddocuments.raw_value" t-as="documentId">
+		            				<t t-debug="plm"/> <!-- To debug qweb -->
+		            				<!-- <t t-value="documentId" t-set="context"/> -->
+		            				<div>
+		                            <a type="action" class="a_preview" data-context='{"xml_id":"plm_action_document_form", "id":8}'> 
+		                            	
+		                            	<!-- context="{'io':'state', 'documentId':'documentId', 'docId':'docId'}" -->
+		                            	<!-- data-name="return_action_to_open" href="#" data-context='{"xml_id":"plm_action_document_form"}' -->
+		                                <img  class="image_component_kanban" t-att-src="kanban_image('plm.document', 'preview', documentId)"/>
+		                                
+		                            </a>
+		                            </div>
+		            			</t>
+	            			</div>
+	            			</td>
+	                         </tr>
+							</table>
+	                    </div>
                     </t>
                 </templates>
             </kanban>

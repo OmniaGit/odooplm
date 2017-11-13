@@ -176,7 +176,7 @@ class PlmComponent(models.Model):
     def on_change_tmpmater(self):
         if self.tmp_material:
             if self.tmp_material.name:
-                self.engineering_material = unicode(self.tmp_material.name)
+                self.engineering_material = self.tmp_material.name
 
     @api.onchange('tmp_surface')
     def on_change_tmpsurface(self):
@@ -192,6 +192,7 @@ class PlmComponent(models.Model):
             out.append((self.env['mrp.bom'].whereUsedHeader(mrpBomLine),
                         mrpBomLine.bom_id.getWhereUsedStructure()))
         return out
+
 
 #   Internal methods
     def _packfinalvalues(self, fmt, value=False, value2=False, value3=False):
