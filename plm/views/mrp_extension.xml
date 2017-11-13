@@ -52,8 +52,10 @@
             		
                 <form string="Bill of Material" edit="false">
                     <sheet>
-                    <group>
-                    	<button name="open_related_bom_lines" type="object" string="Related BOM Lines"/>	
+                    <div class="oe_button_box" name="button_box">
+                        <button name="open_related_bom_lines" type="object" string="Related BOM Lines" class="oe_stat_button" icon="fa-tasks"/>
+                    </div>
+                    <group>	
                         <field name="product_tmpl_id" options="{'no_open':True,'no_create':True}"/>
                         <field name="product_id" groups="product.group_product_variant"/>
                         <field name="state" readonly="True"/>
@@ -68,10 +70,10 @@
                         <page string="Components">
                             <field name="bom_line_ids" widget="one2many_list">
                                 <tree string="Components" editable="bottom">
-                                	<button name="openRelatedBoms" type="object" string="Related BOM" attrs="{'invisible':[('related_bom_ids', '=', [])]}"/>
+                                	<button name="openRelatedBoms" type="object" string="Related BOM" class="btn btn-sm oe_stat_button" attrs="{'invisible':[('related_bom_ids', '=', [])]}"/>
 									<field name="related_bom_ids" invisible="True"/>
 									<field name="related_document_ids" invisible="True"/>
-	           						<button name="openRelatedDocuments" type="object" string="Related DOCS" attrs="{'invisible':[('related_document_ids', '=', [])]}"/>
+	           						<button name="openRelatedDocuments" type="object" string="Related DOCS" class="btn btn-sm oe_stat_button" attrs="{'invisible':[('related_document_ids', '=', [])]}"/>
                                     <field name="sequence" widget="handle"/>
                                     <field name="product_id"/>
                                     <field name="product_qty"/>
@@ -130,11 +132,9 @@
         	<field name="priority" eval="16"/>
             <field name="arch" type="xml">
             	<data>
-            		
-            		<field name="product_tmpl_id" position="before">
-            			<label for="id" string=""/>
-            			<button name="open_related_bom_lines" type="object" string="Related BOM Lines"/>
-            		</field>
+                    <div class="oe_button_box" name="button_box" position="inside">
+                        <button name="open_related_bom_lines" type="object" string="Related BOM Lines" class="oe_stat_button" icon="fa-tasks"/>
+                    </div>
             		<field name="product_tmpl_id" position="replace">
             			<field name="product_tmpl_id" context="{'default_type': 'product'}" options="{'no_open':True,'no_create':True}"/>
             		</field>
@@ -148,9 +148,9 @@
             	<data>
 	            	<xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_id']" position="before">
 	            		<field name="related_bom_ids" invisible="True"/>
-	            		<button name="openRelatedBoms" type="object" string="Related BOM" attrs="{'invisible':[('related_bom_ids', '=', [])]}"/>	
+	            		<button name="openRelatedBoms" type="object" string="Related BOM" class="btn btn-sm oe_stat_button" attrs="{'invisible':[('related_bom_ids', '=', [])]}"/>	
 						<field name="related_document_ids" invisible="True"/>
-	           			<button name="openRelatedDocuments" type="object" string="Related DOCS" attrs="{'invisible':[('related_document_ids', '=', [])]}"/>
+	           			<button name="openRelatedDocuments" type="object" string="Related DOCS" class="btn btn-sm oe_stat_button" attrs="{'invisible':[('related_document_ids', '=', [])]}"/>
 		            	<field name="itemnum"/>
 	           		</xpath>
              	</data>
