@@ -1,10 +1,8 @@
-.image_component_kanban{
-  width:50px;
-  border: 2px solid #893b74;
-  border-radius: 7px;
-}
+
 .a_preview{
-	padding: 5px;
+	padding: 2px;
+	color: #7c7bad;
+
 }
 div.state_style{
 	display: -webkit-box;
@@ -14,32 +12,35 @@ div.state_style{
 div.more_containers{
 	padding-left: 8px;
 	padding-right: 8px;
-}
+	}
 
-.image_component_kanban {
--webkit-transition: .5s all;   
--webkit-transition-delay: 5s; 
--moz-transition: .5s all;   
--moz-transition-delay: 5s; 
--ms-transition: .5s all;   
--ms-transition-delay: 5s; 
--o-transition: .5s all;   
--o-transition-delay: 5s; 
-transition: .5s all;   
-transition-delay: 0.1s; 
-z-index:990;
+.image_component_kanban{
+  	border-radius: 2px;
+	-webkit-transition: .5s all;   
+	-webkit-transition-delay: 5s; 
+	-moz-transition: .5s all;   
+	-moz-transition-delay: 5s; 
+	-ms-transition: .5s all;   
+	-ms-transition-delay: 5s; 
+	-o-transition: .5s all;   
+	-o-transition-delay: 5s; 
+	transition: .5s all;   
+	transition-delay: 0.1s; 
+	width:50px;
+	border: 1px solid #893b74;
+	display: block;
+	position: relative;
 }
 .image_component_kanban:hover {
-width:70%;
--webkit-transition-delay: 0s;
--moz-transition-delay: 0s;
--ms-transition-delay: 0s;
--o-transition-delay: 0s;
-transition-delay: 0s;
-z-index:99999999;
+	width:100%;
+	-webkit-transition-delay: 0s;
+	-moz-transition-delay: 0s;
+	-ms-transition-delay: 0s;
+	-o-transition-delay: 0s;
+	transition-delay: 0s;
+	z-index: 100;
+	position: relative;
 }
-a{
-    color: #7c7bad;
-}
+
 
 

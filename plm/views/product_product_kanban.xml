@@ -7,7 +7,7 @@
             <kanban class="oe_background_grey o_kanban_dashboard o_account_kanban" create="0">
                 <field name="name"/>
                 <field name="engineering_code"/>
-                <field name="description"/>
+               	<field name="description"/>
                 <field name="engineering_revision"/>
                 <field name="engineering_writable"/>
                 <field name="engineering_material"/>
@@ -37,60 +37,57 @@
                         <div class="o_kanban_card_header">
                             <div class="o_kanban_card_header_title">
                                 <div class="o_primary" id='prod_name_div'>
-                                    <a type="object" name="open_action"><field name="name"/></a>
+                                    <a type="object" name="open_action"><field name="name"/> - <field name="engineering_revision"/></a>
+                                    <div><field name="description"/></div>
                                 </div>
-		                        <div class="o_secondary">
-		                            <span title="Revision Number">Engineering revision:  <field name="engineering_revision"/></span>
-		                        </div>
                             </div>
-                            <div style="display: flex;">
-                                <div class="o_secondary"> 
-                                	<div class="state_style">
-                                		<p>State:  </p>
-	                                	<t t-if="stateToUse == 'draft'">
-	                            			<div style="color: rgb(110, 51, 197);padding-left: 5px;">
-	                            				<b><field name="state"/></b>
-	                            			</div>
-	                                    </t>
-	                                	<t t-if="stateToUse == 'confirmed'">
-	                            			<div style="color: blue;padding-left: 5px;">
-	                            				<b><field name="state"/></b>
-	                            			</div>
-	                                    </t>
-	                                	<t t-if="stateToUse == 'released'">
-	                            			<div style="color: rgba(0, 170, 34, 0.66);padding-left: 5px;">
-	                            				<b><field name="state"/></b>
-	                            			</div>
-	                                    </t>
-	                                	<t t-if="stateToUse == 'undermodify'">
-	                            			<div style="color: rgb(218, 159, 34);padding-left: 5px;">
-	                            				<b><field name="state"/></b>
-	                            			</div>
-	                                    </t>
-	                                	<t t-if="stateToUse == 'obsoleted'">
-	                            			<div style="color: rgb(231, 43, 26);padding-left: 5px;">
-	                            				<b><field name="state"/></b>
-	                            			</div>
-	                                    </t>
-                                    </div>
-	                                 <div>
-			                             <a type="object" name="open_related_docs_action" >
-			                                 <span title="Number Related Documents"><b><t t-esc="dashboard.number_documents"/> Docs</b></span>
-			                             </a>
-		                             </div>
-		                             <div>
-			                             <a type="object" name="open_related_boms_action" >
-			                                 <span title="Number Related Boms"><b><t t-esc="dashboard.number_boms"/> Boms</b></span>
-			                             </a>
-		                             </div>
-                                </div>
-	                            <div class="o_kanban_manage_button_section">
-	                                <a class="o_kanban_manage_toggle_button" href="#">More <i class="fa fa-caret-down"/></a>
-	                            </div>
+                            <div class="o_secondary" style="overflow: auto;"> 
+                            	<div class="state_style" style="float:left">
+                               		<p>State:  </p>
+                                	<t t-if="stateToUse == 'draft'">
+                            			<div style="color: rgb(110, 51, 197);padding-left: 5px;">
+                            				<b><field name="state"/></b>
+                            			</div>
+                                    </t>
+                                	<t t-if="stateToUse == 'confirmed'">
+                            			<div style="color: blue;padding-left: 5px;">
+                            				<b><field name="state"/></b>
+                            			</div>
+                                    </t>
+                                	<t t-if="stateToUse == 'released'">
+                            			<div style="color: rgba(0, 170, 34, 0.66);padding-left: 5px;">
+                            				<b><field name="state"/></b>
+                            			</div>
+                                    </t>
+                                	<t t-if="stateToUse == 'undermodify'">
+                            			<div style="color: rgb(218, 159, 34);padding-left: 5px;">
+                            				<b><field name="state"/></b>
+                            			</div>
+                                    </t>
+                                	<t t-if="stateToUse == 'obsoleted'">
+                            			<div style="color: rgb(231, 43, 26);padding-left: 5px;">
+                            				<b><field name="state"/></b>
+                            			</div>
+                                    </t>
+                                   </div>
+								<div style="float:right">
+									<div>
+									 <a type="object" name="open_related_docs_action" >
+									     <span title="Number Related Documents"><b><t t-esc="dashboard.number_documents"/> Docs</b></span>
+									 </a>
+									</div>
+									<div>
+									 <a type="object" name="open_related_boms_action" >
+									     <span title="Number Related Boms"><b><t t-esc="dashboard.number_boms"/> Boms</b></span>
+									 </a>
+									</div>
+								</div>
+                               </div>
+                            <div class="o_kanban_manage_button_section">
+                                <a class="o_kanban_manage_toggle_button" href="#">More <i class="fa fa-caret-down"/></a>
                             </div>
-                        </div>
+						</div>
                     </t>
-                    
                     
                     <t t-name="ComponentManage"> 
                     	<div class="row">
@@ -138,15 +135,11 @@
                     </t>
                     
                     <t t-name="Previews">
-                    	<div>
-                    		<table style="width: 100%;">
-                    		<tr>
-                    		<td style="width: 84%;">
-	                    	<div style="display: -webkit-inline-box;">
-		            			<t t-foreach="record.linkeddocuments.raw_value" t-as="documentId">
-		            				<t t-debug="plm"/> <!-- To debug qweb -->
-		            				<!-- <t t-value="documentId" t-set="context"/> -->
-		            				<div>
+	  	                <div style="display: -webkit-inline-box;">
+	            			<t t-foreach="record.linkeddocuments.raw_value" t-as="documentId">
+	            				<t t-debug="plm"/> <!-- To debug qweb -->
+	            				<!-- <t t-value="documentId" t-set="context"/> -->
+	            				<div>
 		                            <a type="action" class="a_preview" data-context='{"xml_id":"plm_action_document_form", "id":8}'> 
 		                            	
 		                            	<!-- context="{'io':'state', 'documentId':'documentId', 'docId':'docId'}" -->
@@ -154,13 +147,9 @@
 		                                <img  class="image_component_kanban" t-att-src="kanban_image('plm.document', 'preview', documentId)"/>
 		                                
 		                            </a>
-		                            </div>
-		            			</t>
-	            			</div>
-	            			</td>
-	                         </tr>
-							</table>
-	                    </div>
+	                            </div>
+	            			</t>
+	           			</div>
                     </t>
                 </templates>
             </kanban>
