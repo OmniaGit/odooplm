@@ -100,9 +100,9 @@ Supported Editors :
             # Report
             'report/bom_structure.xml',
             'report/component_report.xml',
-            'report/document_report.xml',
-            # 'views/product_product_kanban.xml'
-            ],
+            'report/document_report.xml'],
+            #  'views/product_product_kanban.xml'
+    'qweb': ['views/templates.xml'],
     'demo': [],
     'test': [],
     'installable': True,
