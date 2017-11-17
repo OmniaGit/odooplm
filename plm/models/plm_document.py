@@ -1048,7 +1048,7 @@ class PlmDocument(models.Model):
             read_docs.extend(self._relateddocs(oid, kinds, listed_documents, False))
             read_docs.extend(self._relatedbydocs(oid, kinds, listed_documents, False))
         for document in self.browse(read_docs):
-            related_documents.append([document.id, document.name, document.preview])
+            related_documents.append([document.id, document.name, document.datas_fname, document.preview])
         return related_documents
 
     @api.model
