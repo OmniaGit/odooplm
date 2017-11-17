@@ -321,7 +321,7 @@ class PackAndGo(osv.osv.osv_memory):
         def checkCreateFolder(path):
             if os.path.exists(path):
                 shutil.rmtree(path, ignore_errors=True)
-            os.makedirs(path, 777)
+            os.makedirs(path)
 
         convetionModuleInstalled = self.checkPlmConvertionInstalled()
         tmpSubFolder = tools.config.get('document_path', os.path.join(tools.config['root_path'], 'filestore'))
