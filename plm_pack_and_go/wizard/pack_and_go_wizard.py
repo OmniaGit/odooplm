@@ -321,7 +321,7 @@ class PackAndGo(osv.osv.osv_memory):
         def checkCreateFolder(path):
             if os.path.exists(path):
                 shutil.rmtree(path, ignore_errors=True)
-            os.makedirs(path, 777)
+            os.makedirs(path, 0777)
 
         convetionModuleInstalled = self.checkPlmConvertionInstalled()
         tmpSubFolder = tools.config.get('document_path', os.path.join(tools.config['root_path'], 'filestore'))
@@ -348,8 +348,8 @@ class PackAndGo(osv.osv.osv_memory):
         def exportPdf():
             for lineBrws in self.export_pdf:
                 docBws = lineBrws.document_id
-                datas, fileExtention = self.env.ref('plm.document_pdf').sudo().render_qweb_pdf(docBws.id)
-                outFilePath = os.path.join(outZipFile, docBws.name + '.' + fileExtention)
+                datas = self.env.ref('plm.document_pdf').sudo().render_template(docBws.id)
+                outFilePath = os.path.join(outZipFile, docBws.name + '.' + 'pdf')
                 fileObj = file(outFilePath, 'wb')
                 fileObj.write(datas)
 
