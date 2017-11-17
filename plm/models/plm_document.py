@@ -164,7 +164,7 @@ class PlmDocument(models.Model):
                     filename = docBrws.store_fname
                     try:
                         os.unlink(os.path.join(filestore, filename))
-                    except Exception, ex:
+                    except Exception as ex:
                         logging.warning("Error %r " % ex)
                     self.env.cr.execute('update plm_document set store_fname=NULL WHERE id=%s', (oid,))
                     return True
