@@ -348,10 +348,9 @@ class PackAndGo(osv.osv.osv_memory):
         def exportPdf():
             for lineBrws in self.export_pdf:
                 docBws = lineBrws.document_id
-                datas, fileExtention = self.env.ref('plm.report_plm_document_pdf').sudo().render_qweb_pdf(docBws.id)
-                outFilePath = os.path.join(outZipFile, docBws.name + '.' + fileExtention)
+                outFilePath = os.path.join(outZipFile, docBws.name + '.' + 'pdf')
                 with open(outFilePath, 'wb') as fileObj:
-                    fileObj.write(datas)
+                    fileObj.write(base64.b64decode(docBws.printout))
 
         def exportOther():
             for lineBrws in self.export_other:
