@@ -237,6 +237,8 @@ class PackAndGo(osv.osv.osv_memory):
         packAndGoViewObj = self.env['pack_and_go_view']
         objBrwsList = packAndGoViewObj.search([])
         objBrwsList.unlink()
+        packList = self.search([('id', '!=', self.id)])
+        packList.unlink()
 
     def getAllAvailableTypes(self):
         '''
