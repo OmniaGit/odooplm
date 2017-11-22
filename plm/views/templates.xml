@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+<!-- 
+				'name': product_id.name,
+                'part_number': product_id.engineering_code,
+                'part_revision': product_id.engineering_revision,
+                'part_description': product_id.description}
+                {'bom_type': mprBomLineId.type}
+ -->
+	<t t-name="plm_exploded_view_row">
+			<t t-foreach="rows" t-as="r">
+				<li>	
+					<input type="checkbox" checked="checked" t-att-id="r[0].lable_product_id"/>
+						<label t-att-for="r[0].lable_product_id"  class="tree_label">
+							<div>
+								<span>	
+									<b><a class="o_plm_entity_open" t-att-data-product-id="r[0].product_id"><t t-esc="r[0].name"></t> - QTY:<t t-esc="r[0].bom_qty"></t></a></b>
+									<div>
+										<span t-esc="r[0].part_number"/> - <span t-esc="r[0].part_revision"/>
+									</div>
+									<div>
+										<span t-esc="r[0].part_description"/> - <span t-esc="r[0].bom_type"/>
+									</div>
+									
+								</span>
+							</div>
+						</label>
+					<ul>
+						<t t-call="plm_exploded_view_row">
+						    <t t-set="rows" t-value="r[1]"/>
+						</t>
+					</ul>
+				</li>
+	        </t>
+	 </t>
+	        	
+	<t t-name="plm_exploded_view">
+		<div class="plm_exploded_viem_title"><b>Exploded view</b></div>
+		<ul class="tree">
+			<t t-call="plm_exploded_view_row">
+		    	<t t-set="rows" t-value="widget.res"/>
+			</t>
+		</ul> 
+	</t>
+
+</templates>

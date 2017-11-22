@@ -26,6 +26,7 @@ import os
 import time
 import json
 import copy
+from odoo import SUPERUSER_ID
 from datetime import datetime
 import odoo.tools as tools
 from odoo.exceptions import UserError
@@ -163,8 +164,8 @@ class PlmDocument(models.Model):
                     filename = docBrws.store_fname
                     try:
                         os.unlink(os.path.join(filestore, filename))
-                    except:
-                        pass
+                    except Exception as ex:
+                        logging.warning("Error %r " % ex)
                     self.env.cr.execute('update plm_document set store_fname=NULL WHERE id=%s', (oid,))
                     return True
                 printout = False
@@ -286,9 +287,9 @@ class PlmDocument(models.Model):
         previous_name = self.name
         if 'name' not in defaults:
             new_name = 'Copy of %s' % previous_name
-            l = self.search([('name', '=', new_name)], order='revisionid')
-            if len(l) > 0:
-                new_name = '%s (%s)' % (new_name, len(l) + 1)
+            documents = self.search([('name', '=', new_name)], order='revisionid')
+            if len(documents) > 0:
+                new_name = '%s (%s)' % (new_name, len(documents) + 1)
             defaults['name'] = new_name
         fname, filesize = self._manageFile()
         defaults['store_fname'] = fname
@@ -669,7 +670,15 @@ class PlmDocument(models.Model):
                 if customObject.state in checkState:
                     raise UserError(_("The active state does not allow you to make save action"))
                     return False
+        self.writeCheckDatas(vals)
         return super(PlmDocument, self).write(vals)
+
+    @api.multi
+    def writeCheckDatas(self, vals):
+        if 'datas' in vals.keys() or 'datas_fname' in vals.keys():
+            for docBrws in self:
+                if not docBrws._is_checkedout_for_me() and self.env.uid != SUPERUSER_ID:
+                    raise UserError(_("You cannot edit a file not in check-out by you! User ID %s" % (self.env.uid)))
 
     @api.multi
     def unlink(self):
@@ -689,7 +698,6 @@ class PlmDocument(models.Model):
 #   Overridden methods for this entity
     @api.model
     def _check_duplication(self, vals, ids=None, op='create'):
-        SUPERUSER_ID = 1
         name = vals.get('name', False)
         parent_id = vals.get('parent_id', False)
         ressource_parent_type_id = vals.get('ressource_parent_type_id', False)
@@ -819,9 +827,9 @@ class PlmDocument(models.Model):
     document_type = fields.Selection([('other', _('Other')),
                                       ('2d', _('2D')),
                                       ('3d', _('3D')),
-                                      ], 
+                                      ],
                                      compute=_compute_document_type,
-                                     string= _('Document Type'))
+                                     string=_('Document Type'))
     desc_modify = fields.Text(_('Modification Description'), default='')
 
     _sql_constraints = [
@@ -1040,7 +1048,7 @@ class PlmDocument(models.Model):
             read_docs.extend(self._relateddocs(oid, kinds, listed_documents, False))
             read_docs.extend(self._relatedbydocs(oid, kinds, listed_documents, False))
         for document in self.browse(read_docs):
-            related_documents.append([document.id, document.name, document.preview])
+            related_documents.append([document.id, document.name, document.datas_fname, document.preview])
         return related_documents
 
     @api.model
@@ -1227,7 +1235,7 @@ class PlmDocument(models.Model):
                 childRelations.append((documentId, relationAttributes.get('TYPE', '')))
                 if parentDocumentId:
                     documentRelations[parentDocumentId] = list(set(childRelations))
-                if parentProductId and createBom: # Case of part - assembly
+                if parentProductId and createBom:  # Case of part - assembly
                     if not documentId:
                         documentId = parentDocumentId
                     itemTuple = (productId, documentId, relationAttributes)
@@ -1236,7 +1244,7 @@ class PlmDocument(models.Model):
                     productRelations[parentProductId] = listItem
                 else:
                     if productId and parentDocumentId:
-                        if not parentProductId: # Case of drawing - model relation
+                        if not parentProductId:  # Case of drawing - model relation
                             listRelated = productDocumentRelations.get(productId, [])
                             listRelated.append(parentDocumentId)
                             productDocumentRelations[productId] = listRelated
@@ -1396,7 +1404,7 @@ class PlmDocument(models.Model):
                 return False, msg
             return True, ''
         return False, 'No document provided'
-        
+
     @api.model
     def needUpdate(self):
         """
@@ -1434,20 +1442,16 @@ class PlmDocument(models.Model):
         if not docName or docRev is None:
             logging.warning('No name or not revision passed by the client %r' % (docProps))
             return {}
-        docBrws = self.search([
-            ('name', '=', docName),
-            ('revisionid', '=', docRev)
-            ])
-        
+        docBrws = self.search([('name', '=', docName),
+                               ('revisionid', '=', docRev)])
+
         rootDocInfos = docBrws.getDocumentInfos()
         rootDocInfos['root_document'] = True
         linkedDocs = [{'component': {}, 'document': rootDocInfos}]
         linkedDocs.extend(docBrws.computeLikedDocuments())
-        return {
-            'root_props': docBrws.getDocumentInfos(),
-            'documents': linkedDocs,
-            'bom': [],
-            }
+        return {'root_props': docBrws.getDocumentInfos(),
+                'documents': linkedDocs,
+                'bom': []}
 
     @api.multi
     def computeLikedDocuments(self):
@@ -1481,17 +1485,15 @@ class PlmDocument(models.Model):
         docRev = docVals.get('revisionid', None)
         if not docName or docRev is None:
             return self.browse()
-        return self.search([
-            ('name', '=', docName),
-            ('revisionid', '=', docRev),
-            ])
-        
+        return self.search([('name', '=', docName),
+                            ('revisionid', '=', docRev)])
+
     @api.model
     def checkStructureExistance(self, args):
         prodProdEnv = self.env['product.product']
         jsonNode = args[0]
         rootNode = json.loads(jsonNode)
-        
+
         def getLinkedDocumentsByComponent(node, compBrws):
             '''
                 Append in the node relations documents taken by linkeddocuments
@@ -1507,7 +1509,7 @@ class PlmDocument(models.Model):
                     newNode['DOCUMENT_ATTRIBUTES'] = docBrws.getDocumentInfos()
                     newNode['DOCUMENT_ATTRIBUTES']['CAN_BE_REVISED'] = docBrws.canBeRevised()
                     node['RELATIONS'].append(newNode)
-        
+
         def getLinkedDocumentsByDocument(node, docBrws):
             '''
                 Append in the node relations documents taken by plm.document.relation
@@ -1525,12 +1527,12 @@ class PlmDocument(models.Model):
                         relatedDocBrws = docLinkBrws.parent_id
                     else:
                         relatedDocBrws = docLinkBrws.child_id
-                    if relatedDocBrws and relatedDocBrws.document_type.upper() == '2D': # If not 2D is a raw part
+                    if relatedDocBrws and relatedDocBrws.document_type.upper() == '2D':  # If not 2D is a raw part
                         newNode = copy.deepcopy(node)
                         newNode['DOCUMENT_ATTRIBUTES'] = relatedDocBrws.getDocumentInfos()
                         newNode['DOCUMENT_ATTRIBUTES']['CAN_BE_REVISED'] = relatedDocBrws.canBeRevised()
                         node['RELATIONS'].append(newNode)
-                    
+
         def recursionUpdate(node, isRoot=False):
             # Update root component and document ids
             compVals = node.get('PRODUCT_ATTRIBUTES', {})
@@ -1542,18 +1544,18 @@ class PlmDocument(models.Model):
             node['DOCUMENT_ATTRIBUTES'] = rootDocBrws.getDocumentInfos()
             node['DOCUMENT_ATTRIBUTES']['CAN_BE_REVISED'] = rootDocBrws.canBeRevised()
             if isRoot:
-                node['PRODUCT_ATTRIBUTES']['CAN_BE_REVISED'] = True # Has already been revised
+                node['PRODUCT_ATTRIBUTES']['CAN_BE_REVISED'] = True  # Has already been revised
                 engcode = compVals.get('engineering_code')
-                if not engcode: # Has already been revised and contains only document props
+                if not engcode:  # Has already been revised and contains only document props
                     node['PRODUCT_ATTRIBUTES']['CAN_BE_REVISED'] = False
                     node['DOCUMENT_ATTRIBUTES']['CAN_BE_REVISED'] = True
             compId = compBrws.id
             for relatedNode in node.get('RELATIONS', []):   # Caso grezzo
                 recursionUpdate(relatedNode)
             if compId:
-                getLinkedDocumentsByComponent(node, compBrws)   # Only if component infos
+                getLinkedDocumentsByComponent(node, compBrws)    # Only if component infos
             else:
-                getLinkedDocumentsByDocument(node, rootDocBrws) # Only for document infos
+                getLinkedDocumentsByDocument(node, rootDocBrws)  # Only for document infos
 
         recursionUpdate(rootNode, True)
         return json.dumps(rootNode)
@@ -1572,7 +1574,7 @@ class PlmDocument(models.Model):
             outLocalDict['state'] = ''
             outLocalDict['_id'] = False
             if not docBrwsList:
-                outLocalDict['help_checkout'] = _('Unable to find document to check-out. Please save it.') 
+                outLocalDict['help_checkout'] = _('Unable to find document to check-out. Please save it.')
             else:
                 for docBrws in docBrwsList:
                     outLocalDict['_id'] = docBrws.id
@@ -1584,7 +1586,5 @@ class PlmDocument(models.Model):
                     break
             outDict[file_path] = outLocalDict
         return outDict
-        
-PlmDocument()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

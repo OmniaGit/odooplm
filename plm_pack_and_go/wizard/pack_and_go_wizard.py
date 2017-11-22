@@ -237,6 +237,8 @@ class PackAndGo(osv.osv.osv_memory):
         packAndGoViewObj = self.env['pack_and_go_view']
         objBrwsList = packAndGoViewObj.search([])
         objBrwsList.unlink()
+        packList = self.search([('id', '!=', self.id)])
+        packList.unlink()
 
     def getAllAvailableTypes(self):
         '''
@@ -321,7 +323,7 @@ class PackAndGo(osv.osv.osv_memory):
         def checkCreateFolder(path):
             if os.path.exists(path):
                 shutil.rmtree(path, ignore_errors=True)
-            os.makedirs(path, 777)
+            os.makedirs(path)
 
         convetionModuleInstalled = self.checkPlmConvertionInstalled()
         tmpSubFolder = tools.config.get('document_path', os.path.join(tools.config['root_path'], 'filestore'))
@@ -348,10 +350,9 @@ class PackAndGo(osv.osv.osv_memory):
         def exportPdf():
             for lineBrws in self.export_pdf:
                 docBws = lineBrws.document_id
-                datas, fileExtention = self.env.ref('plm.document_pdf').sudo().render_qweb_pdf(docBws.id)
-                outFilePath = os.path.join(outZipFile, docBws.name + '.' + fileExtention)
-                fileObj = file(outFilePath, 'wb')
-                fileObj.write(datas)
+                outFilePath = os.path.join(outZipFile, docBws.name + '.' + 'pdf')
+                with open(outFilePath, 'wb') as fileObj:
+                    fileObj.write(base64.b64decode(docBws.printout))
 
         def exportOther():
             for lineBrws in self.export_other:

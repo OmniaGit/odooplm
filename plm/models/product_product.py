@@ -58,6 +58,15 @@ class PlmComponent(models.Model):
     _inherit = 'product.product'
 
     @api.multi
+    def action_show_reference(self):
+        ctx = self.env.context.copy()
+        ctx.update({'active_id': self.id,
+                    'active_ids': self.ids})
+        return {'type': 'ir.actions.client',
+                'tag': 'plm_exploded_view',
+                'context': ctx}
+
+    @api.multi
     def _father_part_compute(self, name='', arg={}):
         """ Gets father bom.
         @param self: The object pointer
@@ -173,7 +182,17 @@ class PlmComponent(models.Model):
     def on_change_tmpsurface(self):
         if self.tmp_surface:
             if self.tmp_surface.name:
-                self.engineering_surface = self.tmp_surface.name
+                self.engineering_surface = unicode(self.tmp_surface.name)
+
+    @api.model
+    def getParentBomStructure(self):
+        mrpBomLines = self.env['mrp.bom.line'].search([('product_id', '=', self.env.context['id'])])
+        out = []
+        for mrpBomLine in mrpBomLines:
+            out.append((self.env['mrp.bom'].whereUsedHeader(mrpBomLine),
+                        mrpBomLine.bom_id.getWhereUsedStructure()))
+        return out
+
 
 #   Internal methods
     def _packfinalvalues(self, fmt, value=False, value2=False, value3=False):
@@ -1358,9 +1377,6 @@ class PlmTemporayMessage(osv.osv.osv_memory):
     name = fields.Text(_('Bom Result'), readonly=True)
 
 
-PlmTemporayMessage()
-
-
 class ProductProductDashboard(models.Model):
     _name = "report.plmcomponent"
     _description = "Report Component"
@@ -1396,8 +1412,5 @@ class ProductProductDashboard(models.Model):
                     (SELECT count(*) FROM product_template WHERE state = 'obsoleted' and  engineering_code<>'') AS count_component_obsoleted
              )
         """)
-
-
-ProductProductDashboard()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

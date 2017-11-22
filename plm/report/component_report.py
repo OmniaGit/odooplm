@@ -214,21 +214,21 @@ class ReportProductPdf(models.AbstractModel):
         docRepository, mainBookCollector = commonInfos(self.env)
         documents = []
 
-        def getDocument(products, check):
+        def getDocument(product, check):
             out = []
-            for product in products:
-                for doc in product.linkeddocuments:
-                    if check:
-                        if doc.state in ['released', 'undermodify']:
-                            out.append(doc)
-                        continue
-                    out.append(doc)
+            for doc in product.linkeddocuments:
+                if check:
+                    if doc.state in ['released', 'undermodify']:
+                        out.append(doc)
+                    continue
+                out.append(doc)
             return out
 
         for product in products:
             documents.extend(getDocument(product, checkState))
             if level > -1:
                 for childProduct in product._getChildrenBom(product, level):
+                    childProduct = self.env['product.product'].browse(childProduct)
                     documents.extend(getDocument(childProduct, checkState))
         if len(documents) == 0:
             content = getEmptyDocument()

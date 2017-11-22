@@ -94,6 +94,10 @@
                         attrs="{'invisible':[('type', 'not in', ['product', 'consu'])]}" icon="fa-flask">
                         <field string="Bill of Materials" name="bom_count" widget="statinfo" />
                     </button>
+                    <button class="oe_stat_button" name="action_show_reference" type="object"
+                        icon="fa-level-up">
+                        <field string="Product Where Used" name="used_in_bom_count" widget="statinfo" />
+                    </button>
                     <button class="oe_stat_button" name="action_view_mos" type="object"
                         attrs="{'invisible':[('type', 'not in', ['product', 'consu'])]}" icon="fa-list-alt">
                         <field string="Manufacturing" name="mo_count" widget="statinfo" />
@@ -160,7 +164,7 @@
             </form>
         </field>
     </record> 
-        							
+    
     <record model="ir.actions.act_window" id="action_plm_component_base">
         <field name="name">Engineering Parts</field>
         <field name="res_model">product.product</field>

@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 ##############################################################################
 #
-#    OmniaSolutions, Open Source Management Solution    
+#    OmniaSolutions, Open Source Management Solution
 #    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
 #    $Id$
 #
@@ -101,8 +101,8 @@ Supported Editors :
             'report/bom_structure.xml',
             'report/component_report.xml',
             'report/document_report.xml',
-            # 'views/product_product_kanban.xml'
-            ],
+            'views/product_product_kanban.xml'],
+    'qweb': ['views/templates.xml'],
     'demo': [],
     'test': [],
     'installable': True,
