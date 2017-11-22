@@ -65,6 +65,14 @@ class PlmDocument(models.Model):
     _table = 'plm_document'
     _inherit = ['mail.thread', 'ir.attachment']
 
+    @property
+    def actions(self):
+        return {'reactivate': self.action_reactivate,
+                'obsolete': self.action_obsolete,
+                'release': self.action_release,
+                'confirm': self.action_confirm,
+                'draft': self.action_draft}
+
     @api.multi
     def get_checkout_user(self):
         lastDoc = self._getlastrev(self.ids)
@@ -546,6 +554,11 @@ class PlmDocument(models.Model):
                 logging.warning(_("The document %s - %s has not checked-in" % (str(document.name), str(document.revisionid))))
                 return False
         return True
+
+    @api.multi
+    def perform_action(self, action):
+        toCall = self.actions.get(action)
+        return toCall()
 
     @api.multi
     def wf_message_post(self, body=''):
@@ -1373,7 +1386,7 @@ class PlmDocument(models.Model):
                 brwBom.addChildRow(trueChildId, trueDocumentId, relationAttributes, bomType)
         jsonify = json.dumps(objStructure)
         end = time.time()
-        logging.debug("Time Spend For save structure is: %s" % (str(end - start)))
+        logging.info("Time Spend For save structure is: %s" % (str(end - start)))
         return jsonify
 
     @api.multi
