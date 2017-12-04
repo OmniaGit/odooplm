@@ -623,7 +623,7 @@ class PlmComponent(models.Model):
             defaults['state'] = status
             excludeStatuses = ['draft', 'released', 'undermodify', 'obsoleted']
             includeStatuses = ['confirmed', 'transmitted']
-            compObj._action_to_perform(status, action, docaction, defaults, excludeStatuses, includeStatuses)
+            compObj.commonWFAction(status, action, docaction, defaults, excludeStatuses, includeStatuses)
         return True
 
     @api.multi
@@ -640,7 +640,7 @@ class PlmComponent(models.Model):
             defaults['state'] = status
             excludeStatuses = ['confirmed', 'transmitted', 'released', 'undermodify', 'obsoleted']
             includeStatuses = ['draft']
-            compObj._action_to_perform(status, action, docaction, defaults, excludeStatuses, includeStatuses)
+            compObj.commonWFAction(status, action, docaction, defaults, excludeStatuses, includeStatuses)
         return True
 
     @api.model
@@ -701,7 +701,7 @@ class PlmComponent(models.Model):
             defaults['state'] = status
             excludeStatuses = ['draft', 'confirmed', 'transmitted', 'undermodify', 'obsoleted']
             includeStatuses = ['released']
-            compObj._action_to_perform(status, action, docaction, defaults, excludeStatuses, includeStatuses)
+            compObj.commonWFAction(status, action, docaction, defaults, excludeStatuses, includeStatuses)
         return True
 
     @api.multi
@@ -718,7 +718,7 @@ class PlmComponent(models.Model):
             defaults['state'] = status
             excludeStatuses = ['draft', 'confirmed', 'transmitted', 'released', 'undermodify', 'obsoleted']
             includeStatuses = ['obsoleted']
-            compObj._action_to_perform(status, action, docaction, defaults, excludeStatuses, includeStatuses)
+            compObj.commonWFAction(status, action, docaction, defaults, excludeStatuses, includeStatuses)
         return True
 
     def perform_action(self, action):
@@ -731,7 +731,7 @@ class PlmComponent(models.Model):
         return toCall()
 
     @api.multi
-    def _action_to_perform(self, status, action, docaction, defaults=[], excludeStatuses=[], includeStatuses=[]):
+    def commonWFAction(self, status, action, docaction, defaults=[], excludeStatuses=[], includeStatuses=[]):
         tmpl_ids = []
         full_ids = []
         userErrors, allIDs = self._get_recursive_parts(excludeStatuses, includeStatuses)
