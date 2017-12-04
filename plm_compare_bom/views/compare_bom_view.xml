@@ -8,8 +8,11 @@
         	<field name="priority" eval="10"/>
             <field name="arch" type="xml">
                 <tree string="BoM Relations in Bom 2"
-            		  decoration-info="reason in ('Changed')"
-            	      decoration-danger="reason in ('Removed')">
+            	decoration-bf="reason != ''"
+            	decoration-success="reason == 'Added'"
+            	decoration-warning="reason == 'Changed'"
+            	decoration-muted="reason == 'Changed Qty'"
+                >
                     <field name="itemnum" select="True"/>
                     <field name="bom_idrow" invisible="True"/>
                     <field name="part_id" select="True"/>
@@ -28,9 +31,12 @@
             <field name="type">tree</field>
             <field name="priority" eval="10"/>
             <field name="arch" type="xml">
-                <tree string="BoM Relations in Bom 1"
-            		  decoration-info="reason in ('Changed')"
-            		  decoration-success="reason in ('Added')">
+                <tree 
+            	decoration-bf="reason != ''"
+            	decoration-success="reason == 'Added'"
+            	decoration-warning="reason == 'Changed'"
+            	decoration-muted="reason == 'Changed Qty'"
+             	string="BoM Relations in Bom 1">
                     <field name="itemnum" select="True"/>
                     <field name="bom_idrow" invisible="True"/>
                     <field name="part_id" select="True"/>
@@ -56,13 +62,15 @@
                     	<field name="bom_id2"/>
                     </group>
                     <newline/>
-                    <separator colspan="4"/>
-                    <group col="2" colspan="4">
-                        <button special="cancel" string="Cancel" />
-                        <button name="action_compare_Bom" string="Compare selected BoMs"
-                            colspan="1" type="object"/>
+                    <group>
+                    	<field name="compute_type" widget="radio"/>
                     </group>
+		          <footer>
+                    <button name="action_compare_Bom" class="oe_highlight" string="Compare selected BoMs" type="object"/>
+		            <button string="Cancel" class="oe_link" special="cancel"/>
+		          </footer>
                 </form>
+                
             </field>
         </record>
 
