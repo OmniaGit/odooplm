@@ -101,10 +101,10 @@
 		            <field name="datas" readonly="1" filename="datas_fname"/>
 			</group>
             <separator string=""/>
-            <group colspan="4" col="4">
-            	<button icon="gtk-cancel" special="cancel" string="Cancel"/>
-            	<button icon="terp-gtk-go-back-rtl" string="Create zip archive" name="action_export_zip" type="object"/>
-            </group>
+            <footer>
+            	<button special="cancel" string="Cancel"/>
+            	<button string="Create zip archive" name="action_export_zip" type="object"/>
+            </footer>
         </form>
         </field>
     </record>

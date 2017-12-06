@@ -80,6 +80,7 @@ def get_bom_report(myObject, recursion=False, flat=False, leaf=False, level=1, s
             else:
                 if prodTmlId not in leafRes.keys():
                     resDict = getOutLineInfos(l, productTmplObj, prodQty)
+                    resDict['engineering_code'] = productTmplObj.engineering_code
                     resDict['level'] = ''
                     leafRes[prodTmlId] = resDict
                 else:
@@ -123,6 +124,7 @@ def get_bom_report(myObject, recursion=False, flat=False, leaf=False, level=1, s
             else:
                 prodQty = l.product_qty
                 res = getOutLineInfos(l, productTmplObj, prodQty)
+                res['engineering_code'] = '- ' * level + ' ' + productTmplObj.engineering_code
                 res['children'] = children
                 res['level'] = level
                 levelListed.append(prodTmlId)
