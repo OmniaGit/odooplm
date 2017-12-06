@@ -1,5 +1,5 @@
 <odoo>
-    
+    <data>
 	<record id="plm_component_kanban" model="ir.ui.view">
         <field name="name">plm.component.kanban</field>
         <field name="model">product.product</field>
@@ -155,5 +155,5 @@
             </kanban>
         </field>
     </record>
-
+	</data>
 </odoo>
