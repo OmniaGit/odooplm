@@ -144,8 +144,6 @@
 	                	<field name="state" readonly="True"/>
 	                	<field name="weight_net" readonly="True"/>
 	                </field>
-            	</data>
-            	<data>
 	            	<xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_id']" position="before">
 	            		<field name="related_bom_ids" invisible="True"/>
 	            		<button name="openRelatedBoms" type="object" string="Related BOM" class="btn btn-sm oe_stat_button" attrs="{'invisible':[('related_bom_ids', '=', [])]}"/>	
@@ -153,8 +151,6 @@
 	           			<button name="openRelatedDocuments" type="object" string="Related DOCS" class="btn btn-sm oe_stat_button" attrs="{'invisible':[('related_document_ids', '=', [])]}"/>
 		            	<field name="itemnum"/>
 	           		</xpath>
-             	</data>
-            	<data>
 	            	<xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_id']" position="after">
 	            		<field name="engineering_revision" readonly="True"/>	
 		                <field name="state" readonly="True"/>
@@ -162,13 +158,14 @@
 		                <field name="source_id" string="Source Relation Document"/>
  	            		<field name="type" />
 	           		</xpath>
-             	</data>
-            	<data>
 	            	<xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_qty']" position="after">
 		               	<field name="weight_net" readonly="True"/>
 		    			<field name="create_date" select="True" readonly="True"/>
                         <field name="hasChildBoms" invisible="True"/>
 	           		</xpath>
+            		<tree position="attributes">
+            			<attribute name="editable">bottom</attribute>
+            		</tree>
              	</data>
      		</field>
         </record>
