@@ -66,8 +66,7 @@
         <field name="type">form</field>
         <field name="priority" eval="6"/>
         <field name="arch" type="xml">
-             <form string="Engineering Product">
-             	<field name="type" invisible="1"/>	
+             <form string="Engineering Product" version="7.0">
              	<header>
 	                <button name="action_release"
 	                		type="object"
@@ -84,11 +83,15 @@
 	                		states="draft" 		
 	                		string="Confirm Component" 
 	                		class="oe_highlight"/>	
-	                <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,released" statusbar_colors='{"undermodify":"red","obsoleted":"red"}' />
+	                <field name="state" 
+	                	widget="statusbar" 
+	                	statusbar_visible="draft,confirmed,released" 
+	                	statusbar_colors='{"undermodify":"red","obsoleted":"red"}'
+	                	readonly="1"/>
 	            </header>
 	           	
 	           	<sheet>
-	           
+	           <field name="type" invisible="1"/>
                 <div name="button_box" class="oe_button_box">
  					<button class="oe_stat_button" name="open_boms" type="object"
                         attrs="{'invisible':[('type', 'not in', ['product', 'consu'])]}" icon="fa-flask">
@@ -112,7 +115,6 @@
            		<group name="PNArea" colspan="4" col="2">
           			<field name="engineering_code" attrs="{'readonly':[('state','!=','draft')]}" select="1"/>
           			<field name="engineering_revision" 	colspan="2" readonly="True"/>
-           			<field name="state" readonly="True"/>	
           			<field name="std_description" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/> 	
            			<field name="description" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
 	                <field name="desc_modify" attrs="{'readonly':[('state','in',['released','obsoleted'])], 'invisible': [('engineering_revision', '=', 0)]}"/>
