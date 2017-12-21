@@ -27,7 +27,19 @@
             </tree>
         </field>
     </record>  
-               
+
+    <record id="view_stock_product_template_tree_plm" model="ir.ui.view">
+        <field name="name">product.template.tree.plm.inherit</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_tree_view"/>
+        <field name="arch" type="xml">
+            <field name="default_code" position="replace">
+                <field name="engineering_code"/>
+                <field name="engineering_revision"/>
+            </field>
+        </field>
+    </record>
+         
     <record model="ir.ui.view" id="plm_component_base_search">
         <field name="name">plm.base.component</field>
         <field name="model">product.product</field>
