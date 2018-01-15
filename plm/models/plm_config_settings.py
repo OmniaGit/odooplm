@@ -50,6 +50,6 @@ class PlmConfigSettings(models.TransientModel):
     module_plm_project = fields.Boolean("Activate the PLM Project connection")
     module_plm_client_customprocedure = fields.Boolean("Activate the PLM Client mapping")
     module_plm_box = fields.Boolean("PLM Box")
-
+    module_plm_suspended = fields.Boolean("Manage Product suspend code")
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
