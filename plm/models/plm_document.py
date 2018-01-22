@@ -46,6 +46,8 @@ USED_STATES = [('draft', _('Draft')),
                ('obsoleted', _('Obsoleted'))]
 USEDIC_STATES = dict(USED_STATES)
 
+PLM_NO_WRITE_STATE = ['confirmed', 'released', 'undermodify', 'obsoleted']
+
 
 def random_name():
     random.seed()
@@ -674,15 +676,19 @@ class PlmDocument(models.Model):
     def create(self, vals):
         return super(PlmDocument, self).create(vals)
 
+    @api.model
+    def isPlmStateWritable(self):
+        for customObject in self:
+            if customObject.state in PLM_NO_WRITE_STATE:
+                return False
+        return True
+
     @api.multi
     def write(self, vals):
-        checkState = ('confirmed', 'released', 'undermodify', 'obsoleted')
         check = self.env.context.get('check', True)
         if check:
-            for customObject in self:
-                if customObject.state in checkState:
-                    raise UserError(_("The active state does not allow you to make save action"))
-                    return False
+            if not self.isPlmStateWritable():
+                raise UserError(_("The active state does not allow you to make save action"))
         self.writeCheckDatas(vals)
         return super(PlmDocument, self).write(vals)
 

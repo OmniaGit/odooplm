@@ -83,7 +83,6 @@ class ProductTemplateExtension(models.Model):
         ('partnumber_uniq', 'unique (engineering_code,engineering_revision)', _('Part Number has to be unique!'))
     ]
 
-
     @api.multi
     def engineering_products_open(self):
         product_id = False
