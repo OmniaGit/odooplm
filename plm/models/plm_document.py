@@ -396,10 +396,11 @@ class PlmDocument(models.Model):
         return False
 
     @api.multi
-    def NewRevision(self):
+    def NewRevision(self, newBomDocumentRevision=True):
         """
             create a new revision of the document
         """
+        # TODO: Migrate document revision functionality from plm 10
         newID = None
         newRevIndex = False
         for tmpObject in self:

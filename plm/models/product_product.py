@@ -139,6 +139,7 @@ class PlmComponent(models.Model):
                               help=_("Assign value to the second characteristic."))
 
     desc_modify = fields.Text(_('Modification Description'), default='')
+    source_product = fields.Many2one('product.product', _('Generated From'))
     # Don't overload std_umc1, std_umc2, std_umc3 setting them related to std_description because odoo try to set value
     # of related fields and integration users doesn't have write permissions in std_description. The result is that
     # integration users can't create products if in changed values there is std_description
