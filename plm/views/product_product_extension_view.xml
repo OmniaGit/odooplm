@@ -129,7 +129,7 @@
           			<field name="engineering_revision" 	colspan="2" readonly="True"/>
           			<field name="std_description" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/> 	
            			<field name="description" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
-           			<field name="source_product" readonly="True"/>
+           			<field name="source_product" invisible="True"/>
 	                <field name="desc_modify" attrs="{'readonly':[('state','in',['released','obsoleted'])], 'invisible': [('engineering_revision', '=', 0)]}"/>
            		</group>
            			
