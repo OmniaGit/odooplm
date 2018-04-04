@@ -157,12 +157,14 @@
 		            	<field name="description" readonly="True"/>
 		                <field name="source_id" string="Source Relation Document"/>
  	            		<field name="type" />
+ 	            		<field name="weight_net" readonly="True"/>
+ 	            		<field name="create_date" select="True" readonly="True"/>
 	           		</xpath>
+	           		
 	            	<xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_qty']" position="after">
-		               	<field name="weight_net" readonly="True"/>
-		    			<field name="create_date" select="True" readonly="True"/>
                         <field name="hasChildBoms" invisible="True"/>
 	           		</xpath>
+	           		
             		<tree position="attributes">
             			<attribute name="editable">bottom</attribute>
             		</tree>
