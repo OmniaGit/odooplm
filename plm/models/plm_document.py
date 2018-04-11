@@ -618,7 +618,7 @@ class PlmDocument(models.Model):
         for oldObject in self:
             lastDocBrws = self._getbyrevision(oldObject.name, oldObject.revisionid - 1)
             if lastDocBrws:
-                lastDocBrws.commonWFAction(False, 'released', False)
+                lastDocBrws.commonWFAction(False, 'obsoleted', False)
         if self.ischecked_in():
             return self.commonWFAction(False, 'released', False)
         return False
