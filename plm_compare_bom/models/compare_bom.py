@@ -273,9 +273,10 @@ class plm_compare_bom(osv.osv.osv_memory):
         """
             Compare two BOMs
         """
+        logging.info('Start comparing')
         bom1Dict = self.computeBomLines(self.bom_id1)
         bom2Dict = self.computeBomLines(self.bom_id2)
-        
+        logging.info('Lines computed. Compute type %r' %(self.compute_type))
         if self.compute_type == 'only_product':
             bom1NewItems, bom2NewItems = self.computeOnlyProduct(bom1Dict, bom2Dict)
         elif self.compute_type == 'summarized':
@@ -284,14 +285,16 @@ class plm_compare_bom(osv.osv.osv_memory):
             bom1NewItems, bom2NewItems = self.computeByQty(bom1Dict, bom2Dict)
         else:
             logging.warning('Compute type not found!')
-        
-        self.anotinb = bom1NewItems
-        self.bnotina = bom2NewItems
-
+        logging.info('Starting returning self %r' %(self))
+        self.write({'anotinb': [(6, False, bom1NewItems)],
+                    'bnotina': [(6, False, bom2NewItems)]})
+        logging.info('Assigned values')
         data_obj = self.env['ir.model.data']
-        id3 = data_obj._get_id(openerpModule, 'plm_visualize_diff_form')
+        id3 = data_obj._get_id('plm', 'plm_visualize_diff_form')
+        logging.info('ID3: %r' % (id3))
         if id3:
             id3 = data_obj.browse(id3).res_id
+        logging.info('ID3 2: %r' % (id3))
         return {
             'domain': [],
             'name': _('Differences on BoMs'),
