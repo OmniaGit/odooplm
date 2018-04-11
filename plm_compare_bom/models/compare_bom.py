@@ -290,7 +290,7 @@ class plm_compare_bom(osv.osv.osv_memory):
                     'bnotina': [(6, False, bom2NewItems)]})
         logging.info('Assigned values')
         data_obj = self.env['ir.model.data']
-        id3 = data_obj._get_id('plm', 'plm_visualize_diff_form')
+        id3 = data_obj._get_id(openerpModule, 'plm_visualize_diff_form')
         logging.info('ID3: %r' % (id3))
         if id3:
             id3 = data_obj.browse(id3).res_id
