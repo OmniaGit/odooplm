@@ -34,7 +34,8 @@ class PlmComponent(models.Model):
 
     @api.multi
     def unlink(self):
-        packAndGoObj = self.env['pack.and_go']
-        presentPackAndGo = packAndGoObj.search([('component_id', '=', self.id)])
-        presentPackAndGo.unlink()
+        for prodBrws in self:
+            packAndGoObj = self.env['pack.and_go']
+            presentPackAndGo = packAndGoObj.search([('component_id', '=', prodBrws.id)])
+            presentPackAndGo.unlink()
         return super(PlmComponent, self).unlink()
