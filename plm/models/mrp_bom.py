@@ -451,7 +451,7 @@ class MrpBomExtension(models.Model):
                 nexRelation.append(element)
 
             subRelations = filter(divedeByParent, relations)
-            if len(subRelations) < 1:  # no relation to save
+            if len(list(subRelations)) < 1:  # no relation to save
                 return
             parentName, parentID, _ChildName, _ChildID, sourceID, _RelArgs = subRelations[0]
             existingBoms = self.search([('product_id', '=', parentID),
