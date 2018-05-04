@@ -519,7 +519,7 @@ class MrpBomExtension(models.Model):
             try:
                 vals = getParentVals(name, partID, sourceID, bomType=kindBom)
                 return self.create(vals).id
-            except Exception, ex:
+            except Exception as ex:
                 logging.error("saveParent :  unable to create a relation for part: (%s) with source: (%d)  exception: %r" % (name, sourceID, ex))
                 raise AttributeError(_("saveParent :  unable to create a relation for part (%s) with source (%d) : %s.") % (name, sourceID, str(sys.exc_info())))
 
@@ -540,7 +540,7 @@ class MrpBomExtension(models.Model):
                 if ('product_qty' in res):
                     res['product_qty'] = repairQty(res['product_qty'])
                 return t_bom_line.create(res)
-            except Exception, ex:
+            except Exception as ex:
                 logging.error(ex)
                 logging.error("saveChild :  unable to create a relation for part (%s) with source (%d) : %s." % (name, sourceID, str(args)))
                 raise AttributeError(_("saveChild :  unable to create a relation for part (%s) with source (%d) : %s." % (name, sourceID, str(sys.exc_info()))))
