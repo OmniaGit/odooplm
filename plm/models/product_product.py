@@ -733,8 +733,8 @@ class PlmComponent(models.Model):
 
     @api.multi
     def commonWFAction(self, status, action, docaction, defaults=[], excludeStatuses=[], includeStatuses=[]):
-        tmpl_ids = []
-        full_ids = []
+        product_product_ids = []
+        product_template_ids = []
         userErrors, allIDs = self._get_recursive_parts(excludeStatuses, includeStatuses)
         if userErrors:
             raise UserError(userErrors)
@@ -742,11 +742,11 @@ class PlmComponent(models.Model):
         allIdsBrwsList._action_ondocuments(docaction)
         for currId in allIdsBrwsList:
             if not(currId.id in self.ids):
-                tmpl_ids.append(currId.id)
-            full_ids.append(currId.product_tmpl_id.id)
+                product_product_ids.append(currId.id)
+            product_template_ids.append(currId.product_tmpl_id.id)
         if action:
-            self.browse(tmpl_ids).perform_action(action)
-        objId = self.env['product.template'].browse(full_ids).write(defaults)
+            self.browse(product_product_ids).perform_action(action)
+        objId = self.env['product.template'].browse(product_template_ids).write(defaults)
         if objId:
             self.browse(allIDs).wf_message_post(body=_('Status moved to: %s.' % (USEDIC_STATES[defaults['state']])))
         return objId
