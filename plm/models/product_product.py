@@ -742,7 +742,7 @@ class PlmComponent(models.Model):
         allIdsBrwsList._action_ondocuments(docaction)
         for currId in allIdsBrwsList:
             if not(currId.id in self.ids):
-                tmpl_ids.append(currId.product_tmpl_id.id)
+                tmpl_ids.append(currId.id)
             full_ids.append(currId.product_tmpl_id.id)
         if action:
             self.browse(tmpl_ids).perform_action(action)
