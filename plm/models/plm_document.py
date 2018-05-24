@@ -46,6 +46,8 @@ USED_STATES = [('draft', _('Draft')),
                ('obsoleted', _('Obsoleted'))]
 USEDIC_STATES = dict(USED_STATES)
 
+PLM_NO_WRITE_STATE = ['confirmed', 'released', 'undermodify', 'obsoleted']
+
 
 def random_name():
     random.seed()
@@ -394,10 +396,11 @@ class PlmDocument(models.Model):
         return False
 
     @api.multi
-    def NewRevision(self):
+    def NewRevision(self, newBomDocumentRevision=True):
         """
             create a new revision of the document
         """
+        # TODO: Migrate document revision functionality from plm 10
         newID = None
         newRevIndex = False
         for tmpObject in self:
@@ -615,7 +618,7 @@ class PlmDocument(models.Model):
         for oldObject in self:
             lastDocBrws = self._getbyrevision(oldObject.name, oldObject.revisionid - 1)
             if lastDocBrws:
-                lastDocBrws.commonWFAction(False, 'released', False)
+                lastDocBrws.commonWFAction(False, 'obsoleted', False)
         if self.ischecked_in():
             return self.commonWFAction(False, 'released', False)
         return False
@@ -674,15 +677,19 @@ class PlmDocument(models.Model):
     def create(self, vals):
         return super(PlmDocument, self).create(vals)
 
+    @api.model
+    def isPlmStateWritable(self):
+        for customObject in self:
+            if customObject.state in PLM_NO_WRITE_STATE:
+                return False
+        return True
+
     @api.multi
     def write(self, vals):
-        checkState = ('confirmed', 'released', 'undermodify', 'obsoleted')
         check = self.env.context.get('check', True)
         if check:
-            for customObject in self:
-                if customObject.state in checkState:
-                    raise UserError(_("The active state does not allow you to make save action"))
-                    return False
+            if not self.isPlmStateWritable():
+                raise UserError(_("The active state does not allow you to make save action"))
         self.writeCheckDatas(vals)
         return super(PlmDocument, self).write(vals)
 
@@ -1230,6 +1237,7 @@ class PlmDocument(models.Model):
             productId = False
             createBom = structure.get('CREATE_BOM', True)
             documentProperty = structure.get('DOCUMENT_ATTRIBUTES', False)
+            docType = structure.get('DOC_TYPE', '')
             if documentProperty and structure.get('FILE_PATH', False):
                 documentId = id(documentProperty)
                 documentAttributes[documentId] = documentProperty
@@ -1241,7 +1249,7 @@ class PlmDocument(models.Model):
                 listRelated = productDocumentRelations.get(productId, [])
                 listRelated.append(documentId)
                 productDocumentRelations[productId] = listRelated
-            if parentItem:
+            if parentItem and productId and docType != '2D':
                 parentDocumentId, parentProductId = parentItem
                 relationAttributes = structure.get('MRP_ATTRIBUTES', {})
                 childRelations = documentRelations.get(parentDocumentId, [])
@@ -1500,6 +1508,79 @@ class PlmDocument(models.Model):
             return self.browse()
         return self.search([('name', '=', docName),
                             ('revisionid', '=', docRev)])
+
+    @api.model
+    def checkSyncImportStructure(self, args):
+        prodProd = self.env['product.product']
+        
+        def checkDocument(docAttrs):
+            docName = docAttrs.get('name', '')
+            docRev = int(docAttrs.get('revisionid', 0))
+            docBrwsList = self.search([('name', '=', docName)], order='revisionid DESC')
+            existingDocs = {}
+            graterDocBrws = None
+            matchDocBrws = None
+            docAttrs['state'] = 'draft'
+            for docBrws in docBrwsList:
+                if docBrws.revisionid == docRev:
+                    docAttrs['state'] = docBrws.state
+                    matchDocBrws = docBrws
+                if not graterDocBrws:
+                    graterDocBrws = docBrws
+                existingDocs[docBrws.revisionid] = (docBrws.name, docBrws.state)
+            docAttrs['existing_docs'] = existingDocs
+            docAttrs['is_latest_revision'] = False
+            if graterDocBrws and (graterDocBrws == matchDocBrws):
+                docAttrs['is_latest_revision'] = True
+                if graterDocBrws:
+                    docAttrs['can_be_revised'] = graterDocBrws.canBeRevised()
+            if not matchDocBrws:    # CAD document revision is grater than Odoo one
+                if graterDocBrws:
+                    docAttrs['can_be_revised'] = graterDocBrws.canBeRevised()
+            return docAttrs
+
+        def checkComponent(compAttrs):
+            engCode = compAttrs.get('engineering_code', '')
+            engRev = int(compAttrs.get('engineering_revision', 0))
+            prodBrwsList = prodProd.search([('engineering_code', '=', engCode)], order='engineering_code DESC')
+            existingCompRevisions = {}
+            foundCompBrws = None
+            graterCompBrws = None
+            compAttrs['state'] = 'draft'
+            for compBrws in prodBrwsList:
+                if engRev == compBrws.engineering_revision:
+                    compAttrs['state'] = compBrws.state
+                    foundCompBrws = compBrws
+                if not graterCompBrws:
+                    graterCompBrws = compBrws
+                existingCompRevisions[compBrws.engineering_revision] = (compBrws.engineering_code, compBrws.state)
+            compAttrs['existing_comps'] = existingCompRevisions
+            if graterCompBrws == foundCompBrws:
+                compAttrs['is_latest_revision'] = True
+                if graterCompBrws:
+                    compAttrs['can_be_revised'] = graterCompBrws.canBeRevised()
+            if not foundCompBrws:
+                if graterCompBrws:
+                    compAttrs['can_be_revised'] = graterCompBrws.canBeRevised()
+            return compAttrs
+        
+        def recursion(parentNode):
+            docAttrs = parentNode.get('DOCUMENT_ATTRIBUTES', {})
+            compAttrs = parentNode.get('PRODUCT_ATTRIBUTES', {})
+            parentNode['DOCUMENT_ATTRIBUTES'] = checkDocument(docAttrs)
+            parentNode['PRODUCT_ATTRIBUTES'] = checkComponent(compAttrs)
+            childrenNodes = parentNode.get('RELATIONS', {})
+            for node in childrenNodes:
+                index = childrenNodes.index(node)
+                updatedNode = recursion(node)
+                parentNode['RELATIONS'][index] = updatedNode
+            return parentNode
+            
+            
+        jsonNode = args[0]
+        rootNode = json.loads(jsonNode)
+        rootNode = recursion(rootNode)
+        return json.dumps(rootNode)
 
     @api.model
     def checkStructureExistance(self, args):

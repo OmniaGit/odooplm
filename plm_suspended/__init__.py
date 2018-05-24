@@ -21,21 +21,9 @@
 ##############################################################################
 
 '''
-Created on Nov 21, 2017
+Created on 24 Aug 2016
 
-@author: dsmerghetto
+@author: Daniel Smerghetto
 '''
-from odoo import models
-from odoo import api
 
-
-class PlmComponent(models.Model):
-    _inherit = 'product.product'
-
-    @api.multi
-    def unlink(self):
-        for prodBrws in self:
-            packAndGoObj = self.env['pack.and_go']
-            presentPackAndGo = packAndGoObj.search([('component_id', '=', prodBrws.id)])
-            presentPackAndGo.unlink()
-        return super(PlmComponent, self).unlink()
+from . import models

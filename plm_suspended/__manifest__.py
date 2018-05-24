@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
 ##############################################################################
 #
-#    OmniaSolutions, Your own solutions
-#    Copyright (C) 2010 OmniaSolutions (<http://omniasolutions.eu>). All Rights Reserved
+#    OmniaSolutions, Open Source Management Solution    
+#    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -19,23 +19,30 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+{
+    'name': 'PLM Spare',
+    'version': '1.1',
+    'author': 'OmniaSolutions',
+    'website': 'http://www.omniasolutions.eu',
+    'category': 'Product Lifecycle Management',
+    'sequence': 15,
+    'summary': '',
+    'images': [],
+    'depends': ['plm'],
+    'description': """
+Add obsolete status to the work flow
+==============================================
+    """,
+    'data': [
+            # views
+            'views/plm_product_view.xml',
+            'views/plm_document_view.xml',
+    ],
+    'demo': [],
+    'test': [],
+    'installable': True,
+    'application': False,
+    'auto_install': False,
+}
 
-'''
-Created on Nov 21, 2017
-
-@author: dsmerghetto
-'''
-from odoo import models
-from odoo import api
-
-
-class PlmComponent(models.Model):
-    _inherit = 'product.product'
-
-    @api.multi
-    def unlink(self):
-        for prodBrws in self:
-            packAndGoObj = self.env['pack.and_go']
-            presentPackAndGo = packAndGoObj.search([('component_id', '=', prodBrws.id)])
-            presentPackAndGo.unlink()
-        return super(PlmComponent, self).unlink()
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

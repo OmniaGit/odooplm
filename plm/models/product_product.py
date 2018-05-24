@@ -139,6 +139,7 @@ class PlmComponent(models.Model):
                               help=_("Assign value to the second characteristic."))
 
     desc_modify = fields.Text(_('Modification Description'), default='')
+    source_product = fields.Many2one('product.product', _('Generated From'))
     # Don't overload std_umc1, std_umc2, std_umc3 setting them related to std_description because odoo try to set value
     # of related fields and integration users doesn't have write permissions in std_description. The result is that
     # integration users can't create products if in changed values there is std_description
@@ -732,8 +733,8 @@ class PlmComponent(models.Model):
 
     @api.multi
     def commonWFAction(self, status, action, docaction, defaults=[], excludeStatuses=[], includeStatuses=[]):
-        tmpl_ids = []
-        full_ids = []
+        product_product_ids = []
+        product_template_ids = []
         userErrors, allIDs = self._get_recursive_parts(excludeStatuses, includeStatuses)
         if userErrors:
             raise UserError(userErrors)
@@ -741,16 +742,22 @@ class PlmComponent(models.Model):
         allIdsBrwsList._action_ondocuments(docaction)
         for currId in allIdsBrwsList:
             if not(currId.id in self.ids):
-                tmpl_ids.append(currId.product_tmpl_id.id)
-            full_ids.append(currId.product_tmpl_id.id)
+                product_product_ids.append(currId.id)
+            product_template_ids.append(currId.product_tmpl_id.id)
         if action:
-            self.browse(tmpl_ids).perform_action(action)
-        objId = self.env['product.template'].browse(full_ids).write(defaults)
+            self.browse(product_product_ids).perform_action(action)
+        objId = self.env['product.template'].browse(product_template_ids).write(defaults)
         if objId:
             self.browse(allIDs).wf_message_post(body=_('Status moved to: %s.' % (USEDIC_STATES[defaults['state']])))
         return objId
 
 #  ######################################################################################################################################33
+
+    @api.multi
+    def write(self, vals):
+        if not 'is_engcode_editable' in vals:
+            vals['is_engcode_editable'] = False
+        return super(PlmComponent, self).write(vals)
 
     @api.model
     def create(self, vals):
@@ -771,6 +778,7 @@ class PlmComponent(models.Model):
                 if prodBrwsList:
                     raise UserError('Component %r already exists' % (vals['engineering_code']))
         try:
+            vals['is_engcode_editable'] = False
             return super(PlmComponent, self).create(vals)
         except Exception as ex:
             import psycopg2
@@ -820,7 +828,8 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         defaults['linkeddocuments'] = []
         defaults['release_date'] = False
         objId = super(PlmComponent, self).copy(defaults)
-        if (objId):
+        if objId:
+            objId.is_engcode_editable = True
             newContext = self.env.context.copy()
             newContext['uid'] = SUPERUSER_ID
             self.wf_message_post(body=_('Copied starting from : %s.' % previous_name))
