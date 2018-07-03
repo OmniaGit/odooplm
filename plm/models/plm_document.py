@@ -481,18 +481,21 @@ class PlmDocument(models.Model):
                 document['hasSaved'] = hasSaved
                 document['hasUpdated'] = hasUpdated
                 continue
-            docBrwsList = self.search([('name', '=', document['name']), ('revisionid', '=', document['revisionid'])], order='revisionid')
+            docBrwsList = self.search([('name', '=', document['name']),
+                                       ('revisionid', '=', document['revisionid'])], order='revisionid')
             if not docBrwsList:
                 existingID = self.create(document).id
                 hasSaved = True
             else:
-                existingID = docBrwsList[0].id
-                if self.getLastTime(existingID) < datetime.strptime(str(document['lastupdate']), '%Y-%m-%d %H:%M:%S'):
-                    if self._iswritable(docBrwsList[0]):
-                        del(document['lastupdate'])
-                        if not self.browse([existingID]).write(document, check=True):
-                            raise UserError(_("Document %s  -  %s cannot be updated" % (str(document['name']), str(document['revisionid']))))
+                for existingBrws in docBrwsList:
+                    existingID = existingBrws.id
+                    if existingBrws.isCheckedOutByMe():
                         hasSaved = True
+                        # Need to force update if in check-out because this flag is also used to
+                        # know if this document has to be saved as BOM. Save bom procedure goes recursively to remove
+                        # BOM lines and then BOMs. So checked-out document will don't have it's BOM.
+                        # If this flag is a True the BOM will be recreated.
+                    break
             document['documentID'] = existingID
             document['hasSaved'] = hasSaved
             document['hasUpdated'] = hasUpdated
@@ -1205,7 +1208,7 @@ class PlmDocument(models.Model):
         return None
 
     @api.model
-    def saveStructure(self, arguments):
+    def saveStructure(self, arguments, skipDocumentCheckOnBom=False):
         """
         save the structure passed
         self['FILE_PATH'] = ''
@@ -1294,7 +1297,9 @@ class PlmDocument(models.Model):
             if not docBrws:
                 docBrws = self.create(documentAttribute)
                 alreadyEvaluated.append(docBrws.id)
-                docBrws.checkout(hostName, hostPws)
+                skipCheckOut = documentAttribute.get('SKIP_CHECKOUT', False)
+                if not skipCheckOut:
+                    docBrws.checkout(hostName, hostPws)
                 documentAttribute['TO_UPDATE'] = True
             documentAttribute['id'] = docBrws.id
 
@@ -1378,20 +1383,29 @@ class PlmDocument(models.Model):
                 brwBoml = mrpBomTemplate.create({'product_tmpl_id': productTempId,
                                                  'type': bomType})
             # delete rows
-            for _, documentId, _ in childRelations:
-                trueDocumentId = documentAttributes.get(documentId, {}).get('id', 0)
-                if trueDocumentId:  # seems strange this .. but i will delete only the bom with the right source id
-                    for brwBom in brwBoml:
-                        brwBom.deleteChildRow(trueDocumentId)
-                    break
+            if skipDocumentCheckOnBom:
+                for brwBom in brwBoml:  
+                    # If not source document I need to clean all bom lines losting also custom lines...
+                    brwBom.bom_line_ids.unlink()
+            else:
+                for _, documentId, _ in childRelations:
+                    trueDocumentId = documentAttributes.get(documentId, {}).get('id', 0)
+                    if trueDocumentId:  # seems strange this .. but i will delete only the bom with the right source id
+                        for brwBom in brwBoml:
+                            brwBom.deleteChildRow(trueDocumentId)
+                        break
             # add rows
             for childId, documentId, relationAttributes in childRelations:
-                if not (childId and documentId):
+                if skipDocumentCheckOnBom:
+                    if not childId:
+                        logging.warning("Bad relation request %r, %r" % (childId, documentId))
+                        continue
+                elif not (childId and documentId):
                     logging.warning("Bad relation request %r, %r" % (childId, documentId))
                     continue
                 trueChildId = productAttributes[childId].get('id')
-                trueDocumentId = documentAttributes[documentId].get('id')
-                brwBom.addChildRow(trueChildId, trueDocumentId, relationAttributes, bomType)
+                trueDocumentId = documentAttributes.get(documentId, {}).get('id')
+                brwBoml.addChildRow(trueChildId, trueDocumentId, relationAttributes, bomType)
         jsonify = json.dumps(objStructure)
         end = time.time()
         logging.info("Time Spend For save structure is: %s" % (str(end - start)))
@@ -1542,7 +1556,7 @@ class PlmDocument(models.Model):
         def checkComponent(compAttrs):
             engCode = compAttrs.get('engineering_code', '')
             engRev = int(compAttrs.get('engineering_revision', 0))
-            prodBrwsList = prodProd.search([('engineering_code', '=', engCode)], order='engineering_code DESC')
+            prodBrwsList = prodProd.search([('engineering_code', '=', engCode)], order='engineering_revision DESC')
             existingCompRevisions = {}
             foundCompBrws = None
             graterCompBrws = None
