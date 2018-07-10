@@ -772,16 +772,20 @@ class PlmDocument(models.Model):
         docBrwsList = self.search([('name', '=', documentName),
                                    ('revisionid', '=', revisionId)])
         for docBrws in docBrwsList:
-            checkOutId = docBrws.isCheckedOutByMe()
-            if not checkOutId:
-                logging.info('Document %r is not in check out by user %r so cannot be checked-in' % (docBrws.id, self.env.user_id))
-                return False
-            if docBrws.file_size <= 0 or not docBrws.datas_fname:
-                logging.warning('Document %r has not document content so cannot be checked-in' % (docBrws.id))
-                return False
-            self.env['plm.checkout'].browse(checkOutId).unlink()
-            return docBrws.id
+            docBrws._check_in()
         return False
+    
+    @api.one
+    def _check_in(self):
+        checkOutId = self.isCheckedOutByMe()
+        if not checkOutId:
+            logging.info('Document %r is not in check out by user %r so cannot be checked-in' % (self.id, self.env.user_id))
+            return False
+        if self.file_size <= 0 or not self.datas_fname:
+            logging.warning('Document %r has not document content so cannot be checked-in' % (self.id))
+            return False
+        self.env['plm.checkout'].browse(checkOutId).unlink()
+        return self.id
 
     @api.one
     def _is_checkout(self):
@@ -1281,6 +1285,7 @@ class PlmDocument(models.Model):
         alreadyEvaluated = []
         for documentAttribute in documentAttributes.values():
             documentAttribute['TO_UPDATE'] = False
+            skipCheckOut = documentAttribute.get('SKIP_CHECKOUT', False)
             docBrws = False
             for brwItem in self.search([('name', '=', documentAttribute.get('name')),
                                         ('revisionid', '=', documentAttribute.get('revisionid'))]):
@@ -1297,10 +1302,12 @@ class PlmDocument(models.Model):
             if not docBrws:
                 docBrws = self.create(documentAttribute)
                 alreadyEvaluated.append(docBrws.id)
-                skipCheckOut = documentAttribute.get('SKIP_CHECKOUT', False)
                 if not skipCheckOut:
                     docBrws.checkout(hostName, hostPws)
                 documentAttribute['TO_UPDATE'] = True
+            elif skipCheckOut:
+                if docBrws.isCheckedOutByMe():
+                    docBrws._check_in()
             documentAttribute['id'] = docBrws.id
 
         # Save the product
