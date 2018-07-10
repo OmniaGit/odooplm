@@ -56,6 +56,7 @@
   background-color: #875A7B;
 	color: white;
     font-weight: lighter;
+    padding: 10px;
   }
 
 label.tree_label { cursor: pointer; }
@@ -139,4 +140,8 @@ label.tree_label:after { border-bottom: 0; }
 div.plm_exploded_viem_title{
 	width: 100%;
     text-align: center;
+}
+a.o_plm_entity_open{
+	color: #ffffff;
+	
 }

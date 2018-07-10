@@ -846,7 +846,6 @@ class PlmDocument(models.Model):
                                         'document_id',
                                         'component_id',
                                         _('Linked Parts'))
-    datas = fields.Binary(string='File Content', compute='_compute_datas', inverse='_inverse_datas')
     datas = fields.Binary(string=_('File Content'),
                           compute='_compute_datas',
                           inverse='_inverse_datas',
