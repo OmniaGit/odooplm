@@ -32,17 +32,18 @@ from odoo import fields
 from odoo import api
 from odoo import _
 from odoo.exceptions import UserError
-
+                    
 
 class mrp_bom_extension_data(models.Model):
     _name = 'mrp.bom'
     _inherit = 'mrp.bom'
 
-    @api.multi
+    @api.depends('bom_line_ids')
     def _obsolete_compute(self):
         '''
             Verify if obsolete lines are present in current bom
         '''
+        logging.info('_obsolete_compute started')
         for bomObj in self:
             obsoleteFlag = False
             for bomLine in bomObj.bom_line_ids:
@@ -50,12 +51,16 @@ class mrp_bom_extension_data(models.Model):
                     obsoleteFlag = True
                     break
             bomObj.sudo().obsolete_presents = obsoleteFlag
+            bomObj.sudo().obsolete_presents_computed = obsoleteFlag
             bomObj.sudo().write({'obsolete_presents': obsoleteFlag})   # don't remove this force write or when form is opened the value is not updated
 
     # If store = True is set you need to provide @api.depends because odoo has to know when to compute that field.
     # If you decide to compute that field each time without store you have always to put it in the view or the field will not be computed
-    obsolete_presents_computed = fields.Boolean(string=_("Obsolete presents computed"), compute='_obsolete_compute')
+    obsolete_presents_computed = fields.Boolean(string=_("Obsolete presents computed"), compute='_obsolete_compute', store=True)
     obsolete_presents = fields.Boolean(_("Obsolete presents"))
+    
+    # This fields has not to be computed fields because bom may be very big and the time too
+    #obsolete_presents_recursive = fields.Boolean(_("Obsolete presents Recursive"), default=False)
 
     @api.onchange('bom_line_ids')
     def onchangeBomLine(self):
