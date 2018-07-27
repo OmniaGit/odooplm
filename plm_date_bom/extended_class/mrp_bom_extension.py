@@ -38,13 +38,18 @@ class mrp_bom_extension_data(models.Model):
     _name = 'mrp.bom'
     _inherit = 'mrp.bom'
 
-    @api.depends('bom_line_ids')
     def _obsolete_compute(self):
         '''
             Verify if obsolete lines are present in current bom
         '''
         logging.info('_obsolete_compute started')
         for bomObj in self:
+            if bomObj.type == 'ebom':   
+                # Engineering BOM cannot have this flag computed because every time the user save by the CAD
+                # The BOM will change. Is not correct to change Engineering BOM by Odoo user...
+                bomObj.obsolete_presents = False
+                bomObj.obsolete_presents_computed = False
+                continue
             obsoleteFlag = False
             for bomLine in bomObj.bom_line_ids:
                 if bomLine.product_id.state == 'obsoleted':
@@ -56,11 +61,11 @@ class mrp_bom_extension_data(models.Model):
 
     # If store = True is set you need to provide @api.depends because odoo has to know when to compute that field.
     # If you decide to compute that field each time without store you have always to put it in the view or the field will not be computed
-    obsolete_presents_computed = fields.Boolean(string=_("Obsolete presents computed"), compute='_obsolete_compute', store=True)
+    obsolete_presents_computed = fields.Boolean(string=_("Obsolete presents computed"), compute='_obsolete_compute')
     obsolete_presents = fields.Boolean(_("Obsolete presents"))
     
     # This fields has not to be computed fields because bom may be very big and the time too
-    #obsolete_presents_recursive = fields.Boolean(_("Obsolete presents Recursive"), default=False)
+    obsolete_presents_recursive = fields.Boolean(_("Obsolete presents Recursive"), default=False)
 
     @api.onchange('bom_line_ids')
     def onchangeBomLine(self):

@@ -28,6 +28,37 @@ class ProductExtension(models.Model):
     _name = 'product.template'
     _inherit = 'product.template'
 
+#     @api.model
+#     def updateObsoleteLevel(self, prodBrws, obsolete_recursive=False):
+#         envObj = self.env['mrp.bom.line']
+#         bomLines = envObj.search([(
+#             'product_id', '=', prodBrws.id
+#             )])
+#         bomList = []
+#         for bomLineBrws in bomLines:
+#             bomList.append(bomLineBrws.bom_id)
+#         bomList = list(set(bomList))
+#         for bomBrws in bomList:
+#             bomBrws.obsolete_presents = True
+#             bomBrws.obsolete_presents_recursive = bomBrws.obsolete_presents
+    
+    @api.model
+    def updateObsoleteRecursive(self, prodBrws):
+        bomTmpl = self.env['mrp.bom']
+        struct = prodBrws.getParentBomStructure()
+        
+        def recursion(struct2, isRoot=False):
+            for vals, parentsList in struct2:
+                bom_id = vals.get('bom_id', False)
+                if bom_id:
+                    bomBrws = bomTmpl.browse(bom_id)
+                    bomBrws._obsolete_compute()
+                    if not isRoot:
+                        bomBrws.obsolete_presents_recursive = True
+                recursion(parentsList)
+            
+        recursion(struct, isRoot=True)
+
     @api.multi
     def write(self, vals):
         res = super(ProductExtension, self).write(vals)
@@ -35,36 +66,7 @@ class ProductExtension(models.Model):
         if statePresent == 'obsoleted':
             # Here I force compute obsolete presents flag in all boms
             for prodTmplBrws in self:
-                envObj = self.env['mrp.bom.line']
                 for prodBrws in prodTmplBrws.product_variant_ids:
-                    bomLines = envObj.search([(
-                        'product_id', '=', prodBrws.id
-                        )])
-                    bomList = []
-                    for bomLineBrws in bomLines:
-                        bomList.append(bomLineBrws.bom_id)
-                    bomList = list(set(bomList))
-                    for bomBrws in bomList:
-                        bomBrws._obsolete_compute()
+                    self.updateObsoleteRecursive(prodBrws)
         return res
-                    
-                    
-# class ProductTemplate(models.Model):
-#     _name = 'product.template'
-#     _inherit = 'product.template'
-# 
-#     @api.onchange('state')
-#     def onchangeState(self):
-#         for prodBrws in self:
-#             if prodBrws.state == 'obsoleted':
-#                 envObj = self.env['mrp.bom.line']
-#                 bomLines = envObj.search([(
-#                     'product_id', '=', prodBrws.id
-#                     )])
-#                 bomList = []
-#                 for bomLineBrws in bomLines:
-#                     bomList.append(bomLineBrws.bom_id)
-#                 bomList = list(set(bomList))
-#                 for bomBrws in bomList:
-#                     bomBrws._obsolete_compute()
 

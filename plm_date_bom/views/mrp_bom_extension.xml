@@ -37,21 +37,26 @@
             <field name="type">form</field>
             <field name="arch" type="xml">
             	<data>
-            		<xpath expr="//field[@name='product_tmpl_id']" position="before">
+            		<xpath expr="//button[@name='toggle_active']" position="before">
 		                    <button string="Update Bom" 
 				                    name="action_wizard_compute_bom" 
 				                    type="object" 
 				                    icon="fa-gears" 
-				                    attrs="{'invisible':[('obsolete_presents', '!=', True)]}" 
+				                    style="color: red;font-weight: bold;"
+				                    attrs="{'invisible':['|',('obsolete_presents', '!=', True),
+				                    					('type', '=', 'ebom')]}" 
 		                    />
 		                    <button string="All Related Boms to Update" 
 				                    name="showAllBomsToCompute" 
 				                    type="object" 
 				                    icon="fa-gears" 
+				                    style="color:#e07200;"
+				                    attrs="{'invisible':['|', ('obsolete_presents_recursive', '=', False	),('type', '=', 'ebom')]}"
 		                    />
 		            </xpath>
 	            	<xpath expr="//field[@name='product_qty']" position="after"> 
 		               	<field name="obsolete_presents" invisible='True'/>
+		               	<field name="obsolete_presents_recursive" invisible='True'/>
 		               	<field name="obsolete_presents_computed" invisible='True'/>
 		           	</xpath>
 	           	</data>
