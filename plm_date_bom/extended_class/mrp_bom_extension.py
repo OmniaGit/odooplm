@@ -114,6 +114,81 @@ class mrp_bom_extension_data(models.Model):
             Return bom object from product template and bom type
         '''
         return self.search([('product_tmpl_id', '=', prodTmplBrws.id), ('type', '=', bomType)])
+    
+
+    @api.model
+    def create(self, vals):
+        '''
+            This overload of create is needed to setup obsolete_presents_recursive flag
+        '''
+        res = super(mrp_bom_extension_data, self).create(vals)
+        bomType = res.type
+        
+        def recursion(bomBrws):
+            for lineBrws in bomBrws.bom_line_ids:
+                prodBrws = lineBrws.product_id
+                for bomBrwsChild in prodBrws.product_tmpl_id.bom_ids:
+                    if bomBrwsChild.type == bomType:
+                        if bomBrwsChild.obsolete_presents:
+                            return True
+                        if recursion(bomBrwsChild):
+                            return True
+        
+        if bomType != 'ebom':
+            if recursion(res):
+                res.obsolete_presents_recursive = True
+            res._obsolete_compute()
+        return res
+
+    @api.multi
+    def write(self, vals):
+        res = super(mrp_bom_extension_data, self).write(vals)
+        bom_line_ids = vals.get('bom_line_ids', [])
+        if self.type != 'ebom':
+            if bom_line_ids:
+                beforeObsolete = self.obsolete_presents
+                beforeObsoleteRecursive = self.obsolete_presents_recursive
+                
+                obsoleteRecursive = False
+                for lineBrws in self.bom_line_ids:
+                    prodBrws = lineBrws.product_id
+                    for bomBrws in prodBrws.product_tmpl_id.bom_ids:
+                        if bomBrws.type == self.type:
+                            obsoleteRecursive = bomBrws.obsolete_presents_recursive or bomBrws.obsolete_presents
+                            break
+                    if obsoleteRecursive:
+                        break
+                self.obsolete_presents_recursive = obsoleteRecursive
+                self._obsolete_compute()
+                
+                productBrws = self.product_tmpl_id.product_variant_ids[0]
+                    
+                if (not beforeObsolete and self.obsolete_presents) or (not beforeObsoleteRecursive and self.obsolete_presents_recursive):
+                    # I added obsoleted at first level or added a line containing recursive obsoleted --> Need to update where used
+                    self.updateWhereUsed(productBrws, True)
+                elif (beforeObsolete and not self.obsolete_presents) or (beforeObsoleteRecursive and  not self.obsolete_presents_recursive):
+                    # I removed all obsoleted at first or other sublevels --> Need to update where used
+                    self.updateWhereUsed(productBrws, False)
+        return res
+
+    def updateWhereUsed(self, prodBrws, defaultUpdate=False):
+        bomTmpl = self.env['mrp.bom']
+        struct = prodBrws.getParentBomStructure()
+        
+        def recursion(struct2, cleanObsoleteRecursive=True):
+            for vals, parentsList in struct2:
+                bom_id = vals.get('bom_id', False)
+                if bom_id:
+                    bomBrws = bomTmpl.browse(bom_id)
+                    bomBrws._obsolete_compute()
+                    if cleanObsoleteRecursive:
+                        bomBrws.obsolete_presents_recursive = defaultUpdate
+                    if bomBrws.obsolete_presents:
+                        # I cannot change obsolete_recursive flag if there are other obsolete products in the parent BOM
+                        cleanObsoleteRecursive = False
+                recursion(parentsList, cleanObsoleteRecursive)
+            
+        recursion(struct)
 
 
 class mrp_bom_data_compute(models.Model):
@@ -161,6 +236,8 @@ class mrp_bom_data_compute(models.Model):
                     prodProdBrws = prodProdObj.search([('engineering_code', '=', eng_code)], order='engineering_revision DESC', limit=1)
                     for prodBrws in prodProdBrws:
                         bomLineBrws.product_id = prodBrws
+                        bomLineBrws.bom_id._obsolete_compute()
+                        bomObj.updateWhereUsed(prodBrws)  # Not set before new product assignment
                         if recursive:
                             # Check if new added product has boms
                             self.updateObsoleteBom(prodBrws.product_tmpl_id.bom_ids.ids)

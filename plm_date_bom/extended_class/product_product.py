@@ -27,23 +27,9 @@ from odoo import api
 class ProductExtension(models.Model):
     _name = 'product.template'
     _inherit = 'product.template'
-
-#     @api.model
-#     def updateObsoleteLevel(self, prodBrws, obsolete_recursive=False):
-#         envObj = self.env['mrp.bom.line']
-#         bomLines = envObj.search([(
-#             'product_id', '=', prodBrws.id
-#             )])
-#         bomList = []
-#         for bomLineBrws in bomLines:
-#             bomList.append(bomLineBrws.bom_id)
-#         bomList = list(set(bomList))
-#         for bomBrws in bomList:
-#             bomBrws.obsolete_presents = True
-#             bomBrws.obsolete_presents_recursive = bomBrws.obsolete_presents
     
     @api.model
-    def updateObsoleteRecursive(self, prodBrws):
+    def updateObsoleteRecursive(self, prodBrws, presentsFlag=True):
         bomTmpl = self.env['mrp.bom']
         struct = prodBrws.getParentBomStructure()
         
@@ -54,7 +40,7 @@ class ProductExtension(models.Model):
                     bomBrws = bomTmpl.browse(bom_id)
                     bomBrws._obsolete_compute()
                     if not isRoot:
-                        bomBrws.obsolete_presents_recursive = True
+                        bomBrws.obsolete_presents_recursive = presentsFlag
                 recursion(parentsList)
             
         recursion(struct, isRoot=True)
