@@ -1171,7 +1171,7 @@ class PlmDocument(models.Model):
         return True, _('Document %r with revision %r not present in Odoo.') % (docName, docRev)
 
     @api.model
-    def canBeSaved(self, raiseError=False, returnCode=False):
+    def canBeSaved(self, raiseError=False, returnCode=False, skipCheckOutControl=False):
         """
         check if the document can be saved and raise exception in case is not possible
         """
@@ -1182,18 +1182,19 @@ class PlmDocument(models.Model):
             outCode = 'DOC_RELEASED'
             if raiseError:
                 raise UserError(outMessage)
-        checkOutObject = self.getCheckOutObject()
-        if checkOutObject:
-            if checkOutObject.userid.id != self.env.uid:
-                outMessage = _("Document is Check-Out from User %r", checkOutObject.name)
-                outCode = 'DOC_CHECKOUT_FROM_USER'
+        if not skipCheckOutControl:
+            checkOutObject = self.getCheckOutObject()
+            if checkOutObject:
+                if checkOutObject.userid.id != self.env.uid:
+                    outMessage = _("Document is Check-Out from User %r", checkOutObject.name)
+                    outCode = 'DOC_CHECKOUT_FROM_USER'
+                    if raiseError:
+                        raise UserError(outMessage)
+            else:
+                outMessage = _("Document in check-In unable to save!")
+                outCode = 'DOC_CHECKIN'
                 if raiseError:
                     raise UserError(outMessage)
-        else:
-            outMessage = _("Document in check-In unable to save!")
-            outCode = 'DOC_CHECKIN'
-            if raiseError:
-                raise UserError(outMessage)
 
         def returnTuple():
             if len(outMessage) > 0:
@@ -1211,7 +1212,7 @@ class PlmDocument(models.Model):
         return None
 
     @api.model
-    def saveStructure(self, arguments, skipDocumentCheckOnBom=False):
+    def saveStructure(self, arguments):
         """
         save the structure passed
         self['FILE_PATH'] = ''
@@ -1224,7 +1225,7 @@ class PlmDocument(models.Model):
         self['DOCUMENT_DATE'] = None
         """
         start = time.time()
-        cPickleStructure, hostName, hostPws = arguments
+        cPickleStructure, hostName, hostPws, skipDocumentCheckOnBom = arguments
         documentAttributes = {}
         documentRelations = {}
         productAttributes = {}
