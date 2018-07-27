@@ -186,12 +186,15 @@ class PlmComponent(models.Model):
                 self.engineering_surface = unicode(self.tmp_surface.name)
 
     @api.model
-    def getParentBomStructure(self):
-        mrpBomLines = self.env['mrp.bom.line'].search([('product_id', '=', self.env.context['id'])])
+    def getParentBomStructure(self, filterBomType=''):
+        bom_line_filter = [('product_id', '=', self.id)]
+        if filterBomType:
+            bom_line_filter.append(('type', '=', filterBomType))
+        mrpBomLines = self.env['mrp.bom.line'].search(bom_line_filter)
         out = []
         for mrpBomLine in mrpBomLines:
             out.append((self.env['mrp.bom'].whereUsedHeader(mrpBomLine),
-                        mrpBomLine.bom_id.getWhereUsedStructure()))
+                        mrpBomLine.bom_id.getWhereUsedStructure(filterBomType)))
         return out
 
 

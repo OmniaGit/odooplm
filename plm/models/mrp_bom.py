@@ -224,7 +224,9 @@ class MrpBomExtension(models.Model):
         """
         product_id = mprBomLineId.product_id
         out = {'bom_type': mprBomLineId.type,
-               'bom_qty': mprBomLineId.product_qty}
+               'bom_qty': mprBomLineId.product_qty,
+               'bom_line_id': mprBomLineId.id,
+               'bom_id': mprBomLineId.bom_id.id}
         out.update(self.whereUsedHeaderP(product_id))
         return out
 
@@ -241,15 +243,23 @@ class MrpBomExtension(models.Model):
                 'part_description': product_id.description}
 
     @api.model
-    def getWhereUsedStructure(self):
+    def getWhereUsedStructure(self, filterBomType=''):
         out = []
         for product in self.env['product.product'].search([('product_tmpl_id', '=', self.product_tmpl_id.id)]):
-            parentLines = self.env['mrp.bom.line'].search([('product_id', '=', product.id)])
+            bomLineFilter = [('product_id', '=', product.id)]
+            if filterBomType:
+                bomLineFilter.append(('type', '=', filterBomType))
+            parentLines = self.env['mrp.bom.line'].search(bomLineFilter)
             if parentLines:
                 for parentLine in parentLines:
                     row = self.whereUsedHeader(parentLine)
-                    children = parentLine.bom_id.getWhereUsedStructure()
-                    out.append((row, children))
+                    if not filterBomType:
+                        children = parentLine.bom_id.getWhereUsedStructure(filterBomType)
+                        out.append((row, children))
+                    else:
+                        if parentLine.bom_id.type == filterBomType:
+                            children = parentLine.bom_id.getWhereUsedStructure(filterBomType)
+                            out.append((row, children))
             else:
                 row = {'bom_type': self.type}
                 row.update(self.whereUsedHeaderP(product))
@@ -589,10 +599,6 @@ class MrpBomExtension(models.Model):
             weight = bomBrws._sumBomWeight(bomBrws)
             super(MrpBomExtension, bomBrws).write({'weight_net': weight})
         return weight
-
-    @api.model
-    def create(self, vals):
-        return super(MrpBomExtension, self).create(vals)
 
     @api.multi
     def write(self, vals, check=True):
