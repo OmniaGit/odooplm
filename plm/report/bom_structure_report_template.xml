@@ -28,7 +28,7 @@
 						<td name="parent_bom_pos"> <b></b></td>
 						<td name="parent_bom_level"> <b></b></td>
 						<td name="parent_bom_prod_name"> <b><span t-esc="o.product_tmpl_id.engineering_code or o.product_tmpl_id.default_code"/> </b></td>
-						<td name="parent_bom_description"> <b><span t-esc="o.product_tmpl_id.description"/> </b></td>
+						<td name="parent_bom_description"> <b><span t-esc="o.product_tmpl_id.name"/> </b></td>
 						<td name="parent_bom_qty"> <b><span t-esc="o.product_qty"/> </b></td>
 						<td name="parent_bom_uom"> <b></b></td>
 						<td name="parent_bom_weight"> <b><span t-esc="o.weight_net"/> </b></td>
@@ -43,7 +43,7 @@
 									<td name="bom_pos_value_b" style="background-color: aliceblue;"><span t-esc="childDict.get('item')"/></td>
 									<td name="bom_level_value_b" style="background-color: aliceblue;"><span t-esc="childDict.get('level')"/></td>
 									<td name="bom_prod_name_value_b" style="background-color: aliceblue; white-space: nowrap;"><span t-esc="childDict.get('engineering_code')"/></td>
-									<td name="bom_description_value_b" style="background-color: aliceblue;"><span t-esc="prodTmplBrws.description"/></td>
+									<td name="bom_description_value_b" style="background-color: aliceblue;"><span t-esc="prodTmplBrws.name"/></td>
 									<td name="bom_qty_value_b" style="background-color: aliceblue;"><span t-esc="childDict.get('pqty')"/></td>
 									<td name="bom_uom_value_b" style="background-color: aliceblue;"><span t-esc="lineBrws.product_uom_id.name"/></td>
 									<td name="bom_weight_value_b" style="background-color: aliceblue;"><span t-esc="prodTmplBrws.weight"/></td>
@@ -53,7 +53,7 @@
 									<td name="bom_pos_value"><span t-esc="childDict.get('item')"/></td>
 									<td name="bom_level_value" ><span t-esc="childDict.get('level')"/></td>
 									<td name="bom_prod_name_value" style='white-space: nowrap;'><span t-esc="childDict.get('engineering_code')"/></td>
-									<td name="bom_description_value" ><span t-esc="prodTmplBrws.description"/></td>
+									<td name="bom_description_value" ><span t-esc="prodTmplBrws.name"/></td>
 									<td name="bom_qty_value" ><span t-esc="childDict.get('pqty')"/></td>
 									<td name="bom_uom_value" ><span t-esc="lineBrws.product_uom_id.name"/></td>
 									<td name="bom_weight_value" ><span t-esc="prodTmplBrws.weight"/></td>

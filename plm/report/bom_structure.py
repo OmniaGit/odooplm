@@ -55,7 +55,7 @@ def get_bom_report(myObject, recursion=False, flat=False, leaf=False, level=1, s
         res['name'] = productTmplBrws.engineering_code
         res['item'] = bomLineBrws.itemnum
         res['pname'] = productTmplBrws.engineering_code
-        res['pdesc'] = _(productTmplBrws.description)
+        res['pdesc'] = _(productTmplBrws.name)
         res['pcode'] = bomLineBrws.product_id.default_code
         res['previ'] = productTmplBrws.engineering_revision
         res['pqty'] = prodQty

@@ -54,12 +54,12 @@ class AdvancedPackView(osv.osv.osv_memory):
     @api.model
     def _getComponentDescription(self):
         for row in self:
-            row.comp_description = row.component_id.description
+            row.comp_description = row.component_id.name
 
     @api.model
     def _getDocumentDescription(self):
         for row in self:
-            row.document_description = row.document_id.description
+            row.document_description = row.document_id.name
 
     @api.model
     def _getDocumentFileName(self):

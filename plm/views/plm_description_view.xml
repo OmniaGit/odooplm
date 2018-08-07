@@ -10,13 +10,15 @@
              <form string="Description"  version="7.0"> 
              	<sheet>	
                 <group colspan="4" col="4">
-                    <separator colspan="4" string="Note to help selection"/>
-                	<field name="name" select="1" colspan="1"/>
-                    <field name="sequence"/>
-                    <newline/>
-                    <field name="description" select="1" />
-                    <field name="description_en" select="1" />
-                    <separator/>
+                	<group colspan="4" col="4">
+	                    <separator colspan="4" string="Note to help selection"/>
+	                	<field name="name" select="1" colspan="1"/>
+	                    <field name="sequence"/>
+	                    <newline/>
+	                    <field name="description" select="1" />
+	                    <field name="description_en" select="1" />
+	                    <separator/>
+	                </group>
   	               	<group colspan="4" col="4" string="Technical Features" name="tech_features">
 	 	                
 	 	                	<group colspan="4" col="4">

@@ -99,7 +99,7 @@ class MrpBomExtension(models.Model):
                              string=_("Status"),
                              help=_("The status of the product in its LifeCycle."),
                              store=False)
-    description = fields.Text(related="product_tmpl_id.description",
+    description = fields.Char(related="product_tmpl_id.name",
                               string=_("Description"),
                               store=False)
     father_complete_ids = fields.Many2many('mrp.bom',
@@ -240,7 +240,7 @@ class MrpBomExtension(models.Model):
                 'lable_product_id': "c" + str(product_id.id),
                 'part_number': product_id.engineering_code,
                 'part_revision': product_id.engineering_revision,
-                'part_description': product_id.description}
+                'part_description': product_id.name}
 
     @api.model
     def getWhereUsedStructure(self, filterBomType=''):

@@ -44,7 +44,7 @@ class ReportDocumentPdf(models.AbstractModel):
                     res['item'] = l.itemnum
                     res['ancestor'] = l.bom_id.product_id
                     res['pname'] = product.name
-                    res['pdesc'] = _(product.description)
+                    res['pdesc'] = _(product.name)
                     res['pcode'] = l.product_id.default_code
                     res['previ'] = product.engineering_revision
                     res['pqty'] = l.product_qty * 1 if parentQty < 1 else parentQty

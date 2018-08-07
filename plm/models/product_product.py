@@ -148,7 +148,7 @@ class PlmComponent(models.Model):
     def on_change_stddesc(self):
         if self.std_description:
             if self.std_description.description:
-                self.description = self.std_description.description
+                self.name = self.std_description.description
                 if self.std_description.umc1:
                     self.std_umc1 = self.std_description.umc1
                 if self.std_description.umc2:
@@ -156,13 +156,13 @@ class PlmComponent(models.Model):
                 if self.std_description.umc3:
                     self.std_umc3 = self.std_description.umc3
                 if self.std_description.unitab:
-                    self.description = self.description + " " + self.std_description.unitab
+                    self.name = self.name + " " + self.std_description.unitab
 
     @api.onchange('std_value1', 'std_value2', 'std_value3')
     def on_change_stdvalue(self):
         if self.std_description:
             if self.std_description.description:
-                self.description = self.computeDescription(self.std_description, self.std_description.description, self.std_umc1, self.std_umc2, self.std_umc3, self.std_value1, self.std_value2, self.std_value3)
+                self.name = self.computeDescription(self.std_description, self.std_description.description, self.std_umc1, self.std_umc2, self.std_umc3, self.std_value1, self.std_value2, self.std_value3)
 
     @api.onchange('name')
     def on_change_name(self):
@@ -943,8 +943,8 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         give back the lines
         """
         return [bomLineBrowse.itemnum,
-                emptyStringIfFalse(bomLineBrowse.product_id.description),
-                bomLineBrowse.product_id.with_context({'lang': 'en_GB'}).description,
+                emptyStringIfFalse(bomLineBrowse.product_id.name),
+                bomLineBrowse.product_id.with_context({'lang': 'en_GB'}).name,
                 bomLineBrowse.product_id.engineering_code,
                 bomLineBrowse.product_qty]
 
@@ -1003,7 +1003,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
     def getComponentInfos(self):
         return {'engineering_code': self.engineering_code or '',
                 'engineering_revision': self.engineering_revision,
-                'description': self.description or '',
+                'description': self.name or '',
                 'desc_modify': self.desc_modify or '',    # To be created
                 'name': self.name,
                 '_id': self.id,
