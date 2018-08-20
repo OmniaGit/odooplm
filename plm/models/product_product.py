@@ -49,7 +49,7 @@ def emptyStringIfFalse(value):
         return an empty string if the value is False
     """
     if value:
-        return unicode(value)
+        return str(value)
     else:
         return ''
 
@@ -183,7 +183,7 @@ class PlmComponent(models.Model):
     def on_change_tmpsurface(self):
         if self.tmp_surface:
             if self.tmp_surface.name:
-                self.engineering_surface = unicode(self.tmp_surface.name)
+                self.engineering_surface = str(self.tmp_surface.name)
 
     @api.model
     def getParentBomStructure(self, filterBomType=''):
@@ -787,7 +787,7 @@ class PlmComponent(models.Model):
             import psycopg2
             if isinstance(ex, psycopg2.IntegrityError):
                 raise ex
-            logging.error("(%s). It has tried to create with values : (%s)." % (unicode(ex), unicode(vals)))
+            logging.error("(%s). It has tried to create with values : (%s)." % (str(ex), str(vals)))
             raise Exception(_(" (%r). It has tried to create with values : (%r).") % (ex, vals))
 
     @api.multi
@@ -855,7 +855,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         if values:
             values = values[0]
         if language and values:
-            toRead = filter(lambda x: type(x) in [str, unicode] and x, values.values())     # Where computed only string and not null string values (for performance improvement)
+            toRead = filter(lambda x: type(x) in [str] and x, values.values())     # Where computed only string and not null string values (for performance improvement)
             toRead = list(set(toRead))                                                      # Remove duplicates
             for fieldName, valueToTranslate in values.items():
                 if valueToTranslate not in toRead:
