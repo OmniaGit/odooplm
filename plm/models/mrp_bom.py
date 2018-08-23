@@ -622,9 +622,8 @@ class MrpBomExtension(models.Model):
                 bom_line.write({'source_id': False,
                                 'name': bom_line.product_id.product_tmpl_id.name,
                                 'product_id': lateRevIdC[0]})
-            newBomBrws.sudo().write({'source_id': False,
-                                     'name': newBomBrws.product_tmpl_id.name},
-                                    check=False)
+            newBomBrws.sudo().with_context({'check': False}).write({'source_id': False,
+                                     'name': newBomBrws.product_tmpl_id.name})
         return newBomBrws
 
     @api.one

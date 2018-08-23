@@ -202,6 +202,20 @@ class mrp_bom_data_compute(models.Model):
                                     required=True)
 
     @api.multi
+    def scheduler_update_obsolete_bom(self, compute_type):
+        logging.info('Scheduler to update obsolete boms started with computation type %r' % (compute_type))
+        tmpObj = self.create({'compute_type': compute_type})
+        if tmpObj:
+            bomObj = tmpObj.env['mrp.bom']
+            bomBrwsList = bomObj.search([('obsolete_presents', '=', True)])
+            tmpObj.env.context['active_ids'] = bomBrwsList.ids
+            tmpObj.action_compute_bom()
+        else:
+            logging.info('Cannot create a new temporary object')
+        logging.info('Scheduler to update obsolete boms ended')
+        tmpObj.unlink()
+        
+    @api.multi
     def action_compute_bom(self):
         '''
             Divide due to choosen operation
