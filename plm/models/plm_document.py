@@ -1284,31 +1284,35 @@ class PlmDocument(models.Model):
         logging.info("Savind Document")
         alreadyEvaluated = []
         for documentAttribute in documentAttributes.values():
-            documentAttribute['TO_UPDATE'] = False
-            skipCheckOut = documentAttribute.get('SKIP_CHECKOUT', False)
-            docBrws = False
-            for brwItem in self.search([('name', '=', documentAttribute.get('name')),
-                                        ('revisionid', '=', documentAttribute.get('revisionid'))]):
-                if brwItem.id in alreadyEvaluated:
-                    docBrws = brwItem   # To skip creation
-                    documentAttribute['TO_UPDATE'] = False  # To skip same document preview/pdf uploading by the client
-                    break
-                if brwItem.state not in ['released', 'obsoleted']:
-                    if brwItem.needUpdate():
-                        brwItem.write(documentAttribute)
-                        documentAttribute['TO_UPDATE'] = True
-                docBrws = brwItem
-                alreadyEvaluated.append(docBrws.id)
-            if not docBrws:
-                docBrws = self.create(documentAttribute)
-                alreadyEvaluated.append(docBrws.id)
-                if not skipCheckOut:
-                    docBrws.checkout(hostName, hostPws)
-                documentAttribute['TO_UPDATE'] = True
-            elif skipCheckOut:
-                if docBrws.isCheckedOutByMe():
-                    docBrws._check_in()
-            documentAttribute['id'] = docBrws.id
+            try:
+                documentAttribute['TO_UPDATE'] = False
+                skipCheckOut = documentAttribute.get('SKIP_CHECKOUT', False)
+                docBrws = False
+                for brwItem in self.search([('name', '=', documentAttribute.get('name')),
+                                            ('revisionid', '=', documentAttribute.get('revisionid'))]):
+                    if brwItem.id in alreadyEvaluated:
+                        docBrws = brwItem   # To skip creation
+                        documentAttribute['TO_UPDATE'] = False  # To skip same document preview/pdf uploading by the client
+                        break
+                    if brwItem.state not in ['released', 'obsoleted']:
+                        if brwItem.needUpdate():
+                            brwItem.write(documentAttribute)
+                            documentAttribute['TO_UPDATE'] = True
+                    docBrws = brwItem
+                    alreadyEvaluated.append(docBrws.id)
+                if not docBrws:
+                    docBrws = self.create(documentAttribute)
+                    alreadyEvaluated.append(docBrws.id)
+                    if not skipCheckOut:
+                        docBrws.checkout(hostName, hostPws)
+                    documentAttribute['TO_UPDATE'] = True
+                elif skipCheckOut:
+                    if docBrws.isCheckedOutByMe():
+                        docBrws._check_in()
+                documentAttribute['id'] = docBrws.id
+            except Exception as ex:
+                logging.error(ex)
+                raise ex
 
         # Save the product
         # Save product - document relation
@@ -1316,63 +1320,67 @@ class PlmDocument(models.Model):
         productsEvaluated = []
         productTemplate = self.env['product.product']
         for refId, productAttribute in productAttributes.items():
-            linkedDocuments = set()
-            for refDocId in productDocumentRelations.get(refId, []):
-                linkedDocuments.add((4, documentAttributes[refDocId].get('id', 0)))
-            prodBrws = False
-            for brwItem in productTemplate.search([('engineering_code', '=', productAttribute.get('engineering_code')),
-                                                   ('engineering_revision', '=', productAttribute.get('engineering_revision'))]):
-                if brwItem.id in productsEvaluated:
+            try:
+                linkedDocuments = set()
+                for refDocId in productDocumentRelations.get(refId, []):
+                    linkedDocuments.add((4, documentAttributes[refDocId].get('id', 0)))
+                prodBrws = False
+                for brwItem in productTemplate.search([('engineering_code', '=', productAttribute.get('engineering_code')),
+                                                       ('engineering_revision', '=', productAttribute.get('engineering_revision'))]):
+                    if brwItem.id in productsEvaluated:
+                        prodBrws = brwItem
+                        break
+                    if brwItem.state not in ['released', 'obsoleted']:
+                        brwItem.write(productAttribute)
                     prodBrws = brwItem
+                    productsEvaluated.append(brwItem.id)
                     break
-                if brwItem.state not in ['released', 'obsoleted']:
-                    brwItem.write(productAttribute)
-                prodBrws = brwItem
-                productsEvaluated.append(brwItem.id)
-                break
-            if not prodBrws:
-                if not productAttribute.get('name', False):
-                    productAttribute['name'] = productAttribute.get('engineering_code', False)
-                if not productAttribute.get('engineering_code', False):     # I could have a document without component, so not create product
-                    continue
-                prodBrws = productTemplate.create(productAttribute)
-                productsEvaluated.append(prodBrws.id)
-            if linkedDocuments:
-                prodBrws.write({'linkeddocuments': list(linkedDocuments)})
-            productAttribute['id'] = prodBrws.id
+                if not prodBrws:
+                    if not productAttribute.get('name', False):
+                        productAttribute['name'] = productAttribute.get('engineering_code', False)
+                    if not productAttribute.get('engineering_code', False):     # I could have a document without component, so not create product
+                        continue
+                    prodBrws = productTemplate.create(productAttribute)
+                    productsEvaluated.append(prodBrws.id)
+                if linkedDocuments:
+                    prodBrws.write({'linkeddocuments': list(linkedDocuments)})
+                productAttribute['id'] = prodBrws.id
+            except Exception as ex:
+                logging.error(ex)
+                raise ex
 
         # Save the document relation
         logging.info("Saving Document Relations")
         documentRelationTemplate = self.env['plm.document.relation']
         createdDocRels = []
         for parentId, childrenRelations in documentRelations.items():
-            trueParentId = documentAttributes[parentId].get('id', 0)
-            for objBrw in documentRelationTemplate.search([('parent_id', '=', trueParentId)]):
-                found = False
+            try:
+                trueParentId = documentAttributes[parentId].get('id', 0)
+                for objBrw in documentRelationTemplate.search([('parent_id', '=', trueParentId)]):
+                    found = False
+                    for childId, relationType in childrenRelations:
+                        trueChildId = documentAttributes.get(childId, {}).get('id', 0)
+                        if objBrw.parent_id.id == trueParentId and objBrw.child_id.id == trueChildId and objBrw.link_kind == relationType:
+                            found = True
+                            key = '%s_%s_%s' % (trueParentId, trueChildId, relationType)
+                            if key in createdDocRels:
+                                continue
+                            createdDocRels.append(key)
+                            break
+                    if not found:   # Line removed from previous save
+                        objBrw.unlink()
                 for childId, relationType in childrenRelations:
                     trueChildId = documentAttributes.get(childId, {}).get('id', 0)
-                    if objBrw.parent_id.id == trueParentId and objBrw.child_id.id == trueChildId and objBrw.link_kind == relationType:
-                        found = True
-                        key = '%s_%s_%s' % (trueParentId, trueChildId, relationType)
-                        if key in createdDocRels:
-                            continue
-                        createdDocRels.append(key)
-                        break
-                if not found:   # Line removed from previous save
-                    objBrw.unlink()
-            for childId, relationType in childrenRelations:
-                trueChildId = documentAttributes.get(childId, {}).get('id', 0)
-                key = '%s_%s_%s' % (trueParentId, trueChildId, relationType)
-                if key in createdDocRels:
-                    continue
-                createdDocRels.append(key)
-                try:
+                    key = '%s_%s_%s' % (trueParentId, trueChildId, relationType)
+                    if key in createdDocRels:
+                        continue
+                    createdDocRels.append(key)
                     documentRelationTemplate.create({'parent_id': trueParentId,
                                                      'child_id': trueChildId,
                                                      'link_kind': relationType})
-                except Exception as ex:
-                    logging.error(ex)
-                    raise ex
+            except Exception as ex:
+                logging.error(ex)
+                raise ex
         # Save the product relation
         domain = [('state', 'in', ['installed', 'to upgrade', 'to remove']), ('name', '=', 'plm_engineering')]
         apps = self.env['ir.module.module'].sudo().search_read(domain, ['name'])
@@ -1382,37 +1390,41 @@ class PlmDocument(models.Model):
         logging.info("Saving Product Relations")
         mrpBomTemplate = self.env['mrp.bom']
         for parentId, childRelations in productRelations.items():
-            trueParentId = productAttributes[parentId].get('id')
-            brwProduct = productTemplate.search([('id', '=', trueParentId)])
-            productTempId = brwProduct.product_tmpl_id.id
-            brwBoml = mrpBomTemplate.search([('product_tmpl_id', '=', productTempId)])
-            if not brwBoml:
-                brwBoml = mrpBomTemplate.create({'product_tmpl_id': productTempId,
-                                                 'type': bomType})
-            # delete rows
-            if skipDocumentCheckOnBom:
-                for brwBom in brwBoml:  
-                    # If not source document I need to clean all bom lines losting also custom lines...
-                    brwBom.bom_line_ids.unlink()
-            else:
-                for _, documentId, _ in childRelations:
-                    trueDocumentId = documentAttributes.get(documentId, {}).get('id', 0)
-                    if trueDocumentId:  # seems strange this .. but i will delete only the bom with the right source id
-                        for brwBom in brwBoml:
-                            brwBom.deleteChildRow(trueDocumentId)
-                        break
-            # add rows
-            for childId, documentId, relationAttributes in childRelations:
+            try:
+                trueParentId = productAttributes[parentId].get('id')
+                brwProduct = productTemplate.search([('id', '=', trueParentId)])
+                productTempId = brwProduct.product_tmpl_id.id
+                brwBoml = mrpBomTemplate.search([('product_tmpl_id', '=', productTempId)])
+                if not brwBoml:
+                    brwBoml = mrpBomTemplate.create({'product_tmpl_id': productTempId,
+                                                     'type': bomType})
+                # delete rows
                 if skipDocumentCheckOnBom:
-                    if not childId:
+                    for brwBom in brwBoml:  
+                        # If not source document I need to clean all bom lines losting also custom lines...
+                        brwBom.bom_line_ids.unlink()
+                else:
+                    for _, documentId, _ in childRelations:
+                        trueDocumentId = documentAttributes.get(documentId, {}).get('id', 0)
+                        if trueDocumentId:  # seems strange this .. but i will delete only the bom with the right source id
+                            for brwBom in brwBoml:
+                                brwBom.deleteChildRow(trueDocumentId)
+                            break
+                # add rows
+                for childId, documentId, relationAttributes in childRelations:
+                    if skipDocumentCheckOnBom:
+                        if not childId:
+                            logging.warning("Bad relation request %r, %r" % (childId, documentId))
+                            continue
+                    elif not (childId and documentId):
                         logging.warning("Bad relation request %r, %r" % (childId, documentId))
                         continue
-                elif not (childId and documentId):
-                    logging.warning("Bad relation request %r, %r" % (childId, documentId))
-                    continue
-                trueChildId = productAttributes[childId].get('id')
-                trueDocumentId = documentAttributes.get(documentId, {}).get('id')
-                brwBoml.addChildRow(trueChildId, trueDocumentId, relationAttributes, bomType)
+                    trueChildId = productAttributes[childId].get('id')
+                    trueDocumentId = documentAttributes.get(documentId, {}).get('id')
+                    brwBoml.addChildRow(trueChildId, trueDocumentId, relationAttributes, bomType)
+            except Exception as ex:
+                logging.error(ex)
+                raise ex
         jsonify = json.dumps(objStructure)
         end = time.time()
         logging.info("Time Spend For save structure is: %s" % (str(end - start)))
