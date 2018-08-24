@@ -225,6 +225,35 @@
 		            <field name="perm_create" eval="True"/>
 		            <field name="perm_unlink" eval="False"/>
         		</record>
+                <record id="product_product_integration" model="ir.model.access">
+		            <field name="name">Product Product</field>
+		            <field name="model_id" ref="model_product_product"/>
+		            <field name="group_id" eval="group_plm_integrationuser"/>
+		            <field name="perm_read" eval="True"/>
+		            <field name="perm_write" eval="True"/>
+		            <field name="perm_create" eval="True"/>
+		            <field name="perm_unlink" eval="True"/>
+        		</record>
+                <record id="product_template_integration" model="ir.model.access">
+		            <field name="name">Product Template</field>
+		            <field name="model_id" ref="model_product_template"/>
+		            <field name="group_id" eval="group_plm_integrationuser"/>
+		            <field name="perm_read" eval="True"/>
+		            <field name="perm_write" eval="True"/>
+		            <field name="perm_create" eval="True"/>
+		            <field name="perm_unlink" eval="True"/>
+        		</record>
+        		
+                <record id="product_price_history_integration" model="ir.model.access">
+		            <field name="name">Product Price History</field>
+		            <field name="model_id" ref="product.model_product_price_history"/>
+		            <field name="group_id" eval="group_plm_integrationuser"/>
+		            <field name="perm_read" eval="True"/>
+		            <field name="perm_write" eval="False"/>
+		            <field name="perm_create" eval="False"/>
+		            <field name="perm_unlink" eval="False"/>
+        		</record>
+        		
 
 <!-- Administrator  -->
                 <record id="group_plm_admin" model="res.groups">
