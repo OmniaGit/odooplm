@@ -395,15 +395,31 @@ class PlmDocument(models.Model):
             return True
         return False
 
-    @api.multi
-    def NewRevision(self, newBomDocumentRevision=True):
+    @api.model
+    def NewRevision(self, docId, newBomDocumentRevision=True):
         """
             create a new revision of the document
         """
-        # TODO: Migrate document revision functionality from plm 10
+        def setupSourceBoms(tmpObject, newObj):
+            logging.info('Start cleaning old revision Boms')
+            for componentBrws in self.linkedcomponents:
+                for bomBrws in componentBrws.bom_ids:
+                    if bomBrws.source_id.id == tmpObject.id:
+                        for bomLineBrws in bomBrws:
+                            if bomLineBrws.source_id.id == tmpObject.id:
+                                bomLineBrws.write({'source_id': newObj.id})
+                        bomBrws.write({'source_id': newObj.id})
+                        logging.info('Bom ID %r update with new source ID %r / %r' % (bomBrws.id, tmpObject.id, newObj.id))
+
         newID = None
         newRevIndex = False
-        for tmpObject in self:
+        if isinstance(docId, (list, tuple)):
+            if len(docId) > 1:
+                docId, newBomDocumentRevision = docId
+            else:
+                docId = docId[0]
+                
+        for tmpObject in self.browse(docId):
             latestIDs = self.GetLatestIds([(tmpObject.name, tmpObject.revisionid, False)])
             for oldObject in self.browse(latestIDs):
                 oldObject.with_context({'check': False}).write({'state': 'undermodify'})
@@ -415,6 +431,8 @@ class PlmDocument(models.Model):
                 defaults['state'] = 'draft'
                 res = super(PlmDocument, oldObject).copy(defaults)
                 newID = res.id
+                if not newBomDocumentRevision:
+                    setupSourceBoms(tmpObject, res)
                 oldObject.wf_message_post(body=_('Created : New Revision.'))
                 break
             break
