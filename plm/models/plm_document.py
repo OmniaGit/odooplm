@@ -1257,7 +1257,7 @@ class PlmDocument(models.Model):
                                         ('revisionid', '=', documentAttribute.get('revisionid', -1))]):
                 brwItem.canBeSaved(raiseError=True)
 
-        def populateStructure(parentItem=False, structure={}):
+        def populateStructure(parentItem=False, structure={}, parentCreateBOM=True):
             documentId = False
             productId = False
             createBom = structure.get('CREATE_BOM', True)
@@ -1275,13 +1275,14 @@ class PlmDocument(models.Model):
                 listRelated.append(documentId)
                 productDocumentRelations[productId] = listRelated
             if parentItem and productId and docType != '2D':
+                # I'm a 3D file
                 parentDocumentId, parentProductId = parentItem
                 relationAttributes = structure.get('MRP_ATTRIBUTES', {})
                 childRelations = documentRelations.get(parentDocumentId, [])
                 childRelations.append((documentId, relationAttributes.get('TYPE', '')))
                 if parentDocumentId:
                     documentRelations[parentDocumentId] = list(set(childRelations))
-                if parentProductId and createBom:  # Case of part - assembly
+                if parentProductId and parentCreateBOM:  # Case of part - assembly
                     if not documentId:
                         documentId = parentDocumentId
                     itemTuple = (productId, documentId, relationAttributes)
@@ -1295,7 +1296,7 @@ class PlmDocument(models.Model):
                             listRelated.append(parentDocumentId)
                             productDocumentRelations[productId] = listRelated
             for subStructure in structure.get('RELATIONS', []):
-                populateStructure((documentId, productId), subStructure)
+                populateStructure((documentId, productId), subStructure, createBom)
         populateStructure(structure=objStructure)
 
         # Save the document
