@@ -57,7 +57,7 @@ class plm_missing_bom(osv.osv.osv_memory):
     bom_idrow = fields.Many2one('mrp.bom.line', _('BoM Line'), ondelete='cascade')
     part_id = fields.Many2one('product.product', _('Part'), ondelete='cascade')
     revision = fields.Integer(related="part_id.engineering_revision", string=_("Revision"), store=False)
-    description = fields.Text(related="part_id.name", string=_("Description"), store=False)
+    description = fields.Char(related="part_id.name", string=_("Description"), store=False)
     itemnum = fields.Integer(related="bom_idrow.itemnum", string=_("Cad Item Position"), store=False)
     itemqty = fields.Float(string=_("Quantity"), digits=(16, 3))
     reason = fields.Char(string=_("Difference"), size=32)
@@ -75,7 +75,7 @@ class plm_adding_bom(osv.osv.osv_memory):
     bom_idrow = fields.Many2one('mrp.bom.line', _('BoM Line'), ondelete='cascade')
     part_id = fields.Many2one('product.product', _('Part'), ondelete='cascade')
     revision = fields.Integer(related="part_id.engineering_revision", string=_("Revision"), store=False)
-    description = fields.Text(related="part_id.name", string=_("Description"), store=False)
+    description = fields.Char(related="part_id.name", string=_("Description"), store=False)
     itemnum = fields.Integer(related="bom_idrow.itemnum", string=_("Cad Item Position"), store=False)
     itemqty = fields.Float(string=_("Quantity"), digits=(16, 3))
     reason = fields.Char(string=_("Difference"), size=32)
@@ -98,7 +98,7 @@ class plm_compare_bom(osv.osv.osv_memory):
                                 _('BoM Type'))
     part_id1 = fields.Many2one('product.product', 'Part', ondelete='cascade')
     revision1 = fields.Integer(related="part_id1.engineering_revision", string=_("Revision"), store=False)
-    description1 = fields.Text(related="part_id1.name", string=_("Description"), store=False)
+    description1 = fields.Char(related="part_id1.name", string=_("Description"), store=False)
     bom_id2 = fields.Many2one('mrp.bom', _('BoM 2'), required=True, ondelete='cascade')
     type_id2 = fields.Selection([('normal', _('Normal BoM')),
                                  ('phantom', _('Sets / Phantom')),
@@ -107,7 +107,7 @@ class plm_compare_bom(osv.osv.osv_memory):
                                 _('BoM Type'))
     part_id2 = fields.Many2one('product.product', 'Part', ondelete='cascade')
     revision2 = fields.Integer(related="part_id2.engineering_revision", string=_("Revision"), store=False)
-    description2 = fields.Text(related="part_id2.name", string=_("Description"), store=False)
+    description2 = fields.Char(related="part_id2.name", string=_("Description"), store=False)
     anotinb = fields.One2many('plm.adding.bom', 'bom_id', _('BoM Adding'))
     bnotina = fields.One2many('plm.missing.bom', 'bom_id', _('BoM Missing'))
     
