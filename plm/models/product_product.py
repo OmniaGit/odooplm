@@ -1,5 +1,4 @@
-# -*- encoding: utf-8 -*-
-##############################################################################
+##############################################################
 #
 #    OmniaSolutions, Your own solutions
 #    Copyright (C) 2010 OmniaSolutions (<http://omniasolutions.eu>). All Rights Reserved
@@ -19,29 +18,37 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+
 import logging
 from datetime import datetime
-from odoo import models
-from odoo import fields
-from odoo import api
-from odoo import _
-from odoo.exceptions import ValidationError
-from odoo.exceptions import AccessError
-from odoo.exceptions import UserError
-from odoo import osv
-from odoo import SUPERUSER_ID
-import odoo.tools as tools
 import os
 import json
 
+from odoo import (
+    api,
+    fields,
+    models,
+    osv,
+    SUPERUSER_ID,
+    _
+)
+from odoo.exceptions import (
+    AccessError,
+    UserError,
+    ValidationError
+)
+import odoo.tools as tools
+
 _logger = logging.getLogger(__name__)
 
-USED_STATES = [('draft', _('Draft')),
-               ('confirmed', _('Confirmed')),
-               ('released', _('Released')),
-               ('undermodify', _('UnderModify')),
-               ('obsoleted', _('Obsoleted'))]
-USEDIC_STATES = dict(USED_STATES)
+USED_STATES = [
+    ('draft', _('Draft')),
+    ('confirmed', _('Confirmed')),
+    ('released', _('Released')),
+    ('undermodify', _('UnderModify')),
+    ('obsoleted', _('Obsoleted'))
+]
+USE_DICT_STATES = dict(USED_STATES)
 
 
 def emptyStringIfFalse(value):
