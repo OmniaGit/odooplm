@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <record model="ir.ui.view" id="plm_component_base_tree">
-        <field name="name">plm.base.component</field>
+        <field name="name">plm.base.component.tree</field>
         <field name="model">product.product</field>
         <field name="type">tree</field>
         <field name="priority" eval="5"/>
@@ -39,7 +39,7 @@
     </record>
 
     <record model="ir.ui.view" id="plm_component_base_search">
-        <field name="name">plm.base.component</field>
+        <field name="name">plm.base.component.search</field>
         <field name="model">product.product</field>
         <field name="type">search</field>
         <field name="priority" eval="15"/>
@@ -71,7 +71,7 @@
     </record>
 
     <record model="ir.ui.view" id="plm_component_base_form">
-        <field name="name">plm.base.component</field>
+        <field name="name">plm.base.component.form</field>
         <field name="model">product.product</field>
         <field name="type">form</field>
         <field name="priority" eval="6"/>
