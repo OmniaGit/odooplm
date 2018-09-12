@@ -1,158 +1,208 @@
 <odoo>
-    <data>
-	<record id="plm_component_kanban" model="ir.ui.view">
+    <record id="plm_component_kanban" model="ir.ui.view">
         <field name="name">plm.component.kanban</field>
         <field name="model">product.product</field>
         <field name="arch" type="xml">
             <kanban class="oe_background_grey o_kanban_dashboard o_account_kanban" create="0">
+                <field name="id"/>
+                <field name="image_small"/>
                 <field name="name"/>
                 <field name="engineering_code"/>
-               	<field name="description" invisible="1"/>
+                <field name="description" invisible="1"/>
                 <field name="engineering_revision"/>
                 <field name="engineering_writable"/>
                 <field name="engineering_material"/>
-                <field name="engineering_surface"/> 
+                <field name="engineering_surface"/>
                 <field name="state"/>
                 <field name="linkeddocuments"/>
-				<field name="father_part_ids" /> 
+                <field name="father_part_ids"/>
                 <field name="kanban_dashboard"/>
-	            <templates>
+                <templates>
                     <t t-name="kanban-box">
                         <div t-attf-class="#{kanban_color(0)}" style="max-height: 340px;">
-                        	<t t-value="record.state.raw_value" t-set="stateToUse"/>
-	                    	<t t-value="JSON.parse(record.kanban_dashboard.raw_value)" t-set="dashboard"/>
-		                    <t t-call="ComponentTop"/>
-		                    <div class="container o_kanban_view o_kanban_card_content o_visible"> 
-	                            <div class="row">
-	                            	<t t-call="Previews"/>
-	                            </div>
-		                    </div>
-							<div class="container o_kanban_view o_kanban_card_manage_pane o_invisible" style="position: absolute;">
-                                <t t-call="ComponentManage"/>
-                            </div>
-                        </div>
-                    </t>
-                    
-                    <t t-name="ComponentTop">
-                        <div class="o_kanban_card_header">
-                            <div class="o_kanban_card_header_title">
-                                <div class="o_primary" id='prod_name_div'>
-                                    <a type="object" name="open_action"><field name="name"/> - <field name="engineering_revision"/></a>
+                            <t t-value="record.state.raw_value" t-set="stateToUse"/>
+                            <t t-value="JSON.parse(record.kanban_dashboard.raw_value)" t-set="dashboard"/>
+                            <t t-call="component-top"/>
+                            <div class="container o_kanban_view o_kanban_card_content o_visible">
+                                <div class="row">
+                                    <t t-call="previews"/>
                                 </div>
                             </div>
-                            <div class="o_secondary" style="overflow: auto;"> 
-                            	<div class="state_style" style="float:left">
-                               		<p>State:  </p>
-                                	<t t-if="stateToUse == 'draft'">
-                            			<div style="color: rgb(110, 51, 197);padding-left: 5px;">
-                            				<b><field name="state"/></b>
-                            			</div>
-                                    </t>
-                                	<t t-if="stateToUse == 'confirmed'">
-                            			<div style="color: blue;padding-left: 5px;">
-                            				<b><field name="state"/></b>
-                            			</div>
-                                    </t>
-                                	<t t-if="stateToUse == 'released'">
-                            			<div style="color: rgba(0, 170, 34, 0.66);padding-left: 5px;">
-                            				<b><field name="state"/></b>
-                            			</div>
-                                    </t>
-                                	<t t-if="stateToUse == 'undermodify'">
-                            			<div style="color: rgb(218, 159, 34);padding-left: 5px;">
-                            				<b><field name="state"/></b>
-                            			</div>
-                                    </t>
-                                	<t t-if="stateToUse == 'obsoleted'">
-                            			<div style="color: rgb(231, 43, 26);padding-left: 5px;">
-                            				<b><field name="state"/></b>
-                            			</div>
-                                    </t>
-                                   </div>
-								<div style="float:right">
-									<div>
-									 <a type="object" name="open_related_docs_action" >
-									     <span title="Number Related Documents"><b><t t-esc="dashboard.number_documents"/> Docs</b></span>
-									 </a>
-									</div>
-									<div>
-									 <a type="object" name="open_related_boms_action" >
-									     <span title="Number Related Boms"><b><t t-esc="dashboard.number_boms"/> Boms</b></span>
-									 </a>
-									</div>
-								</div>
-                               </div>
-                            <div class="o_kanban_manage_button_section">
-                                <a class="o_kanban_manage_toggle_button" href="#">More <i class="fa fa-caret-down"/></a>
+                            <div class="container o_kanban_view o_kanban_card_manage_pane o_invisible"
+                                 style="position: absolute;">
+                                <t t-call="component-manage"/>
                             </div>
-						</div>
-                    </t>
-                    
-                    <t t-name="ComponentManage"> 
-                    	<div class="row">
-	                        <div class="col-xs-4 o_kanban_card_manage_section o_kanban_manage_view more_containers" style="width: 130px;">
-	                            <div class="o_kanban_card_manage_title">
-	                                <span>View</span>
-	                            </div>
-	                            <div style="margin-bottom: 10px;">
-	                            	<button type="object" id="normal_bom" name="open_normal_bom" class="btn btn-primary btn-sm">Normal Boms</button>
-	                            </div>
-	                        </div>
-	                        <div class="col-xs-4 o_kanban_card_manage_section o_kanban_manage_view more_containers" style="width: 100px;">
-	                            <div class="o_kanban_card_manage_title">
-	                                <span>New</span>
-	                            </div>
-	                            <div style="margin-bottom: 10px;">
-	                            	<button type="object" id="normal_bom" name="create_normal_bom" class="btn btn-primary btn-sm">Normal Bom</button>
-	                            </div>
-	                        </div>
-	                   </div>
-	                   <div class="row">
-	                        <div class="col-xs-4 o_kanban_card_manage_section o_kanban_manage_view more_containers" style="width: 230px;">
-	                            <div class="o_kanban_card_manage_title">
-	                                <span>Report</span>
-	                            </div>
-	                            <div style="margin-bottom: 10px;">
-	                            	<button type="action" name="plm.report_all_product_product_pdf" class="btn btn-primary btn-sm">Print Bom All Levels</button>
-	                           	</div>
-	                           	<div style="margin-bottom: 10px;">
-									<button type="action" name="plm.report_one_product_product_pdf" class="btn btn-primary btn-sm">Print Bom One Level</button>
-								</div>
-								<div style="margin-bottom: 10px;">	
-									<button type="action" name="plm.report_product_product_pdf" class="btn btn-primary btn-sm">Print Attached PDF</button>
-	                            </div>
-	                        </div>
-	                        <div class="col-xs-4 o_kanban_card_manage_section o_kanban_manage_view more_containers" style="min-width: 250px;">
-	                            <div class="o_kanban_card_manage_title">
-	                                <span>Action</span>
-	                            </div>
-	                            <div style="margin-bottom: 10px;">
-	                            	<button type="action" name="plm.action_product_bom_structure_where" class="btn btn-primary btn-sm">Product Where Used</button>
-	                            </div>
-	                        </div>
                         </div>
                     </t>
-                    
-                    <t t-name="Previews">
-	  	                <div style="display: -webkit-inline-box;">
-	            			<t t-foreach="record.linkeddocuments.raw_value" t-as="documentId">
-	            				<t t-debug="plm"/> <!-- To debug qweb -->
-	            				<!-- <t t-value="documentId" t-set="context"/> -->
-	            				<div>
-		                            <a type="action" class="a_preview" data-context='{"xml_id":"plm_action_document_form", "id":8}'> 
-		                            	
-		                            	<!-- context="{'io':'state', 'documentId':'documentId', 'docId':'docId'}" -->
-		                            	<!-- data-name="return_action_to_open" href="#" data-context='{"xml_id":"plm_action_document_form"}' -->
-		                                <img  class="image_component_kanban" t-att-src="kanban_image('plm.document', 'preview', documentId)"/>
-		                                
-		                            </a>
-	                            </div>
-	            			</t>
-	           			</div>
+
+                    <t t-name="component-top">
+                        <div class="o_kanban_card_header">
+                            <div class="o_kanban_image">
+                                <img t-att-src="kanban_image('product.product', 'image_small', record.id.raw_value)"/>
+                            </div>
+                            <div class="oe_kanban_details">
+                                <div class="o_kanban_card_header_title">
+                                    <div class="o_primary" id='prod_name_div'>
+                                        <a type="object" name="open_action">
+                                            <field name="name"/>
+                                            -
+                                            <field name="engineering_revision"/>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="o_secondary" style="overflow: auto;">
+                                    <div class="state_style" style="float:left">
+                                        <p>State:</p>
+                                        <t t-if="stateToUse == 'draft'">
+                                            <div style="color: rgb(110, 51, 197);padding-left: 5px;">
+                                                <b>
+                                                    <field name="state"/>
+                                                </b>
+                                            </div>
+                                        </t>
+                                        <t t-if="stateToUse == 'confirmed'">
+                                            <div style="color: blue;padding-left: 5px;">
+                                                <b>
+                                                    <field name="state"/>
+                                                </b>
+                                            </div>
+                                        </t>
+                                        <t t-if="stateToUse == 'released'">
+                                            <div style="color: rgba(0, 170, 34, 0.66);padding-left: 5px;">
+                                                <b>
+                                                    <field name="state"/>
+                                                </b>
+                                            </div>
+                                        </t>
+                                        <t t-if="stateToUse == 'undermodify'">
+                                            <div style="color: rgb(218, 159, 34);padding-left: 5px;">
+                                                <b>
+                                                    <field name="state"/>
+                                                </b>
+                                            </div>
+                                        </t>
+                                        <t t-if="stateToUse == 'obsoleted'">
+                                            <div style="color: rgb(231, 43, 26);padding-left: 5px;">
+                                                <b>
+                                                    <field name="state"/>
+                                                </b>
+                                            </div>
+                                        </t>
+                                    </div>
+                                    <div style="float:right">
+                                        <div>
+                                            <a type="object" name="open_related_docs_action">
+                                                <span title="Number Related Documents">
+                                                    <b>
+                                                        <t t-esc="dashboard.number_documents"/>
+                                                        Docs
+                                                    </b>
+                                                </span>
+                                            </a>
+                                        </div>
+                                        <div>
+                                            <a type="object" name="open_related_boms_action">
+                                                <span title="Number Related Boms">
+                                                    <b>
+                                                        <t t-esc="dashboard.number_boms"/>
+                                                        Boms
+                                                    </b>
+                                                </span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="o_kanban_manage_button_section">
+                                    <a class="o_kanban_manage_toggle_button" href="#">More
+                                        <i class="fa fa-caret-down"/>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+
+                    <t t-name="component-manage">
+                        <div class="row">
+                            <div class="col-xs-4 o_kanban_card_manage_section o_kanban_manage_view more_containers"
+                                 style="width: 130px;">
+                                <div class="o_kanban_card_manage_title">
+                                    <span>View</span>
+                                </div>
+                                <div style="margin-bottom: 10px;">
+                                    <button type="object" id="normal_bom" name="open_normal_bom"
+                                            class="btn btn-primary btn-sm">Normal Boms
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-xs-4 o_kanban_card_manage_section o_kanban_manage_view more_containers"
+                                 style="width: 100px;">
+                                <div class="o_kanban_card_manage_title">
+                                    <span>New</span>
+                                </div>
+                                <div style="margin-bottom: 10px;">
+                                    <button type="object" id="normal_bom" name="create_normal_bom"
+                                            class="btn btn-primary btn-sm">Normal Bom
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-4 o_kanban_card_manage_section o_kanban_manage_view more_containers"
+                                 style="width: 230px;">
+                                <div class="o_kanban_card_manage_title">
+                                    <span>Report</span>
+                                </div>
+                                <div style="margin-bottom: 10px;">
+                                    <button type="action" name="plm.report_all_product_product_pdf"
+                                            class="btn btn-primary btn-sm">Print Bom All Levels
+                                    </button>
+                                </div>
+                                <div style="margin-bottom: 10px;">
+                                    <button type="action" name="plm.report_one_product_product_pdf"
+                                            class="btn btn-primary btn-sm">Print Bom One Level
+                                    </button>
+                                </div>
+                                <div style="margin-bottom: 10px;">
+                                    <button type="action" name="plm.report_product_product_pdf"
+                                            class="btn btn-primary btn-sm">Print Attached PDF
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-xs-4 o_kanban_card_manage_section o_kanban_manage_view more_containers"
+                                 style="min-width: 250px;">
+                                <div class="o_kanban_card_manage_title">
+                                    <span>Action</span>
+                                </div>
+                                <div style="margin-bottom: 10px;">
+                                    <button type="action" name="plm.action_product_bom_structure_where"
+                                            class="btn btn-primary btn-sm">Product Where Used
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+
+                    <t t-name="previews">
+                        <div style="display: -webkit-inline-box;">
+                            <t t-foreach="record.linkeddocuments.raw_value" t-as="documentId">
+                                <t t-debug="plm"/> <!-- To debug qweb -->
+                                <!-- <t t-value="documentId" t-set="context"/> -->
+                                <div>
+                                    <a type="action" class="a_preview"
+                                       data-context='{"xml_id":"plm_action_document_form", "id":8}'>
+
+                                        <!-- context="{'io':'state', 'documentId':'documentId', 'docId':'docId'}" -->
+                                        <!-- data-name="return_action_to_open" href="#" data-context='{"xml_id":"plm_action_document_form"}' -->
+                                        <img class="image_component_kanban"
+                                             t-att-src="kanban_image('plm.document', 'preview', documentId)"/>
+
+                                    </a>
+                                </div>
+                            </t>
+                        </div>
                     </t>
                 </templates>
             </kanban>
         </field>
     </record>
-	</data>
 </odoo>
