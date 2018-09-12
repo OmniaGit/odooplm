@@ -5,6 +5,8 @@
         <field name="model">product.product</field>
         <field name="arch" type="xml">
             <kanban class="oe_background_grey o_kanban_dashboard o_account_kanban" create="0">
+                <field name="id"/>
+                <field name="image_small"/>
                 <field name="name"/>
                 <field name="engineering_code"/>
                	<field name="description" invisible="1"/>
@@ -39,6 +41,8 @@
                                 <div class="o_primary" id='prod_name_div'>
                                     <a type="object" name="open_action"><field name="name"/> - <field name="engineering_revision"/></a>
                                 </div>
+                            <div class="o_kanban_image">
+                                <img t-att-src="kanban_image('product.product', 'image_small', record.id.raw_value)"/>
                             </div>
                             <div class="o_secondary" style="overflow: auto;"> 
                             	<div class="state_style" style="float:left">
