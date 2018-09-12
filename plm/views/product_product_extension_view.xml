@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
-<data>
-
+<odoo>
     <record model="ir.ui.view" id="plm_component_base_tree">
         <field name="name">plm.base.component</field>
         <field name="model">product.product</field>
@@ -39,7 +37,7 @@
             </field>
         </field>
     </record>
-         
+
     <record model="ir.ui.view" id="plm_component_base_search">
         <field name="name">plm.base.component</field>
         <field name="model">product.product</field>
@@ -181,6 +179,7 @@
         </field>
     </record> 
     
+
     <record model="ir.actions.act_window" id="action_plm_component_base">
         <field name="name">Engineering Parts</field>
         <field name="res_model">product.product</field>
@@ -191,7 +190,4 @@
         <field name="domain">['|', ('engineering_code','!=',''), ('engineering_code','!=',False)]</field>  
         <field name="view_id_search" ref="plm_component_base_search"/>
     </record>
-    
-</data>
-</openerp>
-
+</odoo>
