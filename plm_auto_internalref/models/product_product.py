@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -20,12 +19,30 @@
 #
 ##############################################################################
 
-'''
+"""
 Created on 9 Dec 2016
 
 @author: Daniel Smerghetto
-'''
+"""
 
-from . import product_product
+import logging
+from odoo import (
+    models,
+    api
+)
 
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+
+class ProductProductExtension(models.Model):
+    _name = 'product.product'
+    _inherit = 'product.product'
+
+    @api.model
+    def create(self, vals):
+        engineering_code = vals.get('engineering_code', '')
+        engineering_revision = vals.get('engineering_revision', 0)
+        if (engineering_code and not vals.get('default_code')) or (engineering_code and engineering_revision > 0):
+            vals['default_code'] = '{0}_{1}'.format(engineering_code, engineering_revision)
+            logging.info(
+                'Internal ref set value {0} on engineering_code: {1}'.format(vals['default_code'], engineering_code)
+            )
+        return super(ProductProductExtension, self).create(vals)
