@@ -51,7 +51,7 @@ PLM_NO_WRITE_STATE = ['confirmed', 'released', 'undermodify', 'obsoleted']
 
 def random_name():
     random.seed()
-    d = [random.choice(string.ascii_letters) for _x in xrange(20)]
+    d = [random.choice(string.ascii_letters) for _x in range(20)]
     return ("".join(d))
 
 
