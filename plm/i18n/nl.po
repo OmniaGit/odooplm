@@ -1884,7 +1884,7 @@ msgid "PLM / Administrator"
 msgstr "PLM / Administrator"
 
 #. module: plm
-#: model:res.groups,name:plm.group_plm_integrationuser
+#: model:res.groups,name:plm.group_plm_integration_user
 msgid "PLM / Integration User"
 msgstr "PLM / Integratie gebruiker"
 

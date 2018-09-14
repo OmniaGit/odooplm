@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
 	<data> 
+    <menuitem
+            id="plm_menu"
+            name="PLM"
+            icon="terp-stock"
+            web_icon="plm,static/src/img/PLMmodule.png"
+            web_icon_hover="plm,static/src/img/PLMmodule-hoover.png"
 
-    <menuitem 
-		id="plm_menu" 
-		name="PLM Module" 
-		icon="terp-stock" 
-    	web_icon="plm,static/src/img/PLMmodule.png" 
-    	web_icon_hover="plm,static/src/img/PLMmodule-hoover.png" 
-		
-    	/>
+    />
     <!-- action = "plm.open_board_plm_manager"  -->
     <!-- Parent menu "PLM Module"  -->
 <!--
