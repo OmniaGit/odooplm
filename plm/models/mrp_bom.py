@@ -20,19 +20,19 @@
 #
 ##############################################################################
 
-'''
+"""
 Created on 25 Aug 2016
 
 @author: Daniel Smerghetto
-'''
+"""
+import logging
+import sys
 
 import odoo.addons.decimal_precision as dp
 from odoo import models
 from odoo import fields
 from odoo import api
 from odoo import _
-import logging
-import sys
 
 
 class MrpBomExtension(models.Model):

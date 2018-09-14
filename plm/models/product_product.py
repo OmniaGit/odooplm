@@ -1431,5 +1431,3 @@ class ProductProductDashboard(models.Model):
                     (SELECT count(*) FROM product_template WHERE state = 'obsoleted' and  engineering_code<>'') AS count_component_obsoleted
              )
         """)
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
