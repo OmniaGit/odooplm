@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution    
@@ -32,8 +31,9 @@
     'description': """
     """,
     'data': [
-            # security
-            'security/base_plm_security.xml',],  # After component_report.xml
+        # security
+        'security/base_plm_security.xml',
+    ],  # After component_report.xml
 
     'demo': [],
     'test': [],
@@ -41,5 +41,3 @@
     'application': False,
     'auto_install': False,
 }
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
