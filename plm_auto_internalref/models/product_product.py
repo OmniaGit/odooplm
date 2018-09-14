@@ -26,10 +26,9 @@ Created on 9 Dec 2016
 """
 
 import logging
-from odoo import (
-    models,
-    api
-)
+from odoo import models
+from odoo import api
+
 
 
 class ProductProductExtension(models.Model):
