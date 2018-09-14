@@ -25,16 +25,14 @@ Created on 25 Aug 2016
 
 @author: Daniel Smerghetto
 """
-
-import odoo.addons.decimal_precision as dp
-from odoo import (
-    models,
-    fields,
-    api,
-    _
-)
 import logging
 import sys
+
+import odoo.addons.decimal_precision as dp
+from odoo import models
+from odoo import fields
+from odoo import api
+from odoo import _
 
 
 class MrpBomExtension(models.Model):
