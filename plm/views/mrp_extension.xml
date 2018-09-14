@@ -46,21 +46,23 @@
         </record>
 
           <record id="plm_bom_form_view_eng" model="ir.ui.view">
-            <field name="name">plm.bom.form.eng</field>
-            <field name="model">mrp.bom</field>
-            <field name="arch" type="xml">
-            		
-                <form string="Bill of Material" edit="false">
-                    <sheet>
+        <field name="name">plm.bom.form.eng</field>
+        <field name="model">mrp.bom</field>
+        <field name="arch" type="xml">
+
+            <form string="Bill of Material" edit="false">
+                <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button name="open_related_bom_lines" type="object" string="Related BOM Lines" class="oe_stat_button" icon="fa-tasks"/>
+                        <button name="open_related_bom_lines" type="object" string="Related BOM Lines"
+                                class="oe_stat_button" icon="fa-tasks"/>
                     </div>
-                    <group>	
+                    <group>
                         <field name="product_tmpl_id" options="{'no_open':True,'no_create':True}"/>
                         <field name="product_id" groups="product.group_product_variant"/>
                         <field name="state" readonly="True"/>
                         <field name="product_qty" class="oe_inline"/>
-                        <field name="product_uom_id" options="{'no_open':True,'no_create':True}" class="oe_inline" groups="product.group_uom"/>
+                        <field name="product_uom_id" options="{'no_open':True,'no_create':True}" class="oe_inline"
+                               groups="product.group_uom"/>
                         <field name="routing_id" class="oe_inline" groups="mrp.group_mrp_routings"/>
                         <field name="code"/>
                         <field name="type" widget="radio"/>
@@ -70,21 +72,42 @@
                         <page string="Components">
                             <field name="bom_line_ids" widget="one2many_list">
                                 <tree string="Components" editable="bottom">
-                                	<button name="openRelatedBoms" type="object" string="Related BOM" class="btn btn-sm oe_stat_button" attrs="{'invisible':[('related_bom_ids', '=', [])]}"/>
-									<field name="related_bom_ids" invisible="True"/>
-									<field name="related_document_ids" invisible="True"/>
-	           						<button name="openRelatedDocuments" type="object" string="Related DOCS" class="btn btn-sm oe_stat_button" attrs="{'invisible':[('related_document_ids', '=', [])]}"/>
+                                    <button name="openRelatedBoms" type="object" string="Related BOM"
+                                            class="btn btn-sm oe_stat_button"
+                                            attrs="{'invisible':[('related_bom_ids', '=', [])]}"/>
+                                    <field name="related_bom_ids" invisible="True"/>
+                                    <field name="related_document_ids" invisible="True"/>
+                                    <button name="openRelatedDocuments" type="object" string="Related DOCS"
+                                            class="btn btn-sm oe_stat_button"
+                                            attrs="{'invisible':[('related_document_ids', '=', [])]}"/>
+                                    <field name="itemnum"/>
                                     <field name="sequence" widget="handle"/>
                                     <field name="product_id"/>
-                                    <field name="product_qty"/>
-                                    <field name="product_uom_id" options="{'no_open':True,'no_create':True}" groups="product.group_uom"/>
-                                    <field name="attribute_value_ids" widget="many2many_tags" domain="[('product_ids.product_tmpl_id', '=', parent.product_tmpl_id)]" groups="product.group_product_variant"/>
-					                <field name="engineering_revision" readonly="True"/>
+                                    <field name="attribute_value_ids" widget="many2many_tags"
+                                           domain="[('product_ids.product_tmpl_id', '=', parent.product_tmpl_id)]"
+                                           groups="product.group_product_variant"/>
+                                    <field name="engineering_revision" readonly="True"/>
                                     <field name="state" readonly="True"/>
-					            	<field name="description" readonly="True"/>
-					                <field name="source_id" string="Source Relation Document"/>
-			 	            		<field name="type" />
+                                    <field name="description" readonly="True"/>
+                                    <field name="source_id" string="Source Relation Document"/>
+                                    <field name="type"/>
+                                    <field name="weight_net" readonly="True"/>
+                                    <field name="create_date" select="True" readonly="True"/>
                                     <field name="hasChildBoms" invisible="True"/>
+                                    <!--
+                                    <button name="action_see_attachments" type="object" icon="fa-files-o" attrs="{'invisible': [('has_attachments', '=', False)]}"/>
+                                    <button name="action_see_attachments" type="object" icon="fa-file" attrs="{'invisible': [('has_attachments', '=', True)]}"/>
+                                    -->
+                                    <field name="product_qty"/>
+                                    <field name="product_uom_id" options="{'no_open':True,'no_create':True}"
+                                           groups="product.group_uom"/>
+                                    <field name="attribute_value_ids" widget="many2many_tags"
+                                           options="{'no_create': True}"
+                                           domain="[('product_ids.product_tmpl_id', '=', parent.product_tmpl_id)]"
+                                           groups="product.group_product_variant"/>
+                                    <field name="operation_id" groups="mrp.group_mrp_routings"
+                                           domain="[('routing_id', '=', parent.routing_id)]"
+                                           options="{'no_quick_create':True,'no_create_edit':True}"/>
                                 </tree>
                             </field>
                         </page>
@@ -103,14 +126,14 @@
                             </group>
                         </page>
                     </notebook>
-                    </sheet>
-                    <div class="oe_chatter">
-                         <field name="message_follower_ids" widget="mail_followers"/>
-                         <field name="message_ids" colspan="4" widget="mail_thread" nolabel="1"/>
-                    </div>
-                </form>
-            </field>
-        </record>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" colspan="4" widget="mail_thread" nolabel="1"/>
+                </div>
+            </form>
+        </field>
+    </record>
 
     <record id="plm_bom_form_view_2" model="ir.ui.view">
         <field name="name">plm.bom.form.2</field>
@@ -125,52 +148,53 @@
     </record> 
 
         <record id="plm_bom_form_view" model="ir.ui.view">
-            <field name="name">plm.bom.form</field>
-            <field name="model">mrp.bom</field>
-            <field name="inherit_id" ref="mrp.mrp_bom_form_view"/>
-            <field name="type">form</field>
-        	<field name="priority" eval="16"/>
-            <field name="arch" type="xml">
-            	<data>
-                    <div class="oe_button_box" name="button_box" position="inside">
-                        <button name="open_related_bom_lines" type="object" string="Related BOM Lines" class="oe_stat_button" icon="fa-tasks"/>
-                    </div>
-            		<field name="product_tmpl_id" position="replace">
-            			<field name="product_tmpl_id" context="{'default_type': 'product'}" options="{'no_open':True,'no_create':True}"/>
-            		</field>
-	                <field name="product_id" position="after">
-	                	<field name="engineering_revision" readonly="True"/>	
-	                	<field name="description" readonly="True"/>
-	                	<field name="state" readonly="True"/>
-	                	<field name="weight_net" readonly="True"/>
-	                </field>
-	            	<xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_id']" position="before">
-	            		<field name="related_bom_ids" invisible="True"/>
-	            		<button name="openRelatedBoms" type="object" string="Related BOM" class="btn btn-sm oe_stat_button" attrs="{'invisible':[('related_bom_ids', '=', [])]}"/>	
-						<field name="related_document_ids" invisible="True"/>
-	           			<button name="openRelatedDocuments" type="object" string="Related DOCS" class="btn btn-sm oe_stat_button" attrs="{'invisible':[('related_document_ids', '=', [])]}"/>
-		            	<field name="itemnum"/>
-	           		</xpath>
-	            	<xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_id']" position="after">
-	            		<field name="engineering_revision" readonly="True"/>	
-		                <field name="state" readonly="True"/>
-		            	<field name="description" readonly="True"/>
-		                <field name="source_id" string="Source Relation Document"/>
- 	            		<field name="type" />
- 	            		<field name="weight_net" readonly="True"/>
- 	            		<field name="create_date" select="True" readonly="True"/>
-	           		</xpath>
-	           		
-	            	<xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_qty']" position="after">
-                        <field name="hasChildBoms" invisible="True"/>
-	           		</xpath>
-	           		
-            		<tree position="attributes">
-            			<attribute name="editable">bottom</attribute>
-            		</tree>
-             	</data>
-     		</field>
-        </record>
+        <field name="name">plm.bom.form</field>
+        <field name="model">mrp.bom</field>
+        <field name="inherit_id" ref="mrp.mrp_bom_form_view"/>
+        <field name="type">form</field>
+        <field name="priority" eval="16"/>
+        <field name="arch" type="xml">
+            <div class="oe_button_box" name="button_box" position="inside">
+                <button name="open_related_bom_lines" type="object" string="Related BOM Lines"
+                        class="oe_stat_button" icon="fa-tasks"/>
+            </div>
+            <field name="product_tmpl_id" position="replace">
+                <field name="product_tmpl_id" context="{'default_type': 'product'}"
+                       options="{'no_open':True,'no_create':True}"/>
+            </field>
+            <field name="product_id" position="after">
+                <field name="engineering_revision" readonly="True"/>
+                <field name="description" readonly="True"/>
+                <field name="state" readonly="True"/>
+                <field name="weight_net" readonly="True"/>
+            </field>
+            <xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_id']" position="before">
+                <field name="related_bom_ids" invisible="True"/>
+                <button name="openRelatedBoms" type="object" string="Related BOM" class="btn btn-sm oe_stat_button"
+                        attrs="{'invisible':[('related_bom_ids', '=', [])]}"/>
+                <field name="related_document_ids" invisible="True"/>
+                <button name="openRelatedDocuments" type="object" string="Related DOCS"
+                        class="btn btn-sm oe_stat_button"
+                        attrs="{'invisible':[('related_document_ids', '=', [])]}"/>
+            </xpath>
+            <xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_id']" position="after">
+                <field name="engineering_revision" readonly="True"/>
+                <field name="state" readonly="True"/>
+                <field name="description" readonly="True"/>
+                <field name="source_id" string="Source Relation Document"/>
+                <field name="type"/>
+            </xpath>
+
+            <xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_qty']" position="after">
+                <field name="hasChildBoms" invisible="True"/>
+            </xpath>
+
+            <tree position="attributes">
+                <attribute name="editable">bottom</attribute>
+            </tree>
+        </field>
+    </record>
+
 
 
 <!-- Opening views from menu -->
