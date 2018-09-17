@@ -18,10 +18,10 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-'''
+"""
 Created on 30/mag/2016
 
 @author: mboscolo
-'''
+"""
 
 from . import report
