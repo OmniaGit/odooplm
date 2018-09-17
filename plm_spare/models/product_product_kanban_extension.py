@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -20,18 +19,18 @@
 #
 ##############################################################################
 
-'''
+"""
 Created on 30 Aug 2016
 
 @author: Daniel Smerghetto
-'''
+"""
 
-from openerp import models
-from openerp import api
-from openerp import _
+from odoo import models
+from odoo import api
+from odoo import _
 
 
-class ProdProdKanabanExtension(models.Model):
+class ProdProdKanbanExtension(models.Model):
     _inherit = 'product.product'
 
     @api.multi
@@ -44,10 +43,8 @@ class ProdProdKanabanExtension(models.Model):
     def create_spare_bom(self):
         context = self.env.context.copy()
         context.update({'default_type': 'spbom'})
-        docIds = self.get_related_docs()
-        if docIds:
+        doc_ids = self.get_related_docs()
+        if doc_ids:
             context.update(
                 {'default_product_tmpl_id': self.product_tmpl_id.id})
         return self.common_open(_('Related Boms'), 'mrp.bom', 'form', 'form', False, context)
-
-ProdProdKanabanExtension()

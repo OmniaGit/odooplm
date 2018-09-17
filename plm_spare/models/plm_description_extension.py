@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -25,9 +24,9 @@ Created on 30 Aug 2016
 
 @author: Daniel Smerghetto
 '''
-from openerp import models
-from openerp import fields
-from openerp import _
+from odoo import models
+from odoo import fields
+from odoo import _
 
 
 class PlmDescriptionExtension(models.Model):
@@ -38,5 +37,3 @@ class PlmDescriptionExtension(models.Model):
                                required=False,
                                change_default=True,
                                help=_("Select a  BoM as template to drive building Spare BoM."))
-
-PlmDescriptionExtension()
