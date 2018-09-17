@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution    
@@ -33,16 +32,15 @@
 Manage bom explosion for cutted parts
 ==============================================
     """,
-    'data': ['views/product.xml',
-             'views/mrp_bom_lines.xml',
-             'report/mrp_bom.xml',
-             'security/base_plm_security.xml',
-             ],
+    'data': [
+        'views/product.xml',
+        'views/mrp_bom_lines.xml',
+        'report/mrp_bom.xml',
+        'security/base_plm_security.xml',
+    ],
     'demo': [],
     'test': [],
     'installable': True,
     'application': False,
     'auto_install': False,
 }
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
