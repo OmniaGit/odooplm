@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -20,11 +19,11 @@
 #
 ##############################################################################
 
-'''
+"""
 Created on 24 Aug 2016
 
 @author: Daniel Smerghetto
-'''
+"""
 
 from . import models
 from . import report
