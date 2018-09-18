@@ -96,7 +96,3 @@ class MrpBomExtension(models.Model):
             Save EBom relations
         """
         return super(MrpBomExtension, self).SaveStructure(relations, level, currlevel, kindBom='ebom')
-
-MrpBomExtension()
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

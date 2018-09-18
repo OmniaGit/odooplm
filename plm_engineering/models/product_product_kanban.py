@@ -40,5 +40,3 @@ class ProdProdKanbanExtension(models.Model):
         boms = self.get_related_boms()
         domain = [('id', 'in', boms.ids), ('type', '=', 'ebom')]
         return self.common_open(_('Related Boms'), 'mrp.bom', 'tree,form', 'form', boms.ids, self.env.context, domain)
-
-ProdProdKanbanExtension()

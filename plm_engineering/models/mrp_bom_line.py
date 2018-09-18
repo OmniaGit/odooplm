@@ -44,5 +44,3 @@ class MrpBomLineExtension(models.Model):
                             help=_("Phantom BOM: When processing a sales order for this product, the delivery order will contain the raw materials, instead of the finished product."
                                    " Ship this product as a set of components (kit)."))
     ebom_source_id = fields.Integer('Source Ebom ID')
-
-MrpBomLineExtension()
