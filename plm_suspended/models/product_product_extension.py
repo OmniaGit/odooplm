@@ -25,43 +25,58 @@ Created on 30 Aug 2016
 @author: Daniel Smerghetto
 """
 
+from odoo import _
 from odoo import api
 from odoo import fields
 from odoo import models
 
 from odoo.addons.plm.models.product_product import USED_STATES
-from odoo.addons.plm.models.product_product import USEDIC_STATES
+
+USED_STATES.append(('suspended', _('Suspended')))
+
+USE_DIC_STATES = dict(USED_STATES)
 
 
 class PlmComponentExtension(models.Model):
     _inherit = 'product.product'
 
-    state = fields.Selection(USED_STATES,
-                             _('Status'),
-                             help=_("The status of the product."),
-                             readonly="True",
-                             default='draft',
-                             required=True)
-    old_state = fields.Char(size=128,
-                            name=_("Old Staus"))
+    state = fields.Selection(
+        USED_STATES,
+        _('Status'),
+        help=_("The status of the product."),
+        readonly="True",
+        default='draft',
+        required=True
+    )
+    old_state = fields.Char(
+        size=128,
+        name=_("Old Status")
+    )
 
     @property
     def actions(self):
-        actionDict = super(PlmComponentExtension, self).actions
-        actionDict['suspended'] = self.action_suspend
+        action_dict = super(PlmComponentExtension, self).actions
+        action_dict['suspended'] = self.action_suspend
+        return action_dict
 
     @api.multi
     def action_suspend(self):
         """
             reactivate the object
         """
-        if self.ischecked_in():
-            defaults = {}
-            defaults['old_state'] = self.state
-            defaults['state'] = 'suspended'
-            self.setCheckContextWrite(False)
-            objId = self.write(defaults)
-            if objId:
-                self.wf_message_post(body=_('Status moved to:%s.' % (USEDIC_STATES[defaults['state']])))
-            return objId
-        return False
+        defaults = {'old_state': self.state, 'state': 'suspended'}
+        obj_id = self.write(defaults)
+        if obj_id:
+            self.wf_message_post(body=_('Status moved to:{}.'.format(USE_DIC_STATES[defaults['state']])))
+        return obj_id
+
+    @api.multi
+    def action_unsuspend(self):
+        """
+            reactivate the object
+        """
+        defaults = {'old_state': self.state, 'state': 'draft'}
+        obj_id = self.write(defaults)
+        if obj_id:
+            self.wf_message_post(body=_('Status moved to:{}.'.format(USE_DIC_STATES[defaults['state']])))
+        return obj_id
