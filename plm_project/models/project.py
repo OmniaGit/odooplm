@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -20,11 +19,11 @@
 #
 ##############################################################################
 
-'''
+"""
 Created on 30 Aug 2016
 
 @author: Daniel Smerghetto
-'''
+"""
 from odoo import fields, models, _
 
 
@@ -49,15 +48,23 @@ class ProjectExtension(models.Model):
         for project in self:
             project.plm_product_count = len(project.plm_product_ids)
 
-    plm_use_plm = fields.Boolean(string='Use PLM',
-                                 default=False,
-                                 help=_("Check this box to manage plm data into project"))
-    plm_completed = fields.Float(string=_('Plm Complete'),
-                                 compute="_compute_plm_complete")
-    plm_product_ids = fields.Many2many('product.product',
-                                       'project_product_rel',
-                                       'project_id',
-                                       'product_id',
-                                       string=_('Products'))
-    plm_product_count = fields.Integer(compute='_compute_product_count',
-                                       string=_("Number of product related"))
+    plm_use_plm = fields.Boolean(
+        string='Use PLM',
+        default=False,
+        help=_("Check this box to manage plm data into project")
+    )
+    plm_completed = fields.Float(
+        string=_('Plm Complete'),
+        compute="_compute_plm_complete"
+    )
+    plm_product_ids = fields.Many2many(
+        'product.product',
+        'project_product_rel',
+        'project_id',
+        'product_id',
+        string=_('Products')
+    )
+    plm_product_count = fields.Integer(
+        compute='_compute_product_count',
+        string=_("Number of product related")
+    )
