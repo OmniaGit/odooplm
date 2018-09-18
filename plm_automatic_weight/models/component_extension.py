@@ -154,6 +154,4 @@ class PlmComponent(models.Model):
             Function called form xml action to compute and set weight for all selected products and boms
         for prodBrws in self:
             prodBrws.computeBomWeight()
-
-PlmComponent()
         """
