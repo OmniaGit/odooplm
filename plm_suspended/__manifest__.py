@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution    
@@ -34,9 +33,9 @@ Add obsolete status to the work flow
 ==============================================
     """,
     'data': [
-            # views
-            'views/plm_product_view.xml',
-            'views/plm_document_view.xml',
+        # views
+        'views/plm_product_view.xml',
+        'views/plm_document_view.xml',
     ],
     'demo': [],
     'test': [],
@@ -44,5 +43,3 @@ Add obsolete status to the work flow
     'application': False,
     'auto_install': False,
 }
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
