@@ -1,32 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
-	<data> 
-    
+<odoo>
     <record id="plm_document_spare_extension" model="ir.ui.view">
         <field name="name">plm.document.spare.extension</field>
-        <field name="model">plm.document</field>
-        <field name="inherit_id" ref="plm.view_plm_document"/>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="plm.plm_component_base_form"/>
         <field name="type">form</field>
-    	<field name="priority" eval="16"/>
+        <field name="priority" eval="16"/>
         <field name="arch" type="xml">
-	        	 <xpath expr="//header" position="inside">
-	        		<button name="action_suspend" 
-	                    		states="draft" 
-	                    		type="object"
-	                    		string="Suspend" 
-	                    		class="oe_highlight"  
-	                    		attrs="{'invisible': ['|',('is_checkout','=',True)]}"
-	                    	/>
-	        		<button name="action_unsuspend" 
-	                    		states="draft" 
-	                    		type="object"
-	                    		string="Un-Suspend" 
-	                    		class="oe_highlight"  
-	                    		attrs="{'invisible': ['|',('is_checkout','=',True), ('state', '=', 'suspended')]}"
-	                    	/>
-				</xpath>
- 		</field>
+            <xpath expr="//header" position="inside">
+                <button name="action_suspend"
+                        states="draft"
+                        type="object"
+                        string="Suspend"
+                        class="oe_highlight"
+                />
+                <button name="action_unsuspend"
+                        states="suspended"
+                        type="object"
+                        string="Un-Suspend"
+                        class="oe_highlight"
+                        attrs="{'invisible': [('state', 'not in', 'suspended')]}"
+                />
+            </xpath>
+        </field>
     </record>
-		
- 	</data>
-</openerp>
+</odoo>
