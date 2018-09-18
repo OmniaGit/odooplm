@@ -25,12 +25,13 @@ Created on May 25, 2016
 @author: Daniel Smerghetto
 """
 
-from openerp import models
-from openerp import fields
-from openerp import api
-from openerp import _
-import openerp.addons.decimal_precision as dp
+from odoo import models
+from odoo import fields
+from odoo import api
+from odoo import _
+import odoo.addons.decimal_precision as dp
 import logging
+
 _logger = logging.getLogger(__name__)
 
 
