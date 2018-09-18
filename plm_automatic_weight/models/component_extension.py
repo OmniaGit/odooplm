@@ -39,16 +39,19 @@ class PlmComponent(models.Model):
     _name = 'product.product'
     _inherit = 'product.product'
 
-    automatic_compute_selection = fields.Selection([('use_net', _('Use Net Weight')),
-                                                    ('use_cad', _('Use CAD Weight')),
-                                                    ('use_normal_bom', _('Use Normal Bom'))],
-                                                   _('Weight compute mode'),
-                                                   default='use_net',
-                                                   help=_("""Set "Use Net Weight" to use only gross weight. Set "Use CAD Weight" to use CAD weight + Additional Weight as gross weight. Set "Use Normal Bom" to use NBOM Weight Computed + Additional weight as gross weight.""")
-                                                   )
+    automatic_compute_selection = fields.Selection(
+        [('use_net', _('Use Net Weight')),
+         ('use_cad', _('Use CAD Weight')),
+         ('use_normal_bom', _('Use Normal Bom'))],
+        _('Weight compute mode'),
+        default='use_net',
+        help=_(
+            """Set "Use Net Weight" to use only gross weight. Set "Use CAD Weight" to use CAD weight + Additional Weight as gross weight. Set "Use Normal Bom" to use NBOM Weight Computed + Additional weight as gross weight.""")
+    )
     weight_additional = fields.Float(_('Additional Weight'), digits=dp.get_precision('Stock Weight'), default=0)
     weight_cad = fields.Float(_('CAD Weight'), readonly=True, digits=dp.get_precision('Stock Weight'), default=0)
-    weight_nbom_computed = fields.Float(_('NBOM Weight Computed'), readonly=True, digits=dp.get_precision('Stock Weight'), default=0)
+    weight_n_bom_computed = fields.Float(_('NBOM Weight Computed'), readonly=True,
+                                         digits=dp.get_precision('Stock Weight'), default=0)
 
     @api.model
     def create(self, vals):
@@ -71,7 +74,7 @@ class PlmComponent(models.Model):
         if self.automatic_compute_selection == 'use_cad':
             self.weight = self.weight_cad + self.weight_additional
         elif self.automatic_compute_selection == 'use_normal_bom':
-            self.weight = self.weight_additional + self.weight_nbom_computed
+            self.weight = self.weight_additional + self.weight_n_bom_computed
 
     @api.onchange('weight_additional')
     def on_change_weight_additional(self):
@@ -79,79 +82,81 @@ class PlmComponent(models.Model):
             Compute weight due to additional weight change
         """
         if self.automatic_compute_selection == 'use_normal_bom':
-            self.weight = self.weight_nbom_computed + self.weight_additional
+            self.weight = self.weight_n_bom_computed + self.weight_additional
         elif self.automatic_compute_selection == 'use_cad':
             self.weight = self.weight_cad + self.weight_additional
 
     @api.multi
-    def computeBomWeight(self):
+    def compute_bom_weight(self):
         """
             - Compute first founded Normal Bom weight
             - Compute and set weight for all products and boms during computation
-        '''
-        for prodBrws in self:
-            bomObj = self.env['mrp.bom']
+        """
+        for prod_brws in self:
+            bom_obj = self.env['mrp.bom']
 
-            def recursionBom(productBrws):
-                productTmplId = productBrws.product_tmpl_id.id
-                if not productTmplId:
-                    logging.warning('No Product Template is set for product %s ' % (productBrws.id))
-                bomBrwsList = bomObj.search([('type', '=', 'normal'), ('product_tmpl_id', '=', productTmplId)])
-                isUserAdmin = self.isUserWeightAdmin()
-                if not bomBrwsList:
-                    self.commonWeightCompute(productBrws, isUserAdmin, productBrws.weight_cad)
+            def recursion_bom(product_brws):
+                product_tmpl_id = product_brws.product_tmpl_id.id
+                if not product_tmpl_id:
+                    logging.warning('No Product Template is set for product {} '.format(product_brws.id))
+                bom_brws_list = bom_obj.search([('type', '=', 'normal'), ('product_tmpl_id', '=', product_tmpl_id)])
+                is_user_admin = self.is_user_weight_admin()
+                if not bom_brws_list:
+                    self.common_weight_compute(product_brws, is_user_admin, product_brws.weight_cad)
                 else:
-                    for bomBrws in bomBrwsList:
-                        bomTotalWeight = 0
-                        for bomLineBrws in bomBrws.bom_line_ids:
-                            recursionBom(bomLineBrws.product_id)
-                            productWeight = bomLineBrws.product_id.weight
-                            lineAmount = productWeight * bomLineBrws.product_qty
-                            bomTotalWeight = bomTotalWeight + lineAmount
-                        productBrws.write({'weight_nbom_computed': bomTotalWeight})
-                        productBrws.weight_nbom_computed = bomTotalWeight
-                        if productBrws.state not in ['released', 'obsoleted'] or (productBrws.state in ['released', 'obsoleted'] and isUserAdmin):
-                            bomBrws.write({'weight_net': bomTotalWeight})
-                        self.commonWeightCompute(productBrws, isUserAdmin, productBrws.weight_nbom_computed)
+                    for bom_brws in bom_brws_list:
+                        bom_total_weight = 0
+                        for bom_line_brws in bom_brws.bom_line_ids:
+                            recursion_bom(bom_line_brws.product_id)
+                            product_weight = bom_line_brws.product_id.weight
+                            line_amount = product_weight * bom_line_brws.product_qty
+                            bom_total_weight = bom_total_weight + line_amount
+                        product_brws.write({'weight_n_bom_computed': bom_total_weight})
+                        product_brws.weight_n_bom_computed = bom_total_weight
+                        if product_brws.state not in ['released', 'obsoleted'] or (
+                                product_brws.state in ['released', 'obsoleted'] and is_user_admin):
+                            bom_brws.write({'weight_net': bom_total_weight})
+                        self.common_weight_compute(product_brws, is_user_admin, product_brws.weight_n_bom_computed)
                         break
 
-            recursionBom(prodBrws)
+            recursion_bom(prod_brws)
 
-    def commonWeightCompute(self, productBrws, isUserAdmin, toAdd):
+    def common_weight_compute(self, product_brws, is_user_admin, to_add):
         """
             Common compute and set weight in single product
-        def commonSet(productB):
-            if productB.automatic_compute_selection == 'use_cad':
-                commonWeight = productB.weight_cad + productB.weight_additional
-                productB.write({'weight': commonWeight})
-                productB.weight = commonWeight
-            elif productB.automatic_compute_selection == 'use_normal_bom':
-                common = toAdd + productB.weight_additional
-                productB.write({'weight': common})
-                productB.weight = common
-
-        if productBrws.state in ['released', 'obsoleted']:
-            if isUserAdmin:
-                commonSet(productBrws)
         """
 
-        else:
-            commonSet(productBrws)
+        def common_set(product_b):
+            if product_b.automatic_compute_selection == 'use_cad':
+                common_weight = product_b.weight_cad + product_b.weight_additional
+                product_b.write({'weight': common_weight})
+                product_b.weight = common_weight
+            elif product_b.automatic_compute_selection == 'use_normal_bom':
+                common = to_add + product_b.weight_additional
+                product_b.write({'weight': common})
+                product_b.weight = common
 
-    def isUserWeightAdmin(self):
+        if product_brws.state in ['released', 'obsoleted']:
+            if is_user_admin:
+                common_set(product_brws)
+        else:
+            common_set(product_brws)
+
+    def is_user_weight_admin(self):
         """
             Verify if logged user is a weight admin
-        groupBrws = self.env['res.groups'].search([('name', '=', 'PLM / Weight Admin')])    # Same name must be used in data record file
-        if groupBrws:
-            if self.env.user in groupBrws.users:
         """
+        group_brws = self.env['res.groups'].search(
+            [('name', '=', 'PLM / Weight Admin')])  # Same name must be used in data record file
+        if group_brws:
+            if self.env.user in group_brws.users:
                 return True
         return False
 
     @api.multi
-    def computeBomWeightAction(self):
+    def compute_bom_weight_action(self):
         """
             Function called form xml action to compute and set weight for all selected products and boms
-        for prodBrws in self:
-            prodBrws.computeBomWeight()
         """
+        for prod_brws in self:
+            prod_brws.compute_bom_weight()
