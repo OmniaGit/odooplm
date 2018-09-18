@@ -1,4 +1,3 @@
-#  -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OpenERP, Open Source Management Solution
@@ -75,7 +74,7 @@ def bom_sort(my_object):
     for l in my_object:
         res[str(index)] = l.itemnum
         index += 1
-    items = res.items()
+    items = list(res.items())
     items.sort(key=itemgetter(1))
     for res in items:
         bom_object.append(my_object[int(res[0])])
