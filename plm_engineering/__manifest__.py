@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution    
@@ -46,5 +45,3 @@ Allow to use engineering boms
     'application': False,
     'auto_install': False,
 }
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

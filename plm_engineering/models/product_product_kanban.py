@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -20,15 +19,17 @@
 #
 ##############################################################################
 
-'''
+"""
 Created on 30 Aug 2016
 
 @author: Daniel Smerghetto
-'''
+"""
 
-from openerp import models
-from openerp import api
-from openerp import _
+from odoo import (
+    models,
+    api,
+    _
+)
 
 
 class ProdProdKanbanExtension(models.Model):

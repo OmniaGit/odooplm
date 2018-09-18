@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -26,12 +25,12 @@ Created on 31 Aug 2016
 @author: Daniel Smerghetto
 '''
 
-from openerp import models
-from openerp import fields
-from openerp import api
-from openerp import _
-import logging
-import sys
+from odoo import (
+    models,
+    fields,
+    api,
+    _
+)
 
 
 class MrpBomExtension(models.Model):
