@@ -33,11 +33,10 @@ Allow to use engineering boms
 ==============================================
     """,
     'data': [
-            'views/plm_description.xml',
-            'views/mrp_bom.xml',
-            #'views/product_product_kanban.xml',
-            'views/menu.xml',
-            'views/product_product.xml',
+        'views/mrp_bom.xml',
+        # 'views/product_product_kanban.xml',
+        'views/menu.xml',
+        'views/product_product.xml',
     ],
     'demo': [],
     'test': [],
