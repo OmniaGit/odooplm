@@ -36,11 +36,11 @@ class ProjectExtension(models.Model):
         """
         for project in self:
             if project.plm_product_ids:
-                productOk = 0
+                product_ok = 0
                 for product in project.plm_product_ids:
                     if product.state in ['released']:
-                        productOk = productOk + 1
-                project.plm_completed = round(100.0 * productOk / len(project.plm_product_ids), 2)
+                        product_ok = product_ok + 1
+                project.plm_completed = round(100.0 * product_ok / len(project.plm_product_ids), 2)
             else:
                 project.plm_completed = 100
 
