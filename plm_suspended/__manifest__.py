@@ -19,7 +19,7 @@
 #
 ##############################################################################
 {
-    'name': 'PLM Spare',
+    'name': 'PLM Suspended State',
     'version': '1.1',
     'author': 'OmniaSolutions',
     'website': 'http://www.omniasolutions.eu',
