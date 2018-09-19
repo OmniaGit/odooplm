@@ -24,19 +24,15 @@ from datetime import datetime
 import os
 import json
 
-from odoo import (
-    api,
-    fields,
-    models,
-    osv,
-    SUPERUSER_ID,
-    _
-)
-from odoo.exceptions import (
-    AccessError,
-    UserError,
-    ValidationError
-)
+from odoo import models
+from odoo import fields
+from odoo import api
+from odoo import _
+from odoo.exceptions import ValidationError
+from odoo.exceptions import AccessError
+from odoo.exceptions import UserError
+from odoo import osv
+from odoo import SUPERUSER_ID
 import odoo.tools as tools
 
 _logger = logging.getLogger(__name__)
