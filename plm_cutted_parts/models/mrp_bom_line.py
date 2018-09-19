@@ -18,21 +18,18 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-'''
+"""
 Created on 25/mag/2016
 
 @author: mboscolo
-'''
-import logging
+"""
 
-from odoo import models, fields, _
+from odoo import models
+from odoo import fields
+from odoo import _
 
-_logger = logging.getLogger(__name__)
 
-
-class mrpBomLine_templateCuttedParts(models.Model):
+class MrpBomLineTemplateCuttedParts(models.Model):
     _inherit = 'mrp.bom.line'
-    x_leght = fields.Float(_("X Lenght"), default=0.0)
-    y_leght = fields.Float(_("Y Lenght"), default=0.0)
-
-mrpBomLine_templateCuttedParts()
+    x_length = fields.Float(_("X Length"), default=0.0)
+    y_length = fields.Float(_("Y Length"), default=0.0)
