@@ -19,18 +19,18 @@
 #
 ##############################################################################
 
-'''
+"""
 Created on 31 Aug 2016
 
 @author: Daniel Smerghetto
-'''
+"""
+import logging
 
 from odoo import models
 from odoo import api
 from odoo import osv
 from odoo import _
 from odoo.exceptions import UserError
-import logging
 
 
 class ProductProductExtension(models.Model):

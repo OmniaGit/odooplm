@@ -19,18 +19,16 @@
 #
 ##############################################################################
 
-'''
+"""
 Created on 31 Aug 2016
 
 @author: Daniel Smerghetto
-'''
+"""
 
-from odoo import (
-    models,
-    fields,
-    api,
-    _
-)
+from odoo import models
+from odoo import fields
+from odoo import api
+from odoo import _
 
 
 class MrpBomExtension(models.Model):

@@ -19,15 +19,15 @@
 #
 ##############################################################################
 
-'''
+"""
 Created on 30 Aug 2016
 
 @author: Daniel Smerghetto
-'''
-from openerp import models
-from openerp import fields
-from openerp import api
-from openerp import _
+"""
+from odoo import models
+from odoo import fields
+from odoo import api
+from odoo import _
 
 
 class MrpBomLineExtension(models.Model):
