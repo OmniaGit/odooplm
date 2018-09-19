@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -20,15 +19,16 @@
 #
 ##############################################################################
 
-'''
+"""
 Created on 9 Dec 2016
 
 @author: Daniel Smerghetto
-'''
+"""
 
+import logging
 from odoo import models
 from odoo import api
-import logging
+
 
 
 class ProductProductExtension(models.Model):
@@ -40,9 +40,8 @@ class ProductProductExtension(models.Model):
         engineering_code = vals.get('engineering_code', '')
         engineering_revision = vals.get('engineering_revision', 0)
         if (engineering_code and not vals.get('default_code')) or (engineering_code and engineering_revision > 0):
-            vals['default_code'] = '%s_%s' % (engineering_code, engineering_revision)
-            logging.info('Internal ref set value %s on engineering_code: %r' % (vals['default_code'], engineering_code))
+            vals['default_code'] = '{0}_{1}'.format(engineering_code, engineering_revision)
+            logging.info(
+                'Internal ref set value {0} on engineering_code: {1}'.format(vals['default_code'], engineering_code)
+            )
         return super(ProductProductExtension, self).create(vals)
-
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
