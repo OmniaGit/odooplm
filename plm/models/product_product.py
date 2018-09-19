@@ -48,7 +48,7 @@ USED_STATES = [
     ('undermodify', _('UnderModify')),
     ('obsoleted', _('Obsoleted'))
 ]
-USE_DICT_STATES = dict(USED_STATES)
+USE_DIC_STATES = dict(USED_STATES)
 
 
 def emptyStringIfFalse(value):
@@ -492,7 +492,7 @@ class PlmComponent(models.Model):
                 dic[key].product_qty = float(dic[key].product_qty) + float(datarow.product_qty)
             else:
                 dic[key] = datarow
-        retd = dic.values()
+        retd = list(dic.values())
         return retd
 
     @api.multi
@@ -681,7 +681,7 @@ class PlmComponent(models.Model):
                     defaults['engineering_writable'] = False
                     defaults['state'] = 'obsoleted'
                     old_revision.product_tmpl_id.write(defaults)
-                    old_revision.wf_message_post(body=_('Status moved to: %s.' % (USEDIC_STATES[defaults['state']])))
+                    old_revision.wf_message_post(body=_('Status moved to: %s.' % (USE_DIC_STATES[defaults['state']])))
             defaults['engineering_writable'] = False
             defaults['state'] = 'released'
             self.browse(product_ids)._action_ondocuments('release')
@@ -694,7 +694,7 @@ class PlmComponent(models.Model):
             self.browse(childrenProductToEmit).action_release()
             objId = prodTmplType.browse(product_tmpl_ids).write(defaults)
             if (objId):
-                self.browse(product_ids).wf_message_post(body=_('Status moved to: %s.' % (USEDIC_STATES[defaults['state']])))
+                self.browse(product_ids).wf_message_post(body=_('Status moved to: %s.' % (USE_DIC_STATES[defaults['state']])))
             return objId
         return False
 
@@ -758,7 +758,7 @@ class PlmComponent(models.Model):
             self.browse(product_product_ids).perform_action(action)
         objId = self.env['product.template'].browse(product_template_ids).write(defaults)
         if objId:
-            self.browse(allIDs).wf_message_post(body=_('Status moved to: %s.' % (USEDIC_STATES[defaults['state']])))
+            self.browse(allIDs).wf_message_post(body=_('Status moved to: %s.' % (USE_DIC_STATES[defaults['state']])))
         return objId
 
 #  ######################################################################################################################################33
@@ -862,9 +862,9 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         if values:
             values = values[0]
         if language and values:
-            toRead = filter(lambda x: type(x) in [str] and x, values.values())     # Where computed only string and not null string values (for performance improvement)
+            toRead = [x for x in list(values.values()) if type(x) in [str] and x]     # Where computed only string and not null string values (for performance improvement)
             toRead = list(set(toRead))                                                      # Remove duplicates
-            for fieldName, valueToTranslate in values.items():
+            for fieldName, valueToTranslate in list(values.items()):
                 if valueToTranslate not in toRead:
                     continue
                 translationObj = self.env['ir.translation']
@@ -919,7 +919,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                 oldProdVals = {'engineering_writable': False,
                                'state': 'undermodify'}
                 self.browse([oldObject.id]).sudo().write(oldProdVals)
-                oldObject.wf_message_post(body=_('Status moved to: %s.' % (USEDIC_STATES[oldProdVals['state']])))
+                oldObject.wf_message_post(body=_('Status moved to: %s.' % (USE_DIC_STATES[oldProdVals['state']])))
                 # store updated infos in "revision" object
                 defaults = {}
                 defaults['name'] = oldObject.name                 # copy function needs an explicit name value

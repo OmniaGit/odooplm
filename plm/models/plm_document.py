@@ -43,15 +43,15 @@ USED_STATES = [('draft', _('Draft')),
                ('released', _('Released')),
                ('undermodify', _('UnderModify')),
                ('obsoleted', _('Obsoleted'))]
-USEDIC_STATES = dict(USED_STATES)
+USE_DIC_STATES = dict(USED_STATES)
 
 PLM_NO_WRITE_STATE = ['confirmed', 'released', 'undermodify', 'obsoleted']
 
 
 def random_name():
     random.seed()
-    d = [random.choice(string.ascii_letters) for _x in xrange(20)]
-    return ("".join(d))
+    d = [random.choice(string.ascii_letters) for _x in range(20)]
+    return "".join(d)
 
 
 def create_directory(path):
@@ -334,7 +334,7 @@ class PlmDocument(models.Model):
                 break
         if binvalue is None:
             fileStream = self._data_get(name=None, arg=None)
-            binvalue = fileStream[fileStream.keys()[0]]
+            binvalue = fileStream[list(fileStream.keys())[0]]
 
         flag = flag or create_directory(filestore)
         filename = random_name()
@@ -613,7 +613,7 @@ class PlmDocument(models.Model):
                             'state': state
                             })
         if objId:
-            self.wf_message_post(body=_('Status moved to: %s.' % (USEDIC_STATES[state])))
+            self.wf_message_post(body=_('Status moved to: %s.' % (USE_DIC_STATES[state])))
         return objId
 
     @api.multi
@@ -662,7 +662,7 @@ class PlmDocument(models.Model):
             self.setCheckContextWrite(False)
             objId = self.write(defaults)
             if objId:
-                self.wf_message_post(body=_('Status moved to:%s.' % (USEDIC_STATES[defaults['state']])))
+                self.wf_message_post(body=_('Status moved to:%s.' % (USE_DIC_STATES[defaults['state']])))
             return objId
         return False
 
@@ -698,7 +698,7 @@ class PlmDocument(models.Model):
         return super(PlmDocument, self).create(vals)
 
     @api.model
-    def isPlmStateWritable(self):
+    def is_plm_state_writable(self):
         for customObject in self:
             if customObject.state in PLM_NO_WRITE_STATE:
                 return False
@@ -708,14 +708,14 @@ class PlmDocument(models.Model):
     def write(self, vals):
         check = self.env.context.get('check', True)
         if check:
-            if not self.isPlmStateWritable():
+            if not self.is_plm_state_writable():
                 raise UserError(_("The active state does not allow you to make save action"))
         self.writeCheckDatas(vals)
         return super(PlmDocument, self).write(vals)
 
     @api.multi
     def writeCheckDatas(self, vals):
-        if 'datas' in vals.keys() or 'datas_fname' in vals.keys():
+        if 'datas' in list(vals.keys()) or 'datas_fname' in list(vals.keys()):
             for docBrws in self:
                 if not docBrws._is_checkedout_for_me() and self.env.uid != SUPERUSER_ID:
                     raise UserError(_("You cannot edit a file not in check-out by you! User ID %s" % (self.env.uid)))
@@ -1301,7 +1301,7 @@ class PlmDocument(models.Model):
         # Save the document
         logging.info("Savind Document")
         alreadyEvaluated = []
-        for documentAttribute in documentAttributes.values():
+        for documentAttribute in list(documentAttributes.values()):
             try:
                 documentAttribute['TO_UPDATE'] = False
                 skipCheckOut = documentAttribute.get('SKIP_CHECKOUT', False)
@@ -1337,7 +1337,7 @@ class PlmDocument(models.Model):
         logging.info("Saving Product")
         productsEvaluated = []
         productTemplate = self.env['product.product']
-        for refId, productAttribute in productAttributes.items():
+        for refId, productAttribute in list(productAttributes.items()):
             try:
                 linkedDocuments = set()
                 for refDocId in productDocumentRelations.get(refId, []):
@@ -1371,7 +1371,7 @@ class PlmDocument(models.Model):
         logging.info("Saving Document Relations")
         documentRelationTemplate = self.env['plm.document.relation']
         createdDocRels = []
-        for parentId, childrenRelations in documentRelations.items():
+        for parentId, childrenRelations in list(documentRelations.items()):
             try:
                 trueParentId = documentAttributes[parentId].get('id', 0)
                 for objBrw in documentRelationTemplate.search([('parent_id', '=', trueParentId)]):
@@ -1407,7 +1407,7 @@ class PlmDocument(models.Model):
             bomType = 'ebom'
         logging.info("Saving Product Relations")
         mrpBomTemplate = self.env['mrp.bom']
-        for parentId, childRelations in productRelations.items():
+        for parentId, childRelations in list(productRelations.items()):
             try:
                 trueParentId = productAttributes[parentId].get('id')
                 brwProduct = productTemplate.search([('id', '=', trueParentId)])
