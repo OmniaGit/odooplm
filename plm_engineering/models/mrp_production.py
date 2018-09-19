@@ -54,7 +54,3 @@ class MrpProductionExtension(models.Model):
                     'product_uos': False
                 }}
         return result
-
-MrpProductionExtension()
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

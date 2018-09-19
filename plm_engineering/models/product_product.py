@@ -253,5 +253,3 @@ class ProductTemporaryNormalBom(osv.osv.osv_memory):
                         'target': 'new',
                     }
         return {}
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
