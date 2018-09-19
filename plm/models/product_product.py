@@ -799,10 +799,10 @@ class PlmComponent(models.Model):
             return super(PlmComponent, self).read(fields=fields, load=load)
         except Exception as ex:
             if isinstance(ex, AccessError) and 'sale.report' in ex.name:
-                return '''
+                return """
 Your user does not have enough permissions to make this operation. Error: \n
 %r\n
-Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fix module to solve the problem.''' % (ex)
+Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fix module to solve the problem.""" % (ex)
             raise ex
 
     @api.multi
@@ -843,14 +843,14 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
 
     @api.model
     def translateForClient(self, values=[], forcedLang=''):
-        '''
+        """
             Get values attribute in this format:
             values = [{'field1':value1,'field2':value2,...}]     only one element in the list!!!
             and return computed values due to language
             Get also forcedLang attribute in this format:
             forcedLang = 'en_US'
             if is not set it takes language from user
-        '''
+        """
         language = forcedLang
         if not forcedLang:
             resDict = self.env['res.users'].read(['lang'])
@@ -873,10 +873,10 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
 
     @api.multi
     def action_rev_docs(self):
-        '''
+        """
             This function is called by the button on component view, section LinkedDocuments
             Clicking that button all documents related to all revisions of this component are opened in a tree view
-        '''
+        """
         docIds = []
         for compBrws in self:
             engineering_code = compBrws.engineering_code
@@ -933,9 +933,9 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
 
     @api.model
     def wf_message_post_client(self, args):
-        '''
+        """
             args = [objId, objMessage]
-        '''
+        """
         objId, objMessage = args
         self.browse(objId).wf_message_post(objMessage)
         return True
@@ -1015,7 +1015,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
 
     @api.model
     def getCloneRevisionStructure(self, values=[]):
-        '''
+        """
             out = {
                 'root_props': {},
                 'documents': [],
@@ -1026,7 +1026,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                     },
                 ]
                 }
-        '''
+        """
         def computeBomAllLevels(prodBrws):
             return prodBrws._getChildrenBomWithDocuments(prodBrws, level=1)
 

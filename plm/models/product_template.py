@@ -19,11 +19,11 @@
 #
 ##############################################################################
 
-'''
+"""
 Created on 25 Aug 2016
 
 @author: Daniel Smerghetto
-'''
+"""
 import odoo.addons.decimal_precision as dp
 from odoo import models
 from odoo import fields

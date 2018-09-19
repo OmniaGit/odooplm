@@ -19,11 +19,11 @@
 #
 ##############################################################################
 
-'''
+"""
 Created on 25 Aug 2016
 
 @author: Daniel Smerghetto
-'''
+"""
 from . import plm_finishing
 from . import plm_material
 from . import product_template

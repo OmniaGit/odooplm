@@ -18,11 +18,11 @@
 #
 ##############################################################################
 
-'''
+"""
 Created on Apr 14, 2016
 
 @author: Daniel Smerghetto
-'''
+"""
 
 from odoo import api
 from odoo import models

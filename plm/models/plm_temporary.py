@@ -19,11 +19,11 @@
 #
 ##############################################################################
 
-'''
+"""
 Created on 12 Dec 2016
 
 @author: Daniel Smerghetto
-'''
+"""
 from odoo import fields
 from odoo import osv
 from odoo import _

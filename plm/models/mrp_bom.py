@@ -154,9 +154,9 @@ class MrpBomExtension(models.Model):
         return bomBrwsList
 
     def getListIdsFromStructure(self, structure):
-        '''
+        """
             Convert from [id1,[[id2,[]]]] to [id1,id2]
-        '''
+        """
         outList = []
         if isinstance(structure, (list, tuple)) and len(structure) == 2:
             if structure[0]:
