@@ -7,6 +7,9 @@
         <field name="type">form</field>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='weight']" position="replace">
+                <field name="weight" invisible="1"/>
+            </xpath>
+            <xpath expr="//group[@name='technical_infos_group']" position="after">
                 <group name="weight" string="Weight" colspan="4" col="4">
                     <field name="automatic_compute_selection" widget='radio'/>
                     <field name="weight" attrs="{'readonly':[('state', 'in', ['released', 'obsoleted'])]}"/>
@@ -27,6 +30,7 @@
         <field name="model_id" ref="model_product_product"/>
         <field name="binding_model_id" ref="product.model_product_product"/>
         <field name="state">code</field>
-        <field name="code">env['product.product'].browse(env.context['active_ids']).force_compute_bom_weight_action()</field>
+        <field name="code">env['product.product'].browse(env.context['active_ids']).force_compute_bom_weight_action()
+        </field>
     </record>
 </odoo>
