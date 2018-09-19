@@ -7,12 +7,10 @@
         <field name="inherit_id" ref="plm.plm_bom_form_view"/>
         <field name="type">form</field>
         <field name="arch" type="xml">
-            <data>
-                <xpath expr="//field[@name='bom_line_ids']/tree/field[@name='type']" position="after">
-                    <field name="x_length"/>
-                    <field name="y_length"/>
-                </xpath>
-            </data>
+            <xpath expr="//field[@name='bom_line_ids']/tree/field[@name='type']" position="after">
+                <field name="x_length"/>
+                <field name="y_length"/>
+            </xpath>
         </field>
     </record>
 </odoo>
