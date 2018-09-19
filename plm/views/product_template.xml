@@ -9,7 +9,7 @@
             <field name="priority" eval="3"/>
             <field name="arch" type="xml">
                 <div name="button_box" position="inside">
-                    <button class="oe_stat_button" name="engineering_products_open" type="object" string="Engineering Infos"
+                    <button class="oe_stat_button" name="engineering_products_open" type="object" string="Engineering Information"
                         icon="fa-gears"> 
                     </button>
                 </div>
