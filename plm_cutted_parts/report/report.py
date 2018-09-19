@@ -64,7 +64,7 @@ class ReportDocumentPdf(models.AbstractModel):
                 for bom_id in l.product_id.bom_ids:
                     if bom_id.type == l.bom_id.type:
                         _get_rec(bom_id, level + 1, l.product_qty)
-            return result.values()
+            return list(result.values())
         children = _get_rec(my_object, level + 1)
         return children
 
