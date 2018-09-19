@@ -77,7 +77,7 @@ def get_bom_report(myObject, recursion=False, flat=False, leaf=False, level=1, s
             if myNewBom:
                 leafComputeRecursion(myNewBom, prodQty)
             else:
-                if prodTmlId not in leafRes.keys():
+                if prodTmlId not in list(leafRes.keys()):
                     resDict = getOutLineInfos(l, productTmplObj, prodQty)
                     resDict['engineering_code'] = productTmplObj.engineering_code
                     resDict['level'] = ''
@@ -87,11 +87,11 @@ def get_bom_report(myObject, recursion=False, flat=False, leaf=False, level=1, s
     if leaf:
         leafRes = {}
         leafComputeRecursion(myObject)
-        return leafRes.values()
+        return list(leafRes.values())
 
     def summarize_level(bomObj, recursion=False, flat=False, level=1, summarize=False, parentQty=1):
         def updateQty(tmplId, qtyToAdd):
-            for localIndex, valsList in orderDict.items():
+            for localIndex, valsList in list(orderDict.items()):
                 count = 0
                 for res in valsList:
                     tmplBrws = res.get('prodTmplBrws', False)
@@ -108,7 +108,7 @@ def get_bom_report(myObject, recursion=False, flat=False, leaf=False, level=1, s
         levelListed = []
         for l in bomObj.bom_line_ids:
             index = l.itemnum
-            if index not in orderDict.keys():
+            if index not in list(orderDict.keys()):
                 orderDict[index] = []
             children = {}
             productTmplObj = l.product_id.product_tmpl_id
@@ -168,7 +168,7 @@ def BomSort(myObject):
         for l in myObject:
             res[str(index)] = l.product_id.product_tmpl_id.name
             index += 1
-    items = res.items()
+    items = list(res.items())
     items.sort(key=itemgetter(1))
     for res in items:
         bomobject.append(myObject[int(res[0])])
