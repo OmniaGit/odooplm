@@ -30,7 +30,6 @@
         <field name="model_id" ref="model_product_product"/>
         <field name="binding_model_id" ref="product.model_product_product"/>
         <field name="state">code</field>
-        <field name="code">env['product.product'].browse(env.context['active_ids']).force_compute_bom_weight_action()
-        </field>
+        <field name="code">env['product.product'].browse(env.context['active_ids']).compute_bom_weight_action()</field>
     </record>
 </odoo>
