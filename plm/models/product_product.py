@@ -492,7 +492,7 @@ class PlmComponent(models.Model):
         return retd
 
     @api.multi
-    def _get_recursive_parts(self, excludeStatuses, includeStatuses):
+    def _get_recursive_parts(self, exclude_statuses, include_statuses):
         """
            Get all ids related to current one as children
         """
@@ -503,10 +503,10 @@ class PlmComponent(models.Model):
         tobeReleasedIDs.extend(self.ids)
         for prodBrws in self:
             for childProdBrws in self.browse(self._getChildrenBom(prodBrws, 1)):
-                if (childProdBrws.state not in excludeStatuses) and (childProdBrws.state not in includeStatuses):
+                if (childProdBrws.state not in exclude_statuses) and (childProdBrws.state not in include_statuses):
                     errors.append(_("Product code: %r revision %r status %r") % (childProdBrws.engineering_code, childProdBrws.engineering_revision, childProdBrws.state))
                     continue
-                if childProdBrws.state in includeStatuses:
+                if childProdBrws.state in include_statuses:
                     if childProdBrws.id not in tobeReleasedIDs:
                         tobeReleasedIDs.append(childProdBrws.id)
         msg = ''
@@ -597,8 +597,8 @@ class PlmComponent(models.Model):
             Writing messages to follower, on multiple objects
         """
         if not (body == ''):
-            for compObj in self:
-                compObj.sudo().message_post(body=_(body))
+            for comp_obj in self:
+                comp_obj.sudo().message_post(body=_(body))
 
     @api.multi
     def unlink(self):
@@ -621,16 +621,16 @@ class PlmComponent(models.Model):
         """
             release the object
         """
-        for compObj in self:
+        for comp_obj in self:
             defaults = {}
             status = 'draft'
             action = 'draft'
-            docaction = 'draft'
+            doc_action = 'draft'
             defaults['engineering_writable'] = True
             defaults['state'] = status
-            excludeStatuses = ['draft', 'released', 'undermodify', 'obsoleted']
-            includeStatuses = ['confirmed', 'transmitted']
-            compObj.commonWFAction(status, action, docaction, defaults, excludeStatuses, includeStatuses)
+            exclude_statuses = ['draft', 'released', 'undermodify', 'obsoleted']
+            include_statuses = ['confirmed']
+            comp_obj.commonWFAction(status, action, doc_action, defaults, exclude_statuses, include_statuses)
         return True
 
     @api.multi
@@ -638,16 +638,16 @@ class PlmComponent(models.Model):
         """
             action to be executed for Draft state
         """
-        for compObj in self:
+        for comp_obj in self:
             defaults = {}
             status = 'confirmed'
             action = 'confirm'
-            docaction = 'confirm'
+            doc_action = 'confirm'
             defaults['engineering_writable'] = False
             defaults['state'] = status
-            excludeStatuses = ['confirmed', 'transmitted', 'released', 'undermodify', 'obsoleted']
-            includeStatuses = ['draft']
-            compObj.commonWFAction(status, action, docaction, defaults, excludeStatuses, includeStatuses)
+            exclude_statuses = ['confirmed', 'released', 'undermodify', 'obsoleted']
+            include_statuses = ['draft']
+            comp_obj.commonWFAction(status, action, doc_action, defaults, exclude_statuses, include_statuses)
         return True
 
     @api.model
@@ -660,14 +660,14 @@ class PlmComponent(models.Model):
         """
            action to be executed for Released state
         """
-        for compObj in self:
-            childrenProductToEmit = []
+        for comp_obj in self:
+            children_product_to_emit = []
             product_tmpl_ids = []
             defaults = {}
             prodTmplType = self.env['product.template']
-            excludeStatuses = ['released', 'undermodify', 'obsoleted']
-            includeStatuses = ['confirmed']
-            errors, product_ids = compObj._get_recursive_parts(excludeStatuses, includeStatuses)
+            exclude_statuses = ['released', 'undermodify', 'obsoleted']
+            include_statuses = ['confirmed']
+            errors, product_ids = comp_obj._get_recursive_parts(exclude_statuses, include_statuses)
             if len(product_ids) < 1 or len(errors) > 0:
                 raise UserError(errors)
             allProdObjs = self.browse(product_ids)
@@ -685,9 +685,9 @@ class PlmComponent(models.Model):
                 if not currentProductId.release_date:
                     currentProductId.release_date = datetime.now()
                 if not(currentProductId.id in self.ids):
-                    childrenProductToEmit.append(currentProductId.id)
+                    children_product_to_emit.append(currentProductId.id)
                 product_tmpl_ids.append(currentProductId.product_tmpl_id.id)
-            self.browse(childrenProductToEmit).action_release()
+            self.browse(children_product_to_emit).action_release()
             objId = prodTmplType.browse(product_tmpl_ids).write(defaults)
             if (objId):
                 self.browse(product_ids).wf_message_post(body=_('Status moved to: %s.' % (USE_DIC_STATES[defaults['state']])))
@@ -699,16 +699,16 @@ class PlmComponent(models.Model):
         """
             obsolete the object
         """
-        for compObj in self:
+        for comp_obj in self:
             defaults = {}
             status = 'obsoleted'
             action = 'obsolete'
-            docaction = 'obsolete'
+            doc_action = 'obsolete'
             defaults['engineering_writable'] = False
             defaults['state'] = status
-            excludeStatuses = ['draft', 'confirmed', 'transmitted', 'undermodify', 'obsoleted']
-            includeStatuses = ['released']
-            compObj.commonWFAction(status, action, docaction, defaults, excludeStatuses, includeStatuses)
+            exclude_statuses = ['draft', 'confirmed', 'undermodify', 'obsoleted']
+            include_statuses = ['released']
+            comp_obj.commonWFAction(status, action, doc_action, defaults, exclude_statuses, include_statuses)
         return True
 
     @api.multi
@@ -716,16 +716,16 @@ class PlmComponent(models.Model):
         """
             reactivate the object
         """
-        for compObj in self:
+        for comp_obj in self:
             defaults = {}
             status = 'released'
             action = ''
-            docaction = 'release'
+            doc_action = 'release'
             defaults['engineering_writable'] = True
             defaults['state'] = status
-            excludeStatuses = ['draft', 'confirmed', 'transmitted', 'released', 'undermodify', 'obsoleted']
-            includeStatuses = ['obsoleted']
-            compObj.commonWFAction(status, action, docaction, defaults, excludeStatuses, includeStatuses)
+            exclude_statuses = ['draft', 'confirmed', 'released', 'undermodify', 'obsoleted']
+            include_statuses = ['obsoleted']
+            comp_obj.commonWFAction(status, action, doc_action, defaults, exclude_statuses, include_statuses)
         return True
 
     def perform_action(self, action):
@@ -738,14 +738,14 @@ class PlmComponent(models.Model):
         return toCall()
 
     @api.multi
-    def commonWFAction(self, status, action, docaction, defaults=[], excludeStatuses=[], includeStatuses=[]):
+    def commonWFAction(self, status, action, doc_action, defaults=[], exclude_statuses=[], include_statuses=[]):
         product_product_ids = []
         product_template_ids = []
-        userErrors, allIDs = self._get_recursive_parts(excludeStatuses, includeStatuses)
+        userErrors, allIDs = self._get_recursive_parts(exclude_statuses, include_statuses)
         if userErrors:
             raise UserError(userErrors)
         allIdsBrwsList = self.browse(allIDs)
-        allIdsBrwsList._action_ondocuments(docaction)
+        allIdsBrwsList._action_ondocuments(doc_action)
         for currId in allIdsBrwsList:
             if not(currId.id in self.ids):
                 product_product_ids.append(currId.id)
