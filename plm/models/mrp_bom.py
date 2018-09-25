@@ -670,6 +670,3 @@ class MrpBomExtension(models.Model):
                     'domain': [('id', 'in', bomLineIds)],
                     'context': {"group_by": ['bom_id']},
                     }
-
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

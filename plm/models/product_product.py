@@ -1,4 +1,4 @@
-##############################################################
+##############################################################################
 #
 #    OmniaSolutions, Your own solutions
 #    Copyright (C) 2010 OmniaSolutions (<http://omniasolutions.eu>). All Rights Reserved
