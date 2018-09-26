@@ -34,6 +34,8 @@ from odoo import models
 from odoo import fields
 from odoo import api
 from odoo import _
+from collections import defaultdict
+import itertools
 import logging
 _logger = logging.getLogger(__name__)
 
@@ -1733,4 +1735,57 @@ class PlmDocument(models.Model):
             outDict[file_path] = outLocalDict
         return outDict
 
+    @api.model
+    def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
+        # add res_field=False in domain if not present; the arg[0] trick below
+        # works for domain items and '&'/'|'/'!' operators too
+        if not any(arg[0] in ('id', 'res_field') for arg in args):
+            args.insert(0, ('res_field', '=', False))
+
+        ids = super(models.Model, self)._search(args, offset=offset, limit=limit, order=order,
+                                                count=False, access_rights_uid=access_rights_uid)
+
+        if self._uid == SUPERUSER_ID:
+            # rules do not apply for the superuser
+            return len(ids) if count else ids
+
+        if not ids:
+            return 0 if count else []
+
+        # Work with a set, as list.remove() is prohibitive for large lists of documents
+        # (takes 20+ seconds on a db with 100k docs during search_count()!)
+        orig_ids = ids
+        ids = set(ids)
+
+        # For attachments, the permissions of the document they are attached to
+        # apply, so we must remove attachments for which the user cannot access
+        # the linked document.
+        # Use pure SQL rather than read() as it is about 50% faster for large dbs (100k+ docs),
+        # and the permissions are checked in super() and below anyway.
+        model_attachments = defaultdict(lambda: defaultdict(set))   # {res_model: {res_id: set(ids)}}
+        self._cr.execute("""SELECT id, res_model, res_id, public FROM plm_document WHERE id IN %s""", [tuple(ids)])
+        for row in self._cr.dictfetchall():
+            if not row['res_model'] or row['public']:
+                continue
+            # model_attachments = {res_model: {res_id: set(ids)}}
+            model_attachments[row['res_model']][row['res_id']].add(row['id'])
+
+        # To avoid multiple queries for each attachment found, checks are
+        # performed in batch as much as possible.
+        for res_model, targets in model_attachments.items():
+            if res_model not in self.env:
+                continue
+            if not self.env[res_model].check_access_rights('read', False):
+                # remove all corresponding attachment ids
+                ids.difference_update(itertools.chain(*targets.values()))
+                continue
+            # filter ids according to what access rules permit
+            target_ids = list(targets)
+            allowed = self.env[res_model].with_context(active_test=False).search([('id', 'in', target_ids)])
+            for res_id in set(target_ids).difference(allowed.ids):
+                ids.difference_update(targets[res_id])
+
+        # sort result according to the original sort ordering
+        result = [id for id in orig_ids if id in ids]
+        return len(result) if count else list(result)
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
