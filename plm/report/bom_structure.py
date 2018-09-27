@@ -1,4 +1,3 @@
-## -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OpenERP, Open Source Management Solution
@@ -19,11 +18,11 @@
 #
 ##############################################################################
 
-'''
+"""
 Created on Apr 14, 2016
 
 @author: Daniel Smerghetto
-'''
+"""
 
 from odoo import api
 from odoo import models
@@ -40,7 +39,6 @@ def _translate(value):
 
 
 def get_bom_report(myObject, recursion=False, flat=False, leaf=False, level=1, summarize=False):
-
     def getBom(bomLineObj):
         newBom = None
         for bomBws in bomLineObj.related_bom_ids:
@@ -49,23 +47,24 @@ def get_bom_report(myObject, recursion=False, flat=False, leaf=False, level=1, s
                 break
         return newBom
 
-    def getOutLineInfos(bomLineBrws, productTmplBrws, prodQty):
-        res = {}
-        res['row_bom_line'] = bomLineBrws
-        res['name'] = productTmplBrws.engineering_code
-        res['item'] = bomLineBrws.itemnum
-        res['pname'] = productTmplBrws.engineering_code
-        res['pdesc'] = _(productTmplBrws.name)
-        res['pcode'] = bomLineBrws.product_id.default_code
-        res['previ'] = productTmplBrws.engineering_revision
-        res['pqty'] = prodQty
-        res['uname'] = bomLineBrws.product_uom_id.name
-        res['pweight'] = productTmplBrws.weight
-        res['code'] = bomLineBrws.product_id.default_code
-        res['level'] = level
-        res['prodBrws'] = bomLineBrws.product_id
-        res['prodTmplBrws'] = productTmplBrws
-        res['lineBrws'] = bomLineBrws
+    def get_out_line_infos(bomLineBrws, productTmplBrws, prodQty):
+        res = {
+            'row_bom_line': bomLineBrws,
+            'name': productTmplBrws.engineering_code,
+            'item': bomLineBrws.itemnum,
+            'pname': productTmplBrws.engineering_code,
+            'pdesc': _(productTmplBrws.name),
+            'pcode': bomLineBrws.product_id.default_code,
+            'previ': productTmplBrws.engineering_revision,
+            'pqty': prodQty,
+            'uname': bomLineBrws.product_uom_id.name,
+            'pweight': productTmplBrws.weight,
+            'code': bomLineBrws.product_id.default_code,
+            'level': level,
+            'prodBrws': bomLineBrws.product_id,
+            'prodTmplBrws': productTmplBrws,
+            'lineBrws': bomLineBrws
+        }
         return res
 
     def leafComputeRecursion(bomObj, parentQty=1):
@@ -78,21 +77,22 @@ def get_bom_report(myObject, recursion=False, flat=False, leaf=False, level=1, s
             if myNewBom:
                 leafComputeRecursion(myNewBom, prodQty)
             else:
-                if prodTmlId not in leafRes.keys():
-                    resDict = getOutLineInfos(l, productTmplObj, prodQty)
+                if prodTmlId not in list(leafRes.keys()):
+                    resDict = get_out_line_infos(l, productTmplObj, prodQty)
                     resDict['engineering_code'] = productTmplObj.engineering_code
                     resDict['level'] = ''
                     leafRes[prodTmlId] = resDict
                 else:
                     leafRes[prodTmlId]['pqty'] = leafRes[prodTmlId]['pqty'] + prodQty
+
     if leaf:
         leafRes = {}
         leafComputeRecursion(myObject)
-        return leafRes.values()
+        return list(leafRes.values())
 
     def summarize_level(bomObj, recursion=False, flat=False, level=1, summarize=False, parentQty=1):
         def updateQty(tmplId, qtyToAdd):
-            for localIndex, valsList in orderDict.items():
+            for localIndex, valsList in list(orderDict.items()):
                 count = 0
                 for res in valsList:
                     tmplBrws = res.get('prodTmplBrws', False)
@@ -109,7 +109,7 @@ def get_bom_report(myObject, recursion=False, flat=False, leaf=False, level=1, s
         levelListed = []
         for l in bomObj.bom_line_ids:
             index = l.itemnum
-            if index not in orderDict.keys():
+            if index not in list(orderDict.keys()):
                 orderDict[index] = []
             children = {}
             productTmplObj = l.product_id.product_tmpl_id
@@ -117,14 +117,16 @@ def get_bom_report(myObject, recursion=False, flat=False, leaf=False, level=1, s
             if recursion or flat:
                 myNewBom = getBom(l)
                 if myNewBom:
-                    children = summarize_level(myNewBom, recursion, flat, level + 1, summarize, l.product_qty * parentQty)
+                    children = summarize_level(myNewBom, recursion, flat, level + 1, summarize,
+                                               l.product_qty * parentQty)
             if prodTmlId in levelListed and summarize:
                 qty = l.product_qty
                 updateQty(prodTmlId, qty)
             else:
                 prodQty = l.product_qty
-                res = getOutLineInfos(l, productTmplObj, prodQty)
-                res['engineering_code'] = (bomObj.env['ir.config_parameter'].get_param('REPORT_INDENTATION_KEY') or '') * level + ' ' + (productTmplObj.engineering_code or '')
+                res = get_out_line_infos(l, productTmplObj, prodQty)
+                res['engineering_code'] = (bomObj.env['ir.config_parameter'].get_param(
+                    'REPORT_INDENTATION_KEY') or '') * level + ' ' + (productTmplObj.engineering_code or '')
                 res['children'] = children
                 res['level'] = level
                 levelListed.append(prodTmlId)
@@ -169,7 +171,7 @@ def BomSort(myObject):
         for l in myObject:
             res[str(index)] = l.product_id.product_tmpl_id.name
             index += 1
-    items = res.items()
+    items = list(res.items())
     items.sort(key=itemgetter(1))
     for res in items:
         bomobject.append(myObject[int(res[0])])

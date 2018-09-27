@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -20,19 +19,19 @@
 #
 ##############################################################################
 
-'''
+"""
 Created on 25 Aug 2016
 
 @author: Daniel Smerghetto
-'''
+"""
+import logging
+import sys
 
 import odoo.addons.decimal_precision as dp
 from odoo import models
 from odoo import fields
 from odoo import api
 from odoo import _
-import logging
-import sys
 
 
 class MrpBomExtension(models.Model):
@@ -155,9 +154,9 @@ class MrpBomExtension(models.Model):
         return bomBrwsList
 
     def getListIdsFromStructure(self, structure):
-        '''
+        """
             Convert from [id1,[[id2,[]]]] to [id1,id2]
-        '''
+        """
         outList = []
         if isinstance(structure, (list, tuple)) and len(structure) == 2:
             if structure[0]:
@@ -175,7 +174,7 @@ class MrpBomExtension(models.Model):
         compType = self.env['product.product']
         tmpDatas = compType.browse(tmpids).read()
         for tmpData in tmpDatas:
-            for keyData in tmpData.keys():
+            for keyData in list(tmpData.keys()):
                 if tmpData[keyData] is None:
                     del tmpData[keyData]
             prtDatas[str(tmpData['id'])] = tmpData
@@ -188,14 +187,14 @@ class MrpBomExtension(models.Model):
         tmpids = self.getListIdsFromStructure(relDatas)
         if len(tmpids) < 1:
             return prtDatas
-        for keyData in prtDatas.keys():
+        for keyData in list(prtDatas.keys()):
             tmpData = prtDatas[keyData]
             if len(tmpData['bom_ids']) > 0:
                 relids[keyData] = tmpData['bom_ids'][0]
 
         if len(relids) < 1:
             return relationDatas
-        for keyData in relids.keys():
+        for keyData in list(relids.keys()):
             relationDatas[keyData] = self.browse(relids[keyData]).read()[0]
         return relationDatas
 
@@ -556,7 +555,7 @@ class MrpBomExtension(models.Model):
                 raise AttributeError(_("saveChild :  unable to create a relation for part (%s) with source (%d) : %s." % (name, sourceID, str(sys.exc_info()))))
 
         def cleanEmptyBoms():
-            for _bomId, bomBrws in evaluatedBOMs.items():
+            for _bomId, bomBrws in list(evaluatedBOMs.items()):
                 if not bomBrws.bom_line_ids:
                     bomBrws.unlink()
             
@@ -671,6 +670,3 @@ class MrpBomExtension(models.Model):
                     'domain': [('id', 'in', bomLineIds)],
                     'context': {"group_by": ['bom_id']},
                     }
-
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -37,7 +37,7 @@ def getDocumentStream(docRepository, objDoc):
         else:
             content = file(os.path.join(docRepository, objDoc.store_fname), 'rb').read()
     except Exception as ex:
-        logging.error("getFileStream : Exception (%s)reading  stream on file : %s." % (unicode(ex), objDoc.datas_fname))
+        logging.error("getFileStream : Exception (%s)reading  stream on file : %s." % (str(ex), objDoc.datas_fname))
     return content
 
 
