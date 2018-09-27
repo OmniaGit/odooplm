@@ -6,7 +6,7 @@
             <script type="text/javascript" src="/plm/static/src/js/plm_exploded_view.js"/>
         </xpath>
     </template>
-    
+
     <template id="assets_backend_plm" name="account assets" inherit_id="web.assets_backend">
         <xpath expr="." position="inside">
         	<!--  Rimosso e da verificare
@@ -21,4 +21,3 @@
         </xpath>
     </template>
 </odoo>
-

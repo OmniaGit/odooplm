@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -34,9 +33,11 @@ from odoo import models
 from odoo import fields
 from odoo import api
 from odoo import _
+from collections import defaultdict
+import itertools
 import logging
-_logger = logging.getLogger(__name__)
 
+_logger = logging.getLogger(__name__)
 
 # To be adequated to plm.component class states
 USED_STATES = [('draft', _('Draft')),
@@ -44,15 +45,15 @@ USED_STATES = [('draft', _('Draft')),
                ('released', _('Released')),
                ('undermodify', _('UnderModify')),
                ('obsoleted', _('Obsoleted'))]
-USEDIC_STATES = dict(USED_STATES)
+USE_DIC_STATES = dict(USED_STATES)
 
 PLM_NO_WRITE_STATE = ['confirmed', 'released', 'undermodify', 'obsoleted']
 
 
 def random_name():
     random.seed()
-    d = [random.choice(string.ascii_letters) for _x in xrange(20)]
-    return ("".join(d))
+    d = [random.choice(string.ascii_letters) for _x in range(20)]
+    return "".join(d)
 
 
 def create_directory(path):
@@ -99,7 +100,7 @@ class PlmDocument(models.Model):
         result = []
         for objDoc in self.browse(resIds):
             docIds = self.search([('name', '=', objDoc.name)], order='revisionid').ids
-            docIds.sort()   # Ids are not surely ordered, but revision are always in creation order.
+            docIds.sort()  # Ids are not surely ordered, but revision are always in creation order.
             if docIds:
                 result.append(docIds[len(docIds) - 1])
             else:
@@ -127,28 +128,33 @@ class PlmDocument(models.Model):
                 timeSaved = time.mktime(timeDoc.timetuple())
                 try:
                     isCheckedOutToMe = objDoc._is_checkedout_for_me()
-                    if not(objDoc.datas_fname in listfiles):
+                    if not (objDoc.datas_fname in listfiles):
                         if (not objDoc.store_fname) and (objDoc.db_datas):
                             value = objDoc.db_datas
                         else:
                             value = file(os.path.join(self._get_filestore(), objDoc.store_fname), 'rb').read()
-                        result.append((objDoc.id, objDoc.datas_fname, base64.b64encode(value), isCheckedOutToMe, timeDoc))
+                        result.append(
+                            (objDoc.id, objDoc.datas_fname, base64.b64encode(value), isCheckedOutToMe, timeDoc))
                     else:
                         if forceFlag:
                             isNewer = True
                         else:
-                            timefile = time.mktime(datetime.strptime(str(datefiles[listfiles.index(objDoc.datas_fname)]), '%Y-%m-%d %H:%M:%S').timetuple())
+                            timefile = time.mktime(
+                                datetime.strptime(str(datefiles[listfiles.index(objDoc.datas_fname)]),
+                                                  '%Y-%m-%d %H:%M:%S').timetuple())
                             isNewer = (timeSaved - timefile) > 5
-                        if (isNewer and not(isCheckedOutToMe)):
+                        if (isNewer and not (isCheckedOutToMe)):
                             if (not objDoc.store_fname) and (objDoc.db_datas):
                                 value = objDoc.db_datas
                             else:
                                 value = file(os.path.join(self._get_filestore(), objDoc.store_fname), 'rb').read()
-                            result.append((objDoc.id, objDoc.datas_fname, base64.b64encode(value), isCheckedOutToMe, timeDoc))
+                            result.append(
+                                (objDoc.id, objDoc.datas_fname, base64.b64encode(value), isCheckedOutToMe, timeDoc))
                         else:
                             result.append((objDoc.id, objDoc.datas_fname, False, isCheckedOutToMe, timeDoc))
                 except Exception as ex:
-                    logging.error("_data_get_files : Unable to access to document (" + str(objDoc.name) + "). Error :" + str(ex))
+                    logging.error(
+                        "_data_get_files : Unable to access to document (" + str(objDoc.name) + "). Error :" + str(ex))
                     result.append((objDoc.id, objDoc.datas_fname, False, True, self.getServerTime()))
         return result
 
@@ -184,12 +190,13 @@ class PlmDocument(models.Model):
                     printout = docBrws.printout
                 if docBrws.preview:
                     preview = docBrws.preview
-                db_datas = b''                    # Clean storage field.
+                db_datas = b''  # Clean storage field.
                 fname, filesize = self._manageFile(filestore, value)
-                self.env.cr.execute('update plm_document set store_fname=%s,file_size=%s,db_datas=%s where id=%s', (fname,
-                                                                                                                    filesize,
-                                                                                                                    db_datas,
-                                                                                                                    oid))
+                self.env.cr.execute('update plm_document set store_fname=%s,file_size=%s,db_datas=%s where id=%s',
+                                    (fname,
+                                     filesize,
+                                     db_datas,
+                                     oid))
                 self.env['plm.backupdoc'].create({'userid': self.env.uid,
                                                   'existingfile': fname,
                                                   'documentid': oid,
@@ -210,6 +217,7 @@ class PlmDocument(models.Model):
                     result.append(idToAdd)
                     if recursion:
                         getAllDocumentChildId(idToAdd, kinds)
+
         getAllDocumentChildId(oid, kinds)
         return result
 
@@ -270,16 +278,19 @@ class PlmDocument(models.Model):
                         isNewer = True
                     else:
                         listFileIndex = listfiles.index(objDoc.datas_fname)
-                        timefile = time.mktime(datetime.strptime(str(datefiles[listFileIndex]), '%Y-%m-%d %H:%M:%S').timetuple())
+                        timefile = time.mktime(
+                            datetime.strptime(str(datefiles[listFileIndex]), '%Y-%m-%d %H:%M:%S').timetuple())
                         isNewer = (timeSaved - timefile) > 5
-                    collectable = isNewer and not(isCheckedOutToMe)
+                    collectable = isNewer and not (isCheckedOutToMe)
                 else:
                     collectable = True
                 objDatas = False
                 try:
                     objDatas = objDoc.datas
                 except Exception as ex:
-                    logging.error('Document with "id": %s  and "name": %s may contains no data!!         Exception: %s' % (objDoc.id, objDoc.name, ex))
+                    logging.error(
+                        'Document with "id": %s  and "name": %s may contains no data!!         Exception: %s' % (
+                            objDoc.id, objDoc.name, ex))
                 if (objDoc.file_size < 1) and (objDatas):
                     file_size = len(objDoc.datas)
                 else:
@@ -311,11 +322,11 @@ class PlmDocument(models.Model):
             newDocBrws.wf_message_post(body=_('Copied starting from : %s.' % previous_name))
         for brwEnt in docBrwsList:
             documentRelation.create({
-                                    'parent_id': newDocBrws.id,
-                                    'child_id': brwEnt.child_id.id,
-                                    'configuration': brwEnt.configuration,
-                                    'link_kind': brwEnt.link_kind,
-                                    })
+                'parent_id': newDocBrws.id,
+                'child_id': brwEnt.child_id.id,
+                'configuration': brwEnt.configuration,
+                'link_kind': brwEnt.link_kind,
+            })
         return newDocBrws.id
 
     @api.multi
@@ -335,7 +346,7 @@ class PlmDocument(models.Model):
                 break
         if binvalue is None:
             fileStream = self._data_get(name=None, arg=None)
-            binvalue = fileStream[fileStream.keys()[0]]
+            binvalue = fileStream[list(fileStream.keys())[0]]
 
         flag = flag or create_directory(filestore)
         filename = random_name()
@@ -376,13 +387,16 @@ class PlmDocument(models.Model):
     @api.model
     def _iswritable(self, oid):
         if not oid.type == 'binary':
-            logging.warning("_iswritable : Part (" + str(oid.name) + "-" + str(oid.revisionid) + ") not writable as hyperlink.")
+            logging.warning(
+                "_iswritable : Part (" + str(oid.name) + "-" + str(oid.revisionid) + ") not writable as hyperlink.")
             return False
         if oid.state not in ('draft'):
-            logging.warning("_iswritable : Part (" + str(oid.name) + "-" + str(oid.revisionid) + ") in status ; " + str(oid.state) + ".")
+            logging.warning("_iswritable : Part (" + str(oid.name) + "-" + str(oid.revisionid) + ") in status ; " + str(
+                oid.state) + ".")
             return False
         if not oid.name:
-            logging.warning("_iswritable : Part (" + str(oid.name) + "-" + str(oid.revisionid) + ") without Engineering P/N.")
+            logging.warning(
+                "_iswritable : Part (" + str(oid.name) + "-" + str(oid.revisionid) + ") without Engineering P/N.")
             return False
         return True
 
@@ -400,6 +414,7 @@ class PlmDocument(models.Model):
         """
             create a new revision of the document
         """
+
         def setupSourceBoms(tmpObject, newObj):
             logging.info('Start cleaning old revision Boms')
             for componentBrws in self.linkedcomponents:
@@ -409,7 +424,8 @@ class PlmDocument(models.Model):
                             if bomLineBrws.source_id.id == tmpObject.id:
                                 bomLineBrws.write({'source_id': newObj.id})
                         bomBrws.write({'source_id': newObj.id})
-                        logging.info('Bom ID %r update with new source ID %r / %r' % (bomBrws.id, tmpObject.id, newObj.id))
+                        logging.info(
+                            'Bom ID %r update with new source ID %r / %r' % (bomBrws.id, tmpObject.id, newObj.id))
 
         newID = None
         newRevIndex = False
@@ -418,7 +434,7 @@ class PlmDocument(models.Model):
                 docId, newBomDocumentRevision = docId
             else:
                 docId = docId[0]
-                
+
         for tmpObject in self.browse(docId):
             latestIDs = self.GetLatestIds([(tmpObject.name, tmpObject.revisionid, False)])
             for oldObject in self.browse(latestIDs):
@@ -465,7 +481,7 @@ class PlmDocument(models.Model):
                 document['hasSaved'] = hasToBeSaved
                 continue
             docBrwsList = self.search([('name', '=', document['name']),
-                                      ('revisionid', '=', document['revisionid'])],
+                                       ('revisionid', '=', document['revisionid'])],
                                       order='revisionid')
             existingID = False
             if not docBrwsList:
@@ -475,7 +491,8 @@ class PlmDocument(models.Model):
                     existingID = existingBrws.id
                     if existingBrws.writable:
                         if existingBrws.file_size > 0 and existingBrws.datas_fname:
-                            if self.getLastTime(existingID) < datetime.strptime(str(document['lastupdate']), '%Y-%m-%d %H:%M:%S'):
+                            if self.getLastTime(existingID) < datetime.strptime(str(document['lastupdate']),
+                                                                                '%Y-%m-%d %H:%M:%S'):
                                 hasToBeSaved = True
                         else:
                             hasToBeSaved = True
@@ -537,7 +554,7 @@ class PlmDocument(models.Model):
         ret = True
         for document in documents:
             oid = document['documentID']
-            del(document['documentID'])
+            del (document['documentID'])
             ret = ret and self.browse([oid]).write(document, check=True)
         return ret
 
@@ -575,7 +592,8 @@ class PlmDocument(models.Model):
         checkoutType = self.env['plm.checkout']
         for document in self:
             if checkoutType.search([('documentid', '=', document.id)]):
-                logging.warning(_("The document %s - %s has not checked-in" % (str(document.name), str(document.revisionid))))
+                logging.warning(
+                    _("The document %s - %s has not checked-in" % (str(document.name), str(document.revisionid))))
                 return False
         return True
 
@@ -595,26 +613,26 @@ class PlmDocument(models.Model):
 
     @api.multi
     def setCheckContextWrite(self, checkVal=True):
-        '''
+        """
             :checkVal Set check flag in context to do state verification in component write
-        '''
+        """
         localCtx = self.env.context.copy()
         localCtx['check'] = checkVal
         self.env.context = localCtx
 
     @api.multi
     def commonWFAction(self, writable, state, check):
-        '''
+        """
             :writable set writable flag for component
             :state define new product state
             :check do state verification in component write
-        '''
+        """
         self.setCheckContextWrite(check)
         objId = self.write({'writable': writable,
                             'state': state
                             })
         if objId:
-            self.wf_message_post(body=_('Status moved to: %s.' % (USEDIC_STATES[state])))
+            self.wf_message_post(body=_('Status moved to: %s.' % (USE_DIC_STATES[state])))
         return objId
 
     @api.multi
@@ -663,7 +681,7 @@ class PlmDocument(models.Model):
             self.setCheckContextWrite(False)
             objId = self.write(defaults)
             if objId:
-                self.wf_message_post(body=_('Status moved to:%s.' % (USEDIC_STATES[defaults['state']])))
+                self.wf_message_post(body=_('Status moved to:%s.' % (USE_DIC_STATES[defaults['state']])))
             return objId
         return False
 
@@ -675,7 +693,7 @@ class PlmDocument(models.Model):
         """
         return self.with_context({'check': False}).write(vals)
 
-#   Overridden methods for this entity
+    #   Overridden methods for this entity
     @api.model
     def _get_filestore(self):
         dms_Root_Path = tools.config.get('document_path', os.path.join(tools.config['root_path'], 'filestore'))
@@ -699,7 +717,7 @@ class PlmDocument(models.Model):
         return super(PlmDocument, self).create(vals)
 
     @api.model
-    def isPlmStateWritable(self):
+    def is_plm_state_writable(self):
         for customObject in self:
             if customObject.state in PLM_NO_WRITE_STATE:
                 return False
@@ -709,14 +727,14 @@ class PlmDocument(models.Model):
     def write(self, vals):
         check = self.env.context.get('check', True)
         if check:
-            if not self.isPlmStateWritable():
+            if not self.is_plm_state_writable():
                 raise UserError(_("The active state does not allow you to make save action"))
         self.writeCheckDatas(vals)
         return super(PlmDocument, self).write(vals)
 
     @api.multi
     def writeCheckDatas(self, vals):
-        if 'datas' in vals.keys() or 'datas_fname' in vals.keys():
+        if 'datas' in list(vals.keys()) or 'datas_fname' in list(vals.keys()):
             for docBrws in self:
                 if not docBrws._is_checkedout_for_me() and self.env.uid != SUPERUSER_ID:
                     raise UserError(_("You cannot edit a file not in check-out by you! User ID %s" % (self.env.uid)))
@@ -732,11 +750,13 @@ class PlmDocument(models.Model):
                 if oldObject.state in checkState:
                     oldObject.wf_message_post(body=_('Removed : Latest Revision.'))
                     if not oldObject.with_context({'check': False}).write(values):
-                        logging.warning("unlink : Unable to update state to old document (" + str(oldObject.name) + "-" + str(oldObject.revisionid) + ").")
+                        logging.warning(
+                            "unlink : Unable to update state to old document (" + str(oldObject.name) + "-" + str(
+                                oldObject.revisionid) + ").")
                         return False
         return super(PlmDocument, self).unlink()
 
-#   Overridden methods for this entity
+    #   Overridden methods for this entity
     @api.model
     def _check_duplication(self, vals, ids=None, op='create'):
         name = vals.get('name', False)
@@ -773,7 +793,8 @@ class PlmDocument(models.Model):
             if docBrwsList:
                 return False
         return True
-#   Overridden methods for this entity
+
+    #   Overridden methods for this entity
 
     @api.one
     def _get_checkout_state(self):
@@ -792,12 +813,13 @@ class PlmDocument(models.Model):
         for docBrws in docBrwsList:
             docBrws._check_in()
         return False
-    
+
     @api.one
     def _check_in(self):
         checkOutId = self.isCheckedOutByMe()
         if not checkOutId:
-            logging.info('Document %r is not in check out by user %r so cannot be checked-in' % (self.id, self.env.user_id))
+            logging.info(
+                'Document %r is not in check out by user %r so cannot be checked-in' % (self.id, self.env.user_id))
             return False
         if self.file_size <= 0 or not self.datas_fname:
             logging.warning('Document %r has not document content so cannot be checked-in' % (self.id))
@@ -877,7 +899,8 @@ class PlmDocument(models.Model):
     desc_modify = fields.Text(_('Modification Description'), default='')
 
     _sql_constraints = [
-        ('name_unique', 'unique (name, revisionid)', 'File name has to be unique!')  # qui abbiamo la sicurezza dell'univocita del nome file
+        ('name_unique', 'unique (name, revisionid)', 'File name has to be unique!')
+        # qui abbiamo la sicurezza dell'univocita del nome file
     ]
 
     @api.model
@@ -898,6 +921,7 @@ class PlmDocument(models.Model):
                     checkoutFlag = docBrws._is_checkedout_for_me()
                     res.append([fileName, not checkoutFlag])
             return res
+
         if len(files) > 0:  # no files to process
             retValues = getcheckedfiles(files)
         return retValues
@@ -932,7 +956,7 @@ class PlmDocument(models.Model):
             if checkOutUser:
                 isMyDocument = docBrowse.isCheckedOutByMe()
                 if isMyDocument:
-                    return []    # Document properties will be not updated
+                    return []  # Document properties will be not updated
                 else:
                     getCompIds(docName, docRev)
             else:
@@ -941,7 +965,8 @@ class PlmDocument(models.Model):
 
     @api.multi
     def isCheckedOutByMe(self):
-        checkoutBrwsList = self.env['plm.checkout'].search([('documentid', '=', self.id), ('userid', '=', self.env.uid)])
+        checkoutBrwsList = self.env['plm.checkout'].search(
+            [('documentid', '=', self.id), ('userid', '=', self.env.uid)])
         for checkoutBrws in checkoutBrwsList:
             return checkoutBrws.id
         return None
@@ -958,8 +983,8 @@ class PlmDocument(models.Model):
         oid, listedFiles, selection = request
         outIds.append(oid)
         if selection is False:
-            selection = 1   # Case of selected
-        if selection < 0:   # Case of force refresh PWS
+            selection = 1  # Case of selected
+        if selection < 0:  # Case of force refresh PWS
             forceFlag = True
             selection = selection * (-1)
         # Get relations due to layout connected
@@ -976,6 +1001,7 @@ class PlmDocument(models.Model):
         """
             Evaluate documents to return
         """
+
         def getDocId(args):
             docName = args.get('name')
             docRev = args.get('revisionid')
@@ -990,7 +1016,8 @@ class PlmDocument(models.Model):
         docBrws = self.browse(oid)
         checkRes = self.browse(oid).isCheckedOutByMe()
         if not checkRes:
-            logging.info('Document %r is not in check out by user %r so cannot be checked-in recursively' % (oid, self.env.uid))
+            logging.info(
+                'Document %r is not in check out by user %r so cannot be checked-in recursively' % (oid, self.env.uid))
             return False
         if docBrws.file_size <= 0 or not docBrws.datas_fname:
             logging.warning('Document %r has not document content so cannot be checked-in recirsively' % (oid))
@@ -1061,20 +1088,20 @@ class PlmDocument(models.Model):
             forceFlag = True
             selection = selection * -1
 
-        kind = 'HiTree'                   # Get Hierarchical tree relations due to children
+        kind = 'HiTree'  # Get Hierarchical tree relations due to children
         docArray = self._explodedocs(oid, [kind], listed_models)
         if oid not in docArray:
-            docArray.append(oid)        # Add requested document to package
+            docArray.append(oid)  # Add requested document to package
         for item in docArray:
-            kinds = ['LyTree', 'RfTree']               # Get relations due to layout connected
+            kinds = ['LyTree', 'RfTree']  # Get relations due to layout connected
             modArray.extend(self._relateddocs(item, kinds, listed_documents))
             modArray.extend(self._explodedocs(item, kinds, listed_documents))
         modArray.extend(docArray)
-        docArray = list(set(modArray))    # Get unique documents object IDs
+        docArray = list(set(modArray))  # Get unique documents object IDs
         if selection == 2:
             docArray = self._getlastrev(docArray)
         if oid not in docArray:
-            docArray.append(oid)     # Add requested document to package
+            docArray.append(oid)  # Add requested document to package
         return self.browse(docArray)._data_get_files(listedFiles, forceFlag)
 
     @api.multi
@@ -1088,7 +1115,7 @@ class PlmDocument(models.Model):
         for oid in self.ids:
             kinds = ['RfTree',
                      'LyTree',
-                     '']   # Fix for new style document relations
+                     '']  # Fix for new style document relations
             read_docs.extend(self._relateddocs(oid, kinds, listed_documents, False))
             read_docs.extend(self._relatedbydocs(oid, kinds, listed_documents, False))
         for document in self.browse(read_docs):
@@ -1105,12 +1132,14 @@ class PlmDocument(models.Model):
         docProps = docPropsList[0]
         docRev = docProps.get('revisionid', None)
         if docRev is None:
-            logging.warning('Current document has not revisionid attribute %r.\n Cannot get related documents.' % (docProps))
+            logging.warning(
+                'Current document has not revisionid attribute %r.\n Cannot get related documents.' % (docProps))
             return False
         docName = docProps.get('name', '')
         documentBrws = self.search([('name', '=', docName), ('revisionid', '=', docRev)])
         if not documentBrws:
-            logging.warning('Unbale to find document %r with revision %r.\n Cannot get related documents.' % (docName, docRev))
+            logging.warning(
+                'Unbale to find document %r with revision %r.\n Cannot get related documents.' % (docName, docRev))
             return False
         return documentBrws.GetRelatedDocs()
 
@@ -1127,7 +1156,7 @@ class PlmDocument(models.Model):
             get document last modification time
         """
         obj = self.browse(oid)
-        if(obj.write_date is not False):
+        if (obj.write_date is not False):
             return datetime.strptime(obj.write_date, '%Y-%m-%d %H:%M:%S')
         else:
             return datetime.strptime(obj.create_date, '%Y-%m-%d %H:%M:%S')
@@ -1153,26 +1182,26 @@ class PlmDocument(models.Model):
         checkoutType = self.env['plm.checkout']
         checkoutBrwsList = checkoutType.search([('documentid', '=', oid)])
         for checkOutBrws in checkoutBrwsList:
-            return(checkOutBrws.documentid.name,
-                   checkOutBrws.documentid.revisionid,
-                   self.getUserSign(checkOutBrws.userid.id),
-                   checkOutBrws.hostname)
+            return (checkOutBrws.documentid.name,
+                    checkOutBrws.documentid.revisionid,
+                    self.getUserSign(checkOutBrws.userid.id),
+                    checkOutBrws.hostname)
         return ('', False, '', '')
 
     @api.model
     def _file_delete(self, fname):
-        '''
+        """
             Delete file only if is not saved on plm.backupdoc
-        '''
+        """
         backupDocBrwsList = self.env['plm.backupdoc'].search([('existingfile', '=', fname)])
         if not backupDocBrwsList:
             return super(PlmDocument, self)._file_delete(fname)
 
     @api.model
     def GetNextDocumentName(self, documentName):
-        '''
+        """
             Return a new name due to sequence next number.
-        '''
+        """
         nextDocNum = self.env['ir.sequence'].next_by_code('plm.document.progress')
         return documentName + '-' + nextDocNum
 
@@ -1218,6 +1247,7 @@ class PlmDocument(models.Model):
             if len(outMessage) > 0:
                 return False, outMessage
             return True, ''
+
         if returnCode:
             return returnTuple() + (outCode,)
         return returnTuple()
@@ -1297,12 +1327,13 @@ class PlmDocument(models.Model):
                             productDocumentRelations[productId] = listRelated
             for subStructure in structure.get('RELATIONS', []):
                 populateStructure((documentId, productId), subStructure, createBom)
+
         populateStructure(structure=objStructure)
 
         # Save the document
         logging.info("Savind Document")
         alreadyEvaluated = []
-        for documentAttribute in documentAttributes.values():
+        for documentAttribute in list(documentAttributes.values()):
             try:
                 documentAttribute['TO_UPDATE'] = False
                 skipCheckOut = documentAttribute.get('SKIP_CHECKOUT', False)
@@ -1310,8 +1341,9 @@ class PlmDocument(models.Model):
                 for brwItem in self.search([('name', '=', documentAttribute.get('name')),
                                             ('revisionid', '=', documentAttribute.get('revisionid'))]):
                     if brwItem.id in alreadyEvaluated:
-                        docBrws = brwItem   # To skip creation
-                        documentAttribute['TO_UPDATE'] = False  # To skip same document preview/pdf uploading by the client
+                        docBrws = brwItem  # To skip creation
+                        documentAttribute[
+                            'TO_UPDATE'] = False  # To skip same document preview/pdf uploading by the client
                         break
                     if brwItem.state not in ['released', 'obsoleted']:
                         if brwItem.needUpdate():
@@ -1338,14 +1370,15 @@ class PlmDocument(models.Model):
         logging.info("Saving Product")
         productsEvaluated = []
         productTemplate = self.env['product.product']
-        for refId, productAttribute in productAttributes.items():
+        for refId, productAttribute in list(productAttributes.items()):
             try:
                 linkedDocuments = set()
                 for refDocId in productDocumentRelations.get(refId, []):
                     linkedDocuments.add((4, documentAttributes[refDocId].get('id', 0)))
                 prodBrws = False
-                for brwItem in productTemplate.search([('engineering_code', '=', productAttribute.get('engineering_code')),
-                                                       ('engineering_revision', '=', productAttribute.get('engineering_revision'))]):
+                for brwItem in productTemplate.search(
+                        [('engineering_code', '=', productAttribute.get('engineering_code')),
+                         ('engineering_revision', '=', productAttribute.get('engineering_revision'))]):
                     if brwItem.id in productsEvaluated:
                         prodBrws = brwItem
                         break
@@ -1357,7 +1390,8 @@ class PlmDocument(models.Model):
                 if not prodBrws:
                     if not productAttribute.get('name', False):
                         productAttribute['name'] = productAttribute.get('engineering_code', False)
-                    if not productAttribute.get('engineering_code', False):     # I could have a document without component, so not create product
+                    if not productAttribute.get('engineering_code',
+                                                False):  # I could have a document without component, so not create product
                         continue
                     prodBrws = productTemplate.create(productAttribute)
                     productsEvaluated.append(prodBrws.id)
@@ -1372,7 +1406,7 @@ class PlmDocument(models.Model):
         logging.info("Saving Document Relations")
         documentRelationTemplate = self.env['plm.document.relation']
         createdDocRels = []
-        for parentId, childrenRelations in documentRelations.items():
+        for parentId, childrenRelations in list(documentRelations.items()):
             try:
                 trueParentId = documentAttributes[parentId].get('id', 0)
                 for objBrw in documentRelationTemplate.search([('parent_id', '=', trueParentId)]):
@@ -1386,7 +1420,7 @@ class PlmDocument(models.Model):
                                 continue
                             createdDocRels.append(key)
                             break
-                    if not found:   # Line removed from previous save
+                    if not found:  # Line removed from previous save
                         objBrw.unlink()
                 for childId, relationType in childrenRelations:
                     trueChildId = documentAttributes.get(childId, {}).get('id', 0)
@@ -1408,7 +1442,7 @@ class PlmDocument(models.Model):
             bomType = 'ebom'
         logging.info("Saving Product Relations")
         mrpBomTemplate = self.env['mrp.bom']
-        for parentId, childRelations in productRelations.items():
+        for parentId, childRelations in list(productRelations.items()):
             try:
                 trueParentId = productAttributes[parentId].get('id')
                 brwProduct = productTemplate.search([('id', '=', trueParentId)])
@@ -1419,7 +1453,7 @@ class PlmDocument(models.Model):
                                                      'type': bomType})
                 # delete rows
                 if skipDocumentCheckOnBom:
-                    for brwBom in brwBoml:  
+                    for brwBom in brwBoml:
                         # If not source document I need to clean all bom lines losting also custom lines...
                         brwBom.bom_line_ids.unlink()
                 else:
@@ -1491,9 +1525,9 @@ class PlmDocument(models.Model):
 
     @api.multi
     def getDocumentInfos(self):
-        '''
+        """
             Document infos for clone/revision procedure
-        '''
+        """
         return {'name': self.name or '',
                 'revisionid': self.revisionid,
                 'description': self.description or '',
@@ -1528,9 +1562,9 @@ class PlmDocument(models.Model):
 
     @api.multi
     def computeLikedDocuments(self):
-        '''
+        """
             Get child documents in document relations
-        '''
+        """
         # Check dei grezzi e delle relazioni parte modello. Non devono comparire nella vista
         docList = []
         linkedDocEnv = self.env['plm.document.relation']
@@ -1564,7 +1598,7 @@ class PlmDocument(models.Model):
     @api.model
     def checkSyncImportStructure(self, args):
         prodProd = self.env['product.product']
-        
+
         def checkDocument(docAttrs):
             docName = docAttrs.get('name', '')
             docRev = int(docAttrs.get('revisionid', 0))
@@ -1586,7 +1620,7 @@ class PlmDocument(models.Model):
                 docAttrs['is_latest_revision'] = True
                 if graterDocBrws:
                     docAttrs['can_be_revised'] = graterDocBrws.canBeRevised()
-            if not matchDocBrws:    # CAD document revision is grater than Odoo one
+            if not matchDocBrws:  # CAD document revision is grater than Odoo one
                 if graterDocBrws:
                     docAttrs['can_be_revised'] = graterDocBrws.canBeRevised()
             return docAttrs
@@ -1615,7 +1649,7 @@ class PlmDocument(models.Model):
                 if graterCompBrws:
                     compAttrs['can_be_revised'] = graterCompBrws.canBeRevised()
             return compAttrs
-        
+
         def recursion(parentNode):
             docAttrs = parentNode.get('DOCUMENT_ATTRIBUTES', {})
             compAttrs = parentNode.get('PRODUCT_ATTRIBUTES', {})
@@ -1627,8 +1661,7 @@ class PlmDocument(models.Model):
                 updatedNode = recursion(node)
                 parentNode['RELATIONS'][index] = updatedNode
             return parentNode
-            
-            
+
         jsonNode = args[0]
         rootNode = json.loads(jsonNode)
         rootNode = recursion(rootNode)
@@ -1641,9 +1674,9 @@ class PlmDocument(models.Model):
         rootNode = json.loads(jsonNode)
 
         def getLinkedDocumentsByComponent(node, compBrws):
-            '''
+            """
                 Append in the node relations documents taken by linkeddocuments
-            '''
+            """
             if compBrws.id:
                 # In this case I start to clone a part/assembly which has a related drawing,
                 # I don't have in the CAD structure the link between them...
@@ -1657,9 +1690,9 @@ class PlmDocument(models.Model):
                     node['RELATIONS'].append(newNode)
 
         def getLinkedDocumentsByDocument(node, docBrws):
-            '''
+            """
                 Append in the node relations documents taken by plm.document.relation
-            '''
+            """
             linkedDocEnv = self.env['plm.document.relation']
             if docBrws.id:
                 typeDoc = ''
@@ -1696,10 +1729,10 @@ class PlmDocument(models.Model):
                     node['PRODUCT_ATTRIBUTES']['CAN_BE_REVISED'] = False
                     node['DOCUMENT_ATTRIBUTES']['CAN_BE_REVISED'] = True
             compId = compBrws.id
-            for relatedNode in node.get('RELATIONS', []):   # Caso grezzo
+            for relatedNode in node.get('RELATIONS', []):  # Caso grezzo
                 recursionUpdate(relatedNode)
             if compId:
-                getLinkedDocumentsByComponent(node, compBrws)    # Only if component infos
+                getLinkedDocumentsByComponent(node, compBrws)  # Only if component infos
             else:
                 getLinkedDocumentsByDocument(node, rootDocBrws)  # Only for document infos
 
@@ -1733,4 +1766,58 @@ class PlmDocument(models.Model):
             outDict[file_path] = outLocalDict
         return outDict
 
+    @api.model
+    def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
+        # add res_field=False in domain if not present; the arg[0] trick below
+        # works for domain items and '&'/'|'/'!' operators too
+        if not any(arg[0] in ('id', 'res_field') for arg in args):
+            args.insert(0, ('res_field', '=', False))
+
+        ids = super(models.Model, self)._search(args, offset=offset, limit=limit, order=order,
+                                                count=False, access_rights_uid=access_rights_uid)
+
+        if self._uid == SUPERUSER_ID:
+            # rules do not apply for the superuser
+            return len(ids) if count else ids
+
+        if not ids:
+            return 0 if count else []
+
+        # Work with a set, as list.remove() is prohibitive for large lists of documents
+        # (takes 20+ seconds on a db with 100k docs during search_count()!)
+        orig_ids = ids
+        ids = set(ids)
+
+        # For attachments, the permissions of the document they are attached to
+        # apply, so we must remove attachments for which the user cannot access
+        # the linked document.
+        # Use pure SQL rather than read() as it is about 50% faster for large dbs (100k+ docs),
+        # and the permissions are checked in super() and below anyway.
+        model_attachments = defaultdict(lambda: defaultdict(set))   # {res_model: {res_id: set(ids)}}
+        self._cr.execute("""SELECT id, res_model, res_id, public FROM plm_document WHERE id IN %s""", [tuple(ids)])
+        for row in self._cr.dictfetchall():
+            if not row['res_model'] or row['public']:
+                continue
+            # model_attachments = {res_model: {res_id: set(ids)}}
+            model_attachments[row['res_model']][row['res_id']].add(row['id'])
+
+        # To avoid multiple queries for each attachment found, checks are
+        # performed in batch as much as possible.
+        for res_model, targets in model_attachments.items():
+            if res_model not in self.env:
+                continue
+            if not self.env[res_model].check_access_rights('read', False):
+                # remove all corresponding attachment ids
+                ids.difference_update(itertools.chain(*targets.values()))
+                continue
+            # filter ids according to what access rules permit
+            target_ids = list(targets)
+            allowed = self.env[res_model].with_context(active_test=False).search([('id', 'in', target_ids)])
+            for res_id in set(target_ids).difference(allowed.ids):
+                ids.difference_update(targets[res_id])
+
+        # sort result according to the original sort ordering
+        result = [id for id in orig_ids if id in ids]
+        return len(result) if count else list(result)
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+

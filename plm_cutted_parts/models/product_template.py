@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution    
@@ -20,34 +19,30 @@
 #
 ##############################################################################
 
-'''
+"""
 Created on Mar 30, 2016
 
 @author: Daniel Smerghetto
-'''
-import logging
+"""
 from odoo import models
 from odoo import fields
 from odoo import api
 from odoo import _
 from odoo.exceptions import UserError
-_logger = logging.getLogger(__name__)
 
 
-class product_templateCuttedParts(models.Model):
+class ProductTemplateCuttedParts(models.Model):
     _inherit = 'product.template'
     row_material = fields.Many2one('product.product', _("Raw Material Product"))
-    row_material_xlenght = fields.Float(_("Raw Material x lenght"), default=1.0)
-    row_material_ylenght = fields.Float(_("Raw Material y lenght"), default=1.0)
+    row_material_x_length = fields.Float(_("Raw Material x length"), default=1.0)
+    row_material_y_length = fields.Float(_("Raw Material y length"), default=1.0)
     wastage_percent = fields.Float(_("Percent Wastage"), default=0.0)
     material_added = fields.Float(_("Material Wastage"), default=0.0)
     is_row_material = fields.Boolean(_("Is Raw Material"))
     bom_rounding = fields.Float(_("Product Rounding"), default=0.0)
 
-product_templateCuttedParts()
 
-
-class product_productCuttedParts(models.Model):
+class ProductCuttedParts(models.Model):
     _inherit = 'product.product'
 
     @api.onchange('is_row_material')
@@ -55,14 +50,12 @@ class product_productCuttedParts(models.Model):
         if self.is_row_material:
             self.row_material = False
 
-    @api.onchange('row_material_xlenght')
-    def onchange_row_material_xlenght(self):
-        if not self.row_material_xlenght or self.row_material_xlenght == 0.0:
-            raise UserError(_('"Raw Material x lenght" cannot have zero value.'))
+    @api.onchange('row_material_x_length')
+    def onchange_row_material_x_length(self):
+        if not self.row_material_x_length or self.row_material_x_length == 0.0:
+            raise UserError(_('"Raw Material x length" cannot have zero value.'))
 
-    @api.onchange('row_material_ylenght')
-    def onchange_row_material_ylenght(self):
-        if not self.row_material_ylenght or self.row_material_xlenght == 0.0:
-            raise UserError(_('"Raw Material y lenght" cannot have zero value.'))
-
-product_productCuttedParts()
+    @api.onchange('row_material_y_length')
+    def onchange_row_material_y_length(self):
+        if not self.row_material_y_length or self.row_material_x_length == 0.0:
+            raise UserError(_('"Raw Material y length" cannot have zero value.'))

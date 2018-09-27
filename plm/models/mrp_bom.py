@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -173,6 +172,7 @@ class MrpBomExtension(models.Model):
             Convert from [id1,[[id2,[]]]] to [id1,id2]
         """
         out_list = []
+
         if isinstance(structure, (list, tuple)) and len(structure) == 2:
             if structure[0]:
                 out_list.append(structure[0])
@@ -605,6 +605,7 @@ class MrpBomExtension(models.Model):
             for _bom_id, bom_brws in evaluated_boms.items():
                 if not bom_brws.bom_line_ids:
                     bom_brws.unlink()
+
 
         if len(relations) < 1:  # no relation to save
             return False

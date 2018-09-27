@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -20,11 +19,12 @@
 #
 ##############################################################################
 
-'''
+"""
 Created on 25 Aug 2016
 
 @author: Daniel Smerghetto
-'''
+"""
+
 from odoo import models
 from odoo import fields
 from odoo import _
@@ -34,7 +34,8 @@ class PlmConfigSettings(models.TransientModel):
     _name = 'res.config.settings'
     _inherit = 'res.config.settings'
 
-    module_plm_automate_normal_bom = fields.Boolean(_("Allow to create normal BOM if not exists and product are released."))
+    module_plm_automate_normal_bom = fields.Boolean(
+        _("Allow to create normal BOM if not exists and product are released."))
     module_plm_automatic_weight = fields.Boolean(_("Automatic weight calculation"))
     module_plm_compare_bom = fields.Boolean(_("Compare two BOM tool"))
     module_plm_cutted_parts = fields.Boolean(_("Manage BOM explosion for cutted parts"))
@@ -45,11 +46,9 @@ class PlmConfigSettings(models.TransientModel):
     module_plm_report_language_helper = fields.Boolean(_("Manage Multi Language PLM reports"))
     module_plm_spare = fields.Boolean(_("Manage spare BOM and Spare Parts Manual"))
     module_plm_web_revision = fields.Boolean(_("Create new revision from WEB"))
-    module_plm_auto_internalref = fields.Boolean("Populate internal reference with engineering infos")
+    module_plm_auto_internalref = fields.Boolean("Populate internal reference with engineering part number")
     module_plm_automated_convertion = fields.Boolean("Activate the server convertion tool")
     module_plm_project = fields.Boolean("Activate the PLM Project connection")
     module_plm_client_customprocedure = fields.Boolean("Activate the PLM Client mapping")
     module_plm_box = fields.Boolean("PLM Box")
     module_plm_suspended = fields.Boolean("Manage Product suspend code")
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
