@@ -38,34 +38,37 @@ class MrpBomExtension(models.Model):
     _name = 'mrp.bom'
     _inherit = 'mrp.bom'
 
-#  ######################################################################################################################################33
+    #  ######################################################################################################################################33
 
-#   Overridden methods for this entity
+    #   Overridden methods for this entity
 
     # TODO: Da rivedere a causa del cambiamento in odoo
     @api.model
     def _bom_find(self, product_tmpl=None, product=None, picking_type=None, company_id=False):
         """ Finds BoM for particular product and product uom.
-        @param product_tmpl_id: Selected product.
-        @param product_uom: Unit of measure of a product.
-        @param properties: List of related properties.
+        @param product_tmpl: Selected product.
+        @param product: Unit of measure of a product.
         @return: False or BoM id.
         """
-        objBom = super(MrpBomExtension, self)._bom_find(product_tmpl=product_tmpl,
-                                                        product=product,
-                                                        picking_type=picking_type,
-                                                        company_id=company_id)
-        if objBom:
-            odooPLMBom = ['ebom', 'spbom']
-            if objBom.type in odooPLMBom:
-                bomBrwsList = self.search([('product_id', '=', objBom.product_id.id),
-                                           ('product_tmpl_id', '=', objBom.product_tmpl_id.id),
-                                           ('type', 'not in', odooPLMBom)])
-                for bomBrws in bomBrwsList:
-                    return bomBrws
-        return objBom
+        obj_bom = super(MrpBomExtension, self)._bom_find(
+            product_tmpl=product_tmpl,
+            product=product,
+            picking_type=picking_type,
+            company_id=company_id
+        )
+        if obj_bom:
+            odoo_plm_bom = ['ebom', 'spbom']
+            if obj_bom.type in odoo_plm_bom:
+                bom_brws_list = self.search([
+                    ('product_id', '=', obj_bom.product_id.id),
+                    ('product_tmpl_id', '=', obj_bom.product_tmpl_id.id),
+                    ('type', 'not in', odoo_plm_bom)
+                ])
+                for bom_brws in bom_brws_list:
+                    return bom_brws
+        return obj_bom
 
-#  ######################################################################################################################################33
+    #  ######################################################################################################################################33
     @api.multi
     def _father_compute(self, name='', arg={}):
         """ Gets father bom.
@@ -79,19 +82,21 @@ class MrpBomExtension(models.Model):
         @return:  Dictionary of values
         """
         bom_type = ''
-        bom_line_objType = self.env['mrp.bom.line']
+        bom_line_obj_type = self.env['mrp.bom.line']
         for bom_obj in self:
             result = []
             bom_type = bom_obj.type
             if bom_type == '':
-                bom_children_lines = bom_line_objType.search([('product_id', '=', bom_obj.product_id.id)])
+                bom_children_lines = bom_line_obj_type.search([('product_id', '=', bom_obj.product_id.id)])
             else:
-                bom_children_lines = bom_line_objType.search([('product_id', '=', bom_obj.product_id.id),
-                                                              ('type', '=', bom_type)])
-            for bomLineBrws in bom_children_lines:
-                if bomLineBrws.bom_id.id:
-                    if not(bomLineBrws.bom_id.id in result):
-                        result.extend([bomLineBrws.bom_id.id])
+                bom_children_lines = bom_line_obj_type.search([
+                    ('product_id', '=', bom_obj.product_id.id),
+                    ('type', '=', bom_type)
+                ])
+            for bom_line_brws in bom_children_lines:
+                if bom_line_brws.bom_id.id:
+                    if not (bom_line_brws.bom_id.id in result):
+                        result.extend([bom_line_brws.bom_id.id])
             bom_obj.father_complete_ids = self.env['mrp.bom'].browse(list(set(result)))
 
     state = fields.Selection(related="product_tmpl_id.state",
@@ -112,12 +117,15 @@ class MrpBomExtension(models.Model):
                                 ondelete='no action',
                                 readonly=True,
                                 help=_('This is the document object that declares this BoM.'))
-    type = fields.Selection([('normal', _('Normal BoM')),
-                             ('phantom', _('Sets / Phantom'))],
-                            _('BoM Type'),
-                            required=True,
-                            help=_("Phantom BOM: When processing a sales order for this product, the delivery order will contain the raw materials, instead of the finished product."
-                                   "Ship this product as a set of components (kit)."))
+    type = fields.Selection(
+        [('normal', _('Normal BoM')), ('phantom', _('Sets / Phantom'))],
+        _('BoM Type'),
+        required=True,
+        help=_(
+            "Phantom BOM: When processing a sales order for this product, the delivery order will contain the raw materials, instead of the finished product."
+            "Ship this product as a set of components (kit)."
+        )
+    )
     weight_net = fields.Float('Weight',
                               digits=dp.get_precision(_('Stock Weight')),
                               help=_("The BoM net weight in Kg."),
@@ -133,152 +141,159 @@ class MrpBomExtension(models.Model):
         self._packed = []
 
     @api.model
-    def _getinbom(self, pid, sid=False):
-        bomLType = self.env['mrp.bom.line']
-        bomLineBrwsList = bomLType.search([('product_id', '=', pid), ('source_id', '=', sid), ('type', '=', 'normal')])
-        if not bomLineBrwsList:
-            bomLineBrwsList = bomLType.search([('product_id', '=', pid), ('source_id', '=', False), ('type', '=', 'normal')])
-            if not bomLineBrwsList:
-                bomLineBrwsList = bomLType.search([('product_id', '=', pid), ('type', '=', 'normal')])
-        return bomLineBrwsList
+    def _get_in_bom(self, pid, sid=False):
+        bom_l_type = self.env['mrp.bom.line']
+        bom_line_brws_list = bom_l_type.search([
+            ('product_id', '=', pid), ('source_id', '=', sid), ('type', '=', 'normal')
+        ])
+        if not bom_line_brws_list:
+            bom_line_brws_list = bom_l_type.search([
+                ('product_id', '=', pid), ('source_id', '=', False), ('type', '=', 'normal')
+            ])
+            if not bom_line_brws_list:
+                bom_line_brws_list = bom_l_type.search([('product_id', '=', pid), ('type', '=', 'normal')])
+        return bom_line_brws_list
 
     @api.model
-    def _getbom(self, pid, sid=False):
+    def _get_bom(self, pid, sid=False):
         if sid is None:
             sid = False
-        bomBrwsList = self.search([('product_tmpl_id', '=', pid), ('source_id', '=', sid), ('type', '=', 'normal')])
-        if not bomBrwsList:
-            bomBrwsList = self.search([('product_tmpl_id', '=', pid), ('source_id', '=', False), ('type', '=', 'normal')])
-            if not bomBrwsList:
-                bomBrwsList = self.search([('product_tmpl_id', '=', pid), ('type', '=', 'normal')])
-        return bomBrwsList
+        bom_brws_list = self.search([('product_tmpl_id', '=', pid), ('source_id', '=', sid), ('type', '=', 'normal')])
+        if not bom_brws_list:
+            bom_brws_list = self.search([
+                ('product_tmpl_id', '=', pid), ('source_id', '=', False), ('type', '=', 'normal')
+            ])
+            if not bom_brws_list:
+                bom_brws_list = self.search([('product_tmpl_id', '=', pid), ('type', '=', 'normal')])
+        return bom_brws_list
 
-    def getListIdsFromStructure(self, structure):
+    def get_list_ids_from_structure(self, structure):
         """
             Convert from [id1,[[id2,[]]]] to [id1,id2]
         """
-        outList = []
+        out_list = []
+
         if isinstance(structure, (list, tuple)) and len(structure) == 2:
             if structure[0]:
-                outList.append(structure[0])
+                out_list.append(structure[0])
             for item in structure[1]:
-                outList.extend(self.getListIdsFromStructure(item))
-        return list(set(outList))
+                out_list.extend(self.get_list_ids_from_structure(item))
+        return list(set(out_list))
 
     @api.model
-    def _getpackdatas(self, relDatas):
-        prtDatas = {}
-        tmpids = self.getListIdsFromStructure(relDatas)
-        if len(tmpids) < 1:
-            return prtDatas
-        compType = self.env['product.product']
-        tmpDatas = compType.browse(tmpids).read()
-        for tmpData in tmpDatas:
-            for keyData in list(tmpData.keys()):
-                if tmpData[keyData] is None:
-                    del tmpData[keyData]
-            prtDatas[str(tmpData['id'])] = tmpData
-        return prtDatas
+    def _get_pack_datas(self, rel_datas):
+        prt_datas = {}
+        tmp_ids = self.get_list_ids_from_structure(rel_datas)
+        if len(tmp_ids) < 1:
+            return prt_datas
+        comp_type = self.env['product.product']
+        tmp_datas = comp_type.browse(tmp_ids).read()
+        for tmp_data in tmp_datas:
+            for key_data in tmp_data.keys():
+                if tmp_data[key_data] is None:
+                    del tmp_data[key_data]
+            prt_datas[str(tmp_data['id'])] = tmp_data
+        return prt_datas
 
     @api.model
-    def _getpackreldatas(self, relDatas, prtDatas):
-        relids = {}
-        relationDatas = {}
-        tmpids = self.getListIdsFromStructure(relDatas)
-        if len(tmpids) < 1:
-            return prtDatas
-        for keyData in list(prtDatas.keys()):
-            tmpData = prtDatas[keyData]
-            if len(tmpData['bom_ids']) > 0:
-                relids[keyData] = tmpData['bom_ids'][0]
+    def _get_pack_rel_datas(self, rel_datas, prt_datas):
+        rel_ids = {}
+        relation_datas = {}
+        tmp_ids = self.get_list_ids_from_structure(rel_datas)
+        if len(tmp_ids) < 1:
+            return prt_datas
+        for key_data in prt_datas.keys():
+            tmp_data = prt_datas[key_data]
+            if len(tmp_data['bom_ids']) > 0:
+                rel_ids[key_data] = tmp_data['bom_ids'][0]
 
-        if len(relids) < 1:
-            return relationDatas
-        for keyData in list(relids.keys()):
-            relationDatas[keyData] = self.browse(relids[keyData]).read()[0]
-        return relationDatas
+        if len(rel_ids) < 1:
+            return relation_datas
+        for key_data in rel_ids.keys():
+            relation_datas[key_data] = self.browse(rel_ids[key_data]).read()[0]
+        return relation_datas
 
     @api.model
-    def GetWhereUsed(self, resIds):
+    def get_where_used(self, res_ids):
         """
             Return a list of all fathers of a Part (all levels)
         """
         self._packed = []
-        relDatas = []
-        if len(resIds) < 1:
+        rel_datas = []
+        if len(res_ids) < 1:
             return None
         sid = False
-        if len(resIds) > 1:
-            sid = resIds[1]
-        oid = resIds[0]
-        relDatas.append(oid)
-        relDatas.append(self._implodebom(self._getinbom(oid, sid)))
-        prtDatas = self._getpackdatas(relDatas)
-        return (relDatas, prtDatas, self._getpackreldatas(relDatas, prtDatas))
+        if len(res_ids) > 1:
+            sid = res_ids[1]
+        oid = res_ids[0]
+        rel_datas.append(oid)
+        rel_datas.append(self._implodebom(self._get_in_bom(oid, sid)))
+        prt_datas = self._get_pack_datas(rel_datas)
+        return rel_datas, prt_datas, self._get_pack_rel_datas(rel_datas, prt_datas)
 
-    def whereUsedHeader(self, mprBomLineId):
+    def where_used_header(self, mpr_bom_line_id):
         """
-        overloadable function in order to customise the where used bom
-        :mprBomLineId mrp_bom_line browse object
+        over-loadable function in order to customise the where used bom
+        :mpr_bom_line_id mrp_bom_line browse object
         """
-        product_id = mprBomLineId.product_id
-        out = {'bom_type': mprBomLineId.type,
-               'bom_qty': mprBomLineId.product_qty,
-               'bom_line_id': mprBomLineId.id,
-               'bom_id': mprBomLineId.bom_id.id}
-        out.update(self.whereUsedHeaderP(product_id))
+        product_id = mpr_bom_line_id.product_id
+        out = {'bom_type': mpr_bom_line_id.type,
+               'bom_qty': mpr_bom_line_id.product_qty,
+               'bom_line_id': mpr_bom_line_id.id,
+               'bom_id': mpr_bom_line_id.bom_id.id}
+        out.update(self.where_used_headerP(product_id))
         return out
 
-    def whereUsedHeaderP(self, product_id):
+    def where_used_header_p(self, product_id):
         """
-        overloadable function in order to customise the where used bom
+        over-loadable function in order to customise the where used bom
         :product_id mrp_bom_line browse object
         """
         return {'name': product_id.name,
                 'product_id': product_id.id,
-                'lable_product_id': "c" + str(product_id.id),
+                'label_product_id': "c" + str(product_id.id),
                 'part_number': product_id.engineering_code,
                 'part_revision': product_id.engineering_revision,
                 'part_description': product_id.name}
 
     @api.model
-    def getWhereUsedStructure(self, filterBomType=''):
+    def get_where_used_structure(self, filter_bom_type=''):
         out = []
         for product in self.env['product.product'].search([('product_tmpl_id', '=', self.product_tmpl_id.id)]):
-            bomLineFilter = [('product_id', '=', product.id)]
-            if filterBomType:
-                bomLineFilter.append(('type', '=', filterBomType))
-            parentLines = self.env['mrp.bom.line'].search(bomLineFilter)
-            if parentLines:
-                for parentLine in parentLines:
-                    row = self.whereUsedHeader(parentLine)
-                    if not filterBomType:
-                        children = parentLine.bom_id.getWhereUsedStructure(filterBomType)
+            bom_line_filter = [('product_id', '=', product.id)]
+            if filter_bom_type:
+                bom_line_filter.append(('type', '=', filter_bom_type))
+            parent_lines = self.env['mrp.bom.line'].search(bom_line_filter)
+            if parent_lines:
+                for parent_line in parent_lines:
+                    row = self.whereUsedHeader(parent_line)
+                    if not filter_bom_type:
+                        children = parent_line.bom_id.get_where_used_structure(filter_bom_type)
                         out.append((row, children))
                     else:
-                        if parentLine.bom_id.type == filterBomType:
-                            children = parentLine.bom_id.getWhereUsedStructure(filterBomType)
+                        if parent_line.bom_id.type == filter_bom_type:
+                            children = parent_line.bom_id.get_where_used_structure(filter_bom_type)
                             out.append((row, children))
             else:
                 row = {'bom_type': self.type}
-                row.update(self.whereUsedHeaderP(product))
+                row.update(self.where_used_header_p(product))
                 out.append((row, ()))
         return out
 
     @api.model
-    def GetExplose(self, values=[]):
+    def get_explode(self, values=[]):
         """
             Returns a list of all children in a Bom (all levels)
         """
         self._packed = []
-        objId, _sourceID, lastRev = values
-        # get all ids of the children product in structured way like [[id,childids]]
-        relDatas = [objId, self._explodebom(self._getbom(objId), False, lastRev)]
-        prtDatas = self._getpackdatas(relDatas)
-        return (relDatas, prtDatas, self._getpackreldatas(relDatas, prtDatas))
+        obj_id, _source_id, last_rev = values
+        # get all ids of the children product in structured way like [[id,child_ids]]
+        rel_datas = [obj_id, self._explode_bom(self._get_bom(obj_id), False, last_rev)]
+        prt_datas = self._get_pack_datas(rel_datas)
+        return rel_datas, prt_datas, self._get_pack_rel_datas(rel_datas, prt_datas)
 
     @api.model
-    def _explodebom(self, bids, check=True, lastRev=False):
+    def _explode_bom(self, bids, check=True, last_rev=False):
         """
             Explodes a bom entity  ( check=False : all levels, check=True : one level )
         """
@@ -290,383 +305,424 @@ class MrpBomExtension(models.Model):
                     continue
                 tmpl_id = bom_line.product_id.product_tmpl_id.id
                 prod_id = bom_line.product_id.id
-                if lastRev:
-                    newerCompBrws = self.getLastCompId(prod_id)
-                    if newerCompBrws:
-                        prod_id = newerCompBrws.id
-                        tmpl_id = newerCompBrws.product_tmpl_id.id
-                innerids = self._explodebom(self._getbom(tmpl_id), check)
+                if last_rev:
+                    newer_comp_brws = self.get_last_comp_id(prod_id)
+                    if newer_comp_brws:
+                        prod_id = newer_comp_brws.id
+                        tmpl_id = newer_comp_brws.product_tmpl_id.id
+                inner_ids = self._explode_bom(self._get_bom(tmpl_id), check)
                 _packed.append(prod_id)
-                output.append([prod_id, innerids])
-        return(output)
+                output.append([prod_id, inner_ids])
+        return output
 
     @api.multi
-    def getLastCompId(self, compId):
-        prodProdObj = self.env['product.product']
-        compBrws = prodProdObj.browse(compId)
-        if compBrws:
-            prodBrwsList = prodProdObj.search([('engineering_code', '=', compBrws.engineering_code)], order='engineering_revision DESC')
-            for prodBrws in prodBrwsList:
-                return prodBrws
+    def get_last_comp_id(self, comp_id):
+        prod_prod_obj = self.env['product.product']
+        comp_brws = prod_prod_obj.browse(comp_id)
+        if comp_brws:
+            prod_brws_list = prod_prod_obj.search(
+                [('engineering_code', '=', comp_brws.engineering_code)],
+                order='engineering_revision DESC'
+            )
+            for prod_brws in prod_brws_list:
+                return prod_brws
         return False
 
     @api.model
-    def GetTmpltIdFromProductId(self, product_id=False):
+    def get_tmplt_id_from_product_id(self, product_id=False):
         if not product_id:
             return False
-        tmplDictList = self.env['product.product'].browse(product_id).read(['product_tmpl_id'])  # tmplDict = {'product_tmpl_id': (tmpl_id, u'name'), 'id': product_product_id}
-        for tmplDict in tmplDictList:
-            tmplTuple = tmplDict.get('product_tmpl_id', {})
-            if len(tmplTuple) == 2:
-                return tmplTuple[0]
+        tmpl_dict_list = self.env['product.product'].browse(product_id).read(['product_tmpl_id'])
+        # tmpl_dict = {'product_tmpl_id': (tmpl_id, u'name'), 'id': product_product_id}
+        for tmpl_dict in tmpl_dict_list:
+            tmpl_tuple = tmpl_dict.get('product_tmpl_id', {})
+            if len(tmpl_tuple) == 2:
+                return tmpl_tuple[0]
         return False
 
     @api.model
-    def GetExploseSum(self, values=[]):
+    def get_explode_sum(self, values=[]):
         """
             Return a list of all children in a Bom taken once (all levels)
         """
-        compId, _source_id, latestFlag = values
+        comp_id, _source_id, latest_flag = values
         self._packed = []
-        prodTmplId = self.GetTmpltIdFromProductId(compId)
-        bomId = self._getbom(prodTmplId)
-        explosedBomIds = self._explodebom(bomId, True, latestFlag)
-        relDatas = [compId, explosedBomIds]
-        prtDatas = self._getpackdatas(relDatas)
-        return (relDatas, prtDatas, self._getpackreldatas(relDatas, prtDatas))
+        prod_tmpl_id = self.get_tmplt_id_from_product_id(comp_id)
+        bom_id = self._get_bom(prod_tmpl_id)
+        explosed_bom_ids = self._explode_bom(bom_id, True, latest_flag)
+        rel_datas = [comp_id, explosed_bom_ids]
+        prt_datas = self._get_pack_datas(rel_datas)
+        return rel_datas, prt_datas, self._get_pack_rel_datas(rel_datas, prt_datas)
 
     @api.model
-    def _implodebom(self, bomLineObjs):
+    def _implode_bom(self, bom_line_objs):
         """
             Execute implosion for a a bom object
         """
-        def getProductId(bomLocalObj):
-            prodId = bomLocalObj.product_id.id
-            if not prodId:
-                trmplBrws = bomLocalObj.product_tmpl_id
-                if trmplBrws:
-                    for variantBrws in trmplBrws.product_variant_ids:
-                        return variantBrws.id
+
+        def get_product_id(bom_local_obj):
+            prod_id = bom_local_obj.product_id.id
+            if not prod_id:
+                trmpl_brws = bom_local_obj.product_tmpl_id
+                if trmpl_brws:
+                    for variant_brws in trmpl_brws.product_variant_ids:
+                        return variant_brws.id
             return False
 
         pids = []
-        for bomLineObj in bomLineObjs:
-            if not bomLineObj.bom_id:
+        for bom_line_obj in bom_line_objs:
+            if not bom_line_obj.bom_id:
                 continue
-            bomObj = bomLineObj.bom_id
-            parentBomId = bomObj.id
-            if parentBomId in self._packed:
+            bom_obj = bom_line_obj.bom_id
+            parent_bom_id = bom_obj.id
+            if parent_bom_id in self._packed:
                 continue
-            self._packed.append(parentBomId)
-            bomFthObj = bomObj.with_context({})
-            innerids = self._implodebom(self._getinbom(getProductId(bomFthObj)))
-            prodId = bomFthObj.product_id.id
-            if not prodId:
-                prodBrwsIds = bomFthObj.product_tmpl_id.product_variant_ids
-                if len(prodBrwsIds) == 1:
-                    prodId = prodBrwsIds[0].id
+            self._packed.append(parent_bom_id)
+            bom_fth_obj = bom_obj.with_context({})
+            inner_ids = self._implode_bom(self._get_in_bom(get_product_id(bom_fth_obj)))
+            prod_id = bom_fth_obj.product_id.id
+            if not prod_id:
+                prod_brws_ids = bom_fth_obj.product_tmpl_id.product_variant_ids
+                if len(prod_brws_ids) == 1:
+                    prod_id = prod_brws_ids[0].id
                 else:
-                    logging.error('[_implodebom] Unable to compute product ID, more than one product found: %r' % (prodBrwsIds))
-            pids.append((prodId, innerids))
-        return (pids)
+                    logging.error(
+                        '[_implode_bom] Unable to compute product id, more than one product found: {0}'.format(
+                            prod_brws_ids)
+                    )
+            pids.append((prod_id, inner_ids))
+        return pids
 
     @api.model
-    def GetWhereUsedSum(self, resIds):
+    def get_where_used_sum(self, res_ids):
         """
             Return a list of all fathers of a Part (all levels)
         """
         self._packed = []
-        relDatas = []
-        if len(resIds) < 1:
+        rel_datas = []
+        if len(res_ids) < 1:
             return None
         sid = False
-        if len(resIds) > 1:
-            sid = resIds[1]
-        oid = resIds[0]
-        relDatas.append(oid)
-        bomLineBrwsList = self._getinbom(oid, sid)
-        relDatas.append(self._implodebom(bomLineBrwsList))
-        prtDatas = self._getpackdatas(relDatas)
-        return (relDatas, prtDatas, self._getpackreldatas(relDatas, prtDatas))
+        if len(res_ids) > 1:
+            sid = res_ids[1]
+        oid = res_ids[0]
+        rel_datas.append(oid)
+        bom_line_brws_list = self._get_in_bom(oid, sid)
+        rel_datas.append(self._implode_bom(bom_line_brws_list))
+        prt_datas = self._get_pack_datas(rel_datas)
+        return rel_datas, prt_datas, self._get_pack_rel_datas(rel_datas, prt_datas)
 
     @api.multi
-    def GetExplodedBom(self, level=0, currlevel=0):
+    def get_exploded_bom(self, level=0, curr_level=0):
         """
             Return a list of all children in a Bom ( level = 0 one level only, level = 1 all levels)
         """
         self._packed = []
         result = []
-        if level == 0 and currlevel > 1:
+        if level == 0 and curr_level > 1:
             return result
-        for bomid in self:
-            for bom in bomid.bom_line_ids:
-                children = self.GetExplodedBom([bom.id], level, currlevel + 1)
+        for bom_id in self:
+            for bom in bom_id.bom_line_ids:
+                children = self.get_exploded_bom([bom.id], level, curr_level + 1)
                 result.extend(children)
-            if len(str(bomid.bom_id)) > 0:
-                result.append(bomid.id)
+            if len(str(bom_id.bom_id)) > 0:
+                result.append(bom_id.id)
         return result
 
     @api.model
-    def SaveStructure(self, relations, level=0, currlevel=0, kindBom='normal'):
+    def save_structure(self, relations, level=0, curr_level=0, kind_bom='normal'):
         """
             Save EBom relations
         """
         t_bom_line = self.env['mrp.bom.line']
         t_product_product = self.env['product.product']
-        ECOModuleInstalled = self.env.get('mrp.eco', None)
-        
-        evaluatedBOMs = {}
+        eco_module_installed = self.env.get('mrp.eco', None)
 
+        evaluated_boms = {}
 
-        def cleanOldEngBomLines(relations):
-            
-            for _parentName, productProductParentID, _ChildName, productProductChildID, sourceID, _RelArgs in relations:
-                checkLevel(productProductParentID, [sourceID], productProductChildID)
-                
-        def checkLevel(productProductParentID, sourceIDs, productProductChildID):
-            logging.info('parentID: %r, source: %r, childID: %r' % (productProductParentID, sourceIDs, productProductChildID))
+        def clean_old_eng_bom_lines(relations):
+
+            for _parent_name, product_product_parent_id, _child_name, product_product_child_id, source_id, _rel_args in relations:
+                check_level(product_product_parent_id, [source_id], product_product_child_id)
+
+        def check_level(product_product_parent_id, source_ids, product_product_child_id):
+            logging.info('parent_id: {0}, source: {1}, child_id: {2}'.format(
+                product_product_parent_id,
+                source_ids,
+                product_product_child_id
+            ))
             evaluated = []
-            if productProductParentID is None or sourceIDs is None:
+            if product_product_parent_id is None or source_ids is None:
                 return False
-            toCheck = (productProductParentID, sourceIDs, productProductChildID)
-            if toCheck in evaluated:
+            to_check = (product_product_parent_id, source_ids, product_product_child_id)
+            if to_check in evaluated:
                 return
-            objPart = t_product_product.with_context({}).browse(productProductParentID)
-            bomBrwsList = self.search(["|",
-                                       ('product_id', '=', productProductParentID),
-                                       ('product_tmpl_id', '=', objPart.product_tmpl_id.id),
-                                       ('source_id', 'in', sourceIDs)])
-            bomLineBrwsList = t_bom_line.search([('bom_id', 'in', bomBrwsList.ids),
-                                              ('source_id', 'in', sourceIDs)])
-            for bomLineBrws in bomLineBrwsList:
-                logging.info('Line: %r product %r' % (bomLineBrws.id, bomLineBrws.product_id.id))
-                checkLevel(bomLineBrws.product_id.id, bomLineBrws.product_id.linkeddocuments.ids, False)
-            bomLineBrwsList.unlink()
-            for bomBrws in bomBrwsList:
-                evaluatedBOMs[bomBrws.id] = bomBrws
-            evaluated.append(toCheck)
+            obj_part = t_product_product.with_context({}).browse(product_product_parent_id)
+            bom_brws_list = self.search([
+                "|",
+                ('product_id', '=', product_product_parent_id),
+                ('product_tmpl_id', '=', obj_part.product_tmpl_id.id),
+                ('source_id', 'in', source_ids)
+            ])
+            bom_line_brws_list = t_bom_line.search([
+                ('bom_id', 'in', bom_brws_list.ids),
+                ('source_id', 'in', source_ids)
+            ])
+            for bom_line_brws in bom_line_brws_list:
+                logging.info('Line: {0} product {1}'.format(bom_line_brws.id, bom_line_brws.product_id.id))
+                check_level(bom_line_brws.product_id.id, bom_line_brws.product_id.linkeddocuments.ids, False)
+            bom_line_brws_list.unlink()
+            for bom_brws in bom_brws_list:
+                evaluated_boms[bom_brws.id] = bom_brws
+            evaluated.append(to_check)
             return False
 
-        def toCompute(parentName, relations, kindBom='normal'):
+        def to_compute(parent_name, relations, kind_bom='normal'):
             """
                 Processes relations
             """
-            bomID = False
-            nexRelation = []
+            bom_id = False
+            nex_relation = []
 
-            def divedeByParent(element):
-                if element[0] == parentName:
+            def divide_by_parent(element):
+                if element[0] == parent_name:
                     return True
-                nexRelation.append(element)
+                nex_relation.append(element)
 
-            subRelations = list(filter(divedeByParent, relations))
-            if len(subRelations) < 1:  # no relation to save
+            sub_relations = list(filter(divide_by_parent, relations))
+            if len(sub_relations) < 1:  # no relation to save
                 return
-            parentName, parentID, _ChildName, _ChildID, sourceID, _RelArgs = subRelations[0]
-            existingBoms = self.search([('product_id', '=', parentID),
-                                        ('source_id', '=', sourceID),
-                                        ('active', '=', True)])
-            if existingBoms:
-                newBomBrws = existingBoms[0]
-                parentVals = getParentVals(parentName, parentID, sourceID, bomType=newBomBrws.type)
-                newBomBrws.write(parentVals)
-                saveChildrenBoms(subRelations, newBomBrws.id, nexRelation, newBomBrws.type)
-                if ECOModuleInstalled is not None:
-                    for ecoBrws in self.env['mrp.eco'].search([('bom_id', '=', newBomBrws.id)]):
-                        ecoBrws._compute_bom_change_ids()
-            elif not existingBoms:
-                bomID = saveParent(parentName, parentID, sourceID, kindBom)
-                saveChildrenBoms(subRelations, bomID, nexRelation, kindBom)
-                
-            return bomID
+            parent_name, parent_id, _child_name, _child_id, source_id, _rel_args = sub_relations[0]
+            existing_boms = self.search([
+                ('product_id', '=', parent_id),
+                ('source_id', '=', source_id),
+                ('active', '=', True)
+            ])
+            if existing_boms:
+                new_bom_brws = existing_boms[0]
+                parent_vals = get_parent_vals(parent_name, parent_id, source_id, bom_type=new_bom_brws.type)
+                new_bom_brws.write(parent_vals)
+                save_children_boms(sub_relations, new_bom_brws.id, nex_relation, new_bom_brws.type)
+                if eco_module_installed is not None:
+                    for eco_brws in self.env['mrp.eco'].search([('bom_id', '=', new_bom_brws.id)]):
+                        eco_brws._compute_bom_change_ids()
+            elif not existing_boms:
+                bom_id = save_parent(parent_name, parent_id, source_id, kind_bom)
+                save_children_boms(sub_relations, bom_id, nex_relation, kind_bom)
 
-        def saveChildrenBoms(subRelations, bomID, nexRelation, kindBom):
-            for parentName, _parentID, childName, childID, sourceID, relArgs in subRelations:
-                if parentName == childName:
-                    logging.error('toCompute : Father (%s) refers to himself' % (str(parentName)))
-                    raise Exception(_('saveChild.toCompute : Father "%s" refers to himself' % (str(parentName))))
+            return bom_id
 
-                saveChild(childName, childID, sourceID, bomID, args=relArgs)
-                toCompute(childName, nexRelation, kindBom)
-            self.RebaseProductWeight(bomID, self.browse(bomID).rebaseBomWeight())
+        def save_children_boms(sub_relations, bom_id, nex_relation, kind_bom):
+            for parent_name, _parent_id, child_name, child_id, source_id, rel_args in sub_relations:
+                if parent_name == child_name:
+                    logging.error('to_compute : Father ({0}) refers to himself'.format(str(parent_name)))
+                    raise Exception(
+                        _('save_child.to_compute : Father "{0}" refers to himself'.format(str(parent_name))))
 
-        def repairQty(value):
+                save_child(child_name, child_id, source_id, bom_id, args=rel_args)
+                to_compute(child_name, nex_relation, kind_bom)
+            self.rebase_product_weight(bom_id, self.browse(bom_id).rebase_bom_weight())
+
+        def repair_qty(value):
             """
             from CAD application some time some value are string with strange value
             so we need to fix it in some way
             """
-            if(not isinstance(value, (float, int)) or (value < 1e-6)):
+            if not isinstance(value, (float, int)) or (value < 1e-6):
                 return 1.0
             return float(value)
 
-        def checkClonedFrom(productID, bomType):
-            prodEnv = self.env['product.product']
-            prodBrws = prodEnv.browse(productID)
-            if prodBrws.source_product:
-                for bomBrws in prodBrws.source_product.bom_ids:
-                    if bomBrws.source_id:
-                        return bomBrws.type, bomBrws.routing_id.id
-            return bomType, False
-            
-        def getParentVals(parentName, partID, sourceID, args=None, bomType='normal'):
+        def check_cloned_from(product_id, bom_type):
+            prod_env = self.env['product.product']
+            prod_brws = prod_env.browse(product_id)
+            if prod_brws.source_product:
+                for bom_brws in prod_brws.source_product.bom_ids:
+                    if bom_brws.source_id:
+                        return bom_brws.type, bom_brws.routing_id.id
+            return bom_type, False
+
+        def get_parent_vals(parent_name, part_id, source_id, args=None, bom_type='normal'):
             """
                 Saves the relation ( parent side in mrp.bom )
             """
             res = {}
-            objPart = t_product_product.with_context({}).browse(partID)
-            res['product_tmpl_id'] = objPart.product_tmpl_id.id
-            res['product_id'] = partID
-            res['source_id'] = sourceID
-            res['type'], res['routing_id'] = checkClonedFrom(partID, bomType=bomType)
+            obj_part = t_product_product.with_context({}).browse(part_id)
+            res['product_tmpl_id'] = obj_part.product_tmpl_id.id
+            res['product_id'] = part_id
+            res['source_id'] = source_id
+            res['type'], res['routing_id'] = check_cloned_from(part_id, bom_type=bom_type)
             return res
 
-        def saveParent(name, partID, sourceID, kindBom='normal'):
+        def save_parent(name, part_id, source_id, kind_bom='normal'):
             """
             Create o retrieve parent bom object
             :return: id of the bom retrieved / created
             """
             try:
-                vals = getParentVals(name, partID, sourceID, bomType=kindBom)
+                vals = get_parent_vals(name, part_id, source_id, bom_type=kind_bom)
                 return self.create(vals).id
             except Exception as ex:
-                logging.error("saveParent :  unable to create a relation for part: (%s) with source: (%d)  exception: %r" % (name, sourceID, ex))
-                raise AttributeError(_("saveParent :  unable to create a relation for part (%s) with source (%d) : %s.") % (name, sourceID, str(sys.exc_info())))
+                logging.error(
+                    "save_parent :  unable to create a relation for part: ({0}) with source: ({1})  exception: {2}".format(
+                        name, source_id, ex)
+                )
+                raise AttributeError(
+                    _("save_parent :  unable to create a relation for part ({0}) with source ({1}) : {2}.".format(
+                        name, source_id, str(sys.exc_info()))
+                    )
+                )
 
-        def saveChild(name, partID, sourceID, bomID=None, args=None):
+        def save_child(name, part_id, source_id, bom_id=None, args=None):
             """
                 Saves the relation ( child side in mrp.bom.line )
             """
             try:
                 res = {}
-                if bomID is not None:
-                    res['bom_id'] = bomID
-                res['type'] = kindBom
-                res['product_id'] = partID
-                res['source_id'] = sourceID
+                if bom_id is not None:
+                    res['bom_id'] = bom_id
+                res['type'] = kind_bom
+                res['product_id'] = part_id
+                res['source_id'] = source_id
                 if args is not None:
                     for arg in args:
                         res[str(arg)] = args[str(arg)]
-                if ('product_qty' in res):
-                    res['product_qty'] = repairQty(res['product_qty'])
+                if 'product_qty' in res:
+                    res['product_qty'] = repair_qty(res['product_qty'])
                 return t_bom_line.create(res)
             except Exception as ex:
                 logging.error(ex)
-                logging.error("saveChild :  unable to create a relation for part (%s) with source (%d) : %s." % (name, sourceID, str(args)))
-                raise AttributeError(_("saveChild :  unable to create a relation for part (%s) with source (%d) : %s." % (name, sourceID, str(sys.exc_info()))))
+                logging.error(
+                    "save_child :  unable to create a relation for part ({0}) with source ({1}) : {2}.".format(
+                        name, source_id, str(args))
+                )
+                raise AttributeError(_(
+                    "save_child :  unable to create a relation for part ({0}) with source ({1}) : {2}.".format(
+                        name, source_id, str(sys.exc_info())
+                    )
+                ))
 
-        def cleanEmptyBoms():
-            for _bomId, bomBrws in list(evaluatedBOMs.items()):
-                if not bomBrws.bom_line_ids:
-                    bomBrws.unlink()
-            
+        def clean_empty_boms():
+            for _bom_id, bom_brws in evaluated_boms.items():
+                if not bom_brws.bom_line_ids:
+                    bom_brws.unlink()
+
+
         if len(relations) < 1:  # no relation to save
             return False
-        parentName, _parentID, _childName, _childID, _sourceID, relArgs = relations[0]
-        if ECOModuleInstalled == None:
-            cleanOldEngBomLines(relations)
-        if not relArgs: # Case of not children, so no more BOM for this product
+        parent_name, _parent_id, _child_name, _child_id, _source_id, rel_args = relations[0]
+        if eco_module_installed is None:
+            clean_old_eng_bom_lines(relations)
+        if not rel_args:  # Case of not children, so no more BOM for this product
             return False
-        bomID = toCompute(parentName, relations, kindBom)
-        cleanEmptyBoms()
-        return bomID
+        bom_id = to_compute(parent_name, relations, kind_bom)
+        clean_empty_boms()
+        return bom_id
 
-    def _sumBomWeight(self, bomObj):
+    def _sum_bom_weight(self, bom_obj):
         """
             Evaluates net weight for assembly, based on BoM object
         """
         weight = 0.0
-        for bom_line in bomObj.bom_line_ids:
+        for bom_line in bom_obj.bom_line_ids:
             weight += (bom_line.product_qty * bom_line.product_id.weight)
         return weight
 
     @api.model
-    def RebaseProductWeight(self, parentBomID, weight=0.0):
+    def rebase_product_weight(self, parent_bom_id, weight=0.0):
         """
             Evaluates net weight for assembly, based on product ID
         """
-        if not(parentBomID is None) or parentBomID:
-            bomObj = self.with_context({}).browse(parentBomID)
-            self.env['product.product'].browse([bomObj.product_id.id]).write({'weight': weight})
+        if not (parent_bom_id is None) or parent_bom_id:
+            bom_obj = self.with_context({}).browse(parent_bom_id)
+            self.env['product.product'].browse([bom_obj.product_id.id]).write({'weight': weight})
 
     @api.multi
-    def rebaseBomWeight(self):
+    def rebase_bom_weight(self):
         """
             Evaluates net weight for assembly, based on BoM ID
         """
         weight = 0.0
-        for bomBrws in self:
-            weight = bomBrws._sumBomWeight(bomBrws)
-            super(MrpBomExtension, bomBrws).write({'weight_net': weight})
+        for bom_brws in self:
+            weight = bom_brws._sum_bom_weight(bom_brws)
+            super(MrpBomExtension, bom_brws).write({'weight_net': weight})
         return weight
 
     @api.multi
     def write(self, vals, check=True):
         ret = super(MrpBomExtension, self).write(vals)
-        for bomBrws in self:
-            bomBrws.rebaseBomWeight()
+        for bom_brws in self:
+            bom_brws.rebase_bom_weight()
         return ret
 
     @api.multi
     def copy(self, default={}):
         """
-            Return new object copied (removing SourceID)
+            Return new object copied (removing source_id)
         """
-        newBomBrws = super(MrpBomExtension, self).copy(default)
-        if newBomBrws:
-            for bom_line in newBomBrws.bom_line_ids:
-                lateRevIdC = self.env['product.product'].GetLatestIds([(bom_line.product_id.product_tmpl_id.engineering_code,
-                                                                        False,
-                                                                        False)])  # Get Latest revision of each Part
+        new_bom_brws = super(MrpBomExtension, self).copy(default)
+        if new_bom_brws:
+            for bom_line in new_bom_brws.bom_line_ids:
+                late_rev_id_c = self.env['product.product'].GetLatestIds([
+                    (bom_line.product_id.product_tmpl_id.engineering_code,
+                     False,
+                     False)
+                ])  # Get Latest revision of each Part
                 bom_line.sudo().write({'state': 'draft'})
-                bom_line.write({'source_id': False,
-                                'name': bom_line.product_id.product_tmpl_id.name,
-                                'product_id': lateRevIdC[0]})
-            newBomBrws.sudo().with_context({'check': False}).write({'source_id': False,
-                                     'name': newBomBrws.product_tmpl_id.name})
-        return newBomBrws
+                bom_line.write({
+                    'source_id': False,
+                    'name': bom_line.product_id.product_tmpl_id.name,
+                    'product_id': late_rev_id_c[0]
+                })
+            new_bom_brws.sudo().with_context({'check': False}).write({
+                'source_id': False,
+                'name': new_bom_brws.product_tmpl_id.name
+            })
+        return new_bom_brws
 
     @api.one
-    def deleteChildRow(self, documentId):
+    def delete_child_row(self, document_id):
         """
         delete the bom child row
         """
-        for bomLine in self.bom_line_ids:
-            if bomLine.source_id.id == documentId and bomLine.type == self.type:
-                bomLine.unlink()
+        for bom_line in self.bom_line_ids:
+            if bom_line.source_id.id == document_id and bom_line.type == self.type:
+                bom_line.unlink()
 
     @api.model
-    def addChildRow(self, childId, sourceDocumentId, relationAttributes, bomType='normal'):
+    def add_child_row(self, child_id, source_document_id, relation_attributes, bom_type='normal'):
         """
         add children rows
         """
-        relationAttributes.update({'bom_id': self.id,
-                                   'product_id': childId,
-                                   'source_id': sourceDocumentId,
-                                   'type': bomType})
-        self.bom_line_ids.ids.append(self.env['mrp.bom.line'].create(relationAttributes).id)
+        relation_attributes.update({'bom_id': self.id,
+                                    'product_id': child_id,
+                                    'source_id': source_document_id,
+                                    'type': bom_type})
+        self.bom_line_ids.ids.append(self.env['mrp.bom.line'].create(relation_attributes).id)
 
-    @api.multi      # Don't change me with @api.one or I don't work!!!
+    @api.multi  # Don't change me with @api.one or I don't work!!!
     def open_related_bom_lines(self):
-        for bomBrws in self:
-            def recursion(bomBrwsList):
-                outBomLines = []
-                for bomBrws in bomBrwsList:
-                    lineBrwsList = bomBrws.bom_line_ids
-                    outBomLines.extend(lineBrwsList.ids)
-                    for lineBrws in lineBrwsList:
-                        bomsFound = self.search([('product_tmpl_id', '=', lineBrws.product_id.product_tmpl_id.id),
-                                                 ('type', '=', lineBrws.type),
-                                                 ('active', '=', True)])
-                        bottomLineIds = recursion(bomsFound)
-                        outBomLines.extend(bottomLineIds)
-                return outBomLines
+        for bom_brws in self:
+            def recursion(bom_brws_list):
+                out_bom_lines = []
+                for bom_brws in bom_brws_list:
+                    line_brws_list = bom_brws.bom_line_ids
+                    out_bom_lines.extend(line_brws_list.ids)
+                    for line_brws in line_brws_list:
+                        boms_found = self.search([
+                            ('product_tmpl_id', '=', line_brws.product_id.product_tmpl_id.id),
+                            ('type', '=', line_brws.type),
+                            ('active', '=', True)
+                        ])
+                        bottom_line_ids = recursion(boms_found)
+                        out_bom_lines.extend(bottom_line_ids)
+                return out_bom_lines
 
-            bomLineIds = recursion(self)
+            bom_line_ids = recursion(self)
             return {'name': _('B.O.M. Lines'),
                     'res_model': 'mrp.bom.line',
                     'view_type': 'form',
                     'view_mode': 'pivot,tree',
                     'type': 'ir.actions.act_window',
-                    'domain': [('id', 'in', bomLineIds)],
+                    'domain': [('id', 'in', bom_line_ids)],
                     'context': {"group_by": ['bom_id']},
                     }
