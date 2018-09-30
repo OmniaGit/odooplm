@@ -1465,7 +1465,7 @@ class PlmDocument(models.Model):
                         trueDocumentId = documentAttributes.get(documentId, {}).get('id', 0)
                         if trueDocumentId:  # seems strange this .. but i will delete only the bom with the right source id
                             for brwBom in brwBoml:
-                                brwBom.deleteChildRow(trueDocumentId)
+                                brwBom.delete_child_row(trueDocumentId)
                             break
                 # add rows
                 for childId, documentId, relationAttributes in childRelations:
@@ -1478,7 +1478,7 @@ class PlmDocument(models.Model):
                         continue
                     trueChildId = productAttributes[childId].get('id')
                     trueDocumentId = documentAttributes.get(documentId, {}).get('id')
-                    brwBoml.addChildRow(trueChildId, trueDocumentId, relationAttributes, bomType)
+                    brwBoml.add_child_row(trueChildId, trueDocumentId, relationAttributes, bomType)
             except Exception as ex:
                 logging.error(ex)
                 raise ex
