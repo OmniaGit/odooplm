@@ -394,7 +394,7 @@ class MrpBomExtension(models.Model):
         return pids
 
     @api.model
-    def get_where_used_sum(self, res_ids):
+    def GetWhereUsedSum(self, res_ids):
         """
             Return a list of all fathers of a Part (all levels)
         """
