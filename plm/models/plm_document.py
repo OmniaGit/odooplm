@@ -1273,7 +1273,11 @@ class PlmDocument(models.Model):
         self['DOCUMENT_DATE'] = None
         """
         start = time.time()
-        cPickleStructure, hostName, hostPws, skipDocumentCheckOnBom = arguments
+        if len(arguments) == 3:
+            cPickleStructure, hostName, hostPws = arguments
+            skipDocumentCheckOnBom = False
+        else:
+            cPickleStructure, hostName, hostPws, skipDocumentCheckOnBom = arguments
         documentAttributes = {}
         documentRelations = {}
         productAttributes = {}
