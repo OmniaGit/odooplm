@@ -59,7 +59,7 @@ class ResUsers(models.Model):
                         logging.info('Got CustomProcedure file from group %r-%r with ID %r' % (groupBrws.category_id.name, groupBrws.name, groupBrws.id))
                         return fileContent, fileName
         return '', ''
-        
+
     @api.multi
     def open_custommodule_edit(self):
         for userBrws in self:

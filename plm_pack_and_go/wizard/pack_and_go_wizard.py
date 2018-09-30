@@ -19,13 +19,13 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-import json
-import tempfile
 '''
 Created on Mar 30, 2016
 
 @author: Daniel Smerghetto
 '''
+import json
+import tempfile
 import logging
 from odoo import models
 from odoo import fields
