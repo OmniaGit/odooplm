@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -20,22 +19,20 @@
 #
 ##############################################################################
 
-'''
+"""
 Created on 30 Aug 2016
 
 @author: Daniel Smerghetto
-'''
+"""
 
-from openerp import models
-from openerp import fields
-from openerp import _
+from odoo import models
+from odoo import fields
+from odoo import _
 
 
 class PlmDocumentExtension(models.Model):
     _inherit = 'plm.document'
 
-    usedforspare = fields.Boolean(_('Used for Spare'),
+    used_for_spare = fields.Boolean(_('Used for Spare'),
                                   default=False,
                                   help=_("Drawings marked here will be used printing Spare Part Manual report."))
-
-PlmDocumentExtension()
