@@ -35,6 +35,7 @@ Allow to compute boms due to date
     """,
     'data': [
             'views/mrp_bom_extension.xml',
+            'views/data.xml',
             #'report/bom_structure_report_extension.xml',
     ],
     'demo': [],

@@ -18,11 +18,11 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-'''
+"""
 Created on 28/mag/2016
 
 @author: mboscolo
-'''
+"""
 from odoo import _
 from odoo import api
 from odoo import models
@@ -31,11 +31,11 @@ from odoo import models
 class ReportDocumentPdf(models.AbstractModel):
     _name = 'report.plm_cutted_parts.bom_structure_all_cutted'
 
-    def get_children(self, myObject, level=0):
+    def get_children(self, my_object, level=0):
         result = {}
 
-        def _get_rec(bomobject, level, parentQty=1):
-            for l in bomobject.bom_line_ids:
+        def _get_rec(bom_object, level, parent_qty=1):
+            for l in bom_object.bom_line_ids:
                 if l.product_id.is_row_material:
                     eng_code = l.product_id.engineering_code
                     res = {}
@@ -43,38 +43,38 @@ class ReportDocumentPdf(models.AbstractModel):
                     res['name'] = product.name
                     res['item'] = l.itemnum
                     res['ancestor'] = l.bom_id.product_id
-                    res['pname'] = product.name
-                    res['pdesc'] = _(product.description)
-                    res['pcode'] = l.product_id.default_code
-                    res['previ'] = product.engineering_revision
-                    res['pqty'] = l.product_qty * 1 if parentQty < 1 else parentQty
-                    res['uname'] = l.product_uom.name
-                    res['pweight'] = product.weight
+                    res['p_name'] = product.name
+                    res['p_desc'] = _(product.name)
+                    res['p_code'] = l.product_id.default_code
+                    res['p_rev'] = product.engineering_revision
+                    res['p_qty'] = l.product_qty * 1 if parent_qty < 1 else parent_qty
+                    res['u_name'] = l.product_uom.name
+                    res['p_weight'] = product.weight
                     res['code'] = eng_code
                     res['level'] = level
-                    res['prodBrws'] = l.product_id
-                    res['prodTmplBrws'] = product
-                    res['x_leght'] = l.x_leght
-                    res['y_leght'] = l.y_leght
-                    spoolList = result.get(eng_code, [])
-                    spoolList.append(res)
-                    result[eng_code] = spoolList
+                    res['prod_brws'] = l.product_id
+                    res['prod_tmpl_brws'] = product
+                    res['x_length'] = l.x_leght
+                    res['y_length'] = l.y_leght
+                    spool_list = result.get(eng_code, [])
+                    spool_list.append(res)
+                    result[eng_code] = spool_list
                     continue
 
-                for bomId in l.product_id.bom_ids:
-                    if bomId.type == l.bom_id.type:
-                        _get_rec(bomId, level + 1, l.product_qty)
-            return result.values()
-        children = _get_rec(myObject, level + 1)
+                for bom_id in l.product_id.bom_ids:
+                    if bom_id.type == l.bom_id.type:
+                        _get_rec(bom_id, level + 1, l.product_qty)
+            return list(result.values())
+        children = _get_rec(my_object, level + 1)
         return children
 
-    def bom_type(self, myObject):
-        result = dict(self.env.get(myObject._model._name).fields_get(self.cr, self.uid)['type']['selection']).get(myObject.type, '')
+    def bom_type(self, my_object):
+        result = dict(self.env.get(my_object._model._name).fields_get(self.cr, self.uid)['type']['selection']).get(my_object.type, '')
         return _(result)
 
     @api.model
-    def get_report_values(self, docids, data=None):
-        documents = self.env['mrp.bom'].browse(docids)
+    def get_report_values(self, doc_ids):
+        documents = self.env['mrp.bom'].browse(doc_ids)
         return {'docs': documents,
                 'get_children': self.get_children,
                 'bom_type': self.bom_type,

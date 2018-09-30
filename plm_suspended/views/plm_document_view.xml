@@ -1,30 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
-	<data> 
-	    <record id="view_plm_document_suspended" model="ir.ui.view">
-	        <field name="name">view.plm.document.suspended</field>
-	        <field name="model">plm.document</field>
-	        <field name="inherit_id" ref="plm.view_plm_document"/>
-	        <field name="type">form</field>
-	    	<field name="priority" eval="16"/>
-	        <field name="arch" type="xml">
-	        	 <xpath expr="//header" position="inside">
-	        		<button name="action_suspend" 
-	                    		states="draft" 
-	                    		type="object"
-	                    		string="Suspend" 
-	                    		class="oe_highlight"  
-	                    		attrs="{'invisible': ['|',('is_checkout','=',True)]}"
-	                    	/>
-	        		<button name="action_unsuspend" 
-	                    		states="draft" 
-	                    		type="object"
-	                    		string="Un-Suspend" 
-	                    		class="oe_highlight"  
-	                    		attrs="{'invisible': ['|',('is_checkout','=',True), ('state', '=', 'suspended')]}"
-	                    	/>
-				</xpath>
-	 		</field>
-	    </record>
- 	</data>
-</openerp>
+<odoo>
+    <record id="view_plm_document_suspended" model="ir.ui.view">
+        <field name="name">view.plm.document.suspended</field>
+        <field name="model">plm.document</field>
+        <field name="inherit_id" ref="plm.view_plm_document"/>
+        <field name="type">form</field>
+        <field name="priority" eval="16"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_suspend"
+                        states="draft"
+                        type="object"
+                        string="Suspend"
+                        class="oe_highlight"
+                        attrs="{'invisible': ['|',('is_checkout','=',True)]}"
+                />
+                <button name="action_unsuspend"
+                        states="suspended"
+                        type="object"
+                        string="Un-Suspend"
+                        class="oe_highlight"
+                        attrs="{'invisible': ['|',('is_checkout','=',True), ('state', 'not in', ['suspended'])]}"
+                />
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -4,7 +4,7 @@
 				'name': product_id.name,
                 'part_number': product_id.engineering_code,
                 'part_revision': product_id.engineering_revision,
-                'part_description': product_id.description}
+                'part_description': product_id.name}
                 {'bom_type': mprBomLineId.type}
  -->
 	<t t-name="plm_exploded_view_row">

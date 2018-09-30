@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -20,11 +19,11 @@
 #
 ##############################################################################
 
-'''
+"""
 Created on 11 Aug 2016
 
 @author: Daniel Smerghetto
-'''
+"""
 from odoo.exceptions import UserError
 from odoo import SUPERUSER_ID
 from odoo import models
@@ -38,9 +37,9 @@ import stat
 
 
 class PlmBackupDocument(models.Model):
-    '''
+    """
         Only administrator is allowed to remove elements by this table
-    '''
+    """
     _name = 'plm.backupdoc'
 
     userid = fields.Many2one('res.users',
@@ -93,10 +92,10 @@ PlmBackupDocument()
 
 
 class BackupDocWizard(osv.osv.osv_memory):
-    '''
+    """
         This class is called from an action in xml located in plm.backupdoc.
         Pay attention! You can restore also confirmed, released and obsoleted documents!!!
-    '''
+    """
 
     _name = 'plm.backupdoc_wizard'
 

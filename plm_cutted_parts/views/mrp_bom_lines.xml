@@ -1,22 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
-	<data>
-<!-- Views -->		
-	
-	
-	    <record id="plm_cutted_parts_bom_line" model="ir.ui.view">
-            <field name="name">plm.bom.form.cutted</field>
-            <field name="model">mrp.bom</field>
-            <field name="inherit_id" ref="plm.plm_bom_form_view"/>
-            <field name="type">form</field>
-            <field name="arch" type="xml">
-            	<data>
-	            	<xpath expr="//field[@name='bom_line_ids']/tree/field[@name='type']" position="after">
-		               	<field name="x_leght" />
-		    			<field name="y_leght" />
-		           	</xpath>
-	           	</data>
-			</field>
-        </record>
-    </data>
-</openerp>
+<odoo>
+    <!-- Views -->
+    <record id="plm_cutted_parts_bom_line" model="ir.ui.view">
+        <field name="name">plm.bom.form.cutted</field>
+        <field name="model">mrp.bom</field>
+        <field name="inherit_id" ref="plm.plm_bom_form_view"/>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='bom_line_ids']/tree/field[@name='type']" position="after">
+                <field name="x_length"/>
+                <field name="y_length"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

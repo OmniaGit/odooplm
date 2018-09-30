@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution    
@@ -34,11 +33,10 @@ Allow to use engineering boms
 ==============================================
     """,
     'data': [
-            'views/plm_description.xml',
-            'views/mrp_bom.xml',
-            #'views/product_product_kanban.xml',
-            'views/menu.xml',
-            'views/product_product.xml',
+        'views/mrp_bom.xml',
+        # 'views/product_product_kanban.xml',
+        'views/menu.xml',
+        'views/product_product.xml',
     ],
     'demo': [],
     'test': [],
@@ -46,5 +44,3 @@ Allow to use engineering boms
     'application': False,
     'auto_install': False,
 }
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

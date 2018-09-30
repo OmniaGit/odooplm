@@ -93,7 +93,7 @@ def get_parent(myObject):
             '',
             _(myObject.product_tmpl_id.name) or _(myObject.product_tmpl_id.default_code),
             myObject.product_tmpl_id.engineering_revision,
-            _(myObject.product_tmpl_id.description),
+            _(myObject.product_tmpl_id.name),
             '',
             '',
             myObject.product_qty,

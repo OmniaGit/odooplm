@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -73,6 +72,3 @@ class PlmDescription(models.Model):
     sequence = fields.Integer(_('Sequence'),
                               help=_("Assign the sequence order when displaying a list of product categories."))
 
-PlmDescription()
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

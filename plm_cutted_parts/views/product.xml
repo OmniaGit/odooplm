@@ -1,43 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
-	<data>
-		
-		
-		
-<!-- Views -->	
+<odoo>
+    <!-- Views -->
+    <record id="product_product_cutted_parts" model="ir.ui.view">
+        <field name="name">product.product.cutted.parts</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="plm.plm_component_base_form"/>
+        <field name="priority" eval="3"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='technical_infos_group']" position="after">
+                <group col="4" colspan="4">
+                    <field name="is_row_material"/>
+                    <field name="row_material"/>
+                    <field name="row_material_x_length" attrs="{'readonly':[('is_row_material', '=', False)]}"/>
+                    <field name="row_material_y_length" attrs="{'readonly':[('is_row_material', '=', False)]}"/>
+                    <field name="wastage_percent"/>
+                    <field name="material_added"/>
+                    <field name="bom_rounding"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
 
-	<record id="product_product_cutted_parts" model="ir.ui.view">
-		<field name="name">product.product.cutted.parts</field>
-		<field name="model">product.product</field>
-		<field name="inherit_id" ref="plm.plm_component_base_form"/>
-		<field name="priority" eval="3"/>
-		<field name="arch" type="xml">
-			<field name="engineering_material" position="after">
-				<group col="4" colspan="4">
-					<field name="is_row_material"></field>
-					<field name="row_material"></field>
-					<field name="row_material_xlenght" attrs="{'readonly':[('is_row_material', '=', False)]}"></field>
-					<field name="row_material_ylenght" attrs="{'readonly':[('is_row_material', '=', False)]}"></field>
-					<field name="wastage_percent"></field>
-					<field name="material_added"></field>
-					<field name="bom_rounding"></field>
-				</group>
-			</field>
-		</field>
-	</record>
-
-	<record id="plm_cutted_normalbom" model="ir.ui.view">
-		<field name="name">plm.relation.normal</field>
-		<field name="model">plm.temporary</field>
-		<field name="inherit_id" ref="plm_engineering.plm_component_create_normalbom"/>
-		<field name="type">form</field>
-		<field name="arch" type="xml">
-			<field name="summarize" position="after">
-				<group>
-					<field name="cutted_part_explosion" widget="radio"/>
-				</group>
-			</field>
-		</field>
-	</record>
-    </data>
-</openerp>
+    <record id="plm_cutted_normal_bom" model="ir.ui.view">
+        <field name="name">plm.relation.normal</field>
+        <field name="model">plm.temporary</field>
+        <field name="inherit_id" ref="plm_engineering.plm_component_create_normal_bom"/>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <field name="summarize" position="after">
+                <group>
+                    <field name="cutted_part_explosion" widget="radio"/>
+                </group>
+            </field>
+        </field>
+    </record>
+</odoo>

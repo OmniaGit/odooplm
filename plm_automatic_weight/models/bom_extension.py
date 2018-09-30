@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution    
@@ -20,14 +19,14 @@
 #
 ##############################################################################
 
-'''
+"""
 Created on 13 Jun 2016
 
 @author: Daniel Smerghetto
-'''
+"""
 
-from openerp import models
-from openerp import api
+from odoo import models
+from odoo import api
 
 
 class MrpBomExtension(models.Model):
@@ -35,10 +34,8 @@ class MrpBomExtension(models.Model):
     _inherit = 'mrp.bom'
 
     @api.multi
-    def forceComputeBomWeight(self):
-        '''
+    def force_compute_bom_weight(self):
+        """
             Call plm bom weight calculator function
-        '''
+        """
         self.rebaseBomWeight()
-
-MrpBomExtension()

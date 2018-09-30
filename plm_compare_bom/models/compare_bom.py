@@ -28,22 +28,16 @@ _logger = logging.getLogger(__name__)
 def _moduleName():
     path = os.path.dirname(__file__)
     return os.path.basename(os.path.dirname(path))
-
-
 openerpModule = _moduleName()
 
 
 def _modulePath():
     return os.path.dirname(__file__)
-
-
 openerpModulePath = _modulePath()
 
 
 def _customPath():
     return os.path.join(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'custom'), 'report')
-
-
 customModulePath = _customPath()
 
 BOM_SHOW_FIELDS = ['Position',
@@ -55,6 +49,40 @@ BOM_SHOW_FIELDS = ['Position',
 ##############################################################################################################
 #    Class plm.compare.bom
 ###############################################################################################################
+class plm_missing_bom(osv.osv.osv_memory):
+    _name = "plm.missing.bom"
+    _description = "BoM Missing Objects"
+
+    bom_id = fields.Many2one('plm.compare.bom', _('BoM'), ondelete='cascade')
+    bom_idrow = fields.Many2one('mrp.bom.line', _('BoM Line'), ondelete='cascade')
+    part_id = fields.Many2one('product.product', _('Part'), ondelete='cascade')
+    revision = fields.Integer(related="part_id.engineering_revision", string=_("Revision"), store=False)
+    description = fields.Char(related="part_id.name", string=_("Description"), store=False)
+    itemnum = fields.Integer(related="bom_idrow.itemnum", string=_("Cad Item Position"), store=False)
+    itemqty = fields.Float(string=_("Quantity"), digits=(16, 3))
+    reason = fields.Char(string=_("Difference"), size=32)
+
+    _defaults = {
+    }
+plm_missing_bom()
+
+
+class plm_adding_bom(osv.osv.osv_memory):
+    _name = "plm.adding.bom"
+    _description = "BoM Adding Objects"
+
+    bom_id = fields.Many2one('plm.compare.bom', _('BoM'), ondelete='cascade')
+    bom_idrow = fields.Many2one('mrp.bom.line', _('BoM Line'), ondelete='cascade')
+    part_id = fields.Many2one('product.product', _('Part'), ondelete='cascade')
+    revision = fields.Integer(related="part_id.engineering_revision", string=_("Revision"), store=False)
+    description = fields.Char(related="part_id.name", string=_("Description"), store=False)
+    itemnum = fields.Integer(related="bom_idrow.itemnum", string=_("Cad Item Position"), store=False)
+    itemqty = fields.Float(string=_("Quantity"), digits=(16, 3))
+    reason = fields.Char(string=_("Difference"), size=32)
+
+    _defaults = {
+    }
+plm_adding_bom()
 
 
 class plm_compare_bom(osv.osv.osv_memory):
@@ -70,7 +98,7 @@ class plm_compare_bom(osv.osv.osv_memory):
                                 _('BoM Type'))
     part_id1 = fields.Many2one('product.product', 'Part', ondelete='cascade')
     revision1 = fields.Integer(related="part_id1.engineering_revision", string=_("Revision"), store=False)
-    description1 = fields.Text(related="part_id1.description", string=_("Description"), store=False)
+    description1 = fields.Char(related="part_id1.name", string=_("Description"), store=False)
     bom_id2 = fields.Many2one('mrp.bom', _('BoM 2'), required=True, ondelete='cascade')
     type_id2 = fields.Selection([('normal', _('Normal BoM')),
                                  ('phantom', _('Sets / Phantom')),
@@ -79,12 +107,22 @@ class plm_compare_bom(osv.osv.osv_memory):
                                 _('BoM Type'))
     part_id2 = fields.Many2one('product.product', 'Part', ondelete='cascade')
     revision2 = fields.Integer(related="part_id2.engineering_revision", string=_("Revision"), store=False)
-    description2 = fields.Text(related="part_id2.description", string=_("Description"), store=False)
+    description2 = fields.Char(related="part_id2.name", string=_("Description"), store=False)
     anotinb = fields.One2many('plm.adding.bom', 'bom_id', _('BoM Adding'))
     bnotina = fields.One2many('plm.missing.bom', 'bom_id', _('BoM Missing'))
+    
+    compute_type = fields.Selection('_get_radio_choice_options',
+                                    string=_('Compare type'))
 
-    _defaults = {'name': 'x'}
+    _defaults = {'name': 'x',
+                 'compute_type': 'only_product'}
 
+    @api.multi
+    def _get_radio_choice_options(self):
+        return [('only_product', _('Compare Only Product Existence')),
+                ('num_qty', _('Compare By Item Number and Quantity')),
+                ('summarized', _('Compare Product Quantity'))]
+        
     @api.model
     def default_get(self, fields):
         """ To get default values for the object.
@@ -101,236 +139,171 @@ class plm_compare_bom(osv.osv.osv_memory):
             res['bom_id1'] = record_ids[0]
         if len(record_ids) > 1:
             res['bom_id2'] = record_ids[1]
-
         return res
 
+    def computeBomLines(self, bomBrws):
+        bomDict = {}
+        for bomLineBrws in bomBrws.bom_line_ids:
+            productId = bomLineBrws.product_id.id
+            bomLineQty = bomLineBrws.product_qty
+            createVals = {'part_id': bomLineBrws.product_id.id,
+                          'itemqty': bomLineQty,
+                          'itemnum': bomLineBrws.itemnum,
+                          'bom_idrow': bomLineBrws.id,
+                          'reason': '',
+                          'bom_id': self.id,
+                          'revision': bomLineBrws.product_id.engineering_revision
+                          }
+            if productId not in bomDict:
+                bomDict[productId] = [createVals]
+            else:
+                if self.compute_type == 'summarized':
+                    bomDict[productId]['itemqty'] = bomDict[productId]['itemqty'] + bomLineQty
+                else:
+                    bomDict[productId].append(createVals)
+        return bomDict
+
+    def getLeftBomObj(self, toCreateVals):
+        if 'itemnum' in toCreateVals:
+            del toCreateVals['itemnum']
+        return self.env['plm.adding.bom'].create(toCreateVals).id
+
+    def getRightBomObj(self, toCreateVals):
+        if 'itemnum' in toCreateVals:
+            del toCreateVals['itemnum']
+        return self.env['plm.missing.bom'].create(toCreateVals).id
+
+    def computeOnlyProduct(self, bom1Dict, bom2Dict):
+
+        def checkAndAdd(leftDict, rightDict, listToAppend, funcToCall):
+            for product_id, toCreateValsList in leftDict.items():
+                if product_id not in rightDict:
+                    for toCreateVals in toCreateValsList:
+                        toCreateVals['reason'] = _('Added')
+                        listToAppend.append(funcToCall(toCreateVals))
+            
+        leftItems = []
+        rightItems = []
+        checkAndAdd(bom1Dict, bom2Dict, leftItems, self.getLeftBomObj)
+        checkAndAdd(bom2Dict, bom1Dict, rightItems, self.getRightBomObj)
+        return leftItems, rightItems
+
+    def computeSummarized(self, bom1Dict, bom2Dict):
+
+        def checkAndAdd(leftDict, rightDict, listToAppend):
+            for product_id, toCreateValsList in leftDict.items():
+                for toCreateVals in toCreateValsList: # Always 1 because summarized
+                    if product_id not in rightDict:
+                        toCreateVals['reason'] = _('Added')
+                        listToAppend.append(self.getLeftBomObj(toCreateVals))
+                    else:
+                        qtyLeftDict = toCreateVals['itemqty']
+                        qtyRightDict = rightDict[product_id][0]['itemqty']
+                        resQty = qtyLeftDict - qtyRightDict
+                        toCreateVals['reason'] = _('Changed Qty')
+                        toCreateVals['itemqty'] = abs(resQty)
+                        if resQty > 0:
+                            leftItems.append(self.getLeftBomObj(toCreateVals))
+                        elif resQty < 0:
+                            rightItems.append(self.getRightBomObj(toCreateVals))
+                        del rightDict[product_id]   # Erase already computed product
+                        
+        leftItems = []
+        rightItems = []
+        tmpDict2 = bom2Dict.copy()
+        checkAndAdd(bom1Dict, tmpDict2, leftItems)
+        # Append lines presents only on right side
+        for toCreateValsList in tmpDict2.values():
+            toCreateValsList[0]['reason'] = _('Added')
+            rightItems.append(self.getRightBomObj(toCreateValsList[0]))
+        return leftItems, rightItems
+    
+    def computeByQty(self, bom1Dict, bom2Dict):
+
+        def checkAndAdd(leftDict, rightDict, listToAppend):
+            for product_id, toCreateValsList in leftDict.items():
+                if product_id not in rightDict:
+                    # Setup new on left side
+                    for toCreateVals in toCreateValsList:
+                        toCreateVals['reason'] = _('Added')
+                        listToAppend.append(self.getLeftBomObj(toCreateVals))
+                        del leftDict[product_id]
+                else:
+                    # Remove equal product elements
+                    for toCreateVals in toCreateValsList:
+                        qtyLeftDict = toCreateVals['itemqty']
+                        itemNumLeftDict = toCreateVals['itemnum']
+                        for toCreateValsRight in rightDict[product_id]:
+                            qtyRightDict = toCreateValsRight['itemqty']
+                            itemNumRightDict = toCreateValsRight['itemnum']
+                            if qtyLeftDict == qtyRightDict and itemNumLeftDict == itemNumRightDict:
+                                # Found so remove from right list
+                                index = rightDict[product_id].index(toCreateValsRight)
+                                del rightDict[product_id][index]
+                                # Found so remove from right left
+                                index = toCreateValsList.index(toCreateVals)
+                                del leftDict[product_id][index]
+
+                    # Setup left product elements
+                    for toCreateVals in toCreateValsList:
+                        toCreateVals['reason'] = _('Changed')
+                        leftItems.append(self.getLeftBomObj(toCreateVals))
+
+                    # Setup right product elements
+                    for toCreateVals in rightDict[product_id]:
+                        toCreateVals['reason'] = _('Changed')
+                        rightItems.append(self.getRightBomObj(toCreateVals))
+                    del leftDict[product_id]
+                    del rightDict[product_id]
+                    
+        leftItems = []
+        rightItems = []
+        checkAndAdd(bom1Dict, bom2Dict, leftItems)
+        # Evaluate remaining new on right side
+        for product_id, toCreateValsList in bom2Dict.items():
+            if product_id not in bom1Dict.keys():
+                for toCreateVals in toCreateValsList:
+                    toCreateVals['reason'] = _('Added')
+                    rightItems.append(self.getRightBomObj(toCreateVals))
+
+        return leftItems, rightItems
+        
     @api.multi
     def action_compare_Bom(self):
         """
-            Create a new Spare Bom if doesn't exist (action callable from views)
+            Compare two BOMs
         """
-        def getProductId(bomBrws):
-            prodBrws = bomBrws.product_id
-            prodId = False
-            if prodBrws:
-                prodId = prodBrws.id
-            else:
-                if bomBrws.product_tmpl_id.product_variant_count == 1:
-                    prodId = bomBrws.product_tmpl_id.product_variant_ids.ids[0]
-            return prodId
-
-        ids = self.ids
-        if len(ids) < 1:
-            return False
-
-        adding_obj = self.env['plm.adding.bom']
-        missing_obj = self.env['plm.missing.bom']
+        logging.info('Start comparing')
+        bom1Dict = self.computeBomLines(self.bom_id1)
+        bom2Dict = self.computeBomLines(self.bom_id2)
+        logging.info('Lines computed. Compute type %r' %(self.compute_type))
+        if self.compute_type == 'only_product':
+            bom1NewItems, bom2NewItems = self.computeOnlyProduct(bom1Dict, bom2Dict)
+        elif self.compute_type == 'summarized':
+            bom1NewItems, bom2NewItems = self.computeSummarized(bom1Dict, bom2Dict)
+        elif self.compute_type == 'num_qty':
+            bom1NewItems, bom2NewItems = self.computeByQty(bom1Dict, bom2Dict)
+        else:
+            logging.warning('Compute type not found!')
+        logging.info('Starting returning self %r' %(self))
+        self.write({'anotinb': [(6, False, bom1NewItems)],
+                    'bnotina': [(6, False, bom2NewItems)]})
+        logging.info('Assigned values')
         data_obj = self.env['ir.model.data']
-
-        checkObj = self.browse(ids[0])
-        differs, changes = self._compare_Bom(checkObj.bom_id1, checkObj.bom_id2)
-        ANotInB, BNotInA = differs
-        changesInA, changesInB = changes
-
-        product_id_1 = getProductId(checkObj.bom_id1)
-        product_id_2 = getProductId(checkObj.bom_id2)
-        defaults = {'name': checkObj.bom_id1.product_id.name,
-                    'type_id1': checkObj.bom_id1.type,
-                    'part_id1': product_id_1,
-                    'type_id2': checkObj.bom_id2.type,
-                    'part_id2': product_id_2}
-        self.browse(ids).write(defaults)
-
-        idList1, objList1, objProd1, _dictData1, AminusB = ANotInB
-        idList2, objList2, objProd2, _dictData2, BminusA = BNotInA
-
-        idList3, objList3, objProd3, _dictData3, AchangesB = changesInA
-        idList4, objList4, objProd4, _dictData4, BchangesA = changesInB
-
-        anotinb = []
-        for item in AminusB:
-            objBom = objList1[idList1.index(item)]
-            objProd = objProd1[idList1.index(item)]
-            anotinb.append(adding_obj.create({
-                'bom_id': checkObj.id,
-                'bom_idrow': objBom.id,
-                'part_id': objProd.id,
-                'reason': "Added",
-            }))
-
-        for item in AchangesB:
-            objBom = objList3[idList3.index(item)]
-            objProd = objProd3[idList3.index(item)]
-            anotinb.append(adding_obj.create({
-                'bom_id': checkObj.id,
-                'bom_idrow': objBom.id,
-                'part_id': objProd.id,
-                'reason': "Changed",
-            }))
-
-        bnotina = []
-        for item in BminusA:
-            objBom = objList2[idList2.index(item)]
-            objProd = objProd2[idList2.index(item)]
-            bnotina.append(missing_obj.create({
-                'bom_id': checkObj.id,
-                'bom_idrow': objBom.id,
-                'part_id': objProd.id,
-                'reason': "Removed",
-            }))
-
-        for item in BchangesA:
-            objBom = objList4[idList4.index(item)]
-            objProd = objProd4[idList4.index(item)]
-            bnotina.append(missing_obj.create({
-                'bom_id': checkObj.id,
-                'bom_idrow': objBom.id,
-                'part_id': objProd.id,
-                'reason': "Changed",
-            }))
-
-        if (len(anotinb) < 1 and len(bnotina) < 1):
-            return False
-
         id3 = data_obj._get_id(openerpModule, 'plm_visualize_diff_form')
+        logging.info('ID3: %r' % (id3))
         if id3:
             id3 = data_obj.browse(id3).res_id
+        logging.info('ID3 2: %r' % (id3))
         return {
             'domain': [],
             'name': _('Differences on BoMs'),
             'view_type': 'form',
             'view_mode': 'tree,form',
             'res_model': 'plm.compare.bom',
-            'res_id': ids[0],
+            'res_id': self.ids[0],
             'views': [(id3, 'form')],
             'type': 'ir.actions.act_window',
         }
 
-    @api.model
-    def _compare_Bom(self, oid1=False, oid2=False):
-        """
-            Create a new Normal Bom (recursive on all EBom children)
-        """
-        changesA = ([], [], [], {}, {})
-        changesB = ([], [], [], {}, {})
-
-        fields = ['name', 'engineering_revision']                   # Evaluate differences
-        boolfields = ['name', 'itemnum', 'product_qty']             # Evaluate changes
-
-        differs = self._differs_Bom(oid1, oid2, fields)
-        changes = self._differs_Bom(oid1, oid2, boolfields)
-        if len(differs) < 1 and len(changes) < 1:
-            return ((changesA, changesB), (changesA, changesB))
-
-        _idList1, _objList1, _objProd1, _dictData1, AminusB = differs[0]
-        _idList2, _objList2, _objProd2, _dictData2, BminusA = differs[1]
-
-        idList3, objList3, objProd3, dictData3, AchangesB = changes[0]
-        idList4, objList4, objProd4, dictData4, BchangesA = changes[1]
-
-        changesinA = {}
-        for item in list(set(AchangesB.keys()) - set(AminusB.keys())):
-            changesinA[item] = AchangesB[item]
-
-        changesinB = {}
-        for item in list(set(BchangesA.keys()) - set(BminusA.keys())):
-            changesinB[item] = BchangesA[item]
-        if len(changesinA):
-            changesA = (idList3, objList3, objProd3, dictData3, changesinA)
-        if len(changesinA):
-            changesB = (idList4, objList4, objProd4, dictData4, changesinB)
-
-        return (differs, (changesA, changesB))
-
-    @api.model
-    def _unpackData(self, oid, fields=[]):
-        """
-            Export data about products and BoM, formatting as required to match.
-        """
-        idList = []
-        listData = []
-        objList = []
-        objProd = []
-        dictData = {}
-        if len(oid.bom_line_ids):
-            prod_names = oid.bom_line_ids[0].product_id._fields.keys()
-            bom_names = oid.bom_line_ids[0]._fields.keys()
-            for bom_line in oid.bom_line_ids:
-                idList.append(bom_line.id)
-                objList.append(bom_line)
-                objProd.append(bom_line.product_id)
-
-                row_data = {}
-                for field in fields:
-                    if field in prod_names:
-                        row_data[field] = bom_line.product_id[field]
-                    if field in bom_names:
-                        row_data[field] = bom_line[field]
-
-                if row_data:
-                    listData.append(row_data)
-                    dictData[bom_line.id] = row_data
-        return (idList, listData, objList, objProd, dictData)
-
-    @api.model
-    def _differs_Bom(self, oid1=False, oid2=False, fields=[]):
-        """
-            Create a new Normal Bom (recursive on all EBom children)
-        """
-        if not oid1 or not oid2 or not fields:
-            return ()
-
-        idList1, listData1, objList1, objProd1, dictData1 = self._unpackData(oid1, fields)
-        idList2, listData2, objList2, objProd2, dictData2 = self._unpackData(oid2, fields)
-
-        index = 0
-        counted = len(listData1)
-        AminusB = {}
-        while index < counted:
-            itemData = listData1[index]
-            if itemData not in listData2:
-                AminusB[idList1[index]] = itemData
-            index += 1
-        index = 0
-        counted = len(listData2)
-        BminusA = {}
-        while index < counted:
-            itemData = listData2[index]
-            if itemData not in listData1:
-                BminusA[idList2[index]] = itemData
-            index += 1
-        return ((idList1, objList1, objProd1, dictData1, AminusB), (idList2, objList2, objProd2, dictData2, BminusA))
-
-
-class plm_missing_bom(osv.osv.osv_memory):
-    _name = "plm.missing.bom"
-    _description = "BoM Missing Objects"
-
-    bom_id = fields.Many2one('plm.compare.bom', _('BoM'), ondelete='cascade')
-    bom_idrow = fields.Many2one('mrp.bom.line', _('BoM Line'), ondelete='cascade')
-    part_id = fields.Many2one('product.product', _('Part'), ondelete='cascade')
-    revision = fields.Integer(related="part_id.engineering_revision", string=_("Revision"), store=False)
-    description = fields.Text(related="part_id.description", string=_("Description"), store=False)
-    itemnum = fields.Integer(related="bom_idrow.itemnum", string=_("Cad Item Position"), store=False)
-    itemqty = fields.Float(related="bom_idrow.product_qty", string=_("Quantity"), store=False)
-    reason = fields.Char(string=_("Difference"), size=32)
-
-    _defaults = {
-    }
-
-
-class plm_adding_bom(osv.osv.osv_memory):
-    _name = "plm.adding.bom"
-    _description = "BoM Adding Objects"
-
-    bom_id = fields.Many2one('plm.compare.bom', _('BoM'), ondelete='cascade')
-    bom_idrow = fields.Many2one('mrp.bom.line', _('BoM Line'), ondelete='cascade')
-    part_id = fields.Many2one('product.product', _('Part'), ondelete='cascade')
-    revision = fields.Integer(related="part_id.engineering_revision", string=_("Revision"), store=False)
-    description = fields.Text(related="part_id.description", string=_("Description"), store=False)
-    itemnum = fields.Integer(related="bom_idrow.itemnum", string=_("Cad Item Position"), store=False)
-    itemqty = fields.Float(related="bom_idrow.product_qty", string=_("Quantity"), store=False)
-    reason = fields.Char(string=_("Difference"), size=32)
-
-    _defaults = {
-    }
+plm_compare_bom()

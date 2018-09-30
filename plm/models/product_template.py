@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -20,11 +19,11 @@
 #
 ##############################################################################
 
-'''
+"""
 Created on 25 Aug 2016
 
 @author: Daniel Smerghetto
-'''
+"""
 import odoo.addons.decimal_precision as dp
 from odoo import models
 from odoo import fields
@@ -51,18 +50,21 @@ class ProductTemplateExtension(models.Model):
                                        size=128,
                                        required=False,
                                        help=_("Raw material for current product, only description for titleblock."))
-    engineering_surface = fields.Char(_('Surface Finishing'),
-                                      size=128,
-                                      required=False,
-                                      help=_("Surface finishing for current product, only description for titleblock."))
+    engineering_surface = fields.Char(
+        _('Surface Finishing'),
+        size=128,
+        required=False,
+        help=_("Surface finishing for current product, only description for titleblock.")
+    )
 
-    engineering_revision = fields.Integer(_('Revision'), required=True, help=_("The revision of the product."), default=0)
+    engineering_revision = fields.Integer(_('Revision'), required=True, help=_("The revision of the product."),
+                                          default=0)
 
     engineering_code = fields.Char(_('Part Number'),
                                    help=_("This is engineering reference to manage a different P/N from item Name."),
                                    size=64)
 
-#   ####################################    Overload to set default values    ####################################
+    #   ####################################    Overload to set default values    ####################################
     standard_price = fields.Float('Cost',
                                   compute='_compute_standard_price',
                                   inverse='_set_standard_price',
@@ -78,6 +80,7 @@ class ProductTemplateExtension(models.Model):
 
     engineering_writable = fields.Boolean(_('Writable'),
                                           default=True)
+    is_engcode_editable = fields.Boolean(_('Engineering Editable'), default=True)
 
     _sql_constraints = [
         ('partnumber_uniq', 'unique (engineering_code,engineering_revision)', _('Part Number has to be unique!'))
@@ -86,9 +89,9 @@ class ProductTemplateExtension(models.Model):
     @api.multi
     def engineering_products_open(self):
         product_id = False
-        relatedProductBrwsList = self.env['product.product'].search([('product_tmpl_id', '=', self.id)])
-        for relatedProductBrws in relatedProductBrwsList:
-            product_id = relatedProductBrws.id
+        related_product_brws_list = self.env['product.product'].search([('product_tmpl_id', '=', self.id)])
+        for related_product_brws in related_product_brws_list:
+            product_id = related_product_brws.id
         mod_obj = self.env['ir.model.data']
         search_res = mod_obj.get_object_reference('plm', 'plm_component_base_form')
         form_id = search_res and search_res[1] or False
@@ -107,29 +110,25 @@ class ProductTemplateExtension(models.Model):
     def init(self):
         cr = self.env.cr
         cr.execute("""
--- Index: product_template_engcode_index
-
--- Index: product_template_engcode_index
-
-DROP INDEX IF EXISTS product_template_engcode_index;
-
-CREATE INDEX product_template_engcode_index
-  ON product_template
-  USING btree
-  (engineering_code);
-  """)
+        -- Index: product_template_engcode_index
+        
+        -- Index: product_template_engcode_index
+        
+        DROP INDEX IF EXISTS product_template_engcode_index;
+        
+        CREATE INDEX product_template_engcode_index
+          ON product_template
+          USING btree
+          (engineering_code);
+        """)
 
         cr.execute("""
--- Index: product_template_engcoderev_index
-
-DROP INDEX IF EXISTS product_template_engcoderev_index;
-
-CREATE INDEX product_template_engcoderev_index
-  ON product_template
-  USING btree
-  (engineering_code, engineering_revision);
-  """)
-
-ProductTemplateExtension()
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+        -- Index: product_template_engcoderev_index
+        
+        DROP INDEX IF EXISTS product_template_engcoderev_index;
+        
+        CREATE INDEX product_template_engcoderev_index
+          ON product_template
+          USING btree
+          (engineering_code, engineering_revision);
+        """)
