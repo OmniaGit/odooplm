@@ -341,7 +341,7 @@ class MrpBomExtension(models.Model):
         return False
 
     @api.model
-    def get_explode_sum(self, values=[]):
+    def GetExploseSum(self, values=[]):
         """
             Return a list of all children in a Bom taken once (all levels)
         """
