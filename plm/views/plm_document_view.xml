@@ -156,7 +156,7 @@
             </tree>
         </field>
     </record>
-
+<!-- 
     <record model="ir.ui.view" id="plm_document_search">
         <field name="name">plm.document</field>
         <field name="model">plm.document</field>
@@ -206,7 +206,7 @@
             </search>
         </field>
     </record>
-
+ -->
     <record id="document_kanban_view" model="ir.ui.view">
         <field name="name">Product.template.product.kanban</field>
         <field name="model">plm.document</field>

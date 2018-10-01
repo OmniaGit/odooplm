@@ -10,15 +10,6 @@
     />
     <!-- action = "plm.open_board_plm_manager"  -->
     <!-- Parent menu "PLM Module"  -->
-    <!--
-        <menuitem
-        action="plm.open_board_plm_manager"
-        id="plm_dashboard_menu"
-        parent="plm.plm_menu"
-        sequence="1"
-        groups="plm.group_plm_integration_user"
-        name="Dashboard" />
-        -->
     <menuitem
             id="plm_component_menu_view"
             name="Components"
@@ -26,14 +17,14 @@
             sequence="10"/>
 
     <menuitem
-            name="Documents"
             id="plm_document_form"
+            name="Documents"
             parent="plm.plm_menu"
             sequence="11"/>
 
     <menuitem
-            name="Component Relations"
             id="plm_menu_relation"
+            name="Component Relations"
             parent="plm.plm_menu"
             sequence="12"/>
 
@@ -44,7 +35,16 @@
             sequence="50"
             groups="plm.group_plm_integration_user"/>
 
+    <menuitem
+            id="menu_document_files"
+            name="Search on Documents"
+            action="plm.plm_action_document_form"
+            parent="plm.plm_document_form"
+            sequence="10"
+    />
+
     <!-- Parent menu "Documents"  -->
+    <!-- 
     <menuitem
             name="Search on Backup Data Set"
             action="action_plm_backupdoc"
@@ -52,15 +52,8 @@
             parent="plm.plm_document_form"
             sequence="13"
             groups="plm.group_plm_admin"/>
-
-    <menuitem
-            name="Search on Documents"
-            action="plm.plm_action_document_form"
-            id="menu_document_files"
-            parent="plm.plm_document_form"
-            sequence="10"
-    />
-
+ -->
+<!-- 
     <menuitem
             name="Search on Checked-Out Documents"
             action="plm.action_plm_checkout"
@@ -69,7 +62,7 @@
             groups="plm.group_plm_integration_user"
             sequence="12"
     />
-
+ -->
     <menuitem
             name="Search on Document Relations"
             action="plm_action_document_relations"

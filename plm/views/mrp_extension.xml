@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <!-- View customization on MRP -->
+    <!--
     <record id="plm_bom_component_tree_view" model="ir.ui.view">
         <field name="name">plm.bom.component.tree</field>
         <field name="model">mrp.bom.line</field>
@@ -23,7 +24,7 @@
             </field>
         </field>
     </record>
-
+  -->
     <record id="plm_bom_tree_view" model="ir.ui.view">
         <field name="name">plm.mrp.bom.tree</field>
         <field name="model">mrp.bom</field>
@@ -202,6 +203,7 @@
     </record>
 
     <!-- Overrides standard Search -->
+    <!-- 
     <record id="view_mrp_bom_filter_inherit" model="ir.ui.view">
         <field name="name">plm.bom.select</field>
         <field name="model">mrp.bom</field>
@@ -230,7 +232,7 @@
             </xpath>
         </field>
     </record>
-
+ -->
     <!-- Tree Structure Views on MRP -->
     <record id="mrp_bom_tree_view_where" model="ir.ui.view">
         <field name="name">mrp.bom.tree.where</field>

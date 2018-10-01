@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
+<odoo>
 <data>
-
+<!-- 
     <record model="ir.ui.view" id="plm_checkout_search">
         <field name="name">plm.checkout</field>
         <field name="model">plm.checkout</field>
@@ -40,7 +40,7 @@
             </search>
      	</field>
     </record>
-
+ -->
     <record model="ir.ui.view" id="view_plm_checkout_form">
         <field name="name">plm.checkout</field>
         <field name="model">plm.checkout</field>
@@ -104,7 +104,7 @@
             </tree>
         </field>
     </record>
-
+    <!-- 
     <record model="ir.actions.act_window" id="action_plm_checkout">
         <field name="name">Check-Out</field>
         <field name="res_model">plm.checkout</field>
@@ -114,8 +114,8 @@
         <field name="search_view_id" ref="plm_checkout_search"/>
     </record>
 
-
+ -->
 
 </data>
-</openerp>
+</odoo>
 
