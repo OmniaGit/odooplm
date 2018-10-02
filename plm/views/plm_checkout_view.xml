@@ -1,27 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 <data>
-<!-- 
+
     <record model="ir.ui.view" id="plm_checkout_search">
         <field name="name">plm.checkout</field>
         <field name="model">plm.checkout</field>
-        <field name="type">search</field>
         <field name="priority" eval="1"/>
         <field name="arch" type="xml">
             <search string="Checked-Out Document">
-                <filter string="  Last Month  " separator="1"
+                <filter 
+                         name="last_month"
+                         string="Last Month"
                          domain="[('create_date','&lt;=', (datetime.date.today() - datetime.timedelta(day=31,months=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today() - datetime.timedelta(day=1,months=1)).strftime('%%Y-%%m-%%d'))]"
                          help="Checked-Out in last month"/>
-                <filter string="  Last Week  " separator="1"
+                <filter 
+                         name="last_week"
+                         string="Last Week"
                          domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"
                          help="Checked-Out in last week"/>
-                <filter string="  Latest 7 Days  " separator="1"
+                 <filter name="last_7_daye"
+                         string="Latest 7 Days"
                          domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
                          help="Checked-Out in last week"/>
-                 <filter string="  Yesterday  " separator="1"
+                 <filter 
+                         name="yestarday"
+                         string="Yesterday"
                          domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
                          help="Checked-Out Yesterday"/>
-                 <filter string="  Today  " separator="1"
+                 <filter 
+                         name="today"
+                         string="Today" 
                          domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
                          help="Checked-Out today"/>
                 <newline/>
@@ -30,17 +38,17 @@
             	<field name="hostname"/>
                	<separator orientation="vertical"/>
                 <field name="userid" nolabel="1">
- 					<filter string="Created by me" domain="[('userid', '=', uid)]"/>
+ 					<filter name="create_by_me" string="Created by me" domain="[('userid', '=', uid)]"/>
                 </field>
                 <group expand="0" string="Group By...">
-                    <filter string="Hostname" domain="[]" context="{'group_by':'hostname'}"/>
-                    <filter string="Create by Month" domain="[]" context="{'group_by':'create_date'}"/>
-                    <filter string="Creator" domain="[]" context="{'group_by':'userid'}"/>
+                    <filter name="hostname" string="Hostname" domain="[]" context="{'group_by':'hostname'}"/>
+                    <filter name="create_by_month" string="Create by Month" domain="[]" context="{'group_by':'create_date'}"/>
+                    <filter name="creator" string="Creator" domain="[]" context="{'group_by':'userid'}"/>
                 </group>
             </search>
      	</field>
     </record>
- -->
+ 
     <record model="ir.ui.view" id="view_plm_checkout_form">
         <field name="name">plm.checkout</field>
         <field name="model">plm.checkout</field>
@@ -104,7 +112,7 @@
             </tree>
         </field>
     </record>
-    <!-- 
+
     <record model="ir.actions.act_window" id="action_plm_checkout">
         <field name="name">Check-Out</field>
         <field name="res_model">plm.checkout</field>
@@ -113,8 +121,6 @@
         <field name="view_id" ref="plm_checkout_tree"/>
         <field name="search_view_id" ref="plm_checkout_search"/>
     </record>
-
- -->
 
 </data>
 </odoo>

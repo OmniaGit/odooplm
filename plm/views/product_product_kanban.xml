@@ -38,7 +38,7 @@
                     <t t-name="component-top">
                         <div class="o_kanban_card_header">
                             <div class="o_kanban_image">
-                                <img t-att-src="kanban_image('product.product', 'image_small', record.id.raw_value)"/>
+                                <img alt="No Image" t-att-src="kanban_image('product.product', 'image_small', record.id.raw_value)"/>
                             </div>
                             <div class="oe_kanban_details">
                                 <div class="o_kanban_card_header_title">

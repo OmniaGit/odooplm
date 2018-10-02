@@ -44,25 +44,23 @@
     />
 
     <!-- Parent menu "Documents"  -->
-    <!-- 
     <menuitem
+            id="menu_backupdoc"
             name="Search on Backup Data Set"
             action="action_plm_backupdoc"
-            id="menu_backupdoc"
             parent="plm.plm_document_form"
             sequence="13"
             groups="plm.group_plm_admin"/>
- -->
-<!-- 
+
     <menuitem
+            id="menu_checkout"
             name="Search on Checked-Out Documents"
             action="plm.action_plm_checkout"
-            id="menu_checkout"
             parent="plm.plm_document_form"
             groups="plm.group_plm_integration_user"
             sequence="12"
     />
- -->
+
     <menuitem
             name="Search on Document Relations"
             action="plm_action_document_relations"

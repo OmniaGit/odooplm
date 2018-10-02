@@ -1,15 +1,11 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
-
         <report id="report_plm_document_pdf"
                 string="Print Pdf"
                 model="plm.document"
                 name="plm.document_pdf"
                 report_type="qweb-html"
-                header="False"
                 />
-                
-
     </data>
 </openerp>
