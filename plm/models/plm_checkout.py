@@ -35,6 +35,7 @@ import time
 
 class PlmCheckout(models.Model):
     _name = 'plm.checkout'
+    _description = 'Document that are locked from someone'
 
     userid = fields.Many2one('res.users',
                              _('Related User'),

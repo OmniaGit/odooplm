@@ -41,6 +41,7 @@ class PlmBackupDocument(models.Model):
         Only administrator is allowed to remove elements by this table
     """
     _name = 'plm.backupdoc'
+    _description = "manage your document back up"
 
     userid = fields.Many2one('res.users',
                              _('Related User'))
@@ -98,6 +99,7 @@ class BackupDocWizard(osv.osv.osv_memory):
     """
 
     _name = 'plm.backupdoc_wizard'
+    _description = "Back up document wizard"
 
     @api.multi
     def action_restore_document(self):

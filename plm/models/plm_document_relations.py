@@ -23,7 +23,6 @@ from odoo import api
 from odoo import fields
 from odoo import _
 import logging
-from apt_offline_core.AptOfflineMagicLib import _descriptor
 
 
 class PlmDocumentRelations(models.Model):

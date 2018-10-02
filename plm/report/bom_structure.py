@@ -180,6 +180,7 @@ def BomSort(myObject):
 
 class ReportBomStructureAll(models.AbstractModel):
     _name = 'report.plm.bom_structure_all'
+    _description = "Report Bom All Structure"
 
     @api.multi
     def get_children(self, myObject, level=0):
@@ -200,6 +201,7 @@ class ReportBomStructureAll(models.AbstractModel):
 
 class ReportBomStructureOne(models.AbstractModel):
     _name = 'report.plm.bom_structure_one'
+    _description = 'Report PLM Bom Structure'
 
     @api.model
     def render_html(self, docids, data=None):
@@ -231,6 +233,7 @@ class ReportBomStructureOne(models.AbstractModel):
 
 class ReportBomStructureAllSum(models.AbstractModel):
     _name = 'report.plm.bom_structure_all_sum'
+    _description = "Report Bom All Structure summarised"
 
     @api.model
     def render_html(self, docids, data=None):
@@ -262,6 +265,7 @@ class ReportBomStructureAllSum(models.AbstractModel):
 
 class ReportBomStructureOneSum(models.AbstractModel):
     _name = 'report.plm.bom_structure_one_sum'
+    _description = 'Report PLM Bom Structure summaraized'
 
     @api.model
     def render_html(self, docids, data=None):
@@ -293,6 +297,7 @@ class ReportBomStructureOneSum(models.AbstractModel):
 
 class ReportBomStructureLevels(models.AbstractModel):
     _name = 'report.plm.bom_structure_leaves'
+    _description = 'Report Bom Leavs'
 
     @api.model
     def render_html(self, docids, data=None):
@@ -324,6 +329,7 @@ class ReportBomStructureLevels(models.AbstractModel):
 
 class ReportBomStructureFlat(models.AbstractModel):
     _name = 'report.plm.bom_structure_flat'
+    _description = 'Report Bom Structure'
 
     @api.model
     def render_html(self, docids, data=None):

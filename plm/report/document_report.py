@@ -30,6 +30,7 @@ from odoo import models
 
 class ReportDocumentPdf(models.AbstractModel):
     _name = 'report.plm.document_pdf'
+    _description = 'Report Document PDF'
 
     @api.model
     def render_qweb_pdf(self, documents=None, data=None):
