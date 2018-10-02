@@ -23,10 +23,12 @@ from odoo import api
 from odoo import fields
 from odoo import _
 import logging
+from apt_offline_core.AptOfflineMagicLib import _descriptor
 
 
 class PlmDocumentRelations(models.Model):
     _name = 'plm.document.relation'
+    _description = "Relation between document used for cad file structure"
 
     parent_preview = fields.Binary(related="parent_id.preview",
                                    string=_("Preview"),
