@@ -38,7 +38,7 @@
             </field>
         </field>
     </record>
-<!-- 
+
     <record model="ir.ui.view" id="plm_component_base_search">
         <field name="name">plm.base.component.search</field>
         <field name="model">product.product</field>
@@ -46,16 +46,20 @@
         <field name="priority" eval="15"/>
         <field name="arch" type="xml">
             <search string="Parts">
-                <filter string="Latest 2 Weeks" separator="1"
+                <filter name="last_2_weeks"
+                        string="Latest 2 Weeks"
                         domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"
                         help="Created latest 2 Weeks"/>
-                <filter string="Latest 7 Days" separator="1"
+                <filter name="latest_7_days"
+                        string="Latest 7 Days"
                         domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
                         help="Created latest 7 Days"/>
-                <filter string="Yesterday" separator="1"
+                <filter name="yestarday"
+                        string="Yesterday"
                         domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
                         help="Created yesterday"/>
-                <filter string="Today" separator="1"
+                <filter name="today"
+                        string="Today"
                         domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
                         help="Created today"/>
                 <separator orientation="vertical"/>
@@ -63,10 +67,10 @@
                 <field name="description" invisible="1"/>
                 <field name="name"/>
                 <separator orientation="vertical"/>
-                <filter string="Confirmed" domain="[('state', '=', 'confirmed')]"/>
-                <filter string="Released" domain="[('state', 'in', ['released','undermodify'])]"/>
-                <filter string="Obsoleted" domain="[('state', '=', 'obsoleted')]"/>
-                <filter string="Latest" domain="[('state', 'not in', ['obsoleted','undermodify'])]"/>
+                <filter name="string" string="Confirmed" domain="[('state', '=', 'confirmed')]"/>
+                <filter name="released" string="Released" domain="[('state', 'in', ['released','undermodify'])]"/>
+                <filter name="obsolated" string="Obsoleted" domain="[('state', '=', 'obsoleted')]"/>
+                <filter name="latest" string="Latest" domain="[('state', 'not in', ['obsoleted','undermodify'])]"/>
             </search>
         </field>
     </record>
@@ -112,10 +116,16 @@
                                 icon="fa-level-up">
                             <field string="Product Where Used" name="used_in_bom_count" widget="statinfo"/>
                         </button>
-                        <button class="oe_stat_button" name="action_view_mos" type="object"
-                                attrs="{'invisible':[('type', 'not in', ['product', 'consu'])]}" icon="fa-list-alt">
-                            <field string="Manufacturing" name="mo_count" widget="statinfo"/>
-                        </button>
+                    <button class="oe_stat_button" name="action_view_mos" type="object"
+                        attrs="{'invisible': [('type', 'not in', ['product', 'consu'])]}" icon="fa-list-alt" help="Manufactured in the last 365 days">
+                        <div class="o_field_widget o_stat_info">
+                            <span class="o_stat_value">
+                                <field name="mrp_product_qty" widget="statinfo" nolabel="1" class="mr4"/>
+                                <field name="uom_name"/>
+                            </span>
+                            <span class="o_stat_text">Manufactured</span>
+                        </div>
+                    </button>
                         <button class="oe_stat_button" name="product_template_open" type="object"
                                 string="Product Information"
                                 icon="fa-gears">
@@ -214,7 +224,7 @@
             </form>
         </field>
     </record>
--->
+
     <record model="ir.actions.act_window" id="action_plm_component_base">
         <field name="name">Engineering Parts</field>
         <field name="res_model">product.product</field>
@@ -223,6 +233,6 @@
         <field name="view_id" ref="plm_component_base_tree"/>
         <field name="context">{"search_default_latest":1}</field>
         <field name="domain">['|', ('engineering_code','!=',''), ('engineering_code','!=',False)]</field>
-        <!-- <field name="view_id_search" ref="plm_component_base_search"/> -->
+        <field name="view_id_search" ref="plm_component_base_search"/>
     </record>
 </odoo>

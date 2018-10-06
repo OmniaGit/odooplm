@@ -66,7 +66,7 @@
                 </tree>
             </field>
         </record>
-<!-- 
+
         <record id="plm_docbom_search" model="ir.ui.view">
             <field name="name">plm.doc.relation.search</field>
             <field name="model">plm.document.relation</field>
@@ -74,13 +74,16 @@
         	<field name="priority" eval="10"/>
             <field name="arch" type="xml">
 				<search string="Search on Document Relations">
-                   	<filter string="  Last Week  " separator="1"
+                   	<filter name="last_week"
+                   	        string="Last Week"
                          	domain="[('create_date','&lt;=', (datetime.date.today()-relativedelta(weeks=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-relativedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"
                           	help="Created last week"/>
-                 	<filter string="  Yesterday  " separator="1"
+                 	<filter name="yestarday"
+                 	        string="Yesterday"
                            	domain="[('create_date','&lt;', (datetime.date.today()).strftime('%%Y-%%m-%%d 00:00:00')),('create_date','&gt;=',(datetime.date.today()-relativedelta(days=1)).strftime('%%Y-%%m-%%d 00:00:00'))]"
                     		help="Created yesterday"/>
-                	<filter string="  Today  " separator="1"
+                	<filter name="today"
+                	        string="Today"
                           	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d 23:59:59')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d 00:00:00'))]"
                          	help="Created today"/>
                    	<separator orientation="vertical"/>
@@ -89,14 +92,22 @@
                     <field name="link_kind"  string="Document Relation Kind"/>
                     <newline/>
                     <group expand="0" string="Group by...">
-                        <filter string="Parent" domain="[]" context="{'group_by':'parent_id'}"/>
-                        <filter string="Child" context="{'group_by' : 'child_id'}"/>
-                        <filter string="Kind" domain="[]" context="{'group_by':'link_kind'}"/>
+                        <filter name="parent"
+                                string="Parent"
+                                domain="[]"
+                                context="{'group_by':'parent_id'}"/>
+                        <filter name="child"
+                                string="Child"
+                                context="{'group_by' : 'child_id'}"/>
+                        <filter name="kind"
+                                string="Kind"
+                                domain="[]"
+                                context="{'group_by':'link_kind'}"/>
                    </group>
                 </search>
             </field>
         </record>
- -->
+
     <record model="ir.actions.act_window" id="plm_action_document_relations">
     	<field name="name">Document Relations</field>
     	 <field name="res_model">plm.document.relation</field>

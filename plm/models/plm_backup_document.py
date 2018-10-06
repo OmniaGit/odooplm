@@ -89,8 +89,6 @@ class PlmBackupDocument(models.Model):
         else:
             return False
 
-PlmBackupDocument()
-
 
 class BackupDocWizard(osv.osv.osv_memory):
     """
@@ -144,7 +142,5 @@ class BackupDocWizard(osv.osv.osv_memory):
                     'type': 'ir.actions.act_window',
                     'domain': "[]"}
         return True
-
-BackupDocWizard()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

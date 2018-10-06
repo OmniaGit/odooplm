@@ -156,7 +156,7 @@
             </tree>
         </field>
     </record>
-<!-- 
+
     <record model="ir.ui.view" id="plm_document_search">
         <field name="name">plm.document</field>
         <field name="model">plm.document</field>
@@ -164,49 +164,81 @@
         <field name="priority" eval="1"/>
         <field name="arch" type="xml">
             <search string="Documents">
-                <filter string="  Last Month  " separator="1"
+                <filter name="last_month"
+                        string="Last Month"
                         domain="[('create_date','&lt;=', (datetime.date.today() - relativedelta(day=31,months=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today() - relativedelta(day=1,months=1)).strftime('%%Y-%%m-%%d'))]"
                         help="Created last month"/>
-                <filter string="  Last Week  " separator="1"
+                <filter name="last_week"
+                        string="Last Week"
                         domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"
                         help="Created last week"/>
-                <filter string="  Latest 7 Days  " separator="1"
+                <filter name="last_7_days"
+                        string="Latest 7 Days"
                         domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
                         help="Created latest 7 Days"/>
-                <filter string="  Yesterday  " separator="1"
+                <filter name="yestarday"
+                        string="Yesterday"
                         domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
                         help="Created yesterday"/>
-                <filter string="  Today  " separator="1"
+                <filter name="today"
+                        string="Today"
                         domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
                         help="Created today"/>
                 <separator orientation="vertical"/>
                 <field name="name"/>
                 <field name="datas_fname"/>
                 <field name="create_uid">
-                    <filter domain="[('create_uid','=',uid)]" help="Filter on documents created by me"/>
+                    <filter name="create_by_me"
+                            string="Create by me"
+                            domain="[('create_uid','=',uid)]"
+                            help="Filter on documents created by me"/>
                 </field>
                 <field name="write_uid">
-                    <filter domain="[('write_uid','=',uid)]" help="Filter on documents changed by me"/>
+                    <filter name="changed_by_me"
+                            string="Changed By Me"
+                            domain="[('write_uid','=',uid)]"
+                            help="Filter on documents changed by me"/>
                 </field>
                 <separator orientation="vertical"/>
                 <field name="state">
-                    <filter string="Confirmed" domain="[('state', '=', 'confirmed')]"/>
-                    <filter string="Released" domain="[('state', 'in', ['released','undermodify'])]"/>
-                    <filter string="Latest" name="latest" domain="[('state', 'not in', ['obsoleted','undermodify'])]"/>
+                    <filter name="confirmed"
+                            string="Confirmed"
+                            domain="[('state', '=', 'confirmed')]"/>
+                    <filter name="released"
+                            string="Released"
+                            domain="[('state', 'in', ['released','undermodify'])]"/>
+                    <filter name="latest"
+                            string="Latest"
+                            domain="[('state', 'not in', ['obsoleted','undermodify'])]"/>
                 </field>
                 <group expand="0" string="Group By...">
-                    <filter string="Created by" domain="[]" context="{'group_by':'create_uid'}"/>
-                    <filter string="Changed by" domain="[]" context="{'group_by':'write_uid'}"/>
-                    <filter string="Status" domain="[]" context="{'group_by':'state'}"/>
-                    <filter string="Created by Month" help="Creation Month" domain="[]"
+                    <filter name="create_by_me"
+                            string="Created by"
+                            domain="[]"
+                            context="{'group_by':'create_uid'}"/>
+                    <filter name="changed_by_me"
+                            string="Changed by"
+                            domain="[]"
+                            context="{'group_by':'write_uid'}"/>
+                    <filter name="status"
+                            string="Status"
+                            domain="[]"
+                            context="{'group_by':'state'}"/>
+                    <filter name="created_by_month"
+                            string="Created by Month"
+                            help="Creation Month"
+                            domain="[]"
                             context="{'group_by':'create_date'}"/>
-                    <filter string="Changed by Month" help="Creation Month" domain="[]"
+                    <filter name="canged_by_month"
+                            string="Changed by Month"
+                            help="Creation Month"
+                            domain="[]"
                             context="{'group_by':'write_date'}"/>
                 </group>
             </search>
         </field>
     </record>
- -->
+ 
     <record id="document_kanban_view" model="ir.ui.view">
         <field name="name">Product.template.product.kanban</field>
         <field name="model">plm.document</field>
