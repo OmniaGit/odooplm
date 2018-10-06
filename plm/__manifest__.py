@@ -20,7 +20,7 @@
 ##############################################################################
 {
     'name': 'Product Lifecycle Management',
-    'version': '11.0',
+    'version': '12.0',
     'author': 'OmniaSolutions',
     'website': 'http://www.omniasolutions.eu',
     'category': 'Product Lifecycle Management',
@@ -37,7 +37,7 @@
                 'product',
                 'mrp'],
     'description': """
-Manage Product Lifecycle Management in OpenERP
+Manage Product Lifecycle Management in Odoo
 ==============================================
 
 This application enables a group of people to intelligently and efficiently manage 3D Models and 2D Drawings, directly from CAD editors.
