@@ -1157,9 +1157,9 @@ class PlmDocument(models.Model):
         """
         obj = self.browse(oid)
         if (obj.write_date is not False):
-            return datetime.strptime(obj.write_date, '%Y-%m-%d %H:%M:%S')
+            return obj.write_date
         else:
-            return datetime.strptime(obj.create_date, '%Y-%m-%d %H:%M:%S')
+            return obj.create_date
 
     @api.model
     def getUserSign(self, userId):
