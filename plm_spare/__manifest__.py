@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution    
@@ -34,14 +33,14 @@ Add spare BOM and Spare Parts Manual
 ==============================================
     """,
     'data': [
-            # views
-            'views/plm_description_extension.xml',
-            'views/sparebom_view.xml',
-            'views/plm_document_view.xml',
-            #'views/product_product_kanban.xml',
-            # reporting
-            'report/bom_structure_report.xml',
-            'report/product_product_report.xml',
+        # views
+        'views/plm_description_extension.xml',
+        'views/sparebom_view.xml',
+        'views/plm_document_view.xml',
+        # 'views/product_product_kanban.xml',
+        # reporting
+        'report/bom_structure_report.xml',
+        'report/product_product_report.xml',
 
     ],
     'demo': [],
@@ -50,5 +49,3 @@ Add spare BOM and Spare Parts Manual
     'application': False,
     'auto_install': False,
 }
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -20,16 +19,16 @@
 #
 ##############################################################################
 
-'''
+"""
 Created on 30 Aug 2016
 
 @author: Daniel Smerghetto
-'''
+"""
 
-from openerp import models
-from openerp import fields
-from openerp import api
-from openerp import _
+from odoo import models
+from odoo import fields
+from odoo import api
+from odoo import _
 
 
 class MrpBomLineExtension(models.Model):
@@ -39,11 +38,12 @@ class MrpBomLineExtension(models.Model):
     def _get_reference_spare_type(self):
         return self.env['mrp.bom']._get_reference_spare_type()
 
-    type = fields.Selection('_get_reference_spare_type',
-                            _('BoM Type'),
-                            required=True,
-                            default='normal',
-                            help=_("Phantom BOM: When processing a sales order for this product, the delivery order will contain the raw materials, instead of the finished product."
-                                   " Ship this product as a set of components (kit)."))
-
-MrpBomLineExtension()
+    type = fields.Selection(
+        '_get_reference_spare_type',
+        _('BoM Type'),
+        required=True,
+        default='normal',
+        help=_(
+            "Phantom BOM: When processing a sales order for this product, the delivery order will contain the raw materials, instead of the finished product."
+            " Ship this product as a set of components (kit).")
+    )

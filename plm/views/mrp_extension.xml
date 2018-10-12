@@ -1,66 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
-<data>
-
-<!-- View customization on MRP -->
-
-        <record id="plm_bom_component_tree_view" model="ir.ui.view">
-            <field name="name">plm.bom.component.tree</field>
-            <field name="model">mrp.bom.line</field>
-            <field name="inherit_id" ref="mrp.mrp_bom_component_tree_view"/>
-            <field name="type">tree</field>
-            <field name="arch" type="xml">
-        		<field name="product_id" position="before">
-                    <field name="itemnum"/>
-        		</field>
-                 <field name="product_id" position="after">
-                 	<field name="engineering_revision" readonly="True"/>	
-	                <field name="state" readonly="True"/>
-	            	<field name="description" select="True"/>
-	                <field name="source_id" string="Source Relation Document"/>
- 	            	<field name="type" />
-                </field>
-        		<field name="product_qty" position="after">
-	               	<field name="weight_net" readonly="True"/>
-	    			<field name="create_date" select="True" readonly="True"/>
-           		</field>
+<odoo>
+    <!-- View customization on MRP -->
+    <record id="plm_bom_component_tree_view" model="ir.ui.view">
+        <field name="name">plm.bom.component.tree</field>
+        <field name="model">mrp.bom.line</field>
+        <field name="inherit_id" ref="mrp.mrp_bom_component_tree_view"/>
+        <field name="type">tree</field>
+        <field name="arch" type="xml">
+            <field name="product_id" position="before">
+                <field name="itemnum"/>
             </field>
-        </record>
+            <field name="product_id" position="after">
+                <field name="engineering_revision" readonly="True"/>
+                <field name="state" readonly="True"/>
+                <field name="description" select="True"/>
+                <field name="source_id" string="Source Relation Document"/>
+                <field name="type"/>
+            </field>
+            <field name="product_qty" position="after">
+                <field name="weight_net" readonly="True"/>
+                <field name="create_date" select="True" readonly="True"/>
+            </field>
+        </field>
+    </record>
 
+    <record id="plm_bom_tree_view" model="ir.ui.view">
+        <field name="name">plm.mrp.bom.tree</field>
+        <field name="model">mrp.bom</field>
+        <field name="type">tree</field>
+        <field name="inherit_id" ref="mrp.mrp_bom_tree_view"/>
+        <field name="arch" type="xml">
+            <field name="product_id" position="after">
+                <field name="source_id" string="Source Relation Document"/>
+                <field name="type"/>
+                <field name="weight_net"/>
+                <field name="engineering_revision"/>
+                <field name="description" select="True"/>
+                <field name="state" select="True"/>
+            </field>
+        </field>
+    </record>
 
-        <record id="plm_bom_tree_view" model="ir.ui.view">
-            <field name="name">plm.mrp.bom.tree</field>
-            <field name="model">mrp.bom</field>
-            <field name="type">tree</field>
-            <field name="inherit_id" ref="mrp.mrp_bom_tree_view"/>
-            <field name="arch" type="xml">
-                 <field name="product_id" position="after">
-                    <field name="source_id" string="Source Relation Document"/>
-  	            	<field name="type" />
-                   	<field name="weight_net"/>
-                   	<field name="engineering_revision"/>
-                   	<field name="description" select="True"/>
-                   	<field name="state" select="True"/>
-          		</field>
-        	</field>
-        </record>
+    <record id="plm_bom_form_view_eng" model="ir.ui.view">
+        <field name="name">plm.bom.form.eng</field>
+        <field name="model">mrp.bom</field>
+        <field name="arch" type="xml">
 
-          <record id="plm_bom_form_view_eng" model="ir.ui.view">
-            <field name="name">plm.bom.form.eng</field>
-            <field name="model">mrp.bom</field>
-            <field name="arch" type="xml">
-            		
-                <form string="Bill of Material" edit="false">
-                    <sheet>
+            <form string="Bill of Material" edit="false">
+                <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button name="open_related_bom_lines" type="object" string="Related BOM Lines" class="oe_stat_button" icon="fa-tasks"/>
+                        <button name="open_related_bom_lines" type="object" string="Related BOM Lines"
+                                class="oe_stat_button" icon="fa-tasks"/>
                     </div>
-                    <group>	
+                    <group>
                         <field name="product_tmpl_id" options="{'no_open':True,'no_create':True}"/>
                         <field name="product_id" groups="product.group_product_variant"/>
                         <field name="state" readonly="True"/>
                         <field name="product_qty" class="oe_inline"/>
-                        <field name="product_uom_id" options="{'no_open':True,'no_create':True}" class="oe_inline" groups="product.group_uom"/>
+                        <field name="product_uom_id" options="{'no_open':True,'no_create':True}" class="oe_inline"
+                               groups="product.group_uom"/>
                         <field name="routing_id" class="oe_inline" groups="mrp.group_mrp_routings"/>
                         <field name="code"/>
                         <field name="type" widget="radio"/>
@@ -70,21 +68,42 @@
                         <page string="Components">
                             <field name="bom_line_ids" widget="one2many_list">
                                 <tree string="Components" editable="bottom">
-                                	<button name="openRelatedBoms" type="object" string="Related BOM" class="btn btn-sm oe_stat_button" attrs="{'invisible':[('related_bom_ids', '=', [])]}"/>
-									<field name="related_bom_ids" invisible="True"/>
-									<field name="related_document_ids" invisible="True"/>
-	           						<button name="openRelatedDocuments" type="object" string="Related DOCS" class="btn btn-sm oe_stat_button" attrs="{'invisible':[('related_document_ids', '=', [])]}"/>
+                                    <button name="openRelatedBoms" type="object" string="Related BOM"
+                                            class="btn btn-sm oe_stat_button"
+                                            attrs="{'invisible':[('related_bom_ids', '=', [])]}"/>
+                                    <field name="related_bom_ids" invisible="True"/>
+                                    <field name="related_document_ids" invisible="True"/>
+                                    <button name="openRelatedDocuments" type="object" string="Related DOCS"
+                                            class="btn btn-sm oe_stat_button"
+                                            attrs="{'invisible':[('related_document_ids', '=', [])]}"/>
+                                    <field name="itemnum"/>
                                     <field name="sequence" widget="handle"/>
                                     <field name="product_id"/>
-                                    <field name="product_qty"/>
-                                    <field name="product_uom_id" options="{'no_open':True,'no_create':True}" groups="product.group_uom"/>
-                                    <field name="attribute_value_ids" widget="many2many_tags" domain="[('product_ids.product_tmpl_id', '=', parent.product_tmpl_id)]" groups="product.group_product_variant"/>
-					                <field name="engineering_revision" readonly="True"/>
+                                    <field name="attribute_value_ids" widget="many2many_tags"
+                                           domain="[('product_ids.product_tmpl_id', '=', parent.product_tmpl_id)]"
+                                           groups="product.group_product_variant"/>
+                                    <field name="engineering_revision" readonly="True"/>
                                     <field name="state" readonly="True"/>
-					            	<field name="description" readonly="True"/>
-					                <field name="source_id" string="Source Relation Document"/>
-			 	            		<field name="type" />
+                                    <field name="description" readonly="True"/>
+                                    <field name="source_id" string="Source Relation Document"/>
+                                    <field name="type"/>
+                                    <field name="weight_net" readonly="True"/>
+                                    <field name="create_date" select="True" readonly="True"/>
                                     <field name="hasChildBoms" invisible="True"/>
+                                    <!--
+                                    <button name="action_see_attachments" type="object" icon="fa-files-o" attrs="{'invisible': [('has_attachments', '=', False)]}"/>
+                                    <button name="action_see_attachments" type="object" icon="fa-file" attrs="{'invisible': [('has_attachments', '=', True)]}"/>
+                                    -->
+                                    <field name="product_qty"/>
+                                    <field name="product_uom_id" options="{'no_open':True,'no_create':True}"
+                                           groups="product.group_uom"/>
+                                    <field name="attribute_value_ids" widget="many2many_tags"
+                                           options="{'no_create': True}"
+                                           domain="[('product_ids.product_tmpl_id', '=', parent.product_tmpl_id)]"
+                                           groups="product.group_product_variant"/>
+                                    <field name="operation_id" groups="mrp.group_mrp_routings"
+                                           domain="[('routing_id', '=', parent.routing_id)]"
+                                           options="{'no_quick_create':True,'no_create_edit':True}"/>
                                 </tree>
                             </field>
                         </page>
@@ -103,14 +122,14 @@
                             </group>
                         </page>
                     </notebook>
-                    </sheet>
-                    <div class="oe_chatter">
-                         <field name="message_follower_ids" widget="mail_followers"/>
-                         <field name="message_ids" colspan="4" widget="mail_thread" nolabel="1"/>
-                    </div>
-                </form>
-            </field>
-        </record>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" colspan="4" widget="mail_thread" nolabel="1"/>
+                </div>
+            </form>
+        </field>
+    </record>
 
     <record id="plm_bom_form_view_2" model="ir.ui.view">
         <field name="name">plm.bom.form.2</field>
@@ -122,59 +141,57 @@
                 <attribute name="edit">true</attribute>
             </xpath>
         </field>
-    </record> 
+    </record>
 
-        <record id="plm_bom_form_view" model="ir.ui.view">
-            <field name="name">plm.bom.form</field>
-            <field name="model">mrp.bom</field>
-            <field name="inherit_id" ref="mrp.mrp_bom_form_view"/>
-            <field name="type">form</field>
-        	<field name="priority" eval="16"/>
-            <field name="arch" type="xml">
-            	<data>
-                    <div class="oe_button_box" name="button_box" position="inside">
-                        <button name="open_related_bom_lines" type="object" string="Related BOM Lines" class="oe_stat_button" icon="fa-tasks"/>
-                    </div>
-            		<field name="product_tmpl_id" position="replace">
-            			<field name="product_tmpl_id" context="{'default_type': 'product'}" options="{'no_open':True,'no_create':True}"/>
-            		</field>
-	                <field name="product_id" position="after">
-	                	<field name="engineering_revision" readonly="True"/>	
-	                	<field name="description" readonly="True"/>
-	                	<field name="state" readonly="True"/>
-	                	<field name="weight_net" readonly="True"/>
-	                </field>
-	            	<xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_id']" position="before">
-	            		<field name="related_bom_ids" invisible="True"/>
-	            		<button name="openRelatedBoms" type="object" string="Related BOM" class="btn btn-sm oe_stat_button" attrs="{'invisible':[('related_bom_ids', '=', [])]}"/>	
-						<field name="related_document_ids" invisible="True"/>
-	           			<button name="openRelatedDocuments" type="object" string="Related DOCS" class="btn btn-sm oe_stat_button" attrs="{'invisible':[('related_document_ids', '=', [])]}"/>
-		            	<field name="itemnum"/>
-	           		</xpath>
-	            	<xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_id']" position="after">
-	            		<field name="engineering_revision" readonly="True"/>	
-		                <field name="state" readonly="True"/>
-		            	<field name="description" readonly="True"/>
-		                <field name="source_id" string="Source Relation Document"/>
- 	            		<field name="type" />
- 	            		<field name="weight_net" readonly="True"/>
- 	            		<field name="create_date" select="True" readonly="True"/>
-	           		</xpath>
-	           		
-	            	<xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_qty']" position="after">
-                        <field name="hasChildBoms" invisible="True"/>
-	           		</xpath>
-	           		
-            		<tree position="attributes">
-            			<attribute name="editable">bottom</attribute>
-            		</tree>
-             	</data>
-     		</field>
-        </record>
+    <record id="plm_bom_form_view" model="ir.ui.view">
+        <field name="name">plm.bom.form</field>
+        <field name="model">mrp.bom</field>
+        <field name="inherit_id" ref="mrp.mrp_bom_form_view"/>
+        <field name="type">form</field>
+        <field name="priority" eval="16"/>
+        <field name="arch" type="xml">
+            <div class="oe_button_box" name="button_box" position="inside">
+                <button name="open_related_bom_lines" type="object" string="Related BOM Lines"
+                        class="oe_stat_button" icon="fa-tasks"/>
+            </div>
+            <field name="product_tmpl_id" position="replace">
+                <field name="product_tmpl_id" context="{'default_type': 'product'}"
+                       options="{'no_open':True,'no_create':True}"/>
+            </field>
+            <field name="product_id" position="after">
+                <field name="engineering_revision" readonly="True"/>
+                <field name="description" readonly="True"/>
+                <field name="state" readonly="True"/>
+                <field name="weight_net" readonly="True"/>
+            </field>
+            <xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_id']" position="before">
+                <field name="related_bom_ids" invisible="True"/>
+                <button name="openRelatedBoms" type="object" string="Related BOM" class="btn btn-sm oe_stat_button"
+                        attrs="{'invisible':[('related_bom_ids', '=', [])]}"/>
+                <field name="related_document_ids" invisible="True"/>
+                <button name="openRelatedDocuments" type="object" string="Related DOCS"
+                        class="btn btn-sm oe_stat_button"
+                        attrs="{'invisible':[('related_document_ids', '=', [])]}"/>
+            </xpath>
+            <xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_id']" position="after">
+                <field name="engineering_revision" readonly="True"/>
+                <field name="state" readonly="True"/>
+                <field name="description" readonly="True"/>
+                <field name="source_id" string="Source Relation Document"/>
+                <field name="type"/>
+            </xpath>
 
+            <xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_qty']" position="after">
+                <field name="hasChildBoms" invisible="True"/>
+            </xpath>
 
-<!-- Opening views from menu -->
+            <tree position="attributes">
+                <attribute name="editable">bottom</attribute>
+            </tree>
+        </field>
+    </record>
 
+    <!-- Opening views from menu -->
     <record model="ir.actions.act_window" id="plm_action_normal_form">
         <field name="name">Normal BoMs</field>
         <field name="type">ir.actions.act_window</field>
@@ -184,101 +201,93 @@
         <field name="filter" eval="True"/>
     </record>
 
-<!-- Overrides standard Search -->
-
-        <record id="view_mrp_bom_filter_inherit" model="ir.ui.view">
-            <field name="name">plm.bom.select</field>
-            <field name="model">mrp.bom</field>
-         	<field name="inherit_id" ref="mrp.view_mrp_bom_filter"/>
-            <field name="type">search</field>
-            <field name="arch" type="xml">
-                <field name="code" position="before">
-	               	<filter name="filter_latest_2_weeks" string="Latest 2 Weeks" separator="1"
-	                       	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"
-	                      	help="Created latest 2 Weeks"/>
-	               	<filter name="filter_latest_7" string="Latest 7 Days" separator="1"
-	                       	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
-	                      	help="Created latest 7 Days"/>
-	             	<filter name="filter_yesterday" string="Yesterday" separator="1"
-	                     	domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
-	                		help="Created yesterday"/>
-	            	<filter name="filter_today" string="Today" separator="1"
-	                     	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
-	                     	help="Created today"/>
-	               	<separator orientation="vertical"/>
-        		</field>
-				<xpath expr="//group" position="after">
-                    <filter string="BoM Name" domain="[]" context="{'group_by':'code'}"/>
-                    <filter string="Variant Name" domain="[]" context="{'group_by':'product_id'}"/>
-                    <filter string="Source Relationship" domain="[]" context="{'group_by':'source_id'}"/>
-	            </xpath>
-	        </field>
-        </record>
-
-
- <!-- Tree Structure Views on MRP -->
- 
-        <record id="mrp_bom_tree_view_where" model="ir.ui.view">
-            <field name="name">mrp.bom.tree.where</field>
-            <field name="model">mrp.bom</field>
-            <field name="field_parent">father_complete_ids</field>
-            <field name="arch" type="xml">
-                <tree string="Where Used Bill of Materials">
-                    <field name="product_id" string="Component Name"/>
-                    <field name="code" string="BoM Name"/>
-                    <field name="engineering_revision" string="Revision"/>
-                    <field name="description"/>
-                    <field name="source_id" string="Source Relation Document"/>
-                    <field name="product_qty"/>
-                    <field name="product_uom_id"/>
-                    <field name="weight_net"/>
-                    <field name="create_date" select="True"/>
-                    <field name="type"/>
-                </tree>
+    <!-- Overrides standard Search -->
+    <record id="view_mrp_bom_filter_inherit" model="ir.ui.view">
+        <field name="name">plm.bom.select</field>
+        <field name="model">mrp.bom</field>
+        <field name="inherit_id" ref="mrp.view_mrp_bom_filter"/>
+        <field name="type">search</field>
+        <field name="arch" type="xml">
+            <field name="code" position="before">
+                <filter name="filter_latest_2_weeks" string="Latest 2 Weeks" separator="1"
+                        domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"
+                        help="Created latest 2 Weeks"/>
+                <filter name="filter_latest_7" string="Latest 7 Days" separator="1"
+                        domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
+                        help="Created latest 7 Days"/>
+                <filter name="filter_yesterday" string="Yesterday" separator="1"
+                        domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
+                        help="Created yesterday"/>
+                <filter name="filter_today" string="Today" separator="1"
+                        domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
+                        help="Created today"/>
+                <separator orientation="vertical"/>
             </field>
-        </record>
+            <xpath expr="//group" position="after">
+                <filter string="BoM Name" domain="[]" context="{'group_by':'code'}"/>
+                <filter string="Variant Name" domain="[]" context="{'group_by':'product_id'}"/>
+                <filter string="Source Relationship" domain="[]" context="{'group_by':'source_id'}"/>
+            </xpath>
+        </field>
+    </record>
 
-         <record id="plm_bom_tree_structure" model="ir.ui.view">
-            <field name="name">plm.bom.tree</field>
-            <field name="model">mrp.bom.line</field>
-            <field name="field_parent">child_line_ids</field>
-            <field name="arch" type="xml">
-                <tree string="Bill of Materials">
-                    <field name="itemnum" string="Position"/>
-                    <field name="product_id" string="Component Name"/>
-                    <field name="engineering_revision" string="Revision"/>
-                    <field name="description"/>
-                    <field name="source_id" string="Source Relation Document"/>
-                    <field name="product_qty"/>
-                    <field name="product_uom_id"/>
-                    <field name="weight_net"/>
-                    <field name="create_date" select="True"/>
-                    <field name="type"/>
-                </tree>
-            </field>
-        </record>
-        
+    <!-- Tree Structure Views on MRP -->
+    <record id="mrp_bom_tree_view_where" model="ir.ui.view">
+        <field name="name">mrp.bom.tree.where</field>
+        <field name="model">mrp.bom</field>
+        <field name="field_parent">father_complete_ids</field>
+        <field name="arch" type="xml">
+            <tree string="Where Used Bill of Materials">
+                <field name="product_id" string="Component Name"/>
+                <field name="code" string="BoM Name"/>
+                <field name="engineering_revision" string="Revision"/>
+                <field name="description"/>
+                <field name="source_id" string="Source Relation Document"/>
+                <field name="product_qty"/>
+                <field name="product_uom_id"/>
+                <field name="weight_net"/>
+                <field name="create_date" select="True"/>
+                <field name="type"/>
+            </tree>
+        </field>
+    </record>
 
+    <record id="plm_bom_tree_structure" model="ir.ui.view">
+        <field name="name">plm.bom.tree</field>
+        <field name="model">mrp.bom.line</field>
+        <field name="field_parent">child_line_ids</field>
+        <field name="arch" type="xml">
+            <tree string="Bill of Materials">
+                <field name="itemnum" string="Position"/>
+                <field name="product_id" string="Component Name"/>
+                <field name="engineering_revision" string="Revision"/>
+                <field name="description"/>
+                <field name="source_id" string="Source Relation Document"/>
+                <field name="product_qty"/>
+                <field name="product_uom_id"/>
+                <field name="weight_net"/>
+                <field name="create_date" select="True"/>
+                <field name="type"/>
+            </tree>
+        </field>
+    </record>
 
-<!-- Tree Structure Actions on MRP -->
-        
-
-        <record id="action2" model="ir.actions.act_window">
-            <field name="name">Bill of Materials Structure</field>
-            <field name="type">ir.actions.act_window</field>
-            <field name="res_model">mrp.bom.line</field>
-            <field name="domain">[('bom_id', 'in', active_ids)]</field>
-            <field name="view_type">tree</field>
-            <field name="view_id" ref="plm_bom_tree_structure"/>
-        </record>
-        <!--
-        <record id="ir_BOM_structure" model="ir.values">
-            <field eval="'client_action_multi'" name="key2"/>
-            <field eval="'mrp.bom'" name="model"/>
-            <field name="name">Bill of Materials Structure</field>
-            <field eval="'ir.actions.act_window,'+str(action2)" name="value"/>
-        </record>
-        -->
-</data>
-</openerp>
+    <!-- Tree Structure Actions on MRP -->
+    <record id="action2" model="ir.actions.act_window">
+        <field name="name">Bill of Materials Structure</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">mrp.bom.line</field>
+        <field name="domain">[('bom_id', 'in', active_ids)]</field>
+        <field name="view_type">tree</field>
+        <field name="view_id" ref="plm_bom_tree_structure"/>
+    </record>
+    <!--
+    <record id="ir_BOM_structure" model="ir.values">
+        <field eval="'client_action_multi'" name="key2"/>
+        <field eval="'mrp.bom'" name="model"/>
+        <field name="name">Bill of Materials Structure</field>
+        <field eval="'ir.actions.act_window,'+str(action2)" name="value"/>
+    </record>
+    -->
+</odoo>
 

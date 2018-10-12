@@ -1,139 +1,125 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<openerp>
-	<data> 
+<odoo>
+    <menuitem
+            id="plm_menu"
+            name="PLM"
+            icon="terp-stock"
+            web_icon="plm,static/src/img/PLMmodule.png"
+            web_icon_hover="plm,static/src/img/PLMmodule-hoover.png"
 
-    <menuitem 
-		id="plm_menu" 
-		name="PLM Module" 
-		icon="terp-stock" 
-    	web_icon="plm,static/src/img/PLMmodule.png" 
-    	web_icon_hover="plm,static/src/img/PLMmodule-hoover.png" 
-		
-    	/>
+    />
     <!-- action = "plm.open_board_plm_manager"  -->
     <!-- Parent menu "PLM Module"  -->
-<!--
-    <menuitem 
-    action="plm.open_board_plm_manager" 
-    id="plm_dashboard_menu" 
-    parent="plm.plm_menu" 
-	sequence="1" 
-	groups="plm.group_plm_integrationuser"
-    name="Dashboard" />
-    -->
-	<menuitem 	
-	id		="plm_component_menu_view" 
-	name	="Components" 
-	parent	="plm.plm_menu" 
-	sequence="10"  />
-    	
-	<menuitem  
-	name="Documents" 
-	id="plm_document_form" 
-	parent="plm.plm_menu" 
-	sequence="11" />
+    <!--
+        <menuitem
+        action="plm.open_board_plm_manager"
+        id="plm_dashboard_menu"
+        parent="plm.plm_menu"
+        sequence="1"
+        groups="plm.group_plm_integration_user"
+        name="Dashboard" />
+        -->
+    <menuitem
+            id="plm_component_menu_view"
+            name="Components"
+            parent="plm.plm_menu"
+            sequence="10"/>
 
-	<menuitem 
-	name="Component Relations" 
-	id="plm_menu_relation" 
-	parent="plm.plm_menu" 
-	sequence="12" />
-		
-    <menuitem  
-    id="plm_menu_dictionaries" 
-    name="Configuration" 
-	parent="plm.plm_menu"  
-    sequence="50" 
-	groups="plm.group_plm_integrationuser"  />
-		
+    <menuitem
+            name="Documents"
+            id="plm_document_form"
+            parent="plm.plm_menu"
+            sequence="11"/>
 
-		
-	<!-- Parent menu "Documents"  -->
-	
-    <menuitem 
-    name="Search on Backup Data Set" 
-    action="action_plm_backupdoc" 
-    id="menu_backupdoc" 
-    parent="plm.plm_document_form" 
-    sequence="13" 
-	groups="plm.group_plm_admin"  />
+    <menuitem
+            name="Component Relations"
+            id="plm_menu_relation"
+            parent="plm.plm_menu"
+            sequence="12"/>
 
-    <menuitem 
-    name="Search on Documents" 
-    action="plm.plm_action_document_form" 
-    id="menu_document_files" 
-    parent="plm.plm_document_form"  
-	sequence="10"  
+    <menuitem
+            id="plm_menu_dictionaries"
+            name="Configuration"
+            parent="plm.plm_menu"
+            sequence="50"
+            groups="plm.group_plm_integration_user"/>
+
+    <!-- Parent menu "Documents"  -->
+    <menuitem
+            name="Search on Backup Data Set"
+            action="action_plm_backupdoc"
+            id="menu_backupdoc"
+            parent="plm.plm_document_form"
+            sequence="13"
+            groups="plm.group_plm_admin"/>
+
+    <menuitem
+            name="Search on Documents"
+            action="plm.plm_action_document_form"
+            id="menu_document_files"
+            parent="plm.plm_document_form"
+            sequence="10"
     />
 
-    <menuitem 
-    name="Search on Checked-Out Documents" 
-    action="plm.action_plm_checkout" 
-    id="menu_checkout" 
-    parent="plm.plm_document_form"
-    groups="plm.group_plm_integrationuser"
-	sequence="12"  
+    <menuitem
+            name="Search on Checked-Out Documents"
+            action="plm.action_plm_checkout"
+            id="menu_checkout"
+            parent="plm.plm_document_form"
+            groups="plm.group_plm_integration_user"
+            sequence="12"
     />
-		
-    <menuitem 
-    name="Search on Document Relations" 
-    action="plm_action_document_relations" 
-    id="menu_document_relations" 
-    parent="plm.plm_document_form" 
-    sequence="11" 
+
+    <menuitem
+            name="Search on Document Relations"
+            action="plm_action_document_relations"
+            id="menu_document_relations"
+            parent="plm.plm_document_form"
+            sequence="11"
     />
-    	
-    	
-    	
+
     <!-- Parent menu "Configuration" -->
-    <menuitem 
-    name="Descriptions" 
-    action="plm_action_description_form" 
-    id="menu_description" 
-    groups="plm.group_plm_admin"
-    parent="plm.plm_menu_dictionaries" /> 
-	
-    <menuitem 
-    name="Finishings" 
-    action="plm_action_finishing_form" 
-    id="menu_finishing" 
-    groups="plm.group_plm_admin"
-    parent="plm.plm_menu_dictionaries" />
+    <menuitem
+            name="Descriptions"
+            action="plm_action_description_form"
+            id="menu_description"
+            groups="plm.group_plm_admin"
+            parent="plm.plm_menu_dictionaries"/>
 
-    <menuitem 
-    name="Materials" 
-    action="plm_action_material_form" 
-    id="menu_material"
-    groups="plm.group_plm_admin"
-    parent="plm.plm_menu_dictionaries" />
-    
-	<menuitem  
-	id="plm_settings" 
-	name="Settings"  
-	parent="plm.plm_menu_dictionaries" 
-	sequence="50" 
-	groups="plm.group_plm_admin" 
-	action="plm_action_settings_form" /> 
-    	
-    	
-    	
-	<!-- Parent menu "Configuration" -->
-    	
-    <menuitem 	
-	id		="menu_base_component" 
-	name	="Search on Engineering Parts" 
-	parent	="plm.plm_component_menu_view" 
-    action	="action_plm_component_base" /> 	
-    	
+    <menuitem
+            name="Finishings"
+            action="plm_action_finishing_form"
+            id="menu_finishing"
+            groups="plm.group_plm_admin"
+            parent="plm.plm_menu_dictionaries"/>
 
-        	
-	<!-- Parent menu "Component Relations" -->
-    
-    <menuitem 
-    	name="Search on Normal Bill of Materials" 
-    	id="menu_relation_normal" 
-    	parent="plm.plm_menu_relation"  
-    	action="plm_action_normal_form"
-    	/>
-	</data>
-</openerp>
+    <menuitem
+            name="Materials"
+            action="plm_action_material_form"
+            id="menu_material"
+            groups="plm.group_plm_admin"
+            parent="plm.plm_menu_dictionaries"/>
+
+    <menuitem
+            id="plm_settings"
+            name="Settings"
+            parent="plm.plm_menu_dictionaries"
+            sequence="50"
+            groups="plm.group_plm_admin"
+            action="plm_action_settings_form"/>
+
+    <!-- Parent menu "Configuration" -->
+    <menuitem
+            id="menu_base_component"
+            name="Search on Engineering Parts"
+            parent="plm.plm_component_menu_view"
+            action="action_plm_component_base"/>
+
+    <!-- Parent menu "Component Relations" -->
+    <menuitem
+            name="Search on Normal Bill of Materials"
+            id="menu_relation_normal"
+            parent="plm.plm_menu_relation"
+            action="plm_action_normal_form"
+    />
+</odoo>

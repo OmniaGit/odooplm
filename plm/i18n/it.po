@@ -1133,7 +1133,7 @@ msgid "Indexed Content"
 msgstr "Contenuto Indicizzato"
 
 #. module: plm
-#: model:res.groups,name:plm.group_plm_integrationuser
+#: model:res.groups,name:plm.group_plm_integration_user
 msgid "Integration User"
 msgstr "Utente di Integrazione"
 

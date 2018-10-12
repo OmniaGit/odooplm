@@ -1,32 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
-<data>
-
-    <record id="plm_component_manage_sparebom" model="ir.ui.view">
+<odoo>
+    <record id="plm_component_manage_spare_bom" model="ir.ui.view">
         <field name="name">plm.relation.spare</field>
         <field name="model">plm.temporary</field>
         <field name="type">form</field>
         <field name="arch" type="xml">
-        <form string="Creation of Spare Bom">
-            <label string="Are you sure you want to create a new Spare Bom?" colspan="4"/>
-            <group><field name="summarize"/></group>
-            <separator string="" colspan="4" />
-            <group colspan="4" col="4">
-            	<button special="cancel" string="Cancel"/>
-            	<button string="Create Spare Bom" name="action_create_spareBom" type="object"/>
-            </group>
-        </form>
+            <form string="Creation of Spare Bom">
+                <label string="Are you sure you want to create a new Spare Bom?" colspan="4"/>
+                <group>
+                    <field name="summarize"/>
+                </group>
+                <separator string="" colspan="4"/>
+                <group colspan="4" col="4">
+                    <button special="cancel" string="Cancel"/>
+                    <button string="Create Spare Bom" name="action_create_spare_bom" type="object"/>
+                </group>
+            </form>
         </field>
     </record>
 
     <act_window name="Create Spare Bom"
-        res_model="plm.temporary"
-        src_model="product.product"
-        view_mode="form"
-        view_id="plm_component_manage_sparebom"
-        target="new"
-        key2="client_action_multi"
-        id="act_manage_spareBom"/>
+                res_model="plm.temporary"
+                src_model="product.product"
+                view_mode="form"
+                view_id="plm_component_manage_spare_bom"
+                target="new"
+                key2="client_action_multi"
+                id="act_manage_spare_bom"/>
 
     <record model="ir.actions.act_window" id="plm_action_spare_form">
         <field name="name">Spare BoMs</field>
@@ -36,13 +36,10 @@
         <field name="domain">[('type','=','spbom')]</field>
         <field name="filter" eval="True"/>
     </record>
- 
-    <menuitem 
-    name="Search on Spare Bill of Materials" 
-    action="plm_action_spare_form" 
-    id="menu_relation_spare" 
-    parent="plm.plm_menu_relation" />
-	
- </data>
-</openerp>
-        
+
+    <menuitem
+            name="Search on Spare Bill of Materials"
+            action="plm_action_spare_form"
+            id="menu_relation_spare"
+            parent="plm.plm_menu_relation"/>
+</odoo>
