@@ -1445,7 +1445,7 @@ class PlmDocument(models.Model):
                         continue
                     trueChildId = productAttributes[childId].get('id')
                     trueDocumentId = documentAttributes.get(documentId, {}).get('id')
-                    brwBoml.addChildRow(trueChildId, trueDocumentId, relationAttributes, bomType)
+                    brwBoml.add_child_row(trueChildId, trueDocumentId, relationAttributes, bomType)
             except Exception as ex:
                 logging.error(ex)
                 raise ex
