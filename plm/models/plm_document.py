@@ -1280,6 +1280,9 @@ class PlmDocument(models.Model):
                 # I'm a 3D file
                 parentDocumentId, parentProductId = parentItem
                 relationAttributes = structure.get('MRP_ATTRIBUTES', {})
+                forceQty = structure.get('FORCE_QTY', 1)
+                if forceQty:
+                    relationAttributes['product_qty'] = forceQty
                 childRelations = documentRelations.get(parentDocumentId, [])
                 childRelations.append((documentId, relationAttributes.get('TYPE', '')))
                 if parentDocumentId:
