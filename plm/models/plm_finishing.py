@@ -48,5 +48,7 @@ class PlmFinishing(models.Model):
 
     @api.multi
     def copy(self, default=None):
+        if not default:
+            default = {}
         default['name'] = self.name + ' (copy)'
         return super(PlmFinishing, self).copy(default=default)
