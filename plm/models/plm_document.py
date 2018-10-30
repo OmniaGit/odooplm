@@ -1791,4 +1791,14 @@ class PlmDocument(models.Model):
         # sort result according to the original sort ordering
         result = [id for id in orig_ids if id in ids]
         return len(result) if count else list(result)
+
+    @api.multi
+    def isLatestRevision(self):
+        for docBrws in self:
+            lastdocIds = self._getlastrev(docBrws.id)
+            for lastDocId in lastdocIds:
+                if lastDocId == docBrws.id:
+                    return True
+        return False
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
