@@ -33,6 +33,7 @@ Allow to compute boms due to date
 ==============================================
     """,
     'data': [
+        'views/product_product.xml'
     ],
     'demo': [],
     'test': [],
