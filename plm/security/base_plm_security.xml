@@ -127,6 +127,15 @@
         <field name="perm_create" eval="0"/>
         <field name="perm_unlink" eval="0"/>
     </record>
+	<record id="plm_treatment_view" model="ir.model.access">
+	    <field name="name">PLM Treatment</field>
+	    <field name="model_id" ref="model_plm_treatment"/>
+	    <field name="group_id" eval="group_plm_view_user"/>
+	    <field name="perm_read" eval="True"/>
+	    <field name="perm_write" eval="False"/>
+	    <field name="perm_create" eval="False"/>
+	    <field name="perm_unlink" eval="False"/>
+	</record>
     <record id="plm_material_view" model="ir.model.access">
         <field name="name">PLM Material</field>
         <field name="model_id" ref="model_plm_material"/>
