@@ -1305,7 +1305,7 @@ class PlmDocument(models.Model):
         populateStructure(structure=objStructure)
 
         # Save the document
-        logging.info("Savind Document")
+        logging.info("Saving Document")
         alreadyEvaluated = []
         for documentAttribute in documentAttributes.values():
             try:
