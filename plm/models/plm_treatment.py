@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -19,20 +20,20 @@
 #
 ##############################################################################
 
-"""
+'''
 Created on 25 Aug 2016
 
 @author: Daniel Smerghetto
-"""
+'''
 from odoo import models
 from odoo import fields
 from odoo import api
 from odoo import _
 
 
-class PlmFinishing(models.Model):
-    _name = "plm.finishing"
-    _description = "Surface Finishing"
+class PlmTreatment(models.Model):
+    _name = "plm.treatment"
+    _description = "Termic Treatment"
 
     name = fields.Char(_('Specification'),
                        size=128,
@@ -43,12 +44,16 @@ class PlmFinishing(models.Model):
                               help=_("Gives the sequence order when displaying a list of product categories."))
 
     _sql_constraints = [
-        ('name_uniq', 'unique(name)', _('Surface Finishing has to be unique !')),
+        ('name_uniq', 'unique(name)', _('Termic Treatment has to be unique !')),
     ]
-
+    
     @api.multi
     def copy(self, default=None):
         if not default:
             default = {}
-        default['name'] = self.name + ' (copy)'
-        return super(PlmFinishing, self).copy(default=default)
+        default['name'] = self.name + ' (copy)' 
+        return super(PlmTreatment, self).copy(default=default)
+
+PlmTreatment()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

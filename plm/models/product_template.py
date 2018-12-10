@@ -56,6 +56,10 @@ class ProductTemplateExtension(models.Model):
         required=False,
         help=_("Surface finishing for current product, only description for titleblock.")
     )
+    engineering_treatment = fields.Char(_('Termic Treatment'),
+                                      size=128,
+                                      required=False,
+                                      help=_("Termic treatment for current product, only description for titleblock."))
 
     engineering_revision = fields.Integer(_('Revision'), required=True, help=_("The revision of the product."),
                                           default=0)
@@ -80,11 +84,20 @@ class ProductTemplateExtension(models.Model):
 
     engineering_writable = fields.Boolean(_('Writable'),
                                           default=True)
-    is_engcode_editable = fields.Boolean(_('Engineering Editable'), default=True)
+    is_engcode_editable = fields.Boolean(_('Engineering Editable'), default=True, compute='_compute_eng_code_editable')
 
     _sql_constraints = [
         ('partnumber_uniq', 'unique (engineering_code,engineering_revision)', _('Part Number has to be unique!'))
     ]
+
+
+    @api.multi
+    def _compute_eng_code_editable(self):
+        for productBrws in self:
+            if productBrws.engineering_code in ['', False, '-']:
+                productBrws.is_engcode_editable = True
+            else:
+                productBrws.is_engcode_editable = False
 
     @api.multi
     def engineering_products_open(self):

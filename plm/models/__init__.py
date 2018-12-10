@@ -25,6 +25,7 @@ Created on 25 Aug 2016
 @author: Daniel Smerghetto
 """
 from . import plm_finishing
+from . import plm_treatment
 from . import plm_material
 from . import product_template
 from . import plm_descriptions             # Has to be before "product_product_extension" due to related field
