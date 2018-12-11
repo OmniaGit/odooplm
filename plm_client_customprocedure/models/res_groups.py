@@ -70,7 +70,7 @@ class ResGroups(models.Model):
             tmpFolder = tempfile.gettempdir()
             if groupBrws.custom_procedure_fname:
                 customFilePath = os.path.join(tmpFolder, groupBrws.custom_procedure_fname)
-                with open(customFilePath, 'w') as writeFile:
+                with open(customFilePath, 'wb') as writeFile:
                     writeFile.write(base64.decodestring(groupBrws.custom_procedure))
             groupBrws.custom_read_content = ''
         
