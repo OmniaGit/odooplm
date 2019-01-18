@@ -1333,6 +1333,7 @@ class PlmDocument(models.Model):
                 elif skipCheckOut:
                     if docBrws.isCheckedOutByMe():
                         docBrws._check_in()
+                    documentAttribute['TO_UPDATE'] = True
                 documentAttribute['id'] = docBrws.id
             except Exception as ex:
                 logging.error(ex)
