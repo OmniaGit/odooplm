@@ -1574,6 +1574,7 @@ class PlmDocument(models.Model):
         def checkDocument(docAttrs):
             docName = docAttrs.get('name', '')
             docRev = int(docAttrs.get('revisionid', 0) or 0)
+            docAttrs['revisionid'] = docRev
             docBrwsList = self.search([('name', '=', docName)], order='revisionid DESC')
             existingDocs = {}
             graterDocBrws = None
@@ -1600,6 +1601,7 @@ class PlmDocument(models.Model):
         def checkComponent(compAttrs):
             engCode = compAttrs.get('engineering_code', '')
             engRev = int(compAttrs.get('engineering_revision', 0) or 0)
+            compAttrs['engineering_revision'] = engRev
             prodBrwsList = prodProd.search([('engineering_code', '=', engCode)], order='engineering_revision DESC')
             existingCompRevisions = {}
             foundCompBrws = None
