@@ -54,32 +54,31 @@ class PlmComponentExtension(models.Model):
         if prod_id in self.processed_ids:
             return False
         self.processed_ids.append(prod_id)
-        for spare_bom_brws in self.browse(prod_id):
-            if not spare_bom_brws:
+        for prod_prod_brws in self.browse(prod_id):
+            if not prod_prod_brws:
                 return False
-            if '-Spare' in spare_bom_brws.name:
+            if '-Spare' in prod_prod_brws.name:
                 return False
             source_bom_type = self.env.context.get('source_bom_type', 'ebom')
             bom_type = self.env['mrp.bom']
             bom_l_type = self.env['mrp.bom.line']
-            spare_bom_brws_list = bom_type.search([('product_tmpl_id', '=', spare_bom_brws.product_tmpl_id.id),
+            spare_bom_brws_list = bom_type.search([('product_tmpl_id', '=', prod_prod_brws.product_tmpl_id.id),
                                                ('type', '=', 'spbom')])
-            normal_bom_brws_list = bom_type.search([('product_tmpl_id', '=', spare_bom_brws.product_tmpl_id.id),
+            normal_bom_brws_list = bom_type.search([('product_tmpl_id', '=', prod_prod_brws.product_tmpl_id.id),
                                                 ('type', '=', 'normal')])
             if not normal_bom_brws_list:
-                normal_bom_brws_list = bom_type.search([('product_tmpl_id', '=', spare_bom_brws.product_tmpl_id.id),
+                normal_bom_brws_list = bom_type.search([('product_tmpl_id', '=', prod_prod_brws.product_tmpl_id.id),
                                                     ('type', '=', source_bom_type)])
             defaults = {}
             if not spare_bom_brws_list:
-                if spare_bom_brws.std_description.bom_tmpl:
-                    new_bom_brws = bom_type.browse(spare_bom_brws.std_description.bom_tmpl.id).copy(defaults)
+                if prod_prod_brws.std_description.bom_tmpl:
+                    new_bom_brws = bom_type.browse(prod_prod_brws.std_description.bom_tmpl.id).copy(defaults)
                 if (not new_bom_brws) and normal_bom_brws_list:
                         new_bom_brws = normal_bom_brws_list[0].copy(defaults)
                 if new_bom_brws:
-                    new_bom_brws.write({'name': spare_bom_brws.name,
-                                      'product_id': spare_bom_brws.id,
-                                      'type': 'spbom'},
-                                     check=False)
+                    new_bom_brws.with_context({'check': False}).write({'name': prod_prod_brws.name,
+                                      'product_id': prod_prod_brws.id,
+                                      'type': 'spbom'})
                     ok_rows = self._summarizeBom(new_bom_brws.bom_line_ids)
                     for bom_line in list(set(new_bom_brws.bom_line_ids) ^ set(ok_rows)):
                         bom_l_type.browse(bom_line.id).unlink()

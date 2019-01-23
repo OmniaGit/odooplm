@@ -10,11 +10,11 @@
                 <group>
                     <field name="summarize"/>
                 </group>
-                <separator string="" colspan="4"/>
-                <group colspan="4" col="4">
-                    <button special="cancel" string="Cancel"/>
-                    <button string="Create Spare Bom" name="action_create_spare_bom" type="object"/>
-                </group>
+                
+	            <footer>
+	            	<button special="cancel" string="Cancel"/>
+	            	<button string="Create Spare Bom" name="action_create_spare_bom" type="object"/>
+	            </footer>
             </form>
         </field>
     </record>
