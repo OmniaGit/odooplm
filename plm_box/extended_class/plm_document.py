@@ -112,7 +112,7 @@ class Plm_box_document(models.Model):
         docName = docDict.get('name', '')
         docRev = docDict.get('revisionId', '')
         plmCheckOutObj = self.env.get('plm.checkout')
-        docBrwsList = self.search([('name', '=', docName), ('revisionid', '=', docRev)]).ids
+        docBrwsList = self.search([('name', '=', docName), ('revisionid', '=', docRev)])
         for docBrws in docBrwsList:
             docState = docBrws.state
             docId = docBrws.id
