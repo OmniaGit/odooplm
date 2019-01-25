@@ -761,8 +761,9 @@ class PlmComponent(models.Model):
 
     @api.multi
     def write(self, vals):
-        if not 'is_engcode_editable' in vals:
+        if 'is_engcode_editable' not in vals:
             vals['is_engcode_editable'] = False
+        vals.update(self.checkMany2oneClient(vals))
         return super(PlmComponent, self).write(vals)
 
     @api.model
@@ -785,6 +786,7 @@ class PlmComponent(models.Model):
                     raise UserError('Component %r already exists' % (vals['engineering_code']))
         try:
             vals['is_engcode_editable'] = False
+            vals.update(self.checkMany2oneClient(vals))
             return super(PlmComponent, self).create(vals)
         except Exception as ex:
             import psycopg2
@@ -796,7 +798,9 @@ class PlmComponent(models.Model):
     @api.multi
     def read(self, fields=None, load='_classic_read'):
         try:
-            return super(PlmComponent, self).read(fields=fields, load=load)
+            res = super(PlmComponent, self).read(fields=fields, load=load)
+            res = self.readMany2oneFields(res)
+            return res
         except Exception as ex:
             if isinstance(ex, AccessError) and 'sale.report' in ex.name:
                 return """
@@ -840,6 +844,51 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             newContext['uid'] = SUPERUSER_ID
             self.wf_message_post(body=_('Copied starting from : %s.' % previous_name))
         return objId
+
+    @api.multi
+    def readMany2oneFields(self, readVals):
+        out = []
+        for vals in readVals:
+            tmpVals = vals
+            fieldsGet = self.fields_get(vals.keys())
+            for fieldName, fieldDefinition in fieldsGet.items():
+                fieldType = fieldDefinition.get('type', '')
+                referredModel = fieldDefinition.get('relation', '')
+                if fieldType == 'many2one':
+                    relatedCustomFieldName = 'plm_convert_' + fieldName
+                    idVal = vals.get(fieldName, False)
+                    if idVal:
+                        if isinstance(idVal, (list, tuple)):
+                            idVal = idVal[0]
+                        if isinstance(idVal, int):
+                            obj = self.env[referredModel].browse(idVal)
+                        else:
+                            obj = idVal
+                        tmpVals[relatedCustomFieldName] = obj.name
+            out.append(tmpVals)
+        return out
+
+    @api.multi
+    def checkMany2oneClient(self, vals):
+        out = {}
+        customFields = [field.replace('plm_convert_', '') for field in vals.keys() if field.startswith('plm_convert_')]
+        fieldsGet = self.fields_get(customFields)
+        for fieldName, fieldDefinition in fieldsGet.items():
+            refId = self.customFieldConvert(fieldDefinition, vals, fieldName)
+            if refId:
+                out[fieldName] = refId.id
+        return out
+
+    @api.multi
+    def customFieldConvert(self, fieldDefinition, vals, fieldName):
+        refId = False
+        fieldType = fieldDefinition.get('type', '')
+        referredModel = fieldDefinition.get('relation', '')
+        oldFieldName = 'plm_convert_' + fieldName
+        cadVal = vals.get(oldFieldName, '')
+        if fieldType == 'many2one':
+            refId = self.env[referredModel].search([('name', '=', cadVal)])
+        return refId
 
     @api.model
     def translateForClient(self, values=[], forcedLang=''):
