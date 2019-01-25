@@ -158,7 +158,7 @@ class plm_compare_bom(osv.osv.osv_memory):
                 bomDict[productId] = [createVals]
             else:
                 if self.compute_type == 'summarized':
-                    bomDict[productId]['itemqty'] = bomDict[productId]['itemqty'] + bomLineQty
+                    bomDict[productId][0]['itemqty'] = bomDict[productId][0]['itemqty'] + bomLineQty
                 else:
                     bomDict[productId].append(createVals)
         return bomDict
