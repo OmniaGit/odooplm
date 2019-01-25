@@ -52,7 +52,7 @@ class Plm_box_document(models.Model):
     @api.model
     def create(self, vals):
         if not vals.get('name', False):
-            name = self.getNewSequencedName()
+            name = self.getNewSequencedName(vals)
             vals['name'] = name
         return super(Plm_box_document, self).create(vals)
 
@@ -97,7 +97,8 @@ class Plm_box_document(models.Model):
         force = docDict.get('force', False)
         docBrowseList = self.search([('name', '=', docName)])
         if docBrowseList and not force:
-            if docBrowseList[0].datas != docContent:
+            clientBytesContent = docContent.encode(encoding='utf_8', errors='strict')
+            if docBrowseList[0].datas + '\n'.encode(encoding='utf_8', errors='strict') != clientBytesContent:
                 return 'File changed'
         docIds = self.search([('name', '=', docName), ('revisionid', '=', docRev)]).ids
         if len(docIds) == 1:
