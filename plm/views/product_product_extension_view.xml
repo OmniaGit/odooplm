@@ -140,7 +140,7 @@
                         </h1>
                         <group name="plm_fields_area" colspan="6" col="2">
                             <field name="is_engcode_editable" invisible="1"/>
-                            <field name="engineering_code" attrs="{'readonly':[('is_engcode_editable','=', False)]}"
+                            <field name="engineering_code" attrs="{'readonly':[('is_engcode_editable','in', [False, '-'])]}"
                                    select="1"/>
                             <field name="engineering_revision" colspan="2" readonly="1"/>
                             <field name="std_description"
