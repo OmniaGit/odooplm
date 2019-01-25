@@ -77,6 +77,15 @@ class PlmDocument(models.Model):
                 'draft': self.action_draft}
 
     @api.multi
+    def isLatestRevision(self):
+        for docBrws in self:
+            lastdocIds = self._getlastrev(docBrws.id)
+            for lastDocId in lastdocIds:
+                if lastDocId == docBrws.id:
+                    return True
+        return False
+
+    @api.multi
     def get_checkout_user(self):
         lastDoc = self._getlastrev(self.ids)
         if lastDoc:
