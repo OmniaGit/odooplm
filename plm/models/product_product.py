@@ -2,7 +2,7 @@
 #
 #    OmniaSolutions, Your own solutions
 #    Copyright (C) 2010 OmniaSolutions (<http://omniasolutions.eu>). All Rights Reserved
-#    $Id$
+#    $Id$F
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -798,8 +798,11 @@ class PlmComponent(models.Model):
     @api.multi
     def read(self, fields=None, load='_classic_read'):
         try:
+            customFields = [field.replace('plm_m2o_', '') for field in fields if field.startswith('plm_m2o_')]
+            fields.extend(customFields)
+            fields = list(set(fields))
             res = super(PlmComponent, self).read(fields=fields, load=load)
-            res = self.readMany2oneFields(res)
+            res = self.readMany2oneFields(res, fields)
             return res
         except Exception as ex:
             if isinstance(ex, AccessError) and 'sale.report' in ex.name:
@@ -846,32 +849,24 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         return objId
 
     @api.multi
-    def readMany2oneFields(self, readVals):
+    def readMany2oneFields(self, readVals, fields):
         out = []
         for vals in readVals:
-            tmpVals = vals
-            fieldsGet = self.fields_get(vals.keys())
-            for fieldName, fieldDefinition in fieldsGet.items():
-                fieldType = fieldDefinition.get('type', '')
-                referredModel = fieldDefinition.get('relation', '')
-                if fieldType == 'many2one':
-                    relatedCustomFieldName = 'plm_convert_' + fieldName
-                    idVal = vals.get(fieldName, False)
-                    if idVal:
-                        if isinstance(idVal, (list, tuple)):
-                            idVal = idVal[0]
-                        if isinstance(idVal, int):
-                            obj = self.env[referredModel].browse(idVal)
-                        else:
-                            obj = idVal
-                        tmpVals[relatedCustomFieldName] = obj.name
+            tmpVals = vals.copy()
+            for fieldName, fieldVal in vals.items():
+                customField = 'plm_m2o_' + fieldName
+                if customField in fields:
+                    if fieldVal:
+                        tmpVals[customField] = fieldVal[1]
+                    else:
+                        tmpVals[customField] = ''
             out.append(tmpVals)
         return out
 
     @api.multi
     def checkMany2oneClient(self, vals):
         out = {}
-        customFields = [field.replace('plm_convert_', '') for field in vals.keys() if field.startswith('plm_convert_')]
+        customFields = [field.replace('plm_m2o_', '') for field in vals.keys() if field.startswith('plm_m2o_')]
         fieldsGet = self.fields_get(customFields)
         for fieldName, fieldDefinition in fieldsGet.items():
             refId = self.customFieldConvert(fieldDefinition, vals, fieldName)
@@ -884,7 +879,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         refId = False
         fieldType = fieldDefinition.get('type', '')
         referredModel = fieldDefinition.get('relation', '')
-        oldFieldName = 'plm_convert_' + fieldName
+        oldFieldName = 'plm_m2o_' + fieldName
         cadVal = vals.get(oldFieldName, '')
         if fieldType == 'many2one':
             refId = self.env[referredModel].search([('name', '=', cadVal)])
