@@ -87,6 +87,7 @@ Supported Editors :
             'views/plm_document_relations.xml',
             'views/plm_document_view.xml',
             'views/plm_finishing_view.xml',
+            'views/plm_treatment_view.xml',
             'views/plm_material_view.xml',
             'views/product_product_extension_view.xml',
             'views/product_template.xml',

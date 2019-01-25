@@ -43,7 +43,7 @@ class PlmFinishing(models.Model):
                               help=_("Gives the sequence order when displaying a list of product categories."))
 
     _sql_constraints = [
-        ('name_uniq', 'unique(name)', _('Raw Material has to be unique !')),
+        ('name_uniq', 'unique(name)', _('Surface Finishing has to be unique !')),
     ]
 
     @api.multi

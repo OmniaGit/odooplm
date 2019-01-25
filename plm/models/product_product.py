@@ -104,6 +104,10 @@ class PlmComponent(models.Model):
                                   _('Surface Finishing'),
                                   required=False,
                                   help=_("Select surface finishing for current product"))
+    tmp_treatment = fields.Many2one('plm.treatment',
+                                    _('Termic Treatment'),
+                                    required=False,
+                                    help=_("Select termic treatment for current product"))
     father_part_ids = fields.Many2many('product.product',
                                        compute=_father_part_compute,
                                        string=_("BoM Hierarchy"),
@@ -187,6 +191,13 @@ class PlmComponent(models.Model):
         if self.tmp_surface:
             if self.tmp_surface.name:
                 self.engineering_surface = str(self.tmp_surface.name)
+
+
+    @api.onchange('tmp_treatment')
+    def on_change_tmptreatment(self):
+        if self.tmp_treatment:
+            if self.tmp_treatment.name:
+                self.engineering_treatment = str(self.tmp_treatment.name)
 
     @api.model
     def getParentBomStructure(self, filterBomType=''):

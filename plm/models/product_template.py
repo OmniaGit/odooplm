@@ -57,6 +57,11 @@ class ProductTemplateExtension(models.Model):
         help=_("Surface finishing for current product, only description for titleblock.")
     )
 
+    engineering_treatment = fields.Char(_('Termic Treatment'),
+                                        size=128,
+                                        required=False,
+                                        help=_("Termic treatment for current product, only description for titleblock."))
+
     engineering_revision = fields.Integer(_('Revision'), required=True, help=_("The revision of the product."),
                                           default=0)
 

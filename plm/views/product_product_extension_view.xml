@@ -171,6 +171,8 @@
                                        attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
                                 <field name="tmp_surface"
                                        attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                                <field name="tmp_treatment"
+                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
                                 <field name="weight" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"
                                        digits="[14,3]"/>
                                 <field name="uom_id"
@@ -200,6 +202,9 @@
                                        attrs="{'readonly':[('state','in',['released','obsoleted'])]}" colspan="2"/>
                                 <field name="engineering_surface"
                                        attrs="{'readonly':[('state','in',['released','obsoleted'])]}" colspan="2"/>
+                                <field name="engineering_treatment"
+                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}" colspan="2"/>
+
                             </group>
                         </page>
                         <page string="Linked Documents" name="linkeddocuments">

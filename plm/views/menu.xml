@@ -84,6 +84,13 @@
             groups="plm.group_plm_admin"
             parent="plm.plm_menu_dictionaries"/>
 
+     <menuitem
+            name="Treatments"
+            action="plm_action_treatment_form"
+            id="menu_treatment"
+            groups="plm.group_plm_admin"
+            parent="plm.plm_menu_dictionaries"/>
+
     <menuitem
             name="Materials"
             action="plm_action_material_form"

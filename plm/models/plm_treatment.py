@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -19,25 +20,40 @@
 #
 ##############################################################################
 
-"""
+'''
 Created on 25 Aug 2016
 
 @author: Daniel Smerghetto
-"""
-from . import plm_treatment
-from . import plm_finishing
-from . import plm_material
-from . import product_template
-from . import plm_descriptions             # Has to be before "product_product_extension" due to related field
-from . import product_product              # Has to be before "plm_document" due to related field
-from . import plm_document                 # Has to be before "plm_document_relations" due to related field
-from . import plm_document_relations
-from . import product_product_document_rel
-from . import product_product_kanban
-from . import plm_backup_document
-from . import plm_checkout
-from . import plm_config_settings
-from . import mrp_bom
-from . import mrp_bom_line
-from . import report_on_document
-from . import plm_temporary
+'''
+from odoo import models
+from odoo import fields
+from odoo import api
+from odoo import _
+
+
+class PlmTreatment(models.Model):
+    _name = "plm.treatment"
+    _description = "Termic Treatment"
+
+    name = fields.Char(_('Specification'),
+                       size=128,
+                       required=True)
+    description = fields.Char(_('Description'),
+                              size=128)
+    sequence = fields.Integer(_('Sequence'),
+                              help=_("Gives the sequence order when displaying a list of product categories."))
+
+    _sql_constraints = [
+        ('name_uniq', 'unique(name)', _('Termic Treatment has to be unique !')),
+    ]
+    
+    @api.multi
+    def copy(self, default=None):
+        if not default:
+            default = {}
+        default['name'] = self.name + ' (copy)' 
+        return super(PlmTreatment, self).copy(default=default)
+
+PlmTreatment()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

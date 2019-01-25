@@ -22,6 +22,16 @@
     </data>
 
     <data noupdate="1">
+        <!-- Sequences for plm.treatment --> 
+        <record id="seq_plm_treatment" model="ir.sequence">
+            <field name="name">PLM Treatment Sequence</field>
+            <field name="code">plm.treatment</field>
+            <field name="prefix">TT</field>
+            <field name="padding">5</field>
+        </record>
+    </data>
+
+    <data noupdate="1">
         <!-- Sequences for plm.material --> 
         <record id="seq_plm_material" model="ir.sequence">
             <field name="name">PLM Material Sequence</field>
