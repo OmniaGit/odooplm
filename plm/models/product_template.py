@@ -80,11 +80,19 @@ class ProductTemplateExtension(models.Model):
 
     engineering_writable = fields.Boolean(_('Writable'),
                                           default=True)
-    is_engcode_editable = fields.Boolean(_('Engineering Editable'), default=True)
+    is_engcode_editable = fields.Boolean(_('Engineering Editable'), compute='_compute_eng_code_editable')
 
     _sql_constraints = [
         ('partnumber_uniq', 'unique (engineering_code,engineering_revision)', _('Part Number has to be unique!'))
     ]
+
+    @api.multi
+    def _compute_eng_code_editable(self):
+        for productBrws in self:
+            if productBrws.engineering_code in ['', False, '-']:
+                productBrws.is_engcode_editable = True
+            else:
+                productBrws.is_engcode_editable = False
 
     @api.multi
     def engineering_products_open(self):
