@@ -47,9 +47,30 @@ class UploadDocument(Controller):
             doc_id = json.loads(doc_id)
             logging.info('start write %r' % (doc_id))
             value1 = mod_file.stream.read()
-            request.env['plm.document'].browse(doc_id).write(
-                {'datas': base64.b64encode(value1),
+            to_write = {'datas': base64.b64encode(value1),
                  'datas_fname': filename,
+                 }
+            preview = kw.get('preview', '')
+            if preview:
+                val_2 = preview.stream.read()
+                to_write['preview'] = val_2
+            request.env['plm.document'].browse(doc_id).write(to_write)
+            logging.info('upload %r' % (doc_id))
+            return Response('Upload succeeded', status=200)
+        logging.info('no upload %r' % (doc_id))
+        return Response('Failed upload', status=200)
+
+    @route('/plm_document_upload/upload_pdf', type='http', auth='user', methods=['POST'])
+    @webservice
+    def upload_pdf(self, mod_file=None, doc_id=False, **kw):
+        logging.info('start upload PDF %r' % (doc_id))
+        if doc_id:
+            logging.info('start json %r' % (doc_id))
+            doc_id = json.loads(doc_id)
+            logging.info('start write %r' % (doc_id))
+            value1 = mod_file.stream.read()
+            request.env['plm.document'].browse(doc_id).write(
+                {'printout': base64.b64encode(value1),
                  })
             logging.info('upload %r' % (doc_id))
             return Response('Upload succeeded', status=200)
