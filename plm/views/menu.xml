@@ -17,7 +17,7 @@
             sequence="10"/>
 
     <menuitem
-            id="plm_document_form"
+            id="ir_attachment_form"
             name="Documents"
             parent="plm.plm_menu"
             sequence="11"/>
@@ -39,7 +39,7 @@
             id="menu_document_files"
             name="Search on Documents"
             action="plm.plm_action_document_form"
-            parent="plm.plm_document_form"
+            parent="plm.ir_attachment_form"
             sequence="10"
     />
 
@@ -48,7 +48,7 @@
             id="menu_backupdoc"
             name="Search on Backup Data Set"
             action="action_plm_backupdoc"
-            parent="plm.plm_document_form"
+            parent="plm.ir_attachment_form"
             sequence="13"
             groups="plm.group_plm_admin"/>
 
@@ -56,7 +56,7 @@
             id="menu_checkout"
             name="Search on Checked-Out Documents"
             action="plm.action_plm_checkout"
-            parent="plm.plm_document_form"
+            parent="plm.ir_attachment_form"
             groups="plm.group_plm_integration_user"
             sequence="12"
     />
@@ -65,7 +65,7 @@
             name="Search on Document Relations"
             action="plm_action_document_relations"
             id="menu_document_relations"
-            parent="plm.plm_document_form"
+            parent="plm.ir_attachment_form"
             sequence="11"
     />
 

@@ -47,7 +47,7 @@ class PlmBackupDocument(models.Model):
                              _('Related User'))
     existingfile = fields.Char(_('Physical Document Location'),
                                size=1024)
-    documentid = fields.Many2one('plm.document',
+    documentid = fields.Many2one('ir.attachment',
                                  _('Related Document'))
     revisionid = fields.Integer(related="documentid.revisionid",
                                 string=_("Revision"),
@@ -69,7 +69,7 @@ class PlmBackupDocument(models.Model):
                 logging.warning("unlink : Unable to remove the required documents. You aren't authorized in this context.")
                 raise UserError(_("Unable to remove the required document.\n You aren't authorized in this context."))
                 return False
-        documentType = self.env['plm.document']
+        documentType = self.env['ir.attachment']
         for checkObj in self:
             if not int(checkObj.documentid):
                 return super(PlmBackupDocument, self).unlink()
@@ -104,7 +104,7 @@ class BackupDocWizard(osv.osv.osv_memory):
         documentId = False
         backupDocIds = self.env.context.get('active_ids', [])
         backupDocObj = self.env['plm.backupdoc']
-        plmDocObj = self.env['plm.document']
+        plmDocObj = self.env['ir.attachment']
         if len(backupDocIds) > 1:
             raise UserError(_('Restore Document Error'), _("You can restore only a document at a time."))
         for backupDocBrws in backupDocObj.browse(backupDocIds):
@@ -137,7 +137,7 @@ class BackupDocWizard(osv.osv.osv_memory):
             return {'name': _('Document'),
                     'view_type': 'form',
                     "view_mode": 'form, tree',
-                    'res_model': 'plm.document',
+                    'res_model': 'ir.attachment',
                     'res_id': documentId,
                     'type': 'ir.actions.act_window',
                     'domain': "[]"}

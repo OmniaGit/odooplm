@@ -20,7 +20,7 @@
 ##############################################################################
 from . import mrp_bom_extension
 from . import mrp_bom_line_extension
-from . import plm_document_extension
+from . import ir_attachment_extension
 from . import plm_temporary
 from . import product_product_kanban_extension
 from . import product_product_extension

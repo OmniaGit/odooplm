@@ -31,7 +31,7 @@ from odoo import _
 
 
 class PlmDocumentExtension(models.Model):
-    _inherit = 'plm.document'
+    _inherit = 'ir.attachment'
 
     used_for_spare = fields.Boolean(_('Used for Spare'),
                                   default=False,

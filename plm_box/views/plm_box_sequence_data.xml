@@ -10,7 +10,7 @@
 
         <record id="seq_doc_name" model="ir.sequence">
             <field name="name">DOC</field>
-            <field name="code">plm.document</field>
+            <field name="code">ir.attachment</field>
             <field name="prefix">BoxDoc_</field>
         </record>
 

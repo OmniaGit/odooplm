@@ -37,18 +37,18 @@
         <field name="perm_create" eval="0"/>
         <field name="perm_unlink" eval="0"/>
     </record>
-    <record id="plm_document_view" model="ir.model.access">
+    <record id="ir_attachment_view" model="ir.model.access">
         <field name="name">PLM Document</field>
-        <field name="model_id" ref="model_plm_document"/>
+        <field name="model_id" ref="model_ir_attachment"/>
         <field name="group_id" eval="group_plm_view_user"/>
         <field name="perm_read" eval="1"/>
         <field name="perm_write" eval="0"/>
         <field name="perm_create" eval="0"/>
         <field name="perm_unlink" eval="0"/>
     </record>
-    <record id="report_plm_document_view" model="ir.model.access">
+    <record id="report_ir_attachment_view" model="ir.model.access">
         <field name="name">PLM Document report</field>
-        <field name="model_id" ref="model_report_plm_document_file"/>
+        <field name="model_id" ref="model_report_ir_attachment_file"/>
         <field name="group_id" eval="group_plm_view_user"/>
         <field name="perm_read" eval="1"/>
         <field name="perm_write" eval="0"/>
@@ -83,9 +83,9 @@
         <field name="perm_create" eval="0"/>
         <field name="perm_unlink" eval="0"/>
     </record>
-    <record id="plm_document_relation_view" model="ir.model.access">
+    <record id="ir_attachment_relation_view" model="ir.model.access">
         <field name="name">PLM Document relation</field>
-        <field name="model_id" ref="model_plm_document_relation"/>
+        <field name="model_id" ref="model_ir_attachment_relation"/>
         <field name="group_id" eval="group_plm_view_user"/>
         <field name="perm_read" eval="1"/>
         <field name="perm_write" eval="0"/>
@@ -171,9 +171,9 @@
         <field name="perm_create" eval="1"/>
         <field name="perm_unlink" eval="1"/>
     </record>
-    <record id="plm_document_relation_integration" model="ir.model.access">
+    <record id="ir_attachment_relation_integration" model="ir.model.access">
         <field name="name">PLM Document relation</field>
-        <field name="model_id" ref="model_plm_document_relation"/>
+        <field name="model_id" ref="model_ir_attachment_relation"/>
         <field name="group_id" eval="group_plm_integration_user"/>
         <field name="perm_read" eval="1"/>
         <field name="perm_write" eval="1"/>
@@ -198,9 +198,9 @@
         <field name="perm_create" eval="1"/>
         <field name="perm_unlink" eval="1"/>
     </record>
-    <record id="plm_document_integration" model="ir.model.access">
+    <record id="ir_attachment_integration" model="ir.model.access">
         <field name="name">PLM Document</field>
-        <field name="model_id" ref="model_plm_document"/>
+        <field name="model_id" ref="model_ir_attachment"/>
         <field name="group_id" eval="group_plm_integration_user"/>
         <field name="perm_read" eval="1"/>
         <field name="perm_write" eval="1"/>
@@ -253,9 +253,9 @@
         <field name="perm_create" eval="1"/>
         <field name="perm_unlink" eval="1"/>
     </record>
-    <record id="plm_document_admin" model="ir.model.access">
+    <record id="ir_attachment_admin" model="ir.model.access">
         <field name="name">PLM Document</field>
-        <field name="model_id" ref="model_plm_document"/>
+        <field name="model_id" ref="model_ir_attachment"/>
         <field name="group_id" eval="group_plm_admin"/>
         <field name="perm_read" eval="1"/>
         <field name="perm_write" eval="1"/>
@@ -294,7 +294,7 @@
     </record>
     <record id="group_plm_readonly_released_rule_document" model="ir.rule">
         <field name="name">NoWrite / NoDelete PLM Document Released</field>
-        <field name="model_id" ref="model_plm_document"/>
+        <field name="model_id" ref="model_ir_attachment"/>
         <field name="active" eval="1"/>
         <field name="perm_write" eval="1"/>
         <field name="perm_unlink" eval="1"/>

@@ -43,7 +43,7 @@ class PlmDocumentExtended(models.Model):
         if not document_id:
             logging.error('[new_document_revision_by_server] Cannot revise because document_id is %r' % (document_id))
             raise UserError(_('Current document cannot be revised!'))
-        plmDocEnv = self.env['plm.document']
+        plmDocEnv = self.env['ir.attachment']
         docBrws = plmDocEnv.browse(document_id)
         if docBrws.document_type != 'other':
             raise UserError(_("Document cannot be revised because the document type is a CAD type document!"))
@@ -55,7 +55,7 @@ class PlmDocumentExtended(models.Model):
             return {'name': _('Revised Document'),
                     'view_type': 'tree,form',
                     "view_mode": 'form',
-                    'res_model': 'plm.document',
+                    'res_model': 'ir.attachment',
                     'res_id': newID,
                     'type': 'ir.actions.act_window'}
 

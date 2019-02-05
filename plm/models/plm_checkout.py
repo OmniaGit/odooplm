@@ -44,7 +44,7 @@ class PlmCheckout(models.Model):
                            size=64)
     hostpws = fields.Char(_('PWS Directory'),
                           size=1024)
-    documentid = fields.Many2one('plm.document',
+    documentid = fields.Many2one('ir.attachment',
                                  _('Related Document'),
                                  ondelete='cascade')
     rel_doc_rev = fields.Integer(related='documentid.revisionid',
@@ -57,7 +57,7 @@ class PlmCheckout(models.Model):
 
     @api.model
     def _adjustRelations(self, childDocIds, userid=False):
-        docRelType = self.env['plm.document.relation']
+        docRelType = self.env['ir.attachment.relation']
         if userid:
             docRelBrwsList = docRelType.search([('child_id', 'in', childDocIds), ('userid', '=', False)])
         else:
@@ -68,7 +68,7 @@ class PlmCheckout(models.Model):
 
     @api.model
     def create(self, vals):
-        docBrws = self.env['plm.document'].browse(vals['documentid'])
+        docBrws = self.env['ir.attachment'].browse(vals['documentid'])
         values = {'writable': True}
         if not docBrws.write(values):
             logging.warning("create : Unable to check-out the required document (" + str(docBrws.name) + "-" + str(docBrws.revisionid) + ").")
@@ -80,7 +80,7 @@ class PlmCheckout(models.Model):
 
     @api.multi
     def unlink(self):
-        documentType = self.env['plm.document']
+        documentType = self.env['ir.attachment']
         docids = []
         for checkObj in self:
             checkObj.documentid.writable = False

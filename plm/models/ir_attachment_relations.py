@@ -26,7 +26,7 @@ import logging
 
 
 class PlmDocumentRelations(models.Model):
-    _name = 'plm.document.relation'
+    _name = 'ir.attachment.relation'
     _description = "Relation between document used for cad file structure"
 
     parent_preview = fields.Binary(related="parent_id.preview",
@@ -47,10 +47,10 @@ class PlmDocumentRelations(models.Model):
     child_revision = fields.Integer(related="child_id.revisionid",
                                     string=_("Revision"),
                                     store=False)
-    parent_id = fields.Many2one('plm.document',
+    parent_id = fields.Many2one('ir.attachment',
                                 _('Related parent document'),
                                 ondelete='cascade')
-    child_id = fields.Many2one('plm.document',
+    child_id = fields.Many2one('ir.attachment',
                                _('Related child document'),
                                ondelete='cascade')
     configuration = fields.Char(_('Configuration Name'),

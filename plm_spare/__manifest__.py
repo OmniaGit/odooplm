@@ -36,7 +36,7 @@ Add spare BOM and Spare Parts Manual
         # views
         'views/plm_description_extension.xml',
         'views/sparebom_view.xml',
-        'views/plm_document_view.xml',
+        'views/ir_attachment_view.xml',
         # 'views/product_product_kanban.xml',
         # reporting
         'report/bom_structure_report.xml',

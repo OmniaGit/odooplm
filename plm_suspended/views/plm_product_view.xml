@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="plm_document_spare_extension" model="ir.ui.view">
-        <field name="name">plm.document.spare.extension</field>
+    <record id="ir_attachment_spare_extension" model="ir.ui.view">
+        <field name="name">ir.attachment.spare.extension</field>
         <field name="model">product.product</field>
         <field name="inherit_id" ref="plm.plm_component_base_form"/>
         <field name="type">form</field>

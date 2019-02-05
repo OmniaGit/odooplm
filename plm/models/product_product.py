@@ -91,7 +91,7 @@ class PlmComponent(models.Model):
                     prod_ids.append(objPrd.id)
             prod_obj.father_part_ids = prod_ids
 
-    linkeddocuments = fields.Many2many('plm.document',
+    linkeddocuments = fields.Many2many('ir.attachment',
                                        'plm_component_document_rel',
                                        'component_id',
                                        'document_id',
@@ -402,7 +402,7 @@ class PlmComponent(models.Model):
             Get Last/Requested revision of given items (by name, revision, update time)
         """
         ids = []
-        plmDocObj = self.env['plm.document']
+        plmDocObj = self.env['ir.attachment']
 
         def getCompIds(partName, partRev):
             if docRev is None or docRev is False:
@@ -545,7 +545,7 @@ class PlmComponent(models.Model):
         """
         docIDs = []
         docInError = []
-        documentType = self.env['plm.document']
+        documentType = self.env['ir.attachment']
         for oldObject in self:
             if (action_name != 'transmit') and (action_name != 'reject') and (action_name != 'release'):
                 check_state = oldObject.state
@@ -948,7 +948,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                 'name': _('Related documents'),
                 'view_type': 'form',
                 'view_mode': 'tree,form',
-                'res_model': 'plm.document',
+                'res_model': 'ir.attachment',
                 'type': 'ir.actions.act_window',
                 }
 
@@ -1137,7 +1137,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
 
     @api.model
     def reviseCompAndDoc(self, elementsToClone):
-        docEnv = self.env['plm.document']
+        docEnv = self.env['ir.attachment']
         updatedJsonNode = elementsToClone[0]
         updatedNode = json.loads(updatedJsonNode)
         hostName, hostPws = elementsToClone[1], elementsToClone[2]
@@ -1271,7 +1271,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         return json.dumps(updatedNode)
 
     def getDocBrws(self, docId, docProps):
-        docEnv = self.env['plm.document']
+        docEnv = self.env['ir.attachment']
         oldDocBrws = False
         if docId:
             oldDocBrws = docEnv.browse(docId)
@@ -1290,7 +1290,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
 
     @api.model
     def cloneCompAndDoc(self, elementsToClone):
-        docEnv = self.env['plm.document']
+        docEnv = self.env['ir.attachment']
         updatedJsonNode = elementsToClone[0]
         updatedNode = json.loads(updatedJsonNode)
         hostName, hostPws = elementsToClone[1], elementsToClone[2]
@@ -1422,7 +1422,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         return json.dumps(updatedNode)
 
     def getNewDoc(self, oldDocBrws, startingComputeName, file_extension):
-        docEnv = self.env['plm.document']
+        docEnv = self.env['ir.attachment']
         newDocName = docEnv.GetNextDocumentName(startingComputeName)
         docDefaultVals = {
             'revisionid': 0,

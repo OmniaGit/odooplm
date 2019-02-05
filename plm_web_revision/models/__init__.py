@@ -20,5 +20,5 @@
 #
 ##############################################################################
 from . import product_product_extended
-from . import plm_document_extended
+from . import ir_attachment_extended
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

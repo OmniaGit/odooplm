@@ -53,16 +53,16 @@ class plm_temporary_batch_converter(osv.osv.osv_memory):
     @api.model
     def getAllFiles(self, document):
         out = {}
-        plm_document = self.env['plm.document']
-        fileStoreLocation = plm_document._get_filestore()
+        ir_attachment = self.env['ir.attachment']
+        fileStoreLocation = ir_attachment._get_filestore()
 
         def templateFile(docId):
-            document = plm_document.browse(docId)
+            document = ir_attachment.browse(docId)
             return {document.name: (document.datas_fname,
                                     file(os.path.join(fileStoreLocation, document.store_fname), 'rb'))}
         out['root_file'] = (document.datas_fname,
                             file(os.path.join(fileStoreLocation, document.store_fname), 'rb'))
-        objDocu = self.env['plm.document']
+        objDocu = self.env['ir.attachment']
         request = (document.id, [], -1)
         for outId, _, _, _, _, _ in objDocu.CheckAllFiles(request):
             if outId == document.id:
@@ -107,7 +107,7 @@ class plm_temporary_batch_converter(osv.osv.osv_memory):
             return [(a, a) for a in avilableFormat]
         return []
 
-    document_id = fields.Many2one('plm.document',
+    document_id = fields.Many2one('ir.attachment',
                                   'Related Document')
     targetFormat = fields.Selection(selection='calculate_available_extention',
                                     string='Conversion Format',

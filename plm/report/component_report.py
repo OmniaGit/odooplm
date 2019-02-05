@@ -196,7 +196,7 @@ RjYxNzJGNDFCNzYwNjRBM0NDQjFEMTgxOTFCQgo+PgpzdGFydHhyZWYKODc0NwolJUVPRgo=""")
 
 
 def commonInfos(env):
-    docRepository = env['plm.document']._get_filestore()
+    docRepository = env['ir.attachment']._get_filestore()
     user = env['res.users'].browse(env.uid)
     msg = getBottomMessage(user, env.context)
     mainBookCollector = BookCollector(jumpFirst=False,

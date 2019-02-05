@@ -28,8 +28,8 @@ from odoo import _
 _logger = logging.getLogger(__name__)
 
 
-class report_plm_document_file(models.Model):
-    _name = "report.plm_document.file"
+class report_ir_attachment_file(models.Model):
+    _name = "report.ir_attachment.file"
     _description = "Files details by Directory"
     _auto = False
 
@@ -47,15 +47,15 @@ class report_plm_document_file(models.Model):
     @api.model
     def init(self):
         cr = self.env.cr
-        tools.drop_view_if_exists(cr, 'report_plm_document_file')
+        tools.drop_view_if_exists(cr, 'report_ir_attachment_file')
         cr.execute("""
-            create or replace view report_plm_document_file as (
+            create or replace view report_ir_attachment_file as (
                 select min(f.id) as id,
                        count(*) as nbr,
                        min(EXTRACT(YEAR FROM f.create_date)||'-'||EXTRACT(MONTH FROM f.create_date)) as month,
                        sum(f.file_size) as file_size,
                        f.write_uid as write_uid
-                from plm_document f
+                from ir_attachment f
                 group by EXTRACT(MONTH FROM f.create_date), write_uid
              )
         """)

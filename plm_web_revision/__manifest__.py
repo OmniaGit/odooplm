@@ -31,7 +31,7 @@
     'depends': ['plm'],
     'description': """Allow to create new revision from WEB""",
     'data': ['views/component_view_extension.xml',
-             'views/plm_document_revision.xml',
+             'views/ir_attachment_revision.xml',
              'security/base_plm_web_rev_security.xml',
              ],
     'installable': True,

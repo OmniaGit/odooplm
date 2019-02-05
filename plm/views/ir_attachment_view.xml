@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record model="ir.ui.view" id="view_plm_document">
-        <field name="name">plm.document</field>
-        <field name="model">plm.document</field>
+    <record model="ir.ui.view" id="view_ir_attachment_form">
+        <field name="name">ir.attachment</field>
+        <field name="model">ir.attachment</field>
         <field name="priority" eval="1"/>
         <field name="type">form</field>
         <field name="arch" type="xml">
@@ -119,10 +119,10 @@
         </field>
     </record>
 
-    <record id="view_plm_document_plm_admin" model="ir.ui.view">
-        <field name="name">plm.document.plm.admin</field>
-        <field name="model">plm.document</field>
-        <field name="inherit_id" ref="plm.view_plm_document"/>
+    <record id="view_ir_attachment_plm_admin" model="ir.ui.view">
+        <field name="name">ir.attachment.plm.admin</field>
+        <field name="model">ir.attachment</field>
+        <field name="inherit_id" ref="plm.view_ir_attachment"/>
         <field name="groups_id" eval="[(6, 0, [ref('plm.group_plm_admin')])]"/>
         <field name="arch" type="xml">
             <field name="name" position="attributes">
@@ -131,9 +131,9 @@
         </field>
     </record>
 
-    <record model="ir.ui.view" id="plm_document_tree">
-        <field name="name">plm.document</field>
-        <field name="model">plm.document</field>
+    <record model="ir.ui.view" id="ir_attachment_tree">
+        <field name="name">ir.attachment</field>
+        <field name="model">ir.attachment</field>
         <field name="type">tree</field>
         <field name="priority" eval="1"/>
         <field name="arch" type="xml">
@@ -157,9 +157,9 @@
         </field>
     </record>
 
-    <record model="ir.ui.view" id="plm_document_search">
-        <field name="name">plm.document</field>
-        <field name="model">plm.document</field>
+    <record model="ir.ui.view" id="ir_attachment_search">
+        <field name="name">ir.attachment</field>
+        <field name="model">ir.attachment</field>
         <field name="type">search</field>
         <field name="priority" eval="1"/>
         <field name="arch" type="xml">
@@ -241,7 +241,7 @@
  
     <record id="document_kanban_view" model="ir.ui.view">
         <field name="name">Product.template.product.kanban</field>
-        <field name="model">plm.document</field>
+        <field name="model">ir.attachment</field>
         <field name="arch" type="xml">
             <kanban>
                 <field name="id"/>    <!-- Necessary to render previews -->
@@ -256,7 +256,7 @@
                             <table>
                                 <tr>
                                     <td>
-                                        <img t-att-src="kanban_image('plm.document', 'preview', record.id.raw_value)"
+                                        <img t-att-src="kanban_image('ir.attachment', 'preview', record.id.raw_value)"
                                             alt=""
                                             height="150" width="150"/>
                                     </td>
@@ -340,9 +340,11 @@
 
     <record model="ir.actions.act_window" id="plm_action_document_form">
         <field name="name">Documents</field>
-        <field name="res_model">plm.document</field>
+        <field name="res_model">ir.attachment</field>
         <field name="view_type">form</field>
-        <field name="view_mode">tree,form,kanban</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="form_view_id" ref="plm.view_ir_attachment_form"/>
+        <field name="search_view_id" ref="plm.ir_attachment_search"></field>
         <field name="context">{"search_default_latest":1}</field>
     </record>
 </odoo>

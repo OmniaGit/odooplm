@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="view_plm_document_suspended" model="ir.ui.view">
-        <field name="name">view.plm.document.suspended</field>
-        <field name="model">plm.document</field>
-        <field name="inherit_id" ref="plm.view_plm_document"/>
+    <record id="view_ir_attachment_suspended" model="ir.ui.view">
+        <field name="name">view.ir.attachment.suspended</field>
+        <field name="model">ir.attachment</field>
+        <field name="inherit_id" ref="plm.view_ir_attachment"/>
         <field name="type">form</field>
         <field name="priority" eval="16"/>
         <field name="arch" type="xml">

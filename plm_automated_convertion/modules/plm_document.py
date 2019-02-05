@@ -32,8 +32,8 @@ from openerp import _
 import logging
 
 
-class plm_document(models.Model):
-    _inherit = 'plm.document'
+class ir_attachment(models.Model):
+    _inherit = 'ir.attachment'
 
     @api.multi
     def show_convert_wizard(self):

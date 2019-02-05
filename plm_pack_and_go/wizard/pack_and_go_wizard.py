@@ -67,7 +67,7 @@ class AdvancedPackView(osv.osv.osv_memory):
             row.doc_file_name = row.document_id.datas_fname
 
     component_id = fields.Many2one('product.product', _('Component'))
-    document_id = fields.Many2one('plm.document', _('Document'))
+    document_id = fields.Many2one('ir.attachment', _('Document'))
     comp_rev = fields.Integer(_('Component Revision'))
     comp_description = fields.Char(compute='_getComponentDescription')
     doc_rev = fields.Integer(_('Document Revision'))
@@ -139,7 +139,7 @@ class PackAndGo(osv.osv.osv_memory):
         checkedDocumentIds = []  # To know if the same document has been already analyzed
         objProduct = self.env['product.product']
         objPackView = self.env['pack_and_go_view']
-        plmDocObject = self.env['plm.document']
+        plmDocObject = self.env['ir.attachment']
 
         def docCheckCreate(doc, comp=False):
             compId = False

@@ -33,7 +33,6 @@
                'images/OpenDocument.jpeg'],
     'depends': ['base',
                 'board',
-                'document',
                 'product',
                 'mrp'],
     'description': """
@@ -84,8 +83,8 @@ Supported Editors :
             'views/plm_checkout_view.xml',
             'views/plm_config_settings.xml',
             'views/plm_description_view.xml',
-            'views/plm_document_relations.xml',
-            'views/plm_document_view.xml',
+            'views/ir_attachment_relations.xml',
+            'views/ir_attachment_view.xml',
             'views/plm_finishing_view.xml',
             'views/plm_treatment_view.xml',
             'views/plm_material_view.xml',

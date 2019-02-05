@@ -121,7 +121,7 @@
         name="Search on Non CAD Document Relations"
         action="action_non_cad_doc"
         id="menu_non_cad_doc_relations"
-        parent="plm.plm_document_form"/>
+        parent="plm.ir_attachment_form"/>
         
         <!--
         <record id="view_stock_config_settings_custom" model="ir.ui.view">

@@ -54,10 +54,10 @@ class Plm_box(models.Model):
     box_id = fields.Integer(_('Box ID'))
     version = fields.Integer(_('Version'))
     description = fields.Text(_('Description'))
-    document_rel = fields.Many2many('plm.document',
-                                    'plm_document_rel',
+    document_rel = fields.Many2many('ir.attachment',
+                                    'ir_attachment_rel',
                                     'name',
-                                    'plm_document_id',
+                                    'ir_attachment_id',
                                     _('Documents')
                                     )
     plm_box_rel = fields.Many2many('plm.box',
@@ -225,7 +225,7 @@ class Plm_box(models.Model):
         '''
             Compute if document is readonly
         '''
-        docBrws = self.env.get('plm.document').browse(docIds)
+        docBrws = self.env.get('ir.attachment').browse(docIds)
         if docBrws.state in ['released', 'undermodify', 'obsoleted']:
             return True
         if not docBrws.ischecked_in():
@@ -312,7 +312,7 @@ class Plm_box(models.Model):
     @api.model
     def getDocDictValues(self, docBrws):
         getCheckOutUser = ''
-        plmDocObj = self.env.get('plm.document')
+        plmDocObj = self.env.get('ir.attachment')
         docState = plmDocObj.getDocumentState({'docName': docBrws.name})
         if docState in ['check-out', 'check-out-by-me']:
             getCheckOutUser = docBrws.getCheckOutUser()
@@ -332,7 +332,7 @@ class Plm_box(models.Model):
     def getDocs(self, docsToUpdate=[]):
         outDocDict = {}
         docIds = []
-        plmDocObj = self.env.get('plm.document')
+        plmDocObj = self.env.get('ir.attachment')
         userAvaibleBoxIds = self.getAvaibleGroupsByUser()
         if isinstance(docsToUpdate, list):
             for doc in docsToUpdate:
@@ -513,7 +513,7 @@ class Plm_box(models.Model):
     @api.model
     def checkIfDocChanged(self, values):
         name, typee, datetimee = values
-        docObj = self.env.get('plm.document')
+        docObj = self.env.get('ir.attachment')
         docBrwsList = docObj.search([('name', '=', name)])
         for docBrws in docBrwsList:
             docId = docBrws.id

@@ -2,8 +2,8 @@
 <openerp>
 <data>
 
-	    <record id="plm_document_new_revision" model="ir.ui.view">
-	        <field name="name">plm.document.new.revision</field>
+	    <record id="ir_attachment_new_revision" model="ir.ui.view">
+	        <field name="name">ir.attachment.new.revision</field>
 	        <field name="model">document.rev_wizard</field>
 	        <field name="type">form</field>
 	        <field name="arch" type="xml">
@@ -26,9 +26,9 @@
         	target="new"
         	domain="[('id','in',active_ids)]" 
             context="{'default_document_id': active_id}"
-            view_id="plm_document_new_revision"
+            view_id="ir_attachment_new_revision"
             res_model="document.rev_wizard"
-            src_model="plm.document"/>	<!-- Do not remove src_model. It is used to get action only in component form -->
+            src_model="ir.attachment"/>	<!-- Do not remove src_model. It is used to get action only in component form -->
 
         
 </data>

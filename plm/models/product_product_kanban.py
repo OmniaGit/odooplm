@@ -40,8 +40,8 @@ class ProductProductKanban(models.Model):
         number_documents = 0
         number_boms = 0
         if self.ids:
-            plm_documents = self.get_related_docs()
-            number_documents = len(plm_documents)
+            ir_attachments = self.get_related_docs()
+            number_documents = len(ir_attachments)
             boms = self.get_related_boms()
             number_boms = len(boms)
         return {
@@ -120,7 +120,7 @@ class ProductProductKanban(models.Model):
     def open_related_docs_action(self):
         docIds = self.get_related_docs()
         domain = [('id', 'in', docIds)]
-        return self.common_open(_('Related Documents'), 'plm.document', 'tree,form', 'form', docIds, self.env.context, domain)
+        return self.common_open(_('Related Documents'), 'ir.attachment', 'tree,form', 'form', docIds, self.env.context, domain)
 
     @api.multi
     def open_related_boms_action(self):

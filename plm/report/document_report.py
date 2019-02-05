@@ -29,12 +29,12 @@ from odoo import models
 
 
 class ReportDocumentPdf(models.AbstractModel):
-    _name = 'report.plm.document_pdf'
+    _name = 'report.ir.attachment_pdf'
     _description = 'Report Document PDF'
 
     @api.model
     def render_qweb_pdf(self, documents=None, data=None):
-        docType = self.env['plm.document']
+        docType = self.env['ir.attachment']
         docRepository = docType._get_filestore()
         userType = self.env['res.users']
         user = userType.browse(self.env.uid)
@@ -52,6 +52,6 @@ class ReportDocumentPdf(models.AbstractModel):
 
     @api.model
     def get_report_values(self, docids, data=None):
-        documents = self.env['plm.document'].browse(docids)
+        documents = self.env['ir.attachment'].browse(docids)
         return {'docs': documents,
                 'get_content': self.render_qweb_pdf}

@@ -112,7 +112,7 @@ class MrpBomExtension(models.Model):
                                            store=False)
     create_date = fields.Datetime(_('Creation Date'),
                                   readonly=True)
-    source_id = fields.Many2one('plm.document',
+    source_id = fields.Many2one('ir.attachment',
                                 'name',
                                 ondelete='no action',
                                 readonly=True,
@@ -430,7 +430,7 @@ class MrpBomExtension(models.Model):
         return result
 
     @api.model
-    def save_structure(self, relations, level=0, curr_level=0, kind_bom='normal'):
+    def SaveStructure(self, relations, level=0, curr_level=0, kind_bom='normal'):
         """
             Save EBom relations
         """

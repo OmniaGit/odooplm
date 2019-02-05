@@ -29,9 +29,9 @@ from . import plm_finishing
 from . import plm_material
 from . import product_template
 from . import plm_descriptions             # Has to be before "product_product_extension" due to related field
-from . import product_product              # Has to be before "plm_document" due to related field
-from . import plm_document                 # Has to be before "plm_document_relations" due to related field
-from . import plm_document_relations
+from . import product_product              # Has to be before "ir_attachment" due to related field
+from . import ir_attachment                # Has to be before "ir_attachment_relations" due to related field
+from . import ir_attachment_relations
 from . import product_product_document_rel
 from . import product_product_kanban
 from . import plm_backup_document

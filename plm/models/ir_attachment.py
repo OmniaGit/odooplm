@@ -20,11 +20,11 @@
 ##############################################################################
 import random
 import string
-import base64
 import os
 import time
 import json
 import copy
+import shutil
 from odoo import SUPERUSER_ID
 from datetime import datetime
 import odoo.tools as tools
@@ -64,9 +64,8 @@ def create_directory(path):
 
 
 class PlmDocument(models.Model):
-    _name = 'plm.document'
-    _table = 'plm_document'
-    _inherit = ['mail.thread', 'ir.attachment']
+    _name = 'ir.attachment'
+    _inherit = ['ir.attachment', 'mail.thread']
 
     @property
     def actions(self):
@@ -138,85 +137,60 @@ class PlmDocument(models.Model):
                 try:
                     isCheckedOutToMe = objDoc._is_checkedout_for_me()
                     if not (objDoc.datas_fname in listfiles):
-                        if (not objDoc.store_fname) and (objDoc.db_datas):
-                            value = objDoc.db_datas
-                        else:
-                            value = file(os.path.join(self._get_filestore(), objDoc.store_fname), 'rb').read()
-                        result.append(
-                            (objDoc.id, objDoc.datas_fname, base64.b64encode(value), isCheckedOutToMe, timeDoc))
+                        result.append((objDoc.id,
+                                       objDoc.datas_fname,
+                                       objDoc.datas,
+                                       isCheckedOutToMe,
+                                       timeDoc))
                     else:
                         if forceFlag:
                             isNewer = True
                         else:
-                            timefile = time.mktime(
-                                datetime.strptime(str(datefiles[listfiles.index(objDoc.datas_fname)]),
-                                                  '%Y-%m-%d %H:%M:%S').timetuple())
+                            timefile = time.mktime(datetime.strptime(str(datefiles[listfiles.index(objDoc.datas_fname)]),
+                                                                     '%Y-%m-%d %H:%M:%S').timetuple())
                             isNewer = (timeSaved - timefile) > 5
                         if (isNewer and not (isCheckedOutToMe)):
-                            if (not objDoc.store_fname) and (objDoc.db_datas):
-                                value = objDoc.db_datas
-                            else:
-                                value = file(os.path.join(self._get_filestore(), objDoc.store_fname), 'rb').read()
-                            result.append(
-                                (objDoc.id, objDoc.datas_fname, base64.b64encode(value), isCheckedOutToMe, timeDoc))
+                            result.append((objDoc.id,
+                                           objDoc.datas_fname,
+                                           objDoc.datas,
+                                           isCheckedOutToMe,
+                                           timeDoc))
                         else:
-                            result.append((objDoc.id, objDoc.datas_fname, False, isCheckedOutToMe, timeDoc))
+                            result.append((objDoc.id,
+                                           objDoc.datas_fname,
+                                           False,
+                                           isCheckedOutToMe,
+                                           timeDoc))
                 except Exception as ex:
                     logging.error(
                         "_data_get_files : Unable to access to document (" + str(objDoc.name) + "). Error :" + str(ex))
-                    result.append((objDoc.id, objDoc.datas_fname, False, True, self.getServerTime()))
+                    result.append((objDoc.id,
+                                   objDoc.datas_fname,
+                                   False,
+                                   True,
+                                   self.getServerTime()))
         return result
-
-    @api.depends('store_fname', 'db_datas')
-    def _compute_datas(self):
-        for objDoc in self:
-            if objDoc.type == 'binary':
-                if objDoc.store_fname:
-                    filestore = os.path.join(self._get_filestore(), objDoc.store_fname)
-                    if os.path.exists(filestore):
-                        objDoc.datas = base64.b64encode(open(filestore, 'rb').read())
-                else:
-                    objDoc.datas = objDoc.db_datas
 
     @api.multi
     def _inverse_datas(self):
-        filestore = self._get_filestore()
-        for docBrws in self:
-            oid = docBrws.id
-            if docBrws.type == 'binary':
-                value = docBrws.datas
-                if not value:
-                    filename = docBrws.store_fname
-                    try:
-                        os.unlink(os.path.join(filestore, filename))
-                    except Exception as ex:
-                        logging.warning("Error %r " % ex)
-                    self.env.cr.execute('update plm_document set store_fname=NULL WHERE id=%s', (oid,))
-                    return True
-                printout = False
-                preview = False
-                if docBrws.printout:
-                    printout = docBrws.printout
-                if docBrws.preview:
-                    preview = docBrws.preview
-                db_datas = b''  # Clean storage field.
-                fname, filesize = self._manageFile(filestore, value)
-                self.env.cr.execute('update plm_document set store_fname=%s,file_size=%s,db_datas=%s where id=%s',
-                                    (fname,
-                                     filesize,
-                                     db_datas,
-                                     oid))
-                self.env['plm.backupdoc'].create({'userid': self.env.uid,
-                                                  'existingfile': fname,
-                                                  'documentid': oid,
-                                                  'printout': printout,
-                                                  'preview': preview
-                                                  })
+        super(PlmDocument, self)._inverse_datas()
+        plm_backupdoc = self.env['plm.backupdoc']
+        for ir_attachment_id in self:
+            try:
+                shutil.copyfile(self._full_path(ir_attachment_id.datas_fname),
+                                self._full_path(random_name()))
+                plm_backupdoc.create({'userid': self.env.uid,
+                                      'existingfile': ir_attachment_id.datas_fname,
+                                      'documentid': ir_attachment_id.id,
+                                      'printout': ir_attachment_id.printout,
+                                      'preview': ir_attachment_id.preview})
+            except Exception as ex:
+                logging.warning("Unable to copy file for backup Error: %r" % ex)
 
     @api.model
     def _explodedocs(self, oid, kinds, listed_documents=[], recursion=True):
         result = []
-        documentRelation = self.env['plm.document.relation']
+        documentRelation = self.env['ir.attachment.relation']
 
         def getAllDocumentChildId(fromID, kinds):
             docRelBrwsList = documentRelation.search([('parent_id', '=', fromID), ('link_kind', 'in', kinds)])
@@ -235,7 +209,7 @@ class PlmDocument(models.Model):
         result = []
         if (oid in listed_documents):
             return result
-        documentRelation = self.env['plm.document.relation']
+        documentRelation = self.env['ir.attachment.relation']
         docBrwsList = documentRelation.search([('child_id', '=', oid), ('link_kind', 'in', kinds)])
         if len(docBrwsList) == 0:
             return []
@@ -252,7 +226,7 @@ class PlmDocument(models.Model):
         result = []
         if (oid in listed_documents):
             return result
-        documentRelation = self.env['plm.document.relation']
+        documentRelation = self.env['ir.attachment.relation']
         docBrwsList = documentRelation.search([('parent_id', '=', oid), ('link_kind', 'in', kinds)])
         if len(docBrwsList) == 0:
             return []
@@ -312,7 +286,7 @@ class PlmDocument(models.Model):
         """
             Overwrite the default copy method
         """
-        documentRelation = self.env['plm.document.relation']
+        documentRelation = self.env['ir.attachment.relation']
         docBrwsList = documentRelation.search([('parent_id', '=', self.id)])
         previous_name = self.name
         if 'name' not in defaults:
@@ -321,9 +295,10 @@ class PlmDocument(models.Model):
             if len(documents) > 0:
                 new_name = '%s (%s)' % (new_name, len(documents) + 1)
             defaults['name'] = new_name
-        fname, filesize = self._manageFile()
-        defaults['store_fname'] = fname
-        defaults['file_size'] = filesize
+# TODO: verifie if document is renamed ??!!
+#         fname, filesize = self._manageFile()
+#         defaults['store_fname'] = fname
+#         defaults['file_size'] = filesize
         defaults['state'] = 'draft'
         defaults['writable'] = True
         newDocBrws = super(PlmDocument, self).copy(defaults)
@@ -337,61 +312,6 @@ class PlmDocument(models.Model):
                 'link_kind': brwEnt.link_kind,
             })
         return newDocBrws.id
-
-    @api.multi
-    def _manageFile(self, filestore=False, binvalue=None):
-        """
-            use given 'binvalue' to save it on physical repository and to read size (in bytes).
-        """
-        if not filestore:
-            filestore = self._get_filestore()
-            if not filestore:
-                raise UserError(_('Filestore not set!'))
-        flag = None
-        # This can be improved
-        for dirs in os.listdir(filestore):
-            if os.path.isdir(os.path.join(filestore, dirs)) and len(os.listdir(os.path.join(filestore, dirs))) < 4000:
-                flag = dirs
-                break
-        if binvalue is None:
-            fileStream = self._data_get(name=None, arg=None)
-            binvalue = fileStream[list(fileStream.keys())[0]]
-
-        flag = flag or create_directory(filestore)
-        filename = random_name()
-        fname = os.path.join(filestore, flag, filename)
-        fobj = open(fname, 'wb')
-        value = base64.b64decode(binvalue)
-        fobj.write(value)
-        fobj.close()
-        return (os.path.join(flag, filename), len(value))
-
-    @api.multi
-    def _data_get(self, name, arg):
-        result = {}
-        for objDoc in self:
-            if objDoc.type == 'binary':
-                value = ''
-                if not objDoc.store_fname:
-                    value = objDoc.db_datas
-                else:
-                    filestore = os.path.join(self._get_filestore(), objDoc.store_fname)
-                    if os.path.exists(filestore):
-                        value = file(filestore, 'rb').read()
-                    else:
-                        msg = "Document %s-%s is not in %r" % (str(objDoc.name),
-                                                               str(objDoc.revisionid),
-                                                               filestore)
-
-                        logging.error(msg)
-                if value and len(value) > 0:
-                    result[objDoc.id] = base64.b64encode(value)
-                else:
-                    result[objDoc.id] = ''
-                    msg = "Document %s - %s cannot be accessed" % (str(objDoc.name),
-                                                                   str(objDoc.revisionid))
-                    logging.warning(msg)
-        return result
 
     @api.model
     def _iswritable(self, oid):
@@ -572,7 +492,7 @@ class PlmDocument(models.Model):
         """
             Remove faked documents
         """
-        self.env.cr.execute("delete from plm_document where store_fname=NULL and type='binary'")
+        self.env.cr.execute("delete from ir_attachment where store_fname=NULL and type='binary'")
         return True
 
     @api.model
@@ -1035,7 +955,7 @@ class PlmDocument(models.Model):
             selection = 1
         if selection < 0:
             selection = selection * (-1)
-        documentRelation = self.env['plm.document.relation']
+        documentRelation = self.env['ir.attachment.relation']
         docArray = []
 
         def recursionCompute(oid):
@@ -1211,7 +1131,7 @@ class PlmDocument(models.Model):
         """
             Return a new name due to sequence next number.
         """
-        nextDocNum = self.env['ir.sequence'].next_by_code('plm.document.progress')
+        nextDocNum = self.env['ir.sequence'].next_by_code('ir.attachment.progress')
         return documentName + '-' + nextDocNum
 
     @api.model
@@ -1420,7 +1340,7 @@ class PlmDocument(models.Model):
 
         # Save the document relation
         logging.info("Saving Document Relations")
-        documentRelationTemplate = self.env['plm.document.relation']
+        documentRelationTemplate = self.env['ir.attachment.relation']
         createdDocRels = []
         for parentId, childrenRelations in list(documentRelations.items()):
             try:
@@ -1583,7 +1503,7 @@ class PlmDocument(models.Model):
         """
         # Check dei grezzi e delle relazioni parte modello. Non devono comparire nella vista
         docList = []
-        linkedDocEnv = self.env['plm.document.relation']
+        linkedDocEnv = self.env['ir.attachment.relation']
         for linkedBrws in linkedDocEnv.search([('child_id', '=', self.id)]):
             if linkedBrws.parent_id.document_type.upper() == '2D':  # Append only 2D relations
                 docList.append({'component': {}, 'document': linkedBrws.parent_id.getDocumentInfos()})
@@ -1598,7 +1518,7 @@ class PlmDocument(models.Model):
 
     @api.multi
     def cleanDocumentRelations(self):
-        linkedDocEnv = self.env['plm.document.relation']
+        linkedDocEnv = self.env['ir.attachment.relation']
         for docBrws in self:
             for linkedBrws in linkedDocEnv.search([('child_id', '=', docBrws.id), ('parent_id', '=', docBrws.id)]):
                 linkedBrws.unlink()
@@ -1707,9 +1627,9 @@ class PlmDocument(models.Model):
 
         def getLinkedDocumentsByDocument(node, docBrws):
             """
-                Append in the node relations documents taken by plm.document.relation
+                Append in the node relations documents taken by ir.attachment.relation
             """
-            linkedDocEnv = self.env['plm.document.relation']
+            linkedDocEnv = self.env['ir.attachment.relation']
             if docBrws.id:
                 typeDoc = ''
                 if docBrws.document_type.upper() == '3D':
@@ -1810,7 +1730,7 @@ class PlmDocument(models.Model):
         # Use pure SQL rather than read() as it is about 50% faster for large dbs (100k+ docs),
         # and the permissions are checked in super() and below anyway.
         model_attachments = defaultdict(lambda: defaultdict(set))   # {res_model: {res_id: set(ids)}}
-        self._cr.execute("""SELECT id, res_model, res_id, public FROM plm_document WHERE id IN %s""", [tuple(ids)])
+        self._cr.execute("""SELECT id, res_model, res_id, public FROM ir_attachment WHERE id IN %s""", [tuple(ids)])
         for row in self._cr.dictfetchall():
             if not row['res_model'] or row['public']:
                 continue
@@ -1836,4 +1756,3 @@ class PlmDocument(models.Model):
         result = [id for id in orig_ids if id in ids]
         return len(result) if count else list(result)
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
-

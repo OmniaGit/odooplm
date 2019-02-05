@@ -182,7 +182,7 @@ class ReportSpareDocumentOne(models.AbstractModel):
 
     def get_pdf_component_layout(self, component):
         ret = []
-        doc_repository = self.env['plm.document']._get_filestore()
+        doc_repository = self.env['ir.attachment']._get_filestore()
         for document in component.linkeddocuments:
             if document.used_for_spare and (document.type == 'binary'):
                 if document.printout and str(document.printout) != 'None':

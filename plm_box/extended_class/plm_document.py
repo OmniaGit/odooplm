@@ -45,7 +45,7 @@ def correctDate(fromTimeStr, context):
 
 
 class Plm_box_document(models.Model):
-    _inherit = 'plm.document'
+    _inherit = 'ir.attachment'
 
     name = fields.Char(_('Attachment Name'), required=False, readonly=True)
 
@@ -76,7 +76,7 @@ class Plm_box_document(models.Model):
 
     @api.model
     def getNewSequencedName(self, vals):
-        return self.env.get('ir.sequence').get('plm.document')
+        return self.env.get('ir.sequence').get('ir.attachment')
 
     @api.model
     def getFilesFromName(self, vals):

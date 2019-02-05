@@ -18,5 +18,5 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from . import plm_document_extension
+from . import ir_attachment_extension
 from . import  product_product_extension

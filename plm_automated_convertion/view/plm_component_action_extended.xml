@@ -22,10 +22,10 @@
 			</field>
 		</record>
 		
-		<record id="plm_batch_convertion_plm_document" model="ir.ui.view">
-			<field name="name">plm.batch.convertion.plm.document</field>
-			<field name="model">plm.document</field>
-			<field name="inherit_id" ref="plm.plm_document_tree"/>
+		<record id="plm_batch_convertion_ir_attachment" model="ir.ui.view">
+			<field name="name">plm.batch.convertion.ir.attachment</field>
+			<field name="model">ir.attachment</field>
+			<field name="inherit_id" ref="plm.ir_attachment_tree"/>
 			<field name="priority" eval="3"/>
 			<field name="arch" type="xml">
 				<field name="name" position="before">

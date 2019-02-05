@@ -29,14 +29,14 @@ from odoo import api
 from odoo import models
 from odoo import fields
 
-from odoo.addons.plm.models.plm_document import USED_STATES
+from odoo.addons.plm.models.ir_attachment import USED_STATES
 
 USED_STATES.append(('suspended', _('Suspended')))
 
 USE_DIC_STATES = dict(USED_STATES)
 
 class PlmDocumentExtension(models.Model):
-    _inherit = 'plm.document'
+    _inherit = 'ir.attachment'
 
     state = fields.Selection(
         USED_STATES,

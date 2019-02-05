@@ -35,7 +35,7 @@ Add obsolete status to the work flow
     'data': [
         # views
         'views/plm_product_view.xml',
-        'views/plm_document_view.xml',
+        'views/ir_attachment_view.xml',
     ],
     'demo': [],
     'test': [],

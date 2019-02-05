@@ -38,7 +38,7 @@ class PlmComponentDocumentRel(models.Model):
     component_id = fields.Many2one('product.product',
                                    _('Linked Component'),
                                    ondelete='cascade')
-    document_id = fields.Many2one('plm.document',
+    document_id = fields.Many2one('ir.attachment',
                                   _('Linked Document'),
                                   ondelete='cascade')
 

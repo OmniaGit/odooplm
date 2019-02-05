@@ -138,7 +138,7 @@ class MrpBomLineExtension(models.Model):
         domain = [('id', 'in', self.related_document_ids.ids)]
         out_act_dict = {'name': _('Documents'), 
 			'view_type': 'form', 
-			'res_model': 'plm.document',
+			'res_model': 'ir.attachment',
                         'type': 'ir.actions.act_window', 
 			'view_mode': 'tree,form', 
 			'domain': domain}
@@ -161,7 +161,7 @@ class MrpBomLineExtension(models.Model):
                               store=False)
     create_date = fields.Datetime(_('Creation Date'),
                                   readonly=True)
-    source_id = fields.Many2one('plm.document',
+    source_id = fields.Many2one('ir.attachment',
                                 'name',
                                 ondelete='no action',
                                 readonly=True,
@@ -191,5 +191,5 @@ class MrpBomLineExtension(models.Model):
                                       digits=0,
                                       readonly=True)
     related_document_ids = fields.One2many(compute='_related_doc_ids',
-                                           comodel_name='plm.document',
+                                           comodel_name='ir.attachment',
                                            string=_('Related Documents'))
