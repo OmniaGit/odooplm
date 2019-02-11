@@ -103,4 +103,4 @@ class MrpBomExtension(models.Model):
         """
             Save EBom relations
         """
-        return super(MrpBomExtension, self).SaveStructure(relations, level, curr_level, kind_bom='ebom')
+        return super(MrpBomExtension, self).save_structure(relations, level, curr_level, kind_bom='ebom')
