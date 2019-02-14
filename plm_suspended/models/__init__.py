@@ -19,4 +19,4 @@
 #
 ##############################################################################
 from . import ir_attachment_extension
-from . import  product_product_extension
+from . import product_product_extension
