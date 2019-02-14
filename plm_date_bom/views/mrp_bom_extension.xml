@@ -69,7 +69,7 @@
         <field name="type">form</field>
         <field name="arch" type="xml">
         <form string="Compute Bom">
-            <label string="Select computation type and proceed." colspan="4"/>
+            <div>Select computation type and proceed.</div>
             <separator string=""/>
             <group>
             	<field name='compute_type'/>

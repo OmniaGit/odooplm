@@ -6,7 +6,7 @@
         <field name="type">form</field>
         <field name="arch" type="xml">
             <form string="Creation of Spare Bom">
-                <label string="Are you sure you want to create a new Spare Bom?" colspan="4"/>
+                <div>Are you sure you want to create a new Spare Bom?</div>div>
                 <group>
                     <field name="summarize"/>
                 </group>

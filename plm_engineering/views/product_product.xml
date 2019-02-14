@@ -5,7 +5,7 @@
         <field name="model">plm.temporary</field>
         <field name="arch" type="xml">
             <form string="Creation of Normal Bom">
-                <label string="Are you sure you want to create a new Normal Bom?" colspan="2"/>
+                <div>Are you sure you want to create a new Normal Bom?</div>
                 <group>
                     <field name="summarize"/>
                     <field name="migrate_custom_lines"/>

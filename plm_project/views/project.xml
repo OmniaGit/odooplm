@@ -16,7 +16,7 @@
             <xpath expr="//notebook" position="inside">
                 <page string="PLM" attrs="{'invisible':[('plm_use_plm', '=', False)]}">
                     <group>
-                        <label string="Products" colspan="4"/>
+                        <div>Products</div>
                         <field name="plm_product_ids" nolabel="1"/>
                     </group>
                 </page>

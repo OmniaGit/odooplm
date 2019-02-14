@@ -192,7 +192,7 @@ class ReportBomStructureAll(models.AbstractModel):
         return _(result)
 
     @api.model
-    def get_report_values(self, docids, data=None):
+    def _get_report_values(self, docids, data=None):
         boms = self.env['mrp.bom'].browse(docids)
         return {'docs': boms,
                 'bom_type': self.bom_type,
@@ -224,7 +224,7 @@ class ReportBomStructureOne(models.AbstractModel):
         return _(result)
 
     @api.model
-    def get_report_values(self, docids, data=None):
+    def _get_report_values(self, docids, data=None):
         boms = self.env['mrp.bom'].browse(docids)
         return {'docs': boms,
                 'bom_type': self.bom_type,
@@ -256,7 +256,7 @@ class ReportBomStructureAllSum(models.AbstractModel):
         return _(result)
 
     @api.model
-    def get_report_values(self, docids, data=None):
+    def _get_report_values(self, docids, data=None):
         boms = self.env['mrp.bom'].browse(docids)
         return {'docs': boms,
                 'bom_type': self.bom_type,
@@ -288,7 +288,7 @@ class ReportBomStructureOneSum(models.AbstractModel):
         return _(result)
 
     @api.model
-    def get_report_values(self, docids, data=None):
+    def _get_report_values(self, docids, data=None):
         boms = self.env['mrp.bom'].browse(docids)
         return {'docs': boms,
                 'bom_type': self.bom_type,
@@ -320,7 +320,7 @@ class ReportBomStructureLevels(models.AbstractModel):
         return _(result)
 
     @api.model
-    def get_report_values(self, docids, data=None):
+    def _get_report_values(self, docids, data=None):
         boms = self.env['mrp.bom'].browse(docids)
         return {'docs': boms,
                 'bom_type': self.bom_type,
@@ -352,7 +352,7 @@ class ReportBomStructureFlat(models.AbstractModel):
         return _(result)
 
     @api.model
-    def get_report_values(self, docids, data=None):
+    def _get_report_values(self, docids, data=None):
         boms = self.env['mrp.bom'].browse(docids)
         return {'docs': boms,
                 'bom_type': self.bom_type,

@@ -126,7 +126,7 @@ class MrpBomLineExtension(models.Model):
                 out_act_dict['view_ids'] = [
                     (5, 0, 0),
                     (0, 0, {'view_mode': 'tree', 'view_id': self.env.ref('plm.plm_bom_tree_view').id}),
-                    (0, 0, {'view_mode': 'form', 'view_id': self.env.ref('plm_engineering.plm_bom_form_view_eng').id})
+                    (0, 0, {'view_mode': 'form', 'view_id': self.env.ref('plm_engineering.plm.bom.form').id})
                 ]
             elif line_brws.type == 'spbom':
                 domain.append(('type', '=', 'spbom'))
@@ -136,12 +136,12 @@ class MrpBomLineExtension(models.Model):
     @api.multi
     def openRelatedDocuments(self):
         domain = [('id', 'in', self.related_document_ids.ids)]
-        out_act_dict = {'name': _('Documents'), 
-			'view_type': 'form', 
-			'res_model': 'ir.attachment',
-                        'type': 'ir.actions.act_window', 
-			'view_mode': 'tree,form', 
-			'domain': domain}
+        out_act_dict = {'name': _('Documents'),
+                        'view_type': 'form',
+                        'res_model': 'ir.attachment',
+                        'type': 'ir.actions.act_window',
+                        'view_mode': 'tree,form',
+                        'domain': domain}
         return out_act_dict
 
     @api.multi
