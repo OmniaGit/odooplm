@@ -3,7 +3,7 @@
     <record id="view_ir_attachment_suspended" model="ir.ui.view">
         <field name="name">view.ir.attachment.suspended</field>
         <field name="model">ir.attachment</field>
-        <field name="inherit_id" ref="plm.view_ir_attachment"/>
+        <field name="inherit_id" ref="plm.view_ir_attachment_form"/>
         <field name="type">form</field>
         <field name="priority" eval="16"/>
         <field name="arch" type="xml">

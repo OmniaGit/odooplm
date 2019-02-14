@@ -5,7 +5,7 @@
         <record id="ir_attachment_plm_box_view" model="ir.ui.view">
             <field name="name">plm.box.document.form.custom</field>
             <field name="model">ir.attachment</field>
-            <field name="inherit_id" ref="plm.view_ir_attachment"/>
+            <field name="inherit_id" ref="plm.view_ir_attachment_form"/>
             <field name="type">form</field>
             <field name="priority" eval="1"/>
             <field name="arch" type="xml">
