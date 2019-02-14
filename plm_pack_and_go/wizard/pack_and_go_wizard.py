@@ -85,7 +85,6 @@ class AdvancedPackView(osv.osv.osv_memory):
 
 class PackAndGo(osv.osv.osv_memory):
     _name = 'pack.and_go'
-    _inherit = 'ir.attachment'
 
     def setComponentFromContext(self):
         """
@@ -123,7 +122,9 @@ class PackAndGo(osv.osv.osv_memory):
     force_types_3d = fields.Many2one('pack_and_go_types', _('Force Types'))
     force_types_2d = fields.Many2one('pack_and_go_types', _('Force Types'))
 
-    convertion_server_available = fields.Boolean(_('Convertion server available'), default=False)
+    convertion_server_available = fields.Boolean(_('Conversion server available'), default=False)
+    datas = fields.Binary(string="Download")
+    datas_fname = fields.Char(string="File Name")
 
     @api.multi
     def computeExportRelField(self, forceType=False):
@@ -326,7 +327,6 @@ class PackAndGo(osv.osv.osv_memory):
             os.makedirs(path)
 
         convetionModuleInstalled = self.checkPlmConvertionInstalled()
-        tmpSubFolder = tools.config.get('document_path', os.path.join(tools.config['root_path'], 'filestore'))
         tmpDir = tempfile.gettempdir()
         export_zip_folder = os.path.join(tmpDir, 'export_zip')
         checkCreateFolder(export_zip_folder)
@@ -375,10 +375,10 @@ class PackAndGo(osv.osv.osv_memory):
             shutil.copyfile(filePath, outFilePath)
 
         def exportSingle(docBws):
-            fileName = os.path.join(tmpSubFolder, self.env.cr.dbname, docBws.store_fname)
-            if os.path.exists(fileName):
+            fromFile = docBws._full_path(docBws.store_fname)
+            if os.path.exists(fromFile):
                 outFilePath = os.path.join(outZipFile, docBws.datas_fname)
-                shutil.copyfile(fileName, outFilePath)
+                shutil.copyfile(fromFile, outFilePath)
             else:
                 logging.error('Unable to export file from document ID %r. File %r does not exists.' % (docBws.id, fileName))
 
