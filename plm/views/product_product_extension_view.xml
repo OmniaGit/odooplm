@@ -27,18 +27,6 @@
         </field>
     </record>
 
-    <record id="view_stock_product_template_tree_plm" model="ir.ui.view">
-        <field name="name">product.template.tree.plm.inherit</field>
-        <field name="model">product.template</field>
-        <field name="inherit_id" ref="product.product_template_tree_view"/>
-        <field name="arch" type="xml">
-            <field name="default_code" position="replace">
-                <field name="engineering_code"/>
-                <field name="engineering_revision"/>
-            </field>
-        </field>
-    </record>
-
     <record model="ir.ui.view" id="plm_component_base_search">
         <field name="name">plm.base.component.search</field>
         <field name="model">product.product</field>
@@ -79,7 +67,7 @@
         <field name="name">plm.base.component.form</field>
         <field name="model">product.product</field>
         <field name="type">form</field>
-        <field name="priority" eval="6"/>
+        <field name="priority" eval="20"/>
         <field name="arch" type="xml">
             <form string="Engineering Product" version="7.0">
                 <header>
@@ -107,60 +95,18 @@
 
                 <sheet>
                     <field name="type" invisible="1"/>
-                    <div name="button_box" class="oe_button_box">
-                        <button class="oe_stat_button" name="open_boms" type="object"
-                                attrs="{'invisible':[('type', 'not in', ['product', 'consu'])]}" icon="fa-flask">
-                            <field string="Bill of Materials" name="bom_count" widget="statinfo"/>
-                        </button>
-                        <button class="oe_stat_button" name="action_show_reference" type="object"
-                                icon="fa-level-up">
-                            <field string="Product Where Used" name="used_in_bom_count" widget="statinfo"/>
-                        </button>
-                    <button class="oe_stat_button" name="action_view_mos" type="object"
-                        attrs="{'invisible': [('type', 'not in', ['product', 'consu'])]}" icon="fa-list-alt" help="Manufactured in the last 365 days">
-                        <div class="o_field_widget o_stat_info">
-                            <span class="o_stat_value">
-                                <field name="mrp_product_qty" widget="statinfo" nolabel="1" class="mr4"/>
-                                <field name="uom_name"/>
-                            </span>
-                            <span class="o_stat_text">Manufactured</span>
-                        </div>
-                    </button>
-                        <button class="oe_stat_button" name="product_template_open" type="object"
-                                string="Product Information"
-                                icon="fa-gears">
-                        </button>
-                    </div>
-                    <field name="image_medium" widget="image" class="oe_avatar"/>
-                    <div class="oe_title">
-                        <label class="oe_edit_only" for="name" string="Product Name"/>
-                        <h1>
-                            <field name="name" placeholder="Product Name"
-                                   attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
-                        </h1>
-                        <group name="plm_fields_area" colspan="6" col="2">
-                            <field name="is_engcode_editable" invisible="1"/>
-                            <field name="engineering_code" attrs="{'readonly':[('is_engcode_editable','=', False)]}"
-                                   select="1"/>
-                            <field name="engineering_revision" colspan="2" readonly="1"/>
-                            <field name="std_description"
-                                   attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
-                            <field name="description" invisible="1"/>
-                            <field name="source_product" invisible="1"/>
-                            <field name="desc_modify"
-                                   attrs="{'readonly':[('state','in',['released','obsoleted'])], 'invisible': [('engineering_revision', '=', 0)]}"/>
-                        </group>
-                        <div name="options" groups="base.group_user">
-                            <div>
-                                <field name="sale_ok"/>
-                                <label for="sale_ok"/>
-                            </div>
-                            <div>
-                                <field name="purchase_ok"/>
-                                <label for="purchase_ok"/>
-                            </div>
-                        </div>
-                    </div>
+                    <field name="name" string="Description"/>
+                    <group name="plm_fields_area" colspan="6" col="2">
+                        <field name="is_engcode_editable" invisible="1"/>
+                        <field name="engineering_code" attrs="{'readonly':[('is_engcode_editable','=', False)]}"
+                               select="1"/>
+                        <field name="engineering_revision" colspan="2" readonly="1"/>
+                        <field name="std_description"
+                               attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                        <field name="source_product" invisible="1"/>
+                        <field name="desc_modify"
+                               attrs="{'readonly':[('state','in',['released','obsoleted'])], 'invisible': [('engineering_revision', '=', 0)]}"/>
+                    </group>
                     <notebook colspan="6" col="6">
                         <page name="technical_infos" string="Technical Information">
                             <group name="group_general">
@@ -219,17 +165,102 @@
 
                     </notebook>
                 </sheet>
-
-                <div class="oe_chatter">
-                    <field name="message_follower_ids" widget="mail_followers"/>
-                    <field name="activity_ids" widget="mail_activity"/>
-                    <field name="message_ids" widget="mail_thread"/>
-                </div>
-
             </form>
         </field>
     </record>
 
+    <record id="plm_product_product_normal_form_view_inherit" model="ir.ui.view">
+        <field name="name">plm.product.product.normal.form.view.inherit</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_normal_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                    <button name="action_release"
+                            type="object"
+                            states="confirmed"
+                            string="Release Component"
+                            class="oe_highlight"/>
+                    <button name="action_draft"
+                            type="object"
+                            states="confirmed"
+                            string="Correct Component"/>
+                    <button name="action_confirm"
+                            type="object"
+                            states="draft"
+                            string="Confirm Component"
+                            class="oe_highlight"/>
+                    <field name="state"
+                           widget="statusbar"
+                           statusbar_visible="draft,confirmed,released"
+                           statusbar_colors='{"undermodify":"red","obsoleted":"red"}'
+                           readonly="1"/>
+            </xpath>
+            <xpath expr="//field[@name='name']/.." position="after">
+               <group col="6">
+                    <field name="engineering_code"/>
+                    <field name="engineering_revision"/>
+                    <field name="state"/>
+               </group>
+            </xpath>
+            <xpath expr="//notebook[last()]" position="inside">
+                                    <page name="technical_infos" string="Technical Information">
+                            <group name="group_general">
+                                <field name="categ_id" string="Category"/>
+                            </group>
+                            <group colspan="4" col="4" name="technical_infos_group">
+                                <field name="tmp_material"
+                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                                <field name="tmp_surface"
+                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                                <field name="tmp_treatment"
+                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                                <field name="weight" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"
+                                       digits="[14,3]"/>
+                                <field name="uom_id"
+                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                                <field name="uom_po_id"
+                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"
+                                       groups="base.group_extended"/>
+                            </group>
+                            <group col="4" colspan="4">
+                                <field name="std_umc1"
+                                       attrs="{'readonly':[('std_umc1','=',False),('state','in',['released','obsoleted'])]}"/>
+                                <field name="std_value1"
+                                       attrs="{'readonly':[('std_umc1','=',False),('state','in',['released','obsoleted'])]}"/>
+                                <field name="std_umc2"
+                                       attrs="{'readonly':[('std_umc2','=',False),('state','in',['released','obsoleted'])]}"/>
+                                <field name="std_value2"
+                                       attrs="{'readonly':[('std_umc2','=',False),('state','in',['released','obsoleted'])]}"/>
+                                <field name="std_umc3"
+                                       attrs="{'readonly':[('std_umc3','=',False),('state','in',['released','obsoleted'])]}"/>
+                                <field name="std_value3"
+                                       attrs="{'readonly':[('std_umc3','=',False),('state','in',['released','obsoleted'])]}"/>
+                            </group>
+                        </page>
+                        <page string="CAD Property">
+                            <group name="cad_property_block">
+                                <field name="engineering_material"
+                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}" colspan="2"/>
+                                <field name="engineering_surface"
+                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}" colspan="2"/>
+                                <field name="engineering_treatment"
+                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}" colspan="2"/>
+
+                            </group>
+                        </page>
+                        <page string="Linked Documents" name="linkeddocuments">
+                            <group>
+                                <button class="oe_inline oe_stat_button" type="object" icon="fa-list-alt"
+                                        name="action_rev_docs" string="Revision Rel Docs"/>
+                            </group>
+                            <group>
+                                <field name="linkeddocuments" nolabel="1"/>
+                            </group>
+                        </page>
+            </xpath>
+        </field>
+    </record>
+    
     <record model="ir.actions.act_window" id="action_plm_component_base">
         <field name="name">Engineering Parts</field>
         <field name="res_model">product.product</field>

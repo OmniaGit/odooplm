@@ -51,6 +51,8 @@ class PlmCheckout(models.Model):
                                  string="Revision",
                                  store=True)
 
+    preview = fields.Binary(related='documentid.preview')
+
     _sql_constraints = [
         ('documentid', 'unique (documentid)', _('The documentid must be unique !'))
     ]

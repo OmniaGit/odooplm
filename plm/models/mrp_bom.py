@@ -723,3 +723,4 @@ class MrpBomExtension(models.Model):
                     'domain': [('id', 'in', bom_line_ids)],
                     'context': {"group_by": ['bom_id']},
                     }
+

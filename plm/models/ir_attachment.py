@@ -641,16 +641,19 @@ class PlmDocument(models.Model):
     def search(self, args, offset=0, limit=None, order=None, count=False):
         return super(PlmDocument, self).search(args, offset, limit, order, count)
 
-    @api.model
-    def create(self, vals):
-        return super(PlmDocument, self).create(vals)
+    @api.multi
+    def check_unique(self):
+        for ir_attachment_id in self:
+            if self.search_count([('name', '=', ir_attachment_id.name),
+                                  ('revisionid', '=', ir_attachment_id.revisionid),
+                                  ('document_type', 'in', ['2d', '3d'])]) > 1:
+                raise UserError(_('Document Already in the system'))
 
     @api.model
-    def is_plm_state_writable(self):
-        for customObject in self:
-            if customObject.state in PLM_NO_WRITE_STATE:
-                return False
-        return True
+    def create(self, vals):
+        res = super(PlmDocument, self).create(vals)
+        res.check_unique()
+        return res
 
     @api.multi
     def write(self, vals):
@@ -659,7 +662,16 @@ class PlmDocument(models.Model):
             if not self.is_plm_state_writable():
                 raise UserError(_("The active state does not allow you to make save action"))
         self.writeCheckDatas(vals)
-        return super(PlmDocument, self).write(vals)
+        res = super(PlmDocument, self).write(vals)
+        self.check_unique()
+        return res
+
+    @api.model
+    def is_plm_state_writable(self):
+        for customObject in self:
+            if customObject.state in PLM_NO_WRITE_STATE:
+                return False
+        return True
 
     @api.multi
     def writeCheckDatas(self, vals):
@@ -772,6 +784,7 @@ class PlmDocument(models.Model):
         return fileExtension
 
     @api.multi
+    @api.depends('name', 'revisionid', 'datas_fname')
     def _compute_document_type(self):
         configParamObj = self.env['ir.config_parameter']
         str2DExtensions = configParamObj._get_param('file_exte_type_rel_2D')
@@ -824,13 +837,9 @@ class PlmDocument(models.Model):
                                       ('3d', _('3D')),
                                       ],
                                      compute=_compute_document_type,
+                                     store=True,
                                      string=_('Document Type'))
     desc_modify = fields.Text(_('Modification Description'), default='')
-
-    _sql_constraints = [
-        ('name_unique', 'unique (name, revisionid)', 'File name has to be unique!')
-        # qui abbiamo la sicurezza dell'univocita del nome file
-    ]
 
     @api.model
     def CheckedIn(self, files, default=None):

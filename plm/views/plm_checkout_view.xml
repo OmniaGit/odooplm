@@ -52,17 +52,22 @@
     <record model="ir.ui.view" id="view_plm_checkout_form">
         <field name="name">plm.checkout</field>
         <field name="model">plm.checkout</field>
-        <field name="type">form</field>
         <field name="arch" type="xml">
             <form string="Plm checkout">
             	<sheet>	
-                <group >
+                <group>
 	                <field name="userid" readonly="1"/>
 	                <field name="hostname" readonly="1"/>
 	                <field name="hostpws" readonly="1"/>
 	                <field name="documentid" readonly="1"/>
 	                <field name="rel_doc_rev" readonly="1"/>
 	                <field name="create_date" readonly="1"/>
+                    <field name="preview"
+                           widget="image"
+                           readonly="1"
+                           nolabel="1"
+                           img_height="350"
+                           img_width="350"/>
                 </group>
                	</sheet> 
             </form>
