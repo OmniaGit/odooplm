@@ -36,6 +36,7 @@ import logging
 
 class ProductProductExtended(models.Model):
     _name = 'product.rev_wizard'
+    _desctiption = "Product Revision wizard"
     reviseDocument = fields.Boolean(_('Document Revision'), help=_("""Make new revision of the linked document ?"""))
     reviseEbom = fields.Boolean(_('Engineering Bom Revision'), help=_("""Make new revision of the linked Engineering BOM ?"""))
     reviseNbom = fields.Boolean(_('Normal Bom Revision'), help=_("""Make new revision of the linked Normal BOM ?"""))

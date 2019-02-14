@@ -43,6 +43,7 @@ _logger = logging.getLogger(__name__)
 
 class AvailableTypes(osv.osv.osv_memory):
     _name = 'pack_and_go_types'
+    _description = "Description of pack and go"
 
     name = fields.Char(_('Name'))
     pack_and_go_view_id = fields.Many2one('pack_and_go_view')
@@ -50,6 +51,7 @@ class AvailableTypes(osv.osv.osv_memory):
 
 class AdvancedPackView(osv.osv.osv_memory):
     _name = 'pack_and_go_view'
+    _description = "Manage pack view for exporting"
 
     @api.model
     def _getComponentDescription(self):
@@ -85,6 +87,7 @@ class AdvancedPackView(osv.osv.osv_memory):
 
 class PackAndGo(osv.osv.osv_memory):
     _name = 'pack.and_go'
+    _description = "Main wizard collector for pack and go"
 
     def setComponentFromContext(self):
         """

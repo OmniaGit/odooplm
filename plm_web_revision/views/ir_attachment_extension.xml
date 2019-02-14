@@ -9,7 +9,7 @@
 	        <field name="arch" type="xml">
 	        <form string="Creation of New Revision">
 	        	<separator string="" colspan="4" />
-	        	<label string="Are you sure you want to create a new Revision?" colspan="2"/>
+	        	<div>"Are you sure you want to create a new Revision?"</div>
 	            <separator string="" colspan="4" />
 	            <group colspan="2" col="2">
 	            	<button special="cancel" string="Cancel"/>
