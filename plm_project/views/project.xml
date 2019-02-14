@@ -6,18 +6,14 @@
         <field name="inherit_id" ref="project.edit_project"/>
         <field name="priority" eval="3"/>
         <field name="arch" type="xml">
-            <field name="label_tasks" position="after">
-                <field name="plm_use_plm" class="oe_inline"/>
-                <label for="plm_use_plm" class="oe_inline" string="PLM"/>
-            </field>
             <field name="partner_id" position="after">
-                <field name="plm_completed" widget="progressbar"/>
+                <field string="PLM" name="plm_use_plm" class="oe_inline"/>
             </field>
             <xpath expr="//notebook" position="inside">
                 <page string="PLM" attrs="{'invisible':[('plm_use_plm', '=', False)]}">
                     <group>
-                        <div>Products</div>
-                        <field name="plm_product_ids" nolabel="1"/>
+                        <field name="plm_completed" widget="progressbar"/>
+                        <field name="plm_product_ids"/>
                     </group>
                 </page>
             </xpath>

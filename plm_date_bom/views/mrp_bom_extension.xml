@@ -3,23 +3,11 @@
 	<data>
 <!-- Views -->		
 
-		<record model="ir.ui.view" id="plm_tree_bom_obsoleted">
-	        <field name="name">plm.tree.bom.obsoleted</field>
-	        <field name="model">mrp.bom</field>
-	        <field name="inherit_id" ref="plm.plm_bom_tree_view"/>
-	        <field name="type">tree</field>
-	        <field name="priority" eval="1"/>
-	        <field name="arch" type="xml">
-	            <tree position="attributes">
-	                <attribute name="colors">rgb(231, 43, 26):obsolete_presents == True;</attribute>
-	            </tree>
-	        </field>
-	    </record>
+
 
         <record id="plm_bom_tree_view_obsoleted" model="ir.ui.view">
             <field name="name">plm.mrp.bom.tree</field>
             <field name="model">mrp.bom</field>
-            <field name="type">tree</field>
             <field name="inherit_id" ref="plm.plm_bom_tree_view"/>
             <field name="arch" type="xml">
                  <field name="weight_net" position="after">
@@ -27,6 +15,17 @@
                    	<field name="obsolete_presents_computed" invisible='True'/>
           		</field>
         	</field>
+        </record>
+
+        <record model="ir.ui.view" id="plm_tree_bom_obsoleted">
+            <field name="name">plm.tree.bom.obsoleted</field>
+            <field name="model">mrp.bom</field>
+            <field name="inherit_id" ref="plm.plm_bom_tree_view"/>
+            <field name="arch" type="xml">
+                <tree position="attributes">
+                    <attribute name="decoration-muted">obsolete_presents == True</attribute>
+                </tree>
+            </field>
         </record>
 
 	    <record id="plm_mrp_bom_date_compute" model="ir.ui.view">
@@ -62,6 +61,8 @@
 	           	</data>
 			</field>
         </record>
+
+
         
     <record id="plm_bom_date_compute" model="ir.ui.view">
         <field name="name">plm.date.compure</field>
@@ -84,13 +85,13 @@
 
 
     <record model="ir.ui.view" id="plm_bom_filter_obsoleted">
-        <field name="name">plm.bom.obsoleted</field>
+        <field name="name">plm.bom.filter.obsoleted</field>
         <field name="model">mrp.bom</field>
-        <field name="type">search</field>
         <field name="inherit_id" ref="plm.view_mrp_bom_filter_inherit"/>
         <field name="arch" type="xml">
         	<xpath expr="//filter[@name='filter_today']" position="after"> 
-                   	<filter string="  Boms To Update  " separator="1"
+                   	<filter name="bom_to_update"
+                   	        string="Boms To Update"
                            	domain="[('obsolete_presents','=', True)]" />
             </xpath>
          </field>
