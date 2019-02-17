@@ -28,6 +28,7 @@
     'sequence': 15,
     'summary': 'PLM Product Description Language Helper',
     'images': [],
+    'license': 'AGPL-3',
     'depends': ['plm'],
     'description': """ """,
     'data': ['views/translation.xml',

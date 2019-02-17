@@ -25,6 +25,7 @@
     'website': 'http://www.omniasolutions.eu',
     'category': 'Product Lifecycle Management',
     'sequence': 15,
+    'license': 'AGPL-3',
     'summary': '',
     'images': [],
     'depends': ['plm'],

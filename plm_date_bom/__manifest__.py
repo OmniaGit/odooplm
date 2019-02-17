@@ -23,6 +23,7 @@
     'name': 'PLM Date Bom',
     'version': '1.1',
     'author': 'OmniaSolutions',
+    'license': 'AGPL-3',
     'website': 'http://www.omniasolutions.eu',
     'category': 'Product Lifecycle Management',
     'sequence': 15,

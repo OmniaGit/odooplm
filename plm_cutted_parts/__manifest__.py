@@ -27,6 +27,7 @@
     'sequence': 15,
     'summary': '',
     'images': [],
+    'license': 'AGPL-3',
     'depends': ['plm', 'plm_engineering'],
     'description': """
 Manage bom explosion for cutted parts

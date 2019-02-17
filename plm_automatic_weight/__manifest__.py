@@ -28,6 +28,7 @@
     'summary': 'PLM Weight Automatic Calculation',
     'images': [],
     'depends': ['plm'],
+    'license': 'AGPL-3',
     'description': """ """,
     'data': [
         'settings_and_data/datas.xml',

@@ -28,6 +28,7 @@
     'sequence': 15,
     'summary': 'PLM Client Custom Procedure',
     'images': [],
+    'license': 'AGPL-3',
     'depends': ['plm'],
     'description': """ 
     Allow to use custom client properties mapping

@@ -26,6 +26,7 @@
     'category': 'Product Lifecycle Management',
     'sequence': 15,
     'summary': '',
+    'license': 'AGPL-3',
     'images': [],
     'depends': ['plm'],
     'description': """

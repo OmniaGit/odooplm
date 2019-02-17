@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 ##############################################################################
 #
-#    OmniaSolutions, Open Source Management Solution    
+#    OmniaSolutions, Open Source Management Solution
 #    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
 #    $Id$
 #
@@ -28,6 +28,7 @@
     'sequence': 15,
     'summary': '',
     'images': [],
+    'license': 'AGPL-3',
     'depends': ['plm'],
     'description': """
 Allow to compare two boms

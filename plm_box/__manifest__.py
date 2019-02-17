@@ -33,6 +33,7 @@
                 'project',  # to work with plm box entities
                 'sale',     # to work with plm box entities
                 ],
+    'license': 'AGPL-3',
     'description': '',
     'data': ['views/non_cad_doc.xml',
              'views/box_object_rel.xml',
