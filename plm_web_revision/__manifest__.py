@@ -23,7 +23,7 @@
     'name': 'PLM Web Revision',
     'version': '1.1',
     'author': 'OmniaSolutions',
-    'website': 'http://www.omniasolutions.eu',
+    'website': 'https://www.omniasolutions.website',
     'category': 'Product Lifecycle Management',
     'sequence': 15,
     'license': 'AGPL-3',
