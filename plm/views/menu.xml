@@ -35,6 +35,10 @@
             sequence="50"
             groups="plm.group_plm_integration_user"/>
 
+
+
+    <!-- Parent menu "Documents"  -->
+
     <menuitem
             id="menu_document_files"
             name="Search on Documents"
@@ -42,8 +46,7 @@
             parent="plm.ir_attachment_form"
             sequence="10"
     />
-
-    <!-- Parent menu "Documents"  -->
+    
     <menuitem
             id="menu_backupdoc"
             name="Search on Backup Data Set"
