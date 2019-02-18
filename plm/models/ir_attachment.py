@@ -787,13 +787,11 @@ class PlmDocument(models.Model):
     @api.depends('name', 'revisionid', 'datas_fname')
     def _compute_document_type(self):
         configParamObj = self.env['ir.config_parameter']
-        str2DExtensions = configParamObj._get_param('file_exte_type_rel_2D')
-        str3DExtensions = configParamObj._get_param('file_exte_type_rel_3D')
+        extensions2D = eval(configParamObj._get_param('file_exte_type_rel_2D'))
+        extensions3D = eval(configParamObj._get_param('file_exte_type_rel_3D'))
         for docBrws in self:
             try:
                 fileExtension = docBrws.getFileExtension(docBrws)
-                extensions2D = eval(str2DExtensions)
-                extensions3D = eval(str3DExtensions)
                 if fileExtension in extensions2D:
                     docBrws.document_type = '2d'
                 elif fileExtension in extensions3D:
