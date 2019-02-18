@@ -62,6 +62,17 @@ class PlmBackupDocument(models.Model):
     preview = fields.Binary(_('Preview Content'))
 
     @api.multi
+    def name_get(self):
+        result = []
+        for r in self:
+            if r.documentid and r.userid:
+                name = "%s .. [%s]" % (r.documentid.name[:8], r.userid.name[:8])
+            else:
+                name = "Error"
+            result.append((r.id, name))
+        return result
+
+    @api.multi
     def unlink(self):
         committed = False
         if self.env.context:

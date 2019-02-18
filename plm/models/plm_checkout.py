@@ -57,6 +57,14 @@ class PlmCheckout(models.Model):
         ('documentid', 'unique (documentid)', _('The documentid must be unique !'))
     ]
 
+    @api.multi
+    def name_get(self):
+        result = []
+        for r in self:
+            name = "%s .. [%s]" % (r.documentid.name[:8], r.userid.name[:8])
+            result.append((r.id, name))
+        return result
+
     @api.model
     def _adjustRelations(self, childDocIds, userid=False):
         docRelType = self.env['ir.attachment.relation']

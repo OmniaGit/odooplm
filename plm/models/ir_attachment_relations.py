@@ -71,6 +71,14 @@ class PlmDocumentRelations(models.Model):
         ('relation_uniq', 'unique (parent_id,child_id,link_kind)', _('The Document Relation must be unique !'))
     ]
 
+    @api.multi
+    def name_get(self):
+        result = []
+        for r in self:
+            name = "%s .. %s.." % (r.parent_id.name[:8], r.child_id.name[:8])
+            result.append((r.id, name))
+        return result
+
     @api.model
     def SaveStructure(self, relations, level=0, currlevel=0):
         """
