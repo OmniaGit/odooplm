@@ -1365,6 +1365,8 @@ class PlmDocument(models.Model):
                         productAttribute['name'] = productAttribute.get('engineering_code', False)
                     if not productAttribute.get('engineering_code', False):     # I could have a document without component, so not create product
                         continue
+                    if 'product_tmpl_id' in productAttribute:
+                        del productAttribute['product_tmpl_id']
                     prodBrws = productTemplate.create(productAttribute)
                     productsEvaluated.append(prodBrws.id)
                 if linkedDocuments:
