@@ -7,9 +7,10 @@
         <field name="type">form</field>
         <field name="priority" eval="16"/>
         <field name="arch" type="xml">
-            <group name="doc_user" position="before">
-                <separator string="Spare Part" colspan="2"/>
-                <field name="used_for_spare" colspan="2"
+            <group name="doc_user" position="inside">
+            
+                <field string="Spare Part"
+                       name="used_for_spare"
                        attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
             </group>
         </field>

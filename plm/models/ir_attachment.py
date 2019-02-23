@@ -177,7 +177,7 @@ class PlmDocument(models.Model):
         plm_backupdoc = self.env['plm.backupdoc']
         for ir_attachment_id in self:
             try:
-                shutil.copyfile(self._full_path(ir_attachment_id.datas_fname),
+                shutil.copyfile(self._full_path(ir_attachment_id.store_fname),
                                 self._full_path(random_name()))
                 plm_backupdoc.create({'userid': self.env.uid,
                                       'existingfile': ir_attachment_id.datas_fname,
@@ -185,7 +185,7 @@ class PlmDocument(models.Model):
                                       'printout': ir_attachment_id.printout,
                                       'preview': ir_attachment_id.preview})
             except Exception as ex:
-                logging.warning("Unable to copy file for backup Error: %r" % ex)
+                logging.error("Unable to copy file for backup Error: %r" % ex)
 
     @api.model
     def _explodedocs(self, oid, kinds, listed_documents=[], recursion=True):
@@ -745,6 +745,17 @@ class PlmDocument(models.Model):
         else:
             self.checkout_user = ''
 
+    @api.multi
+    def toggle_check_out(self):
+        for ir_attachment_id in self:
+            if ir_attachment_id.isCheckedOutByMe():
+                ir_attachment_id._check_in()
+            else:
+                if ir_attachment_id.is_checkout:
+                    raise UserWarning("Unable to check out. The owner of this document is %s" % ir_attachment_id.checkout_user)
+                else:
+                    ir_attachment_id.checkout("localhost", r"check/web")
+
     @api.model
     def CheckIn(self, attrs):
         documentName = attrs.get('name', '')
@@ -760,7 +771,7 @@ class PlmDocument(models.Model):
         checkOutId = self.isCheckedOutByMe()
         if not checkOutId:
             logging.info(
-                'Document %r is not in check out by user %r so cannot be checked-in' % (self.id, self.env.user_id))
+                'Document %r is not in check out by user %r so cannot be checked-in' % (self.id, self.env.user.id))
             return False
         if self.file_size <= 0 or not self.datas_fname:
             logging.warning('Document %r has not document content so cannot be checked-in' % (self.id))
@@ -801,6 +812,11 @@ class PlmDocument(models.Model):
             except Exception as ex:
                 logging.error('Unable to compute document type for document %r, error %r' % (docBrws.id, ex))
 
+    @api.multi
+    def _get_n_rel_doc(self):
+        for ir_attachment_id in self:
+            ir_attachment_id.document_rel_count = len(ir_attachment_id.linkedcomponents)
+
     revisionid = fields.Integer(_('Revision Index'),
                                 default=0,
                                 required=True)
@@ -826,6 +842,7 @@ class PlmDocument(models.Model):
                                         'document_id',
                                         'component_id',
                                         _('Linked Parts'))
+    document_rel_count = fields.Integer(compute=_get_n_rel_doc)
     datas = fields.Binary(string=_('File Content'),
                           compute='_compute_datas',
                           inverse='_inverse_datas',
@@ -1039,6 +1056,13 @@ class PlmDocument(models.Model):
         if oid not in docArray:
             docArray.append(oid)  # Add requested document to package
         return self.browse(docArray)._data_get_files(listedFiles, forceFlag)
+
+    @api.multi
+    def action_view_rel_doc(self):
+        action = self.env.ref('plm.act_view_doc_related').read()[0]
+        action['domain'] = ['|', ('parent_id', 'in', self.ids),
+                                 ('child_id', 'in', self.ids)]
+        return action
 
     @api.multi
     def GetRelatedDocs(self, default=None):

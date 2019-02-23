@@ -31,14 +31,37 @@
                            statusbar_colors='{"undermodify":"red","obsoleted":"red"}' readonly="1"/>
                 </header>
                 <sheet>
+				    <div class="oe_button_box" name="button_box">
+				      <button class="oe_stat_button" icon="fa-sitemap" type="object" name="action_view_rel_doc">
+				        <field name="document_rel_count" string="Documents" widget="statinfo"/>
+				      </button>
+				      <button name="toggle_check_out"
+                              class="oe_stat_button"
+                              icon="fa-unlock-alt" 
+                              type="object">
+                              <field name="is_checkout"
+                                    widget="boolean_button"
+                                    options="{'terminology': {'string_true': 'Check-Out',
+                                                              'hover_true': 'Check-In',
+                                                              'string_false': 'Check-In',
+                                                              'hover_false': 'Check-Out'}}"
+                                    />
+                             
+                       </button>
+                       <button name="check_out_user"
+                            icon="fa-user"
+                            attrs="{'invisible': ['|',('checkout_user', '=', 'False'),
+                                                      ('checkout_user', '=', '')]}">
+                            <field name="checkout_user"/>
+                       </button>
+				    </div>
                     <group name="doc_data">
                         <group name="main_doc_info">
-                            <label for="name" class="oe_edit_only"/>
                             <strong>
                                 <field name="name" select="1"
                                        attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
                             </strong>
-                            <label for="revisionid" class="oe_edit_only"/>
+                            
                             <strong>
                                 <field name="revisionid" readonly="True"/>
                             </strong>
@@ -47,10 +70,6 @@
                                 <field name="create_date" readonly="1"/>
                                 <field name="write_uid" readonly="1"/>
                                 <field name="write_date" readonly="1"/>
-                            </group>
-                            <group string="Check Out">
-                                <field name="checkout_user"/>
-                                <field name="is_checkout"/>
                             </group>
                         </group>
                         <group name="doc_preview">
