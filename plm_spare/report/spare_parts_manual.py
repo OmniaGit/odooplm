@@ -41,6 +41,7 @@ from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 from odoo.addons.plm.report.book_collector import BookCollector
 from odoo.addons.plm.report.book_collector import getBottomMessage
 
+
 def is_pdf(file_name):
     if os.path.splitext(file_name)[1].lower() == '.pdf':
         return True
@@ -124,7 +125,7 @@ class ReportSpareDocumentOne(models.AbstractModel):
     """
 
     @api.model
-    def create(self, components):
+    def create_spare_pdf(self, components):
         recursion = True
         if ReportSpareDocumentOne._name == 'report.plm_spare.pdf_one':
             recursion = False
@@ -195,7 +196,6 @@ class ReportSpareDocumentOne(models.AbstractModel):
 
     def get_first_page(self, ids):
         str_buffer = BytesIO()
-        # todo: si rompe qui con v11 .. capire come fare il report da codice 
         pdf = self.env.ref('plm_spare.report_product_product_spare_header').sudo().render_qweb_pdf(ids)[0]
         str_buffer.write(pdf)
         return str_buffer
@@ -204,7 +204,7 @@ class ReportSpareDocumentOne(models.AbstractModel):
     def get_report_values(self, doc_ids):
         documents = self.env['product.product'].browse(doc_ids)
         return {'docs': documents,
-                'get_content': self.create}
+                'get_content': self.create_spare_pdf}
 
 
 class ReportSpareDocumentAll(ReportSpareDocumentOne):
