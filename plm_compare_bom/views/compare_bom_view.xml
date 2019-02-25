@@ -1,53 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
     <data>
-       <record id="plm_missing_bom_tree_view" model="ir.ui.view">
-            <field name="name">plm.missing.bom.tree</field>
-            <field name="model">plm.missing.bom</field>
-            <field name="type">tree</field>
-        	<field name="priority" eval="10"/>
-            <field name="arch" type="xml">
-                <tree string="BoM Relations in Bom 2"
-            	   decoration-bf="reason != ''"
-            	   decoration-success="reason == 'Added'"
-            	   decoration-warning="reason == 'Changed'"
-            	   decoration-muted="reason == 'Changed Qty'"
-                    >
-                    <field name="itemnum" select="True"/>
-                    <field name="bom_idrow" invisible="True"/>
-                    <field name="part_id" select="True"/>
-                    <field name="revision" select="True"/>
-                    <field name="description" select="True"/>
-                    <field name="itemqty" select="True"/>
-                    <field invisible="True" name="reason"/>
-                </tree>
-            </field>
-        </record>
-
-
-        <record id="plm_adding_bom_tree_view" model="ir.ui.view">
-            <field name="name">plm.adding.bom.tree</field>
-            <field name="model">plm.adding.bom</field>
-            <field name="type">tree</field>
-            <field name="priority" eval="10"/>
-            <field name="arch" type="xml">
-                <tree 
-            	decoration-bf="reason != ''"
-            	decoration-success="reason == 'Added'"
-            	decoration-warning="reason == 'Changed'"
-            	decoration-muted="reason == 'Changed Qty'"
-             	string="BoM Relations in Bom 1">
-                    <field name="itemnum" select="True"/>
-                    <field name="bom_idrow" invisible="True"/>
-                    <field name="part_id" select="True"/>
-                    <field name="revision" select="True"/>
-                    <field name="description" select="True"/>
-                    <field name="itemqty" select="True"/>
-                    <field invisible="True" name="reason"/>
-                </tree>
-            </field>
-        </record>
-
 
         <record model="ir.ui.view" id="view_plm_compare_bom">
             <field name="name">Compare BoMs</field>
@@ -126,19 +79,22 @@
                 <group colspan="4" col="4">
                     <group col="2" colspan="2">
                	        <field colspan="2" name="anotinb" nolabel="1" readonly="True">
-               	            <tree>
+               	            <tree  decoration-bf="reason != ''"
+                                   decoration-success="reason == 'added'"
+                                   decoration-warning="reason == 'changed'"
+                                   decoration-muted="reason == 'changed_qty'">
                                     <button name="delete_bom_line"
                                             type="object"
                                             string="Delete Left"
                                             class="oe_stat_button"
                                             icon="fa-trash-o"/>
                	                    <field name="itemnum" select="True"/>
-                                    <field name="bom_idrow" invisible="True"/>
+                                    <field name="bom_idrow" groups="base.group_no_one"/>
                                     <field name="part_id" select="True"/>
                                     <field name="revision" select="True"/>
                                     <field name="description" select="True"/>
                                     <field name="itemqty" select="True"/>
-                                    <field invisible="True" name="reason"/>
+                                    <field name="reason" groups="base.group_no_one"/>
                                     <button name="copy_right_left"
                                             type="object"
                                             string="Copy Left"
@@ -154,7 +110,10 @@
                     </group>
                  	<group col="2" colspan="2">
                  		<field colspan="2" name="bnotina" nolabel="1" readonly="True">
-                 		     <tree>
+                 		     <tree decoration-bf="reason != ''"
+                                   decoration-success="reason == 'added'"
+                                   decoration-warning="reason == 'changed'"
+                                   decoration-muted="reason == 'changed_qty'">
                                     <button name="copy_left_right"
                                             type="object"
                                             string="Copy Right"
@@ -166,12 +125,12 @@
                                             class="oe_stat_button"
                                             icon="fa-angle-double-left"/>
                  		        <field name="itemnum" select="True"/>
-                                    <field name="bom_idrow" invisible="True"/>
+                                    <field name="bom_idrow" groups="base.group_no_one"/>
                                     <field name="part_id" select="True"/>
                                     <field name="revision" select="True"/>
                                     <field name="description" select="True"/>
                                     <field name="itemqty" select="True"/>
-                                    <field invisible="True" name="reason"/>
+                                    <field name="reason" groups="base.group_no_one"/>
                                     <button name="delete_bom_line"
                                             type="object"
                                             string="Delete Left"

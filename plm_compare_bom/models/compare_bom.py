@@ -251,7 +251,8 @@ class plm_compare_bom(osv.osv.osv_memory):
         res['compute_type'] = 'only_product'
         return res
 
-    def computeBomLines(self, bomBrws):
+    @api.model
+    def computeBomLines(self, bomBrws, keyType=None):
         bomDict = {}
         for bomLineBrws in bomBrws.bom_line_ids:
             productId = bomLineBrws.product_id.id
@@ -262,15 +263,19 @@ class plm_compare_bom(osv.osv.osv_memory):
                           'bom_idrow': bomLineBrws.id,
                           'reason': '',
                           'bom_id': self.id,
-                          'revision': bomLineBrws.product_id.engineering_revision
+                          'revision': bomLineBrws.product_id.engineering_revision,
                           }
-            if productId not in bomDict:
-                bomDict[productId] = [createVals]
+            if keyType == 'num_qty':
+                key = '%s_%s_%s' % (bomLineBrws.product_id.id, bomLineBrws.itemnum, bomLineQty)
             else:
-                if self.compute_type == 'summarized':
-                    bomDict[productId][0]['itemqty'] = bomDict[productId][0]['itemqty'] + bomLineQty
+                key = productId
+            if key not in bomDict:
+                bomDict[key] = [createVals]
+            else:
+                if keyType == 'summarize':
+                    bomDict[key][0]['itemqty'] = bomDict[key][0]['itemqty'] + bomLineQty
                 else:
-                    bomDict[productId].append(createVals)
+                    bomDict[key].append(createVals)
         return bomDict
 
     def getLeftBomObj(self, toCreateVals):
@@ -284,7 +289,6 @@ class plm_compare_bom(osv.osv.osv_memory):
         return self.env['plm.missing.bom'].create(toCreateVals).id
 
     def computeOnlyProduct(self, bom1Dict, bom2Dict):
-
         def checkAndAdd(leftDict, rightDict, listToAppend, funcToCall):
             for product_id, toCreateValsList in leftDict.items():
                 if product_id not in rightDict:
@@ -326,61 +330,22 @@ class plm_compare_bom(osv.osv.osv_memory):
             rightItems.append(self.getRightBomObj(toCreateValsList[0]))
         return leftItems, rightItems
 
-    def computeByQty(self, bom1Dict, bom2Dict):
-
-        def checkAndAdd(leftDict, rightDict, listToAppend):
-            toRemoveLeft = []
-            toRemoveRight = []
-            for product_id, toCreateValsList in leftDict.items():
-                if product_id not in rightDict:
-                    # Setup new on left side
-                    for toCreateVals in toCreateValsList:
-                        toCreateVals['reason'] = 'added'
-                        listToAppend.append(self.getLeftBomObj(toCreateVals))
-                        #del leftDict[product_id]
-                        toRemoveLeft.append(product_id)
-                else:
-                    # Remove equal product elements
-                    for toCreateVals in toCreateValsList:
-                        qtyLeftDict = toCreateVals['itemqty']
-                        itemNumLeftDict = toCreateVals['itemnum']
-                        for toCreateValsRight in rightDict[product_id]:
-                            qtyRightDict = toCreateValsRight['itemqty']
-                            itemNumRightDict = toCreateValsRight['itemnum']
-                            if qtyLeftDict == qtyRightDict and itemNumLeftDict == itemNumRightDict:
-                                # Found so remove from right list
-                                index = rightDict[product_id].index(toCreateValsRight)
-                                del rightDict[product_id][index]
-                                # Found so remove from right left
-                                index = toCreateValsList.index(toCreateVals)
-                                del leftDict[product_id][index]
-
-                    # Setup left product elements
-                    for toCreateVals in toCreateValsList:
-                        toCreateVals['reason'] = 'changed'
-                        leftItems.append(self.getLeftBomObj(toCreateVals))
-
-                    # Setup right product elements
-                    for toCreateVals in rightDict[product_id]:
-                        toCreateVals['reason'] = 'changed'
-                        rightItems.append(self.getRightBomObj(toCreateVals))
-                    toRemoveLeft.append(product_id)
-                    toRemoveRight.append(product_id)
-            for key in toRemoveLeft:
-                del rightDict[key]
-            for key in toRemoveRight:
-                del leftDict[key]
+    def computeByNumQty(self, bom1Dict, bom2Dict):
         leftItems = []
         rightItems = []
-        checkAndAdd(bom1Dict, bom2Dict, leftItems)
-        # Evaluate remaining new on right side
-        for product_id, toCreateValsList in bom2Dict.items():
-            if product_id not in bom1Dict.keys():
-                for toCreateVals in toCreateValsList:
-                    toCreateVals['reason'] = 'added'
-                    rightItems.append(self.getRightBomObj(toCreateVals))
-
-        return leftItems, rightItems
+        key1 = set(bom1Dict.keys())
+        key2 = set(bom2Dict.keys())
+        right = key1 - key2
+        left = key2 - key1
+        for key in right:
+            for toCreateVals in bom1Dict[key]:
+                toCreateVals['reason'] = 'changed'
+                rightItems.append(self.getLeftBomObj(toCreateVals))
+        for key in left:
+            for toCreateVals in bom2Dict[key]:
+                toCreateVals['reason'] = 'changed'
+                leftItems.append(self.getRightBomObj(toCreateVals))
+        return rightItems, leftItems
 
     @api.multi
     def action_compare_Bom(self):
@@ -388,15 +353,15 @@ class plm_compare_bom(osv.osv.osv_memory):
             Compare two BOMs
         """
         logging.info('Start comparing')
-        bom1Dict = self.computeBomLines(self.bom_id1)
-        bom2Dict = self.computeBomLines(self.bom_id2)
+        bom1Dict = self.computeBomLines(self.bom_id1, self.compute_type)
+        bom2Dict = self.computeBomLines(self.bom_id2, self.compute_type)
         logging.info('Lines computed. Compute type %r' % (self.compute_type))
         if self.compute_type == 'only_product':
             bom1NewItems, bom2NewItems = self.computeOnlyProduct(bom1Dict, bom2Dict)
         elif self.compute_type == 'summarized':
             bom1NewItems, bom2NewItems = self.computeSummarized(bom1Dict, bom2Dict)
         elif self.compute_type == 'num_qty':
-            bom1NewItems, bom2NewItems = self.computeByQty(bom1Dict, bom2Dict)
+            bom1NewItems, bom2NewItems = self.computeByNumQty(bom1Dict, bom2Dict)
         else:
             logging.warning('Compute type not found!')
         logging.info('Starting returning self %r' % (self))
