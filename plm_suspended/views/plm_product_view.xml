@@ -3,7 +3,7 @@
     <record id="ir_attachment_spare_extension" model="ir.ui.view">
         <field name="name">ir.attachment.spare.extension</field>
         <field name="model">product.product</field>
-        <field name="inherit_id" ref="plm.plm_component_base_form"/>
+        <field name="inherit_id" ref="plm.plm_product_product_normal_form_view_inherit"/>
         <field name="type">form</field>
         <field name="priority" eval="16"/>
         <field name="arch" type="xml">

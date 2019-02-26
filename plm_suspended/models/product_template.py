@@ -1,7 +1,7 @@
 ##############################################################################
 #
-#    OmniaSolutions, Open Source Management Solution
-#    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
+#    OmniaSolutions, Your own solutions
+#    Copyright (C) 2010 OmniaSolutions (<http://omniasolutions.eu>). All Rights Reserved
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -18,30 +18,24 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-{
-    'name': 'PLM Suspended State',
-    'version': '1.1',
-    'author': 'OmniaSolutions',
-    'website': 'http://www.omniasolutions.eu',
-    'category': 'Product Lifecycle Management',
-    'sequence': 15,
-    'license': 'AGPL-3',
-    'summary': '',
-    'images': [],
-    'depends': ['mrp', 'plm'],
-    'description': """
-Add obsolete status to the work flow
-==============================================
-    """,
-    'data': [
-        # views
-        'views/plm_product_view.xml',
-        'views/ir_attachment_view.xml',
-        'security/security.xml',
-    ],
-    'demo': [],
-    'test': [],
-    'installable': True,
-    'application': False,
-    'auto_install': False,
-}
+
+"""
+Created on 30 Aug 2016
+
+@author: Daniel Smerghetto
+"""
+
+from odoo import _
+from odoo import api
+from odoo import fields
+from odoo import models
+
+
+class ProductTemplate(models.Model):
+    _inherit = 'product.template'
+
+    state = fields.Selection(selection_add=[('suspended', _('Suspended'))])
+    old_state = fields.Char(
+        size=128,
+        name=_("Old Status")
+    )

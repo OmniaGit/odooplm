@@ -31,18 +31,12 @@ from odoo import fields
 from odoo import models
 
 
-class ProductTemplate(models.Model):
-    _inherit = 'product.template'
-
-    state = fields.Selection(selection_add=[('suspended', _('Suspended'))])
-    old_state = fields.Char(
-        size=128,
-        name=_("Old Status")
-    )
+class ProductProduct(models.Model):
+    _inherit = 'product.product'
 
     @property
     def actions(self):
-        action_dict = super(ProductTemplate, self).actions
+        action_dict = super(ProductProduct, self).actions
         action_dict['suspended'] = self.action_suspend
         return action_dict
 

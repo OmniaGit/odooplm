@@ -18,5 +18,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from . import ir_attachment_extension
-from . import product_product_extension
+from . import ir_attachment
+from . import product_product
+from . import product_template
