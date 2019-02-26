@@ -30,24 +30,11 @@ from odoo import api
 from odoo import fields
 from odoo import models
 
-from odoo.addons.plm.models.product_product import USED_STATES
 
-USED_STATES.append(('suspended', _('Suspended')))
+class ProductTemplate(models.Model):
+    _inherit = 'product.template'
 
-USE_DIC_STATES = dict(USED_STATES)
-
-
-class PlmComponentExtension(models.Model):
-    _inherit = 'product.product'
-
-    state = fields.Selection(
-        USED_STATES,
-        _('Status'),
-        help=_("The status of the product."),
-        readonly="True",
-        default='draft',
-        required=True
-    )
+    state = fields.Selection(selection_add=[('suspended', _('Suspended'))])
     old_state = fields.Char(
         size=128,
         name=_("Old Status")
@@ -55,7 +42,7 @@ class PlmComponentExtension(models.Model):
 
     @property
     def actions(self):
-        action_dict = super(PlmComponentExtension, self).actions
+        action_dict = super(ProductTemplate, self).actions
         action_dict['suspended'] = self.action_suspend
         return action_dict
 
@@ -67,7 +54,7 @@ class PlmComponentExtension(models.Model):
         defaults = {'old_state': self.state, 'state': 'suspended'}
         obj_id = self.write(defaults)
         if obj_id:
-            self.wf_message_post(body=_('Status moved to:{}.'.format(USE_DIC_STATES[defaults['state']])))
+            self.wf_message_post(body=_('Status moved to:{}.'.format(defaults['state'])))
         return obj_id
 
     @api.multi
@@ -78,5 +65,5 @@ class PlmComponentExtension(models.Model):
         defaults = {'old_state': self.state, 'state': 'draft'}
         obj_id = self.write(defaults)
         if obj_id:
-            self.wf_message_post(body=_('Status moved to:{}.'.format(USE_DIC_STATES[defaults['state']])))
+            self.wf_message_post(body=_('Status moved to:{}.'.format(defaults['state'])))
         return obj_id

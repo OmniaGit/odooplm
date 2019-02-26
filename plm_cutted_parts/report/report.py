@@ -30,6 +30,7 @@ from odoo import models
 
 class ReportDocumentPdf(models.AbstractModel):
     _name = 'report.plm_cutted_parts.bom_structure_all_cutted'
+    _description = "Report PLM cutted parts bom structure all cutted"
 
     def get_children(self, my_object, level=0):
         result = {}

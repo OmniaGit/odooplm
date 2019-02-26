@@ -193,7 +193,7 @@ class mrp_bom_extension_data(models.Model):
 
 class mrp_bom_data_compute(models.Model):
     _name = 'plm.temporary_date_compute'
-
+    _description = "Temporary model for computing dates"
     compute_type = fields.Selection([
                                     ('update', _('Update Bom replacing obsoleted bom lines with components at the latest revision.')),
                                     ('new_bom', _('Create new bom using last revision of all components.'))

@@ -36,6 +36,7 @@ import logging
 
 class PlmDocumentExtended(models.Model):
     _name = 'document.rev_wizard'
+    _description = "Document Revision Wizard"
 
     @api.multi
     def new_document_revision_by_server(self):

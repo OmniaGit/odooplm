@@ -38,6 +38,7 @@ _logger = logging.getLogger(__name__)
 
 class plm_temporary_batch_converter(osv.osv.osv_memory):
     _name = 'plm.convert'
+    _description = "Temp Class for batch converter"
 
     @api.model
     def getCadAndConvertionAvailabe(self, fromExtention):

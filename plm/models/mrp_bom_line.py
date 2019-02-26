@@ -126,7 +126,7 @@ class MrpBomLineExtension(models.Model):
                 out_act_dict['view_ids'] = [
                     (5, 0, 0),
                     (0, 0, {'view_mode': 'tree', 'view_id': self.env.ref('plm.plm_bom_tree_view').id}),
-                    (0, 0, {'view_mode': 'form', 'view_id': self.env.ref('plm_engineering.plm.bom.form').id})
+                    (0, 0, {'view_mode': 'form', 'view_id': self.env.ref('plm.plm_bom_form_view').id})
                 ]
             elif line_brws.type == 'spbom':
                 domain.append(('type', '=', 'spbom'))

@@ -98,6 +98,7 @@ def get_parent(my_object):
 
 class ReportSparePartsHeader(models.AbstractModel):
     _name = 'report.plm_spare.bom_spare_header'
+    _description = "Report Spare Parts Headers"
 
     def get_document_brws(self, obj_product):
         oldest_obj = None
@@ -120,6 +121,7 @@ class ReportSparePartsHeader(models.AbstractModel):
 
 class ReportSpareDocumentOne(models.AbstractModel):
     _name = 'report.plm_spare.pdf_one'
+    _description = "Report Spare parts Document One"
     """
     Calculates the bom structure spare parts manual
     """
@@ -209,3 +211,4 @@ class ReportSpareDocumentOne(models.AbstractModel):
 
 class ReportSpareDocumentAll(ReportSpareDocumentOne):
     _name = 'report.plm_spare.pdf_all'
+    _description = "Report Spare Pdf All"

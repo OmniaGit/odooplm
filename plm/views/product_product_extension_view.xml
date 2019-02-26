@@ -64,7 +64,7 @@
     </record>
  
     <record model="ir.ui.view" id="plm_component_base_form">
-        <field name="name">plm.base.component.form</field>
+        <field name="name">plm.base.component</field>
         <field name="model">product.product</field>
         <field name="type">form</field>
         <field name="priority" eval="20"/>

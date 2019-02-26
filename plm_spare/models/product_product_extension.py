@@ -30,7 +30,7 @@ from odoo import models
 from odoo import api
 
 
-class PlmComponentExtension(models.Model):
+class ProductTemplate(models.Model):
     _inherit = 'product.product'
 
     @api.multi
