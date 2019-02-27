@@ -70,7 +70,7 @@ class ResUsers(models.Model):
         if fileContent:
             fileReadableContent = base64.decodestring(fileContent)
             self.custom_read_content = fileReadableContent
-     
+
     @api.multi
     def open_custommodule_save(self):
         for userBrws in self:
@@ -78,7 +78,6 @@ class ResUsers(models.Model):
             tmpFolder = tempfile.gettempdir()
             if userBrws.custom_procedure_fname:
                 customFilePath = os.path.join(tmpFolder, userBrws.custom_procedure_fname)
-                with open(customFilePath, 'w') as writeFile:
+                with open(customFilePath, 'wb') as writeFile:
                     writeFile.write(base64.decodestring(userBrws.custom_procedure))
             userBrws.custom_read_content = ''
-
