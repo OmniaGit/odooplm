@@ -124,10 +124,8 @@
                     <field name="image_medium" widget="image" class="oe_avatar"/>
                     <group >
                         <label class="oe_edit_only" for="name" string="Product Name"/>
-                        <h1>
-                            <field name="name" placeholder="Product Name"
-                                   attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
-                        </h1>
+                        <field name="name" placeholder="Product Name"
+                               attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
                         <group name="plm_fields_area" colspan="6" col="2">
                             <field name="is_engcode_editable" invisible="1"/>
                             <field name="engineering_code" attrs="{'readonly':[('is_engcode_editable','=', False)]}"
@@ -136,6 +134,7 @@
                             <field name="std_description"
                                    attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
                             <field name="description" invisible="1"/>
+                            <field name="state" readonly="1"/>
                             <field name="source_product" invisible="1"/>
                             <field name="desc_modify"
                                    attrs="{'readonly':[('state','in',['released','obsoleted'])], 'invisible': [('engineering_revision', '=', 0)]}"/>
