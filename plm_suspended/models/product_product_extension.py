@@ -38,7 +38,7 @@ USE_DIC_STATES = dict(USED_STATES)
 
 
 class PlmComponentExtension(models.Model):
-    _inherit = 'product.product'
+    _inherit = 'product.template'
 
     state = fields.Selection(
         USED_STATES,
