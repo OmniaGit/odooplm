@@ -15,12 +15,11 @@
                 </button>
             </div>
             <div name="options" position="before">
-                <div style="display: inline-flex;">
-                    <label for="engineering_code" style="width:200px;"/>
-                    <field name="engineering_code"/>
-                    <label for="engineering_revision" style="padding-left: 40px;"/>
-                    <field name="engineering_revision" readonly="1"/>
-                </div>
+                <field name="is_engcode_editable" invisible="1"/>
+                <group>
+                    <field name="engineering_code" attrs="{'readonly':[('is_engcode_editable','=', False)]}"/>
+                    <field name="engineering_revision" attrs="{'readonly':[('is_engcode_editable','=', False)]}"/>
+                </group>
             </div>
         </field>
     </record>

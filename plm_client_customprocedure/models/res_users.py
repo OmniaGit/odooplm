@@ -75,9 +75,4 @@ class ResUsers(models.Model):
     def open_custommodule_save(self):
         for userBrws in self:
             userBrws.custom_procedure = base64.encodestring(self.custom_read_content.encode('utf-8'))
-            tmpFolder = tempfile.gettempdir()
-            if userBrws.custom_procedure_fname:
-                customFilePath = os.path.join(tmpFolder, userBrws.custom_procedure_fname)
-                with open(customFilePath, 'wb') as writeFile:
-                    writeFile.write(base64.decodestring(userBrws.custom_procedure))
             userBrws.custom_read_content = ''

@@ -100,7 +100,7 @@
                         <field name="is_engcode_editable" invisible="1"/>
                         <field name="engineering_code" attrs="{'readonly':[('is_engcode_editable','=', False)]}"
                                select="1"/>
-                        <field name="engineering_revision" colspan="2" readonly="1"/>
+                        <field name="engineering_revision" colspan="2" attrs="{'readonly':[('is_engcode_editable','=', False)]}"/>
                         <field name="std_description"
                                attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
                         <field name="source_product" invisible="1"/>
@@ -195,10 +195,11 @@
                            statusbar_colors='{"undermodify":"red","obsoleted":"red"}'
                            readonly="1"/>
             </xpath>
-            <xpath expr="//field[@name='name']/.." position="after">
+            <xpath expr="//notebook[last()]" position="before">
+               <field name="is_engcode_editable" invisible="1"/>
                <group col="6">
-                    <field name="engineering_code"/>
-                    <field name="engineering_revision"/>
+                    <field name="engineering_code" attrs="{'readonly':[('is_engcode_editable','=', False)]}"/>
+                    <field name="engineering_revision" attrs="{'readonly':[('is_engcode_editable','=', False)]}"/>
                     <field name="state"/>
                </group>
             </xpath>
