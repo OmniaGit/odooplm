@@ -36,7 +36,7 @@ class ProductProductExtension(models.Model):
     _inherit = 'product.product'
 
     @api.multi
-    def copy(self, default=None):
+    def copy(self, default={}):
         '''
             Set flag to skip translation creation because super copy function makes the trick
         '''

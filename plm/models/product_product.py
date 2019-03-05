@@ -828,6 +828,9 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         """
             Overwrite the default copy method
         """
+        if not defaults:
+            defaults = {}
+
         def clearBrokenComponents():
             """
                 Remove broken components before make the copy. So the procedure will not fail

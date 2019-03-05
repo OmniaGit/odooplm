@@ -274,33 +274,33 @@
         <field name="name">NoWrite / NoDelete PLM Component Released</field>
         <field name="model_id" ref="model_product_product"/>
         <field name="active" eval="1"/>
-        <field name="perm_write" eval="1"/>
         <field name="perm_unlink" eval="1"/>
-        <field name="perm_create" eval="0"/>
         <field name="perm_read" eval="0"/>
-        <field name="domain_force" eval="[('state','in',['draft', 'confirmed'])]"/>
+        <field name="perm_write" eval="0"/>
+        <field name="perm_create" eval="0"/>
+        <field name="domain_force" eval="[('state','not in',['draft', False])]"/>
         <field name="groups" eval="[(4, ref('group_plm_readonly_released'))]"/>
     </record>
     <record id="group_plm_readonly_released_rule_bom" model="ir.rule">
         <field name="name">NoWrite / NoDelete PLM BOM Released</field>
         <field name="model_id" ref="model_mrp_bom"/>
         <field name="active" eval="1"/>
-        <field name="perm_write" eval="1"/>
         <field name="perm_unlink" eval="1"/>
-        <field name="perm_create" eval="0"/>
         <field name="perm_read" eval="0"/>
-        <field name="domain_force" eval="[('state','in',['draft', 'confirmed'])]"/>
+        <field name="perm_write" eval="0"/>
+        <field name="perm_create" eval="0"/>
+        <field name="domain_force" eval="[('state','not in',['draft', False])]"/>
         <field name="groups" eval="[(4, ref('group_plm_readonly_released'))]"/>
     </record>
     <record id="group_plm_readonly_released_rule_document" model="ir.rule">
         <field name="name">NoWrite / NoDelete PLM Document Released</field>
         <field name="model_id" ref="model_ir_attachment"/>
         <field name="active" eval="1"/>
-        <field name="perm_write" eval="1"/>
         <field name="perm_unlink" eval="1"/>
-        <field name="perm_create" eval="0"/>
         <field name="perm_read" eval="0"/>
-        <field name="domain_force" eval="[('state','in',['draft', 'confirmed'])]"/>
+        <field name="perm_write" eval="0"/>
+        <field name="perm_create" eval="0"/>
+        <field name="domain_force" eval="[('state','not in',['draft', False])]"/>
         <field name="groups" eval="[(4, ref('group_plm_readonly_released'))]"/>
     </record>
 </odoo>
