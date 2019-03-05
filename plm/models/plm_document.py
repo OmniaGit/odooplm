@@ -133,7 +133,7 @@ class PlmDocument(models.Model):
                         if (not objDoc.store_fname) and (objDoc.db_datas):
                             value = objDoc.db_datas
                         else:
-                            value = file(os.path.join(self._get_filestore(), objDoc.store_fname), 'rb').read()
+                            value = open(os.path.join(self._get_filestore(), objDoc.store_fname), 'rb').read()
                         result.append((objDoc.id, objDoc.datas_fname, base64.b64encode(value), isCheckedOutToMe, timeDoc))
                     else:
                         if forceFlag:
@@ -145,7 +145,7 @@ class PlmDocument(models.Model):
                             if (not objDoc.store_fname) and (objDoc.db_datas):
                                 value = objDoc.db_datas
                             else:
-                                value = file(os.path.join(self._get_filestore(), objDoc.store_fname), 'rb').read()
+                                value = open(os.path.join(self._get_filestore(), objDoc.store_fname), 'rb').read()
                             result.append((objDoc.id, objDoc.datas_fname, base64.b64encode(value), isCheckedOutToMe, timeDoc))
                         else:
                             result.append((objDoc.id, objDoc.datas_fname, False, isCheckedOutToMe, timeDoc))
@@ -359,7 +359,7 @@ class PlmDocument(models.Model):
                 else:
                     filestore = os.path.join(self._get_filestore(), objDoc.store_fname)
                     if os.path.exists(filestore):
-                        value = file(filestore, 'rb').read()
+                        value = open(filestore, 'rb').read()
                     else:
                         msg = "Document %s-%s is not in %r" % (str(objDoc.name),
                                                                str(objDoc.revisionid),
