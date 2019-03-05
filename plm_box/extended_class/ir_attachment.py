@@ -47,7 +47,7 @@ def correctDate(fromTimeStr, context):
 class Plm_box_document(models.Model):
     _inherit = 'ir.attachment'
 
-    name = fields.Char(_('Attachment Name'), required=False, readonly=True)
+    name = fields.Char(_('Attachment Name'), required=False)
 
     @api.model
     def create(self, vals):

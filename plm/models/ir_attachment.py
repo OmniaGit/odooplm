@@ -651,6 +651,8 @@ class PlmDocument(models.Model):
 
     @api.model
     def create(self, vals):
+        if self.env.context.get('odooPLM'):
+            vals['is_plm'] = True
         res = super(PlmDocument, self).create(vals)
         res.check_unique()
         return res
@@ -861,6 +863,7 @@ class PlmDocument(models.Model):
                                      store=True,
                                      string=_('Document Type'))
     desc_modify = fields.Text(_('Modification Description'), default='')
+    is_plm = fields.Boolean('Is a plm Document')
 
     @api.model
     def CheckedIn(self, files, default=None):
