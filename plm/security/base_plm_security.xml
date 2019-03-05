@@ -163,6 +163,15 @@
         <field name="perm_create" eval="1"/>
         <field name="perm_unlink" eval="1"/>
     </record>
+    <record id="plm_config_parameter_view" model="ir.model.access">
+        <field name="name">PLM Config Parameter</field>
+        <field name="model_id" ref="base.model_ir_config_parameter"/>
+        <field name="group_id" eval="group_plm_view_user"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="0"/>
+        <field name="perm_create" eval="0"/>
+        <field name="perm_unlink" eval="0"/>
+    </record>
 
     <!-- Integration User  -->
     <record id="group_plm_integration_user" model="res.groups">
@@ -261,7 +270,6 @@
         <field name="perm_create" eval="0"/>
         <field name="perm_unlink" eval="0"/>
     </record>
-
 
     <!-- Administrator  -->
     <record id="group_plm_admin" model="res.groups">
