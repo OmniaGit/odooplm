@@ -807,7 +807,7 @@ class PlmComponent(models.Model):
             raise Exception(_(" (%r). It has tried to create with values : (%r).") % (ex, vals))
 
     @api.multi
-    def read(self, fields=None, load='_classic_read'):
+    def read(self, fields=[], load='_classic_read'):
         try:
             customFields = [field.replace('plm_m2o_', '') for field in fields if field.startswith('plm_m2o_')]
             fields.extend(customFields)
