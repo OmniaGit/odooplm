@@ -458,29 +458,30 @@ class PlmDocument(models.Model):
     def CheckSaveUpdate(self, documents, default=None):
         """
             Save or Update Documents
+            @hasToBeSaved: client use this flag to know if document and preview has to be saved
         """
         retValues = []
         for document in documents:
             hasToBeSaved = False
             if not ('name' in document) or ('revisionid' not in document):
                 document['documentID'] = False
-                document['hasSaved'] = hasToBeSaved
+                document['hasSaved'] = False    # Not info --> not to be saved
                 continue
             docBrwsList = self.search([('name', '=', document['name']),
                                       ('revisionid', '=', document['revisionid'])],
                                       order='revisionid')
             existingID = False
             if not docBrwsList:
-                hasToBeSaved = True
+                hasToBeSaved = True     # Yes info + not present --> to be saved
             else:
                 for existingBrws in docBrwsList:
                     existingID = existingBrws.id
-                    if existingBrws.writable:
-                        if existingBrws.file_size > 0 and existingBrws.datas_fname:
-                            if self.getLastTime(existingID) < datetime.strptime(str(document['lastupdate']), '%Y-%m-%d %H:%M:%S'):
-                                hasToBeSaved = True
-                        else:
-                            hasToBeSaved = True
+                    if existingBrws.isCheckedOutByMe():
+                        hasToBeSaved = True
+                        # Need to force update if in check-out because this flag is also used to
+                        # know if this document has to be saved as BOM. Save bom procedure goes recursively to remove
+                        # BOM lines and then BOMs. So checked-out document will don't have it's BOM.
+                        # If this flag is a True the BOM will be recreated.
                     break
             document['documentID'] = existingID
             document['hasSaved'] = hasToBeSaved
