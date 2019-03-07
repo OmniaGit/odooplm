@@ -103,7 +103,7 @@ class Plm_box(models.Model):
         return True
 
     @api.model
-    def connectionOk(self, vals):
+    def connectionOk(self, vals=[]):
         '''
             Test connection with client
         '''

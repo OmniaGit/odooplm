@@ -78,7 +78,7 @@ class ResUsers(models.Model):
             tmpFolder = tempfile.gettempdir()
             if userBrws.custom_procedure_fname:
                 customFilePath = os.path.join(tmpFolder, userBrws.custom_procedure_fname)
-                with open(customFilePath, 'w') as writeFile:
+                with open(customFilePath, 'wb') as writeFile:
                     writeFile.write(base64.decodestring(userBrws.custom_procedure))
             userBrws.custom_read_content = ''
 

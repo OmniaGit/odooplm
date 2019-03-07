@@ -133,7 +133,7 @@ class PlmDocument(models.Model):
                         if (not objDoc.store_fname) and (objDoc.db_datas):
                             value = objDoc.db_datas
                         else:
-                            value = file(os.path.join(self._get_filestore(), objDoc.store_fname), 'rb').read()
+                            value = open(os.path.join(self._get_filestore(), objDoc.store_fname), 'rb').read()
                         result.append((objDoc.id, objDoc.datas_fname, base64.b64encode(value), isCheckedOutToMe, timeDoc))
                     else:
                         if forceFlag:
@@ -145,7 +145,7 @@ class PlmDocument(models.Model):
                             if (not objDoc.store_fname) and (objDoc.db_datas):
                                 value = objDoc.db_datas
                             else:
-                                value = file(os.path.join(self._get_filestore(), objDoc.store_fname), 'rb').read()
+                                value = open(os.path.join(self._get_filestore(), objDoc.store_fname), 'rb').read()
                             result.append((objDoc.id, objDoc.datas_fname, base64.b64encode(value), isCheckedOutToMe, timeDoc))
                         else:
                             result.append((objDoc.id, objDoc.datas_fname, False, isCheckedOutToMe, timeDoc))
@@ -359,7 +359,7 @@ class PlmDocument(models.Model):
                 else:
                     filestore = os.path.join(self._get_filestore(), objDoc.store_fname)
                     if os.path.exists(filestore):
-                        value = file(filestore, 'rb').read()
+                        value = open(filestore, 'rb').read()
                     else:
                         msg = "Document %s-%s is not in %r" % (str(objDoc.name),
                                                                str(objDoc.revisionid),
@@ -1305,7 +1305,7 @@ class PlmDocument(models.Model):
         populateStructure(structure=objStructure)
 
         # Save the document
-        logging.info("Savind Document")
+        logging.info("Saving Document")
         alreadyEvaluated = []
         for documentAttribute in documentAttributes.values():
             try:
@@ -1333,6 +1333,7 @@ class PlmDocument(models.Model):
                 elif skipCheckOut:
                     if docBrws.isCheckedOutByMe():
                         docBrws._check_in()
+                    documentAttribute['TO_UPDATE'] = True
                 documentAttribute['id'] = docBrws.id
             except Exception as ex:
                 logging.error(ex)
@@ -1364,6 +1365,8 @@ class PlmDocument(models.Model):
                         productAttribute['name'] = productAttribute.get('engineering_code', False)
                     if not productAttribute.get('engineering_code', False):     # I could have a document without component, so not create product
                         continue
+                    if 'product_tmpl_id' in productAttribute:
+                        del productAttribute['product_tmpl_id']
                     prodBrws = productTemplate.create(productAttribute)
                     productsEvaluated.append(prodBrws.id)
                 if linkedDocuments:
@@ -1572,7 +1575,8 @@ class PlmDocument(models.Model):
         
         def checkDocument(docAttrs):
             docName = docAttrs.get('name', '')
-            docRev = int(docAttrs.get('revisionid', 0))
+            docRev = int(docAttrs.get('revisionid', 0) or 0)
+            docAttrs['revisionid'] = docRev
             docBrwsList = self.search([('name', '=', docName)], order='revisionid DESC')
             existingDocs = {}
             graterDocBrws = None
@@ -1598,7 +1602,8 @@ class PlmDocument(models.Model):
 
         def checkComponent(compAttrs):
             engCode = compAttrs.get('engineering_code', '')
-            engRev = int(compAttrs.get('engineering_revision', 0))
+            engRev = int(compAttrs.get('engineering_revision', 0) or 0)
+            compAttrs['engineering_revision'] = engRev
             prodBrwsList = prodProd.search([('engineering_code', '=', engCode)], order='engineering_revision DESC')
             existingCompRevisions = {}
             foundCompBrws = None

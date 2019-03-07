@@ -430,7 +430,7 @@ class MrpBomExtension(models.Model):
         return result
 
     @api.model
-    def save_structure(self, relations, level=0, curr_level=0, kind_bom='normal'):
+    def SaveStructure(self, relations, level=0, curr_level=0, kind_bom='normal'):
         """
             Save EBom relations
         """

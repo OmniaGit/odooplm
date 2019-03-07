@@ -95,11 +95,14 @@ class Plm_box_document(models.Model):
         docRev = docDict.get('revisionId', '')
         docContent = docDict.get('fileContent', '')
         force = docDict.get('force', False)
+        lastupdate = docDict.get('lastupdate', '')
+        clientDtObj = datetime.datetime.strptime(str(lastupdate), '%Y%m%dT%H:%M:%S')
         docBrowseList = self.search([('name', '=', docName)])
-        if docBrowseList and not force:
-            clientBytesContent = docContent.encode(encoding='utf_8', errors='strict')
-            if docBrowseList[0].datas + '\n'.encode(encoding='utf_8', errors='strict') != clientBytesContent:
-                return 'File changed'
+        if not force:
+            for docBrws in docBrowseList:
+                serverDtObj = datetime.datetime.strptime(docBrws.write_date, DEFAULT_SERVER_DATETIME_FORMAT)
+                if clientDtObj > serverDtObj:
+                    return 'File changed'
         docIds = self.search([('name', '=', docName), ('revisionid', '=', docRev)]).ids
         if len(docIds) == 1:
             chckOutDocs = self.env.get('plm.checkout').search([('documentid', '=', docIds[0]), ('userid', '=', self.env.uid)])

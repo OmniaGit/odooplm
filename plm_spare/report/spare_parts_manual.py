@@ -111,7 +111,7 @@ class ReportSparePartsHeader(models.AbstractModel):
                     oldest_obj = linkedBrwsDoc
         return oldest_obj
 
-    def get_report_values(self, doc_ids):
+    def get_report_values(self, doc_ids, data={}):
         products = self.env['product.product'].browse(doc_ids)
         return {'docs': products,
                 'time': time,
@@ -156,13 +156,13 @@ class ReportSpareDocumentOne(models.AbstractModel):
         packed_ids = []
         if product in self.processed_objs:
             return
-        bom_brws_ids = bom_template.search([('product_id', '=', product.id), ('type', '=', 'spbom')])
-        if len(bom_brws_ids) < 1:
-            bom_brws_ids = bom_template.search([('product_tmpl_id', '=', product.product_tmpl_id.id), ('type', '=', 'spbom')])
-        if len(bom_brws_ids) > 0:
-            if bom_brws_ids:
+        prod_tmpl_brws = bom_template.search([('product_id', '=', product.id), ('type', '=', 'spbom')])
+        if len(prod_tmpl_brws) < 1:
+            prod_tmpl_brws = bom_template.search([('product_tmpl_id', '=', product.product_tmpl_id.id), ('type', '=', 'spbom')])
+        if len(prod_tmpl_brws) > 0:
+            if prod_tmpl_brws:
                 self.processed_objs.append(product)
-                for bom_line in bom_brws_ids.bom_line_ids:
+                for bom_line in prod_tmpl_brws.bom_line_ids:
                     packed_objs.append(bom_line.product_id)
                     packed_ids.append(bom_line.id)
                 if len(packed_ids) > 0:
@@ -172,7 +172,7 @@ class ReportSpareDocumentOne(models.AbstractModel):
                         except Exception as ex:
                             logging.error(ex)
                             raise ex
-                    pdf = self.env.ref('plm.report_plm_bom_structure_one').sudo().render_qweb_pdf(bom_brws_ids.ids)[0]
+                    pdf = self.env.ref('plm.report_plm_bom_structure_one').sudo().render_qweb_pdf(prod_tmpl_brws.ids)[0]
                     page_stream = BytesIO()
                     page_stream.write(pdf)
                     output.addPage((page_stream, ''))
@@ -201,7 +201,7 @@ class ReportSpareDocumentOne(models.AbstractModel):
         return str_buffer
 
     @api.model
-    def get_report_values(self, doc_ids):
+    def get_report_values(self, doc_ids, data={}):
         documents = self.env['product.product'].browse(doc_ids)
         return {'docs': documents,
                 'get_content': self.create_spare_pdf}
