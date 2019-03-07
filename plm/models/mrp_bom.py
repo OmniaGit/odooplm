@@ -439,6 +439,7 @@ class MrpBomExtension(models.Model):
         eco_module_installed = self.env.get('mrp.eco', None)
 
         evaluated_boms = {}
+        alreadyCreated = []
 
         def clean_old_eng_bom_lines(relations):
 
@@ -512,15 +513,15 @@ class MrpBomExtension(models.Model):
 
             return bom_id
 
-        def save_children_boms(sub_relations, bom_id, nex_relation, kind_bom):
-            for parent_name, _parent_id, child_name, child_id, source_id, rel_args in sub_relations:
-                if parent_name == child_name:
-                    logging.error('to_compute : Father ({0}) refers to himself'.format(str(parent_name)))
-                    raise Exception(
-                        _('save_child.to_compute : Father "{0}" refers to himself'.format(str(parent_name))))
-
-                save_child(child_name, child_id, source_id, bom_id, args=rel_args)
-                to_compute(child_name, nex_relation, kind_bom)
+        def save_children_boms(sub_relations, bom_id, next_relation, kindBom):
+            for parentName, parentID, childName, childID, sourceID, relArgs in sub_relations:
+                if parentName == childName:
+                    logging.error('toCompute : Father (%s) refers to himself' % (str(parentName)))
+                    raise Exception(_('saveChild.toCompute : Father "%s" refers to himself' % (str(parentName))))
+                save_child(childName, childID, sourceID, bom_id, args=relArgs)
+                if (parentID, childID) not in alreadyCreated:
+                    to_compute(childName, next_relation, kindBom)
+                    alreadyCreated.append((parentID, childID))
             self.rebase_product_weight(bom_id, self.browse(bom_id).rebase_bom_weight())
 
         def repair_qty(value):
@@ -723,4 +724,3 @@ class MrpBomExtension(models.Model):
                     'domain': [('id', 'in', bom_line_ids)],
                     'context': {"group_by": ['bom_id']},
                     }
-
