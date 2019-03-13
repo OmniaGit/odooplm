@@ -92,7 +92,7 @@ class AttachmentExtension(models.Model):
             model_ids[values['res_model']].add(values['res_id'])
 
         # check access rights on the records
-        for res_model, res_ids in model_ids.iteritems():
+        for res_model, res_ids in model_ids.items():
             # ignore attachments that are not attached to a resource anymore
             # when checking access rights (resource was deleted but attachment
             # was not)
