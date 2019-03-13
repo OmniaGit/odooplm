@@ -311,7 +311,7 @@ class PlmDocument(models.Model):
                 'configuration': brwEnt.configuration,
                 'link_kind': brwEnt.link_kind,
             })
-        return newDocBrws.id
+        return newDocBrws
 
     @api.model
     def _iswritable(self, oid):
