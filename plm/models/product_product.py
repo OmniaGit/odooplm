@@ -173,6 +173,7 @@ class PlmComponent(models.Model):
 
     @api.onchange('name')
     def on_change_name(self):
+        self.product_tmpl_id._compute_eng_code_editable()
         if self.name:
             results = self.search([('name', '=', self.name)])
             if len(results) > 0:

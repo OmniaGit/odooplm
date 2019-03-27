@@ -516,12 +516,14 @@ class PlmDocument(models.Model):
         retValues = []
         for document in documents:
             hasToBeSaved = False
-            if not ('name' in document) or ('revisionid' not in document):
+            doc_name = document.get('name', '')
+            doc_rev = document.get('revisionid', None)
+            if not doc_name or doc_rev is None:
                 document['documentID'] = False
                 document['hasSaved'] = False    # Not info --> not to be saved
                 continue
-            docBrwsList = self.search([('name', '=', document['name']),
-                                      ('revisionid', '=', document['revisionid'])],
+            docBrwsList = self.search([('name', '=', doc_name),
+                                      ('revisionid', '=', doc_rev)],
                                       order='revisionid')
             existingID = False
             if not docBrwsList:
