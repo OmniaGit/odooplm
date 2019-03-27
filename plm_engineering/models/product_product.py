@@ -90,7 +90,7 @@ class ProductProductExtension(models.Model):
                           'ebom_source_id': e_bom_id, }
                 if not variant_is_installed:
                     values['product_id'] = False
-                new_bom_brws.write(values, check=False)
+                new_bom_brws.with_context({'check': False}).write(values)
 
                 if summarize:
                     ok_rows = self._summarizeBom(new_bom_brws.bom_line_ids)
@@ -185,11 +185,10 @@ class ProductProductExtension(models.Model):
                 new_bom_brws = bom_brws.copy(defaults)
                 self.processedIds.append(idd)
                 if new_bom_brws:
-                    new_bom_brws.write(
+                    new_bom_brws.with_context({'check': False}).write(
                         {'name': check_obj.name,
                          'product_id': check_obj.id,
-                         'type': 'normal'},
-                        check=False)
+                         'type': 'normal'})
                     ok_rows = self._summarizeBom(new_bom_brws.bom_line_ids)
                     for bom_line in list(set(new_bom_brws.bom_line_ids) ^ set(ok_rows)):
                         bom_line.unlink()

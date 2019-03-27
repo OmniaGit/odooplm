@@ -646,7 +646,7 @@ class MrpBomExtension(models.Model):
         return weight
 
     @api.multi
-    def write(self, vals, check=True):
+    def write(self, vals):
         ret = super(MrpBomExtension, self).write(vals)
         for bom_brws in self:
             bom_brws.rebase_bom_weight()

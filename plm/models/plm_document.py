@@ -596,7 +596,7 @@ class PlmDocument(models.Model):
         for document in documents:
             oid = document['documentID']
             del(document['documentID'])
-            ret = ret and self.browse([oid]).write(document, check=True)
+            ret = ret and self.browse([oid]).with_context({'check': False}).write(document)
         return ret
 
     @api.multi
