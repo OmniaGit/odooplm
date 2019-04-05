@@ -59,7 +59,7 @@ class MrpBomExtension(models.Model):
     ebom_source_id = fields.Integer('Source Ebom ID')
 
     @api.model
-    def _getinbom(self, pid, sid=False):
+    def _get_in_bom(self, pid, sid=False):
         bom_l_type = self.env['mrp.bom.line']
         bom_line_brws_list = bom_l_type.search(
             [('product_id', '=', pid), ('source_id', '=', sid), ('type', '=', 'ebom')])
@@ -79,7 +79,7 @@ class MrpBomExtension(models.Model):
         return bom_line_brws_list
 
     @api.model
-    def _getbom(self, pid, sid=False):
+    def _get_bom(self, pid, sid=False):
         if sid is None:
             sid = False
         bom_brws_list = self.search([('product_tmpl_id', '=', pid), ('source_id', '=', sid), ('type', '=', 'ebom')])
