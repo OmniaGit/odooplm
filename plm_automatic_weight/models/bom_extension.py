@@ -38,4 +38,4 @@ class MrpBomExtension(models.Model):
         """
             Call plm bom weight calculator function
         """
-        self.rebaseBomWeight()
+        self.rebase_bom_weight()

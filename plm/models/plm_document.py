@@ -757,7 +757,7 @@ class PlmDocument(models.Model):
         return super(PlmDocument, self).create(vals)
 
     @api.model
-    def isPlmStateWritable(self):
+    def is_plm_state_writable(self):
         for customObject in self:
             if customObject.state in PLM_NO_WRITE_STATE:
                 return False
@@ -767,7 +767,7 @@ class PlmDocument(models.Model):
     def write(self, vals):
         check = self.env.context.get('check', True)
         if check:
-            if not self.isPlmStateWritable():
+            if not self.is_plm_state_writable():
                 raise UserError(_("The active state does not allow you to make save action"))
         self.writeCheckDatas(vals)
         return super(PlmDocument, self).write(vals)
@@ -1491,7 +1491,7 @@ class PlmDocument(models.Model):
                         trueDocumentId = documentAttributes.get(documentId, {}).get('id', 0)
                         if trueDocumentId:  # seems strange this .. but i will delete only the bom with the right source id
                             for brwBom in brwBoml:
-                                brwBom.deleteChildRow(trueDocumentId)
+                                brwBom.delete_child_row(trueDocumentId)
                             break
                 # add rows
                 for childId, documentId, relationAttributes in childRelations:

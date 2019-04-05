@@ -207,8 +207,8 @@ class PlmComponent(models.Model):
         mrpBomLines = self.env['mrp.bom.line'].search(bom_line_filter)
         out = []
         for mrpBomLine in mrpBomLines:
-            out.append((self.env['mrp.bom'].whereUsedHeader(mrpBomLine),
-                        mrpBomLine.bom_id.getWhereUsedStructure(filterBomType)))
+            out.append((self.env['mrp.bom'].where_used_header(mrpBomLine),
+                        mrpBomLine.bom_id.get_where_used_structure(filterBomType)))
         return out
 
 

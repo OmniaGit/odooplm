@@ -227,7 +227,7 @@ class MrpBomExtension(models.Model):
             sid = res_ids[1]
         oid = res_ids[0]
         rel_datas.append(oid)
-        rel_datas.append(self._implodebom(self._get_in_bom(oid, sid)))
+        rel_datas.append(self._implode_bom(self._get_in_bom(oid, sid)))
         prt_datas = self._get_pack_datas(rel_datas)
         return rel_datas, prt_datas, self._get_pack_rel_datas(rel_datas, prt_datas)
 
@@ -266,7 +266,7 @@ class MrpBomExtension(models.Model):
             parent_lines = self.env['mrp.bom.line'].search(bom_line_filter)
             if parent_lines:
                 for parent_line in parent_lines:
-                    row = self.whereUsedHeader(parent_line)
+                    row = self.where_used_header(parent_line)
                     if not filter_bom_type:
                         children = parent_line.bom_id.get_where_used_structure(filter_bom_type)
                         out.append((row, children))
