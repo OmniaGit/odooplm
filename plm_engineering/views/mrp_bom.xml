@@ -30,12 +30,16 @@
                         <page string="Components">
                             <field name="bom_line_ids" widget="one2many_list">
                                 <tree string="Components" editable="bottom">
-                                    <button name="openRelatedBoms" type="object" string="Related BOM"
+                                    <button name="openRelatedBoms"
+                                            type="object" 
+                                            icon="fa-level-down" 
                                             class="btn btn-sm oe_stat_button"
                                             attrs="{'invisible':[('related_bom_ids', '=', [])]}"/>
                                     <field name="related_bom_ids" invisible="True"/>
                                     <field name="related_document_ids" invisible="True"/>
-                                    <button name="openRelatedDocuments" type="object" string="Related DOCS"
+                                    <button name="openRelatedDocuments"
+                                            type="object"
+                                            icon="fa-folder-open"
                                             class="btn btn-sm oe_stat_button"
                                             attrs="{'invisible':[('related_document_ids', '=', [])]}"/>
                                     <field name="itemnum"/>
