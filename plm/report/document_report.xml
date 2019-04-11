@@ -4,7 +4,7 @@
         <report id="report_ir_attachment_pdf"
                 string="Print Pdf"
                 model="ir.attachment"
-                name="plm.document_pdf"
+                name="plm.ir_attachment_pdf"
                 report_type="qweb-html"
                 />
     </data>

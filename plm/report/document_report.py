@@ -29,7 +29,7 @@ from odoo import models
 
 
 class ReportDocumentPdf(models.AbstractModel):
-    _name = 'report.ir.attachment_pdf'
+    _name = 'report.plm.ir_attachment_pdf'
     _description = 'Report Document PDF'
 
     @api.model
@@ -51,7 +51,7 @@ class ReportDocumentPdf(models.AbstractModel):
         return byteString.decode('UTF-8')
 
     @api.model
-    def get_report_values(self, docids, data=None):
+    def _get_report_values(self, docids, data=None):
         documents = self.env['ir.attachment'].browse(docids)
         return {'docs': documents,
                 'get_content': self.render_qweb_pdf}
