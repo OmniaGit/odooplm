@@ -52,7 +52,7 @@ class PlmTemporary(osv.osv.osv_memory):
                                          _("BoM for Part {} already exists.".format(prod_prod_obj.name))
                                          )
 
-        product_type.browse(active_ids).action_create_spareBom_WF()
+        product_type.browse(active_ids).action_create_spare_bom_wf()
         return {'name': _('Bill of Materials'),
                 'view_type': 'form',
                 "view_mode": 'tree,form',
