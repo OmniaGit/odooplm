@@ -84,9 +84,15 @@ class ProductCuttedParts(models.Model):
 
         def checkCreateBOM(prod, bom_vals={}):
             err = ''
+            domain = [('state', 'in', ['installed', 'to upgrade', 'to remove']), ('name', '=', 'plm_engineering')]
+            apps = self.env['ir.module.module'].sudo().search_read(domain, ['name'])
+            bomType = 'normal'
+            if apps:
+                bomType = 'ebom'
             bom_obj = self.env['mrp.bom']
             bom = bom_obj.search([
                 ('product_tmpl_id', '=', prod.product_tmpl_id.id),
+                ('type', '=', bomType)
                 ])
             if bom:
                 try:
@@ -96,6 +102,7 @@ class ProductCuttedParts(models.Model):
             if not err:
                 try:
                     bom_vals['product_tmpl_id'] = prod.product_tmpl_id.id
+                    bom_vals['type'] = bomType
                     bom = bom_obj.create(bom_vals)
                 except Exception as ex:
                     err = 'Cannot create BOM for product %r due to error %r' % (prod, ex)
