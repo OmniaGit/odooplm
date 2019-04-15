@@ -71,12 +71,15 @@ class ProductCuttedParts(models.Model):
                 ('engineering_code', '=', eng_code),
                 ('engineering_revision', '=', eng_rev),
                 ], limit=1)
+            if not odoo_vals.get('name'):
+                odoo_vals['name'] = odoo_vals.get('engineering_code', '')
             if not prod:
                 try:
-                    odoo_vals['name'] = odoo_vals.get('engineering_code', '')
                     prod = self.create(odoo_vals)
                 except Exception as ex:
                     err = 'Cannot create product with values %r due to error %r' % (odoo_vals, ex)
+            else:
+                prod.write(odoo_vals)
             return prod, err
 
         def checkCreateBOM(prod, bom_vals={}):
