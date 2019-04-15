@@ -11,6 +11,7 @@
                         name="engineering_products_open"
                         type="object"
                         string="Engineering Information"
+                        attrs="{'invisible': [('type', '=', 'service')]}"
                         icon="fa-gears">
                 </button>
             </div>
