@@ -82,7 +82,7 @@ class ProductCuttedParts(models.Model):
                 prod.write(odoo_vals)
             return prod, err
 
-        def checkCreateBOM(prod, bom_vals={}, bomType):
+        def checkCreateBOM(prod, bom_vals={}, bomType='normal'):
             err = ''
             bom_obj = self.env['mrp.bom']
             bom = bom_obj.search([
