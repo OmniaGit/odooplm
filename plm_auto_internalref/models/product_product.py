@@ -39,9 +39,19 @@ class ProductProductExtension(models.Model):
     def create(self, vals):
         engineering_code = vals.get('engineering_code', '')
         engineering_revision = vals.get('engineering_revision', 0)
-        if (engineering_code and not vals.get('default_code')) or (engineering_code and engineering_revision > 0):
-            vals['default_code'] = '{0}_{1}'.format(engineering_code, engineering_revision)
-            logging.info(
-                'Internal ref set value {0} on engineering_code: {1}'.format(vals['default_code'], engineering_code)
-            )
+        if engineering_code and not vals.get('default_code'):
+            vals['default_code'] = self.computeDefaultCode(engineering_code, engineering_revision)
+            logging.info('Internal ref set value %s on engineering_code: %r' % (vals['default_code'], engineering_code))
         return super(ProductProductExtension, self).create(vals)
+
+    def computeDefaultCode(self, eng_code, eng_rev):
+        return '%s_%s' % (eng_code, eng_rev)
+        
+    @api.multi
+    def write(self, vals):
+        res = super(ProductProductExtension, self).write(vals)
+        for prodBrws in self:
+            if prodBrws.engineering_code and not prodBrws.default_code:
+                default_code = self.computeDefaultCode(prodBrws.engineering_code, prodBrws.engineering_revision)
+                super(ProductProductExtension, self).write({'default_code': default_code})
+        return res
