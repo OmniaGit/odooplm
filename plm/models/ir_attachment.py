@@ -174,16 +174,16 @@ class PlmDocument(models.Model):
     @api.multi
     def _inverse_datas(self):
         super(PlmDocument, self)._inverse_datas()
-        plm_backupdoc = self.env['plm.backupdoc']
         for ir_attachment_id in self:
             try:
                 shutil.copyfile(self._full_path(ir_attachment_id.store_fname),
                                 self._full_path(random_name()))
-                plm_backupdoc.create({'userid': self.env.uid,
-                                      'existingfile': ir_attachment_id.datas_fname,
-                                      'documentid': ir_attachment_id.id,
-                                      'printout': ir_attachment_id.printout,
-                                      'preview': ir_attachment_id.preview})
+                if ir_attachment_id.is_plm:
+                    self.env['plm.backupdoc'].create({'userid': self.env.uid,
+                                                      'existingfile': ir_attachment_id.datas_fname,
+                                                      'documentid': ir_attachment_id.id,
+                                                      'printout': ir_attachment_id.printout,
+                                                      'preview': ir_attachment_id.preview})
             except Exception as ex:
                 logging.error("Unable to copy file for backup Error: %r" % ex)
 
@@ -799,7 +799,7 @@ class PlmDocument(models.Model):
     @api.multi
     @api.depends('name', 'revisionid', 'datas_fname')
     def _compute_document_type(self):
-        configParamObj = self.env['ir.config_parameter']
+        configParamObj = self.env['ir.config_parameter'].sudo()
         file_exte_2d_param = configParamObj._get_param('file_exte_type_rel_2D')
         file_exte_3d_param = configParamObj._get_param('file_exte_type_rel_3D')
         extensions2D = []
