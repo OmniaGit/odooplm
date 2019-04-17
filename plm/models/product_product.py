@@ -835,31 +835,88 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         return refId
         
     @api.model
+    def variant_fields_to_keep(self):
+        return [
+            'name',
+            'tmp_material',
+            'tmp_surface',
+            'tmp_treatment',
+            'weight',
+            'uom_id',
+            'std_umc1',
+            'std_umc2',
+            'std_umc3',
+            'std_value1',
+            'std_value2',
+            'std_value3',
+            'engineering_surface',
+            'engineering_treatment',
+            'type',
+            'categ_id',
+            'sale_ok',
+            'purchase_ok',
+            'route_ids',
+            'linkeddocuments',
+            'std_description',
+            'default_code'
+            ]
+        
+    @api.model
+    def checkSetupDueToVariants(self, vals):
+        tmplt_id = vals.get('product_tmpl_id')
+        attribute_value_ids = vals.get('attribute_value_ids')
+        if tmplt_id and attribute_value_ids:
+            outVals = {}
+            tmplBrws = self.env['product.template'].browse(tmplt_id)
+            for variant in tmplBrws.product_variant_ids:
+                outVals = variant.read(self.variant_fields_to_keep())[0]
+                del outVals['id']
+                for key, val in outVals.items():
+                    if isinstance(val, (list)):  # many2many
+                        outVals[key] = [[6, 0, val]]
+                    if isinstance(val, (tuple)): # many2one
+                        outVals[key] = val[0]
+                break
+            outVals.update(vals)
+            vals = outVals
+        return vals
+
+    @api.model
     def create(self, vals):
         if not vals:
             raise ValidationError(_("""You are trying to create a product without values"""))
-        if ('name' in vals):
-            if not vals['name']:
-                return False
-            if 'engineering_code' in vals:
-                if vals['engineering_code'] is False:
-                    vals['engineering_code'] = vals['name']
-            else:
-                vals['engineering_code'] = vals['name']
-            if 'engineering_revision' in vals:
-                prodBrwsList = self.search([('engineering_code', '=', vals['engineering_code']),
-                                            ('engineering_revision', '=', vals['engineering_revision'])
-                                            ])
-                if prodBrwsList:
-                    raise UserError('Component %r already exists' % (vals['engineering_code']))
+        eng_code = vals.get('engineering_code')
+        name = vals.get('name')
+        if not name and eng_code:
+            vals['name'] = eng_code
+        if not vals.get('engineering_code') and name:
+            vals['engineering_code'] = name
+        eng_rev = vals.get('engieering_revision', 0)
+        eng_code = vals.get('engineering_code')
+        if eng_code:
+            prodBrwsList = self.search([('engineering_code', '=', vals['engineering_code']),
+                                        ('engineering_revision', '=', eng_rev)
+                                        ])
+            if prodBrwsList:
+                raise UserError('Component %r already exists' % (vals['engineering_code']))
         try:
             vals['is_engcode_editable'] = False
             vals.update(self.checkMany2oneClient(vals))
-            return super(PlmComponent, self).create(vals)
-        except Exception as ex:
+            vals = self.checkSetupDueToVariants(vals)
+            res = super(PlmComponent, self).create(vals)
+            return res
+        except Exception, ex:
             import psycopg2
             if isinstance(ex, psycopg2.IntegrityError):
-                raise ex
+                msg = _('Error during component creation with values:\n')
+                for key, value in vals.items():
+                    msg = msg + '%r = %r\n' % (key, value)
+                try:
+                    msg = msg + str(ex.message) + '\n'
+                except:
+                    pass
+                msg = msg + '\n\n------------------------------\n\n' + str(ex)
+                raise Exception(msg)
             logging.error("(%s). It has tried to create with values : (%s)." % (str(ex), str(vals)))
             raise Exception(_(" (%r). It has tried to create with values : (%r).") % (ex, vals))
 
