@@ -905,7 +905,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             vals = self.checkSetupDueToVariants(vals)
             res = super(PlmComponent, self).create(vals)
             return res
-        except Exception, ex:
+        except Exception as ex:
             import psycopg2
             if isinstance(ex, psycopg2.IntegrityError):
                 msg = _('Error during component creation with values:\n')
