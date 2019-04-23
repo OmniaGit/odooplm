@@ -834,7 +834,7 @@ class PlmComponent(models.Model):
             vals['name'] = eng_code
         if not vals.get('engineering_code') and name:
             vals['engineering_code'] = name
-        eng_rev = vals.get('engieering_revision', 0)
+        eng_rev = vals.get('engineering_revision', 0)
         eng_code = vals.get('engineering_code')
         if eng_code:
             prodBrwsList = self.search([('engineering_code', '=', vals['engineering_code']),
