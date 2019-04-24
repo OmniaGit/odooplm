@@ -26,3 +26,4 @@ Created on 9 Dec 2016
 """
 
 from . import product_product
+from . import product_template
