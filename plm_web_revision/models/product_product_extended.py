@@ -29,7 +29,6 @@ from odoo.exceptions import UserError
 from odoo import models
 from odoo import fields
 from odoo import api
-from odoo import SUPERUSER_ID
 from odoo import _
 import logging
 

@@ -32,7 +32,6 @@ from odoo.exceptions import ValidationError
 from odoo.exceptions import AccessError
 from odoo.exceptions import UserError
 from odoo import osv
-from odoo import SUPERUSER_ID
 import odoo.tools as tools
 
 _logger = logging.getLogger(__name__)
@@ -914,9 +913,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         objId = super(PlmComponent, self).copy(defaults)
         if objId:
             objId.is_engcode_editable = True
-            newContext = self.env.context.copy()
-            newContext['uid'] = SUPERUSER_ID
-            self.wf_message_post(body=_('Copied starting from : %s.' % previous_name))
+            self.sudo().wf_message_post(body=_('Copied starting from : %s.' % previous_name))
         return objId
 
     @api.multi

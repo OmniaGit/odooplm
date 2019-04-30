@@ -25,7 +25,6 @@ Created on 11 Aug 2016
 @author: Daniel Smerghetto
 """
 from odoo.exceptions import UserError
-from odoo import SUPERUSER_ID
 from odoo import models
 from odoo import fields
 from odoo import osv
@@ -74,31 +73,26 @@ class PlmBackupDocument(models.Model):
 
     @api.multi
     def unlink(self):
-        committed = False
-        if self.env.context:
-            if self.env.uid != SUPERUSER_ID:
-                logging.warning("unlink : Unable to remove the required documents. You aren't authorized in this context.")
-                raise UserError(_("Unable to remove the required document.\n You aren't authorized in this context."))
-                return False
         documentType = self.env['ir.attachment']
-        for checkObj in self:
-            if not int(checkObj.documentid):
-                return super(PlmBackupDocument, self).unlink()
-            currentname = checkObj.documentid.store_fname
-            if checkObj.existingfile != currentname:
-                fullname = os.path.join(documentType._get_filestore(), checkObj.existingfile)
-                if os.path.exists(fullname):
+        for plm_backup_document_id in self:
+            if self.env.context:
+                if not plm_backup_document_id.userid.has_group('plm.group_plm_admin'):
+                    logging.warning("unlink : Unable to remove the required documents. You aren't authorized in this context.")
+                    raise UserError(_("Unable to remove the required document.\n You aren't authorized in this context."))
+            if plm_backup_document_id.documentid:
+                currentname = plm_backup_document_id.documentid.store_fname
+                if plm_backup_document_id.existingfile != currentname:
+                    fullname = os.path.join(documentType._get_filestore(), plm_backup_document_id.existingfile)
                     if os.path.exists(fullname):
                         os.chmod(fullname, stat.S_IWRITE)
                         os.unlink(fullname)
-                        committed = True
+                    else:
+                        logging.warning("unlink : Unable to remove the document (" + str(plm_backup_document_id.documentid.name) + "-" + str(plm_backup_document_id.documentid.revisionid) + ") from backup set. You can't change writable flag.")
+                        raise UserError(_("Unable to remove the document (" + str(plm_backup_document_id.documentid.name) + "-" + str(plm_backup_document_id.documentid.revisionid) + ") from backup set.\n It isn't a backup file, it's original current one."))
                 else:
-                    logging.warning("unlink : Unable to remove the document (" + str(checkObj.documentid.name) + "-" + str(checkObj.documentid.revisionid) + ") from backup set. You can't change writable flag.")
-                    raise UserError(_("Unable to remove the document (" + str(checkObj.documentid.name) + "-" + str(checkObj.documentid.revisionid) + ") from backup set.\n It isn't a backup file, it's original current one."))
-        if committed:
-            return super(PlmBackupDocument, self).unlink()
-        else:
-            return False
+                    logging.warning('Prevent to delete the active File %r' % currentname)
+                    continue
+            super(PlmBackupDocument, plm_backup_document_id).unlink()
 
 
 class BackupDocWizard(osv.osv.osv_memory):
