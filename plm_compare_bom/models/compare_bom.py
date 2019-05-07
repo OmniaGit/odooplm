@@ -20,7 +20,7 @@
 ##############################################################################
 import os
 import logging
-from openerp import models, fields, api, SUPERUSER_ID, _, osv
+from openerp import models, fields, api, _, osv
 _logger = logging.getLogger(__name__)
 
 

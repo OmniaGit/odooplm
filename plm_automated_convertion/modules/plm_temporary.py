@@ -26,7 +26,7 @@ Created on 25/mag/2016
 
 import logging
 import tempfile
-from openerp import models, fields, api, SUPERUSER_ID, _, osv
+from openerp import models, fields, api, _, osv
 from openerp import tools
 from openerp.exceptions import UserError
 import base64

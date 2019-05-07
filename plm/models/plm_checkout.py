@@ -61,7 +61,10 @@ class PlmCheckout(models.Model):
     def name_get(self):
         result = []
         for r in self:
-            name = "%s .. [%s]" % (r.documentid.name[:8], r.userid.name[:8])
+            if not r.documentid or not r.userid:
+                name = 'unknown'
+            else:
+                name = "%s .. [%s]" % (r.documentid.name[:8], r.userid.name[:8])
             result.append((r.id, name))
         return result
 
@@ -93,6 +96,8 @@ class PlmCheckout(models.Model):
         documentType = self.env['ir.attachment']
         docids = []
         for checkObj in self:
+            if not checkObj.documentid:
+                continue
             checkObj.documentid.writable = False
             values = {'writable': False}
             docids.append(checkObj.documentid.id)
@@ -105,6 +110,5 @@ class PlmCheckout(models.Model):
             documentType.browse(docids).wf_message_post(body=_('Checked-In'))
         return dummy
 
-PlmCheckout()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
