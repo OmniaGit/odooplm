@@ -44,6 +44,68 @@ class ResGroups(models.Model):
     custom_procedure_fname = fields.Char(_("New File name"))
     custom_read_content = fields.Text('Modif Content', default='')
 
+    custom_multicad = fields.Binary(string=_('Client Multicad'))
+    custom_multicad_fname = fields.Char(_("New File name"))
+    custom_multicad_content = fields.Text('Modif Content', default='')
+
+    @api.multi
+    def write(self, vals):
+        erase = self.env.context.get('erase_multicad', True)
+        erase_custom = self.env.context.get('erase_customprocedure', True)
+        if erase and 'custom_multicad_content' in vals:
+            self.open_custom_multicad_save(vals)
+        if erase_custom and 'custom_read_content' in vals:
+            self.open_custommodule_save(vals)
+        return super(ResGroups, self).write(vals)
+
+    @api.multi
+    def open_custommodule_edit(self):
+        for groupBrws in self:
+            if groupBrws.custom_procedure:
+                fileReadableContent = base64.decodestring(groupBrws.custom_procedure)
+                if self.custom_read_content:
+                    fileReadableContent = ''
+                self.with_context({'erase_customprocedure': False}).custom_read_content = fileReadableContent
+            
+    @api.multi
+    def open_custom_multicad_edit(self):
+        for groupBrws in self:
+            if groupBrws.custom_multicad:
+                fileReadableContent = base64.decodestring(groupBrws.custom_multicad)
+                if self.custom_multicad_content:
+                    fileReadableContent = ''
+                self.with_context({'erase_multicad': False}).custom_multicad_content = fileReadableContent
+
+    @api.multi
+    def open_custommodule_save(self, vals):
+        for groupBrws in self:
+            self.commonSave(vals, 
+                            'custom_procedure', 
+                            'custom_read_content',
+                            groupBrws.custom_procedure_fname,
+                            groupBrws.custom_procedure
+                            )
+
+    @api.model
+    def open_custom_multicad_save(self, vals):
+        for groupBrws in self:
+            self.commonSave(vals, 
+                            'custom_multicad', 
+                            'custom_multicad_content',
+                            groupBrws.custom_multicad_fname,
+                            groupBrws.custom_multicad
+                            )
+
+    @api.model
+    def commonSave(self, vals, binary_field, content_field, fname, custom_file):
+        vals[binary_field] = base64.encodestring(vals.get(content_field, '').encode('utf-8'))
+        tmpFolder = tempfile.gettempdir()
+        if fname:
+            customFilePath = os.path.join(tmpFolder, fname)
+            with open(customFilePath, 'wb') as writeFile:
+                writeFile.write(base64.decodestring(custom_file))
+        vals[content_field] = ''
+        
     @api.multi
     def getCustomProcedure(self):
         for groupBrws in self:
@@ -53,25 +115,9 @@ class ResGroups(models.Model):
         return False, '', groupBrws.custom_procedure_fname
 
     @api.multi
-    def open_custommodule_edit(self):
+    def getCustomMulticad(self):
         for groupBrws in self:
-            self.commonCustomEdit(groupBrws.custom_procedure)
-            
-    @api.model
-    def commonCustomEdit(self, fileContent):
-        if fileContent:
-            fileReadableContent = base64.decodestring(fileContent)
-            self.custom_read_content = fileReadableContent
-    
-    @api.multi
-    def open_custommodule_save(self):
-        for groupBrws in self:
-            groupBrws.custom_procedure = base64.encodestring(self.custom_read_content.encode('utf-8'))
-            tmpFolder = tempfile.gettempdir()
-            if groupBrws.custom_procedure_fname:
-                customFilePath = os.path.join(tmpFolder, groupBrws.custom_procedure_fname)
-                with open(customFilePath, 'wb') as writeFile:
-                    writeFile.write(base64.decodestring(groupBrws.custom_procedure))
-            groupBrws.custom_read_content = ''
-        
-ResGroups()
+            logging.info('Request Multicad file for user %r and group %r-%r and id %r' % (groupBrws.env.uid, groupBrws.category_id.name, groupBrws.name, groupBrws.id))
+            if groupBrws.custom_multicad:
+                return True, groupBrws.custom_multicad, groupBrws.custom_multicad_fname
+        return False, '', groupBrws.custom_multicad_fname
