@@ -42,6 +42,25 @@ class ProductTemplateCuttedParts(models.Model):
     is_row_material = fields.Boolean(_("Is Raw Material"))
     bom_rounding = fields.Float(_("Product Rounding"), default=0.0)
 
+
+class ProductCuttedParts(models.Model):
+    _inherit = 'product.product'
+
+    @api.onchange('is_row_material')
+    def onchange_is_row_material(self):
+        if self.is_row_material:
+            self.row_material = False
+
+    @api.onchange('row_material_x_length')
+    def onchange_row_material_x_length(self):
+        if not self.row_material_x_length or self.row_material_x_length == 0.0:
+            raise UserError(_('"Raw Material x length" cannot have zero value.'))
+
+    @api.onchange('row_material_y_length')
+    def onchange_row_material_y_length(self):
+        if not self.row_material_y_length or self.row_material_x_length == 0.0:
+            raise UserError(_('"Raw Material y length" cannot have zero value.'))
+
     @api.model
     def createCuttedPartsBOM(self, bom_structure):
 
@@ -125,22 +144,3 @@ class ProductTemplateCuttedParts(models.Model):
         for err in res:
             logging.info('Error during generating cutted part %s' % (err))
         return res
-
-
-class ProductCuttedParts(models.Model):
-    _inherit = 'product.product'
-
-    @api.onchange('is_row_material')
-    def onchange_is_row_material(self):
-        if self.is_row_material:
-            self.row_material = False
-
-    @api.onchange('row_material_x_length')
-    def onchange_row_material_x_length(self):
-        if not self.row_material_x_length or self.row_material_x_length == 0.0:
-            raise UserError(_('"Raw Material x length" cannot have zero value.'))
-
-    @api.onchange('row_material_y_length')
-    def onchange_row_material_y_length(self):
-        if not self.row_material_y_length or self.row_material_x_length == 0.0:
-            raise UserError(_('"Raw Material y length" cannot have zero value.'))
