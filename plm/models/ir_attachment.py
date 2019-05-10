@@ -1571,73 +1571,75 @@ class PlmDocument(models.Model):
         return self.search([('name', '=', docName),
                             ('revisionid', '=', docRev)])
 
+    def checkStructureDocument(self, docAttrs):
+        docName = docAttrs.get('name', '')
+        docRev = int(docAttrs.get('revisionid', 0) or 0)
+        docAttrs['revisionid'] = docRev
+        docBrwsList = self.search([('name', '=', docName)], order='revisionid DESC')
+        existingDocs = {}
+        graterDocBrws = None
+        matchDocBrws = None
+        docAttrs['state'] = 'draft'
+        for docBrws in docBrwsList:
+            if docBrws.revisionid == docRev:
+                docAttrs['state'] = docBrws.state
+                matchDocBrws = docBrws
+            if not graterDocBrws:
+                graterDocBrws = docBrws
+            existingDocs[docBrws.revisionid] = (docBrws.name, docBrws.state)
+        docAttrs['existing_docs'] = existingDocs
+        docAttrs['is_latest_revision'] = False
+        if graterDocBrws and (graterDocBrws == matchDocBrws):
+            docAttrs['is_latest_revision'] = True
+            if graterDocBrws:
+                docAttrs['can_be_revised'] = graterDocBrws.canBeRevised()
+        if not matchDocBrws:    # CAD document revision is grater than Odoo one
+            if graterDocBrws:
+                docAttrs['can_be_revised'] = graterDocBrws.canBeRevised()
+        return docAttrs
+
+    def checkStructureComponent(self, compAttrs):
+        prodProd = self.env['product.product']
+        engCode = compAttrs.get('engineering_code', '')
+        engRev = int(compAttrs.get('engineering_revision', 0) or 0)
+        compAttrs['engineering_revision'] = engRev
+        prodBrwsList = prodProd.search([('engineering_code', '=', engCode)], order='engineering_revision DESC')
+        existingCompRevisions = {}
+        foundCompBrws = None
+        graterCompBrws = None
+        compAttrs['state'] = 'draft'
+        for compBrws in prodBrwsList:
+            if engRev == compBrws.engineering_revision:
+                compAttrs['state'] = compBrws.state
+                foundCompBrws = compBrws
+            if not graterCompBrws:
+                graterCompBrws = compBrws
+            existingCompRevisions[compBrws.engineering_revision] = (compBrws.engineering_code, compBrws.state)
+        compAttrs['existing_comps'] = existingCompRevisions
+        if graterCompBrws == foundCompBrws:
+            compAttrs['is_latest_revision'] = True
+            if graterCompBrws:
+                compAttrs['can_be_revised'] = graterCompBrws.canBeRevised()
+        if not foundCompBrws:
+            if graterCompBrws:
+                compAttrs['can_be_revised'] = graterCompBrws.canBeRevised()
+        return compAttrs
+        
     @api.model
     def checkSyncImportStructure(self, args):
-        prodProd = self.env['product.product']
-
-        def checkDocument(docAttrs):
-            docName = docAttrs.get('name', '')
-            docRev = int(docAttrs.get('revisionid', 0))
-            docBrwsList = self.search([('name', '=', docName)], order='revisionid DESC')
-            existingDocs = {}
-            graterDocBrws = None
-            matchDocBrws = None
-            docAttrs['state'] = 'draft'
-            for docBrws in docBrwsList:
-                if docBrws.revisionid == docRev:
-                    docAttrs['state'] = docBrws.state
-                    matchDocBrws = docBrws
-                if not graterDocBrws:
-                    graterDocBrws = docBrws
-                existingDocs[docBrws.revisionid] = (docBrws.name, docBrws.state)
-            docAttrs['existing_docs'] = existingDocs
-            docAttrs['is_latest_revision'] = False
-            if graterDocBrws and (graterDocBrws == matchDocBrws):
-                docAttrs['is_latest_revision'] = True
-                if graterDocBrws:
-                    docAttrs['can_be_revised'] = graterDocBrws.canBeRevised()
-            if not matchDocBrws:  # CAD document revision is grater than Odoo one
-                if graterDocBrws:
-                    docAttrs['can_be_revised'] = graterDocBrws.canBeRevised()
-            return docAttrs
-
-        def checkComponent(compAttrs):
-            engCode = compAttrs.get('engineering_code', '')
-            engRev = int(compAttrs.get('engineering_revision', 0))
-            prodBrwsList = prodProd.search([('engineering_code', '=', engCode)], order='engineering_revision DESC')
-            existingCompRevisions = {}
-            foundCompBrws = None
-            graterCompBrws = None
-            compAttrs['state'] = 'draft'
-            for compBrws in prodBrwsList:
-                if engRev == compBrws.engineering_revision:
-                    compAttrs['state'] = compBrws.state
-                    foundCompBrws = compBrws
-                if not graterCompBrws:
-                    graterCompBrws = compBrws
-                existingCompRevisions[compBrws.engineering_revision] = (compBrws.engineering_code, compBrws.state)
-            compAttrs['existing_comps'] = existingCompRevisions
-            if graterCompBrws == foundCompBrws:
-                compAttrs['is_latest_revision'] = True
-                if graterCompBrws:
-                    compAttrs['can_be_revised'] = graterCompBrws.canBeRevised()
-            if not foundCompBrws:
-                if graterCompBrws:
-                    compAttrs['can_be_revised'] = graterCompBrws.canBeRevised()
-            return compAttrs
 
         def recursion(parentNode):
             docAttrs = parentNode.get('DOCUMENT_ATTRIBUTES', {})
             compAttrs = parentNode.get('PRODUCT_ATTRIBUTES', {})
-            parentNode['DOCUMENT_ATTRIBUTES'] = checkDocument(docAttrs)
-            parentNode['PRODUCT_ATTRIBUTES'] = checkComponent(compAttrs)
+            parentNode['DOCUMENT_ATTRIBUTES'] = self.checkStructureDocument(docAttrs)
+            parentNode['PRODUCT_ATTRIBUTES'] = self.checkStructureComponent(compAttrs)
             childrenNodes = parentNode.get('RELATIONS', {})
             for node in childrenNodes:
                 index = childrenNodes.index(node)
                 updatedNode = recursion(node)
                 parentNode['RELATIONS'][index] = updatedNode
             return parentNode
-
+            
         jsonNode = args[0]
         rootNode = json.loads(jsonNode)
         rootNode = recursion(rootNode)
