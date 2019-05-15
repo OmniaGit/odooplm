@@ -1365,10 +1365,13 @@ class PlmDocument(models.Model):
         alreadyEvaluated = []
         for documentAttribute in documentAttributes.values():
             try:
+                doc_name = documentAttribute.get('name')
+                if not doc_name:
+                    continue
                 documentAttribute['TO_UPDATE'] = False
                 skipCheckOut = documentAttribute.get('SKIP_CHECKOUT', False)
                 docBrws = False
-                for brwItem in self.search([('name', '=', documentAttribute.get('name')),
+                for brwItem in self.search([('name', '=', doc_name),
                                             ('revisionid', '=', documentAttribute.get('revisionid'))]):
                     if brwItem.id in alreadyEvaluated:
                         docBrws = brwItem   # To skip creation
@@ -1404,7 +1407,9 @@ class PlmDocument(models.Model):
             try:
                 linkedDocuments = set()
                 for refDocId in productDocumentRelations.get(refId, []):
-                    linkedDocuments.add((4, documentAttributes[refDocId].get('id', 0)))
+                    doc_id = documentAttributes[refDocId].get('id', 0)
+                    if doc_id:
+                        linkedDocuments.add((4, doc_id))
                 prodBrws = False
                 for brwItem in productTemplate.search([('engineering_code', '=', productAttribute.get('engineering_code')),
                                                        ('engineering_revision', '=', productAttribute.get('engineering_revision'))]):
