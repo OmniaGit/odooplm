@@ -767,7 +767,7 @@ class PlmDocument(models.Model):
     def write(self, vals):
         check = self.env.context.get('check', True)
         if check:
-            if not self.is_plm_state_writable():
+            if not self.is_plm_state_writable() and self.env.uid != SUPERUSER_ID:
                 raise UserError(_("The active state does not allow you to make save action"))
         self.writeCheckDatas(vals)
         return super(PlmDocument, self).write(vals)
