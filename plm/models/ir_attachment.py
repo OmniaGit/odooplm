@@ -661,7 +661,7 @@ class PlmDocument(models.Model):
     def write(self, vals):
         check = self.env.context.get('check', True)
         if check:
-            if not self.is_plm_state_writable():
+            if not self.is_plm_state_writable() and not (self.env.user._is_admin() or self.env.user._is_superuser()):
                 raise UserError(_("The active state does not allow you to make save action"))
         self.writeCheckDatas(vals)
         res = super(PlmDocument, self).write(vals)
@@ -679,7 +679,7 @@ class PlmDocument(models.Model):
     def writeCheckDatas(self, vals):
         if 'datas' in list(vals.keys()) or 'datas_fname' in list(vals.keys()):
             for docBrws in self:
-                if not docBrws._is_checkedout_for_me() and self.env.uid != SUPERUSER_ID:
+                if not docBrws._is_checkedout_for_me() and not (self.env.user._is_admin() or self.env.user._is_superuser()):
                     raise UserError(_("You cannot edit a file not in check-out by you! User ID %s" % (self.env.uid)))
 
     @api.multi
@@ -1754,7 +1754,7 @@ class PlmDocument(models.Model):
         ids = super(models.Model, self)._search(args, offset=offset, limit=limit, order=order,
                                                 count=False, access_rights_uid=access_rights_uid)
 
-        if self._uid == SUPERUSER_ID:
+        if self.env.user._is_admin() or self.env.user._is_superuser():
             # rules do not apply for the superuser
             return len(ids) if count else ids
 
