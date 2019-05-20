@@ -262,6 +262,15 @@
         <field name="perm_create" eval="1"/>
         <field name="perm_unlink" eval="1"/>
     </record>
+    <record id="plm_description_view" model="ir.model.access">
+        <field name="name">PLM Description</field>
+        <field name="model_id" ref="model_plm_description"/>
+        <field name="group_id" eval="group_plm_admin"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="1"/>
+        <field name="perm_create" eval="1"/>
+        <field name="perm_unlink" eval="1"/>
+    </record>
 
     <!-- Component / Bom Readonly  -->
     <record id="group_plm_readonly_released" model="res.groups">
