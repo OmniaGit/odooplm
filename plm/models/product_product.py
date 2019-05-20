@@ -558,9 +558,10 @@ class PlmComponent(models.Model):
                     if documentBrws.id not in docIDs:
                         docIDs.append(documentBrws.id)
         if docInError:
-            msg = "Error on workflow operation"
+            msg = _("Error on workflow operation")
             for e in docInError:
                 msg = msg + "\n" + e
+            msg = msg + _("\n\nCheck-In All the document in order to proceed !!")
             raise UserError(msg)
 
         if len(docIDs) > 0:
