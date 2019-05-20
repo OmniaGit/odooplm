@@ -661,7 +661,7 @@ class PlmDocument(models.Model):
     def write(self, vals):
         check = self.env.context.get('check', True)
         if check:
-            if not self.is_plm_state_writable():
+            if not self.is_plm_state_writable() and not (self.env.user._is_admin() or self.env.user._is_superuser()):
                 raise UserError(_("The active state does not allow you to make save action"))
         self.writeCheckDatas(vals)
         res = super(PlmDocument, self).write(vals)
@@ -679,7 +679,7 @@ class PlmDocument(models.Model):
     def writeCheckDatas(self, vals):
         if 'datas' in list(vals.keys()) or 'datas_fname' in list(vals.keys()):
             for docBrws in self:
-                if not docBrws._is_checkedout_for_me() and self.env.uid != SUPERUSER_ID:
+                if not docBrws._is_checkedout_for_me() and not (self.env.user._is_admin() or self.env.user._is_superuser()):
                     raise UserError(_("You cannot edit a file not in check-out by you! User ID %s" % (self.env.uid)))
 
     @api.multi
@@ -1571,73 +1571,75 @@ class PlmDocument(models.Model):
         return self.search([('name', '=', docName),
                             ('revisionid', '=', docRev)])
 
+    def checkStructureDocument(self, docAttrs):
+        docName = docAttrs.get('name', '')
+        docRev = int(docAttrs.get('revisionid', 0) or 0)
+        docAttrs['revisionid'] = docRev
+        docBrwsList = self.search([('name', '=', docName)], order='revisionid DESC')
+        existingDocs = {}
+        graterDocBrws = None
+        matchDocBrws = None
+        docAttrs['state'] = 'draft'
+        for docBrws in docBrwsList:
+            if docBrws.revisionid == docRev:
+                docAttrs['state'] = docBrws.state
+                matchDocBrws = docBrws
+            if not graterDocBrws:
+                graterDocBrws = docBrws
+            existingDocs[docBrws.revisionid] = (docBrws.name, docBrws.state)
+        docAttrs['existing_docs'] = existingDocs
+        docAttrs['is_latest_revision'] = False
+        if graterDocBrws and (graterDocBrws == matchDocBrws):
+            docAttrs['is_latest_revision'] = True
+            if graterDocBrws:
+                docAttrs['can_be_revised'] = graterDocBrws.canBeRevised()
+        if not matchDocBrws:    # CAD document revision is grater than Odoo one
+            if graterDocBrws:
+                docAttrs['can_be_revised'] = graterDocBrws.canBeRevised()
+        return docAttrs
+
+    def checkStructureComponent(self, compAttrs):
+        prodProd = self.env['product.product']
+        engCode = compAttrs.get('engineering_code', '')
+        engRev = int(compAttrs.get('engineering_revision', 0) or 0)
+        compAttrs['engineering_revision'] = engRev
+        prodBrwsList = prodProd.search([('engineering_code', '=', engCode)], order='engineering_revision DESC')
+        existingCompRevisions = {}
+        foundCompBrws = None
+        graterCompBrws = None
+        compAttrs['state'] = 'draft'
+        for compBrws in prodBrwsList:
+            if engRev == compBrws.engineering_revision:
+                compAttrs['state'] = compBrws.state
+                foundCompBrws = compBrws
+            if not graterCompBrws:
+                graterCompBrws = compBrws
+            existingCompRevisions[compBrws.engineering_revision] = (compBrws.engineering_code, compBrws.state)
+        compAttrs['existing_comps'] = existingCompRevisions
+        if graterCompBrws == foundCompBrws:
+            compAttrs['is_latest_revision'] = True
+            if graterCompBrws:
+                compAttrs['can_be_revised'] = graterCompBrws.canBeRevised()
+        if not foundCompBrws:
+            if graterCompBrws:
+                compAttrs['can_be_revised'] = graterCompBrws.canBeRevised()
+        return compAttrs
+        
     @api.model
     def checkSyncImportStructure(self, args):
-        prodProd = self.env['product.product']
-
-        def checkDocument(docAttrs):
-            docName = docAttrs.get('name', '')
-            docRev = int(docAttrs.get('revisionid', 0))
-            docBrwsList = self.search([('name', '=', docName)], order='revisionid DESC')
-            existingDocs = {}
-            graterDocBrws = None
-            matchDocBrws = None
-            docAttrs['state'] = 'draft'
-            for docBrws in docBrwsList:
-                if docBrws.revisionid == docRev:
-                    docAttrs['state'] = docBrws.state
-                    matchDocBrws = docBrws
-                if not graterDocBrws:
-                    graterDocBrws = docBrws
-                existingDocs[docBrws.revisionid] = (docBrws.name, docBrws.state)
-            docAttrs['existing_docs'] = existingDocs
-            docAttrs['is_latest_revision'] = False
-            if graterDocBrws and (graterDocBrws == matchDocBrws):
-                docAttrs['is_latest_revision'] = True
-                if graterDocBrws:
-                    docAttrs['can_be_revised'] = graterDocBrws.canBeRevised()
-            if not matchDocBrws:  # CAD document revision is grater than Odoo one
-                if graterDocBrws:
-                    docAttrs['can_be_revised'] = graterDocBrws.canBeRevised()
-            return docAttrs
-
-        def checkComponent(compAttrs):
-            engCode = compAttrs.get('engineering_code', '')
-            engRev = int(compAttrs.get('engineering_revision', 0))
-            prodBrwsList = prodProd.search([('engineering_code', '=', engCode)], order='engineering_revision DESC')
-            existingCompRevisions = {}
-            foundCompBrws = None
-            graterCompBrws = None
-            compAttrs['state'] = 'draft'
-            for compBrws in prodBrwsList:
-                if engRev == compBrws.engineering_revision:
-                    compAttrs['state'] = compBrws.state
-                    foundCompBrws = compBrws
-                if not graterCompBrws:
-                    graterCompBrws = compBrws
-                existingCompRevisions[compBrws.engineering_revision] = (compBrws.engineering_code, compBrws.state)
-            compAttrs['existing_comps'] = existingCompRevisions
-            if graterCompBrws == foundCompBrws:
-                compAttrs['is_latest_revision'] = True
-                if graterCompBrws:
-                    compAttrs['can_be_revised'] = graterCompBrws.canBeRevised()
-            if not foundCompBrws:
-                if graterCompBrws:
-                    compAttrs['can_be_revised'] = graterCompBrws.canBeRevised()
-            return compAttrs
 
         def recursion(parentNode):
             docAttrs = parentNode.get('DOCUMENT_ATTRIBUTES', {})
             compAttrs = parentNode.get('PRODUCT_ATTRIBUTES', {})
-            parentNode['DOCUMENT_ATTRIBUTES'] = checkDocument(docAttrs)
-            parentNode['PRODUCT_ATTRIBUTES'] = checkComponent(compAttrs)
+            parentNode['DOCUMENT_ATTRIBUTES'] = self.checkStructureDocument(docAttrs)
+            parentNode['PRODUCT_ATTRIBUTES'] = self.checkStructureComponent(compAttrs)
             childrenNodes = parentNode.get('RELATIONS', {})
             for node in childrenNodes:
                 index = childrenNodes.index(node)
                 updatedNode = recursion(node)
                 parentNode['RELATIONS'][index] = updatedNode
             return parentNode
-
+            
         jsonNode = args[0]
         rootNode = json.loads(jsonNode)
         rootNode = recursion(rootNode)
@@ -1752,7 +1754,7 @@ class PlmDocument(models.Model):
         ids = super(models.Model, self)._search(args, offset=offset, limit=limit, order=order,
                                                 count=False, access_rights_uid=access_rights_uid)
 
-        if self._uid == SUPERUSER_ID:
+        if self.env.user._is_admin() or self.env.user._is_superuser():
             # rules do not apply for the superuser
             return len(ids) if count else ids
 
