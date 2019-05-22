@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record model="ir.ui.view" id="view_ir_attachment_form">
+    <record model="ir.ui.view" id="view_attachment_form_plm_hinerit">
         <field name="name">ir.attachment</field>
         <field name="model">ir.attachment</field>
         <field name="priority" eval="1"/>
         <field name="type">form</field>
+        <field name="inherit_id" ref="base.view_attachment_form"/>
         <field name="arch" type="xml">
-            <form string="Document" version="7.0">
+            <xpath expr="//sheet" position="before">
                 <header>
                     <button name="action_release"
                             states="confirmed"
@@ -30,31 +31,34 @@
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,released"
                            statusbar_colors='{"undermodify":"red","obsoleted":"red"}' readonly="1"/>
                 </header>
-                <sheet>
-				    <div class="oe_button_box" name="button_box">
-				      <button class="oe_stat_button" icon="fa-sitemap" type="object" name="action_view_rel_doc">
-				        <field name="document_rel_count" string="Documents" widget="statinfo"/>
-				      </button>
-				      <button name="toggle_check_out"
-                              class="oe_stat_button"
-                              icon="fa-unlock-alt" 
-                              type="object">
-                              <field name="is_checkout"
-                                    widget="boolean_button"
-                                    options="{'terminology': {'string_true': 'Check-Out',
-                                                              'hover_true': 'Check-In',
-                                                              'string_false': 'Check-In',
-                                                              'hover_false': 'Check-Out'}}"
-                                    />
-                             
-                       </button>
-                       <button name="check_out_user"
-                            icon="fa-user"
-                            attrs="{'invisible': ['|',('checkout_user', '=', 'False'),
-                                                      ('checkout_user', '=', '')]}">
-                            <field name="checkout_user"/>
-                       </button>
-				    </div>
+            </xpath>
+            <xpath expr="//h1" position="before">
+                <div class="oe_button_box" name="button_box">
+                 <button class="oe_stat_button" icon="fa-sitemap" type="object" name="action_view_rel_doc">
+                   <field name="document_rel_count" string="Documents" widget="statinfo"/>
+                 </button>
+                 <button name="toggle_check_out"
+                         class="oe_stat_button"
+                         icon="fa-unlock-alt" 
+                         type="object">
+                         <field name="is_checkout"
+                               widget="boolean_button"
+                               options="{'terminology': {'string_true': 'Check-Out',
+                                                         'hover_true': 'Check-In',
+                                                         'string_false': 'Check-In',
+                                                         'hover_false': 'Check-Out'}}"
+                               />
+                        
+                  </button>
+                  <button name="check_out_user"
+                       icon="fa-user"
+                       attrs="{'invisible': ['|',('checkout_user', '=', 'False'),
+                                                 ('checkout_user', '=', '')]}">
+                       <field name="checkout_user"/>
+                  </button>
+               </div>
+            </xpath>
+            <xpath expr="//sheet/group[last()]" position="after">
                     <group name="doc_data">
                         <group name="main_doc_info">
                             <strong>
@@ -130,15 +134,30 @@
                                    attrs="{'readonly':[('state','in',['released','obsoleted'])], 'invisible': [('revisionid', '=', 0)]}"/>
                         </page>
                     </notebook>
-                </sheet>
+            </xpath>
+            <xpath expr="//sheet" position="after">
                 <div class="oe_chatter">
-                    <field name="message_follower_ids" widget="mail_followers" modifiers="{}"/>
-                    <field name="message_ids" widget="mail_thread" modifiers="{}"/>
+                   <field name="message_follower_ids" widget="mail_followers" modifiers="{}"/>
+                   <field name="message_ids" widget="mail_thread" modifiers="{}"/>
                 </div>
+            </xpath>
+        </field>
+    </record>
+<!-- 
+    <record model="ir.ui.view" id="view_ir_attachment_form">
+        <field name="name">ir.attachment</field>
+        <field name="model">ir.attachment</field>
+        <field name="priority" eval="1"/>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Document" version="7.0">
+                
+               
+
             </form>
         </field>
     </record>
-
+ -->
     <record model="ir.ui.view" id="ir_attachment_tree">
         <field name="name">ir.attachment</field>
         <field name="model">ir.attachment</field>
@@ -356,7 +375,6 @@
         <field name="domain">[('is_plm', '=', True)]</field>
         <field name="view_ids"
                eval="[(5, 0, 0),
-                      (0, 0, {'view_mode': 'kanban', 'view_id': ref('plm.document_kanban_view')}),
-                      (0, 0, {'view_mode': 'form', 'view_id': ref('plm.view_ir_attachment_form')})]"/>
+                      (0, 0, {'view_mode': 'kanban', 'view_id': ref('plm.document_kanban_view')})]"/>
     </record>
 </odoo>

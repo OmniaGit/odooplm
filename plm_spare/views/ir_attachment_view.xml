@@ -3,12 +3,11 @@
     <record id="ir_attachment_spare_extension" model="ir.ui.view">
         <field name="name">ir.attachment.spare.extension</field>
         <field name="model">ir.attachment</field>
-        <field name="inherit_id" ref="plm.view_ir_attachment_form"/>
+        <field name="inherit_id" ref="plm.view_attachment_form_plm_hinerit"/>
         <field name="type">form</field>
         <field name="priority" eval="16"/>
         <field name="arch" type="xml">
             <group name="doc_user" position="inside">
-            
                 <field string="Spare Part"
                        name="used_for_spare"
                        attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
