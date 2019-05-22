@@ -191,7 +191,6 @@ class PlmComponent(models.Model):
             if self.tmp_surface.name:
                 self.engineering_surface = str(self.tmp_surface.name)
 
-
     @api.onchange('tmp_treatment')
     def on_change_tmptreatment(self):
         if self.tmp_treatment:
