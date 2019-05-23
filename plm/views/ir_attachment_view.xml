@@ -143,21 +143,7 @@
             </xpath>
         </field>
     </record>
-<!-- 
-    <record model="ir.ui.view" id="view_ir_attachment_form">
-        <field name="name">ir.attachment</field>
-        <field name="model">ir.attachment</field>
-        <field name="priority" eval="1"/>
-        <field name="type">form</field>
-        <field name="arch" type="xml">
-            <form string="Document" version="7.0">
-                
-               
 
-            </form>
-        </field>
-    </record>
- -->
     <record model="ir.ui.view" id="ir_attachment_tree">
         <field name="name">ir.attachment</field>
         <field name="model">ir.attachment</field>
@@ -375,6 +361,7 @@
         <field name="domain">[('is_plm', '=', True)]</field>
         <field name="view_ids"
                eval="[(5, 0, 0),
-                      (0, 0, {'view_mode': 'kanban', 'view_id': ref('plm.document_kanban_view')})]"/>
+                      (0, 0, {'view_mode': 'kanban', 'view_id': ref('plm.document_kanban_view')}),
+                      (0, 0, {'view_mode': 'form', 'view_id': ref('base.view_attachment_form')})]"/>
     </record>
 </odoo>

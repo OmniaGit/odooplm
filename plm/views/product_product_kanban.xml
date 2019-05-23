@@ -1,8 +1,4 @@
 <odoo>
-       
-        
-
-
     <record id="plm_component_kanban" model="ir.ui.view">
         <field name="name">plm.component.kanban</field>
         <field name="model">product.product</field>
@@ -187,16 +183,13 @@
                     </t>
 
                     <t t-name="previews">
-                        <div style="display: -webkit-inline-box;">
+                        <div style="display: -webkit-inline-box;" class="linked_document_container">
                             <t t-foreach="record.linkeddocuments.raw_value" t-as="documentId">
-                                <t t-debug="plm"/> <!-- To debug qweb -->
-                                <!-- <t t-value="documentId" t-set="context"/> -->
                                 <div>
+                                <!-- data-name="return_action_to_open"  -->
                                     <a type="action" class="a_preview"
-                                       data-context='{"xml_id":"plm_action_document_form", "id":8}'>
-
-                                        <!-- context="{'io':'state', 'documentId':'documentId', 'docId':'docId'}" -->
-                                        <!-- data-name="return_action_to_open" href="#" data-context='{"xml_id":"plm_action_document_form"}' -->
+                                        href="#"
+                                        data-context='{"xml_id":"plm_action_document_form", "id": documentId}'>
                                         <img class="image_component_kanban"
                                                 alt="No Image"
                                                 t-att-src="kanban_image('ir.attachment', 'preview', documentId)"/>
