@@ -59,7 +59,7 @@ class ProductCuttedParts(models.Model):
     def onchange_row_material_y_length(self):
         if not self.row_material_y_length or self.row_material_x_length == 0.0:
             raise UserError(_('"Raw Material y length" cannot have zero value.'))
-        
+
     @api.model
     def createCuttedPartsBOM(self, bom_structure):
 
@@ -67,14 +67,13 @@ class ProductCuttedParts(models.Model):
             err = ''
             eng_code = odoo_vals.get('engineering_code', '')
             eng_rev = odoo_vals.get('engineering_revision', 0)
-            prod = self.search([
-                ('engineering_code', '=', eng_code),
-                ('engineering_revision', '=', eng_rev),
-                ], limit=1)
-            if not odoo_vals.get('name'):
-                odoo_vals['name'] = odoo_vals.get('engineering_code', '')
+            prod = self.search([('engineering_code', '=', eng_code),
+                                ('engineering_revision', '=', eng_rev),
+                                ], limit=1)
             if not prod:
                 try:
+                    if not odoo_vals.get('name'):
+                        odoo_vals['name'] = odoo_vals.get('engineering_code', '')
                     prod = self.create(odoo_vals)
                 except Exception as ex:
                     err = 'Cannot create product with values %r due to error %r' % (odoo_vals, ex)
@@ -125,6 +124,8 @@ class ProductCuttedParts(models.Model):
                     bom, err = checkCreateBOM(prod, odoo_vals.get('mrp.bom', {}), bomType)
                     if err:
                         errors.append(err)
+                else:
+                    continue
                 if parent_bom:
                     _bom_line, err = checkCreateBOMLine(parent_bom, odoo_vals.get('mrp.bom.line', {}), prod, bomType)
                     if err:
