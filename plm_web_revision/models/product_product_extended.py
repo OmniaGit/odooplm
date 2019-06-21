@@ -83,7 +83,7 @@ class ProductProductExtended(models.Model):
         createdDocIds = []
         for docBrws in prodBrws.linkeddocuments:
             if self.stateAllows(docBrws, 'Document'):
-                resDoc = docBrws.NewRevision()
+                resDoc = docBrws.NewRevision(docBrws.id)
                 newDocID, newDocIndex = resDoc
                 newDocIndex
                 if not newDocID:
