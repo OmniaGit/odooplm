@@ -426,6 +426,23 @@ class PlmComponent(models.Model):
         return list(set(ids))
 
     @api.model
+    def ConvertToPlmProduct(self, attributes_list=[]):
+        """
+        convert the attributes vals and add the plm id to the array
+        """
+        out = []
+        for attributes in attributes_list:
+            engineering_code = attributes.get('engineering_code', False)
+            engineering_revision = attributes.get('engineering_revision', 0)
+            product_product_id = self.search([('engineering_code', '=', engineering_code),
+                                              ('engineering_revision', '=', engineering_revision)], order='engineering_revision ASC')
+            if not product_product_id:
+                product_product_id = self.create(attributes)
+            attributes['plm_id'] = product_product_id.id
+            out.append(attributes)
+        return out
+
+    @api.model
     def SaveOrUpdate(self, vals):
         """
             Save or Update Parts
@@ -442,7 +459,7 @@ class PlmComponent(models.Model):
                 retValues.append(partVals)
                 continue
             existingCompBrwsList = self.search([('engineering_code', '=', partVals['engineering_code']),
-                                                ('engineering_revision', '=', partVals['engineering_revision'])], order='engineering_revision ASC')
+                                                ('engineering_revision', '=', partVals.get('engineering_revision', 0))], order='engineering_revision ASC')
             if not existingCompBrwsList:
                 existingCompBrwsList = [self.create(partVals)]
                 hasSaved = True
