@@ -920,14 +920,23 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
     def readMany2oneFields(self, readVals, fields):
         out = []
         for vals in readVals:
+            fields_def = self.fields_get(vals.keys())
             tmpVals = vals.copy()
             for fieldName, fieldVal in vals.items():
                 customField = 'plm_m2o_' + fieldName
                 if customField in fields:
-                    if fieldVal:
-                        tmpVals[customField] = fieldVal[1]
-                    else:
+                    logging.info('Reading many2one field %r, fieldVal %r' % (customField, fieldVal))
+                    field_def = fields_def.get(fieldName)
+                    if field_def.get('type', '') == 'many2one':
+                        relation = field_def.get('relation', '')
                         tmpVals[customField] = ''
+                        if relation:
+                            if isinstance(fieldVal, int):
+                                tmpVals[customField] = self.env[relation].browse(fieldVal).name
+                            elif isinstance(fieldVal, (list, tuple)):
+                                tmpVals[customField] = fieldVal[1]
+                            else:
+                                tmpVals[customField] = ''
             out.append(tmpVals)
         return out
 
