@@ -766,6 +766,7 @@ class PlmDocument(models.Model):
                                    ('revisionid', '=', revisionId)])
         for docBrws in docBrwsList:
             docBrws._check_in()
+            return docBrws.id
         return False
 
     @api.one
