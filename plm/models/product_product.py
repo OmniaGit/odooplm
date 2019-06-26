@@ -977,7 +977,8 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         cadVal = vals.get(oldFieldName, '')
         if fieldType == 'many2one':
             try:
-                refId = self.env[referredModel].search([('name', '=', cadVal)])
+                for refId in self.env[referredModel].search([('name', '=', cadVal)]):
+                    return refId
             except Exception as ex:
                 logging.warning(ex)
         return refId
