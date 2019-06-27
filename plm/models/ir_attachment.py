@@ -588,6 +588,8 @@ class PlmDocument(models.Model):
             if lastDocBrws:
                 lastDocBrws.commonWFAction(False, 'obsoleted', False)
         if self.ischecked_in():
+            self.attachment_release_user = self.env.uid
+            self.attachment_release_date = datetime.utcnow()
             return self.commonWFAction(False, 'released', False)
         return False
 
@@ -865,6 +867,8 @@ class PlmDocument(models.Model):
                                      string=_('Document Type'))
     desc_modify = fields.Text(_('Modification Description'), default='')
     is_plm = fields.Boolean('Is a plm Document')
+    attachment_release_user = fields.Many2one('res.users', string=_("Release User"))
+    attachment_release_date = fields.Datetime(string=_('Release Datetime'))
 
     @api.model
     def CheckedIn(self, files, default=None):
