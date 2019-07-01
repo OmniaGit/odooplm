@@ -583,14 +583,17 @@ class PlmDocument(models.Model):
         """
             release the object
         """
+        to_release = self.env['ir.attachment']
         for oldObject in self:
             lastDocBrws = self._getbyrevision(oldObject.name, oldObject.revisionid - 1)
             if lastDocBrws:
                 lastDocBrws.commonWFAction(False, 'obsoleted', False)
-        if self.ischecked_in():
-            self.attachment_release_user = self.env.uid
-            self.attachment_release_date = datetime.utcnow()
-            return self.commonWFAction(False, 'released', False)
+            if oldObject.ischecked_in():
+                oldObject.attachment_release_user = self.env.uid
+                oldObject.attachment_release_date = datetime.utcnow()
+                to_release += oldObject
+        if to_release:
+            to_release.commonWFAction(False, 'released', False)
         return False
 
     @api.multi
@@ -655,6 +658,7 @@ class PlmDocument(models.Model):
     def create(self, vals):
         if self.env.context.get('odooPLM'):
             vals['is_plm'] = True
+        vals.update(self.checkMany2oneClient(vals))
         res = super(PlmDocument, self).create(vals)
         res.check_unique()
         return res
@@ -666,9 +670,30 @@ class PlmDocument(models.Model):
             if not self.is_plm_state_writable() and not (self.env.user._is_admin() or self.env.user._is_superuser()):
                 raise UserError(_("The active state does not allow you to make save action"))
         self.writeCheckDatas(vals)
+        vals.update(self.checkMany2oneClient(vals))
         res = super(PlmDocument, self).write(vals)
         self.check_unique()
         return res
+
+    @api.multi
+    def read(self, fields=[], load='_classic_read'):
+        try:
+            customFields = [field.replace('plm_m2o_', '') for field in fields if field.startswith('plm_m2o_')]
+            fields.extend(customFields)
+            fields = list(set(fields))
+            res = super(PlmDocument, self).read(fields=fields, load=load)
+            res = self.readMany2oneFields(res, fields)
+            return res
+        except Exception as ex:
+            raise ex
+
+    @api.multi
+    def readMany2oneFields(self, readVals, fields):
+        return self.env['product.product']._readMany2oneFields(self.env['ir.attachment'], readVals, fields)
+
+    @api.multi
+    def checkMany2oneClient(self, vals):
+        return self.env['product.product']._checkMany2oneClient(self.env['ir.attachment'], vals)
 
     @api.model
     def is_plm_state_writable(self):
