@@ -935,9 +935,13 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
 
     @api.multi
     def readMany2oneFields(self, readVals, fields):
+        return self._readMany2oneFields(self.env['product.product'], readVals, fields)
+
+    @api.model
+    def _readMany2oneFields(self, obj, readVals, fields):
         out = []
         for vals in readVals:
-            fields_def = self.fields_get(vals.keys())
+            fields_def = obj.fields_get(vals.keys())
             tmpVals = vals.copy()
             for fieldName, fieldVal in vals.items():
                 customField = 'plm_m2o_' + fieldName
@@ -959,9 +963,13 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
 
     @api.multi
     def checkMany2oneClient(self, vals):
+        return self._checkMany2oneClient(self.env['product.product'], vals)
+        
+    @api.model
+    def _checkMany2oneClient(self, obj, vals):
         out = {}
         customFields = [field.replace('plm_m2o_', '') for field in vals.keys() if field.startswith('plm_m2o_')]
-        fieldsGet = self.fields_get(customFields)
+        fieldsGet = obj.fields_get(customFields)
         for fieldName, fieldDefinition in fieldsGet.items():
             refId = self.customFieldConvert(fieldDefinition, vals, fieldName)
             if refId:
