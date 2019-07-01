@@ -38,7 +38,10 @@ class ProductProductExtension(models.Model):
     def create(self, vals):
         engineering_code = vals.get('engineering_code', '')
         engineering_revision = vals.get('engineering_revision', 0)
-        if engineering_code and not vals.get('default_code') and engineering_code != '-':
+        if engineering_code and engineering_code != '-' and self.env.context.get('odooPLM'): # Cloning by client
+            vals['default_code'] = self.computeDefaultCode(engineering_code, engineering_revision)
+            logging.info('Internal ref set value %s on engineering_code: %r' % (vals['default_code'], engineering_code))
+        elif engineering_code and not vals.get('default_code') and engineering_code != '-':
             vals['default_code'] = self.computeDefaultCode(engineering_code, engineering_revision)
             logging.info('Internal ref set value %s on engineering_code: %r' % (vals['default_code'], engineering_code))
         return super(ProductProductExtension, self).create(vals)
@@ -50,7 +53,10 @@ class ProductProductExtension(models.Model):
     def write(self, vals):
         res = super(ProductProductExtension, self).write(vals)
         for prodBrws in self:
-            if prodBrws.engineering_code and not prodBrws.default_code and prodBrws.engineering_code != '-':
+            if prodBrws.engineering_code and prodBrws.engineering_code != '-' and self.env.context.get('odooPLM'): # Cloning by client
+                default_code = self.computeDefaultCode(prodBrws.engineering_code, prodBrws.engineering_revision)
+                super(ProductProductExtension, self).write({'default_code': default_code})
+            elif prodBrws.engineering_code and not prodBrws.default_code and prodBrws.engineering_code != '-':
                 default_code = self.computeDefaultCode(prodBrws.engineering_code, prodBrws.engineering_revision)
                 super(ProductProductExtension, self).write({'default_code': default_code})
         return res

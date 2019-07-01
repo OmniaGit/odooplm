@@ -2,10 +2,29 @@
 <odoo>
     <!-- Views -->
     <record id="product_product_cutted_parts" model="ir.ui.view">
-        <field name="name">product.product.cutted.parts</field>
+        <field name="name">product.product.cutted.parts.client</field>
         <field name="model">product.product</field>
         <field name="inherit_id" ref="plm.plm_component_base_form"/>
         <field name="priority" eval="3"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='technical_infos_group']" position="after">
+                <group col="4" colspan="4">
+                    <field name="is_row_material"/>
+                    <field name="row_material"/>
+                    <field name="row_material_x_length" attrs="{'readonly':[('is_row_material', '=', False)]}"/>
+                    <field name="row_material_y_length" attrs="{'readonly':[('is_row_material', '=', False)]}"/>
+                    <field name="wastage_percent"/>
+                    <field name="material_added"/>
+                    <field name="bom_rounding"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="plm_product_product_normal_form_view_inherit_cutted" model="ir.ui.view">
+        <field name="name">product.product.cutted.parts.server</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="plm.plm_product_product_normal_form_view_inherit"/>
         <field name="arch" type="xml">
             <xpath expr="//group[@name='technical_infos_group']" position="after">
                 <group col="4" colspan="4">
@@ -34,4 +53,5 @@
             </field>
         </field>
     </record>
+
 </odoo>

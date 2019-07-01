@@ -74,6 +74,8 @@
                                 <field name="create_date" readonly="1"/>
                                 <field name="write_uid"   readonly="1"/>
                                 <field name="write_date"  readonly="1"/>
+                                <field name="attachment_release_user"   readonly="1"/>
+                                <field name="attachment_release_date"  readonly="1"/>
                                 <field name="is_plm" group="base.group_no_one"/>
                             </group>
                         </group>
