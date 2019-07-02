@@ -105,8 +105,7 @@ class ReportSparePartsHeader(models.AbstractModel):
         oldest_dt = None
         if obj_product:
             for linkedBrwsDoc in obj_product.linkeddocuments:
-                create_date_str = linkedBrwsDoc.create_date
-                create_date = datetime.strptime(create_date_str, DEFAULT_SERVER_DATETIME_FORMAT)
+                create_date = linkedBrwsDoc.create_date
                 if oldest_dt is None or create_date < oldest_dt:
                     oldest_dt = create_date
                     oldest_obj = linkedBrwsDoc
