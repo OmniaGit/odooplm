@@ -700,7 +700,7 @@ class PlmDocument(models.Model):
     @api.model
     def is_plm_state_writable(self):
         for customObject in self:
-            if customObject.state in PLM_NO_WRITE_STATE:
+            if customObject.state not in PLM_NO_WRITE_STATE:
                 logging.info("state %r not in %r" % (customObject.state, PLM_NO_WRITE_STATE))
                 return False
         return True
