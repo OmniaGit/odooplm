@@ -559,8 +559,10 @@ class PlmDocument(models.Model):
         out = []
         for ir_attachment_id in self:
             ir_attachment_id.setCheckContextWrite(check)
-            objId = ir_attachment_id.write({'writable': writable,
-                                            'state': state})
+            newContext = self.env.context.copy()
+            newContext['check'] = False
+            objId = ir_attachment_id.with_context(newContext).write({'writable': writable,
+                                                                     'state': state})
             if objId:
                 ir_attachment_id.wf_message_post(body=_('Status moved to: %s.' % (USE_DIC_STATES[state])))
                 out.append(objId)
@@ -700,7 +702,7 @@ class PlmDocument(models.Model):
     @api.model
     def is_plm_state_writable(self):
         for customObject in self:
-            if customObject.state not in PLM_NO_WRITE_STATE:
+            if customObject.state in PLM_NO_WRITE_STATE:
                 logging.info("state %r not in %r" % (customObject.state, PLM_NO_WRITE_STATE))
                 return False
         return True
