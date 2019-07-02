@@ -556,13 +556,15 @@ class PlmDocument(models.Model):
             :state define new product state
             :check do state verification in component write
         """
-        self.setCheckContextWrite(check)
-        objId = self.write({'writable': writable,
-                            'state': state
-                            })
-        if objId:
-            self.wf_message_post(body=_('Status moved to: %s.' % (USE_DIC_STATES[state])))
-        return objId
+        out = []
+        for ir_attachment_id in self:
+            ir_attachment_id.setCheckContextWrite(check)
+            objId = ir_attachment_id.write({'writable': writable,
+                                            'state': state})
+            if objId:
+                ir_attachment_id.wf_message_post(body=_('Status moved to: %s.' % (USE_DIC_STATES[state])))
+                out.append(objId)
+        return out
 
     @api.multi
     def action_draft(self):
