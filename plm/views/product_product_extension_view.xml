@@ -144,11 +144,9 @@
                         <group name="options" groups="base.group_user">
                             <group>
                                 <field name="sale_ok"/>
-                                <label for="sale_ok"/>
                             </group>
                             <group>
                                 <field name="purchase_ok"/>
-                                <label for="purchase_ok"/>
                             </group>
                         </group>
                     </group>
