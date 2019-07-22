@@ -75,7 +75,7 @@ class Plm_box_document(models.Model):
         return userBrws.name
 
     @api.model
-    def getNewSequencedName(self, vals):
+    def getNewSequencedName(self, vals={}):
         return self.env.get('ir.sequence').get('plm.document')
 
     @api.model
