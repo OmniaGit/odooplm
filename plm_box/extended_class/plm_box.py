@@ -24,6 +24,7 @@ from odoo import models
 from odoo import fields
 from odoo import _
 from odoo import api
+import logging
 
 import datetime
 from dateutil import parser
@@ -146,7 +147,15 @@ class Plm_box(models.Model):
         if not vals.get('name', False):
             name = self.getNewSequencedName()
             vals['name'] = name
-        return super(Plm_box, self).create(vals)
+        try:
+            if 'groups_rel' in vals:
+                vals['groups_rel'][0] = tuple(vals['groups_rel'][0])
+            if 'user_rel_id' in vals:
+                vals['user_rel_id'][0] = tuple(vals['user_rel_id'][0])
+            return super(Plm_box, self).create(vals)
+        except Exception as ex:
+            logging.error(vals)
+            logging.error(ex)
 
     @api.multi
     def write(self, vals):
@@ -158,6 +167,8 @@ class Plm_box(models.Model):
             if name in [False, '']:
                 name = self.getNewSequencedName()
                 vals['name'] = name
+        if 'document_rel' in vals:
+            vals['document_rel'][0] = tuple(vals['document_rel'][0])
         return super(Plm_box, self).write(vals)
 
     @api.model
@@ -252,10 +263,10 @@ class Plm_box(models.Model):
         userBrws = self.env.get('res.users').browse(self.env.uid)
         if userBrws:
             if userBrws.partner_id:
-                avaibleIds = self.search([('message_follower_ids.id', '=', userBrws.partner_id.id)]).ids
-                for idd in avaibleIds:
-                    if idd not in avaibleBoxIds:
-                        avaibleBoxIds.append(idd)
+                mail_follow_ids = self.env['mail.followers'].search([('res_model', '=', 'plm.box'), ('partner_id', '=', userBrws.partner_id.id)])
+                for mail_follow_id in mail_follow_ids:
+                    if mail_follow_id.res_id not in avaibleBoxIds:
+                        avaibleBoxIds.append(mail_follow_id.res_id)
         return avaibleBoxIds
 
     @api.model
@@ -536,7 +547,7 @@ class Plm_box(models.Model):
         return [], False
 
     @api.model
-    def getBoxesStructureFromServer(self, primaryBoxes):
+    def getBoxesStructureFromServer(self, primaryBoxes=[]):
         '''
             *** CLIENT ***
             Function called by "Add" button in the plm client
