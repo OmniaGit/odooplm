@@ -49,6 +49,14 @@ class Plm_box_document(models.Model):
 
     name = fields.Char(_('Attachment Name'), required=False, readonly=True)
 
+    @api.multi
+    def download_box_document(self):
+        return {
+            'type': 'ir.actions.act_url',
+            'name': 'contract',
+            'url': '/web/content/plm.document/%s/datas/%s?download=true' % (self.id, self.datas_fname),
+        }
+
     @api.model
     def create(self, vals):
         if not vals.get('name', False):

@@ -25,7 +25,7 @@
                         <field name="document_rel">
                             <tree>
                                 <field name="datas_fname"/>
-                                <field name="datas" widget="download_link" options="{'filename': 'datas_fname'}" string="File"/>
+                                <button name="download_box_document" type="object" icon="fa-download"/>                                
                                 <field name="revisionid" string="Revision"/>
                                 <field name="state"/>
                                 <field name="checkout_user"/>
