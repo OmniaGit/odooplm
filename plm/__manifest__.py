@@ -57,6 +57,9 @@ Key Features :
     * Engineering Bill of Materials
     * Spare Parts BoM & Reports
     * Compare BoMs
+    * PLM
+    * DMS
+    * PDM
 
 
 Supported Editors :
