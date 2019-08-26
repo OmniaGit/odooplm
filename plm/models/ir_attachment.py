@@ -593,8 +593,10 @@ class PlmDocument(models.Model):
             if lastDocBrws:
                 lastDocBrws.commonWFAction(False, 'obsoleted', False)
             if oldObject.ischecked_in():
-                oldObject.attachment_release_user = self.env.uid
-                oldObject.attachment_release_date = datetime.utcnow()
+                ctx = self.env.context.copy()
+                ctx['check'] = False
+                oldObject.with_context(ctx).attachment_release_user = self.env.uid
+                oldObject.with_context(ctx).attachment_release_date = datetime.utcnow()
                 to_release += oldObject
         if to_release:
             to_release.commonWFAction(False, 'released', False)
