@@ -277,11 +277,12 @@ class PlmComponent(models.Model):
 
         if svalue:
             cnt = fmt.count('%s')
-
             if cnt == 2:
                 retvalue = fmt % (slabel, svalue)
             elif cnt == 1:
                 retvalue = fmt % (svalue)
+            elif cnt == 0 and fmt:
+                retvalue = fmt
         return retvalue
 
     def computeDescription(self, thisObject, initialVal, std_umc1, std_umc2, std_umc3, std_value1, std_value2, std_value3):
