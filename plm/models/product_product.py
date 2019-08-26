@@ -257,6 +257,8 @@ class PlmComponent(models.Model):
             mixing both label and value or only label.
         """
         retvalue = ''
+        if fmt == False:
+            return retvalue
         if value:
             if isinstance(value, float):
                 svalue = "%g" % value
