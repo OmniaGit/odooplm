@@ -171,6 +171,7 @@
         </field>
     </record>
 
+
     <record id="plm_product_product_normal_form_view_inherit" model="ir.ui.view">
         <field name="name">plm.product.product.normal.form.view.inherit</field>
         <field name="model">product.product</field>
@@ -197,19 +198,22 @@
                            statusbar_colors='{"undermodify":"red","obsoleted":"red"}'
                            readonly="1"/>
             </xpath>
+                               
             <xpath expr="//notebook[last()]" position="before">
                <field name="is_engcode_editable" invisible="1"/>
                <group col="6">
                     <field name="engineering_code" attrs="{'readonly':[('is_engcode_editable','=', False)]}"/>
                     <field name="engineering_revision" attrs="{'readonly':[('is_engcode_editable','=', False)]}"/>
                     <field name="state"/>
+	                <field name="std_description" colspan="6"
+	                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+	                <field name="source_product" invisible="1"/>
+	                <field name="desc_modify" colspan="6"
+	                       attrs="{'readonly':[('state','in',['released','obsoleted'])], 'invisible': [('engineering_revision', '=', 0)]}"/>
                </group>
             </xpath>
             <xpath expr="//notebook[last()]" position="inside">
                                     <page name="technical_infos" string="Technical Information">
-                            <group name="group_general">
-                                <field name="categ_id" string="Category"/>
-                            </group>
                             <group colspan="4" col="4" name="technical_infos_group">
                                 <field name="tmp_material"
                                        attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
