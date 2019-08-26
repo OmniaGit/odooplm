@@ -48,6 +48,8 @@ class PlmMaterial(models.Model):
 
     @api.multi
     def copy(self, default=None):
+        if not default:
+            default = {}
         default['name'] = self.name + ' (copy)' 
         return super(PlmMaterial, self).copy(default=default)
 
