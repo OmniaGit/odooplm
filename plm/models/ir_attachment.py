@@ -788,7 +788,7 @@ class PlmDocument(models.Model):
                 ir_attachment_id._check_in()
             else:
                 if ir_attachment_id.is_checkout:
-                    raise UserWarning("Unable to check out. The owner of this document is %s" % ir_attachment_id.checkout_user)
+                    raise UserError("Unable to check out. The owner of this document is %s" % ir_attachment_id.checkout_user)
                 else:
                     ir_attachment_id.checkout("localhost", r"check/web")
 

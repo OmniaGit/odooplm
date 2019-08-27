@@ -50,25 +50,28 @@ class ProductProductExtension(models.Model):
             variant_is_installed = True
         collect_list = []
 
-        def get_previous_normal_bom(bomBrws):
+        def get_previous_normal_bom(bomBrws, exclude_bom_id=False):
             out_bom_brws = []
             engineering_code = bomBrws.product_tmpl_id.engineering_code
-            previous_rev_product_brws_list = prod_tmpl_obj.search([('engineering_code', '=', engineering_code)])
+            previous_rev_product_brws_list = prod_tmpl_obj.search([('engineering_code', '=', engineering_code)], order='engineering_revision desc')
             for prod_brws in previous_rev_product_brws_list:
                 old_bom_brws_list = bom_type.search([('product_tmpl_id', '=', prod_brws.id),
                                                      ('type', '=', new_bom_type)])
                 for old_bom_brws in old_bom_brws_list:
+                    if old_bom_brws == exclude_bom_id:
+                        continue
                     out_bom_brws.append(old_bom_brws)
-                break
+                if out_bom_brws:
+                    break
             return out_bom_brws
 
         e_bom_id = False
-        new_id_bom = False
+        new_nbom_id = False
         if new_bom_type not in ['normal', 'phantom']:
             raise UserError(_("Could not convert source bom to %r" % new_bom_type))
         product_template_id = obj_product_product_brw.product_tmpl_id.id
         bom_brws_list = bom_type.search([('product_tmpl_id', '=', product_template_id),
-                                         ('type', '=', new_bom_type)])
+                                         ('type', '=', new_bom_type)], order='engineering_revision DESC', limit=1)
         if bom_brws_list:
             for bom_brws in bom_brws_list:
                 for bom_line in bom_brws.bom_line_ids:
@@ -76,14 +79,14 @@ class ProductProductExtension(models.Model):
                 break
         else:
             eng_bom_brws_list = bom_type.search([('product_tmpl_id', '=', product_template_id),
-                                                 ('type', '=', 'ebom')])
+                                                 ('type', '=', 'ebom')], order='engineering_revision DESC', limit=1)
             if not eng_bom_brws_list:
                 logging.info('No EBOM or NBOM found for template id: {}'.format(product_template_id))
                 return []
             for e_bom_brws in eng_bom_brws_list:
                 e_bom_id = e_bom_brws.id
                 new_bom_brws = e_bom_brws.copy({})
-                new_id_bom = new_bom_brws
+                new_nbom_id = new_bom_brws
                 values = {'name': obj_product_product_brw.name,
                           'product_tmpl_id': product_template_id,
                           'type': new_bom_type,
@@ -109,18 +112,17 @@ class ProductProductExtension(models.Model):
                 else:
                     for line_brws in new_bom_brws.bom_line_ids:
                         self.create_bom_from_ebom(line_brws.product_id, new_bom_type, summarize=summarize)
+                        line_brws.type = new_bom_type
+                        line_brws.ebom_source_id = e_bom_id
                 obj_product_product_brw.wf_message_post(body=_('Created %r' % new_bom_type))
                 break
-        if new_id_bom and e_bom_id and migrate_custom_lines:
-            bom_brws = bom_type.browse(e_bom_id)
-            old_bom_list = get_previous_normal_bom(bom_brws)
+        if new_nbom_id and e_bom_id and migrate_custom_lines:
+            # if e_bom_id --> normal BOM was not existing
+            ebom_id = bom_type.browse(e_bom_id)
+            old_bom_list = get_previous_normal_bom(ebom_id, new_nbom_id)
             for old_n_bom in old_bom_list:
-                new_bom_brws = new_id_bom
-                if old_n_bom != old_bom_list[
-                    -1]:  # Because in the previous loop I already have a copy of the normal BOM
-                    new_bom_brws = bom_type.copy(new_id_bom)
                 collect_list.extend(
-                    self.addOldBomLines(old_n_bom, new_bom_brws, bom_l_type, new_bom_type, bom_brws, bom_type,
+                    self.addOldBomLines(old_n_bom, new_nbom_id, bom_l_type, new_bom_type, ebom_id, bom_type,
                                         summarize))
         return collect_list
 
@@ -130,18 +132,18 @@ class ProductProductExtension(models.Model):
 
         def verify_summarize(product_id, old_prod_qty):
             to_return = old_prod_qty, False
+            template_name = new_bom_brws.product_tmpl_id.name
+            out_msg = ''
             for new_line in new_bom_brws.bom_line_ids:
                 if new_line.product_id.id == product_id:
-                    template_name = new_bom_brws.product_tmpl_id.name
                     product_name = new_line.product_id.name
-                    out_msg = 'In BOM "{}" '.format(template_name)
                     to_return = 0, False
                     if summarize:
-                        out_msg = out_msg + 'line "{}" has been summarized.'.format(product_name)
+                        out_msg = out_msg + 'In BOM "%s" line "%s" has been summarized.' % (template_name, product_name)
                         to_return = new_line.product_qty + old_prod_qty, new_line.id
                     else:
-                        out_msg = out_msg + 'line "%s" has been not summarized.'.format(product_name)
-                        to_return = new_line.product_qty, new_line.id
+                        out_msg = out_msg + 'In BOM "%s" line "%s" has been not summarized.' % (template_name, product_name)
+                        to_return = new_line.product_qty, False
                     collect_list.append(out_msg)
                     return to_return
             return to_return
@@ -231,7 +233,7 @@ class ProductTemporaryNormalBom(osv.osv.osv_memory):
                 obj_boms = obj_brws.env['mrp.bom'].search([('product_tmpl_id', '=', id_template),
                                                            ('type', '=', 'normal')])
                 if obj_boms:
-                    raise UserError(_("Normal BoM for Part {} already exists.".format(obj_boms)))
+                    raise UserError(_("Normal BoM for Part '%s' and revision '%s' already exists." % (obj_boms.product_tmpl_id.engineering_code, obj_boms.product_tmpl_id.engineering_revision)))
                 line_messages_list = product_product_type_object.create_bom_from_ebom(
                     product_browse, 'normal',
                     obj_brws.summarize,
