@@ -128,7 +128,7 @@ class ReportSpareDocumentOne(models.AbstractModel):
     @api.model
     def create_spare_pdf(self, components):
         recursion = True
-        if ReportSpareDocumentOne._name == 'report.plm_spare.pdf_one':
+        if self._name == 'report.plm_spare.pdf_one':
             recursion = False
         self.processed_objs = []
 
