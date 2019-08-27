@@ -6,15 +6,15 @@
         <field name="type">form</field>
         <field name="arch" type="xml">
             <form string="Creation of Spare Bom">
-                <div>Are you sure you want to create a new Spare Bom?</div>div>
+                <div>Are you sure you want to create a new Spare Bom?</div>
                 <group>
                     <field name="summarize"/>
                 </group>
                 <separator string="" colspan="4"/>
-                <group colspan="4" col="4">
+                <footer colspan="4" col="4">
                     <button special="cancel" string="Cancel"/>
                     <button string="Create Spare Bom" name="action_create_spare_bom" type="object"/>
-                </group>
+                </footer>
             </form>
         </field>
     </record>
