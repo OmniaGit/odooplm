@@ -846,9 +846,10 @@ class PlmDocument(models.Model):
         for docBrws in self:
             try:
                 fileExtension = docBrws.getFileExtension(docBrws)
-                if fileExtension in extensions2D:
+                fileExtension = fileExtension.upper()
+                if fileExtension in [x.upper() for x in extensions2D]:
                     docBrws.document_type = '2d'
-                elif fileExtension in extensions3D:
+                elif fileExtension in [x.upper() for x in extensions3D]:
                     docBrws.document_type = '3d'
                 else:
                     docBrws.document_type = 'other'
