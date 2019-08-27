@@ -652,6 +652,12 @@ class MrpBomExtension(models.Model):
             bom_brws.rebase_bom_weight()
         return ret
 
+    @api.model
+    def create(self, vals):
+        ret = super(MrpBomExtension, self).create(vals)
+        ret.rebase_bom_weight()
+        return ret
+        
     @api.multi
     def copy(self, default={}):
         """

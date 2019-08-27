@@ -36,6 +36,13 @@ class MrpBomLineExtension(models.Model):
     _inherit = 'mrp.bom.line'
     _order = "itemnum"
 
+    @api.multi
+    def write(self, vals):
+        ret = super(MrpBomLineExtension, self).write(vals)
+        for line in self:
+            line.bom_id.rebase_bom_weight()
+        return ret
+        
     @api.one
     def _get_child_bom_lines(self):
         """
