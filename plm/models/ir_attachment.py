@@ -1130,7 +1130,11 @@ class PlmDocument(models.Model):
             read_docs.extend(self._relateddocs(oid, kinds, listed_documents, False))
             read_docs.extend(self._relatedbydocs(oid, kinds, listed_documents, False))
         for document in self.browse(read_docs):
-            related_documents.append([document.id, document.name, document.preview, document.revisionid, document.description])
+            related_documents.append([document.id,
+                                      document.name,
+                                      '' if document.preview in [None, False] else document.preview,
+                                      document.revisionid,
+                                      document.description])
         return related_documents
 
     @api.model
@@ -1152,7 +1156,7 @@ class PlmDocument(models.Model):
             logging.warning(
                 'Unbale to find document %r with revision %r.\n Cannot get related documents.' % (docName, docRev))
             return False
-        return documentBrws.GetRelatedDocs()
+        return documentBrws.GetRelatedDocs(documentBrws.ids)
 
     @api.model
     def getServerTime(self, _unusedVal=False):
