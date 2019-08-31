@@ -1519,7 +1519,7 @@ class PlmDocument(models.Model):
                     raise UserError(msg)
                 return False, msg
             if docBrws.state != 'draft':
-                msg = _("Unable to check-Outcheck-Out a document that is in state %r" % docBrws.state)
+                msg = _("Unable to check-Out a document that is in state %r" % docBrws.state)
                 if showError:
                     raise UserError(msg)
                 return False, msg
