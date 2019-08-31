@@ -858,8 +858,12 @@ class PlmDocument(models.Model):
 
     @api.multi
     def _get_n_rel_doc(self):
+        ir_attachment_relation = self.env['ir.attachment.relation']
         for ir_attachment_id in self:
-            ir_attachment_id.document_rel_count = len(ir_attachment_id.linkedcomponents)
+            ir_a_id = ir_attachment_id.id
+            ir_attachment_id.document_rel_count = ir_attachment_relation.search_count(['|',
+                                                                                       ('parent_id', '=', ir_a_id),
+                                                                                       ('child_id', '=', ir_a_id)])
 
     revisionid = fields.Integer(_('Revision Index'),
                                 default=0,
