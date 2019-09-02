@@ -38,7 +38,7 @@ class UploadDocument(Controller):
             'X-CSRF-TOKEN': request.csrf_token(),
         })
 
-    @route('/plm_document_upload/upload', type='http', auth='user', methods=['POST'])
+    @route('/plm_document_upload/upload', type='http', auth='user', methods=['POST'], csrf=False)
     @webservice
     def upload(self, mod_file=None, doc_id=False, filename='', **kw):
         logging.info('start upload %r' % (doc_id))
@@ -57,9 +57,9 @@ class UploadDocument(Controller):
             logging.info('upload %r' % (doc_id))
             return Response('Upload succeeded', status=200)
         logging.info('no upload %r' % (doc_id))
-        return Response('Failed upload', status=200)
+        return Response('Failed upload', status=400)
 
-    @route('/plm_document_upload/upload_pdf', type='http', auth='user', methods=['POST'])
+    @route('/plm_document_upload/upload_pdf', type='http', auth='user', methods=['POST'], csrf=False)
     @webservice
     def upload_pdf(self, mod_file=None, doc_id=False, **kw):
         logging.info('start upload PDF %r' % (doc_id))
@@ -74,9 +74,26 @@ class UploadDocument(Controller):
             logging.info('upload %r' % (doc_id))
             return Response('Upload succeeded', status=200)
         logging.info('no upload %r' % (doc_id))
-        return Response('Failed upload', status=200)
+        return Response('Failed upload', status=400)
 
-    @route('/plm_document_upload/download', type='http', auth='user', methods=['GET'])
+    @route('/plm_document_upload/upload_preview', type='http', auth='user', methods=['POST'], csrf=False)
+    @webservice
+    def upload_preview(self, mod_file=None, doc_id=False, **kw):
+        logging.info('start upload preview %r' % (doc_id))
+        if doc_id:
+            logging.info('start json %r' % (doc_id))
+            doc_id = json.loads(doc_id)
+            logging.info('start write %r' % (doc_id))
+            value1 = mod_file.stream.read()
+            request.env['ir.attachment'].browse(doc_id).write(
+                {'preview': base64.b64encode(value1),
+                 })
+            logging.info('upload %r' % (doc_id))
+            return Response('Upload succeeded', status=200)
+        logging.info('no upload %r' % (doc_id))
+        return Response('Failed upload', status=400)
+
+    @route('/plm_document_upload/download', type='http', auth='user', methods=['GET'], csrf=False)
     @webservice
     def download(self, requestvals, **kw):
         if not requestvals:
