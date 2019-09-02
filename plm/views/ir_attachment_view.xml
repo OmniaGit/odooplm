@@ -50,6 +50,16 @@
                                />
                         
                   </button>
+	                <button name="open_related_document_revisions"
+	                        type="object"
+	                        string="BOM Rev."
+	                        class="oe_stat_button"
+	                        icon="fa-tasks"
+	                        attrs="{'invisible':[('attachment_revision_count','&lt;=','1')]}">
+	                        <field name="attachment_revision_count"
+	                               string=" "
+	                               widget="statinfo"/>
+	                </button>
                   <button name="check_out_user"
                        icon="fa-user"
                        attrs="{'invisible': ['|',('checkout_user', '=', 'False'),

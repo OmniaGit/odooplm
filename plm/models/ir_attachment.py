@@ -906,6 +906,15 @@ class PlmDocument(models.Model):
     is_plm = fields.Boolean('Is a plm Document')
     attachment_release_user = fields.Many2one('res.users', string=_("Release User"))
     attachment_release_date = fields.Datetime(string=_('Release Datetime'))
+    attachment_revision_count = fields.Integer(compute='_attachment_revision_count')
+
+    @api.multi
+    def _attachment_revision_count(self):
+        """
+        get All version product_tempate based on this one
+        """
+        for ir_attachment_id in self:
+            ir_attachment_id.attachment_revision_count = ir_attachment_id.search_count([('name', '=', ir_attachment_id.name)])
 
     @api.model
     def CheckedIn(self, files, default=None):
@@ -1843,4 +1852,15 @@ class PlmDocument(models.Model):
         # sort result according to the original sort ordering
         result = [id for id in orig_ids if id in ids]
         return len(result) if count else list(result)
+
+    @api.multi
+    def open_related_document_revisions(self):
+        ir_attachment_ids = self.search([('name', '=', self.name)])
+        return {'name': _('Attachment Revs.'),
+                'res_model': 'ir.attachment',
+                'view_type': 'form',
+                'view_mode': 'tree,form',
+                'type': 'ir.actions.act_window',
+                'domain': [('id', 'in', ir_attachment_ids.ids)],
+                'context': {}}
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
