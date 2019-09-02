@@ -14,6 +14,16 @@
                         attrs="{'invisible': [('type', '=', 'service')]}"
                         icon="fa-gears">
                 </button>
+                <button name="open_related_revisions"
+                        type="object"
+                        string="Rev."
+                        class="oe_stat_button"
+                        icon="fa-tasks"
+                        attrs="{'invisible':[('revision_count','&lt;=','1')]}">
+                        <field name="revision_count"
+                               string=" "
+                               widget="statinfo"/>
+                </button>
             </div>
             <div name="options" position="before">
                 <field name="is_engcode_editable" invisible="1"/>

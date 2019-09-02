@@ -1132,7 +1132,7 @@ class PlmDocument(models.Model):
         for document in self.browse(read_docs):
             related_documents.append([document.id,
                                       document.name,
-                                      '' if document.preview in [None, False] else document.preview,
+                                      '' if document.preview is None else document.preview,
                                       document.revisionid,
                                       document.description])
         return related_documents

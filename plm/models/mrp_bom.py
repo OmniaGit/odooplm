@@ -136,6 +136,8 @@ class MrpBomExtension(models.Model):
                                           help=_("The revision of the product."),
                                           store=False)
 
+    bom_revision_count = fields.Integer(related='product_tmpl_id.revision_count')
+
     @api.model
     def init(self):
         self._packed = []
@@ -657,7 +659,7 @@ class MrpBomExtension(models.Model):
         ret = super(MrpBomExtension, self).create(vals)
         ret.rebase_bom_weight()
         return ret
-        
+
     @api.multi
     def copy(self, default={}):
         """
@@ -730,3 +732,15 @@ class MrpBomExtension(models.Model):
                     'domain': [('id', 'in', bom_line_ids)],
                     'context': {"group_by": ['bom_id']},
                     }
+
+    @api.multi
+    def open_related_bom_revisions(self):
+        bom_ids = self.search([('product_tmpl_id', 'in', self.product_tmpl_id.getAllVersionTemplate().ids)])
+        return {'name': _('B.O.M.S'),
+                'res_model': 'mrp.bom',
+                'view_type': 'form',
+                'view_mode': 'tree,form',
+                'type': 'ir.actions.act_window',
+                'domain': [('id', 'in', bom_ids.ids)],
+                'context': {}}
+

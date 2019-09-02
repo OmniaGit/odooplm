@@ -52,6 +52,16 @@
             <div class="oe_button_box" name="button_box" position="inside">
                 <button name="open_related_bom_lines" type="object" string="Related BOM Lines"
                         class="oe_stat_button" icon="fa-tasks"/>
+                <button name="open_related_bom_revisions"
+                        type="object"
+                        string="BOM Rev."
+                        class="oe_stat_button"
+                        icon="fa-tasks"
+                        attrs="{'invisible':[('bom_revision_count','&lt;=','1')]}">
+                        <field name="bom_revision_count"
+                               string=" "
+                               widget="statinfo"/>
+                </button>
             </div>
             <field name="product_tmpl_id" position="replace">
                 <field name="product_tmpl_id" context="{'default_type': 'product'}"
@@ -210,9 +220,20 @@
                     <div class="oe_button_box" name="button_box">
                         <button name="open_related_bom_lines" type="object" string="Related BOM Lines"
                                 class="oe_stat_button" icon="fa-tasks"/>
+		                <button name="open_related_bom_revisions"
+		                        type="object"
+		                        string="BOM Rev."
+		                        class="oe_stat_button"
+		                        icon="fa-tasks"
+		                        attrs="{'invisible':[('bom_revision_count','&lt;=','1')]}">
+		                        <field name="bom_revision_count"
+		                               string=" "
+		                               widget="statinfo"/>
+		                </button>
                     </div>
                     <group>
                         <field name="product_tmpl_id" options="{'no_open':True,'no_create':True}"/>
+                        <field name="engineering_revision"/>
                         <field name="product_id" groups="product.group_product_variant"/>
                         <field name="state" readonly="True"/>
                         <field name="product_qty" class="oe_inline"/>

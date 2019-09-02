@@ -96,6 +96,7 @@
                 </header>
 
                 <sheet>
+                
                     <field name="type" invisible="1"/>
                     <field name="name" string="Description"/>
                     <group name="plm_fields_area" colspan="6" col="2">
@@ -198,7 +199,20 @@
                            statusbar_colors='{"undermodify":"red","obsoleted":"red"}'
                            readonly="1"/>
             </xpath>
-                               
+            <!--  -->
+            <xpath expr="//button[@name='action_view_mos']" position="after">
+                <button name="open_related_revisions"
+                        type="object"
+                        string="Rev.s."
+                        class="oe_stat_button"
+                        icon="fa-tasks"
+                        attrs="{'invisible':[('revision_count','&lt;=','1')]}"
+                        >
+                        <field name="revision_count"
+                               string=" "
+                               widget="statinfo"/>
+                </button>
+            </xpath>      
             <xpath expr="//notebook[last()]" position="before">
                <field name="is_engcode_editable" invisible="1"/>
                <group col="6">

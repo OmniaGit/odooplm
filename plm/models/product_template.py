@@ -87,6 +87,8 @@ class ProductTemplateExtension(models.Model):
                                           default=True)
     is_engcode_editable = fields.Boolean(_('Engineering Editable'), default=True, compute='_compute_eng_code_editable')
 
+    revision_count = fields.Integer(compute='_revisions_count')
+
     _sql_constraints = [
         ('partnumber_uniq', 'unique (engineering_code,engineering_revision)', _('Part Number has to be unique!'))
     ]
@@ -118,6 +120,31 @@ class ProductTemplateExtension(models.Model):
                 'res_id': product_id,
                 'views': [(form_id, 'form')],
             }
+
+    @api.model
+    def getAllVersionTemplate(self):
+        """
+        get All version product_tempate based on this one
+        """
+        return self.search([('engineering_code', '=', self.engineering_code)])
+
+    @api.multi
+    def _revisions_count(self):
+        """
+        get All version product_tempate based on this one
+        """
+        for product_template_id in self:
+            product_template_id.revision_count = product_template_id.search_count([('engineering_code', '=', product_template_id.engineering_code)])
+
+    @api.multi
+    def open_related_revisions(self):
+        return {'name': _('Products'),
+                'res_model': 'product.template',
+                'view_type': 'form',
+                'view_mode': 'tree,form',
+                'type': 'ir.actions.act_window',
+                'domain': [('id', 'in', self.getAllVersionTemplate.ids)],
+                'context': {}}
 
     @api.model
     def init(self):

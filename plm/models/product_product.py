@@ -149,6 +149,15 @@ class PlmComponent(models.Model):
     # Don't overload std_umc1, std_umc2, std_umc3 setting them related to std_description because odoo try to set value
     # of related fields and integration users doesn't have write permissions in std_description. The result is that
     # integration users can't create products if in changed values there is std_description
+    revision_count = fields.Integer(compute='_revisions_count')
+
+    @api.multi
+    def _revisions_count(self):
+        """
+        get All version product_tempate based on this one
+        """
+        for product_product_id in self:
+            product_product_id.revision_count = product_product_id.search_count([('engineering_code', '=', product_product_id.engineering_code)])
 
     @api.onchange('std_description')
     def on_change_stddesc(self):
@@ -1537,6 +1546,17 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         return self.search([
             ('engineering_code', '=', engCode),
             ('engineering_revision', '=', engRev)])
+
+    @api.multi
+    def open_related_revisions(self):
+        product_product_ids = self.search([('engineering_code', '=', self.engineering_code)])
+        return {'name': _('Products'),
+                'res_model': 'product.product',
+                'view_type': 'form',
+                'view_mode': 'tree,form',
+                'type': 'ir.actions.act_window',
+                'domain': [('id', 'in', product_product_ids.ids)],
+                'context': {}}
 
 
 class PlmTemporayMessage(osv.osv.osv_memory):
