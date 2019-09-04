@@ -123,23 +123,44 @@ class PlmDocument(models.Model):
         newIds = self._getlastrev(self.ids)
         return self.browse(newIds).read(['datas_fname'])
 
+    @api.model
+    def _isDownloadableFromServer(self, server_name):
+        """
+            Check in the file is downloadable from server
+            this function is implemented in the plm_document_multi_site module
+        """
+        return False, ''
+
     @api.multi
-    def _data_get_files(self, listedFiles=([], []), forceFlag=False):
+    def _data_get_files(self,
+                        listedFiles=([], []),
+                        forceFlag=False,
+                        local_server_name=True):
         """
             Get Files to return to Client
         """
+        if isinstance(local_server_name, bool):
+            local_server_name = 'odoo'
+        local_server_name_errors = []
         result = []
         datefiles, listfiles = listedFiles
         for objDoc in self:
+            if local_server_name != 'odoo':
+                responce, message = objDoc._isDownloadableFromServer(local_server_name)
+                if not responce:
+                    local_server_name_errors.append(message)
             if objDoc.type == 'binary':
                 timeDoc = self.getLastTime(objDoc.id)
                 timeSaved = time.mktime(timeDoc.timetuple())
                 try:
                     isCheckedOutToMe = objDoc._is_checkedout_for_me()
                     if not (objDoc.datas_fname in listfiles):
+                        datas = False
+                        if local_server_name == 'odoo':
+                            datas = objDoc.datas
                         result.append((objDoc.id,
                                        objDoc.datas_fname,
-                                       objDoc.datas,
+                                       datas,
                                        isCheckedOutToMe,
                                        timeDoc))
                     else:
@@ -150,9 +171,12 @@ class PlmDocument(models.Model):
                                                                      '%Y-%m-%d %H:%M:%S').timetuple())
                             isNewer = (timeSaved - timefile) > 5
                         if (isNewer and not (isCheckedOutToMe)):
+                            datas = False
+                            if local_server_name == 'odoo':
+                                datas = objDoc.datas
                             result.append((objDoc.id,
                                            objDoc.datas_fname,
-                                           objDoc.datas,
+                                           datas,
                                            isCheckedOutToMe,
                                            timeDoc))
                         else:
@@ -169,6 +193,11 @@ class PlmDocument(models.Model):
                                    False,
                                    True,
                                    self.getServerTime()))
+        if local_server_name != 'odoo':
+            if local_server_name_errors:
+                return True, local_server_name_errors
+            else:
+                return False, result
         return result
 
     @api.multi
@@ -1065,7 +1094,9 @@ class PlmDocument(models.Model):
         return self.browse(docArray).read(['datas_fname'])
 
     @api.model
-    def GetSomeFiles(self, request, default=None):
+    def GetSomeFiles(self,
+                     request,
+                     default=None):
         """
             Extract documents to be returned
         """
@@ -1679,10 +1710,9 @@ class PlmDocument(models.Model):
             if graterCompBrws:
                 compAttrs['can_be_revised'] = graterCompBrws.canBeRevised()
         return compAttrs
-        
+
     @api.model
     def checkSyncImportStructure(self, args):
-
         def recursion(parentNode):
             docAttrs = parentNode.get('DOCUMENT_ATTRIBUTES', {})
             compAttrs = parentNode.get('PRODUCT_ATTRIBUTES', {})
@@ -1694,7 +1724,6 @@ class PlmDocument(models.Model):
                 updatedNode = recursion(node)
                 parentNode['RELATIONS'][index] = updatedNode
             return parentNode
-            
         jsonNode = args[0]
         rootNode = json.loads(jsonNode)
         rootNode = recursion(rootNode)
