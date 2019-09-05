@@ -76,7 +76,7 @@ class PlmBackupDocument(models.Model):
         documentType = self.env['ir.attachment']
         for plm_backup_document_id in self:
             if self.env.context:
-                if not plm_backup_document_id.userid.has_group('plm.group_plm_admin'):
+                if not self.env.user.has_group('plm.group_plm_admin'):
                     logging.warning("unlink : Unable to remove the required documents. You aren't authorized in this context.")
                     raise UserError(_("Unable to remove the required document.\n You aren't authorized in this context."))
             if plm_backup_document_id.documentid:
