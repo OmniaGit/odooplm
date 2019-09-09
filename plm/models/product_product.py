@@ -1558,6 +1558,25 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                 'domain': [('id', 'in', product_product_ids.ids)],
                 'context': {}}
 
+    @api.model
+    def createFromProps(self, productAttribute):
+        out_product_produc_id = self.env['product.product']
+        found = False
+        engineering_name = productAttribute.get('engineering_code', False)
+        if not engineering_name:
+            return False
+        for product_produc_id in self.search([('engineering_code', '=', engineering_name),
+                                              ('engineering_revision', '=', productAttribute.get('engineering_revision', '0'))]):
+            out_product_produc_id = product_produc_id
+            found = True
+            break
+        if found:  # Write
+            if product_produc_id.state not in ['released', 'obsoleted']:
+                out_product_produc_id.write(productAttribute)
+        else:  # write
+            out_product_produc_id = self.create(productAttribute)
+        return out_product_produc_id
+
 
 class PlmTemporayMessage(osv.osv.osv_memory):
     _name = "plm.temporary.message"

@@ -124,6 +124,22 @@ class PlmDocumentRelations(models.Model):
             saveChild(relation)
         return False
 
-PlmDocumentRelations()
+    @api.model
+    def saveDocumentRelationNew(self, parent_ir_attachment_id, child_ir_attachment_id, linkType='HiTree'):
+        if not parent_ir_attachment_id and child_ir_attachment_id:
+            return False
+        if self.search_count([('parent_id', '=', parent_ir_attachment_id),
+                              ('child_id', '=', child_ir_attachment_id),
+                              ('link_kind', '=', linkType)]):
+            return True
+        self.create({'parent_id': parent_ir_attachment_id,
+                     'child_id': child_ir_attachment_id,
+                    'link_kind': linkType})
+        return True
+
+    @api.model
+    def removeChildRelation(self, parent_ir_attachment_id, linkType='HiTree'):
+        self.search([('parent_id', '=', parent_ir_attachment_id),
+                     ('link_kind', '=', linkType)]).unlink()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

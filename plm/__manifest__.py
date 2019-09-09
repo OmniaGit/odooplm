@@ -74,6 +74,7 @@ Supported Editors :
             # security
             'security/base_plm_security.xml',
             # views
+            'views/plm_dbthread.xml',
             'views/import_stylesheet.xml',
             'views/mrp_extension.xml',
             'views/plm_backupdoc_view.xml',

@@ -1393,7 +1393,7 @@ class PlmDocument(models.Model):
         populateStructure(structure=objStructure)
 
         # Save the document
-        logging.info("Savind Document")
+        logging.info("Saving Document")
         alreadyEvaluated = []
         for documentAttribute in list(documentAttributes.values()):
             try:
@@ -1892,4 +1892,77 @@ class PlmDocument(models.Model):
                 'type': 'ir.actions.act_window',
                 'domain': [('id', 'in', ir_attachment_ids.ids)],
                 'context': {}}
+
+    @api.model
+    def saveSingleLevel(self, clientArg):
+        component_props, document_props, dbThread = clientArg[0]
+        #  generate component
+        product_product_id = self.env['product.product'].createFromProps(component_props)
+        if not product_product_id:
+            logging.warning("Unable to create / get product_prodct from %s" % component_props)
+        #  generate document
+        ir_attachment_id, action = self.env['ir.attachment'].createFromProps(document_props,
+                                                                             dbThread)
+        if not ir_attachment_id:
+            logging.warning("Unable to create / get product_prodct from %s" % document_props)
+        #  generate link
+        if product_product_id and product_product_id:
+            self.env['plm.component.document.rel'].createFromIds(product_product_id,
+                                                                 ir_attachment_id)
+        else:
+            logging.warning("Unable to generate link from product: %s document: %s Thread %s" % (product_product_id, ir_attachment_id, dbThread))
+        return (action,
+                product_product_id.id if product_product_id else False,
+                ir_attachment_id.id if ir_attachment_id else False)
+
+    @api.model
+    def createFromProps(self,
+                        documentAttribute={},
+                        dbThread=False):
+        action = 'upload'
+        document_name = documentAttribute.get("name", False)
+        if not document_name:
+            raise UserError("Unable to create document with empty name")
+
+        found = False
+        ir_attachemnt_id = self.env['ir.attachment']
+        for seached_ir_attachemnt_id in self.search([('name', '=', document_name),
+                                                     ('revisionid', '=', documentAttribute.get('revisionid', 0))]):
+            found = True
+            ir_attachemnt_id = seached_ir_attachemnt_id
+            break
+        if found:  # write
+            if ir_attachemnt_id.state not in ['released', 'obsoleted']:
+                if ir_attachemnt_id.needUpdate():
+                    ir_attachemnt_id.write(documentAttribute)
+                    action = ir_attachemnt_id.canIUpload(dbThread)
+                else:
+                    action = 'jump'
+            else:
+                action = 'jump'
+        else:  # create
+            ir_attachemnt_id = ir_attachemnt_id.create(documentAttribute)
+        return ir_attachemnt_id, action
+
+    @api.multi
+    def canIUpload(self, dbTheread):
+        action = 'upload'
+        plm_dbthread = self.env['plm.dbthread']
+        actualdbThred = int(dbTheread)
+        for ir_attachment_id in self:
+            key = "%s_%s" % (ir_attachment_id.name, ir_attachment_id.revisionid)
+            threadCodelist = plm_dbthread.search([('documement_name_version', '=', key),
+                                                  ('done', '=', False)]).mapped(lambda x: int(x.threadCode))
+            if len(threadCodelist):
+                if actualdbThred < max(threadCodelist):
+                    action = 'jump'
+                    break
+                if actualdbThred > min(threadCodelist):
+                    action = 'wait'
+                    break
+                break
+            else:
+                action = 'jump'  # no activity to perform
+        return action
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

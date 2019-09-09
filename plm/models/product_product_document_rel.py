@@ -18,7 +18,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
 """
 Created on 25 Aug 2016
 
@@ -82,6 +81,12 @@ class PlmComponentDocumentRel(models.Model):
             saveChild(relation)
         return False
 
-PlmComponentDocumentRel()
+    @api.model
+    def createFromIds(self, product_product_id, ir_attachment_id):
+        exsist = self.search_count([('component_id', '=', product_product_id.id),
+                                    ('document_id', '=', ir_attachment_id.id)])
+        if not exsist:
+            product_product_id.linkeddocuments = [(4, ir_attachment_id.id, False)]
+        return True
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

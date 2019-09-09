@@ -697,13 +697,14 @@ class MrpBomExtension(models.Model):
     @api.model
     def add_child_row(self, child_id, source_document_id, relation_attributes, bom_type='normal'):
         """
-        add children rows
+            add children rows
         """
-        relation_attributes.update({'bom_id': self.id,
-                                    'product_id': child_id,
-                                    'source_id': source_document_id,
-                                    'type': bom_type})
-        self.bom_line_ids.ids.append(self.env['mrp.bom.line'].create(relation_attributes).id)
+        if self.id and child_id and source_document_id:
+            relation_attributes.update({'bom_id': self.id,
+                                        'product_id': child_id,
+                                        'source_id': source_document_id,
+                                        'type': bom_type})
+            self.env['mrp.bom.line'].create(relation_attributes).id
 
     @api.multi  # Don't change me with @api.one or I don't work!!!
     def open_related_bom_lines(self):
@@ -744,3 +745,40 @@ class MrpBomExtension(models.Model):
                 'domain': [('id', 'in', bom_ids.ids)],
                 'context': {}}
 
+    @api.model
+    def saveRelationNew(self,
+                        clientArgs):
+        product_product = self.env['product.product']
+        ir_attachment_relation = self.env['ir.attachment.relation']
+        try:
+            domain = [('state', 'in', ['installed', 'to upgrade', 'to remove']), ('name', '=', 'plm_engineering')]
+            apps = self.env['ir.module.module'].sudo().search_read(domain, ['name'])
+            bomType = 'normal'
+            if apps:
+                bomType = 'ebom'
+            parentOdooTuple, childrenOdooTuple = clientArgs
+            _state, parent_product_product_id, parent_ir_attachment_id = parentOdooTuple
+            parent_product_product_id = product_product.browse(parent_product_product_id)
+            product_tmpl_id = parent_product_product_id.product_tmpl_id.id
+            ir_attachment_relation.removeChildRelation(parent_ir_attachment_id)  # perform default unlink to HiTree, need to perform RfTree also
+            mrp_bom_found_id = False
+            for mrp_bom_id in self.search([('product_tmpl_id', '=', product_tmpl_id)]):
+                mrp_bom_found_id = mrp_bom_id
+            if not mrp_bom_found_id:
+                mrp_bom_found_id = self.create({'product_tmpl_id': product_tmpl_id,
+                                                'product_product_id': parent_product_product_id.id,
+                                                'type': bomType})
+            else:
+                mrp_bom_found_id.delete_child_row(parent_ir_attachment_id)
+                # add rows
+            for product_product_id, ir_attachment_id, relationAttributes in childrenOdooTuple:
+                mrp_bom_found_id.add_child_row(product_product_id,
+                                               parent_ir_attachment_id,
+                                               relationAttributes,
+                                               bomType)
+                ir_attachment_relation.saveDocumentRelationNew(parent_ir_attachment_id,
+                                                               ir_attachment_id)
+            return True
+        except Exception as ex:
+            logging.error(ex)
+            raise ex

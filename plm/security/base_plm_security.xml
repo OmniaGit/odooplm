@@ -430,10 +430,16 @@
     </record>
 
 
+<!-- plm.dbthread  -->
 
-
-
-
-
+    <record id="plm.dbthread" model="ir.model.access">
+        <field name="name">Product Price History</field>
+        <field name="model_id" ref="model_plm_dbthread"/>
+        <field name="group_id" eval="group_plm_integration_user"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="1"/>
+        <field name="perm_create" eval="1"/>
+        <field name="perm_unlink" eval="1"/>
+    </record>
 
 </odoo>

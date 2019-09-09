@@ -51,7 +51,7 @@ class UploadDocument(Controller):
                         'datas_fname': filename}
             preview = kw.get('preview', '')
             if preview:
-                val_2 = preview.stream.read()
+                val_2 = base64.b64encode(preview.stream.read())
                 to_write['preview'] = val_2
             request.env['ir.attachment'].browse(doc_id).write(to_write)
             logging.info('upload %r' % (doc_id))
@@ -61,13 +61,13 @@ class UploadDocument(Controller):
 
     @route('/plm_document_upload/upload_pdf', type='http', auth='user', methods=['POST'], csrf=False)
     @webservice
-    def upload_pdf(self, mod_file=None, doc_id=False, **kw):
+    def upload_pdf(self, file_stream=None, doc_id=False, **kw):
         logging.info('start upload PDF %r' % (doc_id))
         if doc_id:
             logging.info('start json %r' % (doc_id))
             doc_id = json.loads(doc_id)
             logging.info('start write %r' % (doc_id))
-            value1 = mod_file.stream.read()
+            value1 = file_stream.stream.read()
             request.env['ir.attachment'].browse(doc_id).write(
                 {'printout': base64.b64encode(value1),
                  })

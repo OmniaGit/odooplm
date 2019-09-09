@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+
+    <record model="ir.ui.view" id="plm_action_plm_dbthread_tree">
+        <field name="name">plm.action.plm.dbthread.tree</field>
+        <field name="model">plm.dbthread</field>
+        <field name="type">tree</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <tree string="Actions" editable="top">
+                <field name="documement_name_version" readonly="1"/>
+                <field name="threadCode" readonly="1"/>
+                <field name="done"  readonly="1"/>
+                <field name="error_message" readonly="1"/>
+            </tree>
+        </field>
+    </record>
+    
+    <record model="ir.actions.act_window" id="plm_action_plm_dbthread">
+        <field name="name">DB Thread Action</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">plm.dbthread</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="plm_action_plm_dbthread_tree"/>
+    </record>
+    
+
+
+    </data>
+</odoo>
