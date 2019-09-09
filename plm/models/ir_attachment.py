@@ -1896,13 +1896,17 @@ class PlmDocument(models.Model):
     @api.model
     def saveSingleLevel(self, clientArg):
         component_props, document_props, dbThread = clientArg[0]
+        host_name = clientArg[1]
+        host_pws = clientArg[2]
         #  generate component
         product_product_id = self.env['product.product'].createFromProps(component_props)
         if not product_product_id:
             logging.warning("Unable to create / get product_prodct from %s" % component_props)
         #  generate document
         ir_attachment_id, action = self.env['ir.attachment'].createFromProps(document_props,
-                                                                             dbThread)
+                                                                             dbThread,
+                                                                             host_name,
+                                                                             host_pws)
         if not ir_attachment_id:
             logging.warning("Unable to create / get product_prodct from %s" % document_props)
         #  generate link
@@ -1918,7 +1922,9 @@ class PlmDocument(models.Model):
     @api.model
     def createFromProps(self,
                         documentAttribute={},
-                        dbThread=False):
+                        dbThread=False,
+                        hostName=False,
+                        hostPws=False):
         action = 'upload'
         document_name = documentAttribute.get("name", False)
         if not document_name:
@@ -1942,6 +1948,10 @@ class PlmDocument(models.Model):
                 action = 'jump'
         else:  # create
             ir_attachemnt_id = ir_attachemnt_id.create(documentAttribute)
+            self.env['plm.checkout'].Create({'userid': self.env.user.id,
+                                             'hostname': hostName,
+                                             'hostpws': hostPws,
+                                             'documentid': ir_attachemnt_id.id})
         return ir_attachemnt_id, action
 
     @api.multi
