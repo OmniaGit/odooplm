@@ -765,17 +765,19 @@ class MrpBomExtension(models.Model):
             for mrp_bom_id in self.search([('product_tmpl_id', '=', product_tmpl_id)]):
                 mrp_bom_found_id = mrp_bom_id
             if not mrp_bom_found_id:
-                mrp_bom_found_id = self.create({'product_tmpl_id': product_tmpl_id,
-                                                'product_product_id': parent_product_product_id.id,
-                                                'type': bomType})
+                if product_tmpl_id:
+                    mrp_bom_found_id = self.create({'product_tmpl_id': product_tmpl_id,
+                                                    'product_product_id': parent_product_product_id.id,
+                                                    'type': bomType})
             else:
                 mrp_bom_found_id.delete_child_row(parent_ir_attachment_id)
                 # add rows
             for product_product_id, ir_attachment_id, relationAttributes in childrenOdooTuple:
-                mrp_bom_found_id.add_child_row(product_product_id,
-                                               parent_ir_attachment_id,
-                                               relationAttributes,
-                                               bomType)
+                if mrp_bom_found_id:
+                    mrp_bom_found_id.add_child_row(product_product_id,
+                                                   parent_ir_attachment_id,
+                                                   relationAttributes,
+                                                   bomType)
                 ir_attachment_relation.saveDocumentRelationNew(parent_ir_attachment_id,
                                                                ir_attachment_id)
             return True
