@@ -1948,7 +1948,7 @@ class PlmDocument(models.Model):
                 action = 'jump'
         else:  # create
             ir_attachemnt_id = ir_attachemnt_id.create(documentAttribute)
-            self.env['plm.checkout'].Create({'userid': self.env.user.id,
+            self.env['plm.checkout'].create({'userid': self.env.user.id,
                                              'hostname': hostName,
                                              'hostpws': hostPws,
                                              'documentid': ir_attachemnt_id.id})
