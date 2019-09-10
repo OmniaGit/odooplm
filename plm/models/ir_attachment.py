@@ -1954,6 +1954,11 @@ class PlmDocument(models.Model):
                                              'documentid': ir_attachemnt_id.id})
         return ir_attachemnt_id, action
 
+    @api.model
+    def clientCanIUpload(self, clientArgs):
+        ir_attachment_id, dbThread = clientArgs
+        return self.browse(ir_attachment_id).canIUpload(dbThread)
+
     @api.multi
     def canIUpload(self, dbTheread):
         action = 'upload'

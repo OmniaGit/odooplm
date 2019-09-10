@@ -61,15 +61,24 @@ class PlmDbthread(models.Model):
         return threadCode
 
     @api.model
+    def cleadUpPrevious(self,
+                        document_key):
+        for plm_dbthread_id in self.search([('id', '<', self.id),
+                                            ('documement_name_version', '=', document_key),
+                                            ('done', '=', False)]):
+            plm_dbthread_id.done = True
+            plm_dbthread_id.error_message = "Automatically close from tread %s " % self.dbThread
+
+    @api.model
     def notifieDoneToDbThread(self, clientArgs):
         document_key, dbThread, clientException = clientArgs[0]
-
         for plm_dbthread_id in self.search([('documement_name_version', '=', document_key),
                                             ('threadCode', '=', dbThread),
                                             ('done', '=', False)]):
             plm_dbthread_id.done = True
             if clientException:
                 plm_dbthread_id.error_message = clientException
+            self.cleadUpPrevious(document_key)
             return True
         logging.warning("Try to update %s but not found in the db" % clientArgs[0])
         return False
