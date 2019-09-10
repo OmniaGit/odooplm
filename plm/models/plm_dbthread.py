@@ -97,7 +97,7 @@ class PlmDbthread(models.Model):
         out = []
         threadCode = clientArgs[0]
         for plm_dbthread_id in self.search([('threadCode', '=', threadCode),
-                                            ('done', '=', False),
+                                            ('done', '=', True),
                                             ('error_message', '!=', False)]):
             out.append(plm_dbthread_id.documement_name_version)
         return out
