@@ -91,3 +91,13 @@ class PlmDbthread(models.Model):
             plm_dbthread_id.done = True
             plm_dbthread_id.error_message = error
         return True
+
+    @api.model
+    def getErrorMissingDocument(self, clientArgs):
+        out = []
+        threadCode = clientArgs[0]
+        for plm_dbthread_id in self.search([('threadCode', '=', threadCode),
+                                            ('done', '=', False),
+                                            ('error_message', '!=', False)]):
+            out.append(plm_dbthread_id.documement_name_version)
+        return out
