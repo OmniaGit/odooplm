@@ -128,16 +128,16 @@ class PlmDocumentRelations(models.Model):
         return False
 
     @api.model
-    def saveDocumentRelationNew(self, parent_ir_attachment_id, child_ir_attachment_id, linkType='HiTree'):
+    def saveDocumentRelationNew(self, parent_ir_attachment_id, child_ir_attachment_id, link_kind='HiTree'):
         if not parent_ir_attachment_id and child_ir_attachment_id:
             return False
         if self.search_count([('parent_id', '=', parent_ir_attachment_id),
                               ('child_id', '=', child_ir_attachment_id),
-                              ('link_kind', '=', linkType)]):
+                              ('link_kind', '=', link_kind)]):
             return True
         self.create({'parent_id': parent_ir_attachment_id,
                      'child_id': child_ir_attachment_id,
-                    'link_kind': linkType})
+                    'link_kind': link_kind})
         return True
 
     @api.model

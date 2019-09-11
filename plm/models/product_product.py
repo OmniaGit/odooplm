@@ -446,12 +446,13 @@ class PlmComponent(models.Model):
         for attributes in attributes_list:
             engineering_code = attributes.get('engineering_code', False)
             engineering_revision = attributes.get('engineering_revision', 0)
-            product_product_id = self.search([('engineering_code', '=', engineering_code),
-                                              ('engineering_revision', '=', engineering_revision)], order='engineering_revision ASC')
-            if not product_product_id:
-                product_product_id = self.create(attributes)
-            attributes['plm_id'] = product_product_id.id
-            out.append(attributes)
+            if engineering_code:
+                product_product_id = self.search([('engineering_code', '=', engineering_code),
+                                                  ('engineering_revision', '=', engineering_revision)], order='engineering_revision ASC')
+                if not product_product_id:
+                    product_product_id = self.create(attributes)
+                attributes['plm_id'] = product_product_id.id
+                out.append(attributes)
         return out
 
     @api.model
