@@ -1985,4 +1985,25 @@ class PlmDocument(models.Model):
                 action = 'jump'  # no activity to perform
         return action
 
+    @api.model
+    def isDownloadableFromServer(self, args):
+        """
+        check il the document listed is ready to be downloaded from local server
+        """
+        forceFlag = False
+        ids, listedFiles, selection, _local_server_name = args
+        if not selection:
+            selection = 1
+
+        if selection < 0:
+            forceFlag = True
+            selection = selection * (-1)
+
+        if selection == 2:
+            docArray = self._getlastrev(ids)
+        else:
+            docArray = ids
+        return self.browse(docArray)._data_get_files(listedFiles,
+                                                     forceFlag,
+                                                     _local_server_name)
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

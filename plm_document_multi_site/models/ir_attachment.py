@@ -102,28 +102,6 @@ class IrAttachment(models.Model):
             return False, "Document %r is no syncronized on server %s " % (self.name,
                                                                            server_name)
 
-    @api.model
-    def isDownloadableFromServer(self, args):
-        """
-        check il the document listed is ready to be downloaded from local server
-        """
-        forceFlag = False
-        ids, listedFiles, selection, _local_server_name = args
-        if not selection:
-            selection = 1
-
-        if selection < 0:
-            forceFlag = True
-            selection = selection * (-1)
-
-        if selection == 2:
-            docArray = self._getlastrev(ids)
-        else:
-            docArray = ids
-        return self.browse(docArray)._data_get_files(listedFiles,
-                                                     forceFlag,
-                                                     _local_server_name)
-
     @api.multi
     def canCheckOut(self, showError=False):
         ret = super(IrAttachment, self).canCheckOut(showError=showError)
