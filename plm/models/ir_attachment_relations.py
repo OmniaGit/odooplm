@@ -49,12 +49,15 @@ class PlmDocumentRelations(models.Model):
                                     store=False)
     parent_id = fields.Many2one('ir.attachment',
                                 _('Related parent document'),
-                                ondelete='cascade')
+                                ondelete='cascade',
+                                index=True,)
     child_id = fields.Many2one('ir.attachment',
                                _('Related child document'),
-                               ondelete='cascade')
+                               ondelete='cascade',
+                               index=True)
     configuration = fields.Char(_('Configuration Name'),
-                                size=1024)
+                                size=1024,
+                                index=True)
     link_kind = fields.Char(_('Kind of Link'),
                             default='HiTree',
                             size=64,

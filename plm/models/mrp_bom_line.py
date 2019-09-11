@@ -42,7 +42,7 @@ class MrpBomLineExtension(models.Model):
         for line in self:
             line.bom_id.rebase_bom_weight()
         return ret
-        
+
     @api.one
     def _get_child_bom_lines(self):
         """
@@ -172,6 +172,7 @@ class MrpBomLineExtension(models.Model):
                                 'name',
                                 ondelete='no action',
                                 readonly=True,
+                                index=True,
                                 help=_("This is the document object that declares this BoM."))
     type = fields.Selection(
         [('normal', _('Normal BoM')),

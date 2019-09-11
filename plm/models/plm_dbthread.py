@@ -39,11 +39,14 @@ class PlmDbthread(models.Model):
     _name = "plm.dbthread"
 
     documement_name_version = fields.Char(string="Document name and version",
-                                          readonly=True)
+                                          readonly=True,
+                                          index=True)
     threadCode = fields.Char("Thread Code assigned automatically",
-                             readonly=True)
+                             readonly=True,
+                             index=True)
     done = fields.Boolean("This thread is done ?",
-                          readonly=True)
+                          readonly=True,
+                          index=True)
     error_message = fields.Char("Error message",
                                 readonly=True)
 

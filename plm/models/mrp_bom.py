@@ -116,6 +116,7 @@ class MrpBomExtension(models.Model):
                                 'name',
                                 ondelete='no action',
                                 readonly=True,
+                                index=True,
                                 help=_('This is the document object that declares this BoM.'))
     type = fields.Selection(
         [('normal', _('Normal BoM')), ('phantom', _('Sets / Phantom'))],
