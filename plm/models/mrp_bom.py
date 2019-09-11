@@ -778,8 +778,10 @@ class MrpBomExtension(models.Model):
                                                    parent_ir_attachment_id,
                                                    relationAttributes,
                                                    bomType)
+                link_kind = relationAttributes.get('link_kind', 'HiTree')
                 ir_attachment_relation.saveDocumentRelationNew(parent_ir_attachment_id,
-                                                               ir_attachment_id)
+                                                               ir_attachment_id,
+                                                               link_kind=link_kind)
             return True
         except Exception as ex:
             logging.error(ex)
