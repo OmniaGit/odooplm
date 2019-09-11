@@ -45,7 +45,8 @@ class ProductTemplateExtension(models.Model):
                              _('Status'),
                              default='draft',
                              help=_("The status of the product in its LifeCycle."),
-                             readonly="True")
+                             readonly="True",
+                             index=True)
     engineering_material = fields.Char(_('Raw Material'),
                                        size=128,
                                        required=False,
@@ -62,10 +63,14 @@ class ProductTemplateExtension(models.Model):
                                         required=False,
                                         help=_("Termic treatment for current product, only description for titleblock."))
 
-    engineering_revision = fields.Integer(_('Revision'), required=True, help=_("The revision of the product."),
+    engineering_revision = fields.Integer(_('Revision'),
+                                          required=True,
+                                          help=_("The revision of the product."),
+                                          index=True,
                                           default=0)
 
     engineering_code = fields.Char(_('Part Number'),
+                                   index=True,
                                    help=_("This is engineering reference to manage a different P/N from item Name."),
                                    size=64)
 

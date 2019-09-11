@@ -894,9 +894,13 @@ class PlmDocument(models.Model):
                                                                                        ('parent_id', '=', ir_a_id),
                                                                                        ('child_id', '=', ir_a_id)])
 
+    name = fields.Char('Name',
+                       required=True,
+                       index=True)
     revisionid = fields.Integer(_('Revision Index'),
                                 default=0,
-                                required=True)
+                                required=True,
+                                index=True)
     writable = fields.Boolean(_('Writable'),
                               default=True)
     printout = fields.Binary(_('Printout Content'),
@@ -908,7 +912,8 @@ class PlmDocument(models.Model):
                              help=_("The status of the product."),
                              readonly="True",
                              default='draft',
-                             required=True)
+                             required=True,
+                             index=True)
     checkout_user = fields.Char(string=_("Checked-Out to"),
                                 compute=_get_checkout_state)
     is_checkout = fields.Boolean(_('Is Checked-Out'),
