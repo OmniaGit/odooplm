@@ -71,6 +71,7 @@ class PlmDocumentActionSyncronize(models.Model):
                         ir_attachment_error.append(ir_attachment_id.id)
                 else:
                     plm_document_action_syncronize_id.done = True
+            self.env.cr.commit()
         ir_attachment_processed = []
         domain_pull = [('done', '=', False),
                        ('action', '=', 'pull')]
@@ -87,3 +88,4 @@ class PlmDocumentActionSyncronize(models.Model):
                     ir_attachment_processed.append(ir_attachment_id.id)
             else:
                 plm_document_action_syncronize_id.done = True
+            self.env.cr.commit()

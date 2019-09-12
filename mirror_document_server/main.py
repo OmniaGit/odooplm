@@ -33,7 +33,7 @@ from flask_httpauth import HTTPBasicAuth
 auth = HTTPBasicAuth()
 
 
-@app.route('/upload_file/', methods=['POST'])
+@app.route('/upload_file', methods=['POST'])
 @auth.login_required
 def upload_file():
     if request.method == 'POST':

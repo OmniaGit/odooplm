@@ -84,7 +84,7 @@ class PlmRemoteServer(models.Model):
                               files=files)
             out = r.status_code == 200
             if not out:
-                logging.error("Bed responce from server %r" % r.status_code)
+                logging.error("Bad response from server %r" % r.status_code)
             return out
         except Exception as ex:
             logging.error(ex)
