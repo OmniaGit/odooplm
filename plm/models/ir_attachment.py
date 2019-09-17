@@ -1906,16 +1906,16 @@ class PlmDocument(models.Model):
         #  generate component
         product_product_id = self.env['product.product'].createFromProps(component_props)
         if not product_product_id:
-            logging.warning("Unable to create / get product_prodct from %s" % component_props)
+            logging.warning("Unable to create / get product_product from %s" % component_props)
         #  generate document
         ir_attachment_id, action = self.env['ir.attachment'].createFromProps(document_props,
                                                                              dbThread,
                                                                              host_name,
                                                                              host_pws)
         if not ir_attachment_id:
-            logging.warning("Unable to create / get product_prodct from %s" % document_props)
+            logging.warning("Unable to create / get ir_attachment from %s" % document_props)
         #  generate link
-        if product_product_id and product_product_id:
+        if product_product_id and ir_attachment_id:
             self.env['plm.component.document.rel'].createFromIds(product_product_id,
                                                                  ir_attachment_id)
         else:
@@ -1931,9 +1931,11 @@ class PlmDocument(models.Model):
                         hostName=False,
                         hostPws=False):
         action = 'upload'
+        if documentAttribute.get("CUTTED_COMP", False):
+            return False, 'jump'
         document_name = documentAttribute.get("name", False)
         if not document_name:
-            raise UserError("Unable to create document with empty name")
+            raise UserError("Unable to create document with empty name %r" % (documentAttribute.get('KEY', '')))
 
         found = False
         ir_attachemnt_id = self.env['ir.attachment']
