@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
 #
-#    OmniaSolutions, ERP-PLM-CAD Open Source Solution
+#    OmniaSolutions, ERP-PLM-CAD Open Source Solutions
 #    Copyright (C) 2011-2019 https://OmniaSolutions.website
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -19,17 +19,31 @@
 #
 ##############################################################################
 '''
-Created on Aug 30, 2019
+Created on Sep 11, 2019
 
 @author: mboscolo
 '''
-from flask import Flask
+import py2exe
+from setuptools import setup, find_packages
 
-UPLOAD_FOLDER = '/tmp'
+NAME = "OdooPLMSyncServer"
+VERSION = "1.0"
 
-app = Flask(__name__)
-app.secret_key = "secret key"
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-#app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
-app.config['USER_NAME'] = 'OMNIA_USER'
-app.config['PASSWORD'] = 'OMNIA_PASSWORD'
+setup(
+    name=NAME,
+    version=VERSION,
+    description="Provide syncronization for file in odoo",
+    long_description="",
+    classifiers=[],
+    author="Matteo Boscolo OmniaSolutions",
+    author_email='',
+    url='',
+    license='Free',
+    packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
+    include_package_data=True,
+    zip_safe=False,
+    install_requires=[
+        'flask >= 0.10.1'
+    ],
+    console=['main.py']
+)

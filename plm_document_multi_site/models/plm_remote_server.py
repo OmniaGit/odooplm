@@ -74,6 +74,7 @@ class PlmRemoteServer(models.Model):
     @api.model
     def push_document_to_remote(self, ir_attachment_id):
         try:
+            logging.info("push_document_to_remote")
             url = '%s/upload_file' % self.address
             file_path = ir_attachment_id.full_path()
             files = {'file': (str(ir_attachment_id.id), open(file_path, 'rb'))}
@@ -81,7 +82,10 @@ class PlmRemoteServer(models.Model):
                               auth=HTTPBasicAuth(self.login,
                                                  self.password),
                               files=files)
-            return r.status_code == 200
+            out = r.status_code == 200
+            if not out:
+                logging.error("Bad response from server %r" % r.status_code)
+            return out
         except Exception as ex:
             logging.error(ex)
             return False
