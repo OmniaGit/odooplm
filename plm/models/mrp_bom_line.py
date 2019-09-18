@@ -125,6 +125,9 @@ class MrpBomLineExtension(models.Model):
                         'res_model': 'mrp.bom',
                         'type': 'ir.actions.act_window',
                         'view_mode': 'tree,form'}
+        if len(ids_to_open) == 1:
+            out_act_dict['view_mode'] = 'form'
+            out_act_dict['res_id'] = ids_to_open[0]
         for line_brws in self:
             if line_brws.type == 'normal':
                 domain.append(('type', '=', 'normal'))
