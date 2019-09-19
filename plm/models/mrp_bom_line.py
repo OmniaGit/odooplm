@@ -150,7 +150,7 @@ class MrpBomLineExtension(models.Model):
                         'view_type': 'form',
                         'res_model': 'ir.attachment',
                         'type': 'ir.actions.act_window',
-                        'view_mode': 'tree,form',
+                        'view_mode': 'kanban,tree,form',
                         'domain': domain}
         return out_act_dict
 
