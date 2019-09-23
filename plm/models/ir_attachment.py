@@ -1976,12 +1976,14 @@ class PlmDocument(models.Model):
             threadCodelist = plm_dbthread.search([('documement_name_version', '=', key),
                                                   ('done', '=', False)]).mapped(lambda x: int(x.threadCode))
             if len(threadCodelist):
+                if actualdbThred == max(threadCodelist):
+                    break
                 if actualdbThred < max(threadCodelist):
                     action = 'jump'
                     break
-                if actualdbThred > min(threadCodelist):
-                    action = 'wait'
-                    break
+#                 if actualdbThred > min(threadCodelist):
+#                     action = 'wait'
+#                     break
                 break
             else:
                 action = 'jump'  # no activity to perform
