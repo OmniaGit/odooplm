@@ -47,9 +47,7 @@
         <field name="type">form</field>
         <field name="arch" type="xml">
             <field name="summarize" position="after">
-                <group>
-                    <field name="cutted_part_explosion" widget="radio"/>
-                </group>
+                <field name="cutted_part_explosion" widget="radio"/>
             </field>
         </field>
     </record>
