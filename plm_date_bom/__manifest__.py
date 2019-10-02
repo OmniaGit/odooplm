@@ -21,7 +21,7 @@
 ##############################################################################
 {
     'name': 'PLM Date Bom',
-    'version': '12.0',
+    'version': '13.0',
     'author': 'OmniaSolutions',
     'license': 'AGPL-3',
     'website': 'https://www.omniasolutions.website',
