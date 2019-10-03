@@ -57,7 +57,6 @@ class PlmDocumentExtension(models.Model):
         action_dict['suspended'] = self.action_suspend
         return action_dict
 
-    @api.multi
     def action_suspend(self):
         """
             reactivate the object
@@ -71,7 +70,6 @@ class PlmDocumentExtension(models.Model):
             return obj_id
         return False
 
-    @api.multi
     def action_unsuspend(self):
         """
             reactivate the object

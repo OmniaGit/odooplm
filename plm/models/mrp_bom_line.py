@@ -36,14 +36,13 @@ class MrpBomLineExtension(models.Model):
     _inherit = 'mrp.bom.line'
     _order = "itemnum"
 
-    @api.multi
+    
     def write(self, vals):
         ret = super(MrpBomLineExtension, self).write(vals)
         for line in self:
             line.bom_id.rebase_bom_weight()
         return ret
 
-    @api.one
     def _get_child_bom_lines(self):
         """
             If the BOM line refers to a BOM, return the ids of the child BOM lines
@@ -63,7 +62,7 @@ class MrpBomLineExtension(models.Model):
             else:
                 self.child_line_ids = False
 
-    @api.multi
+    
     def get_related_boms(self):
         for bom_line in self:
             if not self.product_id:
@@ -77,7 +76,6 @@ class MrpBomLineExtension(models.Model):
                     ('active', '=', True)
                 ])
 
-    @api.one
     @api.depends('product_id')
     def _has_children_boms(self):
         for bom_line in self:
@@ -94,7 +92,6 @@ class MrpBomLineExtension(models.Model):
                 else:
                     self.hasChildBoms = False
 
-    @api.one
     @api.depends('product_id')
     def _related_boms(self):
         for bom_line in self:
@@ -111,7 +108,6 @@ class MrpBomLineExtension(models.Model):
                 else:
                     self.related_bom_ids = bom_objs.ids
 
-    @api.multi
     def openRelatedBoms(self):
         related_boms = self.get_related_boms()
         if not related_boms:
@@ -143,7 +139,7 @@ class MrpBomLineExtension(models.Model):
         out_act_dict['domain'] = domain
         return out_act_dict
 
-    @api.multi
+    
     def openRelatedDocuments(self):
         domain = [('id', 'in', self.related_document_ids.ids)]
         out_act_dict = {'name': _('Documents'),
@@ -154,7 +150,7 @@ class MrpBomLineExtension(models.Model):
                         'domain': domain}
         return out_act_dict
 
-    @api.multi
+    
     def _related_doc_ids(self):
         for bom_line_brws in self:
             bom_line_brws.related_document_ids = bom_line_brws.product_id.linkeddocuments

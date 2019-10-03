@@ -74,7 +74,6 @@ class PlmDocumentRelations(models.Model):
         ('relation_uniq', 'unique (parent_id,child_id,link_kind)', _('The Document Relation must be unique !'))
     ]
 
-    @api.multi
     def name_get(self):
         result = []
         for r in self:

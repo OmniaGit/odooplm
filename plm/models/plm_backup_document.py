@@ -60,7 +60,7 @@ class PlmBackupDocument(models.Model):
     printout = fields.Binary(_('Printout Content'))
     preview = fields.Binary(_('Preview Content'))
 
-    @api.multi
+    
     def name_get(self):
         result = []
         for r in self:
@@ -71,7 +71,7 @@ class PlmBackupDocument(models.Model):
             result.append((r.id, name))
         return result
 
-    @api.multi
+    
     def unlink(self):
         documentType = self.env['ir.attachment']
         for plm_backup_document_id in self:
@@ -104,7 +104,7 @@ class BackupDocWizard(osv.osv.osv_memory):
     _name = 'plm.backupdoc_wizard'
     _description = "Back up document wizard"
 
-    @api.multi
+    
     def action_restore_document(self):
         documentId = False
         backupDocIds = self.env.context.get('active_ids', [])

@@ -86,7 +86,6 @@ class PlmComponent(models.Model):
         elif self.automatic_compute_selection == 'use_cad':
             self.weight = self.weight_cad + self.weight_additional
 
-    @api.multi
     def compute_bom_weight(self):
         """
             - Compute first founded Normal Bom weight
@@ -153,7 +152,6 @@ class PlmComponent(models.Model):
                 return True
         return False
 
-    @api.multi
     def compute_bom_weight_action(self):
         """
             Function called form xml action to compute and set weight for all selected products and boms

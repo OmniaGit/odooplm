@@ -46,7 +46,6 @@ class PlmFinishing(models.Model):
         ('name_uniq', 'unique(name)', _('Surface Finishing has to be unique !')),
     ]
 
-    @api.multi
     def copy(self, default=None):
         if not default:
             default = {}

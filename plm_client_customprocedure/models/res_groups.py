@@ -48,7 +48,6 @@ class ResGroups(models.Model):
     custom_multicad_fname = fields.Char(_("New File name"))
     custom_multicad_content = fields.Text('Modif Content', default='')
 
-    @api.multi
     def write(self, vals):
         erase = self.env.context.get('erase_multicad', True)
         erase_custom = self.env.context.get('erase_customprocedure', True)
@@ -58,7 +57,6 @@ class ResGroups(models.Model):
             self.open_custommodule_save(vals)
         return super(ResGroups, self).write(vals)
 
-    @api.multi
     def open_custommodule_edit(self):
         for groupBrws in self:
             if groupBrws.custom_procedure:
@@ -66,8 +64,7 @@ class ResGroups(models.Model):
                 if self.custom_read_content:
                     fileReadableContent = ''
                 self.with_context({'erase_customprocedure': False}).custom_read_content = fileReadableContent
-            
-    @api.multi
+
     def open_custom_multicad_edit(self):
         for groupBrws in self:
             if groupBrws.custom_multicad:
@@ -76,7 +73,6 @@ class ResGroups(models.Model):
                     fileReadableContent = ''
                 self.with_context({'erase_multicad': False}).custom_multicad_content = fileReadableContent
 
-    @api.multi
     def open_custommodule_save(self, vals):
         for groupBrws in self:
             self.commonSave(vals, 
@@ -105,8 +101,7 @@ class ResGroups(models.Model):
             with open(customFilePath, 'wb') as writeFile:
                 writeFile.write(base64.decodestring(custom_file))
         vals[content_field] = ''
-        
-    @api.multi
+
     def getCustomProcedure(self):
         for groupBrws in self:
             logging.info('Request CustomProcedure file for user %r and group %r-%r and id %r' % (groupBrws.env.uid, groupBrws.category_id.name, groupBrws.name, groupBrws.id))
@@ -114,7 +109,6 @@ class ResGroups(models.Model):
                 return True, groupBrws.custom_procedure, groupBrws.custom_procedure_fname
         return False, '', groupBrws.custom_procedure_fname
 
-    @api.multi
     def getCustomMulticad(self):
         for groupBrws in self:
             logging.info('Request Multicad file for user %r and group %r-%r and id %r' % (groupBrws.env.uid, groupBrws.category_id.name, groupBrws.name, groupBrws.id))

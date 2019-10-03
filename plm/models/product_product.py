@@ -59,7 +59,6 @@ def emptyStringIfFalse(value):
 class PlmComponent(models.Model):
     _inherit = 'product.product'
 
-    @api.multi
     def action_show_reference(self):
         ctx = self.env.context.copy()
         ctx.update({'active_id': self.id,
@@ -68,7 +67,6 @@ class PlmComponent(models.Model):
                 'tag': 'plm_exploded_view',
                 'context': ctx}
 
-    @api.multi
     def _father_part_compute(self, name='', arg={}):
         """ Gets father bom.
         @param self: The object pointer
@@ -151,7 +149,6 @@ class PlmComponent(models.Model):
     # integration users can't create products if in changed values there is std_description
     revision_count = fields.Integer(compute='_revisions_count')
 
-    @api.multi
     def _revisions_count(self):
         """
         get All version product_tempate based on this one
@@ -266,7 +263,7 @@ class PlmComponent(models.Model):
             mixing both label and value or only label.
         """
         retvalue = ''
-        if fmt == False:
+        if fmt is False:
             return retvalue
         if value:
             if isinstance(value, float):
@@ -318,7 +315,6 @@ class PlmComponent(models.Model):
             description = description + " " + thisObject.unitab
         return description
 
-    @api.multi
     def product_template_open(self):
         product_id = self.product_tmpl_id.id
         mod_obj = self.env['ir.model.data']
@@ -335,7 +331,6 @@ class PlmComponent(models.Model):
                 'views': [(form_id, 'form')],
             }
 
-    @api.multi
     def open_boms(self):
         product_tmpl_id = self.product_tmpl_id.id
         if product_tmpl_id:
@@ -386,7 +381,6 @@ class PlmComponent(models.Model):
         else:
             return obj.create_date
 
-    @api.multi
     def Clone(self, defaults={}):
         exitValues = {}
         newCompBrws = self.copy(defaults)
@@ -530,7 +524,6 @@ class PlmComponent(models.Model):
         retd = list(dic.values())
         return retd
 
-    @api.multi
     def _get_recursive_parts(self, exclude_statuses, include_statuses):
         """
            Get all ids related to current one as children
@@ -555,7 +548,6 @@ class PlmComponent(models.Model):
                 msg = msg + "\n" + subMsg
         return (msg, list(set(tobeReleasedIDs)))
 
-    @api.multi
     def action_create_normalBom_WF(self):
         """
             Create a new Normal Bom if doesn't exist (action callable from code)
@@ -566,7 +558,6 @@ class PlmComponent(models.Model):
         self.wf_message_post(body=_('Created Normal Bom.'))
         return False
 
-    @api.multi
     def _action_ondocuments(self, action_name):
         """
             move workflow on documents having the same state of component
@@ -631,7 +622,6 @@ class PlmComponent(models.Model):
             return False
         return True
 
-    @api.multi
     def wf_message_post(self, body=''):
         """
             Writing messages to follower, on multiple objects
@@ -640,7 +630,6 @@ class PlmComponent(models.Model):
             for comp_obj in self:
                 comp_obj.sudo().message_post(body=_(body))
 
-    @api.multi
     def unlink(self):
         values = {'state': 'released'}
         checkState = ('undermodify', 'obsoleted')
@@ -656,7 +645,6 @@ class PlmComponent(models.Model):
                         return False
         return super(PlmComponent, self).unlink()
 
-    @api.multi
     def action_draft(self):
         """
             release the object
@@ -673,7 +661,6 @@ class PlmComponent(models.Model):
             comp_obj.commonWFAction(status, action, doc_action, defaults, exclude_statuses, include_statuses)
         return True
 
-    @api.multi
     def action_confirm(self):
         """
             action to be executed for Draft state
@@ -695,7 +682,6 @@ class PlmComponent(models.Model):
         return self.search([('engineering_code', '=', name),
                             ('engineering_revision', '=', revision)])
 
-    @api.multi
     def action_release(self):
         """
            action to be executed for Released state
@@ -734,7 +720,6 @@ class PlmComponent(models.Model):
             return objId
         return False
 
-    @api.multi
     def action_obsolete(self):
         """
             obsolete the object
@@ -751,7 +736,6 @@ class PlmComponent(models.Model):
             comp_obj.commonWFAction(status, action, doc_action, defaults, exclude_statuses, include_statuses)
         return True
 
-    @api.multi
     def action_reactivate(self):
         """
             reactivate the object
@@ -777,7 +761,6 @@ class PlmComponent(models.Model):
         toCall = actions.get(action)
         return toCall()
 
-    @api.multi
     def commonWFAction(self, status, action, doc_action, defaults=[], exclude_statuses=[], include_statuses=[]):
         product_product_ids = []
         product_template_ids = []
@@ -799,7 +782,6 @@ class PlmComponent(models.Model):
 
 #  ######################################################################################################################################33
 
-    @api.multi
     def write(self, vals):
         if 'is_engcode_editable' not in vals:
             vals['is_engcode_editable'] = False
@@ -832,7 +814,7 @@ class PlmComponent(models.Model):
             'std_description',
             'default_code'
             ]
-        
+
     @api.model
     def checkSetupDueToVariants(self, vals):
         tmplt_id = vals.get('product_tmpl_id')
@@ -846,7 +828,7 @@ class PlmComponent(models.Model):
                 for key, val in outVals.items():
                     if isinstance(val, (list)):  # many2many
                         outVals[key] = [[6, 0, val]]
-                    if isinstance(val, (tuple)): # many2one
+                    if isinstance(val, (tuple)):  # many2one
                         outVals[key] = val[0]
                 break
             outVals.update(vals)
@@ -892,7 +874,6 @@ class PlmComponent(models.Model):
             logging.error("(%s). It has tried to create with values : (%s)." % (str(ex), str(vals)))
             raise Exception(_(" (%r). It has tried to create with values : (%r).") % (ex, vals))
 
-    @api.multi
     def read(self, fields=[], load='_classic_read'):
         try:
             customFields = [field.replace('plm_m2o_', '') for field in fields if field.startswith('plm_m2o_')]
@@ -909,7 +890,6 @@ Your user does not have enough permissions to make this operation. Error: \n
 Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fix module to solve the problem.""" % (ex)
             raise ex
 
-    @api.multi
     def copy(self, defaults={}):
         """
             Overwrite the default copy method
@@ -946,7 +926,6 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             self.sudo().wf_message_post(body=_('Copied starting from : %s.' % previous_name))
         return objId
 
-    @api.multi
     def readMany2oneFields(self, readVals, fields):
         return self._readMany2oneFields(self.env['product.product'], readVals, fields)
 
@@ -974,10 +953,9 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             out.append(tmpVals)
         return out
 
-    @api.multi
     def checkMany2oneClient(self, vals):
         return self._checkMany2oneClient(self.env['product.product'], vals)
-        
+
     @api.model
     def _checkMany2oneClient(self, obj, vals):
         out = {}
@@ -989,7 +967,6 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                 out[fieldName] = refId.id
         return out
 
-    @api.multi
     def customFieldConvert(self, fieldDefinition, vals, fieldName):
         refId = False
         fieldType = fieldDefinition.get('type', '')
@@ -1034,7 +1011,6 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                     values[fieldName] = readDict.get('value', '')
         return values
 
-    @api.multi
     def action_rev_docs(self):
         """
             This function is called by the button on component view, section LinkedDocuments
@@ -1057,14 +1033,12 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                 'type': 'ir.actions.act_window',
                 }
 
-    @api.multi
     def action_view_mos(self):
         tmplBrws = self.product_tmpl_id
         if tmplBrws:
             return tmplBrws.action_view_mos()
         logging.warning('[action_view_mos] product with id %s does not have a related template' % (self.id))
 
-    @api.multi
     def NewRevision(self):
         """
             create a new revision of current component
@@ -1233,7 +1207,6 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             return {}
         return {}
 
-    @api.multi
     def canBeRevised(self):
         for compBrws in self:
             if compBrws.state == 'released':
@@ -1548,7 +1521,6 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             ('engineering_code', '=', engCode),
             ('engineering_revision', '=', engRev)])
 
-    @api.multi
     def open_related_revisions(self):
         product_product_ids = self.search([('engineering_code', '=', self.engineering_code)])
         return {'name': _('Products'),

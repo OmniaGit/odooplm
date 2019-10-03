@@ -29,7 +29,6 @@ _logger = logging.getLogger(__name__)
 class PlmTemporary(osv.osv.osv_memory):
     _inherit = "plm.temporary"
 
-    @api.multi
     def action_create_spare_bom(self):
         """
             Create a new Spare Bom if doesn't exist (action callable from views)

@@ -33,13 +33,11 @@ from odoo import _
 class ProdProdKanbanExtension(models.Model):
     _inherit = 'product.product'
 
-    @api.multi
     def open_spare_bom(self):
         boms = self.get_related_boms()
         domain = [('id', 'in', boms.ids), ('type', '=', 'spbom')]
         return self.common_open(_('Related Boms'), 'mrp.bom', 'tree,form', 'form', boms.ids, self.env.context, domain)
 
-    @api.multi
     def create_spare_bom(self):
         context = self.env.context.copy()
         context.update({'default_type': 'spbom'})

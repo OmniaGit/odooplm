@@ -117,7 +117,6 @@ class plm_temporary_batch_converter(osv.osv.osv_memory):
                                   attachment=True)
     datas_fname = fields.Char("New File name")
 
-    @api.multi
     def convert(self):
         """
         convert the file in a new one
@@ -138,7 +137,6 @@ class plm_temporary_batch_converter(osv.osv.osv_memory):
             out.append(newFilePath)
         return out
 
-    @api.multi
     def action_create_coversion(self):
         """
         convert the file to the give format
@@ -154,7 +152,6 @@ class plm_temporary_batch_converter(osv.osv.osv_memory):
                 shutil.move(newFilePath, convertionFolder)
         UserError(_("File Converted check the shared folder"))
 
-    @api.multi
     def action_create_convert_download(self):
         """
         Convert file in the given format and return it to the web page

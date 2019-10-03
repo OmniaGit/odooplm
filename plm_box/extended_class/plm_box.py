@@ -84,7 +84,6 @@ class Plm_box(models.Model):
     bom_id = fields.Many2many('mrp.bom', 'plm_box_bom_rel', 'box_id', 'bom_id', _('Bill Of Material'))
     wc_id = fields.Many2many('mrp.workcenter', 'plm_box_wc_rel', 'box_id', 'wc_id', _('Work Center'))
 
-    @api.multi
     def unlink(self):
         for boxBrws in self:
             if not self.boxUnlinkPossible(boxBrws):
@@ -148,7 +147,6 @@ class Plm_box(models.Model):
             vals['name'] = name
         return super(Plm_box, self).create(vals)
 
-    @api.multi
     def write(self, vals):
         '''
             Write a new name if not provided
@@ -234,7 +232,6 @@ class Plm_box(models.Model):
                 return False
         return True
 
-    @api.multi
     def boxReadonlyCompute(self):
         '''
             Compute if box is readonly
@@ -405,23 +402,18 @@ class Plm_box(models.Model):
                    }
         return outDict
 
-    @api.multi
     def action_draft(self):
         return self.write({'state': 'draft'})
 
-    @api.multi
     def action_confirm(self):
         return self.write({'state': 'confirmed'})
 
-    @api.multi
     def action_release(self):
         return self.write({'state': 'released'})
 
-    @api.multi
     def action_obsolete(self):
         return self.write({'state': 'obsoleted'})
 
-    @api.multi
     def action_reactivate(self):
         return self.write({'state': 'released'})
 
@@ -553,7 +545,6 @@ class Plm_box(models.Model):
                 notFoundBoxes.append(boxName)
         return (outDict, notFoundBoxes)
 
-    @api.multi
     def getBoxStructure(self, primary=False):
         '''
             *** CLIENT ***

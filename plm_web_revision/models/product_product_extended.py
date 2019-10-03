@@ -42,7 +42,6 @@ class ProductProductExtended(models.Model):
     reviseNbom = fields.Boolean(_('Normal Bom Revision'), help=_("""Make new revision of the linked Normal BOM ?"""))
     reviseSbom = fields.Boolean(_('Spare Bom Revision'), help=_("""Make new revision of the linked Spare BOM ?"""))
 
-    @api.multi
     def action_create_new_revision_by_server(self):
         product_id = self.env.context.get('default_product_id', False)
         if not product_id:
@@ -71,14 +70,12 @@ class ProductProductExtended(models.Model):
                     'res_id': newID,
                     'type': 'ir.actions.act_window'}
 
-    @api.multi
     def stateAllows(self, brwsObj, objType):
         if brwsObj.state != 'released':
             logging.error('[action_create_new_revision_by_server:stateAllows] Cannot revise obj %s, Id: %r because state is %r' % (objType, brwsObj.id, brwsObj.state))
             raise UserError(_("%s cannot be revised because the state isn't released!" % (objType)))
         return True
 
-    @api.multi
     def docRev(self, prodBrws, newID, prodProdEnv):
         createdDocIds = []
         for docBrws in prodBrws.linkeddocuments:
@@ -92,7 +89,6 @@ class ProductProductExtended(models.Model):
                 createdDocIds.append(newDocID)
         prodProdEnv.browse(newID).linkeddocuments = createdDocIds
 
-    @api.multi
     def commonBomRev(self, oldProdBrws, newID, prodProdEnv, bomType):
         bomObj = self.env['mrp.bom']
         newProdBrws = prodProdEnv.browse(newID)

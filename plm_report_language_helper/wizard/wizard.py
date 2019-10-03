@@ -46,7 +46,6 @@ class plm_spareChoseLanguage(osv.osv.osv_memory):
     _name = "plm.sparechoselanguage"
     _description = "Module for extending the functionality of printing spare_bom reports in a multi language environment"
 
-    @api.v8
     def getInstalledLanguage(self):
         """
             get installed language
@@ -57,7 +56,6 @@ class plm_spareChoseLanguage(osv.osv.osv_memory):
             out.append((objBrowse.code, objBrowse.name))
         return out
 
-    @api.multi
     def print_report(self):
         self.ensure_one()
         lang = self.lang
@@ -123,7 +121,6 @@ class plm_bomChoseLanguage(osv.osv.osv_memory):
     _name = "plm.bomchoselanguage"
     _description = "Module for extending the functionality of printing bom reports in a multi language environment"
 
-    @api.v8
     def getInstalledLanguage(self):
         """
             get installed language
@@ -134,7 +131,6 @@ class plm_bomChoseLanguage(osv.osv.osv_memory):
             out.append((objBrowse.code, objBrowse.name))
         return out
 
-    @api.multi
     def print_report(self):
         self.ensure_one()
         lang = self.lang

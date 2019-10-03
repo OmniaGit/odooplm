@@ -69,7 +69,7 @@ class MrpBomExtension(models.Model):
         return obj_bom
 
     #  ######################################################################################################################################33
-    @api.multi
+    
     def _father_compute(self, name='', arg={}):
         """ Gets father bom.
         @param self: The object pointer
@@ -318,7 +318,7 @@ class MrpBomExtension(models.Model):
                 output.append([prod_id, inner_ids])
         return output
 
-    @api.multi
+    
     def get_last_comp_id(self, comp_id):
         prod_prod_obj = self.env['product.product']
         comp_brws = prod_prod_obj.browse(comp_id)
@@ -415,7 +415,7 @@ class MrpBomExtension(models.Model):
         prt_datas = self._get_pack_datas(rel_datas)
         return rel_datas, prt_datas, self._get_pack_rel_datas(rel_datas, prt_datas)
 
-    @api.multi
+    
     def get_exploded_bom(self, level=0, curr_level=0):
         """
             Return a list of all children in a Bom ( level = 0 one level only, level = 1 all levels)
@@ -637,7 +637,7 @@ class MrpBomExtension(models.Model):
             bom_obj = self.with_context({}).browse(parent_bom_id)
             self.env['product.product'].browse([bom_obj.product_id.id]).write({'weight': weight})
 
-    @api.multi
+    
     def rebase_bom_weight(self):
         """
             Evaluates net weight for assembly, based on BoM ID
@@ -648,7 +648,7 @@ class MrpBomExtension(models.Model):
             super(MrpBomExtension, bom_brws).write({'weight_net': weight})
         return weight
 
-    @api.multi
+    
     def write(self, vals, check=True):
         ret = super(MrpBomExtension, self).write(vals)
         for bom_brws in self:
@@ -661,7 +661,7 @@ class MrpBomExtension(models.Model):
         ret.rebase_bom_weight()
         return ret
 
-    @api.multi
+    
     def copy(self, default={}):
         """
             Return new object copied (removing source_id)
@@ -686,7 +686,6 @@ class MrpBomExtension(models.Model):
             })
         return new_bom_brws
 
-    @api.one
     def delete_child_row(self, document_id):
         """
         delete the bom child row
@@ -707,7 +706,7 @@ class MrpBomExtension(models.Model):
                                         'type': bom_type})
             self.env['mrp.bom.line'].create(relation_attributes).id
 
-    @api.multi  # Don't change me with @api.one or I don't work!!!
+      # Don't change me with @api.one or I don't work!!!
     def open_related_bom_lines(self):
         for bom_brws in self:
             def recursion(bom_brws_list):
@@ -735,7 +734,7 @@ class MrpBomExtension(models.Model):
                     'context': {"group_by": ['bom_id']},
                     }
 
-    @api.multi
+    
     def open_related_bom_revisions(self):
         bom_ids = self.search([('product_tmpl_id', 'in', self.product_tmpl_id.getAllVersionTemplate().ids)])
         return {'name': _('B.O.M.S'),

@@ -130,7 +130,6 @@ class PackAndGo(osv.osv.osv_memory):
     datas = fields.Binary(string="Download")
     datas_fname = fields.Char(string="File Name")
 
-    @api.multi
     def computeExportRelField(self, forceType=False):
         '''
             Populate related field with all components and documents of Bill of Materials
@@ -203,7 +202,6 @@ class PackAndGo(osv.osv.osv_memory):
         self.export_pdf = export_pdf
         return self.returnWizard()
 
-    @api.multi
     def returnWizard(self):
         return {'name': _('Pack and Go'),
                 'view_type': 'form',
@@ -214,27 +212,22 @@ class PackAndGo(osv.osv.osv_memory):
                 'type': 'ir.actions.act_window',
                 'domain': "[]"}
 
-    @api.multi
     def clear2d(self):
         self.write({'export_2d': [(5, 0, 0)]})
         return self.returnWizard()
 
-    @api.multi
     def clear3d(self):
         self.write({'export_3d': [(5, 0, 0)]})
         return self.returnWizard()
 
-    @api.multi
     def clearpdf(self):
         self.write({'export_pdf': [(5, 0, 0)]})
         return self.returnWizard()
 
-    @api.multi
     def clearother(self):
         self.write({'export_other': [(5, 0, 0)]})
         return self.returnWizard()
 
-    @api.multi
     def clearAll(self):
         '''
             Clear all pack and go views
@@ -312,7 +305,6 @@ class PackAndGo(osv.osv.osv_memory):
         compIds.extend(recursion(startingBom))
         return compIds
 
-    @api.multi
     def checkPlmConvertionInstalled(self):
         domain = [('state', 'in', ['installed', 'to upgrade', 'to remove']), ('name', '=', 'plm_automated_convertion')]
         apps = self.env['ir.module.module'].sudo().search_read(domain, ['name'])
@@ -320,7 +312,6 @@ class PackAndGo(osv.osv.osv_memory):
             return True
         return False
 
-    @api.multi
     def action_export_zip(self):
         """
             action to import the data
@@ -420,7 +411,6 @@ class PackAndGo(osv.osv.osv_memory):
             fileExtension = '.' + datas_fname.split('.')[-1]
         return fileExtension
 
-    @api.multi
     def forceTypes3d(self):
         if not self.force_types_3d:
             raise UserError(_('You have to select a force type before clicking.'))
@@ -432,7 +422,6 @@ class PackAndGo(osv.osv.osv_memory):
                 line.available_types = res.ids[0]
         return self.returnWizard()
 
-    @api.multi
     def forceTypes2d(self):
         if not self.force_types_2d:
             raise UserError(_('You have to select a force type before clicking.'))

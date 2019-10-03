@@ -33,7 +33,7 @@ class MrpProductionExtension(models.Model):
     _name = 'mrp.production'
     _inherit = 'mrp.production'
 
-    @api.multi
+    @
     def product_id_change(self, product_id, product_qty=0):
         """ Finds UoM of changed product.
         @param product_id: Id of changed product.

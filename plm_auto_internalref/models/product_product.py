@@ -49,7 +49,6 @@ class ProductProductExtension(models.Model):
     def computeDefaultCode(self, eng_code, eng_rev):
         return '%s_%s' % (eng_code, eng_rev)
 
-    @api.multi
     def write(self, vals):
         res = super(ProductProductExtension, self).write(vals)
         for prodBrws in self:

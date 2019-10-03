@@ -98,7 +98,6 @@ class ProductTemplateExtension(models.Model):
         ('partnumber_uniq', 'unique (engineering_code,engineering_revision)', _('Part Number has to be unique!'))
     ]
 
-    @api.multi
     def _compute_eng_code_editable(self):
         for productBrws in self:
             if productBrws.engineering_code in ['', False, '-']:
@@ -106,7 +105,6 @@ class ProductTemplateExtension(models.Model):
             else:
                 productBrws.is_engcode_editable = False
 
-    @api.multi
     def engineering_products_open(self):
         product_id = False
         related_product_brws_list = self.env['product.product'].search([('product_tmpl_id', '=', self.id)])
@@ -133,7 +131,6 @@ class ProductTemplateExtension(models.Model):
         """
         return self.search([('engineering_code', '=', self.engineering_code)])
 
-    @api.multi
     def _revisions_count(self):
         """
         get All version product_tempate based on this one
@@ -141,7 +138,6 @@ class ProductTemplateExtension(models.Model):
         for product_template_id in self:
             product_template_id.revision_count = product_template_id.search_count([('engineering_code', '=', product_template_id.engineering_code)])
 
-    @api.multi
     def open_related_revisions(self):
         return {'name': _('Products'),
                 'res_model': 'product.template',
@@ -156,11 +152,8 @@ class ProductTemplateExtension(models.Model):
         cr = self.env.cr
         cr.execute("""
         -- Index: product_template_engcode_index
-        
         -- Index: product_template_engcode_index
-        
         DROP INDEX IF EXISTS product_template_engcode_index;
-        
         CREATE INDEX product_template_engcode_index
           ON product_template
           USING btree
@@ -169,9 +162,7 @@ class ProductTemplateExtension(models.Model):
 
         cr.execute("""
         -- Index: product_template_engcoderev_index
-        
         DROP INDEX IF EXISTS product_template_engcoderev_index;
-        
         CREATE INDEX product_template_engcoderev_index
           ON product_template
           USING btree

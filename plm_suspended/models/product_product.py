@@ -40,7 +40,6 @@ class ProductProduct(models.Model):
         action_dict['suspended'] = self.action_suspend
         return action_dict
 
-    @api.multi
     def action_suspend(self):
         """
             reactivate the object
@@ -51,7 +50,6 @@ class ProductProduct(models.Model):
             self.wf_message_post(body=_('Status moved to:{}.'.format(defaults['state'])))
         return obj_id
 
-    @api.multi
     def action_unsuspend(self):
         """
             reactivate the object

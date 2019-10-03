@@ -33,7 +33,6 @@ from odoo import api
 class ProductTemplate(models.Model):
     _inherit = 'product.product'
 
-    @api.multi
     def action_create_spare_bom_wf(self):
         """
             Create a new Spare Bom if doesn't exist (action callable from code)
@@ -41,7 +40,6 @@ class ProductTemplate(models.Model):
         self._create_spare_bom()
         return False
 
-    @api.multi
     def _create_spare_bom(self):
         """
             Create a new Spare Bom (recursive on all EBom children)

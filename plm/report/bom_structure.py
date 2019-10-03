@@ -182,11 +182,9 @@ class ReportBomStructureAll(models.AbstractModel):
     _name = 'report.plm.bom_structure_all'
     _description = "Report Bom All Structure"
 
-    @api.multi
     def get_children(self, myObject, level=0):
         return get_bom_report(myObject, recursion=True, flat=False, leaf=False, level=1, summarize=False)
 
-    @api.multi
     def bom_type(self, myObject):
         result = dict(myObject.fields_get()['type']['selection']).get(myObject.type, '')
         return _(result)
@@ -214,11 +212,9 @@ class ReportBomStructureOne(models.AbstractModel):
             'doc_ids': docids}
         return report_obj.render('plm.bom_structure_one', docargs)
 
-    @api.multi
     def get_children(self, myObject, level=0):
         return get_bom_report(myObject, recursion=False, flat=False, leaf=False, level=1, summarize=False)
 
-    @api.multi
     def bom_type(self, myObject):
         result = dict(myObject.fields_get()['type']['selection']).get(myObject.type, '')
         return _(result)
@@ -246,11 +242,9 @@ class ReportBomStructureAllSum(models.AbstractModel):
             'doc_ids': docids}
         return report_obj.render('plm.bom_structure_all_sum', docargs)
 
-    @api.multi
     def get_children(self, myObject, level=1):
         return get_bom_report(myObject, recursion=True, flat=False, leaf=False, level=level, summarize=True)
 
-    @api.multi
     def bom_type(self, myObject):
         result = dict(myObject.fields_get()['type']['selection']).get(myObject.type, '')
         return _(result)
@@ -278,11 +272,9 @@ class ReportBomStructureOneSum(models.AbstractModel):
             'doc_ids': docids}
         return report_obj.render('plm.bom_structure_one_sum', docargs)
 
-    @api.multi
     def get_children(self, myObject):
         return get_bom_report(myObject, summarize=True)
 
-    @api.multi
     def bom_type(self, myObject):
         result = dict(myObject.fields_get()['type']['selection']).get(myObject.type, '')
         return _(result)
@@ -310,11 +302,9 @@ class ReportBomStructureLevels(models.AbstractModel):
             'doc_ids': docids}
         return report_obj.render('plm.bom_structure_leaves', docargs)
 
-    @api.multi
     def get_children(self, myObject, level=1):
         return get_bom_report(myObject, leaf=True, level=level, summarize=True)
 
-    @api.multi
     def bom_type(self, myObject):
         result = dict(myObject.fields_get()['type']['selection']).get(myObject.type, '')
         return _(result)
@@ -342,11 +332,9 @@ class ReportBomStructureFlat(models.AbstractModel):
             'doc_ids': docids}
         return report_obj.render('plm.bom_structure_flat', docargs)
 
-    @api.multi
     def get_children(self, myObject, level=1):
         return get_bom_report(myObject, recursion=True, flat=True, leaf=False, level=level, summarize=True)
 
-    @api.multi
     def bom_type(self, myObject):
         result = dict(myObject.fields_get()['type']['selection']).get(myObject.type, '')
         return _(result)

@@ -103,7 +103,6 @@ class PlmTemporaryCutted(osv.osv.osv_memory):
                         bom_line_brws.write(common_values)
                         return
 
-    @api.multi
     def action_create_normalBom(self):
         selected_ids = self.env.context.get('active_ids', [])
         response = super(PlmTemporaryCutted, self).action_create_normalBom()

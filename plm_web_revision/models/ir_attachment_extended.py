@@ -37,7 +37,6 @@ class PlmDocumentExtended(models.Model):
     _name = 'document.rev_wizard'
     _description = "Document Revision Wizard"
 
-    @api.multi
     def new_document_revision_by_server(self):
         document_id = self.env.context.get('default_document_id', False)
         if not document_id:
@@ -59,7 +58,6 @@ class PlmDocumentExtended(models.Model):
                     'res_id': newID,
                     'type': 'ir.actions.act_window'}
 
-    @api.multi
     def stateAllows(self, brwsObj, objType):
         if brwsObj.state != 'released':
             logging.error('[new_document_revision_by_server:stateAllows] Cannot revise obj %s, Id: %r because state is %r' % (objType, brwsObj.id, brwsObj.state))

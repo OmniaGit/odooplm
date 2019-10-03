@@ -44,7 +44,6 @@ class ProductTemplateExtension(models.Model):
             logging.info('Internal ref set value %s on engineering_code: %r' % (vals['default_code'], engineering_code))
         return super(ProductTemplateExtension, self).create(vals)
         
-    @api.multi
     def write(self, vals):
         res = super(ProductTemplateExtension, self).write(vals)
         for prodBrws in self:

@@ -35,7 +35,7 @@ from odoo import (
 class ProdProdKanbanExtension(models.Model):
     _inherit = 'product.product'
 
-    @api.multi
+    @
     def open_engine_bom(self):
         boms = self.get_related_boms()
         domain = [('id', 'in', boms.ids), ('type', '=', 'ebom')]

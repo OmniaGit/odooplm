@@ -71,7 +71,6 @@ class mrp_bom_extension_data(models.Model):
     def onchangeBomLine(self):
         self._obsolete_compute()
 
-    @api.multi
     def action_wizard_compute_bom(self):
         return {
             'domain': [],
@@ -83,7 +82,6 @@ class mrp_bom_extension_data(models.Model):
             'target': 'new',
         }
 
-    @api.multi
     def showAllBomsToCompute(self):
         outLines = []
 
@@ -140,7 +138,6 @@ class mrp_bom_extension_data(models.Model):
             res._obsolete_compute()
         return res
 
-    @api.multi
     def write(self, vals):
         res = super(mrp_bom_extension_data, self).write(vals)
         bom_line_ids = vals.get('bom_line_ids', [])
@@ -201,7 +198,6 @@ class mrp_bom_data_compute(models.Model):
                                     _('Compute Type'),
                                     required=True)
 
-    @api.multi
     def scheduler_update_obsolete_bom(self, compute_type):
         logging.info('Scheduler to update obsolete boms started with computation type %r' % (compute_type))
         tmpObj = self.create({'compute_type': compute_type})
@@ -214,8 +210,7 @@ class mrp_bom_data_compute(models.Model):
             logging.info('Cannot create a new temporary object')
         logging.info('Scheduler to update obsolete boms ended')
         tmpObj.unlink()
-        
-    @api.multi
+
     def action_compute_bom(self):
         '''
             Divide due to choosen operation

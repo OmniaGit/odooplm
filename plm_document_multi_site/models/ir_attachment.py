@@ -43,7 +43,6 @@ class IrAttachment(models.Model):
                                                           string="S.N",
                                                           help="""Number of syncronization action to be performed in order to have the document aligned in all the servers""")
 
-    @api.multi
     def _count_plm_document_action_syncronize_ids_count(self):
         """
         get All version product_tempate based on this one
@@ -102,7 +101,6 @@ class IrAttachment(models.Model):
             return False, "Document %r is no syncronized on server %s " % (self.name,
                                                                            server_name)
 
-    @api.multi
     def canCheckOut(self, showError=False):
         ret = super(IrAttachment, self).canCheckOut(showError=showError)
         for plm_document_action_syncronize_id in self.plm_document_action_syncronize_ids:
@@ -114,7 +112,6 @@ class IrAttachment(models.Model):
                     logging.error(msg)
         return ret
 
-    @api.multi
     def open_related_action_syncronize(self):
         return {'name': _('Sync.Actions'),
                 'res_model': 'plm.document.action.syncronize',
@@ -124,6 +121,5 @@ class IrAttachment(models.Model):
                 'domain': [('id', 'in', self.plm_document_action_syncronize_ids.ids)],
                 'context': {}}
 
-    @api.multi
     def syncronize(self):
         self.env['plm.document.action.syncronize'].syncronize(document_ids=self.ids)

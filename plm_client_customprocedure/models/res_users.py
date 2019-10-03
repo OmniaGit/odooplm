@@ -46,8 +46,7 @@ class ResUsers(models.Model):
     custom_multicad = fields.Binary(string=_('Client Multicad'))
     custom_multicad_fname = fields.Char(_("New File name"))
     custom_multicad_content = fields.Text('Modif Content', default='')
- 
-    @api.multi
+
     def write(self, vals):
         erase = self.env.context.get('erase_multicad', True)
         erase_custom = self.env.context.get('erase_customprocedure', True)
@@ -56,8 +55,7 @@ class ResUsers(models.Model):
         if erase_custom and 'custom_read_content' in vals:
             self.open_custommodule_save(vals)
         return super(ResUsers, self).write(vals)
- 
-    @api.multi
+
     def open_custommodule_edit(self):
         for groupBrws in self:
             if groupBrws.custom_procedure:
@@ -65,8 +63,7 @@ class ResUsers(models.Model):
                 if self.custom_read_content:
                     fileReadableContent = ''
                 self.with_context({'erase_customprocedure': False}).custom_read_content = fileReadableContent
-             
-    @api.multi
+
     def open_custom_multicad_edit(self):
         for groupBrws in self:
             if groupBrws.custom_multicad:
@@ -74,8 +71,7 @@ class ResUsers(models.Model):
                 if self.custom_multicad_content:
                     fileReadableContent = ''
                 self.with_context({'erase_multicad': False}).custom_multicad_content = fileReadableContent
- 
-    @api.multi
+
     def open_custommodule_save(self, vals):
         for groupBrws in self:
             self.commonSave(vals, 
@@ -104,8 +100,7 @@ class ResUsers(models.Model):
             with open(customFilePath, 'wb') as writeFile:
                 writeFile.write(base64.decodestring(custom_file))
         vals[content_field] = ''
- 
-    @api.multi
+
     def getCustomProcedure(self):
         for userBrws in self.browse(self.env.uid):
             logging.info('Request CustomProcedure file for user %r' % (userBrws.env.uid))
@@ -121,7 +116,6 @@ class ResUsers(models.Model):
                         return fileContent, fileName
         return '', ''
 
-    @api.multi
     def getCustomMulticad(self):
         for userBrws in self.browse(self.env.uid):
             logging.info('Request Multicad file for user %r' % (userBrws.env.uid))

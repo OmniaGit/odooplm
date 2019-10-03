@@ -75,7 +75,6 @@ class PlmDocument(models.Model):
                 'confirm': self.action_confirm,
                 'draft': self.action_draft}
 
-    @api.multi
     def isLatestRevision(self):
         for docBrws in self:
             lastdocIds = self._getlastrev(docBrws.id)
@@ -84,7 +83,6 @@ class PlmDocument(models.Model):
                     return True
         return False
 
-    @api.multi
     def get_checkout_user(self):
         lastDoc = self._getlastrev(self.ids)
         if lastDoc:
@@ -92,7 +90,6 @@ class PlmDocument(models.Model):
                 return docBrws.userid
         return False
 
-    @api.multi
     def _is_checkedout_for_me(self):
         """
             Get if given document (or its latest revision) is checked-out for the requesting user
@@ -103,7 +100,6 @@ class PlmDocument(models.Model):
                 return True
         return False
 
-    @api.multi
     def _getlastrev(self, resIds):
         result = []
         for objDoc in self.browse(resIds):
@@ -115,7 +111,6 @@ class PlmDocument(models.Model):
                 logging.warning('[_getlastrev] No documents are found for object with name: "%s"' % (objDoc.name))
         return list(set(result))
 
-    @api.multi
     def GetLastNamesFromID(self):
         """
             get the last rev
@@ -131,7 +126,6 @@ class PlmDocument(models.Model):
         """
         return False, ''
 
-    @api.multi
     def _data_get_files(self,
                         listedFiles=([], []),
                         forceFlag=False,
@@ -200,7 +194,6 @@ class PlmDocument(models.Model):
                 return False, result
         return result
 
-    @api.multi
     def _inverse_datas(self):
         super(PlmDocument, self)._inverse_datas()
         for ir_attachment_id in self:
@@ -267,7 +260,6 @@ class PlmDocument(models.Model):
                 result.append(child.child_id.id)
         return list(set(result))
 
-    @api.multi
     def _data_check_files(self, targetIds, listedFiles=(), forceFlag=False):
         result = []
         datefiles = []
@@ -310,7 +302,6 @@ class PlmDocument(models.Model):
                 result.append((objDoc.id, objDoc.datas_fname, file_size, collectable, isCheckedOutToMe, checkOutUser))
         return list(set(result))
 
-    @api.multi
     def copy(self, defaults={}):
         """
             Overwrite the default copy method
@@ -358,7 +349,6 @@ class PlmDocument(models.Model):
             return False
         return True
 
-    @api.multi
     def newVersion(self):
         """
             create a new version of the document (to WorkFlow calling)
@@ -412,7 +402,6 @@ class PlmDocument(models.Model):
             break
         return (newID, newRevIndex)
 
-    @api.multi
     def Clone(self, defaults={}):
         """
             create a new copy of the document
@@ -516,7 +505,6 @@ class PlmDocument(models.Model):
             ret = ret and self.browse([oid]).write(document, check=True)
         return ret
 
-    @api.multi
     def CleanUp(self, default=None):
         """
             Remove faked documents
@@ -542,7 +530,6 @@ class PlmDocument(models.Model):
                 expData = tmpData['datas']
         return expData
 
-    @api.multi
     def ischecked_in(self):
         """
             Check if a document is checked-in
@@ -555,12 +542,10 @@ class PlmDocument(models.Model):
                 return False
         return True
 
-    @api.multi
     def perform_action(self, action):
         toCall = self.actions.get(action)
         return toCall()
 
-    @api.multi
     def wf_message_post(self, body=''):
         """
             Writing messages to follower, on multiple objects
@@ -569,7 +554,6 @@ class PlmDocument(models.Model):
             for elem in self:
                 elem.message_post(body=_(body))
 
-    @api.multi
     def setCheckContextWrite(self, checkVal=True):
         """
             :checkVal Set check flag in context to do state verification in component write
@@ -578,7 +562,6 @@ class PlmDocument(models.Model):
         localCtx['check'] = checkVal
         self.env.context = localCtx
 
-    @api.multi
     def commonWFAction(self, writable, state, check):
         """
             :writable set writable flag for component
@@ -597,21 +580,18 @@ class PlmDocument(models.Model):
                 out.append(objId)
         return out
 
-    @api.multi
     def action_draft(self):
         """
             action to be executed for Draft state
         """
         return self.commonWFAction(True, 'draft', False)
 
-    @api.multi
     def action_confirm(self):
         """
             action to be executed for Confirm state
         """
         return self.commonWFAction(False, 'confirmed', False)
 
-    @api.multi
     def action_release(self):
         """
             release the object
@@ -631,14 +611,12 @@ class PlmDocument(models.Model):
             to_release.commonWFAction(False, 'released', False)
         return False
 
-    @api.multi
     def action_obsolete(self):
         """
             obsolete the object
         """
         return self.commonWFAction(False, 'obsoleted', False)
 
-    @api.multi
     def action_reactivate(self):
         """
             reactivate the object
@@ -654,7 +632,6 @@ class PlmDocument(models.Model):
             return objId
         return False
 
-    @api.multi
     def blindwrite(self, vals):
         """
             blind write for xml-rpc call for recovering porpouse
@@ -681,7 +658,6 @@ class PlmDocument(models.Model):
     def search(self, args, offset=0, limit=None, order=None, count=False):
         return super(PlmDocument, self).search(args, offset, limit, order, count)
 
-    @api.multi
     def check_unique(self):
         for ir_attachment_id in self:
             if self.search_count([('name', '=', ir_attachment_id.name),
@@ -698,7 +674,6 @@ class PlmDocument(models.Model):
         res.check_unique()
         return res
 
-    @api.multi
     def write(self, vals):
         check = self.env.context.get('check', True)
         if check:
@@ -710,7 +685,6 @@ class PlmDocument(models.Model):
         self.check_unique()
         return res
 
-    @api.multi
     def read(self, fields=[], load='_classic_read'):
         try:
             customFields = [field.replace('plm_m2o_', '') for field in fields if field.startswith('plm_m2o_')]
@@ -722,11 +696,9 @@ class PlmDocument(models.Model):
         except Exception as ex:
             raise ex
 
-    @api.multi
     def readMany2oneFields(self, readVals, fields):
         return self.env['product.product']._readMany2oneFields(self.env['ir.attachment'], readVals, fields)
 
-    @api.multi
     def checkMany2oneClient(self, vals):
         return self.env['product.product']._checkMany2oneClient(self.env['ir.attachment'], vals)
 
@@ -738,14 +710,12 @@ class PlmDocument(models.Model):
                 return False
         return True
 
-    @api.multi
     def writeCheckDatas(self, vals):
         if 'datas' in list(vals.keys()) or 'datas_fname' in list(vals.keys()):
             for docBrws in self:
                 if not docBrws._is_checkedout_for_me() and not (self.env.user._is_admin() or self.env.user._is_superuser()):
                     raise UserError(_("You cannot edit a file not in check-out by you! User ID %s" % (self.env.uid)))
 
-    @api.multi
     def unlink(self):
         values = {'state': 'released', }
         checkState = ('undermodify', 'obsoleted')
@@ -802,7 +772,6 @@ class PlmDocument(models.Model):
 
     #   Overridden methods for this entity
 
-    @api.one
     def _get_checkout_state(self):
         chechRes = self.getCheckedOut(self.id, None)
         if chechRes:
@@ -810,7 +779,6 @@ class PlmDocument(models.Model):
         else:
             self.checkout_user = ''
 
-    @api.multi
     def toggle_check_out(self):
         for ir_attachment_id in self:
             if ir_attachment_id.isCheckedOutByMe():
@@ -832,7 +800,6 @@ class PlmDocument(models.Model):
             return docBrws.id
         return False
 
-    @api.one
     def _check_in(self):
         checkOutId = self.isCheckedOutByMe()
         if not checkOutId:
@@ -845,7 +812,6 @@ class PlmDocument(models.Model):
         self.env['plm.checkout'].browse(checkOutId).unlink()
         return self.id
 
-    @api.one
     def _is_checkout(self):
         _docName, _docRev, chekOutUser, _hostName = self.getCheckedOut(self.id, None)
         if chekOutUser:
@@ -860,7 +826,6 @@ class PlmDocument(models.Model):
             fileExtension = '.' + datas_fname.split('.')[-1]
         return fileExtension
 
-    @api.multi
     @api.depends('name', 'revisionid', 'datas_fname')
     def _compute_document_type(self):
         configParamObj = self.env['ir.config_parameter'].sudo()
@@ -885,7 +850,6 @@ class PlmDocument(models.Model):
             except Exception as ex:
                 logging.error('Unable to compute document type for document %r, error %r' % (docBrws.id, ex))
 
-    @api.multi
     def _get_n_rel_doc(self):
         ir_attachment_relation = self.env['ir.attachment.relation']
         for ir_attachment_id in self:
@@ -942,7 +906,6 @@ class PlmDocument(models.Model):
     attachment_release_date = fields.Datetime(string=_('Release Datetime'))
     attachment_revision_count = fields.Integer(compute='_attachment_revision_count')
 
-    @api.multi
     def _attachment_revision_count(self):
         """
         get All version product_tempate based on this one
@@ -1010,7 +973,6 @@ class PlmDocument(models.Model):
                 getCompIds(docName, docRev)
         return list(set(ids))
 
-    @api.multi
     def isCheckedOutByMe(self):
         checkoutBrwsList = self.env['plm.checkout'].search(
             [('documentid', '=', self.id), ('userid', '=', self.env.uid)])
@@ -1153,14 +1115,12 @@ class PlmDocument(models.Model):
             docArray.append(oid)  # Add requested document to package
         return self.browse(docArray)._data_get_files(listedFiles, forceFlag)
 
-    @api.multi
     def action_view_rel_doc(self):
         action = self.env.ref('plm.act_view_doc_related').read()[0]
         action['domain'] = ['|', ('parent_id', 'in', self.ids),
                                  ('child_id', 'in', self.ids)]
         return action
 
-    @api.multi
     def GetRelatedDocs(self, default=None):
         """
             Extract documents related to current one(s) (layouts, referred models, etc.)
@@ -1230,7 +1190,6 @@ class PlmDocument(models.Model):
         uiUser = userType.browse(userId)
         return uiUser.name
 
-    @api.multi
     def _getbyrevision(self, name, revision):
         result = False
         for result in self.search([('name', '=', name), ('revisionid', '=', revision)]):
@@ -1550,7 +1509,6 @@ class PlmDocument(models.Model):
         logging.info("Time Spend For save structure is: %s" % (str(end - start)))
         return jsonify
 
-    @api.multi
     def checkout(self, hostName, hostPws):
         """
         check out the current document
@@ -1563,7 +1521,6 @@ class PlmDocument(models.Model):
         res = self.env['plm.checkout'].create(values)
         return res.id
 
-    @api.multi
     def canCheckOut(self, showError=False):
         for docBrws in self:
             if docBrws.is_checkout:
@@ -1590,7 +1547,6 @@ class PlmDocument(models.Model):
             return True
         return False
 
-    @api.multi
     def getDocumentInfos(self):
         """
             Document infos for clone/revision procedure
@@ -1627,7 +1583,6 @@ class PlmDocument(models.Model):
                 'documents': linkedDocs,
                 'bom': []}
 
-    @api.multi
     def computeLikedDocuments(self):
         """
             Get child documents in document relations
@@ -1640,14 +1595,12 @@ class PlmDocument(models.Model):
                 docList.append({'component': {}, 'document': linkedBrws.parent_id.getDocumentInfos()})
         return docList
 
-    @api.multi
     def canBeRevised(self):
         for docBrws in self:
             if docBrws.state == 'released' and docBrws.ischecked_in():
                 return True
         return False
 
-    @api.multi
     def cleanDocumentRelations(self):
         linkedDocEnv = self.env['ir.attachment.relation']
         for docBrws in self:
@@ -1887,7 +1840,6 @@ class PlmDocument(models.Model):
         result = [id for id in orig_ids if id in ids]
         return len(result) if count else list(result)
 
-    @api.multi
     def open_related_document_revisions(self):
         ir_attachment_ids = self.search([('name', '=', self.name)])
         return {'name': _('Attachment Revs.'),
@@ -1966,7 +1918,6 @@ class PlmDocument(models.Model):
         ir_attachment_id, dbThread = clientArgs
         return self.browse(ir_attachment_id).canIUpload(dbThread)
 
-    @api.multi
     def canIUpload(self, dbTheread):
         action = 'upload'
         plm_dbthread = self.env['plm.dbthread']

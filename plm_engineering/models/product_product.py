@@ -213,7 +213,7 @@ class ProductProductExtension(models.Model):
 class ProductTemporaryNormalBom(osv.osv.osv_memory):
     _inherit = "plm.temporary"
 
-    @api.multi
+    @
     def action_create_normalBom(self):
         """
             Create a new Normal Bom if doesn't exist (action callable from views)

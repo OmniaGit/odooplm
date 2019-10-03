@@ -56,7 +56,6 @@ class Plm_box_document(models.Model):
             vals['name'] = name
         return super(Plm_box_document, self).create(vals)
 
-    @api.multi
     def getCheckOutUser(self):
         for docBrws in self:
             checkOutObj = self.env.get('plm.checkout')

@@ -69,13 +69,11 @@ class plm_missing_bom(osv.osv.osv_memory):
     itemqty = fields.Float(string=_("Quantity"), digits=(16, 3))
     reason = fields.Char(string=_("Difference"), size=32)
 
-    @api.multi
     def delete_bom_line(self):
         for plm_missign_bom_id in self:
             plm_missign_bom_id.bom_id.bom_line_id_to_delete = [(6, True, plm_missign_bom_id.bom_idrow.ids)]
             plm_missign_bom_id.unlink()
 
-    @api.multi
     def copy_left_right(self):
         obj_adding_bom = self.env['plm.adding.bom']
         for plm_missign_bom_id in self:
@@ -89,7 +87,6 @@ class plm_missing_bom(osv.osv.osv_memory):
                 'itemqty': plm_missign_bom_id.itemqty,
                 'reason': 'new'})
 
-    @api.multi
     def move_left_left(self):
         for plm_missign_bom_id in self:
             plm_missign_bom_id.copy_left_right()
@@ -109,13 +106,11 @@ class plm_adding_bom(osv.osv.osv_memory):
     itemqty = fields.Float(string=_("Quantity"), digits=(16, 3))
     reason = fields.Char(string=_("Difference"), size=32)
 
-    @api.multi
     def delete_bom_line(self):
         for plm_missign_bom_id in self:
             plm_missign_bom_id.bom_id.bom_line_id_to_delete = [(6, True, plm_missign_bom_id.bom_idrow.ids)]
             plm_missign_bom_id.unlink()
 
-    @api.multi
     def copy_right_left(self):
         obj_missing_bom = self.env['plm.missing.bom']
         for plm_missign_bom_id in self:
@@ -129,7 +124,6 @@ class plm_adding_bom(osv.osv.osv_memory):
                 'itemqty': plm_missign_bom_id.itemqty,
                 'reason': 'new'})
 
-    @api.multi
     def move_right_left(self):
         for plm_missign_bom_id in self:
             plm_missign_bom_id.copy_right_left()
@@ -187,7 +181,6 @@ class plm_compare_bom(osv.osv.osv_memory):
 
     bom_line_id_to_delete = fields.Many2many('mrp.bom.line', string=_('BoM Line to Delete'))
 
-    @api.multi
     def _to_update(self):
         for plm_compare_bom_id in self:
             rule = len(plm_compare_bom_id.bom_line_id_to_delete) or len(plm_compare_bom_id.anotinb.filtered(lambda x: x.reason == 'new')) or len(plm_compare_bom_id.bnotina.filtered(lambda x: x.reason == 'new'))
@@ -195,13 +188,11 @@ class plm_compare_bom(osv.osv.osv_memory):
 
     to_update = fields.Boolean(compute='_to_update')
 
-    @api.multi
     def _are_equal(self):
         for plm_compare_bom_id in self:
             plm_compare_bom_id.bom_are_equal = len(plm_compare_bom_id.anotinb) == 0 and len(plm_compare_bom_id.bnotina) == 0
     bom_are_equal = fields.Boolean(compute='_are_equal')
 
-    @api.multi
     def name_get(self):
         result = []
         for r in self:
@@ -209,7 +200,6 @@ class plm_compare_bom(osv.osv.osv_memory):
             result.append((r.id, name))
         return result
 
-    @api.multi
     def update_bom(self):
         mrp_bom_line = self.env['mrp.bom.line']
         for plm_compare_bom_id in self:
@@ -347,7 +337,6 @@ class plm_compare_bom(osv.osv.osv_memory):
                 leftItems.append(self.getRightBomObj(toCreateVals))
         return rightItems, leftItems
 
-    @api.multi
     def action_compare_Bom(self):
         """
             Compare two BOMs

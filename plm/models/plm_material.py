@@ -46,13 +46,10 @@ class PlmMaterial(models.Model):
         ('name_uniq', 'unique(name)', _('Raw Material has to be unique !')),
     ]
 
-    @api.multi
     def copy(self, default=None):
         if not default:
             default = {}
         default['name'] = self.name + ' (copy)' 
         return super(PlmMaterial, self).copy(default=default)
-
-PlmMaterial()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

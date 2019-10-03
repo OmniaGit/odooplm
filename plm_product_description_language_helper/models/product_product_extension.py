@@ -35,7 +35,6 @@ from openerp import _
 class ProductProductExtension(models.Model):
     _inherit = 'product.product'
 
-    @api.multi
     def copy(self, default={}):
         '''
             Set flag to skip translation creation because super copy function makes the trick
@@ -80,7 +79,6 @@ class ProductProductExtension(models.Model):
                                                        'value': oldDescObj.value})
         return productBrws
 
-    @api.multi
     def write(self, vals):
         '''
             - Set up translations every time description changes

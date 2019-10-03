@@ -46,14 +46,11 @@ class PlmTreatment(models.Model):
     _sql_constraints = [
         ('name_uniq', 'unique(name)', _('Termic Treatment has to be unique !')),
     ]
-    
-    @api.multi
+
     def copy(self, default=None):
         if not default:
             default = {}
-        default['name'] = self.name + ' (copy)' 
+        default['name'] = self.name + ' (copy)'
         return super(PlmTreatment, self).copy(default=default)
-
-PlmTreatment()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

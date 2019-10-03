@@ -61,7 +61,7 @@ class PlmCheckout(models.Model):
         ('documentid', 'unique (documentid)', _('The documentid must be unique !'))
     ]
 
-    @api.multi
+    
     def name_get(self):
         result = []
         for r in self:
@@ -95,7 +95,7 @@ class PlmCheckout(models.Model):
         docBrws.wf_message_post(body=_('Checked-Out ID %r' % (newCheckoutBrws.id)))
         return newCheckoutBrws
 
-    @api.multi
+    
     def unlink(self):
         documentType = self.env['ir.attachment']
         docids = []

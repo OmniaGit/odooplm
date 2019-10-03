@@ -42,10 +42,9 @@ class ProductExtension(models.Model):
                     if not isRoot:
                         bomBrws.obsolete_presents_recursive = presentsFlag
                 recursion(parentsList)
-            
+
         recursion(struct, isRoot=True)
 
-    @api.multi
     def write(self, vals):
         res = super(ProductExtension, self).write(vals)
         statePresent = vals.get('state', None)
