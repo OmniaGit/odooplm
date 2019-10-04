@@ -36,7 +36,6 @@
         <field name="name">Materials</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">plm.material</field>
-        <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
         <field name="view_id" ref="plm_view_material_tree"/>
     </record>

@@ -110,7 +110,6 @@
         <field name="name">Normal BoMs</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">mrp.bom</field>
-        <field name="view_type">form</field>
         <field name="domain">[('type','=','normal'),]</field>
         <field name="filter" eval="True"/>
     </record>
@@ -206,7 +205,6 @@
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">mrp.bom.line</field>
         <field name="domain">[('bom_id', 'in', active_ids)]</field>
-        <field name="view_type">tree</field>
         <field name="view_id" ref="plm_bom_tree_structure"/>
     </record>
 

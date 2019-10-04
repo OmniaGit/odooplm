@@ -26,7 +26,6 @@
                 name="plm.product_pdf"
                 report_type="qweb-html"
                 file=""
-                header="False"
                 />
     </data>
 
@@ -37,7 +36,6 @@
                 name="plm.product_production_pdf_latest"
                 report_type="qweb-html"
                 file=""
-                header="False"
                 />
     </data>   
     
@@ -48,7 +46,6 @@
                 name="plm.product_production_one_pdf_latest"
                 report_type="qweb-html"
                 file=""
-                header="False"
                 />
     </data>   
     <data>
@@ -58,7 +55,6 @@
                 name="plm.product_production_all_pdf_latest"
                 report_type="qweb-html"
                 file=""
-                header="False"
                 />
     </data>   
 </openerp>

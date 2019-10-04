@@ -32,7 +32,6 @@
         <field name="name">Spare BoMs</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">mrp.bom</field>
-        <field name="view_type">form</field>
         <field name="domain">[('type','=','spbom')]</field>
         <field name="filter" eval="True"/>
     </record>

@@ -121,7 +121,6 @@
     <record model="ir.actions.act_window" id="action_plm_checkout">
         <field name="name">Check-Out</field>
         <field name="res_model">plm.checkout</field>
-        <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
         <field name="view_id" ref="plm_checkout_tree"/>
         <field name="search_view_id" ref="plm_checkout_search"/>

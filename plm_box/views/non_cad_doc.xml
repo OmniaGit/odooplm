@@ -112,7 +112,6 @@
     <record model="ir.actions.act_window" id="action_non_cad_doc">
     	<field name="name">Non CAD Document Relations</field>
     	 <field name="res_model">plm.box</field>
-        <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
         <field name="view_id" ref="plm_box_tree"/>
     </record>

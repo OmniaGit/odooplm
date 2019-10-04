@@ -325,11 +325,10 @@
     <record model="ir.actions.act_window" id="action_plm_component_base">
         <field name="name">Engineering Parts</field>
         <field name="res_model">product.product</field>
-        <field name="view_type">form</field>
         <field name="view_mode">kanban,tree,form</field>
         <field name="view_id" ref="plm_component_base_tree"/>
         <field name="context">{"search_default_latest":1}</field>
         <field name="domain">['|', ('engineering_code','!=',''), ('engineering_code','!=',False)]</field>
-        <field name="view_id_search" ref="plm_component_base_search"/>
+        <!-- fixme<field name="view_id_search" ref="plm_component_base_search"/> -->
     </record>
 </odoo>

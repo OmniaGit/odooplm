@@ -112,8 +112,6 @@
     <record model="ir.actions.act_window" id="plm_action_document_relations">
     	<field name="name">Document Relations</field>
     	 <field name="res_model">ir.attachment.relation</field>
-        <field name="view_type">form</field>
-        <field name="view_mode">tree,form</field>
     </record>
 
     <act_window name="View Document Relations"

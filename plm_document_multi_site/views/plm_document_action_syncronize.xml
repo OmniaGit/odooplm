@@ -21,7 +21,6 @@
         <field name="name">Syncronize Actions</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">plm.document.action.syncronize</field>
-        <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
         <field name="view_id" ref="plm_document_action_syncronize_tree"/>
     </record>

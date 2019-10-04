@@ -366,7 +366,6 @@
     <record model="ir.actions.act_window" id="plm_action_document_form">
         <field name="name">Documents</field>
         <field name="res_model">ir.attachment</field>
-        <field name="view_type">form</field>
         <field name="view_mode">kanban,tree,form</field>
         <field name="search_view_id" ref="plm.ir_attachment_search"></field>
         <field name="context">{"odooPLM":True}</field>

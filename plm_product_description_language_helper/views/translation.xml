@@ -6,7 +6,6 @@
         <field name="name">Translations</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">ir.translation</field>
-        <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
         <field name="domain">[('name','like','plm.description'),]</field>
         <field name="filter" eval="True"/>

@@ -97,7 +97,6 @@
     <record model="ir.actions.act_window" id="action_plm_backupdoc">
         <field name="name">Backup Data Set</field>
         <field name="res_model">plm.backupdoc</field>
-        <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
         <field eval="False" name="filter"/>
         <field name="view_id" ref="plm_backupdoc_tree"/>
