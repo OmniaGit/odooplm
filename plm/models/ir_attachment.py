@@ -1080,11 +1080,13 @@ class PlmDocument(models.Model):
             if oid in docArray:
                 return
             else:
-                docArray.append(oid)
+                if oid:
+                    docArray.append(oid)
             docBrwsList = documentRelation.search(['|', ('parent_id', '=', oid), ('child_id', '=', oid)])
             for objRel in docBrwsList:
                 if objRel.link_kind in ['LyTree', 'RfTree'] and objRel.child_id.id not in docArray:
-                    docArray.append(objRel.child_id.id)
+                    if objRel.child_id.id:
+                        docArray.append(objRel.child_id.id)
                 else:
                     if objRel.parent_id.id == oid:
                         recursionCompute(objRel.child_id.id)
