@@ -1,15 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-<data>
-    <!-- <menuitem name="Backup Documents View" id="plm_menu_backup" parent="ir_attachment_form" sequence="15"/> -->
-
+<!-- 
     <record model="ir.ui.view" id="view_plm_backupdoc">
         <field name="name">plm.backupdoc</field>
         <field name="model">plm.backupdoc</field>
         <field name="priority" eval="1"/>
         <field name="type">form</field>
         <field name="arch" type="xml">
-            <form string="Backup Document">
             	<sheet>
                 <group colspan="4" col="4">
                 	<field name="document_name" select="1"/>
@@ -31,7 +28,6 @@
                         	img_width="400"/>
                 </group>
                 </sheet>
-            </form>
         </field>
     </record>
 
@@ -82,11 +78,10 @@
             </search>
      	</field>
     </record>
- 
+
     <record model="ir.ui.view" id="plm_backupdoc_tree">
         <field name="name">plm.backupdoc</field>
         <field name="model">plm.backupdoc</field>
-        <field name="type">tree</field>
         <field name="priority" eval="1"/>
         <field name="arch" type="xml">
             <tree string="Documents in Check-Out">
@@ -98,7 +93,7 @@
             </tree>
         </field>
     </record>
- 
+  
     <record model="ir.actions.act_window" id="action_plm_backupdoc">
         <field name="name">Backup Data Set</field>
         <field name="res_model">plm.backupdoc</field>
@@ -136,7 +131,5 @@
         target="new"
         key2="client_action_multi"
         id="act_restore_document"/>
-
-
-</data>
+-->
 </odoo>

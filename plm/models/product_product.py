@@ -573,7 +573,7 @@ class PlmComponent(models.Model):
             for documentBrws in oldObject.linkeddocuments:
                 if documentBrws.state == check_state:
                     if documentBrws.is_checkout:
-                        docInError.append(_("Document %r : %r is checked out by user %r") % (documentBrws.name, documentBrws.revisionid, documentBrws.checkout_user))
+                        docInError.append(_("Document %r : %r is checked out by user %r") % (documentBrws.engineering_document_name, documentBrws.revisionid, documentBrws.checkout_user))
                         continue
                     if documentBrws.id not in docIDs:
                         docIDs.append(documentBrws.id)
@@ -1260,7 +1260,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         def updateRootDocument(docBrws, node):
             if docBrws:
                 newDocBrws = docBrws
-                updateDocAttrs(node, docBrws.datas_fname)
+                updateDocAttrs(node, docBrws.name)
                 docBrws.checkout(hostName, hostPws)
                 newDocBrws.desc_modify = node['DOCUMENT_ATTRIBUTES'].get('desc_modify', '')
                 return newDocBrws
@@ -1279,7 +1279,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             newDocBrws = docEnv.browse(newDocId)
             updateDocDescModify(newDocBrws, node)
             updateDocNodeByBrws(node, newDocBrws)
-            updateDocAttrs(node, docBrws.datas_fname)
+            updateDocAttrs(node, docBrws.name)
             newDocBrws.checkout(hostName, hostPws)
             return newDocBrws
 
@@ -1404,11 +1404,11 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         def cloneDocumentObj(oldDocBrws, engCode, node):
             newDocBrws = False
             if oldDocBrws.id:
-                _filename, file_extension = os.path.splitext(oldDocBrws.datas_fname)
+                _filename, file_extension = os.path.splitext(oldDocBrws.name)
                 newDocBrws = self.getNewDoc(oldDocBrws, engCode, file_extension)
                 newDocBrws.checkout(hostName, hostPws)
                 node['DOCUMENT_ATTRIBUTES'] = newDocBrws.getDocumentInfos()
-                node['DOCUMENT_ATTRIBUTES']['OLD_FILE_NAME'] = oldDocBrws.datas_fname
+                node['DOCUMENT_ATTRIBUTES']['OLD_FILE_NAME'] = oldDocBrws.name
                 node['DOCUMENT_ATTRIBUTES']['CHECK_OUT_BY_ME'] = oldDocBrws._is_checkedout_for_me()
             return newDocBrws
 
@@ -1416,11 +1416,11 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             # oldRootDocVals are starting document properties
             # clonedDocBrws is cloned document browse
             rootOldDocBrws = docEnv.getDocumentBrws(oldRootDocVals)
-            _filename, file_extension = os.path.splitext(rootOldDocBrws.datas_fname)
-            clonedDocBrws.datas_fname = '%s%s' % (clonedDocBrws.name, file_extension)
-            node['DOCUMENT_ATTRIBUTES']['datas_fname'] = clonedDocBrws.datas_fname
+            _filename, file_extension = os.path.splitext(rootOldDocBrws.name)
+            clonedDocBrws.name = '%s%s' % (clonedDocBrws.name, file_extension)
+            node['DOCUMENT_ATTRIBUTES']['name'] = clonedDocBrws.name
             node['DOCUMENT_ATTRIBUTES']['CHECK_OUT_BY_ME'] = True
-            node['DOCUMENT_ATTRIBUTES']['OLD_FILE_NAME'] = rootOldDocBrws.datas_fname
+            node['DOCUMENT_ATTRIBUTES']['OLD_FILE_NAME'] = rootOldDocBrws.name
             clonedDocBrws.checkout(hostName, hostPws)
             return clonedDocBrws
 
@@ -1482,9 +1482,9 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                 compBrws = newRawComponent
             elif docName:    # Node is a document node
                 baseName = docName
-                rootDocName = newRootDocProps.get('name', '')
-                if rootEngCode or rootDocName:
-                    baseName = rootEngCode or rootDocName
+                engineering_document_name = newRootDocProps.get('engineering_document_name', '')
+                if rootEngCode or engineering_document_name:
+                    baseName = rootEngCode or engineering_document_name
                 newDocBrws = cloneWithDoc(cloneDocument,
                                           oldDocBrws,
                                           node,
@@ -1504,8 +1504,8 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         newDocName = docEnv.GetNextDocumentName(startingComputeName)
         docDefaultVals = {
             'revisionid': 0,
-            'name': newDocName,
-            'datas_fname': '%s%s' % (newDocName, file_extension),
+            'engineering_document_name': newDocName,
+            'name': '%s%s' % (newDocName, file_extension),
             'checkout_user': self.env.uid}
         newDocVals = oldDocBrws.Clone(docDefaultVals)
         newDocId = newDocVals.get('_id')

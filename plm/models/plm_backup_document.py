@@ -54,24 +54,22 @@ class PlmBackupDocument(models.Model):
     state = fields.Selection(related="documentid.state",
                              string=_("Status"),
                              store=True)
-    document_name = fields.Char(related="documentid.name",
+    document_name = fields.Char(related="documentid.engineering_document_name",
                                 string=_("Stored Name"),
                                 store=True)
     printout = fields.Binary(_('Printout Content'))
     preview = fields.Binary(_('Preview Content'))
 
-    
     def name_get(self):
         result = []
         for r in self:
             if r.documentid and r.userid:
-                name = "%s .. [%s]" % (r.documentid.name[:8], r.userid.name[:8])
+                name = "%s .. [%s]" % (r.documentid.engineering_document_name[:8], r.userid.engineering_document_name[:8])
             else:
                 name = "Error"
             result.append((r.id, name))
         return result
 
-    
     def unlink(self):
         documentType = self.env['ir.attachment']
         for plm_backup_document_id in self:

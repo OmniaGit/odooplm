@@ -69,7 +69,7 @@ class MrpBomExtension(models.Model):
         return obj_bom
 
     #  ######################################################################################################################################33
-    
+
     def _father_compute(self, name='', arg={}):
         """ Gets father bom.
         @param self: The object pointer
@@ -113,7 +113,7 @@ class MrpBomExtension(models.Model):
     create_date = fields.Datetime(_('Creation Date'),
                                   readonly=True)
     source_id = fields.Many2one('ir.attachment',
-                                'name',
+                                'engineering_document_name',
                                 ondelete='no action',
                                 readonly=True,
                                 index=True,

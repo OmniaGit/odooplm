@@ -37,7 +37,7 @@ def getDocumentStream(docRepository, objDoc):
         else:
             content = file(os.path.join(docRepository, objDoc.store_fname), 'rb').read()
     except Exception as ex:
-        logging.error("getFileStream : Exception (%s)reading  stream on file : %s." % (str(ex), objDoc.datas_fname))
+        logging.error("getFileStream : Exception (%s)reading  stream on file : %s." % (str(ex), objDoc.name))
     return content
 
 
@@ -135,7 +135,7 @@ def packDocuments(docRepository, documents, bookCollector):
                 if document.printout and document.printout != 'None':
                     byteIoStream = BytesIO(base64.b64decode(document.printout))
                     appendPage = True
-                elif isPdf(document.datas_fname):
+                elif isPdf(document.name):
                     value = getDocumentStream(docRepository, document)
                     if value:
                         byteIoStream = BytesIO(value)

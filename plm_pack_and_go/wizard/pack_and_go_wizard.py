@@ -66,7 +66,7 @@ class AdvancedPackView(osv.osv.osv_memory):
     @api.model
     def _getDocumentFileName(self):
         for row in self:
-            row.doc_file_name = row.document_id.datas_fname
+            row.doc_file_name = row.document_id.name
 
     component_id = fields.Many2one('product.product', _('Component'))
     document_id = fields.Many2one('ir.attachment', _('Document'))
@@ -372,7 +372,7 @@ class PackAndGo(osv.osv.osv_memory):
         def exportSingle(docBws):
             fromFile = docBws._full_path(docBws.store_fname)
             if os.path.exists(fromFile):
-                outFilePath = os.path.join(outZipFile, docBws.datas_fname)
+                outFilePath = os.path.join(outZipFile, docBws.name)
                 shutil.copyfile(fromFile, outFilePath)
             else:
                 logging.error('Unable to export file from document ID %r. File %r does not exists.' % (docBws.id, fileName))
@@ -406,7 +406,7 @@ class PackAndGo(osv.osv.osv_memory):
 
     def getFileExtension(self, docBrws):
         fileExtension = ''
-        datas_fname = docBrws.datas_fname
+        datas_fname = docBrws.name
         if datas_fname:
             fileExtension = '.' + datas_fname.split('.')[-1]
         return fileExtension

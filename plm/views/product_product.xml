@@ -18,7 +18,6 @@
                 <field name="engineering_code" select="1"/>
                 <field name="default_code"/>
                 <field name="engineering_revision" select="1"/>
-                <field name="attribute_value_ids" widget="many2many_tags" groups="product.group_product_variant" select="1"/>
                 <field name="state" select="1"/>
                 <field name="description" invisible="1"/>
                 <field name="engineering_writable" invisible="1"/>

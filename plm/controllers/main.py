@@ -48,7 +48,7 @@ class UploadDocument(Controller):
             logging.info('start write %r' % (doc_id))
             value1 = mod_file.stream.read()
             to_write = {'datas': base64.b64encode(value1),
-                        'datas_fname': filename}
+                        'name': filename}
             preview = kw.get('preview', '')
             if preview:
                 val_2 = base64.b64encode(preview.stream.read())

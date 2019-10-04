@@ -61,14 +61,13 @@ class PlmCheckout(models.Model):
         ('documentid', 'unique (documentid)', _('The documentid must be unique !'))
     ]
 
-    
     def name_get(self):
         result = []
         for r in self:
             if not r.documentid or not r.userid:
                 name = 'unknown'
             else:
-                name = "%s .. [%s]" % (r.documentid.name[:8], r.userid.name[:8])
+                name = "%s .. [%s]" % (r.documentid.engineering_document_name[:8], r.userid.engineering_document_name[:8])
             result.append((r.id, name))
         return result
 
@@ -88,14 +87,13 @@ class PlmCheckout(models.Model):
         docBrws = self.env['ir.attachment'].browse(vals['documentid'])
         values = {'writable': True}
         if not docBrws.write(values):
-            logging.warning("create : Unable to check-out the required document (" + str(docBrws.name) + "-" + str(docBrws.revisionid) + ").")
-            raise UserError(_("Unable to check-out the required document (" + str(docBrws.name) + "-" + str(docBrws.revisionid) + ")."))
+            logging.warning("create : Unable to check-out the required document (" + str(docBrws.engineering_document_name) + "-" + str(docBrws.revisionid) + ").")
+            raise UserError(_("Unable to check-out the required document (" + str(docBrws.engineering_document_name) + "-" + str(docBrws.revisionid) + ")."))
         self._adjustRelations([docBrws.id])
         newCheckoutBrws = super(PlmCheckout, self).create(vals)
         docBrws.wf_message_post(body=_('Checked-Out ID %r' % (newCheckoutBrws.id)))
         return newCheckoutBrws
 
-    
     def unlink(self):
         documentType = self.env['ir.attachment']
         docids = []
@@ -106,8 +104,8 @@ class PlmCheckout(models.Model):
             values = {'writable': False}
             docids.append(checkObj.documentid.id)
             if not documentType.browse([checkObj.documentid.id]).write(values):
-                logging.warning("unlink : Unable to check-in the document (" + str(checkObj.documentid.name) + "-" + str(checkObj.documentid.revisionid) + ").\n You can't change writable flag.")
-                raise UserError(_("Unable to Check-In the document (" + str(checkObj.documentid.name) + "-" + str(checkObj.documentid.revisionid) + ").\n You can't change writable flag."))
+                logging.warning("unlink : Unable to check-in the document (" + str(checkObj.documentid.engineering_document_name) + "-" + str(checkObj.documentid.revisionid) + ").\n You can't change writable flag.")
+                raise UserError(_("Unable to Check-In the document (" + str(checkObj.documentid.engineering_document_name) + "-" + str(checkObj.documentid.revisionid) + ").\n You can't change writable flag."))
         self._adjustRelations(docids, False)
         dummy = super(PlmCheckout, self).unlink()
         if dummy:

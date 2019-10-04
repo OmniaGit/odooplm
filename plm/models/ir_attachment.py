@@ -103,12 +103,12 @@ class PlmDocument(models.Model):
     def _getlastrev(self, resIds):
         result = []
         for objDoc in self.browse(resIds):
-            docIds = self.search([('name', '=', objDoc.name)], order='revisionid').ids
+            docIds = self.search([('engineering_document_name', '=', objDoc.engineering_document_name)], order='revisionid').ids
             docIds.sort()  # Ids are not surely ordered, but revision are always in creation order.
             if docIds:
                 result.append(docIds[len(docIds) - 1])
             else:
-                logging.warning('[_getlastrev] No documents are found for object with name: "%s"' % (objDoc.name))
+                logging.warning('[_getlastrev] No documents are found for object with engineering_document_name: "%s"' % (objDoc.engineering_document_name))
         return list(set(result))
 
     def GetLastNamesFromID(self):
@@ -116,7 +116,7 @@ class PlmDocument(models.Model):
             get the last rev
         """
         newIds = self._getlastrev(self.ids)
-        return self.browse(newIds).read(['datas_fname'])
+        return self.browse(newIds).read(['name'])
 
     @api.model
     def _isDownloadableFromServer(self, server_name):
@@ -148,12 +148,12 @@ class PlmDocument(models.Model):
                 timeSaved = time.mktime(timeDoc.timetuple())
                 try:
                     isCheckedOutToMe = objDoc._is_checkedout_for_me()
-                    if not (objDoc.datas_fname in listfiles):
+                    if not (objDoc.name in listfiles):
                         datas = False
                         if local_server_name == 'odoo':
                             datas = objDoc.datas
                         result.append((objDoc.id,
-                                       objDoc.datas_fname,
+                                       objDoc.name,
                                        datas,
                                        isCheckedOutToMe,
                                        timeDoc))
@@ -161,7 +161,7 @@ class PlmDocument(models.Model):
                         if forceFlag:
                             isNewer = True
                         else:
-                            timefile = time.mktime(datetime.strptime(str(datefiles[listfiles.index(objDoc.datas_fname)]),
+                            timefile = time.mktime(datetime.strptime(str(datefiles[listfiles.index(objDoc.name)]),
                                                                      '%Y-%m-%d %H:%M:%S').timetuple())
                             isNewer = (timeSaved - timefile) > 5
                         if (isNewer and not (isCheckedOutToMe)):
@@ -169,21 +169,21 @@ class PlmDocument(models.Model):
                             if local_server_name == 'odoo':
                                 datas = objDoc.datas
                             result.append((objDoc.id,
-                                           objDoc.datas_fname,
+                                           objDoc.name,
                                            datas,
                                            isCheckedOutToMe,
                                            timeDoc))
                         else:
                             result.append((objDoc.id,
-                                           objDoc.datas_fname,
+                                           objDoc.name,
                                            False,
                                            isCheckedOutToMe,
                                            timeDoc))
                 except Exception as ex:
                     logging.error(
-                        "_data_get_files : Unable to access to document (" + str(objDoc.name) + "). Error :" + str(ex))
+                        "_data_get_files : Unable to access to document (" + str(objDoc.engineering_document_name) + "). Error :" + str(ex))
                     result.append((objDoc.id,
-                                   objDoc.datas_fname,
+                                   objDoc.name,
                                    False,
                                    True,
                                    self.getServerTime()))
@@ -202,7 +202,7 @@ class PlmDocument(models.Model):
                                 self._full_path(random_name()))
                 if ir_attachment_id.is_plm:
                     self.env['plm.backupdoc'].create({'userid': self.env.uid,
-                                                      'existingfile': ir_attachment_id.datas_fname,
+                                                      'existingfile': ir_attachment_id.name,
                                                       'documentid': ir_attachment_id.id,
                                                       'printout': ir_attachment_id.printout,
                                                       'preview': ir_attachment_id.preview})
@@ -274,14 +274,14 @@ class PlmDocument(models.Model):
                 timeSaved = time.mktime(timeDoc.timetuple())
                 checkoutUserBrws = objDoc.get_checkout_user()
                 if checkoutUserBrws:
-                    checkOutUser = checkoutUserBrws.name
+                    checkOutUser = checkoutUserBrws.engineering_document_name
                     if checkoutUserBrws.id == self.env.uid:
                         isCheckedOutToMe = True
-                if (objDoc.datas_fname in listfiles):
+                if (objDoc.name in listfiles):
                     if forceFlag:
                         isNewer = True
                     else:
-                        listFileIndex = listfiles.index(objDoc.datas_fname)
+                        listFileIndex = listfiles.index(objDoc.name)
                         timefile = time.mktime(
                             datetime.strptime(str(datefiles[listFileIndex]), '%Y-%m-%d %H:%M:%S').timetuple())
                         isNewer = (timeSaved - timefile) > 5
@@ -293,13 +293,13 @@ class PlmDocument(models.Model):
                     objDatas = objDoc.datas
                 except Exception as ex:
                     logging.error(
-                        'Document with "id": %s  and "name": %s may contains no data!!         Exception: %s' % (
-                            objDoc.id, objDoc.name, ex))
+                        'Document with "id": %s  and "engineering_document_name": %s may contains no data!!         Exception: %s' % (
+                            objDoc.id, objDoc.engineering_document_name, ex))
                 if (objDoc.file_size < 1) and (objDatas):
                     file_size = len(objDoc.datas)
                 else:
                     file_size = objDoc.file_size
-                result.append((objDoc.id, objDoc.datas_fname, file_size, collectable, isCheckedOutToMe, checkOutUser))
+                result.append((objDoc.id, objDoc.name, file_size, collectable, isCheckedOutToMe, checkOutUser))
         return list(set(result))
 
     def copy(self, defaults={}):
@@ -308,13 +308,13 @@ class PlmDocument(models.Model):
         """
         documentRelation = self.env['ir.attachment.relation']
         docBrwsList = documentRelation.search([('parent_id', '=', self.id)])
-        previous_name = self.name
-        if 'name' not in defaults:
+        previous_name = self.engineering_document_name
+        if 'engineering_document_name' not in defaults:
             new_name = 'Copy of %s' % previous_name
-            documents = self.search([('name', '=', new_name)], order='revisionid')
+            documents = self.search([('engineering_document_name', '=', new_name)], order='revisionid')
             if len(documents) > 0:
                 new_name = '%s (%s)' % (new_name, len(documents) + 1)
-            defaults['name'] = new_name
+            defaults['engineering_document_name'] = new_name
 # TODO: verifie if document is renamed ??!!
 #         fname, filesize = self._manageFile()
 #         defaults['store_fname'] = fname
@@ -337,15 +337,15 @@ class PlmDocument(models.Model):
     def _iswritable(self, oid):
         if not oid.type == 'binary':
             logging.warning(
-                "_iswritable : Part (" + str(oid.name) + "-" + str(oid.revisionid) + ") not writable as hyperlink.")
+                "_iswritable : Part (" + str(oid.engineering_document_name) + "-" + str(oid.revisionid) + ") not writable as hyperlink.")
             return False
         if oid.state not in ('draft'):
-            logging.warning("_iswritable : Part (" + str(oid.name) + "-" + str(oid.revisionid) + ") in status ; " + str(
+            logging.warning("_iswritable : Part (" + str(oid.engineering_document_name) + "-" + str(oid.revisionid) + ") in status ; " + str(
                 oid.state) + ".")
             return False
-        if not oid.name:
+        if not oid.engineering_document_name:
             logging.warning(
-                "_iswritable : Part (" + str(oid.name) + "-" + str(oid.revisionid) + ") without Engineering P/N.")
+                "_iswritable : Part (" + str(oid.engineering_document_name) + "-" + str(oid.revisionid) + ") without Engineering P/N.")
             return False
         return True
 
@@ -384,12 +384,12 @@ class PlmDocument(models.Model):
                 docId = docId[0]
 
         for tmpObject in self.browse(docId):
-            latestIDs = self.GetLatestIds([(tmpObject.name, tmpObject.revisionid, False)])
+            latestIDs = self.GetLatestIds([(tmpObject.engineering_document_name, tmpObject.revisionid, False)])
             for oldObject in self.browse(latestIDs):
                 oldObject.with_context({'check': False}).write({'state': 'undermodify'})
                 defaults = {}
                 newRevIndex = int(oldObject.revisionid) + 1
-                defaults['name'] = oldObject.name
+                defaults['engineering_document_name'] = oldObject.engineering_document_name
                 defaults['revisionid'] = newRevIndex
                 defaults['writable'] = True
                 defaults['state'] = 'draft'
@@ -411,7 +411,7 @@ class PlmDocument(models.Model):
         if newID is not None:
             newEnt = self.browse(newID)
             exitValues['_id'] = newID
-            exitValues['name'] = newEnt.name
+            exitValues['engineering_document_name'] = newEnt.engineering_document_name
             exitValues['revisionid'] = newEnt.revisionid
         return exitValues
 
@@ -424,11 +424,11 @@ class PlmDocument(models.Model):
         retValues = []
         for document in documents:
             hasToBeSaved = False
-            if not ('name' in document) or ('revisionid' not in document):
+            if not ('engineering_document_name' in document) or ('revisionid' not in document):
                 document['documentID'] = False
                 document['hasSaved'] = False    # Not info --> not to be saved
                 continue
-            docBrwsList = self.search([('name', '=', document['name']),
+            docBrwsList = self.search([('engineering_document_name', '=', document['engineering_document_name']),
                                       ('revisionid', '=', document['revisionid'])],
                                       order='revisionid')
             existingID = False
@@ -458,12 +458,12 @@ class PlmDocument(models.Model):
         for document in documents:
             hasSaved = False
             hasUpdated = False
-            if not ('name' in document) or ('revisionid' not in document):
+            if not ('engineering_document_names' in document) or ('revisionid' not in document):
                 document['documentID'] = False
                 document['hasSaved'] = hasSaved
                 document['hasUpdated'] = hasUpdated
                 continue
-            docBrwsList = self.search([('name', '=', document['name']),
+            docBrwsList = self.search([('engineering_document_name', '=', document['engineering_document_name']),
                                        ('revisionid', '=', document['revisionid'])], order='revisionid')
             if not docBrwsList:
                 existingID = self.create(document).id
@@ -538,7 +538,7 @@ class PlmDocument(models.Model):
         for document in self:
             if checkoutType.search([('documentid', '=', document.id)]):
                 logging.warning(
-                    _("The document %s - %s has not checked-in" % (str(document.name), str(document.revisionid))))
+                    _("The document %s - %s has not checked-in" % (str(document.engineering_document_name), str(document.revisionid))))
                 return False
         return True
 
@@ -598,7 +598,7 @@ class PlmDocument(models.Model):
         """
         to_release = self.env['ir.attachment']
         for oldObject in self:
-            lastDocBrws = self._getbyrevision(oldObject.name, oldObject.revisionid - 1)
+            lastDocBrws = self._getbyrevision(oldObject.engineering_document_name, oldObject.revisionid - 1)
             if lastDocBrws:
                 lastDocBrws.commonWFAction(False, 'obsoleted', False)
             if oldObject.ischecked_in():
@@ -660,7 +660,7 @@ class PlmDocument(models.Model):
 
     def check_unique(self):
         for ir_attachment_id in self:
-            if self.search_count([('name', '=', ir_attachment_id.name),
+            if self.search_count([('engineering_document_name', '=', ir_attachment_id.engineering_document_name),
                                   ('revisionid', '=', ir_attachment_id.revisionid),
                                   ('document_type', 'in', ['2d', '3d'])]) > 1:
                 raise UserError(_('Document Already in the system'))
@@ -711,7 +711,7 @@ class PlmDocument(models.Model):
         return True
 
     def writeCheckDatas(self, vals):
-        if 'datas' in list(vals.keys()) or 'datas_fname' in list(vals.keys()):
+        if 'datas' in list(vals.keys()) or 'name' in list(vals.keys()):
             for docBrws in self:
                 if not docBrws._is_checkedout_for_me() and not (self.env.user._is_admin() or self.env.user._is_superuser()):
                     raise UserError(_("You cannot edit a file not in check-out by you! User ID %s" % (self.env.uid)))
@@ -720,14 +720,14 @@ class PlmDocument(models.Model):
         values = {'state': 'released', }
         checkState = ('undermodify', 'obsoleted')
         for checkObj in self:
-            docBrwsList = self.search([('name', '=', checkObj.name), ('revisionid', '=', checkObj.revisionid - 1)])
+            docBrwsList = self.search([('engineering_document_name', '=', checkObj.engineering_document_name), ('revisionid', '=', checkObj.revisionid - 1)])
             if len(docBrwsList) > 0:
                 oldObject = docBrwsList[0]
                 if oldObject.state in checkState:
                     oldObject.wf_message_post(body=_('Removed : Latest Revision.'))
                     if not oldObject.with_context({'check': False}).write(values):
                         logging.warning(
-                            "unlink : Unable to update state to old document (" + str(oldObject.name) + "-" + str(
+                            "unlink : Unable to update state to old document (" + str(oldObject.engineering_document_name) + "-" + str(
                                 oldObject.revisionid) + ").")
                         return False
         return super(PlmDocument, self).unlink()
@@ -735,24 +735,24 @@ class PlmDocument(models.Model):
     #   Overridden methods for this entity
     @api.model
     def _check_duplication(self, vals, ids=None, op='create'):
-        name = vals.get('name', False)
+        engineering_document_name = vals.get('engineering_document_name', False)
         parent_id = vals.get('parent_id', False)
         ressource_parent_type_id = vals.get('ressource_parent_type_id', False)
         ressource_id = vals.get('ressource_id', 0)
         revisionid = vals.get('revisionid', 0)
         if op == 'write':
-            for directory in self.browse(ids):
-                if not name:
-                    name = directory.name
+            for ir_attachment_id in self.browse(ids):
+                if not engineering_document_name:
+                    engineering_document_name = ir_attachment_id.engineering_document_name
                 if not parent_id:
-                    parent_id = directory.parent_id and directory.parent_id.id or False
+                    parent_id = ir_attachment_id.parent_id and ir_attachment_id.parent_id.id or False
                 # TODO fix algo
                 if not ressource_parent_type_id:
-                    ressource_parent_type_id = directory.ressource_parent_type_id and directory.ressource_parent_type_id.id or False
+                    ressource_parent_type_id = ir_attachment_id.ressource_parent_type_id and ir_attachment_id.ressource_parent_type_id.id or False
                 if not ressource_id:
-                    ressource_id = directory.ressource_id and directory.ressource_id or 0
-                docBrwsList = self.search([('id', '<>', directory.id),
-                                           ('name', '=', name),
+                    ressource_id = ir_attachment_id.ressource_id and ir_attachment_id.ressource_id or 0
+                docBrwsList = self.search([('id', '<>', ir_attachment_id.id),
+                                           ('engineering_document_name', '=', engineering_document_name),
                                            ('parent_id', '=', parent_id),
                                            ('ressource_parent_type_id', '=', ressource_parent_type_id),
                                            ('ressource_id', '=', ressource_id),
@@ -761,7 +761,7 @@ class PlmDocument(models.Model):
                     return False
         if op == 'create':
             docBrwsList = self.search(SUPERUSER_ID,
-                                      [('name', '=', name),
+                                      [('engineering_document_name', '=', engineering_document_name),
                                        ('parent_id', '=', parent_id),
                                        ('ressource_parent_type_id', '=', ressource_parent_type_id),
                                        ('ressource_id', '=', ressource_id),
@@ -791,9 +791,9 @@ class PlmDocument(models.Model):
 
     @api.model
     def CheckIn(self, attrs):
-        documentName = attrs.get('name', '')
+        engineering_document_name = attrs.get('engineering_document_name', '')
         revisionId = attrs.get('revisionid', False)
-        docBrwsList = self.search([('name', '=', documentName),
+        docBrwsList = self.search([('engineering_document_name', '=', engineering_document_name),
                                    ('revisionid', '=', revisionId)])
         for docBrws in docBrwsList:
             docBrws._check_in()
@@ -806,7 +806,7 @@ class PlmDocument(models.Model):
             logging.info(
                 'Document %r is not in check out by user %r so cannot be checked-in' % (self.id, self.env.user.id))
             return False
-        if self.file_size <= 0 or not self.datas_fname:
+        if self.file_size <= 0 or not self.name:
             logging.warning('Document %r has not document content so cannot be checked-in' % (self.id))
             return False
         self.env['plm.checkout'].browse(checkOutId).unlink()
@@ -821,12 +821,12 @@ class PlmDocument(models.Model):
 
     def getFileExtension(self, docBrws):
         fileExtension = ''
-        datas_fname = docBrws.datas_fname
-        if datas_fname:
-            fileExtension = '.' + datas_fname.split('.')[-1]
+        name = docBrws.name
+        if name:
+            fileExtension = '.' + name.split('.')[-1]
         return fileExtension
 
-    @api.depends('name', 'revisionid', 'datas_fname')
+    @api.depends('engineering_document_name', 'revisionid', 'name')
     def _compute_document_type(self):
         configParamObj = self.env['ir.config_parameter'].sudo()
         file_exte_2d_param = configParamObj._get_param('file_exte_type_rel_2D')
@@ -858,9 +858,8 @@ class PlmDocument(models.Model):
                                                                                        ('parent_id', '=', ir_a_id),
                                                                                        ('child_id', '=', ir_a_id)])
 
-    name = fields.Char('Name',
-                       required=True,
-                       index=True)
+    engineering_document_name = fields.Char('Document Name',
+                                            index=True)
     revisionid = fields.Integer(_('Revision Index'),
                                 default=0,
                                 required=True,
@@ -911,7 +910,7 @@ class PlmDocument(models.Model):
         get All version product_tempate based on this one
         """
         for ir_attachment_id in self:
-            ir_attachment_id.attachment_revision_count = ir_attachment_id.search_count([('name', '=', ir_attachment_id.name)])
+            ir_attachment_id.attachment_revision_count = ir_attachment_id.search_count([('engineering_document_name', '=', ir_attachment_id.engineering_document_name)])
 
     @api.model
     def CheckedIn(self, files, default=None):
@@ -923,7 +922,7 @@ class PlmDocument(models.Model):
         def getcheckedfiles(files):
             res = []
             for fileName in files:
-                plmDocList = self.search([('datas_fname', '=', fileName)], order='revisionid')
+                plmDocList = self.search([('name', '=', fileName)], order='revisionid')
                 if len(plmDocList) > 0:
                     ids = plmDocList.ids
                     ids.sort()
@@ -939,7 +938,7 @@ class PlmDocument(models.Model):
     @api.model
     def GetUpdated(self, vals):
         """
-            Get Last/Requested revision of given items (by name, revision, update time)
+            Get Last/Requested revision of given items (by engineering_document_name, revision, update time)
         """
         docData, attribNames = vals
         ids = self.GetLatestIds(docData)
@@ -948,17 +947,17 @@ class PlmDocument(models.Model):
     @api.model
     def GetLatestIds(self, vals, forceCADProperties=False):
         """
-            Get Last/Requested revision of given items (by name, revision, update time)
+            Get Last/Requested revision of given items (by engineering_document_name, revision, update time)
         """
         ids = []
 
         def getCompIds(docName, docRev):
             if docRev is None or docRev is False:
-                docBrwsList = self.search([('name', '=', docName)], order='revisionid')
+                docBrwsList = self.search([('engineering_document_name', '=', docName)], order='revisionid')
                 if len(docBrwsList) > 0:
                     ids.append(docBrwsList.ids[-1])
             else:
-                ids.extend(self.search([('name', '=', docName), ('revisionid', '=', docRev)]).ids)
+                ids.extend(self.search([('engineering_document_name', '=', docName), ('revisionid', '=', docRev)]).ids)
 
         for docName, docRev, docIdToOpen in vals:
             docBrowse = self.browse(docIdToOpen)
@@ -1012,11 +1011,12 @@ class PlmDocument(models.Model):
         """
 
         def getDocId(args):
-            docName = args.get('name')
+            engineering_document_name = args.get('engineering_document_name')
             docRev = args.get('revisionid')
-            docBrwsList = self.search([('name', '=', docName), ('revisionid', '=', docRev)])
+            docBrwsList = self.search([('engineering_document_name', '=', engineering_document_name),
+                                       ('revisionid', '=', docRev)])
             if not docBrwsList:
-                logging.warning('Document with name "%s" and revision "%s" not found' % (docName, docRev))
+                logging.warning('Document with engineering_document_name "%s" and revision "%s" not found' % (engineering_document_name, docRev))
                 return False
             return docBrwsList[0].id
 
@@ -1028,7 +1028,7 @@ class PlmDocument(models.Model):
             logging.info(
                 'Document %r is not in check out by user %r so cannot be checked-in recursively' % (oid, self.env.uid))
             return False
-        if docBrws.file_size <= 0 or not docBrws.datas_fname:
+        if docBrws.file_size <= 0 or not docBrws.name:
             logging.warning('Document %r has not document content so cannot be checked-in recirsively' % (oid))
             return False
         if selection is False:
@@ -1058,7 +1058,7 @@ class PlmDocument(models.Model):
         for docId in docArray:
             checkOutBrwsList = checkoutObj.search([('documentid', '=', docId), ('userid', '=', self.env.uid)])
             checkOutBrwsList.unlink()
-        return self.browse(docArray).read(['datas_fname'])
+        return self.browse(docArray).read(['name'])
 
     @api.model
     def GetSomeFiles(self,
@@ -1136,7 +1136,7 @@ class PlmDocument(models.Model):
             read_docs.extend(self._relatedbydocs(oid, kinds, listed_documents, False))
         for document in self.browse(read_docs):
             related_documents.append([document.id,
-                                      document.name,
+                                      document.engineering_document_name,
                                       '' if document.preview is None else document.preview,
                                       document.revisionid,
                                       document.description])
@@ -1155,8 +1155,9 @@ class PlmDocument(models.Model):
             logging.warning(
                 'Current document has not revisionid attribute %r.\n Cannot get related documents.' % (docProps))
             return False
-        docName = docProps.get('name', '')
-        documentBrws = self.search([('name', '=', docName), ('revisionid', '=', docRev)])
+        docName = docProps.get('engineering_document_name', '')
+        documentBrws = self.search([('engineering_document_name', '=', docName),
+                                    ('revisionid', '=', docRev)])
         if not documentBrws:
             logging.warning(
                 'Unbale to find document %r with revision %r.\n Cannot get related documents.' % (docName, docRev))
@@ -1190,9 +1191,10 @@ class PlmDocument(models.Model):
         uiUser = userType.browse(userId)
         return uiUser.name
 
-    def _getbyrevision(self, name, revision):
+    def _getbyrevision(self, engineering_document_name, revision):
         result = False
-        for result in self.search([('name', '=', name), ('revisionid', '=', revision)]):
+        for result in self.search([('engineering_document_name', '=', engineering_document_name),
+                                   ('revisionid', '=', revision)]):
             return result
         return result
 
@@ -1201,7 +1203,7 @@ class PlmDocument(models.Model):
         checkoutType = self.env['plm.checkout']
         checkoutBrwsList = checkoutType.search([('documentid', '=', oid)])
         for checkOutBrws in checkoutBrwsList:
-            return (checkOutBrws.documentid.name,
+            return (checkOutBrws.documentid.engineering_document_name,
                     checkOutBrws.documentid.revisionid,
                     self.getUserSign(checkOutBrws.userid.id),
                     checkOutBrws.hostname)
@@ -1226,15 +1228,15 @@ class PlmDocument(models.Model):
 
     @api.model
     def canBeSavedClient(self, documentValues={}, returnCode=False):
-        docName = documentValues.get('name')
+        engineering_document_name = documentValues.get('engineering_document_name')
         docRev = documentValues.get('revisionid')
-        for docBrws in self.search([('name', '=', docName),
+        for docBrws in self.search([('engineering_document_name', '=', engineering_document_name),
                                     ('revisionid', '=', docRev)
                                     ]):
             return docBrws.canBeSaved(False, returnCode=returnCode)
         if returnCode:
-            return True, _('Document %r with revision %r not present in Odoo.') % (docName, docRev), 'NO_ERROR'
-        return True, _('Document %r with revision %r not present in Odoo.') % (docName, docRev)
+            return True, _('Document %r with revision %r not present in Odoo.') % (engineering_document_name, docRev), 'NO_ERROR'
+        return True, _('Document %r with revision %r not present in Odoo.') % (engineering_document_name, docRev)
 
     @api.model
     def canBeSaved(self, raiseError=False, returnCode=False, skipCheckOutControl=False):
@@ -1306,7 +1308,7 @@ class PlmDocument(models.Model):
 
         documentAttribute = objStructure.get('DOCUMENT_ATTRIBUTES', {})
         if documentAttribute:
-            for brwItem in self.search([('name', '=', documentAttribute.get('name', '')),
+            for brwItem in self.search([('engineering_document_name', '=', documentAttribute.get('engineering_document_name', '')),
                                         ('revisionid', '=', documentAttribute.get('revisionid', -1))]):
                 brwItem.canBeSaved(raiseError=True)
 
@@ -1364,7 +1366,7 @@ class PlmDocument(models.Model):
                 documentAttribute['TO_UPDATE'] = False
                 skipCheckOut = documentAttribute.get('SKIP_CHECKOUT', False)
                 docBrws = False
-                for brwItem in self.search([('name', '=', documentAttribute.get('name')),
+                for brwItem in self.search([('engineering_document_name', '=', documentAttribute.get('engineering_document_name')),
                                             ('revisionid', '=', documentAttribute.get('revisionid'))]):
                     if brwItem.id in alreadyEvaluated:
                         docBrws = brwItem  # To skip creation
@@ -1551,12 +1553,12 @@ class PlmDocument(models.Model):
         """
             Document infos for clone/revision procedure
         """
-        return {'name': self.name or '',
+        return {'engineering_document_name': self.engineering_document_name or '',
                 'revisionid': self.revisionid,
                 'description': self.description or '',
                 'desc_modify': self.desc_modify or '',
                 'doc_type': self.document_type,
-                'datas_fname': self.datas_fname,
+                'name': self.name,
                 '_id': self.id,
                 'can_revise': self.canBeRevised(),
                 'DOC_TYPE': self.document_type
@@ -1567,12 +1569,12 @@ class PlmDocument(models.Model):
         if not values:
             return {}
         docProps = values[0]
-        docName = docProps.get('name', '')
+        engineering_document_name = docProps.get('engineering_document_name', '')
         docRev = docProps.get('revisionid', None)
-        if not docName or docRev is None:
+        if not engineering_document_name or docRev is None:
             logging.warning('No name or not revision passed by the client %r' % (docProps))
             return {}
-        docBrws = self.search([('name', '=', docName),
+        docBrws = self.search([('engineering_document_name', '=', engineering_document_name),
                                ('revisionid', '=', docRev)])
 
         rootDocInfos = docBrws.getDocumentInfos()
@@ -1608,18 +1610,18 @@ class PlmDocument(models.Model):
                 linkedBrws.unlink()
 
     def getDocumentBrws(self, docVals):
-        docName = docVals.get('name', '')
+        docName = docVals.get('engineering_document_name', '')
         docRev = docVals.get('revisionid', None)
         if not docName or docRev is None:
             return self.browse()
-        return self.search([('name', '=', docName),
+        return self.search([('engineering_document_name', '=', docName),
                             ('revisionid', '=', docRev)])
 
     def checkStructureDocument(self, docAttrs):
-        docName = docAttrs.get('name', '')
+        docName = docAttrs.get('engineering_document_name', '')
         docRev = int(docAttrs.get('revisionid', 0) or 0)
         docAttrs['revisionid'] = docRev
-        docBrwsList = self.search([('name', '=', docName)], order='revisionid DESC')
+        docBrwsList = self.search([('engineering_document_name', '=', docName)], order='revisionid DESC')
         existingDocs = {}
         graterDocBrws = None
         matchDocBrws = None
@@ -1630,7 +1632,7 @@ class PlmDocument(models.Model):
                 matchDocBrws = docBrws
             if not graterDocBrws:
                 graterDocBrws = docBrws
-            existingDocs[docBrws.revisionid] = (docBrws.name, docBrws.state)
+            existingDocs[docBrws.revisionid] = (docBrws.engineering_document_name, docBrws.state)
         docAttrs['existing_docs'] = existingDocs
         docAttrs['is_latest_revision'] = False
         if graterDocBrws and (graterDocBrws == matchDocBrws):
@@ -1841,7 +1843,7 @@ class PlmDocument(models.Model):
         return len(result) if count else list(result)
 
     def open_related_document_revisions(self):
-        ir_attachment_ids = self.search([('name', '=', self.name)])
+        ir_attachment_ids = self.search([('engineering_document_name', '=', self.engineering_document_name)])
         return {'name': _('Attachment Revs.'),
                 'res_model': 'ir.attachment',
                 'view_type': 'form',
@@ -1885,13 +1887,13 @@ class PlmDocument(models.Model):
         action = 'upload'
         if documentAttribute.get("CUTTED_COMP", False):
             return False, 'jump'
-        document_name = documentAttribute.get("name", False)
-        if not document_name:
+        engineering_document_name = documentAttribute.get("engineering_document_name", False)
+        if not engineering_document_name:
             raise UserError("Unable to create document with empty name %r" % (documentAttribute.get('KEY', '')))
 
         found = False
         ir_attachemnt_id = self.env['ir.attachment']
-        for seached_ir_attachemnt_id in self.search([('name', '=', document_name),
+        for seached_ir_attachemnt_id in self.search([('engineering_document_name', '=', engineering_document_name),
                                                      ('revisionid', '=', documentAttribute.get('revisionid', 0))]):
             found = True
             ir_attachemnt_id = seached_ir_attachemnt_id
@@ -1923,7 +1925,7 @@ class PlmDocument(models.Model):
         plm_dbthread = self.env['plm.dbthread']
         actualdbThred = int(dbTheread)
         for ir_attachment_id in self:
-            key = "%s_%s" % (ir_attachment_id.name, ir_attachment_id.revisionid)
+            key = "%s_%s" % (ir_attachment_id.engineering_document_name, ir_attachment_id.revisionid)
             threadCodelist = plm_dbthread.search([('documement_name_version', '=', key),
                                                   ('done', '=', False)]).mapped(lambda x: int(x.threadCode))
             if len(threadCodelist):

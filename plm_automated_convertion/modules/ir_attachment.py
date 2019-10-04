@@ -38,7 +38,7 @@ class ir_attachment(models.Model):
     def show_convert_wizard(self):
         context = dict(self.env.context or {})
         context['default_document_id'] = self.id
-        context['datas_fname'] = self.datas_fname
+        context['name'] = self.name
         out = {'view_type': 'form',
                'view_mode': 'form',
                'res_model': 'plm.convert',

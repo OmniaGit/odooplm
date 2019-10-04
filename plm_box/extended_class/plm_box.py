@@ -315,11 +315,11 @@ class Plm_box(models.Model):
             getCheckOutUser = docBrws.getCheckOutUser()
         writeVal = datetime.datetime.strptime(docBrws.write_date, DEFAULT_SERVER_DATETIME_FORMAT)
         return {'revisionid': docBrws.revisionid,
-                'datas_fname': docBrws.datas_fname,
+                'datas_fname': docBrws.name,
                 'create_date': docBrws.create_date,
                 'write_date': correctDate(writeVal, self.env.context),
                 'description': docBrws.description,
-                'fileName': docBrws.datas_fname,
+                'fileName': docBrws.name,
                 'state': docBrws.state,
                 'readonly': self.docReadonlyCompute(docBrws.id),
                 'checkoutUser': getCheckOutUser,

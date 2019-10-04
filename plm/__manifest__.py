@@ -88,6 +88,7 @@ Supported Editors :
             'views/plm_material_view.xml',
             'views/product_product.xml',
             'views/product_template.xml',
+            #  'views/product_product_kanban.xml',
             'views/sequence.xml',
             'views/menu.xml',
             # Reports Template
@@ -97,8 +98,8 @@ Supported Editors :
             # Report
             'report/bom_structure.xml',
             'report/component_report.xml',
-            'report/document_report.xml',
-            'views/product_product_kanban.xml'],
+            'report/document_report.xml'
+            ],
     'qweb': ['views/templates.xml'],
     'demo': [],
     'test': [],

@@ -36,7 +36,6 @@ class MrpBomLineExtension(models.Model):
     _inherit = 'mrp.bom.line'
     _order = "itemnum"
 
-    
     def write(self, vals):
         ret = super(MrpBomLineExtension, self).write(vals)
         for line in self:
@@ -62,7 +61,6 @@ class MrpBomLineExtension(models.Model):
             else:
                 self.child_line_ids = False
 
-    
     def get_related_boms(self):
         for bom_line in self:
             if not self.product_id:
@@ -139,7 +137,6 @@ class MrpBomLineExtension(models.Model):
         out_act_dict['domain'] = domain
         return out_act_dict
 
-    
     def openRelatedDocuments(self):
         domain = [('id', 'in', self.related_document_ids.ids)]
         out_act_dict = {'name': _('Documents'),
@@ -150,7 +147,6 @@ class MrpBomLineExtension(models.Model):
                         'domain': domain}
         return out_act_dict
 
-    
     def _related_doc_ids(self):
         for bom_line_brws in self:
             bom_line_brws.related_document_ids = bom_line_brws.product_id.linkeddocuments
@@ -168,7 +164,7 @@ class MrpBomLineExtension(models.Model):
     create_date = fields.Datetime(_('Creation Date'),
                                   readonly=True)
     source_id = fields.Many2one('ir.attachment',
-                                'name',
+                                'engineering_document_name',
                                 ondelete='no action',
                                 readonly=True,
                                 index=True,

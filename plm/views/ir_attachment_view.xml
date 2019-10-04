@@ -72,7 +72,7 @@
                     <group name="doc_data">
                         <group name="main_doc_info">
                             <strong>
-                                <field name="name" select="1"
+                                <field name="engineering_document_name" select="1"
                                        attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
                             </strong>
                             
@@ -104,9 +104,9 @@
                             <group string="File Data" name="FileData">
                                 <group attrs="{'invisible':[('type','=','url')]}" name="group_datas" colspan="4"
                                        col="2">
-                                    <field name="datas" filename="datas_fname"
+                                    <field name="datas" filename="name"
                                            attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
-                                    <field name="datas_fname" select="1"
+                                    <field name="name" select="1"
                                            attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
                                     <field name="document_type"
                                            attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
@@ -169,10 +169,10 @@
                   decoration-warning="state == 'undermodify'"
                   decoration-muted="state == 'obsoleted'">
 
-                <field name="name" select="True"/>
+                <field name="engineering_document_name" select="True"/>
                 <field name="revisionid" select="True"/>
                 <field name="state" select="True"/>
-                <field name="datas_fname" select="True"/>
+                <field name="engineering_document_name" select="True"/>
                 <field name="checkout_user" colspan="2"/>
                 <field name="create_uid" select="True"/>
                 <field name="create_date" select="True"/>
@@ -210,8 +210,8 @@
                         domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
                         help="Created today"/>
                 <separator orientation="vertical"/>
-                <field name="name"/>
-                <field name="datas_fname"/>
+                <field name="engineering_document_name"/>
+                <field name="engineering_document_name"/>
                 <field name="create_uid">
                     <filter name="create_by_me"
                             string="Create by me"
@@ -270,7 +270,7 @@
         <field name="arch" type="xml">
             <kanban>
                 <field name="id"/>    <!-- Necessary to render previews -->
-                <field name="name"/>
+                <field name="engineering_document_name"/>
                 <field name="revisionid"/>
                 <field name="description"/>
                 <field name="state"/>
@@ -290,7 +290,7 @@
                                             <tr>
                                                 <td>
                                                     <strong>Name:</strong>
-                                                    <field name="name"/>
+                                                    <field name="engineering_document_name"/>
                                                 </td>
                                             </tr>
                                             <tr>

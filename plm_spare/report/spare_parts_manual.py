@@ -60,7 +60,7 @@ def get_document_stream(doc_repository, obj_doc):
             with open(os.path.join(doc_repository, obj_doc.store_fname), 'rb') as f:
                 content = f.read()
     except Exception as ex:
-        logging.error("getFileStream : Exception ({0})reading  stream on file : {1}.".format(ex, obj_doc.datas_fname))
+        logging.error("getFileStream : Exception ({0})reading  stream on file : {1}.".format(ex, obj_doc.name))
     return content
 
 
@@ -189,7 +189,7 @@ class ReportSpareDocumentOne(models.AbstractModel):
             if document.used_for_spare and (document.type == 'binary'):
                 if document.printout and str(document.printout) != 'None':
                     ret.append(BytesIO(base64.b64decode(document.printout)))
-                elif is_pdf(document.datas_fname):
+                elif is_pdf(document.name):
                     value = get_document_stream(doc_repository, document)
                     if value:
                         ret.append(BytesIO(value))
