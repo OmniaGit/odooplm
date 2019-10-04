@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 <data>
-<!-- 
         <record id="plm_docbom_form_view" model="ir.ui.view">
             <field name="name">plm.doc.relation.form</field>
             <field name="model">ir.attachment.relation</field>
@@ -114,13 +113,14 @@
     	 <field name="res_model">ir.attachment.relation</field>
     </record>
 
-    <act_window name="View Document Relations"
-        res_model="ir.attachment.relation"
-        src_model="ir.attachment"
-        view_mode="tree,form"
-        key2="client_action_multi"
-    	domain="['|', ('child_id', 'in', context.get('active_ids', [])), ('parent_id', '=', context.get('active_ids', []))]"
-        id="act_view_doc_related"/>
- -->
+    <record model="ir.actions.act_window" id="act_view_doc_related">
+        <field name="name">View Document Relations</field>
+        <field name="res_model">ir.attachment.relation</field>
+        <field name="src_model">ir.attachment</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="plm_component_base_tree"/>
+        <field name="domain">['|', ('child_id', 'in', context.get('active_ids', [])), ('parent_id', '=', context.get('active_ids', []))]</field>
+    </record>
+    
 </data>
 </odoo>

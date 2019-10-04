@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-<!-- 
+<data>
+ 
     <record model="ir.ui.view" id="view_plm_backupdoc">
         <field name="name">plm.backupdoc</field>
         <field name="model">plm.backupdoc</field>
         <field name="priority" eval="1"/>
-        <field name="type">form</field>
         <field name="arch" type="xml">
+        <form>
             	<sheet>
                 <group colspan="4" col="4">
                 	<field name="document_name" select="1"/>
@@ -28,6 +29,7 @@
                         	img_width="400"/>
                 </group>
                 </sheet>
+           </form>
         </field>
     </record>
 
@@ -122,13 +124,13 @@
         </field>
     </record>
 
-    <act_window name="Restore Document"
-        res_model="plm.backupdoc_wizard"
-        src_model="plm.backupdoc"
-        view_mode="form"
-        view_id="restore_document_button_view"
-        target="new"
-        key2="client_action_multi"
-        id="act_restore_document"/>
--->
+         <record id="act_restore_document" model="ir.actions.act_window">
+            <field name="name">Restore Document</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">plm.backupdoc_wizard</field>
+            <!-- <field name="src_model">plm.backupdoc</field> -->
+            <field name="view_id" ref="restore_document_button_view"/>
+            <field name="target">new</field>
+        </record>
+</data>
 </odoo>

@@ -46,7 +46,7 @@
             parent="plm.ir_attachment_form"
             sequence="10"
     />
-    <!-- 
+
     <menuitem
             id="menu_backupdoc"
             name="Search on Backup Data Set"
@@ -54,7 +54,7 @@
             parent="plm.ir_attachment_form"
             sequence="13"
             groups="plm.group_plm_admin"/>
-    -->
+
     <menuitem
             id="menu_checkout"
             name="Search on Checked-Out Documents"
@@ -63,7 +63,7 @@
             groups="plm.group_plm_integration_user"
             sequence="12"
     />
-<!-- 
+
     <menuitem
             name="Search on Document Relations"
             action="plm_action_document_relations"
@@ -71,7 +71,7 @@
             parent="plm.ir_attachment_form"
             sequence="11"
     />
- -->
+
     <!-- Parent menu "Configuration" -->
     <menuitem
             name="Descriptions"
