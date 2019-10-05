@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
+<odoo>
 <data>
 
 	    <record id="ir_attachment_new_revision" model="ir.ui.view">
@@ -11,26 +11,27 @@
 	        	<separator string="" colspan="4" />
 	        	<div>"Are you sure you want to create a new Revision?"</div>
 	            <separator string="" colspan="4" />
-	            <group colspan="2" col="2">
+	            <footer>
 	            	<button special="cancel" string="Cancel"/>
 	            	<button string="Create New Revision" name="new_document_revision_by_server" type="object"/>
-	            </group>
+	            </footer>
 	        </form>
 	        </field>
 	    </record>
- 	
-        <act_window
-            id="action_document_new_revision"
-            name="New Document Revision" 
-            view_type="form"
-        	target="new"
-        	domain="[('id','in',active_ids)]" 
-            context="{'default_document_id': active_id}"
-            view_id="ir_attachment_new_revision"
-            res_model="document.rev_wizard"
-            src_model="ir.attachment"/>	<!-- Do not remove src_model. It is used to get action only in component form -->
 
-        
+
+     <record model="ir.actions.act_window" id="action_document_new_revision">
+        <field name="name">New Document Revision</field>
+        <field name="res_model">document.rev_wizard</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="base.model_ir_attachment"/>
+        <field name="context">{'default_document_id': active_id}</field>
+        <field name="domain">[('id','in',active_ids)]</field>
+        <field name="view_ids"
+               eval="[(5, 0, 0),
+                      (0, 0, {'view_mode': 'form', 'view_id': ref('plm_web_revision.ir_attachment_new_revision')})]"/>
+    </record>
 </data>
-</openerp>
+</odoo>
 
