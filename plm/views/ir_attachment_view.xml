@@ -77,15 +77,17 @@
             </xpath>
             <xpath expr="//sheet/group[last()]" position="after">
                     <group name="doc_data">
-                        <group name="main_doc_info">
-                            <strong>
-                                <field name="engineering_document_name" select="1"
-                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
-                            </strong>
-                            
-                            <strong>
-                                <field name="revisionid" readonly="True"/>
-                            </strong>
+                        <group string= "PLM Infos" name="main_doc_info">
+                            <group name="main_doc_info">
+	                            <label for="engineering_document_name" class="oe_edit_only"/>
+	                            <field string="Engineering document name"
+	                                   name="engineering_document_name"
+	                                   attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+	                            <label for="revisionid" class="oe_edit_only"/>
+	                            <field string="Enineering revision"
+	                                   name="revisionid"
+	                                   readonly="True"/>
+                            </group>
                             <group string="Created and Modified" name="doc_user">
                                 <field name="create_uid"  readonly="1"/>
                                 <field name="create_date" readonly="1"/>

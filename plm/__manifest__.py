@@ -74,6 +74,9 @@ Supported Editors :
             # security
             'security/base_plm_security.xml',
             # views
+            'views/product_product_first.xml',
+            'views/ir_attachment_view.xml',
+            'views/ir_attachment_relations.xml',
             'views/plm_dbthread.xml',
             'views/import_stylesheet.xml',
             'views/mrp_extension.xml',
@@ -81,8 +84,6 @@ Supported Editors :
             'views/plm_checkout_view.xml',
             'views/plm_config_settings.xml',
             'views/plm_description_view.xml',
-            'views/ir_attachment_relations.xml',
-            'views/ir_attachment_view.xml',
             'views/plm_finishing_view.xml',
             'views/plm_treatment_view.xml',
             'views/plm_material_view.xml',

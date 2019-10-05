@@ -622,7 +622,6 @@ class PlmDocument(models.Model):
             reactivate the object
         """
         defaults = {}
-        defaults['engineering_writable'] = False
         defaults['state'] = 'released'
         if self.ischecked_in():
             self.setCheckContextWrite(False)

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record model="ir.ui.view" id="plm_component_base_tree">
+        <field name="name">plm.base.component.tree</field>
+        <field name="model">product.product</field>
+        <field name="type">tree</field>
+        <field name="priority" eval="5"/>
+        <field name="arch" type="xml">
+            <tree string="Engineering Parts"
+                  decoration-bf="state != ''"
+                  decoration-info="state == 'confirmed'"
+                  decoration-success="state == 'released'"
+                  decoration-warning="state == 'undermodify'"
+                  decoration-muted="state == 'obsoleted'">
+
+                <field name="name" select="1"/>
+                <!-- Koo search for "select" attribute to use it as filter, so do not remove it-->
+                <field name="engineering_code" select="1"/>
+                <field name="default_code"/>
+                <field name="engineering_revision" select="1"/>
+                <field name="state" select="1"/>
+                <field name="description" invisible="1"/>
+                <field name="engineering_writable" invisible="1"/>
+                <field name="engineering_material"/>
+                <field name="engineering_surface"/>
+                <field name="linkeddocuments" invisible="True"/>
+            </tree>
+        </field>
+    </record>
+</odoo>
