@@ -911,7 +911,10 @@ class PlmDocument(models.Model):
         get All version product_tempate based on this one
         """
         for ir_attachment_id in self:
-            ir_attachment_id.attachment_revision_count = ir_attachment_id.search_count([('engineering_document_name', '=', ir_attachment_id.engineering_document_name)])
+            if ir_attachment_id.engineering_document_name is not False:
+                ir_attachment_id.attachment_revision_count = ir_attachment_id.search_count([('engineering_document_name', '=', ir_attachment_id.engineering_document_name)])
+            else:
+                ir_attachment_id.attachment_revision_count = 0
 
     @api.model
     def CheckedIn(self, files, default=None):

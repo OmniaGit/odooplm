@@ -37,18 +37,25 @@
                  <button class="oe_stat_button" icon="fa-sitemap" type="object" name="action_view_rel_doc">
                    <field name="document_rel_count" string="Documents" widget="statinfo"/>
                  </button>
+                 <field name="is_checkout"
+                         invisible="True"/>
                  <button name="toggle_check_out"
                          class="oe_stat_button"
-                         icon="fa-unlock-alt" 
+                         icon="fa-lock" 
+                         type="object"
+                         attrs="{'invisible': [('is_checkout','=', True)]}">
+                         <div class="o_field_widget o_stat_info o_readonly_modifier">
+                            <span>Check-Out</span>
+                         </div>                        
+                  </button>
+                 <button name="toggle_check_out"
+                         class="oe_stat_button"
+                         icon="fa-unlock"
+                         attrs="{'invisible': [('is_checkout','=', False)]} "
                          type="object">
-                         <field name="is_checkout"
-                               widget="boolean_button"
-                               options="{'terminology': {'string_true': 'Check-Out',
-                                                         'hover_true': 'Check-In',
-                                                         'string_false': 'Check-In',
-                                                         'hover_false': 'Check-Out'}}"
-                               />
-                        
+                         <div class="o_field_widget o_stat_info o_readonly_modifier">
+                            <span>Check-In</span>
+                         </div>
                   </button>
 	                <button name="open_related_document_revisions"
 	                        type="object"

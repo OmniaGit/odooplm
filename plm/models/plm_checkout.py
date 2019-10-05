@@ -67,7 +67,8 @@ class PlmCheckout(models.Model):
             if not r.documentid or not r.userid:
                 name = 'unknown'
             else:
-                name = "%s .. [%s]" % (r.documentid.engineering_document_name[:8], r.userid.engineering_document_name[:8])
+                document_name = r.documentid.name if r.documentid.engineering_document_name is False else r.documentid.engineering_document_name
+                name = "%s .. [%s]" % (document_name[:10], r.userid.name[:8])
             result.append((r.id, name))
         return result
 
