@@ -773,11 +773,12 @@ class PlmDocument(models.Model):
     #   Overridden methods for this entity
 
     def _get_checkout_state(self):
-        chechRes = self.getCheckedOut(self.id, None)
-        if chechRes:
-            self.checkout_user = str(chechRes[2])
-        else:
-            self.checkout_user = ''
+        for ir_attachment_id in self:
+            chechRes = self.getCheckedOut(ir_attachment_id.id, None)
+            if chechRes:
+                ir_attachment_id.checkout_user = str(chechRes[2])
+            else:
+                ir_attachment_id.checkout_user = ''
 
     def toggle_check_out(self):
         for ir_attachment_id in self:

@@ -38,37 +38,6 @@ class MrpBomExtension(models.Model):
     _name = 'mrp.bom'
     _inherit = 'mrp.bom'
 
-    #  ######################################################################################################################################33
-
-    #   Overridden methods for this entity
-
-    # TODO: Da rivedere a causa del cambiamento in odoo
-    @api.model
-    def _bom_find(self, product_tmpl=None, product=None, picking_type=None, company_id=False):
-        """ Finds BoM for particular product and product uom.
-        @param product_tmpl: Selected product.
-        @param product: Unit of measure of a product.
-        @return: False or BoM id.
-        """
-        obj_bom = super(MrpBomExtension, self)._bom_find(
-            product_tmpl=product_tmpl,
-            product=product,
-            picking_type=picking_type,
-            company_id=company_id
-        )
-        if obj_bom:
-            odoo_plm_bom = ['ebom', 'spbom']
-            if obj_bom.type in odoo_plm_bom:
-                bom_brws_list = self.search([
-                    ('product_id', '=', obj_bom.product_id.id),
-                    ('product_tmpl_id', '=', obj_bom.product_tmpl_id.id),
-                    ('type', 'not in', odoo_plm_bom)
-                ])
-                for bom_brws in bom_brws_list:
-                    return bom_brws
-        return obj_bom
-
-    #  ######################################################################################################################################33
 
     def _father_compute(self, name='', arg={}):
         """ Gets father bom.

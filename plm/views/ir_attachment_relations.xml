@@ -116,7 +116,7 @@
     <record model="ir.actions.act_window" id="act_view_doc_related">
         <field name="name">View Document Relations</field>
         <field name="res_model">ir.attachment.relation</field>
-        <field name="src_model">ir.attachment</field>
+        <!-- <field name="src_model">ir.attachment</field> -->
         <field name="view_mode">tree,form</field>
         <field name="view_id" ref="plm_component_base_tree"/>
         <field name="domain">['|', ('child_id', 'in', context.get('active_ids', [])), ('parent_id', '=', context.get('active_ids', []))]</field>
