@@ -1531,6 +1531,15 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                 'domain': [('id', 'in', product_product_ids.ids)],
                 'context': {}}
 
+    def open_template(self):
+        return {'name': _('Products'),
+                'res_model': 'product.template',
+                'view_type': 'form',
+                'view_mode': 'tree,form',
+                'type': 'ir.actions.act_window',
+                'domain': [('id', '=', self.product_tmpl_id.id)],
+                'context': {}}
+
     @api.model
     def createFromProps(self, productAttribute):
         out_product_produc_id = self.env['product.product']
