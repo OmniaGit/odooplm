@@ -610,10 +610,10 @@ class MrpBomExtension(models.Model):
         if len(relations) < 1:  # no relation to save
             return False
 
-        parent_name, _parent_id, _child_name, _child_id, _source_id, rel_args = relations[0]
+        parent_name, _parent_id, _child_name, child_id, _source_id, rel_args = relations[0]
         if eco_module_installed is None:
             clean_old_eng_bom_lines(relations)
-        if not rel_args:  # Case of not children, so no more BOM for this product
+        if len(relations) == 1 and not child_id: # Case of not children, so no more BOM for this product
             return False
         bom_id = to_compute(parent_name, relations, kind_bom)
         clean_empty_boms()
