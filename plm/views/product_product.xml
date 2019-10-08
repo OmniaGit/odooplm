@@ -218,7 +218,6 @@
                <group col="6">
                     <field name="engineering_code" attrs="{'readonly':[('is_engcode_editable','=', False)]}"/>
                     <field name="engineering_revision" attrs="{'readonly':[('is_engcode_editable','=', False)]}"/>
-                    <field name="state"/>
 	                <field name="std_description" colspan="6"
 	                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
 	                <field name="source_product" invisible="1"/>
