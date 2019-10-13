@@ -46,6 +46,7 @@ class ProductProduct(models.Model):
         """
         defaults = {'old_state': self.state, 'state': 'suspended'}
         obj_id = self.write(defaults)
+        self.product_tmpl_id.write(defaults)
         if obj_id:
             self.wf_message_post(body=_('Status moved to:{}.'.format(defaults['state'])))
         return obj_id
@@ -56,6 +57,7 @@ class ProductProduct(models.Model):
         """
         defaults = {'old_state': self.state, 'state': 'draft'}
         obj_id = self.write(defaults)
+        self.product_tmpl_id.write(defaults)
         if obj_id:
             self.wf_message_post(body=_('Status moved to:{}.'.format(defaults['state'])))
         return obj_id
