@@ -38,7 +38,6 @@ class MrpBomExtension(models.Model):
     _name = 'mrp.bom'
     _inherit = 'mrp.bom'
 
-
     def _father_compute(self, name='', arg={}):
         """ Gets father bom.
         @param self: The object pointer
@@ -87,15 +86,7 @@ class MrpBomExtension(models.Model):
                                 readonly=True,
                                 index=True,
                                 help=_('This is the document object that declares this BoM.'))
-    type = fields.Selection(
-        [('normal', _('Normal BoM')), ('phantom', _('Sets / Phantom'))],
-        _('BoM Type'),
-        required=True,
-        help=_(
-            "Phantom BOM: When processing a sales order for this product, the delivery order will contain the raw materials, instead of the finished product."
-            "Ship this product as a set of components (kit)."
-        )
-    )
+
     weight_net = fields.Float('Weight',
                               digits=dp.get_precision(_('Stock Weight')),
                               help=_("The BoM net weight in Kg."),

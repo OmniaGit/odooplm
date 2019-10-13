@@ -16,7 +16,6 @@
                 <field name="state" readonly="True"/>
                 <field name="description" select="True"/>
                 <field name="source_id" string="Source Relation Document"/>
-                <field name="type"/>
             </field>
             <field name="product_qty" position="after">
                 <field name="weight_net" readonly="True"/>
@@ -92,7 +91,6 @@
                 <field name="state" readonly="True"/>
                 <field name="description" readonly="True"/>
                 <field name="source_id" string="Source Relation Document"/>
-                <field name="type"/>
             </xpath>
 
             <xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_qty']" position="after">
@@ -194,7 +192,6 @@
                 <field name="product_uom_id"/>
                 <field name="weight_net"/>
                 <field name="create_date" select="True"/>
-                <field name="type"/>
             </tree>
         </field>
     </record>
