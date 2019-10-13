@@ -55,7 +55,7 @@
        <field name="name">Create Boms Report</field>
        <field name="res_model">plm.bomchoselanguage</field>
        <field name="view_mode">form</field>
-       <field name="binding_model_id" ref="product.model_mrp_bom"/>
+       <field name="binding_model_id" ref="mrp.model_mrp_bom"/>
        <field name="view_id" ref="plm_bomchoselanguage_form"/>
        <field name="target">new</field>
    </record>

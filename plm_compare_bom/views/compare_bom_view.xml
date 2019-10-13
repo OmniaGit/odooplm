@@ -32,7 +32,7 @@
         <field name="res_model">plm.compare.bom</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
-        <field name="binding_model_id" ref="product.model_mrp_bom"/>   
+        <field name="binding_model_id" ref="mrp.model_mrp_bom"/>   
     </record>
     
 

@@ -28,7 +28,7 @@
 			<field name="inherit_id" ref="plm.ir_attachment_tree"/>
 			<field name="priority" eval="3"/>
 			<field name="arch" type="xml">
-				<field name="name" position="before">
+				<field name="engineering_document_name" position="before">
 					<button icon="fa-openid" string="Convert" name="show_convert_wizard" type="object"/>	
 				</field>
 			</field>

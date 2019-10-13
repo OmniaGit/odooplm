@@ -36,7 +36,7 @@
             <field name="type">form</field>
             <field name="arch" type="xml">
             	<data>
-            		<xpath expr="//button[@name='toggle_active']" position="before">
+            		<xpath expr="//button[@name='open_related_bom_lines']" position="before">
 		                    <button string="Update Bom" 
 				                    name="action_wizard_compute_bom" 
 				                    type="object" 

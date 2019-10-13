@@ -33,7 +33,6 @@ class MrpBomExtension(models.Model):
     _name = 'mrp.bom'
     _inherit = 'mrp.bom'
 
-    @
     def force_compute_bom_weight(self):
         """
             Call plm bom weight calculator function
