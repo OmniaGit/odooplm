@@ -30,22 +30,22 @@ class PlmDocumentRelations(models.Model):
     _description = "Relation between document used for cad file structure"
 
     parent_preview = fields.Binary(related="parent_id.preview",
-                                   string=_("Preview"),
+                                   string=_("Parent Preview"),
                                    store=False)
     parent_state = fields.Selection(related="parent_id.state",
-                                    string=_("Status"),
+                                    string=_("Parent Status"),
                                     store=False)
     parent_revision = fields.Integer(related="parent_id.revisionid",
-                                     string=_("Revision"),
+                                     string=_("Parent Revision"),
                                      store=False)
     child_preview = fields.Binary(related="child_id.preview",
-                                  string=_("Preview"),
+                                  string=_("Child Preview"),
                                   store=False)
     child_state = fields.Selection(related="child_id.state",
-                                   string=_("Status"),
+                                   string=_("Child Status"),
                                    store=False)
     child_revision = fields.Integer(related="child_id.revisionid",
-                                    string=_("Revision"),
+                                    string=_("Child Revision"),
                                     store=False)
     parent_id = fields.Many2one('ir.attachment',
                                 _('Related parent document'),

@@ -102,7 +102,7 @@ class MrpBomLineExtension(models.Model):
                     ('active', '=', True)
                 ])
                 if not bom_objs:
-                    self.related_bom_ids = []
+                    self.related_bom_ids = False
                 else:
                     self.related_bom_ids = bom_objs.ids
 

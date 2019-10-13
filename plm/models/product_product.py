@@ -781,11 +781,18 @@ class PlmComponent(models.Model):
         return objId
 
 #  ######################################################################################################################################33
+    def plm_sanitize(self, vals):
+        valsKey = list(vals.keys())
+        for k in valsKey:
+            if k not in self.fields_get_keys():
+                del vals[k]
+        return vals
 
     def write(self, vals):
         if 'is_engcode_editable' not in vals:
             vals['is_engcode_editable'] = False
         vals.update(self.checkMany2oneClient(vals))
+        vals = self.plm_sanitize(vals)
         return super(PlmComponent, self).write(vals)
 
     @api.model
@@ -857,6 +864,7 @@ class PlmComponent(models.Model):
             vals['is_engcode_editable'] = False
             vals.update(self.checkMany2oneClient(vals))
             vals = self.checkSetupDueToVariants(vals)
+            vals = self.plm_sanitize(vals)
             res = super(PlmComponent, self).create(vals)
             return res
         except Exception as ex:

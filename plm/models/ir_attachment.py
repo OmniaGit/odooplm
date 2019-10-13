@@ -664,11 +664,19 @@ class PlmDocument(models.Model):
                                   ('document_type', 'in', ['2d', '3d'])]) > 1:
                 raise UserError(_('Document Already in the system'))
 
+    def plm_sanitize(self, vals):
+        valsKey = list(vals.keys())
+        for k in valsKey:
+            if k not in self.fields_get_keys():
+                del vals[k]
+        return vals
+
     @api.model
     def create(self, vals):
         if self.env.context.get('odooPLM'):
             vals['is_plm'] = True
         vals.update(self.checkMany2oneClient(vals))
+        vals = self.plm_sanitize(vals)
         res = super(PlmDocument, self).create(vals)
         res.check_unique()
         return res
@@ -680,6 +688,7 @@ class PlmDocument(models.Model):
                 raise UserError(_("The active state does not allow you to make save action"))
         self.writeCheckDatas(vals)
         vals.update(self.checkMany2oneClient(vals))
+        vals = self.plm_sanitize(vals)
         res = super(PlmDocument, self).write(vals)
         self.check_unique()
         return res
@@ -1888,6 +1897,8 @@ class PlmDocument(models.Model):
                         hostName=False,
                         hostPws=False):
         action = 'upload'
+        file_name = os.path.basename(documentAttribute.get('INTEGRATION_FILE_PATH'))
+        documentAttribute['name'] = file_name
         if documentAttribute.get("CUTTED_COMP", False):
             return False, 'jump'
         engineering_document_name = documentAttribute.get("engineering_document_name", False)
