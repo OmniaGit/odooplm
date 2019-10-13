@@ -98,7 +98,3 @@ class ProductProductExtended(models.Model):
             if newProdBrws.linkeddocuments.ids:
                 source_id = newProdBrws.linkeddocuments.ids[0]
             newBomBrws.sudo().write({'product_tmpl_id': newProdBrws.product_tmpl_id.id, 'source_id': source_id})
-
-
-ProductProductExtended()
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

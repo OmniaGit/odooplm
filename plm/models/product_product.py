@@ -1055,22 +1055,22 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         engineering_revision = 0
         for tmpObject in self:
             latestIDs = self.GetLatestIds([(tmpObject.engineering_code, tmpObject.engineering_revision, False)])
-            for oldObject in self.browse(latestIDs[-1]):
-                engineering_revision = int(oldObject.engineering_revision) + 1
+            for product_product_id in self.browse(latestIDs[-1]):
+                engineering_revision = int(product_product_id.engineering_revision) + 1
                 oldProdVals = {'engineering_writable': False,
                                'state': 'undermodify'}
-                self.browse([oldObject.id]).sudo().write(oldProdVals)
-                oldObject.wf_message_post(body=_('Status moved to: %s.' % (USE_DIC_STATES[oldProdVals['state']])))
+                self.browse([product_product_id.id]).sudo().write(oldProdVals)
+                product_product_id.wf_message_post(body=_('Status moved to: %s.' % (USE_DIC_STATES[oldProdVals['state']])))
                 # store updated infos in "revision" object
                 defaults = {}
-                defaults['name'] = oldObject.name                 # copy function needs an explicit name value
-                defaults['engineering_code'] = oldObject.engineering_code
+                defaults['name'] = product_product_id.name                 # copy function needs an explicit name value
+                defaults['engineering_code'] = product_product_id.engineering_code
                 defaults['engineering_revision'] = engineering_revision
                 defaults['engineering_writable'] = True
                 defaults['state'] = 'draft'
                 defaults['linkeddocuments'] = []                  # Clean attached documents for new revision object
-                newCompBrws = oldObject.with_context({'new_revision': True}).copy(defaults)
-                oldObject.wf_message_post(body=_('Created : New Revision.'))
+                newCompBrws = product_product_id.with_context({'new_revision': True}).copy(defaults)
+                product_product_id.wf_message_post(body=_('Created : New Revision.'))
                 newComponentId = newCompBrws.id
                 break
             break
