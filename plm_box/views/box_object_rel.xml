@@ -1,62 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
+<odoo>
 <data>
-
-    <act_window name="View Reated Boxis"
-    	domain="[('product_id.id', '=', active_id)]"
-    	res_model="plm.box"
-        src_model="product.product"
-        view_id="plm_box_tree"
-        id="act_product_boxis"/>
+	<record id="act_product_boxis" model="ir.actions.act_window">
+	    <field name="name">View Reated Boxis</field>
+	    <field name="domain">[('product_id.id', '=', active_id)</field>
+	    <field name="res_model">plm.box</field>
+	    <field name="binding_model_id" ref="product.model_product_product"/>
+	    <field name="view_id" ref="plm_box_tree"/>
+	</record>
     
-    <act_window name="View Reated Boxis"
-    	domain="[('project_id.id', '=', active_id)]"
-    	res_model="plm.box"
-        src_model="project.project"
-        view_id="plm_box_tree"
-        id="act_project_boxis"/>
+    <record id="act_project_boxis" model="ir.actions.act_window">
+        <field name="name">View Reated Boxis</field>
+        <field name="domain">[('project_id.id', '=', active_id)]</field>
+        <field name="res_model">plm.box</field>
+        <field name="binding_model_id" ref="product.model_project_project"/>
+        <field name="view_id" ref="plm_box_tree"/>
+    </record>
+        
+    <record id="act_task_boxis" model="ir.actions.act_window">
+        <field name="name">View Reated Boxis</field>
+        <field name="domain">[('task_id.id','=',active_id)]</field>
+        <field name="res_model">plm.box</field>
+        <field name="binding_model_id" ref="product.model_project_task"/>
+        <field name="view_id" ref="plm_box_tree"/>
+    </record>
     
-    <act_window name="View Reated Boxis"
-    	domain="[('task_id.id','=',active_id)]"
-    	res_model="plm.box"
-        src_model="project.task"
-        view_id="plm_box_tree"
-        id="act_task_boxis"/>
+    <record id="act_sale_order_boxis" model="ir.actions.act_window">
+        <field name="name">View Reated Boxis</field>
+        <field name="domain">[('sale_ord_id.id','=',active_id)]</field>
+        <field name="res_model">plm.box</field>
+        <field name="binding_model_id" ref="product.model_sale_order"/>
+        <field name="view_id" ref="plm_box_tree"/>
+    </record>
     	
-    <act_window name="View Reated Boxis"
-    	domain="[('sale_ord_id.id','=',active_id)]"
-    	res_model="plm.box"
-        src_model="sale.order"
-        view_id="plm_box_tree"
-        id="act_sale_order_boxis"/>
+    <record id="act_acc_an_acc_boxis" model="ir.actions.act_window">
+        <field name="name">View Reated Boxis</field>
+        <field name="domain">[('acc_an_acc_id.id','=',active_id)]</field>
+        <field name="res_model">plm.box</field>
+        <field name="binding_model_id" ref="product.model_account_analytic_account"/>
+        <field name="view_id" ref="plm_box_tree"/>
+    </record>
     
-    <act_window name="View Reated Boxis"
-    	domain="[('acc_an_acc_id.id','=',active_id)]"
-    	res_model="plm.box"
-        src_model="account.analytic.account"
-        view_id="plm_box_tree"
-        id="act_acc_an_acc_boxis"/>
+    <record id="act_users_boxis" model="ir.actions.act_window">
+        <field name="name">View Reated Boxis</field>
+        <field name="domain">[('user_rel_id.id','=',active_id)]</field>
+        <field name="res_model">plm.box</field>
+        <field name="binding_model_id" ref="product.model_res_users"/>
+        <field name="view_id" ref="plm_box_tree"/>
+    </record>
     	
-    <act_window name="View Reated Boxis"	
-    	domain="[('user_rel_id.id','=',active_id)]" 
-    	res_model="plm.box"
-        src_model="res.users"
-        view_id="plm_box_tree"
-        id="act_users_boxis"/>
+    <record id="act_bom_boxis" model="ir.actions.act_window">
+        <field name="name">View Reated Boxis</field>
+        <field name="domain">[('bom_id.id','=',active_id)]</field>
+        <field name="res_model">plm.box</field>
+        <field name="binding_model_id" ref="product.model_mrp_bom"/>
+        <field name="view_id" ref="plm_box_tree"/>
+    </record>
 
-    <act_window name="View Reated Boxis"
-    	domain="[('bom_id.id','=',active_id)]"
-    	res_model="plm.box"
-        src_model="mrp.bom"
-        view_id="plm_box_tree"
-        id="act_bom_boxis"/>
-    
-    <act_window name="View Reated Boxis"
-    	domain="[('wc_id.id','=',active_id)]"
-    	res_model="plm.box"
-        src_model="mrp.workcenter"
-        view_id="plm_box_tree"
-        id="act_wc_boxis"/>
+    <record id="act_wc_boxis" model="ir.actions.act_window">
+        <field name="name">View Reated Boxis</field>
+        <field name="domain">[('wc_id.id','=',active_id)]</field>
+        <field name="res_model">plm.box</field>
+        <field name="binding_model_id" ref="product.model_mrp_workcenter"/>
+        <field name="view_id" ref="plm_box_tree"/>
+    </record>
 
-	</data>
-</openerp>
+</data>
+</odoo>

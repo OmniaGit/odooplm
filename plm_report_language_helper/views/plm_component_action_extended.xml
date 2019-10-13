@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
+<odoo>
 	<data>
     
 	<record id="plm_sparechoselanguage_form" model="ir.ui.view">
@@ -21,19 +21,17 @@
         </form>
         </field>
     </record>	
-    	   
-    <act_window
-    	id="act_plm_print_spare_bom"
-     	name="Create Report Spare Bom"
-        res_model="plm.sparechoselanguage"
-        src_model="product.product"
-        view_mode="form"
-    	view_id="plm_sparechoselanguage_form"
-        target="new"
-        key2="client_action_multi"
-        />
 
-    <record id="plm_bomchoselanguage_form" model="ir.ui.view">
+    <record id="act_plm_print_spare_bom" model="ir.actions.act_window">
+       <field name="name">Create Report Spare Bom</field>
+       <field name="res_model">plm.sparechoselanguage</field>
+       <field name="view_mode">form</field>
+       <field name="binding_model_id" ref="product.model_product_product"/>
+       <field name="view_id" ref="plm_sparechoselanguage_form"/>
+       <field name="target">new</field>
+   </record>
+
+   <record id="plm_bomchoselanguage_form" model="ir.ui.view">
         <field name="name">plm.bomchoselanguage.form</field>
         <field name="model">plm.bomchoselanguage</field>
         <field name="type">form</field>
@@ -52,18 +50,15 @@
         </form>
         </field>
     </record>	
-    	   
-    <act_window
-    	id="act_plm_print_boms"
-     	name="Create Boms Report"
-        res_model="plm.bomchoselanguage"
-        src_model="mrp.bom"
-        view_mode="form"
-    	view_id="plm_bomchoselanguage_form"
-        target="new"
-        key2="client_action_multi"
-        />
-        	
+
+    <record id="act_plm_print_boms" model="ir.actions.act_window">
+       <field name="name">Create Boms Report</field>
+       <field name="res_model">plm.bomchoselanguage</field>
+       <field name="view_mode">form</field>
+       <field name="binding_model_id" ref="product.model_mrp_bom"/>
+       <field name="view_id" ref="plm_bomchoselanguage_form"/>
+       <field name="target">new</field>
+   </record>
         	        		
 	</data>
-</openerp>
+</odoo>

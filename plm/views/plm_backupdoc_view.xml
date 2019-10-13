@@ -128,7 +128,7 @@
             <field name="name">Restore Document</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">plm.backupdoc_wizard</field>
-            <!-- <field name="src_model">plm.backupdoc</field> -->
+            <field name="binding_model_id" ref="product.model_plm_backupdoc"/>
             <field name="view_id" ref="restore_document_button_view"/>
             <field name="target">new</field>
         </record>

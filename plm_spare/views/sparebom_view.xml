@@ -19,14 +19,15 @@
         </field>
     </record>
 
-    <act_window name="Create Spare Bom"
-                res_model="plm.temporary"
-                src_model="product.product"
-                view_mode="form"
-                view_id="plm_component_manage_spare_bom"
-                target="new"
-                key2="client_action_multi"
-                id="act_manage_spare_bom"/>
+    <record id="act_manage_spare_bom" model="ir.actions.act_window">
+       <field name="name">Create Spare Bom</field>
+       <field name="res_model">plm.temporary</field>
+       <field name="view_mode">form</field>
+       <field name="binding_model_id" ref="product.model_product_product"/>
+       <field name="view_id" ref="plm_component_manage_spare_bom"/>
+       <field name="target">new</field>
+   </record>
+
 
     <record model="ir.actions.act_window" id="plm_action_spare_form">
         <field name="name">Spare BoMs</field>

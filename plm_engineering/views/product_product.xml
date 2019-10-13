@@ -19,14 +19,14 @@
         </field>
     </record>
 
-    <act_window name="Create Normal Bom"
-                res_model="plm.temporary"
-                src_model="product.product"
-                view_mode="form"
-                view_id="plm_component_create_normal_bom"
-                target="new"
-                key2="client_action_multi"
-                id="act_create_normalBom"/>
+    <record id="act_create_normalBom" model="ir.actions.act_window">
+       <field name="name">Create Normal Bom</field>
+       <field name="res_model">plm.temporary</field>
+       <field name="view_mode">form</field>
+       <field name="binding_model_id" ref="product.model_product_product"/>
+       <field name="view_id" ref="plm_component_create_normal_bom"/>
+       <field name="target">new</field>
+   </record>
 
     <record id="plm_temporary_message_form" model="ir.ui.view">
         <field name="name">plm.temporary.message.form</field>

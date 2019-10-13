@@ -109,15 +109,14 @@
         </field>
     </record>
 
-    <act_window name="Pack and Go"
-        res_model="pack.and_go" 
-        src_model="product.product"
-        view_mode="form"
-        view_id="act_plm_pack_and_go"
-        target="new"
-        key2="client_action_multi"
-        id="act_pack_and_go_action" 
-        	/>
+    <record id="act_pack_and_go_action" model="ir.actions.act_window">
+       <field name="name">Pack and Go</field>
+       <field name="res_model">pack.and_go</field>
+       <field name="view_mode">form</field>
+       <field name="binding_model_id" ref="product.model_product_product"/>
+       <field name="view_id" ref="act_plm_pack_and_go"/>
+       <field name="target">new</field>
+   </record>
     
     <record model="ir.ui.view" id="view_pack_and_go_view_form">
         <field name="name">pack.and.go.view.form</field>
