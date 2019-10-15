@@ -25,7 +25,6 @@
 
     <record id="action_bom_weight_computed" model="ir.actions.server">
         <field name="name">Compute Bom Weight</field>
-        <field name="condition">True</field>
         <field name="type">ir.actions.server</field>
         <field name="model_id" ref="model_product_product"/>
         <field name="binding_model_id" ref="product.model_product_product"/>

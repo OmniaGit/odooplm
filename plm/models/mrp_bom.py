@@ -727,7 +727,7 @@ class MrpBomExtension(models.Model):
             if not mrp_bom_found_id:
                 if product_tmpl_id:
                     mrp_bom_found_id = self.create({'product_tmpl_id': product_tmpl_id,
-                                                    'product_product_id': parent_product_product_id.id,
+                                                    'product_id': parent_product_product_id.id,
                                                     'type': bomType})
             else:
                 mrp_bom_found_id.delete_child_row(parent_ir_attachment_id)

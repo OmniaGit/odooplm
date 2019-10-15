@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
+<odoo>
 <data>
 	
 	<template id="report_bom_structure_all_extension" inherit_id="plm.bom_structure_all">
@@ -22,4 +22,4 @@
 	</template>
 
 </data>
-</openerp>
+</odoo>

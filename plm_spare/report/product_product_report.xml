@@ -6,7 +6,6 @@
             name="plm_spare.pdf_all"
             report_type="qweb-html"
             file=""
-            header="False"
     />
     <report id="report_product_product_spare_parts_pdf_one"
             string="Print Spare Parts Manual One Level"
@@ -14,7 +13,6 @@
             name="plm_spare.pdf_one"
             report_type="qweb-html"
             file=""
-            header="False"
     />
     <report id="report_product_product_spare_header"
             model="product.product"

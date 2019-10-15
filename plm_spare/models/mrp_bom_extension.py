@@ -33,25 +33,4 @@ from odoo import _
 class MrpBomExtension(models.Model):
     _inherit = 'mrp.bom'
 
-    @api.model
-    def _get_reference_spare_type(self):
-        module_brws_list = self.sudo().env['ir.module.module'].search([('name', '=', 'plm_engineering')])
-        for mod_brws in module_brws_list:
-            if mod_brws.state == 'installed':
-                return [('normal', _('Normal BoM')),
-                        ('phantom', _('Sets / Phantom')),
-                        ('ebom', _('Engineering BoM')),
-                        ('spbom', _('Spare BoM'))]
-        return [('normal', _('Normal BoM')),
-                ('phantom', _('Sets / Phantom')),
-                ('spbom', _('Spare BoM'))]
-
-    type = fields.Selection(
-        '_get_reference_spare_type',
-        _('BoM Type'),
-        required=True,
-        default='normal',
-        help=_(
-            "Phantom BOM: When processing a sales order for this product, the delivery order will contain the raw materials, instead of the finished product."
-            "Ship this product as a set of components (kit).")
-    )
+    type = fields.Selection(selection_add=[('spbom', 'Spare BoM')])

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<openerp>
+<odoo>
   	<data>
    
         <report id="report_all_product_product_pdf"
@@ -57,4 +57,4 @@
                 file=""
                 />
     </data>   
-</openerp>
+</odoo>

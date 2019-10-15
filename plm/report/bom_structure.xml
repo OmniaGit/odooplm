@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
+<odoo>
     <data>
         <report 
             id="report_plm_bom_structure_all"
@@ -46,4 +46,4 @@
         
                 
     </data>
-</openerp>
+</odoo>

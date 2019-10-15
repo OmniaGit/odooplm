@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
+<odoo>
 <data>
 
     <record model="ir.ui.view" id="view_plm_document_multi_site_hinerit">
@@ -44,5 +44,5 @@
     </record>
 
 </data>
-</openerp>
+</odoo>
 

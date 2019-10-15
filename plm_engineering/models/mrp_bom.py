@@ -34,28 +34,7 @@ from odoo import _
 class MrpBomExtension(models.Model):
     _inherit = 'mrp.bom'
 
-    @api.model
-    def _get_reference_eng_type(self):
-        module_brws_list = self.env['ir.module.module'].sudo().search([('name', '=', 'plm_spare')])
-        for mod_brws in module_brws_list:
-            if mod_brws.state == 'installed':
-                return [('normal', _('Normal BoM')),
-                        ('phantom', _('Sets / Phantom')),
-                        ('ebom', _('Engineering BoM')),
-                        ('spbom', _('Spare BoM'))]
-        return [('normal', _('Normal BoM')),
-                ('phantom', _('Sets / Phantom')),
-                ('ebom', _('Engineering BoM'))]
-
-    type = fields.Selection(
-        '_get_reference_eng_type',
-        _('BoM Type'),
-        required=True,
-        default='normal',
-        help=_(
-            "Phantom BOM: When processing a sales order for this product, the delivery order will contain the raw materials, instead of the finished product."
-            "Ship this product as a set of components (kit).")
-    )
+    type = fields.Selection(selection_add=[('ebom', 'Engineering BoM')])
     ebom_source_id = fields.Integer('Source Ebom ID')
 
     @api.model
