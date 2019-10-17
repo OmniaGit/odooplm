@@ -731,9 +731,9 @@ class MrpBomExtension(models.Model):
                                                     'type': bomType})
             else:
                 mrp_bom_found_id.delete_child_row(parent_ir_attachment_id)
-                # add rows
+            # add rows
             for product_product_id, ir_attachment_id, relationAttributes in childrenOdooTuple:
-                if mrp_bom_found_id:
+                if mrp_bom_found_id and not relationAttributes.get('EXCLUDE', False):
                     mrp_bom_found_id.add_child_row(product_product_id,
                                                    parent_ir_attachment_id,
                                                    relationAttributes,
