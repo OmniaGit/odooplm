@@ -88,7 +88,7 @@ class MrpBomExtension(models.Model):
                                 help=_('This is the document object that declares this BoM.'))
 
     weight_net = fields.Float('Weight',
-                              digits=dp.get_precision(_('Stock Weight')),
+                              digits='Stock Weight',
                               help=_("The BoM net weight in Kg."),
                               default=0.0)
 

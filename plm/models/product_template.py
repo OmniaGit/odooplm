@@ -47,18 +47,18 @@ class ProductTemplateExtension(models.Model):
                              help=_("The status of the product in its LifeCycle."),
                              readonly="True",
                              index=True)
-    engineering_material = fields.Char(_('Raw Material'),
+    engineering_material = fields.Char(_('Cad Raw Material'),
                                        size=128,
                                        required=False,
                                        help=_("Raw material for current product, only description for titleblock."))
     engineering_surface = fields.Char(
-        _('Surface Finishing'),
+        _('Cad Surface Finishing'),
         size=128,
         required=False,
         help=_("Surface finishing for current product, only description for titleblock.")
     )
 
-    engineering_treatment = fields.Char(_('Termic Treatment'),
+    engineering_treatment = fields.Char(_('Cad Termic Treatment'),
                                         size=128,
                                         required=False,
                                         help=_("Termic treatment for current product, only description for titleblock."))
@@ -79,7 +79,7 @@ class ProductTemplateExtension(models.Model):
                                   compute='_compute_standard_price',
                                   inverse='_set_standard_price',
                                   search='_search_standard_price',
-                                  digits=dp.get_precision('Product Price'),
+                                  digits='Product Price',
                                   groups="base.group_user",
                                   default=0,
                                   help="Cost of the product, in the default unit of measure of the product.")

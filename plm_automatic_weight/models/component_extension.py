@@ -48,10 +48,10 @@ class PlmComponent(models.Model):
         help=_(
             """Set "Use Net Weight" to use only gross weight. Set "Use CAD Weight" to use CAD weight + Additional Weight as gross weight. Set "Use Normal Bom" to use NBOM Weight Computed + Additional weight as gross weight.""")
     )
-    weight_additional = fields.Float(_('Additional Weight'), digits=dp.get_precision('Stock Weight'), default=0)
-    weight_cad = fields.Float(_('CAD Weight'), readonly=True, digits=dp.get_precision('Stock Weight'), default=0)
+    weight_additional = fields.Float(_('Additional Weight'), digits='Stock Weight', default=0)
+    weight_cad = fields.Float(_('CAD Weight'), readonly=True, digits='Stock Weight', default=0)
     weight_n_bom_computed = fields.Float(_('NBOM Weight Computed'), readonly=True,
-                                         digits=dp.get_precision('Stock Weight'), default=0)
+                                         digits='Stock Weight', default=0)
 
     @api.model
     def create(self, vals):
