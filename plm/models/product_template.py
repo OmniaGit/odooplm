@@ -144,7 +144,7 @@ class ProductTemplateExtension(models.Model):
                 'view_type': 'form',
                 'view_mode': 'tree,form',
                 'type': 'ir.actions.act_window',
-                'domain': [('id', 'in', self.getAllVersionTemplate.ids)],
+                'domain': [('id', 'in', self.getAllVersionTemplate().ids)],
                 'context': {}}
 
     @api.model
