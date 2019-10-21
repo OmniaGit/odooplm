@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -20,38 +19,18 @@
 #
 ##############################################################################
 
-'''
+"""
 Created on 30 Aug 2016
 
 @author: Daniel Smerghetto
-'''
-from openerp import models
-from openerp import fields
-from openerp import api
-from openerp import _
+"""
+from odoo import models
+from odoo import fields
+from odoo import api
+from odoo import _
 
 
 class MrpBomExtension(models.Model):
     _inherit = 'mrp.bom'
 
-    @api.model
-    def _get_reference_spare_type(self):
-        moduleBrwsList = self.sudo().env['ir.module.module'].search([('name', '=', 'plm_engineering')])
-        for modbrws in moduleBrwsList:
-            if modbrws.state == 'installed':
-                return [('normal', _('Normal BoM')),
-                        ('phantom', _('Sets / Phantom')),
-                        ('ebom', _('Engineering BoM')),
-                        ('spbom', _('Spare BoM'))]
-        return [('normal', _('Normal BoM')),
-                ('phantom', _('Sets / Phantom')),
-                ('spbom', _('Spare BoM'))]
-
-    type = fields.Selection('_get_reference_spare_type',
-                            _('BoM Type'),
-                            required=True,
-                            default='normal',
-                            help=_("Phantom BOM: When processing a sales order for this product, the delivery order will contain the raw materials, instead of the finished product."
-                                   "Ship this product as a set of components (kit)."))
-
-MrpBomExtension()
+    type = fields.Selection(selection_add=[('spbom', 'Spare BoM')])

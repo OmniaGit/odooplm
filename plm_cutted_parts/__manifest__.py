@@ -1,8 +1,7 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
-#    OmniaSolutions, Open Source Management Solution    
-#    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
+#    OmniaSolutions, Open Source Management Solution
+#    Copyright (C) 2010-2019 OmniaSolutions (<https://www.omniasolutions.website>). All Rights Reserved
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -21,28 +20,28 @@
 ##############################################################################
 {
     'name': 'PLM Cutted Parts',
-    'version': '11.0',
+    'version': '13.0',
     'author': 'OmniaSolutions',
-    'website': 'http://www.omniasolutions.eu',
+    'website': 'https://www.omniasolutions.website',
     'category': 'Product Lifecycle Management',
     'sequence': 15,
     'summary': '',
     'images': [],
+    'license': 'AGPL-3',
     'depends': ['plm', 'plm_engineering'],
     'description': """
 Manage bom explosion for cutted parts
 ==============================================
     """,
-    'data': ['views/product.xml',
-             'views/mrp_bom_lines.xml',
-             'report/mrp_bom.xml',
-             'security/base_plm_security.xml',
-             ],
+    'data': [
+        'views/product.xml',
+        'views/mrp_bom_lines.xml',
+        'report/mrp_bom.xml',
+        'security/base_plm_security.xml',
+    ],
     'demo': [],
     'test': [],
     'installable': True,
     'application': False,
     'auto_install': False,
 }
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

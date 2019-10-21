@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -20,13 +19,12 @@
 #
 ##############################################################################
 
-'''
+"""
 Created on 11 Aug 2016
 
 @author: Daniel Smerghetto
-'''
+"""
 from odoo.exceptions import UserError
-from odoo import SUPERUSER_ID
 from odoo import models
 from odoo import fields
 from odoo import osv
@@ -38,16 +36,17 @@ import stat
 
 
 class PlmBackupDocument(models.Model):
-    '''
+    """
         Only administrator is allowed to remove elements by this table
-    '''
+    """
     _name = 'plm.backupdoc'
+    _description = "manage your document back up"
 
     userid = fields.Many2one('res.users',
                              _('Related User'))
     existingfile = fields.Char(_('Physical Document Location'),
                                size=1024)
-    documentid = fields.Many2one('plm.document',
+    documentid = fields.Many2one('ir.attachment',
                                  _('Related Document'))
     revisionid = fields.Integer(related="documentid.revisionid",
                                 string=_("Revision"),
@@ -55,57 +54,60 @@ class PlmBackupDocument(models.Model):
     state = fields.Selection(related="documentid.state",
                              string=_("Status"),
                              store=True)
-    document_name = fields.Char(related="documentid.name",
+    document_name = fields.Char(related="documentid.engineering_document_name",
                                 string=_("Stored Name"),
                                 store=True)
     printout = fields.Binary(_('Printout Content'))
     preview = fields.Binary(_('Preview Content'))
 
-    @api.multi
+    def name_get(self):
+        result = []
+        for r in self:
+            if r.documentid and r.userid:
+                name = "%s .. [%s]" % (r.documentid.engineering_document_name[:8], r.userid.engineering_document_name[:8])
+            else:
+                name = "Error"
+            result.append((r.id, name))
+        return result
+
     def unlink(self):
-        committed = False
-        if self.env.context:
-            if self.env.uid != SUPERUSER_ID:
-                logging.warning("unlink : Unable to remove the required documents. You aren't authorized in this context.")
-                raise UserError(_("Unable to remove the required document.\n You aren't authorized in this context."))
-                return False
-        documentType = self.env['plm.document']
-        for checkObj in self:
-            if not int(checkObj.documentid):
-                return super(PlmBackupDocument, self).unlink()
-            currentname = checkObj.documentid.store_fname
-            if checkObj.existingfile != currentname:
-                fullname = os.path.join(documentType._get_filestore(), checkObj.existingfile)
-                if os.path.exists(fullname):
+        documentType = self.env['ir.attachment']
+        for plm_backup_document_id in self:
+            if self.env.context:
+                if not self.env.user.has_group('plm.group_plm_admin'):
+                    logging.warning("unlink : Unable to remove the required documents. You aren't authorized in this context.")
+                    raise UserError(_("Unable to remove the required document.\n You aren't authorized in this context."))
+            if plm_backup_document_id.documentid:
+                currentname = plm_backup_document_id.documentid.store_fname
+                if plm_backup_document_id.existingfile != currentname:
+                    fullname = os.path.join(documentType._get_filestore(), plm_backup_document_id.existingfile)
                     if os.path.exists(fullname):
                         os.chmod(fullname, stat.S_IWRITE)
                         os.unlink(fullname)
-                        committed = True
+                    else:
+                        logging.warning("unlink : Unable to remove the document (" + str(plm_backup_document_id.documentid.name) + "-" + str(plm_backup_document_id.documentid.revisionid) + ") from backup set. You can't change writable flag.")
+                        raise UserError(_("Unable to remove the document (" + str(plm_backup_document_id.documentid.name) + "-" + str(plm_backup_document_id.documentid.revisionid) + ") from backup set.\n It isn't a backup file, it's original current one."))
                 else:
-                    logging.warning("unlink : Unable to remove the document (" + str(checkObj.documentid.name) + "-" + str(checkObj.documentid.revisionid) + ") from backup set. You can't change writable flag.")
-                    raise UserError(_("Unable to remove the document (" + str(checkObj.documentid.name) + "-" + str(checkObj.documentid.revisionid) + ") from backup set.\n It isn't a backup file, it's original current one."))
-        if committed:
-            return super(PlmBackupDocument, self).unlink()
-        else:
-            return False
-
-PlmBackupDocument()
+                    logging.warning('Prevent to delete the active File %r' % currentname)
+                    continue
+            super(PlmBackupDocument, plm_backup_document_id).unlink()
 
 
 class BackupDocWizard(osv.osv.osv_memory):
-    '''
+    """
         This class is called from an action in xml located in plm.backupdoc.
         Pay attention! You can restore also confirmed, released and obsoleted documents!!!
-    '''
+    """
 
     _name = 'plm.backupdoc_wizard'
+    _description = "Back up document wizard"
 
-    @api.multi
+    
     def action_restore_document(self):
         documentId = False
         backupDocIds = self.env.context.get('active_ids', [])
         backupDocObj = self.env['plm.backupdoc']
-        plmDocObj = self.env['plm.document']
+        plmDocObj = self.env['ir.attachment']
         if len(backupDocIds) > 1:
             raise UserError(_('Restore Document Error'), _("You can restore only a document at a time."))
         for backupDocBrws in backupDocObj.browse(backupDocIds):
@@ -138,12 +140,10 @@ class BackupDocWizard(osv.osv.osv_memory):
             return {'name': _('Document'),
                     'view_type': 'form',
                     "view_mode": 'form, tree',
-                    'res_model': 'plm.document',
+                    'res_model': 'ir.attachment',
                     'res_id': documentId,
                     'type': 'ir.actions.act_window',
                     'domain': "[]"}
         return True
-
-BackupDocWizard()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

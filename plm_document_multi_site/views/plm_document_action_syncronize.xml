@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+
+    <record model="ir.ui.view" id="plm_document_action_syncronize_tree">
+        <field name="name">plm.document.action.syncronize.tree</field>
+        <field name="model">plm.document.action.syncronize</field>
+        <field name="type">tree</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <tree string="Actions" editable="top">
+                <field name="plm_remote_server_id"/>
+                <field name="ir_attachment_id"/>
+                <field name="done"/>
+                <field name="action"/>
+            </tree>
+        </field>
+    </record>
+    
+    <record model="ir.actions.act_window" id="plm_document_action_syncronize_action">
+        <field name="name">Syncronize Actions</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">plm.document.action.syncronize</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="plm_document_action_syncronize_tree"/>
+    </record>
+    
+    <menuitem
+        name="Syncronize Actions"
+        action="plm_document_action_syncronize_action"
+        id="menu_plm_action_remote_server"
+        parent="plm.plm_menu_dictionaries"/>
+
+    </data>
+</odoo>

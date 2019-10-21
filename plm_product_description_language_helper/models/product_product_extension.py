@@ -35,8 +35,7 @@ from openerp import _
 class ProductProductExtension(models.Model):
     _inherit = 'product.product'
 
-    @api.multi
-    def copy(self, default=None):
+    def copy(self, default={}):
         '''
             Set flag to skip translation creation because super copy function makes the trick
         '''
@@ -60,12 +59,12 @@ class ProductProductExtension(models.Model):
             if std_description_id:
                 self.commonTranslationSetUp(templateId, std_description_id)
                 self.commonSpecialDescriptionCompute(vals, productBrws.product_tmpl_id.id, self.env['plm.description'].browse(std_description_id))
-            elif 'description' in vals.keys():
-                description = vals['description']
-                if description:
+            elif 'name' in vals.keys():
+                prodName = vals['name']
+                if prodName:
                     userLang = self.env.context.get('lang', 'en_US')
-                    translationObjs = ir_translation_obj.search([('name', '=', 'product.template,description'),
-                                                                 ('value', '=', description),
+                    translationObjs = ir_translation_obj.search([('name', '=', 'product.template,name'),
+                                                                 ('value', '=', prodName),
                                                                  ('lang', '=', userLang)],
                                                                 limit=1)
                     for ranslationObj in translationObjs:
@@ -74,13 +73,12 @@ class ProductProductExtension(models.Model):
                         for oldDescObj in oldDescObjs:
                             ir_translation_obj.create({'src': oldDescObj.src,
                                                        'res_id': templateId,
-                                                       'name': 'product.template,description',
+                                                       'name': 'product.template,name',
                                                        'type': 'model',
                                                        'lang': oldDescObj.lang,
                                                        'value': oldDescObj.value})
         return productBrws
 
-    @api.multi
     def write(self, vals):
         '''
             - Set up translations every time description changes
@@ -91,13 +89,13 @@ class ProductProductExtension(models.Model):
             if 'std_description' in vals:
                 std_description_id = vals.get('std_description', False)
                 self.commonTranslationSetUp(templateId, std_description_id)
-            if 'description' in vals:
-                description = vals.get('description', '')
-                if not description:
-                    translationObjs = ir_translation_obj.search([('name', '=', 'product.template,description'),
+            if 'name' in vals:
+                name = vals.get('name', '')
+                if not name:
+                    translationObjs = ir_translation_obj.search([('name', '=', 'product.template,name'),
                                                                  ('res_id', '=', templateId)])
                     translationObjs.write({'value': ''})
-                    vals['description'] = ' '
+                    vals['name'] = ' '
             if 'name' in vals.keys():
                 translationObjs = ir_translation_obj.search([('name', '=', 'product.template,name'),
                                                              ('res_id', '=', templateId)])
@@ -128,7 +126,7 @@ class ProductProductExtension(models.Model):
                     if not initVal:
                         initVal = thisObject.description
                     description = prodWriteObj.computeDescription(thisObject, initVal, thisObject.umc1, thisObject.umc2, thisObject.umc3, std_value1, std_value2, std_value3)
-                    translationObjs = ir_translation_obj.search([('name', '=', 'product.template,description'),
+                    translationObjs = ir_translation_obj.search([('name', '=', 'product.template,name'),
                                                                  ('res_id', '=', templateId),
                                                                  ('lang', '=', langBrwsObj.code)])
                     if translationObjs:
@@ -137,7 +135,7 @@ class ProductProductExtension(models.Model):
                         ir_translation_obj.create({
                                                   'src': description,
                                                   'res_id': templateId,
-                                                  'name': 'product.template,description',
+                                                  'name': 'product.template,name',
                                                   'type': 'model',
                                                   'lang': userLang,
                                                   'value': description})
@@ -149,11 +147,8 @@ class ProductProductExtension(models.Model):
         ir_translation_obj = self.env['ir.translation']
         descTransBrwsList = ir_translation_obj.search([('name', '=', 'plm.description,name'),             # field to translate
                                                        ('res_id', '=', std_description_id)])
-        if not descTransBrwsList:
-            descTransBrwsList = ir_translation_obj.search([('name', '=', 'plm.description,description'),             # field to translate
-                                                           ('res_id', '=', std_description_id)])
         for transDescBrws in descTransBrwsList:
-            alreadyPresentTranslations = ir_translation_obj.search([('name', '=', 'product.template,description'),
+            alreadyPresentTranslations = ir_translation_obj.search([('name', '=', 'product.template,name'),
                                                                     ('lang', '=', transDescBrws.lang),
                                                                     ('res_id', '=', templateId)])
             if alreadyPresentTranslations:
@@ -162,7 +157,7 @@ class ProductProductExtension(models.Model):
                 ir_translation_obj.create({
                                           'src': transDescBrws.src,
                                           'res_id': templateId,
-                                          'name': 'product.template,description',
+                                          'name': 'product.template,name',
                                           'type': 'model',
                                           'lang': transDescBrws.lang,
                                           'value': transDescBrws.value})

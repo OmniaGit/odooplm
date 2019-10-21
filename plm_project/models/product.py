@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -20,19 +19,21 @@
 #
 ##############################################################################
 
-'''
+"""
 Created on 30 Aug 2016
 
 @author: Daniel Smerghetto
-'''
+"""
 from odoo import fields, models, _
 
 
 class ProductExtension(models.Model):
     _inherit = 'product.product'
 
-    project_ids = fields.Many2many('project.project',
-                                   'project_product_rel',
-                                   'product_id',
-                                   'project_id',
-                                   string=_('Projects'))
+    project_ids = fields.Many2many(
+        'project.project',
+        'project_product_rel',
+        'product_id',
+        'project_id',
+        string=_('Projects')
+    )

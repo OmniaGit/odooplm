@@ -26,7 +26,7 @@ Created on 25/mag/2016
 
 import logging
 import tempfile
-from openerp import models, fields, api, SUPERUSER_ID, _, osv
+from openerp import models, fields, api, _, osv
 from openerp import tools
 from openerp.exceptions import UserError
 import base64
@@ -38,6 +38,7 @@ _logger = logging.getLogger(__name__)
 
 class plm_temporary_batch_converter(osv.osv.osv_memory):
     _name = 'plm.convert'
+    _description = "Temp Class for batch converter"
 
     @api.model
     def getCadAndConvertionAvailabe(self, fromExtention):
@@ -53,16 +54,16 @@ class plm_temporary_batch_converter(osv.osv.osv_memory):
     @api.model
     def getAllFiles(self, document):
         out = {}
-        plm_document = self.env['plm.document']
-        fileStoreLocation = plm_document._get_filestore()
+        ir_attachment = self.env['ir.attachment']
+        fileStoreLocation = ir_attachment._get_filestore()
 
         def templateFile(docId):
-            document = plm_document.browse(docId)
-            return {document.name: (document.datas_fname,
+            document = ir_attachment.browse(docId)
+            return {document.name: (document.name,
                                     file(os.path.join(fileStoreLocation, document.store_fname), 'rb'))}
-        out['root_file'] = (document.datas_fname,
+        out['root_file'] = (document.name,
                             file(os.path.join(fileStoreLocation, document.store_fname), 'rb'))
-        objDocu = self.env['plm.document']
+        objDocu = self.env['ir.attachment']
         request = (document.id, [], -1)
         for outId, _, _, _, _, _ in objDocu.CheckAllFiles(request):
             if outId == document.id:
@@ -89,7 +90,7 @@ class plm_temporary_batch_converter(osv.osv.osv_memory):
         if response.status_code != 200:
             raise UserError("Conversion of cad server failed, check the cad server log")
         if not newFileName:
-            newFileName = document.datas_fname + targetExtention
+            newFileName = document.name + targetExtention
         newTarget = os.path.join(tempfile.gettempdir(), newFileName)
         with open(newTarget, 'wb') as f:
             f.write(response.content)
@@ -100,14 +101,14 @@ class plm_temporary_batch_converter(osv.osv.osv_memory):
         """
         calculate the conversion extension
         """
-        datas_fname = self.env.context.get('datas_fname', False)
-        if datas_fname:
-            _, file_extension = os.path.splitext(datas_fname)
+        name = self.env.context.get('name', False)
+        if name:
+            _, file_extension = os.path.splitext(name)
             _, avilableFormat = self.getCadAndConvertionAvailabe(file_extension)
             return [(a, a) for a in avilableFormat]
         return []
 
-    document_id = fields.Many2one('plm.document',
+    document_id = fields.Many2one('ir.attachment',
                                   'Related Document')
     targetFormat = fields.Selection(selection='calculate_available_extention',
                                     string='Conversion Format',
@@ -116,20 +117,19 @@ class plm_temporary_batch_converter(osv.osv.osv_memory):
                                   attachment=True)
     datas_fname = fields.Char("New File name")
 
-    @api.multi
     def convert(self):
         """
         convert the file in a new one
         """
         out = []
         for brwWizard in self:
-            _, fileExtension = os.path.splitext(self.document_id.datas_fname)
+            _, fileExtension = os.path.splitext(self.document_id.name)
             cadName, _ = self.getCadAndConvertionAvailabe(fileExtension)
             newFileName = ''
             for component in brwWizard.document_id.linkedcomponents:
                 newFileName = component.engineering_code + brwWizard.targetFormat
             if newFileName == '':
-                newFileName = self.document_id.datas_fname + '.' + brwWizard.targetFormat
+                newFileName = self.document_id.name + '.' + brwWizard.targetFormat
             newFilePath = self.getFileConverted(brwWizard.document_id,
                                                 cadName,
                                                 brwWizard.targetFormat,
@@ -137,7 +137,6 @@ class plm_temporary_batch_converter(osv.osv.osv_memory):
             out.append(newFilePath)
         return out
 
-    @api.multi
     def action_create_coversion(self):
         """
         convert the file to the give format
@@ -153,7 +152,6 @@ class plm_temporary_batch_converter(osv.osv.osv_memory):
                 shutil.move(newFilePath, convertionFolder)
         UserError(_("File Converted check the shared folder"))
 
-    @api.multi
     def action_create_convert_download(self):
         """
         Convert file in the given format and return it to the web page
@@ -163,7 +161,7 @@ class plm_temporary_batch_converter(osv.osv.osv_memory):
                 fileContent = f.read()
                 if fileContent:
                     self.write({'downloadDatas': base64.b64encode(fileContent),
-                                'datas_fname': os.path.basename(convertedFile)})
+                                'name': os.path.basename(convertedFile)})
                     break
             break
         return {'name': _('File Converted'),

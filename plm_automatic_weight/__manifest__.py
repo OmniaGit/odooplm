@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution    
@@ -29,19 +28,18 @@
     'summary': 'PLM Weight Automatic Calculation',
     'images': [],
     'depends': ['plm'],
+    'license': 'AGPL-3',
     'description': """ """,
     'data': [
-             'settings_and_data/datas.xml',
-             'views/component_extension.xml',
-             'views/bom_extension.xml',
-       ],
+        'settings_and_data/datas.xml',
+        'views/component_extension.xml',
+        'views/bom_extension.xml',
+    ],
     'demo': [
-        ],
+    ],
     'test': [
-        ],
+    ],
     'installable': True,
     'application': False,
     'auto_install': False,
 }
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

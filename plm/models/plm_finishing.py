@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -20,11 +19,11 @@
 #
 ##############################################################################
 
-'''
+"""
 Created on 25 Aug 2016
 
 @author: Daniel Smerghetto
-'''
+"""
 from odoo import models
 from odoo import fields
 from odoo import api
@@ -44,10 +43,11 @@ class PlmFinishing(models.Model):
                               help=_("Gives the sequence order when displaying a list of product categories."))
 
     _sql_constraints = [
-        ('name_uniq', 'unique(name)', _('Raw Material has to be unique !')),
+        ('name_uniq', 'unique(name)', _('Surface Finishing has to be unique !')),
     ]
 
-    @api.multi
     def copy(self, default=None):
+        if not default:
+            default = {}
         default['name'] = self.name + ' (copy)'
         return super(PlmFinishing, self).copy(default=default)

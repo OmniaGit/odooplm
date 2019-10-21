@@ -1,28 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
-<data> 
-	
-        <record id="product_template_form_view_plm_custom" model="ir.ui.view">
-            <field name="name">product.template.plm.custom</field>
-            <field name="model">product.template</field>
-            <field name="inherit_id" ref="product.product_template_only_form_view"/>
-            <field name="priority" eval="3"/>
-            <field name="arch" type="xml">
-                <div name="button_box" position="inside">
-                    <button class="oe_stat_button" name="engineering_products_open" type="object" string="Engineering Infos"
-                        icon="fa-gears"> 
-                    </button>
-                </div>
-                <div name="options" position="before"> 
-                	<div style="display: inline-flex;">
-                		<label	for="engineering_code" style="width:200px;"/>
-	                	<field name="engineering_code" />	
-	                	<label	for="engineering_revision" style="padding-left: 40px;"/>	
-	                	<field name="engineering_revision" readonly="1"/> 
-                	</div>		
-                </div>
+<odoo>
+    <record id="product_template_form_view_plm_custom" model="ir.ui.view">
+        <field name="name">product.template.plm.custom</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="priority" eval="3"/>
+        <field name="arch" type="xml">
+            <div name="button_box" position="inside">
+                <button class="oe_stat_button"
+                        name="engineering_products_open"
+                        type="object"
+                        string="Engineering Information"
+                        attrs="{'invisible': [('type', '=', 'service')]}"
+                        icon="fa-gears">
+                </button>
+                <button name="open_related_revisions"
+                        type="object"
+                        string="Rev."
+                        class="oe_stat_button"
+                        icon="fa-tasks"
+                        attrs="{'invisible':[('revision_count','&lt;=','1')]}">
+                        <field name="revision_count"
+                               string=" "
+                               widget="statinfo"/>
+                </button>
+            </div>
+            <div name="options" position="before">
+                <field name="is_engcode_editable" invisible="1"/>
+                <group>
+                    <field name="engineering_code" attrs="{'readonly':[('is_engcode_editable','=', False)]}"/>
+                    <field name="engineering_revision" attrs="{'readonly':[('is_engcode_editable','=', False)]}"/>
+                </group>
+            </div>
+        </field>
+    </record>
+    <record id="view_stock_product_template_tree_plm" model="ir.ui.view">
+        <field name="name">product.template.tree.plm.inherit</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_tree_view"/>
+        <field name="arch" type="xml">
+            <field name="default_code" position="replace">
+                <field name="engineering_code"/>
+                <field name="engineering_revision"/>
             </field>
-        </record> 
-        
-</data>
-</openerp>
+        </field>
+    </record>
+</odoo>

@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -20,24 +19,24 @@
 #
 ##############################################################################
 
-'''
+"""
 Created on 30 Aug 2016
 
 @author: Daniel Smerghetto
-'''
+"""
 
-from openerp import models
-from openerp import api
-from openerp import _
+from odoo import (
+    models,
+    api,
+    _
+)
 
 
 class ProdProdKanbanExtension(models.Model):
     _inherit = 'product.product'
 
-    @api.multi
-    def open_engin_bom(self):
+
+    def open_engine_bom(self):
         boms = self.get_related_boms()
         domain = [('id', 'in', boms.ids), ('type', '=', 'ebom')]
         return self.common_open(_('Related Boms'), 'mrp.bom', 'tree,form', 'form', boms.ids, self.env.context, domain)
-
-ProdProdKanbanExtension()

@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution
@@ -26,6 +25,7 @@
     'author': 'OmniaSolutions',
     'website': 'http://www.omniasolutions.eu',
     'category': 'Product Lifecycle Management',
+    'license': 'AGPL-3',
     'sequence': 15,
     'summary': 'Connect odoo project with odooPLM',
     'images': [],

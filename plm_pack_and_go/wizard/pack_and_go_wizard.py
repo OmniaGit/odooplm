@@ -19,13 +19,13 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-import json
-import tempfile
 '''
 Created on Mar 30, 2016
 
 @author: Daniel Smerghetto
 '''
+import json
+import tempfile
 import logging
 from odoo import models
 from odoo import fields
@@ -43,6 +43,7 @@ _logger = logging.getLogger(__name__)
 
 class AvailableTypes(osv.osv.osv_memory):
     _name = 'pack_and_go_types'
+    _description = "Description of pack and go"
 
     name = fields.Char(_('Name'))
     pack_and_go_view_id = fields.Many2one('pack_and_go_view')
@@ -50,24 +51,25 @@ class AvailableTypes(osv.osv.osv_memory):
 
 class AdvancedPackView(osv.osv.osv_memory):
     _name = 'pack_and_go_view'
+    _description = "Manage pack view for exporting"
 
     @api.model
     def _getComponentDescription(self):
         for row in self:
-            row.comp_description = row.component_id.description
+            row.comp_description = row.component_id.name
 
     @api.model
     def _getDocumentDescription(self):
         for row in self:
-            row.document_description = row.document_id.description
+            row.document_description = row.document_id.name
 
     @api.model
     def _getDocumentFileName(self):
         for row in self:
-            row.doc_file_name = row.document_id.datas_fname
+            row.doc_file_name = row.document_id.name
 
     component_id = fields.Many2one('product.product', _('Component'))
-    document_id = fields.Many2one('plm.document', _('Document'))
+    document_id = fields.Many2one('ir.attachment', _('Document'))
     comp_rev = fields.Integer(_('Component Revision'))
     comp_description = fields.Char(compute='_getComponentDescription')
     doc_rev = fields.Integer(_('Document Revision'))
@@ -77,6 +79,7 @@ class AdvancedPackView(osv.osv.osv_memory):
     # Don't change keys because are used in a lower check in this file
     doc_type = fields.Selection([('2d', _('2D')),
                                  ('3d', _('3D')),
+                                 ('other', _('Other')),
                                  ('pdf', _('PDF')),
                                  ], _('Document Type'))
     available_types = fields.Many2one('pack_and_go_types', _('Types'))
@@ -85,7 +88,7 @@ class AdvancedPackView(osv.osv.osv_memory):
 
 class PackAndGo(osv.osv.osv_memory):
     _name = 'pack.and_go'
-    _inherit = 'ir.attachment'
+    _description = "Main wizard collector for pack and go"
 
     def setComponentFromContext(self):
         """
@@ -123,9 +126,10 @@ class PackAndGo(osv.osv.osv_memory):
     force_types_3d = fields.Many2one('pack_and_go_types', _('Force Types'))
     force_types_2d = fields.Many2one('pack_and_go_types', _('Force Types'))
 
-    convertion_server_available = fields.Boolean(_('Convertion server available'), default=False)
+    convertion_server_available = fields.Boolean(_('Conversion server available'), default=False)
+    datas = fields.Binary(string="Download")
+    datas_fname = fields.Char(string="File Name")
 
-    @api.multi
     def computeExportRelField(self, forceType=False):
         '''
             Populate related field with all components and documents of Bill of Materials
@@ -139,7 +143,7 @@ class PackAndGo(osv.osv.osv_memory):
         checkedDocumentIds = []  # To know if the same document has been already analyzed
         objProduct = self.env['product.product']
         objPackView = self.env['pack_and_go_view']
-        plmDocObject = self.env['plm.document']
+        plmDocObject = self.env['ir.attachment']
 
         def docCheckCreate(doc, comp=False):
             compId = False
@@ -198,7 +202,6 @@ class PackAndGo(osv.osv.osv_memory):
         self.export_pdf = export_pdf
         return self.returnWizard()
 
-    @api.multi
     def returnWizard(self):
         return {'name': _('Pack and Go'),
                 'view_type': 'form',
@@ -209,27 +212,22 @@ class PackAndGo(osv.osv.osv_memory):
                 'type': 'ir.actions.act_window',
                 'domain': "[]"}
 
-    @api.multi
     def clear2d(self):
         self.write({'export_2d': [(5, 0, 0)]})
         return self.returnWizard()
 
-    @api.multi
     def clear3d(self):
         self.write({'export_3d': [(5, 0, 0)]})
         return self.returnWizard()
 
-    @api.multi
     def clearpdf(self):
         self.write({'export_pdf': [(5, 0, 0)]})
         return self.returnWizard()
 
-    @api.multi
     def clearother(self):
         self.write({'export_other': [(5, 0, 0)]})
         return self.returnWizard()
 
-    @api.multi
     def clearAll(self):
         '''
             Clear all pack and go views
@@ -307,7 +305,6 @@ class PackAndGo(osv.osv.osv_memory):
         compIds.extend(recursion(startingBom))
         return compIds
 
-    @api.multi
     def checkPlmConvertionInstalled(self):
         domain = [('state', 'in', ['installed', 'to upgrade', 'to remove']), ('name', '=', 'plm_automated_convertion')]
         apps = self.env['ir.module.module'].sudo().search_read(domain, ['name'])
@@ -315,7 +312,6 @@ class PackAndGo(osv.osv.osv_memory):
             return True
         return False
 
-    @api.multi
     def action_export_zip(self):
         """
             action to import the data
@@ -326,7 +322,6 @@ class PackAndGo(osv.osv.osv_memory):
             os.makedirs(path)
 
         convetionModuleInstalled = self.checkPlmConvertionInstalled()
-        tmpSubFolder = tools.config.get('document_path', os.path.join(tools.config['root_path'], 'filestore'))
         tmpDir = tempfile.gettempdir()
         export_zip_folder = os.path.join(tmpDir, 'export_zip')
         checkCreateFolder(export_zip_folder)
@@ -375,10 +370,10 @@ class PackAndGo(osv.osv.osv_memory):
             shutil.copyfile(filePath, outFilePath)
 
         def exportSingle(docBws):
-            fileName = os.path.join(tmpSubFolder, self.env.cr.dbname, docBws.store_fname)
-            if os.path.exists(fileName):
-                outFilePath = os.path.join(outZipFile, docBws.datas_fname)
-                shutil.copyfile(fileName, outFilePath)
+            fromFile = docBws._full_path(docBws.store_fname)
+            if os.path.exists(fromFile):
+                outFilePath = os.path.join(outZipFile, docBws.name)
+                shutil.copyfile(fromFile, outFilePath)
             else:
                 logging.error('Unable to export file from document ID %r. File %r does not exists.' % (docBws.id, fileName))
 
@@ -411,12 +406,11 @@ class PackAndGo(osv.osv.osv_memory):
 
     def getFileExtension(self, docBrws):
         fileExtension = ''
-        datas_fname = docBrws.datas_fname
+        datas_fname = docBrws.name
         if datas_fname:
             fileExtension = '.' + datas_fname.split('.')[-1]
         return fileExtension
 
-    @api.multi
     def forceTypes3d(self):
         if not self.force_types_3d:
             raise UserError(_('You have to select a force type before clicking.'))
@@ -428,7 +422,6 @@ class PackAndGo(osv.osv.osv_memory):
                 line.available_types = res.ids[0]
         return self.returnWizard()
 
-    @api.multi
     def forceTypes2d(self):
         if not self.force_types_2d:
             raise UserError(_('You have to select a force type before clicking.'))

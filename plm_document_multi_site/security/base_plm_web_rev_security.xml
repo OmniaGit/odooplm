@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+        <data>
+<!-- View User  -->
+
+                <record id="data_plm_document_action_syncronize_view" model="ir.model.access">
+		            <field name="name">View plm document action syncronize</field>
+		            <field name="model_id" ref="model_plm_document_action_syncronize"/>
+		            <field name="group_id" ref="plm.group_plm_view_user"/>
+		            <field name="perm_read" eval="True"/>
+		            <field name="perm_write" eval="False"/>
+		            <field name="perm_create" eval="False"/>
+		            <field name="perm_unlink" eval="False"/>
+        		</record>
+        		
+                <record id="data_plm_remote_server_syncronize_view" model="ir.model.access">
+                    <field name="name">View plm remote server</field>
+                    <field name="model_id" ref="model_plm_remote_server"/>
+                    <field name="group_id" ref="plm.group_plm_view_user"/>
+                    <field name="perm_read" eval="True"/>
+                    <field name="perm_write" eval="False"/>
+                    <field name="perm_create" eval="False"/>
+                    <field name="perm_unlink" eval="False"/>
+                </record>
+
+<!-- Integration User  -->
+
+
+                <record id="data_plm_document_action_syncronize_integration" model="ir.model.access">
+                    <field name="name">Integration plm document action syncronize</field>
+		            <field name="model_id" ref="model_plm_document_action_syncronize"/>
+		            <field name="group_id" ref="plm.group_plm_integration_user"/>
+		            <field name="perm_read" eval="True"/>
+		            <field name="perm_write" eval="True"/>
+		            <field name="perm_create" eval="True"/>
+		            <field name="perm_unlink" eval="True"/>
+        		</record>
+
+ <!-- Administrator  -->
+
+                <record id="data_plm_remote_server_syncronize_admin" model="ir.model.access">
+                    <field name="name">Sever syncronizer</field>
+                    <field name="model_id" ref="model_plm_remote_server"/>
+                    <field name="group_id" ref="plm.group_plm_view_user"/>
+                    <field name="perm_read" eval="True"/>
+                    <field name="perm_write" eval="True"/>
+                    <field name="perm_create" eval="True"/>
+                    <field name="perm_unlink" eval="True"/>
+                </record>
+                        		
+        </data>
+</odoo>

@@ -1,12 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
-<!-- 
-				'name': product_id.name,
-                'part_number': product_id.engineering_code,
-                'part_revision': product_id.engineering_revision,
-                'part_description': product_id.description}
-                {'bom_type': mprBomLineId.type}
- -->
 	<t t-name="plm_exploded_view_row">
 			<t t-foreach="rows" t-as="r">
 				<li>	

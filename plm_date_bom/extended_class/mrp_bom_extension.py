@@ -32,36 +32,45 @@ from odoo import fields
 from odoo import api
 from odoo import _
 from odoo.exceptions import UserError
-
+                    
 
 class mrp_bom_extension_data(models.Model):
     _name = 'mrp.bom'
     _inherit = 'mrp.bom'
 
-    @api.multi
     def _obsolete_compute(self):
         '''
             Verify if obsolete lines are present in current bom
         '''
+        logging.info('_obsolete_compute started')
         for bomObj in self:
+            if bomObj.type == 'ebom':   
+                # Engineering BOM cannot have this flag computed because every time the user save by the CAD
+                # The BOM will change. Is not correct to change Engineering BOM by Odoo user...
+                bomObj.obsolete_presents = False
+                bomObj.obsolete_presents_computed = False
+                continue
             obsoleteFlag = False
             for bomLine in bomObj.bom_line_ids:
                 if bomLine.product_id.state == 'obsoleted':
                     obsoleteFlag = True
                     break
             bomObj.sudo().obsolete_presents = obsoleteFlag
+            bomObj.sudo().obsolete_presents_computed = obsoleteFlag
             bomObj.sudo().write({'obsolete_presents': obsoleteFlag})   # don't remove this force write or when form is opened the value is not updated
 
     # If store = True is set you need to provide @api.depends because odoo has to know when to compute that field.
     # If you decide to compute that field each time without store you have always to put it in the view or the field will not be computed
     obsolete_presents_computed = fields.Boolean(string=_("Obsolete presents computed"), compute='_obsolete_compute')
     obsolete_presents = fields.Boolean(_("Obsolete presents"))
+    
+    # This fields has not to be computed fields because bom may be very big and the time too
+    obsolete_presents_recursive = fields.Boolean(_("Obsolete presents Recursive"), default=False)
 
     @api.onchange('bom_line_ids')
     def onchangeBomLine(self):
         self._obsolete_compute()
 
-    @api.multi
     def action_wizard_compute_bom(self):
         return {
             'domain': [],
@@ -73,7 +82,6 @@ class mrp_bom_extension_data(models.Model):
             'target': 'new',
         }
 
-    @api.multi
     def showAllBomsToCompute(self):
         outLines = []
 
@@ -104,11 +112,85 @@ class mrp_bom_extension_data(models.Model):
             Return bom object from product template and bom type
         '''
         return self.search([('product_tmpl_id', '=', prodTmplBrws.id), ('type', '=', bomType)])
+    
+
+    @api.model
+    def create(self, vals):
+        '''
+            This overload of create is needed to setup obsolete_presents_recursive flag
+        '''
+        res = super(mrp_bom_extension_data, self).create(vals)
+        bomType = res.type
+        
+        def recursion(bomBrws):
+            for lineBrws in bomBrws.bom_line_ids:
+                prodBrws = lineBrws.product_id
+                for bomBrwsChild in prodBrws.product_tmpl_id.bom_ids:
+                    if bomBrwsChild.type == bomType:
+                        if bomBrwsChild.obsolete_presents:
+                            return True
+                        if recursion(bomBrwsChild):
+                            return True
+        
+        if bomType != 'ebom':
+            if recursion(res):
+                res.obsolete_presents_recursive = True
+            res._obsolete_compute()
+        return res
+
+    def write(self, vals):
+        res = super(mrp_bom_extension_data, self).write(vals)
+        bom_line_ids = vals.get('bom_line_ids', [])
+        if self.type != 'ebom':
+            if bom_line_ids:
+                beforeObsolete = self.obsolete_presents
+                beforeObsoleteRecursive = self.obsolete_presents_recursive
+                
+                obsoleteRecursive = False
+                for lineBrws in self.bom_line_ids:
+                    prodBrws = lineBrws.product_id
+                    for bomBrws in prodBrws.product_tmpl_id.bom_ids:
+                        if bomBrws.type == self.type:
+                            obsoleteRecursive = bomBrws.obsolete_presents_recursive or bomBrws.obsolete_presents
+                            break
+                    if obsoleteRecursive:
+                        break
+                self.obsolete_presents_recursive = obsoleteRecursive
+                self._obsolete_compute()
+                
+                productBrws = self.product_tmpl_id.product_variant_ids[0]
+                    
+                if (not beforeObsolete and self.obsolete_presents) or (not beforeObsoleteRecursive and self.obsolete_presents_recursive):
+                    # I added obsoleted at first level or added a line containing recursive obsoleted --> Need to update where used
+                    self.updateWhereUsed(productBrws, True)
+                elif (beforeObsolete and not self.obsolete_presents) or (beforeObsoleteRecursive and  not self.obsolete_presents_recursive):
+                    # I removed all obsoleted at first or other sublevels --> Need to update where used
+                    self.updateWhereUsed(productBrws, False)
+        return res
+
+    def updateWhereUsed(self, prodBrws, defaultUpdate=False):
+        bomTmpl = self.env['mrp.bom']
+        struct = prodBrws.getParentBomStructure()
+        
+        def recursion(struct2, cleanObsoleteRecursive=True):
+            for vals, parentsList in struct2:
+                bom_id = vals.get('bom_id', False)
+                if bom_id:
+                    bomBrws = bomTmpl.browse(bom_id)
+                    bomBrws._obsolete_compute()
+                    if cleanObsoleteRecursive:
+                        bomBrws.obsolete_presents_recursive = defaultUpdate
+                    if bomBrws.obsolete_presents:
+                        # I cannot change obsolete_recursive flag if there are other obsolete products in the parent BOM
+                        cleanObsoleteRecursive = False
+                recursion(parentsList, cleanObsoleteRecursive)
+            
+        recursion(struct)
 
 
 class mrp_bom_data_compute(models.Model):
     _name = 'plm.temporary_date_compute'
-
+    _description = "Temporary model for computing dates"
     compute_type = fields.Selection([
                                     ('update', _('Update Bom replacing obsoleted bom lines with components at the latest revision.')),
                                     ('new_bom', _('Create new bom using last revision of all components.'))
@@ -116,7 +198,19 @@ class mrp_bom_data_compute(models.Model):
                                     _('Compute Type'),
                                     required=True)
 
-    @api.multi
+    def scheduler_update_obsolete_bom(self, compute_type):
+        logging.info('Scheduler to update obsolete boms started with computation type %r' % (compute_type))
+        tmpObj = self.create({'compute_type': compute_type})
+        if tmpObj:
+            bomObj = tmpObj.env['mrp.bom']
+            bomBrwsList = bomObj.search([('obsolete_presents', '=', True)])
+            tmpObj.env.context['active_ids'] = bomBrwsList.ids
+            tmpObj.action_compute_bom()
+        else:
+            logging.info('Cannot create a new temporary object')
+        logging.info('Scheduler to update obsolete boms ended')
+        tmpObj.unlink()
+
     def action_compute_bom(self):
         '''
             Divide due to choosen operation
@@ -151,6 +245,8 @@ class mrp_bom_data_compute(models.Model):
                     prodProdBrws = prodProdObj.search([('engineering_code', '=', eng_code)], order='engineering_revision DESC', limit=1)
                     for prodBrws in prodProdBrws:
                         bomLineBrws.product_id = prodBrws
+                        bomLineBrws.bom_id._obsolete_compute()
+                        bomObj.updateWhereUsed(prodBrws)  # Not set before new product assignment
                         if recursive:
                             # Check if new added product has boms
                             self.updateObsoleteBom(prodBrws.product_tmpl_id.bom_ids.ids)

@@ -31,16 +31,19 @@ div.more_containers{
 	display: block;
 	position: relative;
 }
-.image_component_kanban:hover {
-	width:100%;
+
+.image_component_kanban:hover {	
 	-webkit-transition-delay: 0s;
 	-moz-transition-delay: 0s;
 	-ms-transition-delay: 0s;
 	-o-transition-delay: 0s;
 	transition-delay: 0s;
-	z-index: 100;
-	position: relative;
+	z-index: 1000;
+	transform: scale(8); 
+    /*transform-origin: 0% 0%;*/
+    position: sticky;
 }
+
 
 
 

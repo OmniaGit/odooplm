@@ -20,77 +20,74 @@
 #
 ##############################################################################
 
-'''
+"""
 Created on 30 Aug 2016
 
 @author: Daniel Smerghetto
-'''
-from openerp import models
-from openerp import api
+"""
+
+from odoo import models
+from odoo import api
 
 
-class PlmComponentExtension(models.Model):
+class ProductTemplate(models.Model):
     _inherit = 'product.product'
 
-    @api.multi
-    def action_create_spareBom_WF(self):
+    def action_create_spare_bom_wf(self):
         """
             Create a new Spare Bom if doesn't exist (action callable from code)
         """
-        self._create_spareBom()
+        self._create_spare_bom()
         return False
 
-    @api.multi
-    def _create_spareBom(self):
+    def _create_spare_bom(self):
         """
             Create a new Spare Bom (recursive on all EBom children)
         """
-        self.processedIds = []
-        self._createLocalSparebom(self.id)
+        self.processed_ids = []
+        self._create_local_spare_bom(self.id)
 
-    def _createLocalSparebom(self, prodId):
-        newBomBrws = None
-        if prodId in self.processedIds:
+    def _create_local_spare_bom(self, prod_id):
+        new_bom_brws = None
+        if prod_id in self.processed_ids:
             return False
-        self.processedIds.append(prodId)
-        for spareBomBrws in self.browse(prodId):
-            if not spareBomBrws:
+        self.processed_ids.append(prod_id)
+        for spare_bom_brws in self.browse(prod_id):
+            if not spare_bom_brws:
                 return False
-            if '-Spare' in spareBomBrws.name:
+            if '-Spare' in spare_bom_brws.name:
                 return False
-            sourceBomType = self.env.context.get('sourceBomType', 'ebom')
-            bomType = self.env['mrp.bom']
-            bomLType = self.env['mrp.bom.line']
-            spareBomBrwsList = bomType.search([('product_tmpl_id', '=', spareBomBrws.product_tmpl_id.id),
+            source_bom_type = self.env.context.get('source_bom_type', 'ebom')
+            bom_type = self.env['mrp.bom']
+            bom_l_type = self.env['mrp.bom.line']
+            spare_bom_brws_list = bom_type.search([('product_tmpl_id', '=', spare_bom_brws.product_tmpl_id.id),
                                                ('type', '=', 'spbom')])
-            normalBomBrwsList = bomType.search([('product_tmpl_id', '=', spareBomBrws.product_tmpl_id.id),
+            normal_bom_brws_list = bom_type.search([('product_tmpl_id', '=', spare_bom_brws.product_tmpl_id.id),
                                                 ('type', '=', 'normal')])
-            if not normalBomBrwsList:
-                normalBomBrwsList = bomType.search([('product_tmpl_id', '=', spareBomBrws.product_tmpl_id.id),
-                                                    ('type', '=', sourceBomType)])
+            if not normal_bom_brws_list:
+                normal_bom_brws_list = bom_type.search([('product_tmpl_id', '=', spare_bom_brws.product_tmpl_id.id),
+                                                    ('type', '=', source_bom_type)])
             defaults = {}
-            if not spareBomBrwsList:
-                if spareBomBrws.std_description.bom_tmpl:
-                    newBomBrws = bomType.browse(spareBomBrws.std_description.bom_tmpl.id).copy(defaults)
-                if (not newBomBrws) and normalBomBrwsList:
-                        newBomBrws = normalBomBrwsList[0].copy(defaults)
-                if newBomBrws:
-                    newBomBrws.write({'name': spareBomBrws.name,
-                                      'product_id': spareBomBrws.id,
+            if not spare_bom_brws_list:
+                if spare_bom_brws.std_description.bom_tmpl:
+                    new_bom_brws = bom_type.browse(spare_bom_brws.std_description.bom_tmpl.id).copy(defaults)
+                if (not new_bom_brws) and normal_bom_brws_list:
+                        new_bom_brws = normal_bom_brws_list[0].copy(defaults)
+                if new_bom_brws:
+                    new_bom_brws.write({'name': spare_bom_brws.name,
+                                      'product_id': spare_bom_brws.id,
                                       'type': 'spbom'},
                                      check=False)
-                    ok_rows = self._summarizeBom(newBomBrws.bom_line_ids)
-                    for bom_line in list(set(newBomBrws.bom_line_ids) ^ set(ok_rows)):
-                        bomLType.browse(bom_line.id).unlink()
+                    ok_rows = self._summarizeBom(new_bom_brws.bom_line_ids)
+                    for bom_line in list(set(new_bom_brws.bom_line_ids) ^ set(ok_rows)):
+                        bom_l_type.browse(bom_line.id).unlink()
                     for bom_line in ok_rows:
-                        bomLType.browse(bom_line.id).write({'type': 'spbom',
+                        bom_l_type.browse(bom_line.id).write({'type': 'spbom',
                                                             'source_id': False,
                                                             'name': bom_line.product_id.name,
                                                             'product_qty': bom_line.product_qty})
-                        self._createLocalSparebom(bom_line.product_id.id)
+                        self._create_local_spare_bom(bom_line.product_id.id)
             else:
-                for bom_line in spareBomBrwsList[0].bom_line_ids:
-                    self._createLocalSparebom(bom_line.product_id.id)
+                for bom_line in spare_bom_brws_list[0].bom_line_ids:
+                    self._create_local_spare_bom(bom_line.product_id.id)
             return False
-
-PlmComponentExtension()

@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<openerp>
+<odoo>
 <data>
-    <!-- <menuitem name="Backup Documents View" id="plm_menu_backup" parent="plm_document_form" sequence="15"/> -->
-
+ 
     <record model="ir.ui.view" id="view_plm_backupdoc">
         <field name="name">plm.backupdoc</field>
         <field name="model">plm.backupdoc</field>
         <field name="priority" eval="1"/>
-        <field name="type">form</field>
         <field name="arch" type="xml">
-            <form string="Backup Document">
+        <form>
             	<sheet>
                 <group colspan="4" col="4">
                 	<field name="document_name" select="1"/>
@@ -31,44 +29,53 @@
                         	img_width="400"/>
                 </group>
                 </sheet>
-            </form>
+           </form>
         </field>
     </record>
 
     <record model="ir.ui.view" id="plm_backupdoc_search">
-        <field name="name">plm.backupdoc</field>
         <field name="model">plm.backupdoc</field>
-        <field name="type">search</field>
         <field name="priority" eval="1"/>
         <field name="arch" type="xml">
             <search string="Backup Document Set">
-                <filter string="  Last Month  " separator="1"
-                         domain="[('create_date','&lt;=', (datetime.date.today() - relativedelta(day=31,months=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today() - relativedelta(day=1,months=1)).strftime('%%Y-%%m-%%d'))]"
-                         help="Checked-Out in last month"/>
-                <filter string="  Last Week  " separator="1"
-                         domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"
-                         help="Checked-Out in last week"/>
-                <filter string="  Latest 7 Days  " separator="1"
-                         domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
-                         help="Checked-Out in latest 7 days"/>
-                 <filter string="  Yesterday  " separator="1"
-                         domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
-                         help="Checked-Out Yesterday"/>
-                 <filter string="  Today  " separator="1"
-                         domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
-                         help="Checked-Out today"/>
+                <filter 
+                        name="last_month_filter"
+                        string="Last Month"
+                        domain="[('create_date','&lt;=', (datetime.date.today() - relativedelta(day=31,months=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today() - relativedelta(day=1,months=1)).strftime('%%Y-%%m-%%d'))]"
+                        help="Checked-Out in last month"/>      
+                         
+                <filter 
+                        name="last_week_filter"
+                        string="Last Week"
+                        domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"
+                        help="Checked-Out in last week"/>
+                <filter 
+                        name="latest_7_days"
+                        string="Latest 7 Days"
+                        domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
+                        help="Checked-Out in latest 7 days"/>
+                 <filter 
+                        name = "yesterday"
+                        string="Yesterday"
+                        domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
+                        help="Checked-Out Yesterday"/>
+                 <filter
+                        name="today"
+                        string="Today"
+                        domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
+                        help="Checked-Out today"/>
                 <separator orientation="vertical"/>
             	<field name="document_name"/>
                	<separator orientation="vertical"/>
             	<field name="documentid"/>
                	<separator orientation="vertical"/>
                 <field name="userid" nolabel="1">
-					<filter string="Created by me" domain="[('userid', '=', uid)]"/>
+					<filter name="created_by_me" string="Created by me" domain="[('userid', '=', uid)]"/>
                 </field>
                 <group expand="0" string="Group By...">
-                    <filter string="Document Name" domain="[]" context="{'group_by':'documentid'}"/>
-                    <filter string="Create by Month" domain="[]" context="{'group_by':'create_date'}"/>
-                    <filter string="Creator" domain="[]" context="{'group_by':'userid'}"/>
+                    <filter name="document_name" string="Document Name" domain="[]" context="{'group_by':'documentid'}"/>
+                    <filter name="create_by_month" string="Create by Month" domain="[]" context="{'group_by':'create_date'}"/>
+                    <filter name="creator" string="Creator" domain="[]" context="{'group_by':'userid'}"/>
                 </group>
             </search>
      	</field>
@@ -77,7 +84,6 @@
     <record model="ir.ui.view" id="plm_backupdoc_tree">
         <field name="name">plm.backupdoc</field>
         <field name="model">plm.backupdoc</field>
-        <field name="type">tree</field>
         <field name="priority" eval="1"/>
         <field name="arch" type="xml">
             <tree string="Documents in Check-Out">
@@ -89,42 +95,42 @@
             </tree>
         </field>
     </record>
-
+  
     <record model="ir.actions.act_window" id="action_plm_backupdoc">
         <field name="name">Backup Data Set</field>
         <field name="res_model">plm.backupdoc</field>
-        <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
         <field eval="False" name="filter"/>
         <field name="view_id" ref="plm_backupdoc_tree"/>
         <field name="search_view_id" ref="plm_backupdoc_search"/>
     </record>
- 
+
+
     <record id="restore_document_button_view" model="ir.ui.view">
         <field name="name">Restore Document</field>
         <field name="model">plm.backupdoc_wizard</field>
-        <field name="type">form</field>
         <field name="arch" type="xml">
-        <form string="Restore Selected Document">
-            <label string="Are you sure you want to restore this document?" colspan="4"/>
-            <separator string="" colspan="4" />
-            <group colspan="4" col="6">
-            	<button special="cancel" string="Cancel"/>
-            	<button string="Restore Entry" name="action_restore_document" type="object"/>
-            </group>
-        </form>
+	        <form string="Restore Selected Document">
+	            <sheet>
+	                <h2>
+	                    Restore this document
+	                </h2>
+	            </sheet>
+	            <footer>
+	          <button special="cancel" string="Cancel"/>
+	          <button string="Restore Entry" name="action_restore_document" type="object"/>
+	            </footer>
+	        </form>
         </field>
     </record>
 
-    <act_window name="Restore Document"
-        res_model="plm.backupdoc_wizard"
-        src_model="plm.backupdoc"
-        view_mode="form"
-        view_id="restore_document_button_view"
-        target="new"
-        key2="client_action_multi"
-        id="act_restore_document"/>
- 
-        
+         <record id="act_restore_document" model="ir.actions.act_window">
+            <field name="name">Restore Document</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">plm.backupdoc_wizard</field>
+            <field name="binding_model_id" ref="plm.model_plm_backupdoc"/>
+            <field name="view_id" ref="restore_document_button_view"/>
+            <field name="target">new</field>
+        </record>
 </data>
-</openerp>
+</odoo>

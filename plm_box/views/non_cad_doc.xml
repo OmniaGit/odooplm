@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
+<odoo>
 <data>
 
         <record id="plm_box_form_view" model="ir.ui.view">
@@ -52,7 +52,7 @@
 						-->
 	                    <field name="plm_box_rel" />
 	                    <field name="groups_rel" />
-	                    <!--<button type="button" string="Schiacciami" class="oe_button oe_list_add oe_highlight" >Select</button>-->
+
                 </group>
                 <notebook>
                     <page string="Products">
@@ -112,7 +112,6 @@
     <record model="ir.actions.act_window" id="action_non_cad_doc">
     	<field name="name">Non CAD Document Relations</field>
     	 <field name="res_model">plm.box</field>
-        <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
         <field name="view_id" ref="plm_box_tree"/>
     </record>
@@ -121,7 +120,7 @@
         name="Search on Non CAD Document Relations"
         action="action_non_cad_doc"
         id="menu_non_cad_doc_relations"
-        parent="plm.plm_document_form"/>
+        parent="plm.ir_attachment_form"/>
         
         <!--
         <record id="view_stock_config_settings_custom" model="ir.ui.view">
@@ -139,4 +138,4 @@
         </record>
         -->
 </data>
-</openerp>
+</odoo>

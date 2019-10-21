@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -197,7 +196,7 @@ RjYxNzJGNDFCNzYwNjRBM0NDQjFEMTgxOTFCQgo+PgpzdGFydHhyZWYKODc0NwolJUVPRgo=""")
 
 
 def commonInfos(env):
-    docRepository = env['plm.document']._get_filestore()
+    docRepository = env['ir.attachment']._get_filestore()
     user = env['res.users'].browse(env.uid)
     msg = getBottomMessage(user, env.context)
     mainBookCollector = BookCollector(jumpFirst=False,
@@ -208,6 +207,7 @@ def commonInfos(env):
 
 class ReportProductPdf(models.AbstractModel):
     _name = 'report.plm.product_pdf'
+    _description = 'Report for producing pdf'
 
     @api.model
     def render_qweb_pdf(self, products=None, level=0, checkState=False):
@@ -241,7 +241,7 @@ class ReportProductPdf(models.AbstractModel):
         return byteString.decode('UTF-8')
 
     @api.model
-    def get_report_values(self, docids, data=None):
+    def _get_report_values(self, docids, data=None):
         products = self.env['product.product'].browse(docids)
         return {'docs': products,
                 'get_content': self.render_qweb_pdf}
@@ -249,19 +249,24 @@ class ReportProductPdf(models.AbstractModel):
 
 class ReportOneLevelProductPdf(ReportProductPdf):
     _name = 'report.plm.one_product_pdf'
+    _description = 'Report pdf'
 
 
 class ReportAllLevelProductPdf(ReportProductPdf):
     _name = 'report.plm.all_product_pdf'
+    _description = 'Report pdf'
 
 
 class ReportProductionProductPdf(ReportProductPdf):
     _name = 'report.plm.product_production_pdf_latest'
+    _description = 'Report pdf'
 
 
 class ReportProductionOneProductPdf(ReportProductPdf):
     _name = 'report.plm.product_production_one_pdf_latest'
+    _description = 'Report pdf'
 
 
 class ReportProductionAllProductPdf(ReportProductPdf):
     _name = 'report.plm.product_production_all_pdf_latest'
+    _description = 'Report pdf'

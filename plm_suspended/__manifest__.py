@@ -1,7 +1,6 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
-#    OmniaSolutions, Open Source Management Solution    
+#    OmniaSolutions, Open Source Management Solution
 #    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
 #    $Id$
 #
@@ -20,23 +19,24 @@
 #
 ##############################################################################
 {
-    'name': 'PLM Spare',
+    'name': 'PLM Suspended State',
     'version': '1.1',
     'author': 'OmniaSolutions',
     'website': 'http://www.omniasolutions.eu',
     'category': 'Product Lifecycle Management',
     'sequence': 15,
+    'license': 'AGPL-3',
     'summary': '',
     'images': [],
-    'depends': ['plm'],
+    'depends': ['mrp', 'plm'],
     'description': """
 Add obsolete status to the work flow
 ==============================================
     """,
     'data': [
-            # views
-            'views/plm_product_view.xml',
-            'views/plm_document_view.xml',
+        # views
+        'views/plm_product_view.xml',
+        'views/ir_attachment_view.xml',
     ],
     'demo': [],
     'test': [],
@@ -44,5 +44,3 @@ Add obsolete status to the work flow
     'application': False,
     'auto_install': False,
 }
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

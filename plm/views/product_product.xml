@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record model="ir.ui.view" id="plm_component_base_search">
+        <field name="name">plm.base.component.search</field>
+        <field name="model">product.product</field>
+        <field name="type">search</field>
+        <field name="priority" eval="15"/>
+        <field name="arch" type="xml">
+            <search string="Parts">
+                <filter name="last_2_weeks"
+                        string="Latest 2 Weeks"
+                        domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"
+                        help="Created latest 2 Weeks"/>
+                <filter name="latest_7_days"
+                        string="Latest 7 Days"
+                        domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
+                        help="Created latest 7 Days"/>
+                <filter name="yestarday"
+                        string="Yesterday"
+                        domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
+                        help="Created yesterday"/>
+                <filter name="today"
+                        string="Today"
+                        domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
+                        help="Created today"/>
+                <separator orientation="vertical"/>
+                <field name="engineering_code"/>
+                <field name="description" invisible="1"/>
+                <field name="name"/>
+                <separator orientation="vertical"/>
+                <filter name="string" string="Confirmed" domain="[('state', '=', 'confirmed')]"/>
+                <filter name="released" string="Released" domain="[('state', 'in', ['released','undermodify'])]"/>
+                <filter name="obsolated" string="Obsoleted" domain="[('state', '=', 'obsoleted')]"/>
+                <filter name="latest" string="Latest" domain="[('state', 'not in', ['obsoleted','undermodify'])]"/>
+            </search>
+        </field>
+    </record>
+ 
+    <record model="ir.ui.view" id="plm_component_base_form">
+        <field name="name">plm.base.component</field>
+        <field name="model">product.product</field>
+        <field name="type">form</field>
+        <field name="priority" eval="20"/>
+        <field name="arch" type="xml">
+            <form string="Engineering Product" version="7.0">
+                <header>
+                    <button name="action_release"
+                            type="object"
+                            states="confirmed"
+                            string="Release Component"
+                            class="oe_highlight"/>
+                    <button name="action_draft"
+                            type="object"
+                            states="confirmed"
+                            string="Correct Component"
+                    />
+                    <button name="action_confirm"
+                            type="object"
+                            states="draft"
+                            string="Confirm Component"
+                            class="oe_highlight"/>
+                    <field name="state"
+                           widget="statusbar"
+                           statusbar_visible="draft,confirmed,released"
+                           statusbar_colors='{"undermodify":"red","obsoleted":"red"}'
+                           readonly="1"/>
+                </header>
+
+                <sheet>
+                
+                    <field name="type" invisible="1"/>
+                    <field name="name" string="Description"/>
+                    <group name="plm_fields_area" colspan="6" col="2">
+                        <field name="is_engcode_editable" invisible="1"/>
+                        <field name="engineering_code" attrs="{'readonly':[('is_engcode_editable','=', False)]}"
+                               select="1"/>
+                        <field name="engineering_revision" colspan="2" attrs="{'readonly':[('is_engcode_editable','=', False)]}"/>
+                        <field name="std_description"
+                               attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                        <field name="source_product" invisible="1"/>
+                        <field name="desc_modify"
+                               attrs="{'readonly':[('state','in',['released','obsoleted'])], 'invisible': [('engineering_revision', '=', 0)]}"/>
+                    </group>
+                    <notebook colspan="6" col="6">
+                        <page name="technical_infos" string="Technical Information">
+                            <group name="group_general">
+                                <field name="categ_id" string="Category"/>
+                            </group>
+                            <group colspan="4" col="4" name="technical_infos_group">
+                                <field name="tmp_material"
+                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                                <field name="tmp_surface"
+                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                                <field name="tmp_treatment"
+                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                                <field name="weight" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"
+                                       digits="[14,3]"/>
+                                <field name="uom_id"
+                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                                <field name="uom_po_id"
+                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"
+                                       groups="base.group_no_one"/>
+                            </group>
+                            <group col="4" colspan="4">
+                                <field name="std_umc1"
+                                       attrs="{'readonly':[('std_umc1','=',False),('state','in',['released','obsoleted'])]}"/>
+                                <field name="std_value1"
+                                       attrs="{'readonly':[('std_umc1','=',False),('state','in',['released','obsoleted'])]}"/>
+                                <field name="std_umc2"
+                                       attrs="{'readonly':[('std_umc2','=',False),('state','in',['released','obsoleted'])]}"/>
+                                <field name="std_value2"
+                                       attrs="{'readonly':[('std_umc2','=',False),('state','in',['released','obsoleted'])]}"/>
+                                <field name="std_umc3"
+                                       attrs="{'readonly':[('std_umc3','=',False),('state','in',['released','obsoleted'])]}"/>
+                                <field name="std_value3"
+                                       attrs="{'readonly':[('std_umc3','=',False),('state','in',['released','obsoleted'])]}"/>
+                            </group>
+                        </page>
+                        <page string="CAD Property">
+                            <group name="cad_property_block">
+                                <field name="engineering_material"
+                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}" colspan="2"/>
+                                <field name="engineering_surface"
+                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}" colspan="2"/>
+                                <field name="engineering_treatment"
+                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}" colspan="2"/>
+
+                            </group>
+                        </page>
+                        <page string="Linked Documents" name="linkeddocuments">
+                            <group>
+                                <button class="oe_inline oe_stat_button" type="object" icon="fa-list-alt"
+                                        name="action_rev_docs" string="Revision Rel Docs"/>
+                            </group>
+                            <group>
+                                <field name="linkeddocuments" nolabel="1"/>
+                            </group>
+                        </page>
+
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="plm_product_product_normal_form_view_inherit" model="ir.ui.view">
+        <field name="name">plm.product.product.normal.form.view.inherit</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_normal_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                    <button name="action_release"
+                            type="object"
+                            states="confirmed"
+                            string="Release Component"
+                            class="oe_highlight"/>
+                    <button name="action_draft"
+                            type="object"
+                            states="confirmed"
+                            string="Correct Component"/>
+                    <button name="action_confirm"
+                            type="object"
+                            states="draft"
+                            string="Confirm Component"
+                            class="oe_highlight"/>
+                    <field name="state"
+                           widget="statusbar"
+                           statusbar_visible="draft,confirmed,released"
+                           statusbar_colors='{"undermodify":"red","obsoleted":"red"}'
+                           readonly="1"/>
+            </xpath>
+            <!--  -->
+            <xpath expr="//button[@name='action_view_mos']" position="after">
+                <button name="open_related_revisions"
+                        type="object"
+                        string="Rev.s."
+                        class="oe_stat_button"
+                        icon="fa-tasks"
+                        attrs="{'invisible':[('revision_count','&lt;=','1')]}"
+                        >
+                        <field name="revision_count"
+                               string=" "
+                               widget="statinfo"/>
+                </button>
+                <button name="open_template"
+                        type="object"
+                        string="Template"
+                        class="oe_stat_button"
+                        icon="fa-tag"
+                        >
+
+                </button>
+            </xpath>      
+            <xpath expr="//notebook[last()]" position="before">
+               <field name="is_engcode_editable" invisible="1"/>
+               <group col="8">
+                    <field name="engineering_code" attrs="{'readonly':[('is_engcode_editable','=', False)]}"/>
+                    <field name="engineering_revision" attrs="{'readonly':[('is_engcode_editable','=', False)]}" colspan="6"/>
+               </group>       
+               <group>
+	                <field name="std_description" colspan="6"
+	                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+	                <field name="source_product" invisible="1"/>
+	                <field name="desc_modify" colspan="6"
+	                       attrs="{'readonly':[('state','in',['released','obsoleted'])], 'invisible': [('engineering_revision', '=', 0)]}"/>
+               </group>
+            </xpath>
+            <xpath expr="//notebook[last()]" position="inside">
+                <page name="technical_infos" string="Technical Information">
+	                <group colspan="4" col="4" name="technical_infos_group">
+	                    <field name="tmp_material"
+	                           attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+	                    <field name="tmp_surface"
+	                           attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+	                    <field name="tmp_treatment"
+	                           attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+	                    <field name="weight" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"
+	                           digits="[14,3]"/>
+	                    <field name="uom_id"
+	                           attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+	                    <field name="uom_po_id"
+	                           attrs="{'readonly':[('state','in',['released','obsoleted'])]}"
+	                           groups="base.group_no_one"/>
+	                </group>
+                            <group col="4" colspan="4">
+                                <field name="std_umc1"
+                                       attrs="{'readonly':[('std_umc1','=',False),('state','in',['released','obsoleted'])]}"/>
+                                <field name="std_value1"
+                                       attrs="{'readonly':[('std_umc1','=',False),('state','in',['released','obsoleted'])]}"/>
+                                <field name="std_umc2"
+                                       attrs="{'readonly':[('std_umc2','=',False),('state','in',['released','obsoleted'])]}"/>
+                                <field name="std_value2"
+                                       attrs="{'readonly':[('std_umc2','=',False),('state','in',['released','obsoleted'])]}"/>
+                                <field name="std_umc3"
+                                       attrs="{'readonly':[('std_umc3','=',False),('state','in',['released','obsoleted'])]}"/>
+                                <field name="std_value3"
+                                       attrs="{'readonly':[('std_umc3','=',False),('state','in',['released','obsoleted'])]}"/>
+                            </group>
+                            <group string="Cad reflaction prop" name="cad_property_block"  groups="base.group_no_one">
+                                <field name="engineering_material"
+                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}" colspan="2"/>
+                                <field name="engineering_surface"
+                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}" colspan="2"/>
+                                <field name="engineering_treatment"
+                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}" colspan="2"/>
+
+                            </group>
+                        </page>
+                        <page string="Linked Documents" name="linkeddocuments">
+                            <group>
+                                <button class="oe_inline oe_stat_button" type="object" icon="fa-list-alt"
+                                        name="action_rev_docs" string="Revision Rel Docs"/>
+                            </group>
+                            <group>
+                                <field name="linkeddocuments" nolabel="1" context="{'odooPLM': True}"  mode="kanban">
+                                
+                                </field>
+                            </group>
+                        </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="plm_component_kanban_hinerit" model="ir.ui.view">
+        <field name="name">product.kanban.view.hinerit</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_kanban_view"/>
+        <field name="arch" type="xml">
+        
+            <xpath expr="//kanban/field[1]" position="after">
+                <field name="linkeddocuments"/>
+            </xpath>
+            
+            <xpath expr="//templates/t[1]" position="after">
+                 <t t-name="previews">
+                        <div style="display: -webkit-inline-box;">
+                            <t t-foreach="record.linkeddocuments.raw_value" t-as="documentId">
+                                <t t-debug="plm"/>
+                               
+                                <div>
+                                    <a type="action" class="a_preview"
+                                       data-context='{"xml_id":"plm_action_document_form", "id":8}'>
+
+
+                                        <img class="image_component_kanban"
+                                                alt="No Image"
+                                                t-att-src="kanban_image('ir.attachment', 'preview', documentId)"/>
+
+                                    </a>
+                                </div>
+                            </t>
+                        </div>
+                    </t>
+            </xpath>
+        
+        
+            <xpath expr="//div[@name='tags']" position="after">
+                <div class="row">
+                    <t t-call="previews"/>
+               </div>
+            </xpath>  
+        </field>
+   </record> 
+    
+    <record model="ir.actions.act_window" id="action_plm_component_base">
+        <field name="name">Engineering Parts</field>
+        <field name="res_model">product.product</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="view_id" ref="plm_component_base_tree"/>
+        <field name="context">{"search_default_latest":1}</field>
+        <field name="domain">['|', ('engineering_code','!=',''), ('engineering_code','!=',False)]</field>
+        <!-- fixme<field name="view_id_search" ref="plm_component_base_search"/> -->
+    </record>
+</odoo>

@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution    
@@ -26,14 +25,16 @@
     'website': 'http://www.omniasolutions.eu',
     'category': 'Product Lifecycle Management',
     'sequence': 15,
+    'license': 'AGPL-3',
     'summary': '',
     'images': [],
     'depends': ['plm', 'sale'],
     'description': """
     """,
     'data': [
-            # security
-            'security/base_plm_security.xml',],  # After component_report.xml
+        # security
+        'security/base_plm_security.xml',
+    ],  # After component_report.xml
 
     'demo': [],
     'test': [],
@@ -41,5 +42,3 @@
     'application': False,
     'auto_install': False,
 }
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

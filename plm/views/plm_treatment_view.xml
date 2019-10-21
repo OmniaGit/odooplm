@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+    <record model="ir.ui.view" id="view_plm_treatment">
+        <field name="name">plm.treatment.view</field>
+        <field name="model">plm.treatment</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Treatment">
+            	<sheet>
+                <group colspan="4" col="6">
+                    <field name="name" select="1" colspan="4"/>
+                    <field name="description" select="1" />
+                    <field name="sequence"/>
+                </group>
+               </sheet>	 
+            </form>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="plm_view_treatment_tree">
+        <field name="name">plm.view.treatment.tree</field>
+        <field name="model">plm.treatment</field>
+        <field name="type">tree</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <tree string="Finishings">
+                   <field name="name"/>
+                   <field name="description"/>
+                   <field name="sequence"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="plm_action_treatment_form">
+        <field name="name">Treatments</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">plm.treatment</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="plm_view_treatment_tree"/>
+    </record>
+    
+    
+</data>
+</odoo>
+

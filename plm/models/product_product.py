@@ -1,9 +1,8 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
 #    Copyright (C) 2010 OmniaSolutions (<http://omniasolutions.eu>). All Rights Reserved
-#    $Id$
+#    $Id$F
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -19,8 +18,12 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+
 import logging
 from datetime import datetime
+import os
+import json
+
 from odoo import models
 from odoo import fields
 from odoo import api
@@ -29,19 +32,18 @@ from odoo.exceptions import ValidationError
 from odoo.exceptions import AccessError
 from odoo.exceptions import UserError
 from odoo import osv
-from odoo import SUPERUSER_ID
 import odoo.tools as tools
-import os
-import json
 
 _logger = logging.getLogger(__name__)
 
-USED_STATES = [('draft', _('Draft')),
-               ('confirmed', _('Confirmed')),
-               ('released', _('Released')),
-               ('undermodify', _('UnderModify')),
-               ('obsoleted', _('Obsoleted'))]
-USEDIC_STATES = dict(USED_STATES)
+USED_STATES = [
+    ('draft', _('Draft')),
+    ('confirmed', _('Confirmed')),
+    ('released', _('Released')),
+    ('undermodify', _('UnderModify')),
+    ('obsoleted', _('Obsoleted'))
+]
+USE_DIC_STATES = dict(USED_STATES)
 
 
 def emptyStringIfFalse(value):
@@ -49,7 +51,7 @@ def emptyStringIfFalse(value):
         return an empty string if the value is False
     """
     if value:
-        return unicode(value)
+        return str(value)
     else:
         return ''
 
@@ -57,7 +59,6 @@ def emptyStringIfFalse(value):
 class PlmComponent(models.Model):
     _inherit = 'product.product'
 
-    @api.multi
     def action_show_reference(self):
         ctx = self.env.context.copy()
         ctx.update({'active_id': self.id,
@@ -66,7 +67,6 @@ class PlmComponent(models.Model):
                 'tag': 'plm_exploded_view',
                 'context': ctx}
 
-    @api.multi
     def _father_part_compute(self, name='', arg={}):
         """ Gets father bom.
         @param self: The object pointer
@@ -88,7 +88,7 @@ class PlmComponent(models.Model):
                     prod_ids.append(objPrd.id)
             prod_obj.father_part_ids = prod_ids
 
-    linkeddocuments = fields.Many2many('plm.document',
+    linkeddocuments = fields.Many2many('ir.attachment',
                                        'plm_component_document_rel',
                                        'component_id',
                                        'document_id',
@@ -101,6 +101,10 @@ class PlmComponent(models.Model):
                                   _('Surface Finishing'),
                                   required=False,
                                   help=_("Select surface finishing for current product"))
+    tmp_treatment = fields.Many2one('plm.treatment',
+                                    _('Termic Treatment'),
+                                    required=False,
+                                    help=_("Select termic treatment for current product"))
     father_part_ids = fields.Many2many('product.product',
                                        compute=_father_part_compute,
                                        string=_("BoM Hierarchy"),
@@ -143,12 +147,20 @@ class PlmComponent(models.Model):
     # Don't overload std_umc1, std_umc2, std_umc3 setting them related to std_description because odoo try to set value
     # of related fields and integration users doesn't have write permissions in std_description. The result is that
     # integration users can't create products if in changed values there is std_description
+    revision_count = fields.Integer(compute='_revisions_count')
+
+    def _revisions_count(self):
+        """
+        get All version product_tempate based on this one
+        """
+        for product_product_id in self:
+            product_product_id.revision_count = product_product_id.search_count([('engineering_code', '=', product_product_id.engineering_code)])
 
     @api.onchange('std_description')
     def on_change_stddesc(self):
         if self.std_description:
             if self.std_description.description:
-                self.description = self.std_description.description
+                self.name = self.std_description.description
                 if self.std_description.umc1:
                     self.std_umc1 = self.std_description.umc1
                 if self.std_description.umc2:
@@ -156,13 +168,13 @@ class PlmComponent(models.Model):
                 if self.std_description.umc3:
                     self.std_umc3 = self.std_description.umc3
                 if self.std_description.unitab:
-                    self.description = self.description + " " + self.std_description.unitab
+                    self.name = self.name + " " + self.std_description.unitab
 
     @api.onchange('std_value1', 'std_value2', 'std_value3')
     def on_change_stdvalue(self):
         if self.std_description:
             if self.std_description.description:
-                self.description = self.computeDescription(self.std_description, self.std_description.description, self.std_umc1, self.std_umc2, self.std_umc3, self.std_value1, self.std_value2, self.std_value3)
+                self.name = self.computeDescription(self.std_description, self.std_description.description, self.std_umc1, self.std_umc2, self.std_umc3, self.std_value1, self.std_value2, self.std_value3)
 
     @api.onchange('name')
     def on_change_name(self):
@@ -183,15 +195,24 @@ class PlmComponent(models.Model):
     def on_change_tmpsurface(self):
         if self.tmp_surface:
             if self.tmp_surface.name:
-                self.engineering_surface = unicode(self.tmp_surface.name)
+                self.engineering_surface = str(self.tmp_surface.name)
+
+    @api.onchange('tmp_treatment')
+    def on_change_tmptreatment(self):
+        if self.tmp_treatment:
+            if self.tmp_treatment.name:
+                self.engineering_treatment = str(self.tmp_treatment.name)
 
     @api.model
-    def getParentBomStructure(self):
-        mrpBomLines = self.env['mrp.bom.line'].search([('product_id', '=', self.env.context['id'])])
+    def getParentBomStructure(self, filterBomType=''):
+        bom_line_filter = [('product_id', '=', self.id)]
+        if filterBomType:
+            bom_line_filter.append(('type', '=', filterBomType))
+        mrpBomLines = self.env['mrp.bom.line'].search(bom_line_filter)
         out = []
         for mrpBomLine in mrpBomLines:
-            out.append((self.env['mrp.bom'].whereUsedHeader(mrpBomLine),
-                        mrpBomLine.bom_id.getWhereUsedStructure()))
+            out.append((self.env['mrp.bom'].where_used_header(mrpBomLine),
+                        mrpBomLine.bom_id.get_where_used_structure(filterBomType)))
         return out
 
 
@@ -242,6 +263,8 @@ class PlmComponent(models.Model):
             mixing both label and value or only label.
         """
         retvalue = ''
+        if fmt is False:
+            return retvalue
         if value:
             if isinstance(value, float):
                 svalue = "%g" % value
@@ -260,11 +283,12 @@ class PlmComponent(models.Model):
 
         if svalue:
             cnt = fmt.count('%s')
-
             if cnt == 2:
                 retvalue = fmt % (slabel, svalue)
             elif cnt == 1:
                 retvalue = fmt % (svalue)
+            elif cnt == 0 and fmt:
+                retvalue = fmt
         return retvalue
 
     def computeDescription(self, thisObject, initialVal, std_umc1, std_umc2, std_umc3, std_value1, std_value2, std_value3):
@@ -291,7 +315,6 @@ class PlmComponent(models.Model):
             description = description + " " + thisObject.unitab
         return description
 
-    @api.multi
     def product_template_open(self):
         product_id = self.product_tmpl_id.id
         mod_obj = self.env['ir.model.data']
@@ -308,7 +331,6 @@ class PlmComponent(models.Model):
                 'views': [(form_id, 'form')],
             }
 
-    @api.multi
     def open_boms(self):
         product_tmpl_id = self.product_tmpl_id.id
         if product_tmpl_id:
@@ -355,11 +377,10 @@ class PlmComponent(models.Model):
 
     def getUpdTime(self, obj):
         if(obj.write_date is not False):
-            return datetime.strptime(obj.write_date, '%Y-%m-%d %H:%M:%S')
+            return obj.write_date
         else:
-            return datetime.strptime(obj.create_date, '%Y-%m-%d %H:%M:%S')
+            return obj.create_date
 
-    @api.multi
     def Clone(self, defaults={}):
         exitValues = {}
         newCompBrws = self.copy(defaults)
@@ -385,7 +406,7 @@ class PlmComponent(models.Model):
             Get Last/Requested revision of given items (by name, revision, update time)
         """
         ids = []
-        plmDocObj = self.env['plm.document']
+        plmDocObj = self.env['ir.attachment']
 
         def getCompIds(partName, partRev):
             if docRev is None or docRev is False:
@@ -411,6 +432,24 @@ class PlmComponent(models.Model):
         return list(set(ids))
 
     @api.model
+    def ConvertToPlmProduct(self, attributes_list=[]):
+        """
+        convert the attributes vals and add the plm id to the array
+        """
+        out = []
+        for attributes in attributes_list:
+            engineering_code = attributes.get('engineering_code', False)
+            engineering_revision = attributes.get('engineering_revision', 0)
+            if engineering_code:
+                product_product_id = self.search([('engineering_code', '=', engineering_code),
+                                                  ('engineering_revision', '=', engineering_revision)], order='engineering_revision ASC')
+                if not product_product_id:
+                    product_product_id = self.create(attributes)
+                attributes['plm_id'] = product_product_id.id
+                out.append(attributes)
+        return out
+
+    @api.model
     def SaveOrUpdate(self, vals):
         """
             Save or Update Parts
@@ -427,7 +466,7 @@ class PlmComponent(models.Model):
                 retValues.append(partVals)
                 continue
             existingCompBrwsList = self.search([('engineering_code', '=', partVals['engineering_code']),
-                                                ('engineering_revision', '=', partVals['engineering_revision'])], order='engineering_revision ASC')
+                                                ('engineering_revision', '=', partVals.get('engineering_revision', 0))], order='engineering_revision ASC')
             if not existingCompBrwsList:
                 existingCompBrwsList = [self.create(partVals)]
                 hasSaved = True
@@ -482,11 +521,10 @@ class PlmComponent(models.Model):
                 dic[key].product_qty = float(dic[key].product_qty) + float(datarow.product_qty)
             else:
                 dic[key] = datarow
-        retd = dic.values()
+        retd = list(dic.values())
         return retd
 
-    @api.multi
-    def _get_recursive_parts(self, excludeStatuses, includeStatuses):
+    def _get_recursive_parts(self, exclude_statuses, include_statuses):
         """
            Get all ids related to current one as children
         """
@@ -497,10 +535,10 @@ class PlmComponent(models.Model):
         tobeReleasedIDs.extend(self.ids)
         for prodBrws in self:
             for childProdBrws in self.browse(self._getChildrenBom(prodBrws, 1)):
-                if (childProdBrws.state not in excludeStatuses) and (childProdBrws.state not in includeStatuses):
+                if (childProdBrws.state not in exclude_statuses) and (childProdBrws.state not in include_statuses):
                     errors.append(_("Product code: %r revision %r status %r") % (childProdBrws.engineering_code, childProdBrws.engineering_revision, childProdBrws.state))
                     continue
-                if childProdBrws.state in includeStatuses:
+                if childProdBrws.state in include_statuses:
                     if childProdBrws.id not in tobeReleasedIDs:
                         tobeReleasedIDs.append(childProdBrws.id)
         msg = ''
@@ -510,7 +548,6 @@ class PlmComponent(models.Model):
                 msg = msg + "\n" + subMsg
         return (msg, list(set(tobeReleasedIDs)))
 
-    @api.multi
     def action_create_normalBom_WF(self):
         """
             Create a new Normal Bom if doesn't exist (action callable from code)
@@ -521,14 +558,13 @@ class PlmComponent(models.Model):
         self.wf_message_post(body=_('Created Normal Bom.'))
         return False
 
-    @api.multi
     def _action_ondocuments(self, action_name):
         """
             move workflow on documents having the same state of component
         """
         docIDs = []
         docInError = []
-        documentType = self.env['plm.document']
+        documentType = self.env['ir.attachment']
         for oldObject in self:
             if (action_name != 'transmit') and (action_name != 'reject') and (action_name != 'release'):
                 check_state = oldObject.state
@@ -537,14 +573,15 @@ class PlmComponent(models.Model):
             for documentBrws in oldObject.linkeddocuments:
                 if documentBrws.state == check_state:
                     if documentBrws.is_checkout:
-                        docInError.append(_("Document %r : %r is checked out by user %r") % (documentBrws.name, documentBrws.revisionid, documentBrws.checkout_user))
+                        docInError.append(_("Document %r : %r is checked out by user %r") % (documentBrws.engineering_document_name, documentBrws.revisionid, documentBrws.checkout_user))
                         continue
                     if documentBrws.id not in docIDs:
                         docIDs.append(documentBrws.id)
         if docInError:
-            msg = "Error on workflow operation"
+            msg = _("Error on workflow operation")
             for e in docInError:
                 msg = msg + "\n" + e
+            msg = msg + _("\n\nCheck-In All the document in order to proceed !!")
             raise UserError(msg)
 
         if len(docIDs) > 0:
@@ -585,16 +622,14 @@ class PlmComponent(models.Model):
             return False
         return True
 
-    @api.multi
     def wf_message_post(self, body=''):
         """
             Writing messages to follower, on multiple objects
         """
         if not (body == ''):
-            for compObj in self:
-                compObj.sudo().message_post(body=_(body))
+            for comp_obj in self:
+                comp_obj.sudo().message_post(body=_(body))
 
-    @api.multi
     def unlink(self):
         values = {'state': 'released'}
         checkState = ('undermodify', 'obsoleted')
@@ -610,38 +645,36 @@ class PlmComponent(models.Model):
                         return False
         return super(PlmComponent, self).unlink()
 
-    @api.multi
     def action_draft(self):
         """
             release the object
         """
-        for compObj in self:
+        for comp_obj in self:
             defaults = {}
             status = 'draft'
             action = 'draft'
-            docaction = 'draft'
+            doc_action = 'draft'
             defaults['engineering_writable'] = True
             defaults['state'] = status
-            excludeStatuses = ['draft', 'released', 'undermodify', 'obsoleted']
-            includeStatuses = ['confirmed', 'transmitted']
-            compObj.commonWFAction(status, action, docaction, defaults, excludeStatuses, includeStatuses)
+            exclude_statuses = ['draft', 'released', 'undermodify', 'obsoleted']
+            include_statuses = ['confirmed']
+            comp_obj.commonWFAction(status, action, doc_action, defaults, exclude_statuses, include_statuses)
         return True
 
-    @api.multi
     def action_confirm(self):
         """
             action to be executed for Draft state
         """
-        for compObj in self:
+        for comp_obj in self:
             defaults = {}
             status = 'confirmed'
             action = 'confirm'
-            docaction = 'confirm'
+            doc_action = 'confirm'
             defaults['engineering_writable'] = False
             defaults['state'] = status
-            excludeStatuses = ['confirmed', 'transmitted', 'released', 'undermodify', 'obsoleted']
-            includeStatuses = ['draft']
-            compObj.commonWFAction(status, action, docaction, defaults, excludeStatuses, includeStatuses)
+            exclude_statuses = ['confirmed', 'released', 'undermodify', 'obsoleted']
+            include_statuses = ['draft']
+            comp_obj.commonWFAction(status, action, doc_action, defaults, exclude_statuses, include_statuses)
         return True
 
     @api.model
@@ -649,19 +682,18 @@ class PlmComponent(models.Model):
         return self.search([('engineering_code', '=', name),
                             ('engineering_revision', '=', revision)])
 
-    @api.multi
     def action_release(self):
         """
            action to be executed for Released state
         """
-        for compObj in self:
-            childrenProductToEmit = []
+        for comp_obj in self:
+            children_product_to_emit = []
             product_tmpl_ids = []
             defaults = {}
             prodTmplType = self.env['product.template']
-            excludeStatuses = ['released', 'undermodify', 'obsoleted']
-            includeStatuses = ['confirmed']
-            errors, product_ids = compObj._get_recursive_parts(excludeStatuses, includeStatuses)
+            exclude_statuses = ['released', 'undermodify', 'obsoleted']
+            include_statuses = ['confirmed']
+            errors, product_ids = comp_obj._get_recursive_parts(exclude_statuses, include_statuses)
             if len(product_ids) < 1 or len(errors) > 0:
                 raise UserError(errors)
             allProdObjs = self.browse(product_ids)
@@ -671,7 +703,7 @@ class PlmComponent(models.Model):
                     defaults['engineering_writable'] = False
                     defaults['state'] = 'obsoleted'
                     old_revision.product_tmpl_id.write(defaults)
-                    old_revision.wf_message_post(body=_('Status moved to: %s.' % (USEDIC_STATES[defaults['state']])))
+                    old_revision.wf_message_post(body=_('Status moved to: %s.' % (USE_DIC_STATES[defaults['state']])))
             defaults['engineering_writable'] = False
             defaults['state'] = 'released'
             self.browse(product_ids)._action_ondocuments('release')
@@ -679,47 +711,45 @@ class PlmComponent(models.Model):
                 if not currentProductId.release_date:
                     currentProductId.release_date = datetime.now()
                 if not(currentProductId.id in self.ids):
-                    childrenProductToEmit.append(currentProductId.id)
+                    children_product_to_emit.append(currentProductId.id)
                 product_tmpl_ids.append(currentProductId.product_tmpl_id.id)
-            self.browse(childrenProductToEmit).action_release()
+            self.browse(children_product_to_emit).action_release()
             objId = prodTmplType.browse(product_tmpl_ids).write(defaults)
             if (objId):
-                self.browse(product_ids).wf_message_post(body=_('Status moved to: %s.' % (USEDIC_STATES[defaults['state']])))
+                self.browse(product_ids).wf_message_post(body=_('Status moved to: %s.' % (USE_DIC_STATES[defaults['state']])))
             return objId
         return False
 
-    @api.multi
     def action_obsolete(self):
         """
             obsolete the object
         """
-        for compObj in self:
+        for comp_obj in self:
             defaults = {}
             status = 'obsoleted'
             action = 'obsolete'
-            docaction = 'obsolete'
+            doc_action = 'obsolete'
             defaults['engineering_writable'] = False
             defaults['state'] = status
-            excludeStatuses = ['draft', 'confirmed', 'transmitted', 'undermodify', 'obsoleted']
-            includeStatuses = ['released']
-            compObj.commonWFAction(status, action, docaction, defaults, excludeStatuses, includeStatuses)
+            exclude_statuses = ['draft', 'confirmed', 'undermodify', 'obsoleted']
+            include_statuses = ['released']
+            comp_obj.commonWFAction(status, action, doc_action, defaults, exclude_statuses, include_statuses)
         return True
 
-    @api.multi
     def action_reactivate(self):
         """
             reactivate the object
         """
-        for compObj in self:
+        for comp_obj in self:
             defaults = {}
             status = 'released'
             action = ''
-            docaction = 'release'
+            doc_action = 'release'
             defaults['engineering_writable'] = True
             defaults['state'] = status
-            excludeStatuses = ['draft', 'confirmed', 'transmitted', 'released', 'undermodify', 'obsoleted']
-            includeStatuses = ['obsoleted']
-            compObj.commonWFAction(status, action, docaction, defaults, excludeStatuses, includeStatuses)
+            exclude_statuses = ['draft', 'confirmed', 'released', 'undermodify', 'obsoleted']
+            include_statuses = ['obsoleted']
+            comp_obj.commonWFAction(status, action, doc_action, defaults, exclude_statuses, include_statuses)
         return True
 
     def perform_action(self, action):
@@ -731,15 +761,14 @@ class PlmComponent(models.Model):
         toCall = actions.get(action)
         return toCall()
 
-    @api.multi
-    def commonWFAction(self, status, action, docaction, defaults=[], excludeStatuses=[], includeStatuses=[]):
+    def commonWFAction(self, status, action, doc_action, defaults=[], exclude_statuses=[], include_statuses=[]):
         product_product_ids = []
         product_template_ids = []
-        userErrors, allIDs = self._get_recursive_parts(excludeStatuses, includeStatuses)
+        userErrors, allIDs = self._get_recursive_parts(exclude_statuses, include_statuses)
         if userErrors:
             raise UserError(userErrors)
         allIdsBrwsList = self.browse(allIDs)
-        allIdsBrwsList._action_ondocuments(docaction)
+        allIdsBrwsList._action_ondocuments(doc_action)
         for currId in allIdsBrwsList:
             if not(currId.id in self.ids):
                 product_product_ids.append(currId.id)
@@ -748,62 +777,134 @@ class PlmComponent(models.Model):
             self.browse(product_product_ids).perform_action(action)
         objId = self.env['product.template'].browse(product_template_ids).write(defaults)
         if objId:
-            self.browse(allIDs).wf_message_post(body=_('Status moved to: %s.' % (USEDIC_STATES[defaults['state']])))
+            self.browse(allIDs).wf_message_post(body=_('Status moved to: %s.' % (USE_DIC_STATES[defaults['state']])))
         return objId
 
 #  ######################################################################################################################################33
+    def plm_sanitize(self, vals):
+        valsKey = list(vals.keys())
+        for k in valsKey:
+            if k not in self.fields_get_keys():
+                del vals[k]
+        return vals
 
-    @api.multi
     def write(self, vals):
-        if not 'is_engcode_editable' in vals:
+        if 'is_engcode_editable' not in vals:
             vals['is_engcode_editable'] = False
+        vals.update(self.checkMany2oneClient(vals))
+        vals = self.plm_sanitize(vals)
         return super(PlmComponent, self).write(vals)
+
+    @api.model
+    def variant_fields_to_keep(self):
+        return [
+            'name',
+            'tmp_material',
+            'tmp_surface',
+            'tmp_treatment',
+            'weight',
+            'uom_id',
+            'std_umc1',
+            'std_umc2',
+            'std_umc3',
+            'std_value1',
+            'std_value2',
+            'std_value3',
+            'engineering_surface',
+            'engineering_treatment',
+            'type',
+            'categ_id',
+            'sale_ok',
+            'purchase_ok',
+            'route_ids',
+            'linkeddocuments',
+            'std_description',
+            'default_code'
+            ]
+
+    @api.model
+    def checkSetupDueToVariants(self, vals):
+        tmplt_id = vals.get('product_tmpl_id')
+        attribute_value_ids = vals.get('attribute_value_ids')
+        if tmplt_id and attribute_value_ids:
+            outVals = {}
+            tmplBrws = self.env['product.template'].browse(tmplt_id)
+            for variant in tmplBrws.product_variant_ids:
+                outVals = variant.read(self.variant_fields_to_keep())[0]
+                del outVals['id']
+                for key, val in outVals.items():
+                    if isinstance(val, (list)):  # many2many
+                        outVals[key] = [[6, 0, val]]
+                    if isinstance(val, (tuple)):  # many2one
+                        outVals[key] = val[0]
+                break
+            outVals.update(vals)
+            vals = outVals
+        return vals
 
     @api.model
     def create(self, vals):
         if not vals:
             raise ValidationError(_("""You are trying to create a product without values"""))
-        if ('name' in vals):
-            if not vals['name']:
-                return False
-            if 'engineering_code' in vals:
-                if vals['engineering_code'] is False:
-                    vals['engineering_code'] = vals['name']
-            else:
-                vals['engineering_code'] = vals['name']
-            if 'engineering_revision' in vals:
-                prodBrwsList = self.search([('engineering_code', '=', vals['engineering_code']),
-                                            ('engineering_revision', '=', vals['engineering_revision'])
-                                            ])
-                if prodBrwsList:
-                    raise UserError('Component %r already exists' % (vals['engineering_code']))
+        eng_code = vals.get('engineering_code')
+        name = vals.get('name')
+        if not name and eng_code:
+            vals['name'] = eng_code
+        if not vals.get('engineering_code') and name:
+            vals['engineering_code'] = name
+        eng_rev = vals.get('engineering_revision', 0)
+        eng_code = vals.get('engineering_code')
+        if eng_code:
+            prodBrwsList = self.search([('engineering_code', '=', vals['engineering_code']),
+                                        ('engineering_revision', '=', eng_rev)
+                                        ])
+            if prodBrwsList:
+                raise UserError('Component %r already exists' % (vals['engineering_code']))
         try:
             vals['is_engcode_editable'] = False
-            return super(PlmComponent, self).create(vals)
+            vals.update(self.checkMany2oneClient(vals))
+            vals = self.checkSetupDueToVariants(vals)
+            vals = self.plm_sanitize(vals)
+            res = super(PlmComponent, self).create(vals)
+            return res
         except Exception as ex:
             import psycopg2
             if isinstance(ex, psycopg2.IntegrityError):
-                raise ex
-            logging.error("(%s). It has tried to create with values : (%s)." % (unicode(ex), unicode(vals)))
+                msg = _('Error during component creation with values:\n')
+                for key, value in vals.items():
+                    msg = msg + '%r = %r\n' % (key, value)
+                try:
+                    msg = msg + str(ex.message) + '\n'
+                except:
+                    pass
+                msg = msg + '\n\n------------------------------\n\n' + str(ex)
+                raise Exception(msg)
+            logging.error("(%s). It has tried to create with values : (%s)." % (str(ex), str(vals)))
             raise Exception(_(" (%r). It has tried to create with values : (%r).") % (ex, vals))
 
-    @api.multi
-    def read(self, fields=None, load='_classic_read'):
+    def read(self, fields=[], load='_classic_read'):
         try:
-            return super(PlmComponent, self).read(fields=fields, load=load)
+            customFields = [field.replace('plm_m2o_', '') for field in fields if field.startswith('plm_m2o_')]
+            fields.extend(customFields)
+            fields = list(set(fields))
+            res = super(PlmComponent, self).read(fields=fields, load=load)
+            res = self.readMany2oneFields(res, fields)
+            return res
         except Exception as ex:
             if isinstance(ex, AccessError) and 'sale.report' in ex.name:
-                return '''
+                return """
 Your user does not have enough permissions to make this operation. Error: \n
 %r\n
-Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fix module to solve the problem.''' % (ex)
+Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fix module to solve the problem.""" % (ex)
             raise ex
 
-    @api.multi
     def copy(self, defaults={}):
         """
             Overwrite the default copy method
         """
+        if not defaults:
+            defaults = {}
+
         def clearBrokenComponents():
             """
                 Remove broken components before make the copy. So the procedure will not fail
@@ -830,21 +931,74 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         objId = super(PlmComponent, self).copy(defaults)
         if objId:
             objId.is_engcode_editable = True
-            newContext = self.env.context.copy()
-            newContext['uid'] = SUPERUSER_ID
-            self.wf_message_post(body=_('Copied starting from : %s.' % previous_name))
+            self.sudo().wf_message_post(body=_('Copied starting from : %s.' % previous_name))
         return objId
+
+    def readMany2oneFields(self, readVals, fields):
+        return self._readMany2oneFields(self.env['product.product'], readVals, fields)
+
+    @api.model
+    def _readMany2oneFields(self, obj, readVals, fields):
+        out = []
+        for vals in readVals:
+            fields_def = obj.fields_get(vals.keys())
+            tmpVals = vals.copy()
+            for fieldName, fieldVal in vals.items():
+                customField = 'plm_m2o_' + fieldName
+                if customField in fields:
+                    logging.info('Reading many2one field %r, fieldVal %r' % (customField, fieldVal))
+                    field_def = fields_def.get(fieldName)
+                    if field_def.get('type', '') == 'many2one':
+                        relation = field_def.get('relation', '')
+                        tmpVals[customField] = ''
+                        if relation:
+                            if isinstance(fieldVal, int):
+                                tmpVals[customField] = self.env[relation].browse(fieldVal).name
+                            elif isinstance(fieldVal, (list, tuple)):
+                                tmpVals[customField] = fieldVal[1]
+                            else:
+                                tmpVals[customField] = ''
+            out.append(tmpVals)
+        return out
+
+    def checkMany2oneClient(self, vals):
+        return self._checkMany2oneClient(self.env['product.product'], vals)
+
+    @api.model
+    def _checkMany2oneClient(self, obj, vals):
+        out = {}
+        customFields = [field.replace('plm_m2o_', '') for field in vals.keys() if field.startswith('plm_m2o_')]
+        fieldsGet = obj.fields_get(customFields)
+        for fieldName, fieldDefinition in fieldsGet.items():
+            refId = self.customFieldConvert(fieldDefinition, vals, fieldName)
+            if refId:
+                out[fieldName] = refId.id
+        return out
+
+    def customFieldConvert(self, fieldDefinition, vals, fieldName):
+        refId = False
+        fieldType = fieldDefinition.get('type', '')
+        referredModel = fieldDefinition.get('relation', '')
+        oldFieldName = 'plm_m2o_' + fieldName
+        cadVal = vals.get(oldFieldName, '')
+        if fieldType == 'many2one':
+            try:
+                for refId in self.env[referredModel].search([('name', '=', cadVal)]):
+                    return refId
+            except Exception as ex:
+                logging.warning(ex)
+        return refId
 
     @api.model
     def translateForClient(self, values=[], forcedLang=''):
-        '''
+        """
             Get values attribute in this format:
             values = [{'field1':value1,'field2':value2,...}]     only one element in the list!!!
             and return computed values due to language
             Get also forcedLang attribute in this format:
             forcedLang = 'en_US'
             if is not set it takes language from user
-        '''
+        """
         language = forcedLang
         if not forcedLang:
             resDict = self.env['res.users'].read(['lang'])
@@ -852,9 +1006,9 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         if values:
             values = values[0]
         if language and values:
-            toRead = filter(lambda x: type(x) in [str, unicode] and x, values.values())     # Where computed only string and not null string values (for performance improvement)
+            toRead = [x for x in list(values.values()) if type(x) in [str] and x]     # Where computed only string and not null string values (for performance improvement)
             toRead = list(set(toRead))                                                      # Remove duplicates
-            for fieldName, valueToTranslate in values.items():
+            for fieldName, valueToTranslate in list(values.items()):
                 if valueToTranslate not in toRead:
                     continue
                 translationObj = self.env['ir.translation']
@@ -865,12 +1019,11 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                     values[fieldName] = readDict.get('value', '')
         return values
 
-    @api.multi
     def action_rev_docs(self):
-        '''
+        """
             This function is called by the button on component view, section LinkedDocuments
             Clicking that button all documents related to all revisions of this component are opened in a tree view
-        '''
+        """
         docIds = []
         for compBrws in self:
             engineering_code = compBrws.engineering_code
@@ -884,18 +1037,16 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                 'name': _('Related documents'),
                 'view_type': 'form',
                 'view_mode': 'tree,form',
-                'res_model': 'plm.document',
+                'res_model': 'ir.attachment',
                 'type': 'ir.actions.act_window',
                 }
 
-    @api.multi
     def action_view_mos(self):
         tmplBrws = self.product_tmpl_id
         if tmplBrws:
             return tmplBrws.action_view_mos()
         logging.warning('[action_view_mos] product with id %s does not have a related template' % (self.id))
 
-    @api.multi
     def NewRevision(self):
         """
             create a new revision of current component
@@ -904,22 +1055,22 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         engineering_revision = 0
         for tmpObject in self:
             latestIDs = self.GetLatestIds([(tmpObject.engineering_code, tmpObject.engineering_revision, False)])
-            for oldObject in self.browse(latestIDs[-1]):
-                engineering_revision = int(oldObject.engineering_revision) + 1
+            for product_product_id in self.browse(latestIDs[-1]):
+                engineering_revision = int(product_product_id.engineering_revision) + 1
                 oldProdVals = {'engineering_writable': False,
                                'state': 'undermodify'}
-                self.browse([oldObject.id]).sudo().write(oldProdVals)
-                oldObject.wf_message_post(body=_('Status moved to: %s.' % (USEDIC_STATES[oldProdVals['state']])))
+                self.browse([product_product_id.id]).sudo().write(oldProdVals)
+                product_product_id.wf_message_post(body=_('Status moved to: %s.' % (USE_DIC_STATES[oldProdVals['state']])))
                 # store updated infos in "revision" object
                 defaults = {}
-                defaults['name'] = oldObject.name                 # copy function needs an explicit name value
-                defaults['engineering_code'] = oldObject.engineering_code
+                defaults['name'] = product_product_id.name                 # copy function needs an explicit name value
+                defaults['engineering_code'] = product_product_id.engineering_code
                 defaults['engineering_revision'] = engineering_revision
                 defaults['engineering_writable'] = True
                 defaults['state'] = 'draft'
                 defaults['linkeddocuments'] = []                  # Clean attached documents for new revision object
-                newCompBrws = oldObject.with_context({'new_revision': True}).copy(defaults)
-                oldObject.wf_message_post(body=_('Created : New Revision.'))
+                newCompBrws = product_product_id.with_context({'new_revision': True}).copy(defaults)
+                product_product_id.wf_message_post(body=_('Created : New Revision.'))
                 newComponentId = newCompBrws.id
                 break
             break
@@ -927,9 +1078,9 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
 
     @api.model
     def wf_message_post_client(self, args):
-        '''
+        """
             args = [objId, objMessage]
-        '''
+        """
         objId, objMessage = args
         self.browse(objId).wf_message_post(objMessage)
         return True
@@ -940,8 +1091,8 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         give back the lines
         """
         return [bomLineBrowse.itemnum,
-                emptyStringIfFalse(bomLineBrowse.product_id.description),
-                bomLineBrowse.product_id.with_context({'lang': 'en_GB'}).description,
+                emptyStringIfFalse(bomLineBrowse.product_id.name),
+                bomLineBrowse.product_id.with_context({'lang': 'en_GB'}).name,
                 bomLineBrowse.product_id.engineering_code,
                 bomLineBrowse.product_qty]
 
@@ -1000,7 +1151,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
     def getComponentInfos(self):
         return {'engineering_code': self.engineering_code or '',
                 'engineering_revision': self.engineering_revision,
-                'description': self.description or '',
+                'description': self.name or '',
                 'desc_modify': self.desc_modify or '',    # To be created
                 'name': self.name,
                 '_id': self.id,
@@ -1009,7 +1160,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
 
     @api.model
     def getCloneRevisionStructure(self, values=[]):
-        '''
+        """
             out = {
                 'root_props': {},
                 'documents': [],
@@ -1020,7 +1171,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                     },
                 ]
                 }
-        '''
+        """
         def computeBomAllLevels(prodBrws):
             return prodBrws._getChildrenBomWithDocuments(prodBrws, level=1)
 
@@ -1064,7 +1215,6 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             return {}
         return {}
 
-    @api.multi
     def canBeRevised(self):
         for compBrws in self:
             if compBrws.state == 'released':
@@ -1073,7 +1223,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
 
     @api.model
     def reviseCompAndDoc(self, elementsToClone):
-        docEnv = self.env['plm.document']
+        docEnv = self.env['ir.attachment']
         updatedJsonNode = elementsToClone[0]
         updatedNode = json.loads(updatedJsonNode)
         hostName, hostPws = elementsToClone[1], elementsToClone[2]
@@ -1118,7 +1268,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         def updateRootDocument(docBrws, node):
             if docBrws:
                 newDocBrws = docBrws
-                updateDocAttrs(node, docBrws.datas_fname)
+                updateDocAttrs(node, docBrws.name)
                 docBrws.checkout(hostName, hostPws)
                 newDocBrws.desc_modify = node['DOCUMENT_ATTRIBUTES'].get('desc_modify', '')
                 return newDocBrws
@@ -1137,7 +1287,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             newDocBrws = docEnv.browse(newDocId)
             updateDocDescModify(newDocBrws, node)
             updateDocNodeByBrws(node, newDocBrws)
-            updateDocAttrs(node, docBrws.datas_fname)
+            updateDocAttrs(node, docBrws.name)
             newDocBrws.checkout(hostName, hostPws)
             return newDocBrws
 
@@ -1207,7 +1357,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         return json.dumps(updatedNode)
 
     def getDocBrws(self, docId, docProps):
-        docEnv = self.env['plm.document']
+        docEnv = self.env['ir.attachment']
         oldDocBrws = False
         if docId:
             oldDocBrws = docEnv.browse(docId)
@@ -1226,7 +1376,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
 
     @api.model
     def cloneCompAndDoc(self, elementsToClone):
-        docEnv = self.env['plm.document']
+        docEnv = self.env['ir.attachment']
         updatedJsonNode = elementsToClone[0]
         updatedNode = json.loads(updatedJsonNode)
         hostName, hostPws = elementsToClone[1], elementsToClone[2]
@@ -1262,11 +1412,11 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         def cloneDocumentObj(oldDocBrws, engCode, node):
             newDocBrws = False
             if oldDocBrws.id:
-                _filename, file_extension = os.path.splitext(oldDocBrws.datas_fname)
+                _filename, file_extension = os.path.splitext(oldDocBrws.name)
                 newDocBrws = self.getNewDoc(oldDocBrws, engCode, file_extension)
                 newDocBrws.checkout(hostName, hostPws)
                 node['DOCUMENT_ATTRIBUTES'] = newDocBrws.getDocumentInfos()
-                node['DOCUMENT_ATTRIBUTES']['OLD_FILE_NAME'] = oldDocBrws.datas_fname
+                node['DOCUMENT_ATTRIBUTES']['OLD_FILE_NAME'] = oldDocBrws.name
                 node['DOCUMENT_ATTRIBUTES']['CHECK_OUT_BY_ME'] = oldDocBrws._is_checkedout_for_me()
             return newDocBrws
 
@@ -1274,11 +1424,11 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             # oldRootDocVals are starting document properties
             # clonedDocBrws is cloned document browse
             rootOldDocBrws = docEnv.getDocumentBrws(oldRootDocVals)
-            _filename, file_extension = os.path.splitext(rootOldDocBrws.datas_fname)
-            clonedDocBrws.datas_fname = '%s%s' % (clonedDocBrws.name, file_extension)
-            node['DOCUMENT_ATTRIBUTES']['datas_fname'] = clonedDocBrws.datas_fname
+            _filename, file_extension = os.path.splitext(rootOldDocBrws.name)
+            clonedDocBrws.name = '%s%s' % (clonedDocBrws.name, file_extension)
+            node['DOCUMENT_ATTRIBUTES']['name'] = clonedDocBrws.name
             node['DOCUMENT_ATTRIBUTES']['CHECK_OUT_BY_ME'] = True
-            node['DOCUMENT_ATTRIBUTES']['OLD_FILE_NAME'] = rootOldDocBrws.datas_fname
+            node['DOCUMENT_ATTRIBUTES']['OLD_FILE_NAME'] = rootOldDocBrws.name
             clonedDocBrws.checkout(hostName, hostPws)
             return clonedDocBrws
 
@@ -1340,9 +1490,9 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                 compBrws = newRawComponent
             elif docName:    # Node is a document node
                 baseName = docName
-                rootDocName = newRootDocProps.get('name', '')
-                if rootEngCode or rootDocName:
-                    baseName = rootEngCode or rootDocName
+                engineering_document_name = newRootDocProps.get('engineering_document_name', '')
+                if rootEngCode or engineering_document_name:
+                    baseName = rootEngCode or engineering_document_name
                 newDocBrws = cloneWithDoc(cloneDocument,
                                           oldDocBrws,
                                           node,
@@ -1358,12 +1508,12 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         return json.dumps(updatedNode)
 
     def getNewDoc(self, oldDocBrws, startingComputeName, file_extension):
-        docEnv = self.env['plm.document']
+        docEnv = self.env['ir.attachment']
         newDocName = docEnv.GetNextDocumentName(startingComputeName)
         docDefaultVals = {
             'revisionid': 0,
-            'name': newDocName,
-            'datas_fname': '%s%s' % (newDocName, file_extension),
+            'engineering_document_name': newDocName,
+            'name': '%s%s' % (newDocName, file_extension),
             'checkout_user': self.env.uid}
         newDocVals = oldDocBrws.Clone(docDefaultVals)
         newDocId = newDocVals.get('_id')
@@ -1378,6 +1528,44 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         return self.search([
             ('engineering_code', '=', engCode),
             ('engineering_revision', '=', engRev)])
+
+    def open_related_revisions(self):
+        product_product_ids = self.search([('engineering_code', '=', self.engineering_code)])
+        return {'name': _('Products'),
+                'res_model': 'product.product',
+                'view_type': 'form',
+                'view_mode': 'tree,form',
+                'type': 'ir.actions.act_window',
+                'domain': [('id', 'in', product_product_ids.ids)],
+                'context': {}}
+
+    def open_template(self):
+        return {'name': _('Products'),
+                'res_model': 'product.template',
+                'view_type': 'form',
+                'view_mode': 'tree,form',
+                'type': 'ir.actions.act_window',
+                'domain': [('id', '=', self.product_tmpl_id.id)],
+                'context': {}}
+
+    @api.model
+    def createFromProps(self, productAttribute):
+        out_product_produc_id = self.env['product.product']
+        found = False
+        engineering_name = productAttribute.get('engineering_code', False)
+        if not engineering_name:
+            return False
+        for product_produc_id in self.search([('engineering_code', '=', engineering_name),
+                                              ('engineering_revision', '=', productAttribute.get('engineering_revision', '0'))]):
+            out_product_produc_id = product_produc_id
+            found = True
+            break
+        if found:  # Write
+            if product_produc_id.state not in ['released', 'obsoleted']:
+                out_product_produc_id.write(productAttribute)
+        else:  # write
+            out_product_produc_id = self.create(productAttribute)
+        return out_product_produc_id
 
 
 class PlmTemporayMessage(osv.osv.osv_memory):
@@ -1421,5 +1609,3 @@ class ProductProductDashboard(models.Model):
                     (SELECT count(*) FROM product_template WHERE state = 'obsoleted' and  engineering_code<>'') AS count_component_obsoleted
              )
         """)
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

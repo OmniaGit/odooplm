@@ -54,10 +54,10 @@ class Plm_box(models.Model):
     box_id = fields.Integer(_('Box ID'))
     version = fields.Integer(_('Version'))
     description = fields.Text(_('Description'))
-    document_rel = fields.Many2many('plm.document',
-                                    'plm_document_rel',
+    document_rel = fields.Many2many('ir.attachment',
+                                    'ir_attachment_rel',
                                     'name',
-                                    'plm_document_id',
+                                    'ir_attachment_id',
                                     _('Documents')
                                     )
     plm_box_rel = fields.Many2many('plm.box',
@@ -84,7 +84,6 @@ class Plm_box(models.Model):
     bom_id = fields.Many2many('mrp.bom', 'plm_box_bom_rel', 'box_id', 'bom_id', _('Bill Of Material'))
     wc_id = fields.Many2many('mrp.workcenter', 'plm_box_wc_rel', 'box_id', 'wc_id', _('Work Center'))
 
-    @api.multi
     def unlink(self):
         for boxBrws in self:
             if not self.boxUnlinkPossible(boxBrws):
@@ -148,7 +147,6 @@ class Plm_box(models.Model):
             vals['name'] = name
         return super(Plm_box, self).create(vals)
 
-    @api.multi
     def write(self, vals):
         '''
             Write a new name if not provided
@@ -225,7 +223,7 @@ class Plm_box(models.Model):
         '''
             Compute if document is readonly
         '''
-        docBrws = self.env.get('plm.document').browse(docIds)
+        docBrws = self.env.get('ir.attachment').browse(docIds)
         if docBrws.state in ['released', 'undermodify', 'obsoleted']:
             return True
         if not docBrws.ischecked_in():
@@ -234,7 +232,6 @@ class Plm_box(models.Model):
                 return False
         return True
 
-    @api.multi
     def boxReadonlyCompute(self):
         '''
             Compute if box is readonly
@@ -312,17 +309,17 @@ class Plm_box(models.Model):
     @api.model
     def getDocDictValues(self, docBrws):
         getCheckOutUser = ''
-        plmDocObj = self.env.get('plm.document')
+        plmDocObj = self.env.get('ir.attachment')
         docState = plmDocObj.getDocumentState({'docName': docBrws.name})
         if docState in ['check-out', 'check-out-by-me']:
             getCheckOutUser = docBrws.getCheckOutUser()
         writeVal = datetime.datetime.strptime(docBrws.write_date, DEFAULT_SERVER_DATETIME_FORMAT)
         return {'revisionid': docBrws.revisionid,
-                'datas_fname': docBrws.datas_fname,
+                'datas_fname': docBrws.name,
                 'create_date': docBrws.create_date,
                 'write_date': correctDate(writeVal, self.env.context),
                 'description': docBrws.description,
-                'fileName': docBrws.datas_fname,
+                'fileName': docBrws.name,
                 'state': docBrws.state,
                 'readonly': self.docReadonlyCompute(docBrws.id),
                 'checkoutUser': getCheckOutUser,
@@ -332,7 +329,7 @@ class Plm_box(models.Model):
     def getDocs(self, docsToUpdate=[]):
         outDocDict = {}
         docIds = []
-        plmDocObj = self.env.get('plm.document')
+        plmDocObj = self.env.get('ir.attachment')
         userAvaibleBoxIds = self.getAvaibleGroupsByUser()
         if isinstance(docsToUpdate, list):
             for doc in docsToUpdate:
@@ -405,23 +402,18 @@ class Plm_box(models.Model):
                    }
         return outDict
 
-    @api.multi
     def action_draft(self):
         return self.write({'state': 'draft'})
 
-    @api.multi
     def action_confirm(self):
         return self.write({'state': 'confirmed'})
 
-    @api.multi
     def action_release(self):
         return self.write({'state': 'released'})
 
-    @api.multi
     def action_obsolete(self):
         return self.write({'state': 'obsoleted'})
 
-    @api.multi
     def action_reactivate(self):
         return self.write({'state': 'released'})
 
@@ -513,7 +505,7 @@ class Plm_box(models.Model):
     @api.model
     def checkIfDocChanged(self, values):
         name, typee, datetimee = values
-        docObj = self.env.get('plm.document')
+        docObj = self.env.get('ir.attachment')
         docBrwsList = docObj.search([('name', '=', name)])
         for docBrws in docBrwsList:
             docId = docBrws.id
@@ -553,7 +545,6 @@ class Plm_box(models.Model):
                 notFoundBoxes.append(boxName)
         return (outDict, notFoundBoxes)
 
-    @api.multi
     def getBoxStructure(self, primary=False):
         '''
             *** CLIENT ***

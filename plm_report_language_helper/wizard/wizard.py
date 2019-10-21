@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 ##############################################################################
 #
-#    OmniaSolutions, Open Source Management Solution    
+#    OmniaSolutions, Open Source Management Solution
 #    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
 #    $Id$
 #
@@ -32,7 +32,6 @@ from odoo.exceptions import UserError
 from odoo import models
 from odoo import fields
 from odoo import api
-from odoo import SUPERUSER_ID
 from odoo import _
 from odoo import osv
 
@@ -47,7 +46,6 @@ class plm_spareChoseLanguage(osv.osv.osv_memory):
     _name = "plm.sparechoselanguage"
     _description = "Module for extending the functionality of printing spare_bom reports in a multi language environment"
 
-    @api.v8
     def getInstalledLanguage(self):
         """
             get installed language
@@ -58,7 +56,6 @@ class plm_spareChoseLanguage(osv.osv.osv_memory):
             out.append((objBrowse.code, objBrowse.name))
         return out
 
-    @api.multi
     def print_report(self):
         self.ensure_one()
         lang = self.lang
@@ -124,7 +121,6 @@ class plm_bomChoseLanguage(osv.osv.osv_memory):
     _name = "plm.bomchoselanguage"
     _description = "Module for extending the functionality of printing bom reports in a multi language environment"
 
-    @api.v8
     def getInstalledLanguage(self):
         """
             get installed language
@@ -135,7 +131,6 @@ class plm_bomChoseLanguage(osv.osv.osv_memory):
             out.append((objBrowse.code, objBrowse.name))
         return out
 
-    @api.multi
     def print_report(self):
         self.ensure_one()
         lang = self.lang
@@ -184,4 +179,3 @@ class plm_bomChoseLanguage(osv.osv.osv_memory):
     _defaults = {
         'bom_type': False
     }
-

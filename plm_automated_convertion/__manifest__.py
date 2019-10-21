@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
 ##############################################################################
 #
-#    OmniaSolutions, Open Source Management Solution    
-#    Copyright (C) 2016-2016 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
+#    OmniaSolutions, Open Source Management Solution
+#    Copyright (C) 2010-2019 OmniaSolutions (<https://www.omniasolutions.website>). All Rights Reserved
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -21,11 +21,12 @@
 ##############################################################################
 {
     'name': 'Product Lifecycle Management Batch conversion',
-    'version': '11.0',
+    'version': '13.0',
     'author': 'OmniaSolutions',
-    'website': 'http://www.omniasolutions.eu',
+    'website': 'https://www.omniasolutions.website',
     'category': 'Product Lifecycle Management',
     'sequence': 15,
+    'license': 'AGPL-3',
     'summary': 'PLM Integration with main CAD editors batch conversion tool',
     'depends': ['plm'],
     'description': """

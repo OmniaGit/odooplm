@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
 ##############################################################################
 #
-#    OmniaSolutions, Open Source Management Solution    
-#    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
+#    OmniaSolutions, Open Source Management Solution
+#    Copyright (C) 2010-2019 OmniaSolutions (<https://www.omniasolutions.website>). All Rights Reserved
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -21,12 +21,13 @@
 ##############################################################################
 {
     'name': 'PLM Automate Normal Bom',
-    'version': '11.0',
+    'version': '13.0',
     'author': 'OmniaSolutions',
-    'website': 'http://www.omniasolutions.eu',
+    'website': 'https://www.omniasolutions.website',
     'category': 'Product Lifecycle Management',
     'sequence': 15,
     'summary': '',
+    'license': 'AGPL-3',
     'images': [],
     'depends': ['plm', 'plm_engineering'],
     'description': """

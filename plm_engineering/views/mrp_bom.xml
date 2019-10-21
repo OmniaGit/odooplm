@@ -1,19 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<openerp>
-	<data> 
-		
+<odoo>
+
+    <record id="plm_bom_form_view_2" model="ir.ui.view">
+        <field name="name">plm.bom.form.2</field>
+        <field name="model">mrp.bom</field>
+        <field name="inherit_id" ref="plm.plm_bom_form_view"/>
+        <field name="groups_id" eval="[(6, 0, [ref('plm.group_plm_admin')])]"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="attributes">
+                <attribute name="edit">true</attribute>
+            </xpath>
+        </field>
+    </record>
+    
     <record model="ir.actions.act_window" id="plm_action_ebom_form">
         <field name="name">Engineering BoMs</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">mrp.bom</field>
-         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
         <field name="domain">[('type','=','ebom'),]</field>
         <field name="filter" eval="True"/>
         <field name="view_ids" eval="[(5, 0, 0),
             (0, 0, {'view_mode': 'tree', 'view_id': ref('plm.plm_bom_tree_view')}),
-            (0, 0, {'view_mode': 'form', 'view_id': ref('plm.plm_bom_form_view_eng')})]"/>  
-    </record> 
-
-	</data>
-</openerp>
+            (0, 0, {'view_mode': 'form', 'view_id': ref('plm.plm_bom_form_view')})]"/>
+    </record>
+</odoo>

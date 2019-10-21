@@ -1,0 +1,387 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record model="ir.ui.view" id="view_attachment_form_plm_hinerit">
+        <field name="name">ir.attachment</field>
+        <field name="model">ir.attachment</field>
+        <field name="priority" eval="1"/>
+        <field name="type">form</field>
+        <field name="inherit_id" ref="base.view_attachment_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="before">
+                <header>
+                    <button name="action_release"
+                            states="confirmed"
+                            string="Release Document"
+                            class="oe_highlight"
+                            type="object"
+                            attrs="{'invisible': ['|',('is_checkout','=',True)]}"
+                    />
+                    <button name="action_draft"
+                            states="confirmed"
+                            type="object"
+                            string="Correct Document"
+                    />
+                    <button name="action_confirm"
+                            states="draft"
+                            type="object"
+                            string="Confirm Document"
+                            class="oe_highlight"
+                            attrs="{'invisible': ['|',('is_checkout','=',True)]}"
+                    />
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,released"
+                           statusbar_colors='{"undermodify":"red","obsoleted":"red"}' readonly="1"/>
+                </header>
+            </xpath>
+            <xpath expr="//h1" position="before">
+                <div class="oe_button_box" name="button_box">
+                 <button class="oe_stat_button" icon="fa-sitemap" type="object" name="action_view_rel_doc">
+                   <field name="document_rel_count" string="Documents" widget="statinfo"/>
+                 </button>
+                 <field name="is_checkout"
+                         invisible="True"/>
+                 <button name="toggle_check_out"
+                         class="oe_stat_button"
+                         icon="fa-lock" 
+                         type="object"
+                         attrs="{'invisible': [('is_checkout','=', True)]}">
+                         <div class="o_field_widget o_stat_info o_readonly_modifier">
+                            <span>Check-Out</span>
+                         </div>                        
+                  </button>
+                 <button name="toggle_check_out"
+                         class="oe_stat_button"
+                         icon="fa-unlock"
+                         attrs="{'invisible': [('is_checkout','=', False)]} "
+                         type="object">
+                         <div class="o_field_widget o_stat_info o_readonly_modifier">
+                            <span>Check-In</span>
+                         </div>
+                  </button>
+	                <button name="open_related_document_revisions"
+	                        type="object"
+	                        string="BOM Rev."
+	                        class="oe_stat_button"
+	                        icon="fa-tasks"
+	                        attrs="{'invisible':[('attachment_revision_count','&lt;=','1')]}">
+	                        <field name="attachment_revision_count"
+	                               string=" "
+	                               widget="statinfo"/>
+	                </button>
+                  <button name="check_out_user"
+                       icon="fa-user"
+                       attrs="{'invisible': ['|',('checkout_user', '=', 'False'),
+                                                 ('checkout_user', '=', '')]}">
+                       <field name="checkout_user"/>
+                  </button>
+               </div>
+            </xpath>
+            <xpath expr="//sheet/group[last()]" position="after">
+                    <group name="doc_data">
+                        <group string= "PLM Infos" name="main_doc_info">
+                            <group name="main_doc_info">
+	                            <label for="engineering_document_name" class="oe_edit_only"/>
+	                            <field string="Engineering document name"
+	                                   name="engineering_document_name"
+	                                   attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+	                            <label for="revisionid" class="oe_edit_only"/>
+	                            <field string="Enineering revision"
+	                                   name="revisionid"
+	                                   readonly="True"/>
+                            </group>
+                            <group string="Created and Modified" name="doc_user">
+                                <field name="create_uid"  readonly="1"/>
+                                <field name="create_date" readonly="1"/>
+                                <field name="write_uid"   readonly="1"/>
+                                <field name="write_date"  readonly="1"/>
+                                <field name="attachment_release_user"   readonly="1"/>
+                                <field name="attachment_release_date"  readonly="1"/>
+                                <field name="is_plm" group="base.group_no_one"/>
+                            </group>
+                        </group>
+                        <group name="doc_preview">
+                            <field
+                                    name="preview"
+                                    widget="image"
+                                    readonly="1"
+                                    nolabel="1"
+                                    img_height="350"
+                                    img_width="350"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Attachment">
+                            <group string="File Data" name="FileData">
+                                <group attrs="{'invisible':[('type','=','url')]}" name="group_datas" colspan="4"
+                                       col="2">
+                                    <field name="datas" filename="name"
+                                           attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                                    <field name="name" select="1"
+                                           attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                                    <field name="document_type"
+                                           attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                                </group>
+                                <group name="group_url" colspan="4">
+                                    <field name="url" widget="url"
+                                           attrs="{'invisible':[('type','=','binary')],'readonly':[('state','in',['released','obsoleted'])]}"/>
+                                    <field name="type" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                                </group>
+                            </group>
+                            <group>
+                                <group string="Attached To" name="group_resurse">
+                                    <newline/>
+                                    <field name="res_id" readonly="True"/>
+                                    <field name="res_model" readonly="True"/>
+                                </group>
+                                <group string="Related To" name="related">
+                                    <newline/>
+                                    <field name="res_name" readonly="1"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Linked Parts" name="page_liked_parts">
+                            <field colspan="4" name="linkedcomponents" nolabel="1"
+                                   attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                        </page>
+                        <page string="Indexed Content" name="page_indexed_content">
+                            <field name="index_content" colspan="4" nolabel="1"
+                                   attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                        </page>
+                        <page string="Notes" name="page_notes">
+                            <label for="description" class="oe_edit_only"/>
+                            <field colspan="4" name="description" nolabel="1"
+                                   attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                            <label for="desc_modify" class="oe_edit_only"/>
+                            <field colspan="4" name="desc_modify" nolabel="1"
+                                   attrs="{'readonly':[('state','in',['released','obsoleted'])], 'invisible': [('revisionid', '=', 0)]}"/>
+                        </page>
+                    </notebook>
+            </xpath>
+            <xpath expr="//sheet" position="after">
+                <div class="oe_chatter">
+                   <field name="message_follower_ids" widget="mail_followers" modifiers="{}"/>
+                   <field name="message_ids" widget="mail_thread" modifiers="{}"/>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="ir_attachment_tree">
+        <field name="name">ir.attachment</field>
+        <field name="model">ir.attachment</field>
+        <field name="type">tree</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <tree string="Documents"
+                  decoration-bf="state != ''"
+                  decoration-info="state == 'confirmed'"
+                  decoration-success="state == 'released'"
+                  decoration-warning="state == 'undermodify'"
+                  decoration-muted="state == 'obsoleted'">
+
+                <field name="engineering_document_name" select="True"/>
+                <field name="revisionid" select="True"/>
+                <field name="state" select="True"/>
+                <field name="engineering_document_name" select="True"/>
+                <field name="checkout_user" colspan="2"/>
+                <field name="create_uid" select="True"/>
+                <field name="create_date" select="True"/>
+                <field name="write_uid" select="True"/>
+                <field name="write_date" select="True"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="ir_attachment_search">
+        <field name="name">ir.attachment</field>
+        <field name="model">ir.attachment</field>
+        <field name="type">search</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <search string="Documents">
+                <filter name="last_month"
+                        string="Last Month"
+                        domain="[('create_date','&lt;=', (datetime.date.today() - relativedelta(day=31,months=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today() - relativedelta(day=1,months=1)).strftime('%%Y-%%m-%%d'))]"
+                        help="Created last month"/>
+                <filter name="last_week"
+                        string="Last Week"
+                        domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"
+                        help="Created last week"/>
+                <filter name="last_7_days"
+                        string="Latest 7 Days"
+                        domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
+                        help="Created latest 7 Days"/>
+                <filter name="yestarday"
+                        string="Yesterday"
+                        domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
+                        help="Created yesterday"/>
+                <filter name="today"
+                        string="Today"
+                        domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
+                        help="Created today"/>
+                <separator orientation="vertical"/>
+                <field name="engineering_document_name"/>
+                <field name="engineering_document_name"/>
+                <field name="create_uid">
+                    <filter name="create_by_me"
+                            string="Create by me"
+                            domain="[('create_uid','=',uid)]"
+                            help="Filter on documents created by me"/>
+                </field>
+                <field name="write_uid">
+                    <filter name="changed_by_me"
+                            string="Changed By Me"
+                            domain="[('write_uid','=',uid)]"
+                            help="Filter on documents changed by me"/>
+                </field>
+                <separator orientation="vertical"/>
+                <field name="state">
+                    <filter name="confirmed"
+                            string="Confirmed"
+                            domain="[('state', '=', 'confirmed')]"/>
+                    <filter name="released"
+                            string="Released"
+                            domain="[('state', 'in', ['released','undermodify'])]"/>
+                    <filter name="latest"
+                            string="Latest"
+                            domain="[('state', 'not in', ['obsoleted','undermodify'])]"/>
+                </field>
+                <group expand="0" string="Group By...">
+                    <filter name="create_by_me"
+                            string="Created by"
+                            domain="[]"
+                            context="{'group_by':'create_uid'}"/>
+                    <filter name="changed_by_me"
+                            string="Changed by"
+                            domain="[]"
+                            context="{'group_by':'write_uid'}"/>
+                    <filter name="status"
+                            string="Status"
+                            domain="[]"
+                            context="{'group_by':'state'}"/>
+                    <filter name="created_by_month"
+                            string="Created by Month"
+                            help="Creation Month"
+                            domain="[]"
+                            context="{'group_by':'create_date'}"/>
+                    <filter name="canged_by_month"
+                            string="Changed by Month"
+                            help="Creation Month"
+                            domain="[]"
+                            context="{'group_by':'write_date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+ 
+    <record id="document_kanban_view" model="ir.ui.view">
+        <field name="name">Product.template.product.kanban</field>
+        <field name="model">ir.attachment</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <field name="id"/>    <!-- Necessary to render previews -->
+                <field name="engineering_document_name"/>
+                <field name="revisionid"/>
+                <field name="description"/>
+                <field name="state"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <t t-value="record.state.raw_value" t-set="stateToUse"/>
+                        <div class="oe_kanban_global_click">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <img t-att-src="kanban_image('ir.attachment', 'preview', record.id.raw_value)"
+                                            alt=""
+                                            height="150" width="150"/>
+                                    </td>
+                                    <td style="padding-left:10px; vertical-align: middle;">
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                    <strong>Name:</strong>
+                                                    <field name="engineering_document_name"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <strong>
+                                                        Revision:
+                                                    </strong>
+                                                    <field name="revisionid"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <strong>
+                                                        State:
+                                                    </strong>
+                                                    <t t-if="stateToUse == 'draft'">
+                                                        <b>
+                                                            <span style="color: rgb(110, 51, 197);padding-left: 5px;">
+                                                                <field name="state"/>
+                                                            </span>
+                                                        </b>
+                                                    </t>
+                                                    <t t-if="stateToUse == 'confirmed'">
+                                                        <b>
+                                                            <span style="color: blue;padding-left: 5px;">
+                                                                <field name="state"/>
+                                                            </span>
+                                                        </b>
+                                                    </t>
+                                                    <t t-if="stateToUse == 'released'">
+                                                        <b>
+                                                            <span style="color: rgba(0, 170, 34, 0.66);padding-left: 5px;">
+                                                                <field name="state"/>
+                                                            </span>
+                                                        </b>
+                                                    </t>
+                                                    <t t-if="stateToUse == 'undermodify'">
+                                                        <b>
+                                                            <span style="color: rgb(218, 159, 34);padding-left: 5px;">
+                                                                <field name="state"/>
+                                                            </span>
+                                                        </b>
+                                                    </t>
+                                                    <t t-if="stateToUse == 'obsoleted'">
+                                                        <b>
+                                                            <span style="color: rgb(231, 43, 26);padding-left: 5px;">
+                                                                <field name="state"/>
+                                                            </span>
+                                                        </b>
+                                                    </t>
+
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <strong>
+                                                        Description:
+                                                    </strong>
+                                                    <field name="description"/>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="plm_action_document_form">
+        <field name="name">Documents</field>
+        <field name="res_model">ir.attachment</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="search_view_id" ref="plm.ir_attachment_search"></field>
+        <field name="context">{"odooPLM":True}</field>
+        <field name="domain">[('is_plm', '=', True)]</field>
+        <field name="view_ids"
+               eval="[(5, 0, 0),
+                      (0, 0, {'view_mode': 'kanban', 'view_id': ref('plm.document_kanban_view')}),
+                      (0, 0, {'view_mode': 'form', 'view_id': ref('base.view_attachment_form')})]"/>
+    </record>
+</odoo>

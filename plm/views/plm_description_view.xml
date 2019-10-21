@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
+<odoo>
 <data>
 
     <record model="ir.ui.view" id="view_plm_description">
@@ -10,13 +10,15 @@
              <form string="Description"  version="7.0"> 
              	<sheet>	
                 <group colspan="4" col="4">
-                    <separator colspan="4" string="Note to help selection"/>
-                	<field name="name" select="1" colspan="1"/>
-                    <field name="sequence"/>
-                    <newline/>
-                    <field name="description" select="1" />
-                    <field name="description_en" select="1" />
-                    <separator/>
+                	<group colspan="4" col="4">
+	                    <separator colspan="4" string="Note to help selection"/>
+	                	<field name="name" select="1" colspan="1"/>
+	                    <field name="sequence"/>
+	                    <newline/>
+	                    <field name="description" select="1" />
+	                    <field name="description_en" select="1" />
+	                    <separator/>
+	                </group>
   	               	<group colspan="4" col="4" string="Technical Features" name="tech_features">
 	 	                
 	 	                	<group colspan="4" col="4">
@@ -76,12 +78,11 @@
         <field name="name">Descriptions</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">plm.description</field>
-        <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
         <field name="view_id" ref="plm_view_description_tree"/>
     </record>
 
 
 </data>
-</openerp>
+</odoo>
 

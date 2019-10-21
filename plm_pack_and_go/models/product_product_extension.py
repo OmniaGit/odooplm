@@ -32,7 +32,6 @@ from odoo import api
 class PlmComponent(models.Model):
     _inherit = 'product.product'
 
-    @api.multi
     def unlink(self):
         for prodBrws in self:
             packAndGoObj = self.env['pack.and_go']

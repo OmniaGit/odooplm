@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
+<odoo>
 
     <data noupdate="1">
         <!-- Sequences for plm.finishing --> 
@@ -22,6 +22,16 @@
     </data>
 
     <data noupdate="1">
+        <!-- Sequences for plm.treatment --> 
+        <record id="seq_plm_treatment" model="ir.sequence">
+            <field name="name">PLM Treatment Sequence</field>
+            <field name="code">plm.treatment</field>
+            <field name="prefix">TT</field>
+            <field name="padding">5</field>
+        </record>
+    </data>
+
+    <data noupdate="1">
         <!-- Sequences for plm.material --> 
         <record id="seq_plm_material" model="ir.sequence">
             <field name="name">PLM Material Sequence</field>
@@ -35,8 +45,16 @@
         <record id="sequence_document" model="ir.sequence">
             <field name="name">Document Sequence</field>
             <field eval="6" name="padding"/>
-            <field name="code">plm.document.progress</field>
+            <field name="code">ir.attachment.progress</field>
         </record> 
     </data>
 
-</openerp>
+    <data noupdate="1">
+        <record id="sequence_plm_dbthread" model="ir.sequence">
+            <field name="name">db Thread sequence</field>
+            <field eval="6" name="padding"/>
+            <field name="code">plm.dbthread.progress</field>
+        </record> 
+    </data>
+
+</odoo>

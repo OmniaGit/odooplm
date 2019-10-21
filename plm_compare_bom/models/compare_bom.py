@@ -2,8 +2,7 @@
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
-#    Copyright (C) 2012 OmniaSolutions (<http://omniasolutions.eu>). All Rights Reserved
-#    $Id$
+#    Copyright (C) 2012-2019 OmniaSolutions (<http://www.omniasolutions.website>). All Rights Reserved
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -21,23 +20,29 @@
 ##############################################################################
 import os
 import logging
-from openerp import models, fields, api, SUPERUSER_ID, _, osv
+from openerp import models, fields, api, _, osv
 _logger = logging.getLogger(__name__)
 
 
 def _moduleName():
     path = os.path.dirname(__file__)
     return os.path.basename(os.path.dirname(path))
+
+
 openerpModule = _moduleName()
 
 
 def _modulePath():
     return os.path.dirname(__file__)
+
+
 openerpModulePath = _modulePath()
 
 
 def _customPath():
     return os.path.join(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'custom'), 'report')
+
+
 customModulePath = _customPath()
 
 BOM_SHOW_FIELDS = ['Position',
@@ -49,6 +54,8 @@ BOM_SHOW_FIELDS = ['Position',
 ##############################################################################################################
 #    Class plm.compare.bom
 ###############################################################################################################
+
+
 class plm_missing_bom(osv.osv.osv_memory):
     _name = "plm.missing.bom"
     _description = "BoM Missing Objects"
@@ -56,15 +63,34 @@ class plm_missing_bom(osv.osv.osv_memory):
     bom_id = fields.Many2one('plm.compare.bom', _('BoM'), ondelete='cascade')
     bom_idrow = fields.Many2one('mrp.bom.line', _('BoM Line'), ondelete='cascade')
     part_id = fields.Many2one('product.product', _('Part'), ondelete='cascade')
-    revision = fields.Integer(related="part_id.engineering_revision", string=_("Revision"), store=False)
-    description = fields.Text(related="part_id.description", string=_("Description"), store=False)
-    itemnum = fields.Integer(related="bom_idrow.itemnum", string=_("Cad Item Position"), store=False)
+    revision = fields.Integer(related="part_id.engineering_revision", string=_("Rev."), store=False)
+    description = fields.Char(related="part_id.name", string=_("Description"), store=False)
+    itemnum = fields.Integer(related="bom_idrow.itemnum", string=_("Cad Pos."), store=False)
     itemqty = fields.Float(string=_("Quantity"), digits=(16, 3))
     reason = fields.Char(string=_("Difference"), size=32)
 
-    _defaults = {
-    }
-plm_missing_bom()
+    def delete_bom_line(self):
+        for plm_missign_bom_id in self:
+            plm_missign_bom_id.bom_id.bom_line_id_to_delete = [(6, True, plm_missign_bom_id.bom_idrow.ids)]
+            plm_missign_bom_id.unlink()
+
+    def copy_left_right(self):
+        obj_adding_bom = self.env['plm.adding.bom']
+        for plm_missign_bom_id in self:
+            obj_adding_bom.create({
+                'bom_id': plm_missign_bom_id.bom_id.id,
+                'bom_idrow': plm_missign_bom_id.bom_idrow.id,
+                'part_id': plm_missign_bom_id.part_id.id,
+                'revision': plm_missign_bom_id.revision,
+                'description': plm_missign_bom_id.description,
+                'itemnum': plm_missign_bom_id.itemnum,
+                'itemqty': plm_missign_bom_id.itemqty,
+                'reason': 'new'})
+
+    def move_left_left(self):
+        for plm_missign_bom_id in self:
+            plm_missign_bom_id.copy_left_right()
+            plm_missign_bom_id.delete_bom_line()
 
 
 class plm_adding_bom(osv.osv.osv_memory):
@@ -74,15 +100,34 @@ class plm_adding_bom(osv.osv.osv_memory):
     bom_id = fields.Many2one('plm.compare.bom', _('BoM'), ondelete='cascade')
     bom_idrow = fields.Many2one('mrp.bom.line', _('BoM Line'), ondelete='cascade')
     part_id = fields.Many2one('product.product', _('Part'), ondelete='cascade')
-    revision = fields.Integer(related="part_id.engineering_revision", string=_("Revision"), store=False)
-    description = fields.Text(related="part_id.description", string=_("Description"), store=False)
-    itemnum = fields.Integer(related="bom_idrow.itemnum", string=_("Cad Item Position"), store=False)
+    revision = fields.Integer(related="part_id.engineering_revision", string=_("Rev."), store=False)
+    description = fields.Char(related="part_id.name", string=_("Description"), store=False)
+    itemnum = fields.Integer(related="bom_idrow.itemnum", string=_("Cad Pos."), store=False)
     itemqty = fields.Float(string=_("Quantity"), digits=(16, 3))
     reason = fields.Char(string=_("Difference"), size=32)
 
-    _defaults = {
-    }
-plm_adding_bom()
+    def delete_bom_line(self):
+        for plm_missign_bom_id in self:
+            plm_missign_bom_id.bom_id.bom_line_id_to_delete = [(6, True, plm_missign_bom_id.bom_idrow.ids)]
+            plm_missign_bom_id.unlink()
+
+    def copy_right_left(self):
+        obj_missing_bom = self.env['plm.missing.bom']
+        for plm_missign_bom_id in self:
+            obj_missing_bom.create({
+                'bom_id': plm_missign_bom_id.bom_id.id,
+                'bom_idrow': plm_missign_bom_id.bom_idrow.id,
+                'part_id': plm_missign_bom_id.part_id.id,
+                'revision': plm_missign_bom_id.revision,
+                'description': plm_missign_bom_id.description,
+                'itemnum': plm_missign_bom_id.itemnum,
+                'itemqty': plm_missign_bom_id.itemqty,
+                'reason': 'new'})
+
+    def move_right_left(self):
+        for plm_missign_bom_id in self:
+            plm_missign_bom_id.copy_right_left()
+            plm_missign_bom_id.delete_bom_line()
 
 
 class plm_compare_bom(osv.osv.osv_memory):
@@ -90,39 +135,93 @@ class plm_compare_bom(osv.osv.osv_memory):
     _description = "BoM Comparison"
 
     name = fields.Char(_('Part Number'), size=64)
-    bom_id1 = fields.Many2one('mrp.bom', _('BoM 1'), required=True, ondelete='cascade')
-    type_id1 = fields.Selection([('normal', _('Normal BoM')),
-                                 ('phantom', _('Sets / Phantom')),
-                                 ('ebom', _('Engineering BoM')),
-                                 ('spbom', _('Spare BoM'))],
-                                _('BoM Type'))
-    part_id1 = fields.Many2one('product.product', 'Part', ondelete='cascade')
-    revision1 = fields.Integer(related="part_id1.engineering_revision", string=_("Revision"), store=False)
-    description1 = fields.Text(related="part_id1.description", string=_("Description"), store=False)
-    bom_id2 = fields.Many2one('mrp.bom', _('BoM 2'), required=True, ondelete='cascade')
-    type_id2 = fields.Selection([('normal', _('Normal BoM')),
-                                 ('phantom', _('Sets / Phantom')),
-                                 ('ebom', _('Engineering BoM')),
-                                 ('spbom', _('Spare BoM'))],
-                                _('BoM Type'))
-    part_id2 = fields.Many2one('product.product', 'Part', ondelete='cascade')
-    revision2 = fields.Integer(related="part_id2.engineering_revision", string=_("Revision"), store=False)
-    description2 = fields.Text(related="part_id2.description", string=_("Description"), store=False)
-    anotinb = fields.One2many('plm.adding.bom', 'bom_id', _('BoM Adding'))
-    bnotina = fields.One2many('plm.missing.bom', 'bom_id', _('BoM Missing'))
-    
-    compute_type = fields.Selection('_get_radio_choice_options',
+    bom_id1 = fields.Many2one('mrp.bom',
+                              string=_('BoM 1'),
+                              required=True,
+                              ondelete='cascade')
+    type_id1 = fields.Selection(related="bom_id1.type",
+                                string=_('BoM Type'))
+    part_id1 = fields.Many2one('product.template',
+                               related='bom_id1.product_tmpl_id',
+                               string='Part',
+                               ondelete='cascade')
+    revision1 = fields.Integer(related="part_id1.engineering_revision",
+                               string=_("Revision"),
+                               store=False)
+    description1 = fields.Char(related="part_id1.name",
+                               string=_("Description"),
+                               store=False)
+    bom_id2 = fields.Many2one('mrp.bom',
+                              _('BoM 2'),
+                              required=True,
+                              ondelete='cascade')
+    type_id2 = fields.Selection(related="bom_id2.type",
+                                string=_('BoM Type'))
+    part_id2 = fields.Many2one('product.template',
+                               related='bom_id2.product_tmpl_id',
+                               string='Part',
+                               ondelete='cascade')
+    revision2 = fields.Integer(related="part_id2.engineering_revision",
+                               string=_("Revision"),
+                               store=False)
+    description2 = fields.Char(related="part_id2.name",
+                               string=_("Description"),
+                               store=False)
+    anotinb = fields.One2many('plm.adding.bom',
+                              'bom_id',
+                              _('BoM Adding'))
+    bnotina = fields.One2many('plm.missing.bom',
+                              'bom_id',
+                              _('BoM Missing'))
+    compute_type = fields.Selection([('only_product', _('Compare Only Product Existence')),
+                                     ('num_qty', _('Compare By Item Number and Quantity')),
+                                     ('summarized', _('Compare Product Quantity'))],
+                                    default='only_product',
                                     string=_('Compare type'))
 
-    _defaults = {'name': 'x',
-                 'compute_type': 'only_product'}
+    bom_line_id_to_delete = fields.Many2many('mrp.bom.line', string=_('BoM Line to Delete'))
 
-    @api.multi
-    def _get_radio_choice_options(self):
-        return [('only_product', _('Compare Only Product Existence')),
-                ('num_qty', _('Compare By Item Number and Quantity')),
-                ('summarized', _('Compare Product Quantity'))]
-        
+    def _to_update(self):
+        for plm_compare_bom_id in self:
+            rule = len(plm_compare_bom_id.bom_line_id_to_delete) or len(plm_compare_bom_id.anotinb.filtered(lambda x: x.reason == 'new')) or len(plm_compare_bom_id.bnotina.filtered(lambda x: x.reason == 'new'))
+            plm_compare_bom_id.to_update = True if rule else False
+
+    to_update = fields.Boolean(compute='_to_update')
+
+    def _are_equal(self):
+        for plm_compare_bom_id in self:
+            plm_compare_bom_id.bom_are_equal = len(plm_compare_bom_id.anotinb) == 0 and len(plm_compare_bom_id.bnotina) == 0
+    bom_are_equal = fields.Boolean(compute='_are_equal')
+
+    def name_get(self):
+        result = []
+        for r in self:
+            name = "%s .. %s.." % (r.part_id1.name[:8], r.part_id2.name[:8])
+            result.append((r.id, name))
+        return result
+
+    def update_bom(self):
+        mrp_bom_line = self.env['mrp.bom.line']
+        for plm_compare_bom_id in self:
+            for plm_missing_id in plm_compare_bom_id.anotinb.filtered(lambda x: x.reason == 'new'):
+                mrp_bom_line.create({
+                    'bom_id': self.bom_id1.id,
+                    'product_qty': plm_missing_id.itemqty,
+                    'product_id': plm_missing_id.part_id.id,
+                    'type': self.bom_id1.type,
+                    'itemnum': len(self.bom_id1.bom_line_ids) + 1})
+                plm_missing_id.reason = 'added'
+            for plm_adding_id in plm_compare_bom_id.bnotina.filtered(lambda x: x.reason == 'new'):
+                mrp_bom_line.create({
+                    'bom_id': self.bom_id2.id,
+                    'product_qty': plm_adding_id.itemqty,
+                    'product_id': plm_adding_id.part_id.id,
+                    'type': self.bom_id2.type,
+                    'itemnum': len(self.bom_id2.bom_line_ids) + 1})
+                plm_adding_id.reason = 'added'
+            for mrp_bom_line_id in plm_compare_bom_id.bom_line_id_to_delete:
+                mrp_bom_line_id.unlink()
+
     @api.model
     def default_get(self, fields):
         """ To get default values for the object.
@@ -139,9 +238,11 @@ class plm_compare_bom(osv.osv.osv_memory):
             res['bom_id1'] = record_ids[0]
         if len(record_ids) > 1:
             res['bom_id2'] = record_ids[1]
+        res['compute_type'] = 'only_product'
         return res
 
-    def computeBomLines(self, bomBrws):
+    @api.model
+    def computeBomLines(self, bomBrws, keyType=None):
         bomDict = {}
         for bomLineBrws in bomBrws.bom_line_ids:
             productId = bomLineBrws.product_id.id
@@ -152,15 +253,19 @@ class plm_compare_bom(osv.osv.osv_memory):
                           'bom_idrow': bomLineBrws.id,
                           'reason': '',
                           'bom_id': self.id,
-                          'revision': bomLineBrws.product_id.engineering_revision
+                          'revision': bomLineBrws.product_id.engineering_revision,
                           }
-            if productId not in bomDict:
-                bomDict[productId] = [createVals]
+            if keyType == 'num_qty':
+                key = '%s_%s_%s' % (bomLineBrws.product_id.id, bomLineBrws.itemnum, bomLineQty)
             else:
-                if self.compute_type == 'summarized':
-                    bomDict[productId]['itemqty'] = bomDict[productId]['itemqty'] + bomLineQty
+                key = productId
+            if key not in bomDict:
+                bomDict[key] = [createVals]
+            else:
+                if keyType == 'summarize':
+                    bomDict[key][0]['itemqty'] = bomDict[key][0]['itemqty'] + bomLineQty
                 else:
-                    bomDict[productId].append(createVals)
+                    bomDict[key].append(createVals)
         return bomDict
 
     def getLeftBomObj(self, toCreateVals):
@@ -174,14 +279,12 @@ class plm_compare_bom(osv.osv.osv_memory):
         return self.env['plm.missing.bom'].create(toCreateVals).id
 
     def computeOnlyProduct(self, bom1Dict, bom2Dict):
-
         def checkAndAdd(leftDict, rightDict, listToAppend, funcToCall):
             for product_id, toCreateValsList in leftDict.items():
                 if product_id not in rightDict:
                     for toCreateVals in toCreateValsList:
-                        toCreateVals['reason'] = _('Added')
+                        toCreateVals['reason'] = 'added'
                         listToAppend.append(funcToCall(toCreateVals))
-            
         leftItems = []
         rightItems = []
         checkAndAdd(bom1Dict, bom2Dict, leftItems, self.getLeftBomObj)
@@ -192,109 +295,71 @@ class plm_compare_bom(osv.osv.osv_memory):
 
         def checkAndAdd(leftDict, rightDict, listToAppend):
             for product_id, toCreateValsList in leftDict.items():
-                for toCreateVals in toCreateValsList: # Always 1 because summarized
+                for toCreateVals in toCreateValsList:  # Always 1 because summarized
                     if product_id not in rightDict:
-                        toCreateVals['reason'] = _('Added')
+                        toCreateVals['reason'] = 'added'
                         listToAppend.append(self.getLeftBomObj(toCreateVals))
                     else:
                         qtyLeftDict = toCreateVals['itemqty']
                         qtyRightDict = rightDict[product_id][0]['itemqty']
                         resQty = qtyLeftDict - qtyRightDict
-                        toCreateVals['reason'] = _('Changed Qty')
+                        toCreateVals['reason'] = 'changed_qty'
                         toCreateVals['itemqty'] = abs(resQty)
                         if resQty > 0:
                             leftItems.append(self.getLeftBomObj(toCreateVals))
                         elif resQty < 0:
                             rightItems.append(self.getRightBomObj(toCreateVals))
                         del rightDict[product_id]   # Erase already computed product
-                        
         leftItems = []
         rightItems = []
         tmpDict2 = bom2Dict.copy()
         checkAndAdd(bom1Dict, tmpDict2, leftItems)
         # Append lines presents only on right side
         for toCreateValsList in tmpDict2.values():
-            toCreateValsList[0]['reason'] = _('Added')
+            toCreateValsList[0]['reason'] = 'added'
             rightItems.append(self.getRightBomObj(toCreateValsList[0]))
         return leftItems, rightItems
-    
-    def computeByQty(self, bom1Dict, bom2Dict):
 
-        def checkAndAdd(leftDict, rightDict, listToAppend):
-            for product_id, toCreateValsList in leftDict.items():
-                if product_id not in rightDict:
-                    # Setup new on left side
-                    for toCreateVals in toCreateValsList:
-                        toCreateVals['reason'] = _('Added')
-                        listToAppend.append(self.getLeftBomObj(toCreateVals))
-                        del leftDict[product_id]
-                else:
-                    # Remove equal product elements
-                    for toCreateVals in toCreateValsList:
-                        qtyLeftDict = toCreateVals['itemqty']
-                        itemNumLeftDict = toCreateVals['itemnum']
-                        for toCreateValsRight in rightDict[product_id]:
-                            qtyRightDict = toCreateValsRight['itemqty']
-                            itemNumRightDict = toCreateValsRight['itemnum']
-                            if qtyLeftDict == qtyRightDict and itemNumLeftDict == itemNumRightDict:
-                                # Found so remove from right list
-                                index = rightDict[product_id].index(toCreateValsRight)
-                                del rightDict[product_id][index]
-                                # Found so remove from right left
-                                index = toCreateValsList.index(toCreateVals)
-                                del leftDict[product_id][index]
-
-                    # Setup left product elements
-                    for toCreateVals in toCreateValsList:
-                        toCreateVals['reason'] = _('Changed')
-                        leftItems.append(self.getLeftBomObj(toCreateVals))
-
-                    # Setup right product elements
-                    for toCreateVals in rightDict[product_id]:
-                        toCreateVals['reason'] = _('Changed')
-                        rightItems.append(self.getRightBomObj(toCreateVals))
-                    del leftDict[product_id]
-                    del rightDict[product_id]
-                    
+    def computeByNumQty(self, bom1Dict, bom2Dict):
         leftItems = []
         rightItems = []
-        checkAndAdd(bom1Dict, bom2Dict, leftItems)
-        # Evaluate remaining new on right side
-        for product_id, toCreateValsList in bom2Dict.items():
-            if product_id not in bom1Dict.keys():
-                for toCreateVals in toCreateValsList:
-                    toCreateVals['reason'] = _('Added')
-                    rightItems.append(self.getRightBomObj(toCreateVals))
+        key1 = set(bom1Dict.keys())
+        key2 = set(bom2Dict.keys())
+        right = key1 - key2
+        left = key2 - key1
+        for key in right:
+            for toCreateVals in bom1Dict[key]:
+                toCreateVals['reason'] = 'changed'
+                rightItems.append(self.getLeftBomObj(toCreateVals))
+        for key in left:
+            for toCreateVals in bom2Dict[key]:
+                toCreateVals['reason'] = 'changed'
+                leftItems.append(self.getRightBomObj(toCreateVals))
+        return rightItems, leftItems
 
-        return leftItems, rightItems
-        
-    @api.multi
     def action_compare_Bom(self):
         """
             Compare two BOMs
         """
         logging.info('Start comparing')
-        bom1Dict = self.computeBomLines(self.bom_id1)
-        bom2Dict = self.computeBomLines(self.bom_id2)
-        logging.info('Lines computed. Compute type %r' %(self.compute_type))
+        bom1Dict = self.computeBomLines(self.bom_id1, self.compute_type)
+        bom2Dict = self.computeBomLines(self.bom_id2, self.compute_type)
+        logging.info('Lines computed. Compute type %r' % (self.compute_type))
         if self.compute_type == 'only_product':
             bom1NewItems, bom2NewItems = self.computeOnlyProduct(bom1Dict, bom2Dict)
         elif self.compute_type == 'summarized':
             bom1NewItems, bom2NewItems = self.computeSummarized(bom1Dict, bom2Dict)
         elif self.compute_type == 'num_qty':
-            bom1NewItems, bom2NewItems = self.computeByQty(bom1Dict, bom2Dict)
+            bom1NewItems, bom2NewItems = self.computeByNumQty(bom1Dict, bom2Dict)
         else:
             logging.warning('Compute type not found!')
-        logging.info('Starting returning self %r' %(self))
+        logging.info('Starting returning self %r' % (self))
         self.write({'anotinb': [(6, False, bom1NewItems)],
                     'bnotina': [(6, False, bom2NewItems)]})
-        logging.info('Assigned values')
         data_obj = self.env['ir.model.data']
         id3 = data_obj._get_id(openerpModule, 'plm_visualize_diff_form')
-        logging.info('ID3: %r' % (id3))
         if id3:
             id3 = data_obj.browse(id3).res_id
-        logging.info('ID3 2: %r' % (id3))
         return {
             'domain': [],
             'name': _('Differences on BoMs'),
@@ -305,5 +370,3 @@ class plm_compare_bom(osv.osv.osv_memory):
             'views': [(id3, 'form')],
             'type': 'ir.actions.act_window',
         }
-
-plm_compare_bom()

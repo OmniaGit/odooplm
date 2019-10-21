@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
 ##############################################################################
 #
-#    OmniaSolutions, Open Source Management Solution    
-#    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
+#    OmniaSolutions, Open Source Management Solution
+#    Copyright (C) 2010-2019 OmniaSolutions (<https://www.omniasolutions.website>). All Rights Reserved
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -21,9 +21,10 @@
 ##############################################################################
 {
     'name': 'PLM Date Bom',
-    'version': '1.1',
+    'version': '13.0',
     'author': 'OmniaSolutions',
-    'website': 'http://www.omniasolutions.eu',
+    'license': 'AGPL-3',
+    'website': 'https://www.omniasolutions.website',
     'category': 'Product Lifecycle Management',
     'sequence': 15,
     'summary': '',
@@ -35,6 +36,7 @@ Allow to compute boms due to date
     """,
     'data': [
             'views/mrp_bom_extension.xml',
+            'views/data.xml',
             #'report/bom_structure_report_extension.xml',
     ],
     'demo': [],

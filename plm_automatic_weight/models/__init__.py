@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution    
@@ -20,10 +19,10 @@
 #
 ##############################################################################
 
-'''
+"""
 Created on May 25, 2016
 
 @author: Daniel Smerghetto
-'''
+"""
 from . import component_extension
 from . import bom_extension

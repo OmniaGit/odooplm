@@ -1,7 +1,6 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
-#    OmniaSolutions, Open Source Management Solution    
+#    OmniaSolutions, Open Source Management Solution
 #    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
 #    $Id$
 #
@@ -26,6 +25,7 @@
     'website': 'http://www.omniasolutions.eu',
     'category': 'Product Lifecycle Management',
     'sequence': 15,
+    'license': 'AGPL-3',
     'summary': '',
     'images': [],
     'depends': ['plm'],
@@ -34,14 +34,14 @@ Add spare BOM and Spare Parts Manual
 ==============================================
     """,
     'data': [
-            # views
-            'views/plm_description_extension.xml',
-            'views/sparebom_view.xml',
-            'views/plm_document_view.xml',
-            #'views/product_product_kanban.xml',
-            # reporting
-            'report/bom_structure_report.xml',
-            'report/product_product_report.xml',
+        # views
+        'views/plm_description_extension.xml',
+        'views/sparebom_view.xml',
+        'views/ir_attachment_view.xml',
+        # 'views/product_product_kanban.xml',
+        # reporting
+        'report/bom_structure_report.xml',
+        'report/product_product_report.xml',
 
     ],
     'demo': [],
@@ -50,5 +50,3 @@ Add spare BOM and Spare Parts Manual
     'application': False,
     'auto_install': False,
 }
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

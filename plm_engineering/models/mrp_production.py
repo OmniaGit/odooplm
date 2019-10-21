@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -20,32 +19,32 @@
 #
 ##############################################################################
 
-'''
+"""
 Created on 31 Aug 2016
 
 @author: Daniel Smerghetto
-'''
+"""
 
-from openerp import models
-from openerp import api
+from odoo import models
+from odoo import api
 
 
 class MrpProductionExtension(models.Model):
     _name = 'mrp.production'
     _inherit = 'mrp.production'
 
-    @api.multi
     def product_id_change(self, product_id, product_qty=0):
         """ Finds UoM of changed product.
         @param product_id: Id of changed product.
+        @param product_qty:
         @return: Dictionary of values.
         """
         result = super(MrpProductionExtension, self).product_id_change(product_id, product_qty)
-        outValues = result.get('value', {})
-        bom_id = outValues.get('bom_id', False)
+        out_values = result.get('value', {})
+        bom_id = out_values.get('bom_id', False)
         if bom_id:
-            bomBrws = self.env['mrp.bom'].browse(bom_id)
-            if bomBrws.type == 'ebom':
+            bom_brws = self.env['mrp.bom'].browse(bom_id)
+            if bom_brws.type == 'ebom':
                 return {'value': {
                     'product_uom_id': False,
                     'bom_id': False,
@@ -54,7 +53,3 @@ class MrpProductionExtension(models.Model):
                     'product_uos': False
                 }}
         return result
-
-MrpProductionExtension()
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
+<odoo>
     <data noupdate="1">
 
         <record id="seq_plm_box" model="ir.sequence">
@@ -10,9 +10,9 @@
 
         <record id="seq_doc_name" model="ir.sequence">
             <field name="name">DOC</field>
-            <field name="code">plm.document</field>
+            <field name="code">ir.attachment</field>
             <field name="prefix">BoxDoc_</field>
         </record>
 
     </data>
-</openerp>
+</odoo>

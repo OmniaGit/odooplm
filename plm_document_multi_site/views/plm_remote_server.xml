@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+
+    <record model="ir.ui.view" id="plm_remote_server_tree">
+        <field name="name">plm.remote.server.tree</field>
+        <field name="model">plm.remote.server</field>
+        <field name="type">tree</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <tree string="Servers"  editable="top" >
+                <field name="name"/>
+                <field name="login"/>
+                <field name="address"/>
+                <field name="password" widget="password_meter"/>
+            </tree>
+        </field>
+    </record>
+    
+    <record model="ir.actions.act_window" id="plm_remote_server_action">
+        <field name="name">Remote Server</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">plm.remote.server</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="plm_remote_server_tree"/>
+    </record>
+    
+    <menuitem
+        name="Remote Server"
+        action="plm_remote_server_action"
+        id="menu_plm_action_remote_server_form"
+        groups="plm.group_plm_admin"
+        parent="plm.plm_menu_dictionaries"/>
+
+    </data>
+</odoo>

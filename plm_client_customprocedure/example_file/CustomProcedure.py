@@ -28,7 +28,7 @@ APPLICATION_SETTINGS = {
                 },            
                 ],
             
-            'PLM_DOCUMENT':[{
+            'ir_attachment':[{
                 'CAD': 'DOCNAME NEW',
                 'CAD_READ_ONLY': False,
                 'PLM': 'name',
