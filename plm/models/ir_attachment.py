@@ -274,14 +274,14 @@ class PlmDocument(models.Model):
                 timeSaved = time.mktime(timeDoc.timetuple())
                 checkoutUserBrws = objDoc.get_checkout_user()
                 if checkoutUserBrws:
-                    checkOutUser = checkoutUserBrws.engineering_document_name
+                    checkOutUser = checkoutUserBrws.name
                     if checkoutUserBrws.id == self.env.uid:
                         isCheckedOutToMe = True
                 if (objDoc.name in listfiles):
                     if forceFlag:
                         isNewer = True
                     else:
-                        listFileIndex = listfiles.index(objDoc.name)
+                        listFileIndex = listfiles.index(objDoc.engineering_document_name)
                         timefile = time.mktime(
                             datetime.strptime(str(datefiles[listFileIndex]), '%Y-%m-%d %H:%M:%S').timetuple())
                         isNewer = (timeSaved - timefile) > 5
