@@ -190,7 +190,7 @@ class PackAndGo(osv.osv.osv_memory):
                     docCheckCreate(relDocBrws, compBrws)
                     checkedDocumentIds.append(docId)
 
-        self.getAllAvailableTypes()   # Setup available types
+        #self.getAllAvailableTypes()   # Setup available types
         compIds = self.getBomCompIds()
         recursionDocuments(self.component_id.linkeddocuments)     # Check / Create ROOT structure
         for compBrws in objProduct.browse(compIds):                         # Check / Create BOM structure

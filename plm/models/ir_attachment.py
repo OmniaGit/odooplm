@@ -21,6 +21,7 @@
 import random
 import string
 import os
+import logging
 import time
 import json
 import copy
@@ -35,9 +36,6 @@ from odoo import api
 from odoo import _
 from collections import defaultdict
 import itertools
-import logging
-
-_logger = logging.getLogger(__name__)
 
 # To be adequated to plm.component class states
 USED_STATES = [('draft', _('Draft')),
@@ -281,7 +279,7 @@ class PlmDocument(models.Model):
                     if forceFlag:
                         isNewer = True
                     else:
-                        listFileIndex = listfiles.index(objDoc.engineering_document_name)
+                        listFileIndex = listfiles.index(objDoc.name)
                         timefile = time.mktime(
                             datetime.strptime(str(datefiles[listFileIndex]), '%Y-%m-%d %H:%M:%S').timetuple())
                         isNewer = (timeSaved - timefile) > 5
@@ -665,12 +663,23 @@ class PlmDocument(models.Model):
                 raise UserError(_('Document Already in the system'))
 
     def plm_sanitize(self, vals):
-        valsKey = list(vals.keys())
-        for k in valsKey:
-            if k not in self.fields_get_keys():
-                del vals[k]
-        return vals
-
+        all_keys = self.fields_get_keys()
+        if isinstance(vals, dict):
+            valsKey = list(vals.keys())
+            for k in valsKey:
+                if k not in all_keys:
+                    del vals[k]
+                    logging.warning("Removed Field %r" % k)
+            return vals
+        else:
+            out = []
+            for k in vals:
+                if k in all_keys:
+                    out.append(k)
+                else:
+                    logging.warning("Removed Field %r" % k)
+            return out
+                    
     @api.model
     def create(self, vals):
         if self.env.context.get('odooPLM'):
@@ -698,6 +707,7 @@ class PlmDocument(models.Model):
             customFields = [field.replace('plm_m2o_', '') for field in fields if field.startswith('plm_m2o_')]
             fields.extend(customFields)
             fields = list(set(fields))
+            fields = self.plm_sanitize(fields)
             res = super(PlmDocument, self).read(fields=fields, load=load)
             res = self.readMany2oneFields(res, fields)
             return res
@@ -821,12 +831,14 @@ class PlmDocument(models.Model):
         self.env['plm.checkout'].browse(checkOutId).unlink()
         return self.id
 
+    @api.model
     def _is_checkout(self):
-        _docName, _docRev, chekOutUser, _hostName = self.getCheckedOut(self.id, None)
-        if chekOutUser:
-            self.is_checkout = True
-        else:
-            self.is_checkout = False
+        for ir_attachment_id in self:
+            _docName, _docRev, chekOutUser, _hostName = self.env['ir.attachment'].getCheckedOut(ir_attachment_id.id, None)
+            if chekOutUser:
+                ir_attachment_id.is_checkout = True
+            else:
+                ir_attachment_id.is_checkout = False
 
     def getFileExtension(self, docBrws):
         fileExtension = ''

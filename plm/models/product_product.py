@@ -59,6 +59,10 @@ def emptyStringIfFalse(value):
 class PlmComponent(models.Model):
     _inherit = 'product.product'
 
+    def onchange(self, values, field_name, field_onchange):
+        values = self.plm_sanitize(values)
+        return super(PlmComponent, self).onchange(values, field_name, field_onchange)
+
     def action_show_reference(self):
         ctx = self.env.context.copy()
         ctx.update({'active_id': self.id,
@@ -565,18 +569,18 @@ class PlmComponent(models.Model):
         docIDs = []
         docInError = []
         documentType = self.env['ir.attachment']
-        for oldObject in self:
+        for product_product_id in self:
             if (action_name != 'transmit') and (action_name != 'reject') and (action_name != 'release'):
-                check_state = oldObject.state
+                check_state = product_product_id.state
             else:
                 check_state = 'confirmed'
-            for documentBrws in oldObject.linkeddocuments:
-                if documentBrws.state == check_state:
-                    if documentBrws.is_checkout:
-                        docInError.append(_("Document %r : %r is checked out by user %r") % (documentBrws.engineering_document_name, documentBrws.revisionid, documentBrws.checkout_user))
+            for ir_attachment_id in product_product_id.linkeddocuments:
+                if ir_attachment_id.state == check_state:
+                    if ir_attachment_id.is_checkout:
+                        docInError.append(_("Document %r : %r is checked out by user %r") % (ir_attachment_id.engineering_document_name, ir_attachment_id.revisionid, ir_attachment_id.checkout_user))
                         continue
-                    if documentBrws.id not in docIDs:
-                        docIDs.append(documentBrws.id)
+                    if ir_attachment_id.id not in docIDs:
+                        docIDs.append(ir_attachment_id.id)
         if docInError:
             msg = _("Error on workflow operation")
             for e in docInError:
@@ -786,6 +790,7 @@ class PlmComponent(models.Model):
         for k in valsKey:
             if k not in self.fields_get_keys():
                 del vals[k]
+                logging.warning("Removed Field %r" % k)
         return vals
 
     def write(self, vals):
