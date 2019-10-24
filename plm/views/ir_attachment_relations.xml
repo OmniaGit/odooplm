@@ -108,17 +108,60 @@
             </field>
         </record>
 
+
+    <record id="document_document_relation_kanban_view" model="ir.ui.view">
+        <field name="name">document.document.relation.kanban.view</field>
+        <field name="model">ir.attachment.relation</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <field name="parent_id" select="True"/>
+                <field name="parent_revision" select="True"/>
+                <field name="parent_state" select="True"/>
+                <field name="parent_preview"/>
+                <field name="child_id" select="True"/>
+                <field name="child_revision" select="True"/>
+                <field name="child_state" select="True"/>
+                <field name="child_preview"/>
+                <field name="userid" select="True"/>
+                <field name="configuration"/>
+                <field name="link_kind"  select="True"/>
+                <field name="create_date" invisible="True"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <field name="parent_preview" nolabel="1" widget="image" class="oe_right oe_avatar"/>
+                                        <field name="parent_id"/>
+                                        <field name="parent_state"/>
+                                    </td>
+                                    <td>
+                                        <field name="child_preview" nolabel="1" widget="image" class="oe_right oe_avatar"/>
+                                        <field name="child_id"/>
+                                        <field name="child_state"/>
+                                    </td>
+                                </tr>
+                             </table>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
     <record model="ir.actions.act_window" id="plm_action_document_relations">
-    	<field name="name">Document Relations</field>
-    	 <field name="res_model">ir.attachment.relation</field>
+   	   <field name="name">Document Relations</field>
+   	   <field name="res_model">ir.attachment.relation</field>
+   	   <field name="view_mode">kanban,tree,form</field>
     </record>
 
     <record model="ir.actions.act_window" id="act_view_doc_related">
         <field name="name">View Document Relations</field>
         <field name="res_model">ir.attachment.relation</field>
         <field name="binding_model_id" ref="model_ir_attachment"/> 
-        <field name="view_mode">tree,form</field>
-        <field name="view_id" ref="plm_component_base_tree"/>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="view_id" ref="plm_docbom_tree_view"/>
         <field name="domain">['|', ('child_id', 'in', context.get('active_ids', [])), ('parent_id', '=', context.get('active_ids', []))]</field>
     </record>
     
