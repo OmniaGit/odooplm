@@ -74,11 +74,12 @@
             </field>
             <xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_id']" position="before">
                 <field name="related_bom_ids" invisible="True"/>
+                <field name="hasChildBoms" invisible="False"/>
                 <button name="openRelatedBoms"
                         type="object"
                         icon="fa-level-down" 
                         class="btn btn-sm oe_stat_button"
-                        attrs="{'invisible':[('related_bom_ids', '=', [])]}"/>
+                        attrs="{'invisible':[('hasChildBoms', '=', False)]}"/>
                 <field name="related_document_ids" invisible="True"/>
                 <button name="openRelatedDocuments"
                         type="object"

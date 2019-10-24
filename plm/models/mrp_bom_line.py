@@ -44,31 +44,12 @@ class MrpBomLineExtension(models.Model):
             line.bom_id.rebase_bom_weight()
         return ret
 
-    def _get_child_bom_lines(self):
-        """
-            If the BOM line refers to a BOM, return the ids of the child BOM lines
-        """
-        bom_obj = self.env['mrp.bom']
-        for bom_line in self:
-            for bom_id in self.search(
-                    [('product_id', '=', bom_line.product_id.id),
-                     ('product_tmpl_id', '=', bom_line.product_id.product_tmpl_id.id),
-                     ('type', '=', bom_line.type)]
-            ):
-                child_bom = bom_obj.browse(bom_id)
-                for child_bom_line in child_bom.bom_line_ids:
-                    child_bom_line._get_child_bom_lines()
-                self.child_line_ids = [x.id for x in child_bom.bom_line_ids]
-                return
-            else:
-                self.child_line_ids = False
-
     def get_related_boms(self):
         for bom_line in self:
-            if not self.product_id:
-                self.related_bom_id = []
+            if not bom_line.product_id:
+                bom_line.related_bom_id = []
             else:
-                if not self.hasChildBoms:
+                if not bom_line.hasChildBoms:
                     return []
                 return self.env['mrp.bom'].search([
                     ('product_tmpl_id', '=', bom_line.product_id.product_tmpl_id.id),
@@ -79,8 +60,8 @@ class MrpBomLineExtension(models.Model):
     @api.depends('product_id')
     def _has_children_boms(self):
         for bom_line in self:
-            if not self.product_id:
-                self.hasChildBoms = False
+            if not bom_line.product_id:
+                bom_line.hasChildBoms = False
             else:
                 num_boms = self.env['mrp.bom'].search_count([
                     ('product_tmpl_id', '=', bom_line.product_id.product_tmpl_id.id),
@@ -88,25 +69,21 @@ class MrpBomLineExtension(models.Model):
                     ('active', '=', True)
                 ])
                 if num_boms:
-                    self.hasChildBoms = True
+                    bom_line.hasChildBoms = True
                 else:
-                    self.hasChildBoms = False
+                    bom_line.hasChildBoms = False
 
-    @api.depends('product_id')
     def _related_boms(self):
         for bom_line in self:
-            if not self.product_id:
-                self.related_bom_id = []
+            if not bom_line.product_id:
+                bom_line.related_bom_ids = []
             else:
                 bom_objs = self.env['mrp.bom'].search([
                     ('product_tmpl_id', '=', bom_line.product_id.product_tmpl_id.id),
                     ('type', '=', bom_line.type),
                     ('active', '=', True)
                 ])
-                if not bom_objs:
-                    self.related_bom_ids = False
-                else:
-                    self.related_bom_ids = bom_objs.ids
+                bom_line.related_bom_ids = bom_objs
 
     def openRelatedBoms(self):
         related_boms = self.get_related_boms()
@@ -184,9 +161,7 @@ class MrpBomLineExtension(models.Model):
                                   string='Has Children Boms')
     related_bom_ids = fields.One2many(compute='_related_boms',
                                       comodel_name='mrp.bom',
-                                      string='Related BOMs',
-                                      digits=0,
-                                      readonly=True)
+                                      string='Related BOMs')
     related_document_ids = fields.One2many(compute='_related_doc_ids',
                                            comodel_name='ir.attachment',
-                                           string=_('Related Documents'))
+                                           string='Related Documents')
