@@ -1061,11 +1061,13 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         for tmpObject in self:
             latestIDs = self.GetLatestIds([(tmpObject.engineering_code, tmpObject.engineering_revision, False)])
             for product_product_id in self.browse(latestIDs[-1]):
+                product_product_id = product_product_id.sudo()
+                product_product_id.state = 'undermodify'
+                product_product_id.engineering_writable =  False
+                product_product_id.product_tmpl_id.state = 'undermodify'
+                product_product_id.product_tmpl_id.engineering_writable =  False
                 engineering_revision = int(product_product_id.engineering_revision) + 1
-                oldProdVals = {'engineering_writable': False,
-                               'state': 'undermodify'}
-                self.browse([product_product_id.id]).sudo().write(oldProdVals)
-                product_product_id.wf_message_post(body=_('Status moved to: %s.' % (USE_DIC_STATES[oldProdVals['state']])))
+                product_product_id.wf_message_post(body=_('Status moved to: %s.' % (USE_DIC_STATES['undermodify'])))
                 # store updated infos in "revision" object
                 defaults = {}
                 defaults['name'] = product_product_id.name                 # copy function needs an explicit name value
