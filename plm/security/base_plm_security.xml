@@ -337,4 +337,16 @@
         <field name="domain_force" eval="[('state','in',['draft', 'confirmed'])]"/>
         <field name="groups" eval="[(4, ref('group_plm_readonly_released'))]"/>
     </record>
+
+<!-- ir.module.module  -->
+    <record id="plm_module_module_read" model="ir.model.access">
+        <field name="name">Plm Module Module Read</field>
+        <field name="model_id" ref="base.model_ir_module_module"/>
+        <field name="group_id" eval="group_plm_integration_user"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="0"/>
+        <field name="perm_create" eval="0"/>
+        <field name="perm_unlink" eval="0"/>
+    </record>
+
 </odoo>
