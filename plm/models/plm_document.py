@@ -1866,4 +1866,35 @@ class PlmDocument(models.Model):
                     return True
         return False
 
+    @api.model
+    def CheckOutRecursive(self, structure, pws_path='', hostname=''):
+        out = []
+        structure = json.loads(structure)
+        for dict_values in structure:
+            _comp_fields, doc_fields, _relation_fields = dict_values
+            doc_name = doc_fields.get('name', '')
+            doc_rev = doc_fields.get('revisionid', 0)
+            document_ids = self.search([
+                ('name', '=', doc_name),
+                ('revisionid', '=', doc_rev)
+                ])
+            for doc_id in document_ids:
+                is_check_in = doc_id.ischecked_in()
+                checkout_by_me = doc_id.isCheckedOutByMe()
+                doc_fields['documentID'] = doc_id.id
+                doc_fields['datas_fname'] = doc_id.datas_fname
+                if is_check_in:
+                    doc_id.checkout(hostname, pws_path)
+                    doc_fields['checkout'] = True
+                    out.append(doc_fields)
+                elif checkout_by_me:
+                    doc_fields['checkout'] = False
+                    out.append(doc_fields)
+                else:
+                    doc_fields['checkout'] = False
+                    doc_fields['err_msg'] = 'Document %r is in checkout by another user' % (doc_fields['datas_fname'])
+                    out.append(doc_fields)
+                break
+        return json.dumps(out)
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
