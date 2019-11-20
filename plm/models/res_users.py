@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -19,27 +20,27 @@
 #
 ##############################################################################
 
-"""
+'''
 Created on 25 Aug 2016
 
 @author: Daniel Smerghetto
-"""
-from . import plm_treatment
-from . import plm_finishing
-from . import plm_material
-from . import product_template
-from . import plm_descriptions             # Has to be before "product_product_extension" due to related field
-from . import product_product              # Has to be before "ir_attachment" due to related field
-from . import ir_attachment                # Has to be before "ir_attachment_relations" due to related field
-from . import ir_attachment_relations
-from . import product_product_document_rel
-from . import product_product_kanban
-from . import plm_backup_document
-from . import plm_checkout
-from . import plm_config_settings
-from . import mrp_bom
-from . import mrp_bom_line
-from . import report_on_document
-from . import plm_temporary
-from . import plm_dbthread
-from . import res_users
+'''
+from odoo import models
+from odoo import fields
+from odoo import api
+from odoo import _
+
+
+class ResUsersExt(models.Model):
+    _name = 'res.users'
+    _inherit = 'res.users'
+
+
+    @api.multi
+    def getMacros(self):
+        '''
+            Omnia Client Macro module make an overload of this function and enable macros
+        '''
+        return []
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
