@@ -351,7 +351,7 @@ class PlmComponent(models.Model):
                     }
 
     @api.model
-    def _getChildrenBom(self, component, level=0, currlevel=0):
+    def _getChildrenBom(self, component, level=0, currlevel=0, bom_type=False):
         """
             Return a flat list of each child, listed once, in a Bom ( level = 0 one level only, level = 1 all levels)
         """
@@ -360,12 +360,29 @@ class PlmComponent(models.Model):
         if level == 0 and currlevel > 1:
             return bufferdata
         for bomid in component.product_tmpl_id.bom_ids:
+            if bom_type:
+                if bomid.type != bom_type:
+                    continue
             for bomline in bomid.bom_line_ids:
-                children = self._getChildrenBom(bomline.product_id, level, currlevel + 1)
+                children = self._getChildrenBom(component=bomline.product_id,
+                                                level=level,
+                                                currlevel=currlevel + 1,
+                                                bom_type=bom_type)
                 bufferdata.extend(children)
                 bufferdata.append(bomline.product_id.id)
         result.extend(bufferdata)
         return list(set(result))
+
+    @api.multi
+    def summarize_level(self, recursion=False, flat=False, level=1, summarize=False, parentQty=1, bom_type=False):
+        out = {}
+        for product_product_id in self:
+            for bom_id in product_product_id.product_tmpl_id.bom_ids:
+                if bom_type:
+                    if bom_id.type != bom_type:
+                        continue
+                out[bom_id] = bom_id.summarize_level(recursion, flat, level, summarize, parentQty, bom_type)
+        return out
 
     @api.model
     def RegMessage(self, request, default=None):
@@ -799,13 +816,6 @@ class PlmComponent(models.Model):
 
 #  ######################################################################################################################################33
 
-    @api.multi
-    def write(self, vals):
-        if 'is_engcode_editable' not in vals:
-            vals['is_engcode_editable'] = False
-        vals.update(self.checkMany2oneClient(vals))
-        return super(PlmComponent, self).write(vals)
-
     @api.model
     def variant_fields_to_keep(self):
         return [
@@ -842,6 +852,8 @@ class PlmComponent(models.Model):
             tmplBrws = self.env['product.template'].browse(tmplt_id)
             for variant in tmplBrws.product_variant_ids:
                 outVals = variant.read(self.variant_fields_to_keep())[0]
+                linkeddocs = outVals.get('linkeddocuments', [])
+                self.checkVariantLinkeddocs(linkeddocs)
                 del outVals['id']
                 for key, val in outVals.items():
                     if isinstance(val, (list)):  # many2many
@@ -852,6 +864,12 @@ class PlmComponent(models.Model):
             outVals.update(vals)
             vals = outVals
         return vals
+
+    @api.model
+    def checkVariantLinkeddocs(self, doc_ids):
+        for doc in self.env['plm.document'].browse(doc_ids):
+            if not doc.ischecked_in():
+                raise UserError(_('Document %r with revision %r is in check-out, cannot create variant.' % (doc.name, doc.revisionid)))
 
     @api.model
     def create(self, vals):
@@ -975,22 +993,29 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         return out
 
     @api.multi
-    def checkMany2oneClient(self, vals):
-        return self._checkMany2oneClient(self.env['product.product'], vals)
+    def write(self, vals):
+        if 'is_engcode_editable' not in vals:
+            vals['is_engcode_editable'] = False
+        vals.update(self.checkMany2oneClient(vals))
+        return super(PlmComponent, self).write(vals)
+
+    @api.multi
+    def checkMany2oneClient(self, vals, force_create=False):
+        return self._checkMany2oneClient(self.env['product.product'], vals, force_create)
         
     @api.model
-    def _checkMany2oneClient(self, obj, vals):
+    def _checkMany2oneClient(self, obj, vals, force_create=False):
         out = {}
         customFields = [field.replace('plm_m2o_', '') for field in vals.keys() if field.startswith('plm_m2o_')]
         fieldsGet = obj.fields_get(customFields)
         for fieldName, fieldDefinition in fieldsGet.items():
-            refId = self.customFieldConvert(fieldDefinition, vals, fieldName)
+            refId = self.customFieldConvert(fieldDefinition, vals, fieldName, force_create=force_create)
             if refId:
                 out[fieldName] = refId.id
         return out
 
     @api.multi
-    def customFieldConvert(self, fieldDefinition, vals, fieldName):
+    def customFieldConvert(self, fieldDefinition, vals, fieldName, force_create=False):
         refId = False
         fieldType = fieldDefinition.get('type', '')
         referredModel = fieldDefinition.get('relation', '')
@@ -1000,6 +1025,13 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             try:
                 for refId in self.env[referredModel].search([('name', '=', cadVal)]):
                     return refId
+                if force_create:
+                    if referredModel in ['product.product', 'product.template']:
+                        return False    # With False value field is not set
+                    tmp_vals = {
+                        'name': cadVal
+                    }
+                    refId = self.sudo().env[referredModel].create(tmp_vals)
             except Exception as ex:
                 logging.warning(ex)
         return refId
@@ -1533,7 +1565,8 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             'revisionid': 0,
             'name': newDocName,
             'datas_fname': '%s%s' % (newDocName, file_extension),
-            'checkout_user': self.env.uid}
+            'checkout_user': self.env.uid,
+            }
         newDocVals = oldDocBrws.Clone(docDefaultVals)
         newDocId = newDocVals.get('_id')
         newDocBrws = docEnv.browse(newDocId)
@@ -1546,7 +1579,8 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             return self.browse()
         return self.search([
             ('engineering_code', '=', engCode),
-            ('engineering_revision', '=', engRev)])
+            ('engineering_revision', '=', engRev),
+            ])
 
     @api.multi
     def open_related_revisions(self):

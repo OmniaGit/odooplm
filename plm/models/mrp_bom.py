@@ -757,8 +757,8 @@ class MrpBomExtension(models.Model):
             bomType = 'normal'
             if apps:
                 bomType = 'ebom'
-            parentOdooTuple, childrenOdooTuple = clientArgs
-            _state, parent_product_product_id, parent_ir_attachment_id = parentOdooTuple
+            parentOdooTuple, childrenOdooTuple  = clientArgs
+            l_tree_document_id, parent_product_product_id, parent_ir_attachment_id = parentOdooTuple
             parent_product_product_id = product_product.browse(parent_product_product_id)
             product_tmpl_id = parent_product_product_id.product_tmpl_id.id
             ir_attachment_relation.removeChildRelation(parent_ir_attachment_id)  # perform default unlink to HiTree, need to perform RfTree also
@@ -783,6 +783,9 @@ class MrpBomExtension(models.Model):
                 ir_attachment_relation.saveDocumentRelationNew(parent_ir_attachment_id,
                                                                ir_attachment_id,
                                                                link_kind=link_kind)
+                if l_tree_document_id:
+                    self.env['plm.component.document.rel'].createFromIds(self.env['product.product'].browse(product_product_id),
+                                                                         self.env['ir.attachment'].browse(l_tree_document_id))
             return True
         except Exception as ex:
             logging.error(ex)
