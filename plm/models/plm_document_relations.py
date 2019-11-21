@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -114,6 +115,24 @@ class PlmDocumentRelations(models.Model):
         for relation in relations:
             saveChild(relation)
         return False
+
+    @api.model
+    def saveDocumentRelationNew(self, parent_ir_attachment_id, child_ir_attachment_id, link_kind='HiTree'):
+        if not parent_ir_attachment_id and child_ir_attachment_id:
+            return False
+        if self.search_count([('parent_id', '=', parent_ir_attachment_id),
+                              ('child_id', '=', child_ir_attachment_id),
+                              ('link_kind', '=', link_kind)]):
+            return True
+        self.create({'parent_id': parent_ir_attachment_id,
+                     'child_id': child_ir_attachment_id,
+                    'link_kind': link_kind})
+        return True
+
+    @api.model
+    def removeChildRelation(self, parent_ir_attachment_id, linkType='HiTree'):
+        self.search([('parent_id', '=', parent_ir_attachment_id),
+                     ('link_kind', '=', linkType)]).unlink()
 
 PlmDocumentRelations()
 

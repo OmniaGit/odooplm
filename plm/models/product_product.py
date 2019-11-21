@@ -150,6 +150,15 @@ class PlmComponent(models.Model):
     # Don't overload std_umc1, std_umc2, std_umc3 setting them related to std_description because odoo try to set value
     # of related fields and integration users doesn't have write permissions in std_description. The result is that
     # integration users can't create products if in changed values there is std_description
+    revision_count = fields.Integer(compute='_revisions_count')
+
+    @api.multi
+    def _revisions_count(self):
+        """
+        get All version product_tempate based on this one
+        """
+        for product_product_id in self:
+            product_product_id.revision_count = product_product_id.search_count([('engineering_code', '=', product_product_id.engineering_code)])
 
     @api.onchange('std_description')
     def on_change_stddesc(self):
@@ -259,6 +268,8 @@ class PlmComponent(models.Model):
             mixing both label and value or only label.
         """
         retvalue = ''
+        if fmt == False:
+            return retvalue
         if value:
             if isinstance(value, float):
                 svalue = "%g" % value
@@ -277,11 +288,12 @@ class PlmComponent(models.Model):
 
         if svalue:
             cnt = fmt.count('%s')
-
             if cnt == 2:
                 retvalue = fmt % (slabel, svalue)
             elif cnt == 1:
                 retvalue = fmt % (svalue)
+            elif cnt == 0 and fmt:
+                retvalue = fmt
         return retvalue
 
     def computeDescription(self, thisObject, initialVal, std_umc1, std_umc2, std_umc3, std_value1, std_value2, std_value3):
@@ -350,12 +362,29 @@ class PlmComponent(models.Model):
         if level == 0 and currlevel > 1:
             return bufferdata
         for bomid in component.product_tmpl_id.bom_ids:
+            if bom_type:
+                if bomid.type != bom_type:
+                    continue
             for bomline in bomid.bom_line_ids:
-                children = self._getChildrenBom(bomline.product_id, level, currlevel + 1)
+                children = self._getChildrenBom(component=bomline.product_id,
+                                                level=level,
+                                                currlevel=currlevel + 1,
+                                                bom_type=bom_type)
                 bufferdata.extend(children)
                 bufferdata.append(bomline.product_id.id)
         result.extend(bufferdata)
         return list(set(result))
+
+    @api.multi
+    def summarize_level(self, recursion=False, flat=False, level=1, summarize=False, parentQty=1, bom_type=False):
+        out = {}
+        for product_product_id in self:
+            for bom_id in product_product_id.product_tmpl_id.bom_ids:
+                if bom_type:
+                    if bom_id.type != bom_type:
+                        continue
+                out[bom_id] = bom_id.summarize_level(recursion, flat, level, summarize, parentQty, bom_type)
+        return out
 
     @api.model
     def RegMessage(self, request, default=None):
@@ -428,6 +457,24 @@ class PlmComponent(models.Model):
         return list(set(ids))
 
     @api.model
+    def ConvertToPlmProduct(self, attributes_list=[]):
+        """
+        convert the attributes vals and add the plm id to the array
+        """
+        out = []
+        for attributes in attributes_list:
+            engineering_code = attributes.get('engineering_code', False)
+            engineering_revision = attributes.get('engineering_revision', 0)
+            if engineering_code:
+                product_product_id = self.search([('engineering_code', '=', engineering_code),
+                                                  ('engineering_revision', '=', engineering_revision)], order='engineering_revision ASC')
+                if not product_product_id:
+                    product_product_id = self.create(attributes)
+                attributes['plm_id'] = product_product_id.id
+                out.append(attributes)
+        return out
+
+    @api.model
     def SaveOrUpdate(self, vals):
         """
             Save or Update Parts
@@ -444,7 +491,7 @@ class PlmComponent(models.Model):
                 retValues.append(partVals)
                 continue
             existingCompBrwsList = self.search([('engineering_code', '=', partVals['engineering_code']),
-                                                ('engineering_revision', '=', partVals['engineering_revision'])], order='engineering_revision ASC')
+                                                ('engineering_revision', '=', partVals.get('engineering_revision', 0))], order='engineering_revision ASC')
             if not existingCompBrwsList:
                 existingCompBrwsList = [self.create(partVals)]
                 hasSaved = True
@@ -880,6 +927,8 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             tmplBrws = self.env['product.template'].browse(tmplt_id)
             for variant in tmplBrws.product_variant_ids:
                 outVals = variant.read(self.variant_fields_to_keep())[0]
+                linkeddocs = outVals.get('linkeddocuments', [])
+                self.checkVariantLinkeddocs(linkeddocs)
                 del outVals['id']
                 for key, val in outVals.items():
                     if isinstance(val, (list)):  # many2many
@@ -890,6 +939,12 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             outVals.update(vals)
             vals = outVals
         return vals
+
+    @api.model
+    def checkVariantLinkeddocs(self, doc_ids):
+        for doc in self.env['plm.document'].browse(doc_ids):
+            if not doc.ischecked_in():
+                raise UserError(_('Document %r with revision %r is in check-out, cannot create variant.' % (doc.name, doc.revisionid)))
 
     @api.model
     def create(self, vals):
@@ -1099,6 +1154,28 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                     for bomLineBrowse in bomBrowse.bom_line_ids:
                         out.append(self.getBomRowCad(bomLineBrowse))
         return out
+
+    def _translate(self, cr, uid, dataValue="", languageName=""):
+        _LOCALLANGS = {'french': ('French_France', 'fr_FR',),
+                       'italian': ('Italian_Italy', 'it_IT',),
+                       'polish': ('Polish_Poland', 'pl_PL',),
+                       'svedish': ('Svedish_Svenska', 'sw_SE',),
+                       'russian': ('Russian_Russia', 'ru_RU',),
+                       'english': ('English UK', 'en_GB',),
+                       'spanish': ('Spanish_Spain', 'es_ES',),
+                       'german': ('German_Germany', 'de_DE',),
+                       }
+        if not dataValue:
+            return ""
+        if languageName in _LOCALLANGS:
+            language = _LOCALLANGS[languageName][1]
+            transObj = self.pool.get('ir.translation')
+            resIds = transObj.search(cr, uid,
+                                     [('src', '=', dataValue),
+                                      ('lang', '=', language)])
+            for trans in transObj.browse(cr, uid, resIds):
+                return trans.value
+        return ""
 
     @api.model
     def _getChildrenBomWithDocuments(self, component, level=0, currlevel=0):
@@ -1508,7 +1585,40 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             return self.browse()
         return self.search([
             ('engineering_code', '=', engCode),
-            ('engineering_revision', '=', engRev)])
+            ('engineering_revision', '=', engRev),
+            ])
+
+    @api.multi
+    def open_related_revisions(self):
+        product_product_ids = self.search([('engineering_code', '=', self.engineering_code)])
+        return {'name': _('Products'),
+                'res_model': 'product.product',
+                'view_type': 'form',
+                'view_mode': 'tree,form',
+                'type': 'ir.actions.act_window',
+                'domain': [('id', 'in', product_product_ids.ids)],
+                'context': {}}
+
+    @api.model
+    def createFromProps(self, productAttribute):
+        out_product_produc_id = self.env['product.product']
+        found = False
+        engineering_name = productAttribute.get('engineering_code', False)
+        if not engineering_name:
+            return False
+        for product_produc_id in self.search([('engineering_code', '=', engineering_name),
+                                              ('engineering_revision', '=', productAttribute.get('engineering_revision', '0'))]):
+            out_product_produc_id = product_produc_id
+            found = True
+            break
+        if found:  # Write
+            if product_produc_id.state not in ['released', 'obsoleted']:
+                out_product_produc_id.write(productAttribute)
+        else:  # write
+            out_product_produc_id = self.create(productAttribute)
+        return out_product_produc_id
+
+PlmComponent()
 
 
 class PlmTemporayMessage(osv.osv.osv_memory):

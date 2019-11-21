@@ -94,6 +94,7 @@ Supported Editors :
             'views/plm_material_view.xml',
             'views/product_product_extension_view.xml',
             'views/product_template.xml',
+            'views/plm_dbthread.xml',
             'views/sequence.xml',
             'views/menu.xml',
             # Reports Template

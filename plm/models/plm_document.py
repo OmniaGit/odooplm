@@ -1867,6 +1867,137 @@ class PlmDocument(models.Model):
         return False
 
     @api.model
+    def saveSingleLevel(self, clientArg):
+        component_props, document_props, dbThread = clientArg[0]
+        host_name = clientArg[1]
+        host_pws = clientArg[2]
+        #  generate component
+        product_product_id = self.env['product.product'].createFromProps(component_props)
+        if not product_product_id:
+            logging.warning("Unable to create / get product_product from %s" % component_props)
+        #  generate document
+        ir_attachment_id, action = self.env['plm.document'].createFromProps(document_props,
+                                                                             dbThread,
+                                                                             host_name,
+                                                                             host_pws)
+        if not ir_attachment_id:
+            logging.warning("Unable to create / get plm_document from %s" % document_props)
+        #  generate link
+        if product_product_id and ir_attachment_id:
+            self.env['plm.component.document.rel'].createFromIds(product_product_id,
+                                                                 ir_attachment_id)
+        else:
+            logging.warning("Unable to generate link from product: %s document: %s Thread %s" % (product_product_id, ir_attachment_id, dbThread))
+        return (action,
+                product_product_id.id if product_product_id else False,
+                ir_attachment_id.id if ir_attachment_id else False)
+
+    @api.model
+    def createFromProps(self,
+                        documentAttribute={},
+                        dbThread=False,
+                        hostName=False,
+                        hostPws=False):
+        action = 'upload'
+        if documentAttribute.get("CUTTED_COMP", False):
+            return False, 'jump'
+        document_name = documentAttribute.get("name", False)
+        if not document_name:
+            raise UserError("Unable to create document with empty name %r" % (documentAttribute.get('KEY', '')))
+
+        found = False
+        ir_attachemnt_id = self.env['plm.document']
+        for seached_ir_attachemnt_id in self.search([('name', '=', document_name),
+                                                     ('revisionid', '=', documentAttribute.get('revisionid', 0))]):
+            found = True
+            ir_attachemnt_id = seached_ir_attachemnt_id
+            break
+        if found:  # write
+            if ir_attachemnt_id.state not in ['released', 'obsoleted']:
+                if ir_attachemnt_id.needUpdate():
+                    ir_attachemnt_id.write(documentAttribute)
+                    action = ir_attachemnt_id.canIUpload(dbThread)
+                else:
+                    action = 'jump'
+            else:
+                action = 'jump'
+        else:  # create
+            ir_attachemnt_id = ir_attachemnt_id.create(documentAttribute)
+            self.env['plm.checkout'].create({'userid': self.env.user.id,
+                                             'hostname': hostName,
+                                             'hostpws': hostPws,
+                                             'documentid': ir_attachemnt_id.id})
+        return ir_attachemnt_id, action
+
+    @api.model
+    def clientCanIUpload(self, clientArgs):
+        ir_attachment_id, dbThread = clientArgs
+        return self.browse(ir_attachment_id).canIUpload(dbThread)
+
+    @api.multi
+    def canIUpload(self, dbTheread):
+        action = 'upload'
+        plm_dbthread = self.env['plm.dbthread']
+        actualdbThred = int(dbTheread)
+        for ir_attachment_id in self:
+            key = "%s_%s" % (ir_attachment_id.name, ir_attachment_id.revisionid)
+            threadCodelist = plm_dbthread.search([('documement_name_version', '=', key),
+                                                  ('done', '=', False)]).mapped(lambda x: int(x.threadCode))
+            if len(threadCodelist):
+                if actualdbThred == max(threadCodelist):
+                    break
+                if actualdbThred < max(threadCodelist):
+                    action = 'jump'
+                    break
+#                 if actualdbThred > min(threadCodelist):
+#                     action = 'wait'
+#                     break
+                break
+            else:
+                action = 'jump'  # no activity to perform
+        return action
+
+    @api.model
+    def isDownloadableFromServer(self, args):
+        """
+        check il the document listed is ready to be downloaded from local server
+        """
+        forceFlag = False
+        ids, listedFiles, selection, _local_server_name = args
+        if not selection:
+            selection = 1
+
+        if selection < 0:
+            forceFlag = True
+            selection = selection * (-1)
+
+        if selection == 2:
+            docArray = self._getlastrev(ids)
+        else:
+            docArray = ids
+        return self.browse(docArray)._data_get_files(listedFiles,
+                                                     forceFlag,
+                                                     _local_server_name)
+    @api.model
+    def GetProductDocumentId(self, clientArgs):
+        componentAtts, documentAttrs = clientArgs
+        product_product_id = False
+        plm_document_id = False
+        engineering_code = componentAtts.get('engineering_code')
+        engineering_revision = componentAtts.get('engineering_revision', 0)
+        for product_product in self.env['product.product'].search([('engineering_code', '=', engineering_code),
+                                                                  ('engineering_revision', '=', engineering_revision)]):
+            product_product_id = product_product.id
+            break
+        document_name = documentAttrs.get('name')
+        document_revision = documentAttrs.get('revisionid', 0)
+        for plm_document in self.env['plm.document'].search([('name', '=', document_name),
+                                                             ('revisionid', '=', document_revision)]):
+            plm_document_id = plm_document.id
+            break
+        return product_product_id, plm_document_id
+
+    @api.model
     def CheckOutRecursive(self, structure, pws_path='', hostname=''):
         out = []
         structure = json.loads(structure)

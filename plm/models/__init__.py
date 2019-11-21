@@ -42,3 +42,4 @@ from . import mrp_bom_line
 from . import report_on_document
 from . import plm_temporary
 from . import res_users
+from . import plm_dbthread

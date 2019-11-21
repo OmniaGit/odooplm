@@ -82,6 +82,14 @@ class PlmComponentDocumentRel(models.Model):
             saveChild(relation)
         return False
 
+    @api.model
+    def createFromIds(self, product_product_id, ir_attachment_id):
+        exsist = self.search_count([('component_id', '=', product_product_id.id),
+                                    ('document_id', '=', ir_attachment_id.id)])
+        if not exsist:
+            product_product_id.linkeddocuments = [(4, ir_attachment_id.id, False)]
+        return True
+
 PlmComponentDocumentRel()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

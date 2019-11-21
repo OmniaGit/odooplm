@@ -108,6 +108,13 @@
             parent="plm.plm_menu_dictionaries"/>
 
     <menuitem
+            id="plm_dbthread_id"
+            name="DbThread"
+            parent="plm.plm_menu_dictionaries"
+            groups="plm.group_plm_admin"
+            action="plm.plm_action_plm_dbthread"/>
+
+    <menuitem
             id="plm_settings"
             name="Settings"
             parent="plm.plm_menu_dictionaries"

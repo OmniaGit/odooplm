@@ -38,7 +38,24 @@ class UploadDocument(Controller):
             'X-CSRF-TOKEN': request.csrf_token(),
         })
 
-    @route('/plm_document_upload/upload', type='http', auth='user', methods=['POST'])
+    @route('/plm_document_upload/upload_pdf', type='http', auth='user', methods=['POST'], csrf=False)
+    @webservice
+    def upload_pdf(self, file_stream=None, doc_id=False, **kw):
+        logging.info('start upload PDF %r' % (doc_id))
+        if doc_id:
+            logging.info('start json %r' % (doc_id))
+            doc_id = json.loads(doc_id)
+            logging.info('start write %r' % (doc_id))
+            value1 = file_stream.stream.read()
+            request.env['plm.document'].browse(doc_id).write(
+                {'printout': base64.b64encode(value1),
+                 })
+            logging.info('upload %r' % (doc_id))
+            return Response('Upload succeeded', status=200)
+        logging.info('no upload %r' % (doc_id))
+        return Response('Failed upload', status=200)
+    
+    @route('/plm_document_upload/upload', type='http', auth='user', methods=['POST'], csrf=False)
     @webservice
     def upload(self, mod_file=None, doc_id=False, filename='', **kw):
         logging.info('start upload %r' % (doc_id))
@@ -48,34 +65,16 @@ class UploadDocument(Controller):
             logging.info('start write %r' % (doc_id))
             value1 = mod_file.stream.read()
             to_write = {'datas': base64.b64encode(value1),
-                 'datas_fname': filename,
-                 }
+                        'datas_fname': filename}
             preview = kw.get('preview', '')
             if preview:
-                val_2 = preview.stream.read()
+                val_2 = base64.b64encode(preview.stream.read())
                 to_write['preview'] = val_2
             request.env['plm.document'].browse(doc_id).write(to_write)
             logging.info('upload %r' % (doc_id))
             return Response('Upload succeeded', status=200)
         logging.info('no upload %r' % (doc_id))
-        return Response('Failed upload', status=200)
-
-    @route('/plm_document_upload/upload_pdf', type='http', auth='user', methods=['POST'])
-    @webservice
-    def upload_pdf(self, mod_file=None, doc_id=False, **kw):
-        logging.info('start upload PDF %r' % (doc_id))
-        if doc_id:
-            logging.info('start json %r' % (doc_id))
-            doc_id = json.loads(doc_id)
-            logging.info('start write %r' % (doc_id))
-            value1 = mod_file.stream.read()
-            request.env['plm.document'].browse(doc_id).write(
-                {'printout': base64.b64encode(value1),
-                 })
-            logging.info('upload %r' % (doc_id))
-            return Response('Upload succeeded', status=200)
-        logging.info('no upload %r' % (doc_id))
-        return Response('Failed upload', status=200)
+        return Response('Failed upload', status=400)
 
     @route('/plm_document_upload/download', type='http', auth='user', methods=['GET'])
     @webservice
@@ -83,7 +82,6 @@ class UploadDocument(Controller):
         if not requestvals:
             logging.info('No file requests to download')
             return Response([], status=200)
-        #logging.info('Start Downloading via HTTP')
         requestvals = json.loads(requestvals)
         plmDocEnv = request.env['plm.document']
         result = plmDocEnv.GetSomeFiles(requestvals)
@@ -94,8 +92,6 @@ class UploadDocument(Controller):
             if not docContent:
                 docContent = ''
                 docTuple = (docId, docName, docContent, _checkOutByMe, _timeDoc)
-            #logging.info('Sending to client DocId %r, DocName %r' % (docId, docName))
-            # Content need to be passed as first argument, in the client tuple will be recomposed
             result2 = copy.deepcopy(list(docTuple))
             docContent = result2[2]
             result2[2] = ''
@@ -103,3 +99,19 @@ class UploadDocument(Controller):
             'result': [result2]
             })
 
+    @route('/plm_document_upload/upload_preview', type='http', auth='user', methods=['POST'], csrf=False)
+    @webservice
+    def upload_preview(self, mod_file=None, doc_id=False, **kw):
+        logging.info('start upload preview %r' % (doc_id))
+        if doc_id:
+            logging.info('start json %r' % (doc_id))
+            doc_id = json.loads(doc_id)
+            logging.info('start write %r' % (doc_id))
+            value1 = mod_file.stream.read()
+            request.env['ir.attachment'].browse(doc_id).write(
+                {'preview': base64.b64encode(value1),
+                 })
+            logging.info('upload %r' % (doc_id))
+            return Response('Upload succeeded', status=200)
+        logging.info('no upload %r' % (doc_id))
+        return Response('Failed upload', status=400)

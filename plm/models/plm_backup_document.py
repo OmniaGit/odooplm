@@ -31,6 +31,7 @@ from odoo import fields
 from odoo import osv
 from odoo import api
 from odoo import _
+import time
 import logging
 import os
 import stat

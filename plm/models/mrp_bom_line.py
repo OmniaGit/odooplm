@@ -43,14 +43,12 @@ class MrpBomLineExtension(models.Model):
         """
         bom_obj = self.env['mrp.bom']
         for bom_line in self:
-            for bom_id in self.search(
-                    [('product_id', '=', bom_line.product_id.id),
-                     ('product_tmpl_id', '=', bom_line.product_id.product_tmpl_id.id),
-                     ('type', '=', bom_line.type)]
-            ):
+            for bom_id in self.search([('product_id', '=', bom_line.product_id.id),
+                                      ('product_tmpl_id', '=', bom_line.product_id.product_tmpl_id.id),
+                                      ('type', '=', bom_line.type)]):
                 child_bom = bom_obj.browse(bom_id)
-                for child_bom_line in child_bom.bom_line_ids:
-                    child_bom_line._get_child_bom_lines()
+                for childBomLine in child_bom.bom_line_ids:
+                    childBomLine._get_child_bom_lines()
                 self.child_line_ids = [x.id for x in child_bom.bom_line_ids]
                 return
             else:
@@ -64,11 +62,10 @@ class MrpBomLineExtension(models.Model):
             else:
                 if not self.hasChildBoms:
                     return []
-                return self.env['mrp.bom'].search([
-                    ('product_tmpl_id', '=', bom_line.product_id.product_tmpl_id.id),
-                    ('type', '=', bom_line.type),
-                    ('active', '=', True)
-                ])
+                return self.env['mrp.bom'].search([('product_tmpl_id', '=', bom_line.product_id.product_tmpl_id.id),
+                                                   ('type', '=', bom_line.type),
+                                                   ('active', '=', True)
+                                                   ])
 
     @api.one
     @api.depends('product_id')
@@ -118,6 +115,9 @@ class MrpBomLineExtension(models.Model):
                         'res_model': 'mrp.bom',
                         'type': 'ir.actions.act_window',
                         'view_mode': 'tree,form'}
+        if len(ids_to_open) == 1:
+            out_act_dict['view_mode'] = 'form'
+            out_act_dict['res_id'] = ids_to_open[0]
         for line_brws in self:
             if line_brws.type == 'normal':
                 domain.append(('type', '=', 'normal'))
@@ -126,7 +126,7 @@ class MrpBomLineExtension(models.Model):
                 out_act_dict['view_ids'] = [
                     (5, 0, 0),
                     (0, 0, {'view_mode': 'tree', 'view_id': self.env.ref('plm.plm_bom_tree_view').id}),
-                    (0, 0, {'view_mode': 'form', 'view_id': self.env.ref('plm.plm_bom_form_view_eng').id})
+                    (0, 0, {'view_mode': 'form', 'view_id': self.env.ref('plm.plm_bom_form_view').id})
                 ]
             elif line_brws.type == 'spbom':
                 domain.append(('type', '=', 'spbom'))
@@ -136,13 +136,13 @@ class MrpBomLineExtension(models.Model):
     @api.multi
     def openRelatedDocuments(self):
         domain = [('id', 'in', self.related_document_ids.ids)]
-        out_act_dict = {'name': _('Documents'), 
-			'view_type': 'form', 
-			'res_model': 'plm.document',
-                        'type': 'ir.actions.act_window', 
-			'view_mode': 'tree,form', 
-			'domain': domain}
-        return out_act_dict
+        outActDict = {'name': _('Documents'),
+                      'view_type': 'form',
+                      'res_model': 'plm.document',
+                      'type': 'ir.actions.act_window',
+                      'view_mode': 'kanban,tree,form'}
+        outActDict['domain'] = domain
+        return outActDict
 
     @api.multi
     def _related_doc_ids(self):
@@ -183,6 +183,12 @@ class MrpBomLineExtension(models.Model):
                                           string=_("Revision"),
                                           help=_("The revision of the product."),
                                           store=False)
+
+    engineering_code = fields.Char(related="product_id.engineering_code",
+                                   string=_("E-Cod"),
+                                   help=_("The Engineering Rivision code."),
+                                   store=False)
+
     hasChildBoms = fields.Boolean(compute='_has_children_boms',
                                   string='Has Children Boms')
     related_bom_ids = fields.One2many(compute='_related_boms',
@@ -193,3 +199,5 @@ class MrpBomLineExtension(models.Model):
     related_document_ids = fields.One2many(compute='_related_doc_ids',
                                            comodel_name='plm.document',
                                            string=_('Related Documents'))
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

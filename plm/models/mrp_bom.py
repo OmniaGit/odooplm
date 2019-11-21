@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -26,7 +27,6 @@ Created on 25 Aug 2016
 """
 import logging
 import sys
-
 import odoo.addons.decimal_precision as dp
 from odoo import models
 from odoo import fields
@@ -724,3 +724,140 @@ class MrpBomExtension(models.Model):
                     'domain': [('id', 'in', bom_line_ids)],
                     'context': {"group_by": ['bom_id']},
                     }
+
+
+    @api.model
+    def getOutLineInfos(self, bom_line_id, product_tmpl_id, prodQty, level):
+        res = {}
+        res['engineering_code'] = product_tmpl_id.engineering_code
+        res['itemnum'] = bom_line_id.itemnum
+        res['description'] = _(product_tmpl_id.description)
+        res['engineering_revision'] = product_tmpl_id.engineering_revision
+        res['quantity'] = prodQty
+        res['prodtyuct_uom_id_name'] = bom_line_id.product_uom_id.name
+        res['weight'] = product_tmpl_id.weight
+        res['default_code'] = bom_line_id.product_id.default_code
+        res['level'] = level
+        res['product_id'] = bom_line_id.product_id
+        res['product_tmpl_id'] = product_tmpl_id
+        res['bom_line_id'] = bom_line_id
+        return res
+
+    @api.model
+    def summarize_level(self, recursion=False, flat=False, level=1, summarize=False, parentQty=1):
+        def updateQty(tmplId, qtyToAdd):
+            for localIndex, valsList in orderDict.items():
+                count = 0
+                for res in valsList:
+                    tmplBrws = res.get('prodTmplBrws', False)
+                    if not tmplBrws:
+                        logging.error('Template browse not found printing bom: %r' % (res))
+                        continue
+                    if tmplBrws.id == tmplId:
+                        newQty = orderDict[localIndex][count]['quantity'] + qtyToAdd
+                        orderDict[localIndex][count]['quantity'] = newQty
+                        return
+                    count = count + 1
+
+        def getBom(bomLineObj):
+            newBom = None
+            for bomBws in bomLineObj.related_bom_ids:
+                if bomBws.type == bomLineObj.type:
+                    newBom = bomBws
+                    break
+            return newBom
+
+        orderDict = {}
+        levelListed = []
+        for l in self.bom_line_ids:
+            index = l.itemnum
+            if index not in orderDict.keys():
+                orderDict[index] = []
+            children = {}
+            productTmplObj = l.product_id.product_tmpl_id
+            prodTmlId = productTmplObj.id
+            if recursion or flat:
+                myNewBom = getBom(l)
+                if myNewBom:
+                    children = self.summarize_level(myNewBom, recursion, flat, level + 1, summarize, l.product_qty * parentQty)
+            if prodTmlId in levelListed and summarize:
+                qty = l.product_qty
+                updateQty(prodTmlId, qty)
+            else:
+                prodQty = l.product_qty
+                res = self.getOutLineInfos(l, productTmplObj, prodQty, level)
+                res['engineering_code'] = (self.env['ir.config_parameter'].get_param('REPORT_INDENTATION_KEY') or '') * level + ' ' + (productTmplObj.engineering_code or ' ')
+                res['children'] = children
+                res['level'] = level
+                levelListed.append(prodTmlId)
+                orderDict[index].append(res)
+        return orderDict
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+
+    @api.one
+    def delete_child_row(self, document_id):
+        """
+        delete the bom child row
+        """
+        for bom_line in self.bom_line_ids:
+            if bom_line.source_id.id == document_id and bom_line.type == self.type:
+                bom_line.unlink()
+
+    @api.model
+    def add_child_row(self, child_id, source_document_id, relation_attributes, bom_type='normal'):
+        """
+            add children rows
+        """
+        if self.id and child_id and source_document_id:
+            relation_attributes.update({'bom_id': self.id,
+                                        'product_id': child_id,
+                                        'source_id': source_document_id,
+                                        'type': bom_type})
+            self.env['mrp.bom.line'].create(relation_attributes).id
+
+    @api.model
+    def saveRelationNew(self,
+                        clientArgs):
+        product_product = self.env['product.product']
+        ir_attachment_relation = self.env['plm.document.relation']
+        try:
+            domain = [('state', 'in', ['installed', 'to upgrade', 'to remove']), ('name', '=', 'plm_engineering')]
+            apps = self.env['ir.module.module'].sudo().search_read(domain, ['name'])
+            bomType = 'normal'
+            if apps:
+                bomType = 'ebom'
+            parentOdooTuple, childrenOdooTuple  = clientArgs
+            l_tree_document_id, parent_product_product_id, parent_ir_attachment_id = parentOdooTuple
+            parent_product_product_id = product_product.browse(parent_product_product_id)
+            product_tmpl_id = parent_product_product_id.product_tmpl_id.id
+            ir_attachment_relation.removeChildRelation(parent_ir_attachment_id)  # perform default unlink to HiTree, need to perform RfTree also
+            mrp_bom_found_id = False
+            for mrp_bom_id in self.search([('product_tmpl_id', '=', product_tmpl_id)]):
+                mrp_bom_found_id = mrp_bom_id
+            if not mrp_bom_found_id:
+                if product_tmpl_id:
+                    mrp_bom_found_id = self.create({'product_tmpl_id': product_tmpl_id,
+                                                    'product_product_id': parent_product_product_id.id,
+                                                    'type': bomType})
+            else:
+                mrp_bom_found_id.delete_child_row(parent_ir_attachment_id)
+            # add rows
+            for product_product_id, ir_attachment_id, relationAttributes in childrenOdooTuple:
+                if mrp_bom_found_id and not relationAttributes.get('EXCLUDE', False):
+                    mrp_bom_found_id.add_child_row(product_product_id,
+                                                   parent_ir_attachment_id,
+                                                   relationAttributes,
+                                                   bomType)
+                link_kind = relationAttributes.get('link_kind', 'HiTree')
+                ir_attachment_relation.saveDocumentRelationNew(parent_ir_attachment_id,
+                                                               ir_attachment_id,
+                                                               link_kind=link_kind)
+                if l_tree_document_id:
+                    self.env['plm.component.document.rel'].createFromIds(self.env['product.product'].browse(product_product_id),
+                                                                         self.env['plm.document'].browse(l_tree_document_id))
+
+                    
+            return True
+        except Exception as ex:
+            logging.error(ex)
+            raise ex
