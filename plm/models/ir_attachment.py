@@ -689,11 +689,30 @@ class PlmDocument(models.Model):
                                   ('document_type', 'in', ['2d', '3d'])]) > 1:
                 raise UserError(_('Document Already in the system'))
 
+    def plm_sanitize(self, vals):
+        all_keys = self.fields_get_keys()
+        if isinstance(vals, dict):
+            valsKey = list(vals.keys())
+            for k in valsKey:
+                if k not in all_keys:
+                    del vals[k]
+                    logging.warning("Removed Field %r" % k)
+            return vals
+        else:
+            out = []
+            for k in vals:
+                if k in all_keys:
+                    out.append(k)
+                else:
+                    logging.warning("Removed Field %r" % k)
+            return out
+                    
     @api.model
     def create(self, vals):
         if self.env.context.get('odooPLM'):
             vals['is_plm'] = True
         vals.update(self.checkMany2oneClient(vals))
+        vals = self.plm_sanitize(vals)
         res = super(PlmDocument, self).create(vals)
         res.check_unique()
         return res
@@ -706,6 +725,7 @@ class PlmDocument(models.Model):
                 raise UserError(_("The active state does not allow you to make save action"))
         self.writeCheckDatas(vals)
         vals.update(self.checkMany2oneClient(vals))
+        vals = self.plm_sanitize(vals)
         res = super(PlmDocument, self).write(vals)
         self.check_unique()
         return res
@@ -716,6 +736,7 @@ class PlmDocument(models.Model):
             customFields = [field.replace('plm_m2o_', '') for field in fields if field.startswith('plm_m2o_')]
             fields.extend(customFields)
             fields = list(set(fields))
+            fields = self.plm_sanitize(fields)
             res = super(PlmDocument, self).read(fields=fields, load=load)
             res = self.readMany2oneFields(res, fields)
             return res
@@ -740,10 +761,12 @@ class PlmDocument(models.Model):
 
     @api.multi
     def writeCheckDatas(self, vals):
-        if 'datas' in list(vals.keys()) or 'datas_fname' in list(vals.keys()):
+        if 'datas' in list(vals.keys()) or 'name' in list(vals.keys()):
             for docBrws in self:
-                if not docBrws._is_checkedout_for_me() and not (self.env.user._is_admin() or self.env.user._is_superuser()):
-                    raise UserError(_("You cannot edit a file not in check-out by you! User ID %s" % (self.env.uid)))
+                if docBrws.document_type.upper() in ['2D', '3D']:
+                    if not docBrws._is_checkedout_for_me():
+                        if not (self.env.user._is_admin() or self.env.user._is_superuser()):
+                            raise UserError(_("You cannot edit a file not in check-out by you! User ID %s" % (self.env.uid)))
 
     @api.multi
     def unlink(self):
@@ -845,7 +868,7 @@ class PlmDocument(models.Model):
         self.env['plm.checkout'].browse(checkOutId).unlink()
         return self.id
 
-    @api.one
+    @api.model
     def _is_checkout(self):
         _docName, _docRev, chekOutUser, _hostName = self.getCheckedOut(self.id, None)
         if chekOutUser:

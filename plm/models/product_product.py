@@ -60,6 +60,11 @@ class PlmComponent(models.Model):
     _inherit = 'product.product'
 
     @api.multi
+    def onchange(self, values, field_name, field_onchange):
+        values = self.plm_sanitize(values)
+        return super(PlmComponent, self).onchange(values, field_name, field_onchange)
+
+    @api.multi
     def action_show_reference(self):
         ctx = self.env.context.copy()
         ctx.update({'active_id': self.id,
@@ -815,6 +820,13 @@ class PlmComponent(models.Model):
         return objId
 
 #  ######################################################################################################################################33
+    def plm_sanitize(self, vals):
+        valsKey = list(vals.keys())
+        for k in valsKey:
+            if k not in self.fields_get_keys():
+                del vals[k]
+                logging.warning("Removed Field %r" % k)
+        return vals
 
     @api.model
     def variant_fields_to_keep(self):
@@ -842,7 +854,7 @@ class PlmComponent(models.Model):
             'std_description',
             'default_code'
             ]
-        
+
     @api.model
     def checkSetupDueToVariants(self, vals):
         tmplt_id = vals.get('product_tmpl_id')
@@ -893,6 +905,7 @@ class PlmComponent(models.Model):
             vals['is_engcode_editable'] = False
             vals.update(self.checkMany2oneClient(vals))
             vals = self.checkSetupDueToVariants(vals)
+            vals = self.plm_sanitize(vals)
             res = super(PlmComponent, self).create(vals)
             return res
         except Exception as ex:
@@ -997,6 +1010,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         if 'is_engcode_editable' not in vals:
             vals['is_engcode_editable'] = False
         vals.update(self.checkMany2oneClient(vals))
+        vals = self.plm_sanitize(vals)
         return super(PlmComponent, self).write(vals)
 
     @api.multi
@@ -1591,6 +1605,15 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                 'view_mode': 'tree,form',
                 'type': 'ir.actions.act_window',
                 'domain': [('id', 'in', product_product_ids.ids)],
+                'context': {}}
+
+    def open_template(self):
+        return {'name': _('Products'),
+                'res_model': 'product.template',
+                'view_type': 'form',
+                'view_mode': 'tree,form',
+                'type': 'ir.actions.act_window',
+                'domain': [('id', '=', self.product_tmpl_id.id)],
                 'context': {}}
 
     @api.model

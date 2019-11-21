@@ -51,7 +51,7 @@ class PlmTreatment(models.Model):
     def copy(self, default=None):
         if not default:
             default = {}
-        default['name'] = self.name + ' (copy)' 
+        default['name'] = self.name + ' (copy)'
         return super(PlmTreatment, self).copy(default=default)
 
 PlmTreatment()
