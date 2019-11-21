@@ -793,13 +793,6 @@ class PlmComponent(models.Model):
                 logging.warning("Removed Field %r" % k)
         return vals
 
-    def write(self, vals):
-        if 'is_engcode_editable' not in vals:
-            vals['is_engcode_editable'] = False
-        vals.update(self.checkMany2oneClient(vals))
-        vals = self.plm_sanitize(vals)
-        return super(PlmComponent, self).write(vals)
-
     @api.model
     def variant_fields_to_keep(self):
         return [
@@ -836,16 +829,24 @@ class PlmComponent(models.Model):
             tmplBrws = self.env['product.template'].browse(tmplt_id)
             for variant in tmplBrws.product_variant_ids:
                 outVals = variant.read(self.variant_fields_to_keep())[0]
+                linkeddocs = outVals.get('linkeddocuments', [])
+                self.checkVariantLinkeddocs(linkeddocs)
                 del outVals['id']
                 for key, val in outVals.items():
                     if isinstance(val, (list)):  # many2many
                         outVals[key] = [[6, 0, val]]
-                    if isinstance(val, (tuple)):  # many2one
+                    if isinstance(val, (tuple)): # many2one
                         outVals[key] = val[0]
                 break
             outVals.update(vals)
             vals = outVals
         return vals
+
+    @api.model
+    def checkVariantLinkeddocs(self, doc_ids):
+        for doc in self.env['plm.document'].browse(doc_ids):
+            if not doc.ischecked_in():
+                raise UserError(_('Document %r with revision %r is in check-out, cannot create variant.' % (doc.name, doc.revisionid)))
 
     @api.model
     def create(self, vals):
@@ -966,21 +967,28 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             out.append(tmpVals)
         return out
 
-    def checkMany2oneClient(self, vals):
-        return self._checkMany2oneClient(self.env['product.product'], vals)
+    def write(self, vals):
+        if 'is_engcode_editable' not in vals:
+            vals['is_engcode_editable'] = False
+        vals.update(self.checkMany2oneClient(vals))
+        vals = self.plm_sanitize(vals)
+        return super(PlmComponent, self).write(vals)
 
+    def checkMany2oneClient(self, vals, force_create=False):
+        return self._checkMany2oneClient(self.env['product.product'], vals, force_create)
+        
     @api.model
-    def _checkMany2oneClient(self, obj, vals):
+    def _checkMany2oneClient(self, obj, vals, force_create=False):
         out = {}
         customFields = [field.replace('plm_m2o_', '') for field in vals.keys() if field.startswith('plm_m2o_')]
         fieldsGet = obj.fields_get(customFields)
         for fieldName, fieldDefinition in fieldsGet.items():
-            refId = self.customFieldConvert(fieldDefinition, vals, fieldName)
+            refId = self.customFieldConvert(fieldDefinition, vals, fieldName, force_create=force_create)
             if refId:
                 out[fieldName] = refId.id
         return out
 
-    def customFieldConvert(self, fieldDefinition, vals, fieldName):
+    def customFieldConvert(self, fieldDefinition, vals, fieldName, force_create=False):
         refId = False
         fieldType = fieldDefinition.get('type', '')
         referredModel = fieldDefinition.get('relation', '')
@@ -990,6 +998,13 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             try:
                 for refId in self.env[referredModel].search([('name', '=', cadVal)]):
                     return refId
+                if force_create:
+                    if referredModel in ['product.product', 'product.template']:
+                        return False    # With False value field is not set
+                    tmp_vals = {
+                        'name': cadVal
+                    }
+                    refId = self.sudo().env[referredModel].create(tmp_vals)
             except Exception as ex:
                 logging.warning(ex)
         return refId

@@ -21,7 +21,6 @@
 import random
 import string
 import os
-import logging
 import time
 import json
 import copy
@@ -36,6 +35,9 @@ from odoo import api
 from odoo import _
 from collections import defaultdict
 import itertools
+import logging
+
+_logger = logging.getLogger(__name__)
 
 # To be adequated to plm.component class states
 USED_STATES = [('draft', _('Draft')),
@@ -88,6 +90,7 @@ class PlmDocument(models.Model):
                 return docBrws.userid
         return False
 
+    
     def _is_checkedout_for_me(self):
         """
             Get if given document (or its latest revision) is checked-out for the requesting user
@@ -98,6 +101,7 @@ class PlmDocument(models.Model):
                 return True
         return False
 
+    
     def _getlastrev(self, resIds):
         result = []
         for objDoc in self.browse(resIds):
@@ -109,6 +113,7 @@ class PlmDocument(models.Model):
                 logging.warning('[_getlastrev] No documents are found for object with engineering_document_name: "%s"' % (objDoc.engineering_document_name))
         return list(set(result))
 
+    
     def GetLastNamesFromID(self):
         """
             get the last rev
@@ -124,6 +129,7 @@ class PlmDocument(models.Model):
         """
         return False, ''
 
+    
     def _data_get_files(self,
                         listedFiles=([], []),
                         forceFlag=False,
@@ -192,6 +198,7 @@ class PlmDocument(models.Model):
                 return False, result
         return result
 
+    
     def _inverse_datas(self):
         super(PlmDocument, self)._inverse_datas()
         for ir_attachment_id in self:
@@ -258,6 +265,7 @@ class PlmDocument(models.Model):
                 result.append(child.child_id.id)
         return list(set(result))
 
+    
     def _data_check_files(self, targetIds, listedFiles=(), forceFlag=False):
         result = []
         datefiles = []
@@ -300,6 +308,7 @@ class PlmDocument(models.Model):
                 result.append((objDoc.id, objDoc.name, file_size, collectable, isCheckedOutToMe, checkOutUser))
         return list(set(result))
 
+    
     def copy(self, defaults={}):
         """
             Overwrite the default copy method
@@ -400,6 +409,7 @@ class PlmDocument(models.Model):
             break
         return (newID, newRevIndex)
 
+    
     def Clone(self, defaults={}):
         """
             create a new copy of the document
@@ -503,6 +513,7 @@ class PlmDocument(models.Model):
             ret = ret and self.browse([oid]).write(document, check=True)
         return ret
 
+    
     def CleanUp(self, default=None):
         """
             Remove faked documents
@@ -528,6 +539,7 @@ class PlmDocument(models.Model):
                 expData = tmpData['datas']
         return expData
 
+    
     def ischecked_in(self):
         """
             Check if a document is checked-in
@@ -540,10 +552,12 @@ class PlmDocument(models.Model):
                 return False
         return True
 
+    
     def perform_action(self, action):
         toCall = self.actions.get(action)
         return toCall()
 
+    
     def wf_message_post(self, body=''):
         """
             Writing messages to follower, on multiple objects
@@ -552,6 +566,7 @@ class PlmDocument(models.Model):
             for elem in self:
                 elem.message_post(body=_(body))
 
+    
     def setCheckContextWrite(self, checkVal=True):
         """
             :checkVal Set check flag in context to do state verification in component write
@@ -560,6 +575,7 @@ class PlmDocument(models.Model):
         localCtx['check'] = checkVal
         self.env.context = localCtx
 
+    
     def commonWFAction(self, writable, state, check):
         """
             :writable set writable flag for component
@@ -578,18 +594,21 @@ class PlmDocument(models.Model):
                 out.append(objId)
         return out
 
+    
     def action_draft(self):
         """
             action to be executed for Draft state
         """
         return self.commonWFAction(True, 'draft', False)
 
+    
     def action_confirm(self):
         """
             action to be executed for Confirm state
         """
         return self.commonWFAction(False, 'confirmed', False)
 
+    
     def action_release(self):
         """
             release the object
@@ -609,17 +628,20 @@ class PlmDocument(models.Model):
             to_release.commonWFAction(False, 'released', False)
         return False
 
+    
     def action_obsolete(self):
         """
             obsolete the object
         """
         return self.commonWFAction(False, 'obsoleted', False)
 
+    
     def action_reactivate(self):
         """
             reactivate the object
         """
         defaults = {}
+        defaults['engineering_writable'] = False
         defaults['state'] = 'released'
         if self.ischecked_in():
             self.setCheckContextWrite(False)
@@ -629,6 +651,7 @@ class PlmDocument(models.Model):
             return objId
         return False
 
+    
     def blindwrite(self, vals):
         """
             blind write for xml-rpc call for recovering porpouse
@@ -655,6 +678,7 @@ class PlmDocument(models.Model):
     def search(self, args, offset=0, limit=None, order=None, count=False):
         return super(PlmDocument, self).search(args, offset, limit, order, count)
 
+    
     def check_unique(self):
         for ir_attachment_id in self:
             if self.search_count([('engineering_document_name', '=', ir_attachment_id.engineering_document_name),
@@ -690,6 +714,7 @@ class PlmDocument(models.Model):
         res.check_unique()
         return res
 
+    
     def write(self, vals):
         check = self.env.context.get('check', True)
         if check:
@@ -702,6 +727,7 @@ class PlmDocument(models.Model):
         self.check_unique()
         return res
 
+    
     def read(self, fields=[], load='_classic_read'):
         try:
             customFields = [field.replace('plm_m2o_', '') for field in fields if field.startswith('plm_m2o_')]
@@ -714,9 +740,11 @@ class PlmDocument(models.Model):
         except Exception as ex:
             raise ex
 
+    
     def readMany2oneFields(self, readVals, fields):
         return self.env['product.product']._readMany2oneFields(self.env['ir.attachment'], readVals, fields)
 
+    
     def checkMany2oneClient(self, vals):
         return self.env['product.product']._checkMany2oneClient(self.env['ir.attachment'], vals)
 
@@ -728,12 +756,16 @@ class PlmDocument(models.Model):
                 return False
         return True
 
+    
     def writeCheckDatas(self, vals):
         if 'datas' in list(vals.keys()) or 'name' in list(vals.keys()):
             for docBrws in self:
-                if not docBrws._is_checkedout_for_me() and not (self.env.user._is_admin() or self.env.user._is_superuser()):
-                    raise UserError(_("You cannot edit a file not in check-out by you! User ID %s" % (self.env.uid)))
+                if docBrws.document_type.upper() in ['2D', '3D']:
+                    if not docBrws._is_checkedout_for_me():
+                        if not (self.env.user._is_admin() or self.env.user._is_superuser()):
+                            raise UserError(_("You cannot edit a file not in check-out by you! User ID %s" % (self.env.uid)))
 
+    
     def unlink(self):
         values = {'state': 'released', }
         checkState = ('undermodify', 'obsoleted')
@@ -871,6 +903,7 @@ class PlmDocument(models.Model):
             except Exception as ex:
                 logging.error('Unable to compute document type for document %r, error %r' % (docBrws.id, ex))
 
+    
     def _get_n_rel_doc(self):
         ir_attachment_relation = self.env['ir.attachment.relation']
         for ir_attachment_id in self:
@@ -926,6 +959,7 @@ class PlmDocument(models.Model):
     attachment_release_date = fields.Datetime(string=_('Release Datetime'))
     attachment_revision_count = fields.Integer(compute='_attachment_revision_count')
 
+    
     def _attachment_revision_count(self):
         """
         get All version product_tempate based on this one
@@ -996,6 +1030,7 @@ class PlmDocument(models.Model):
                 getCompIds(docName, docRev)
         return list(set(ids))
 
+    
     def isCheckedOutByMe(self):
         checkoutBrwsList = self.env['plm.checkout'].search(
             [('documentid', '=', self.id), ('userid', '=', self.env.uid)])
@@ -1139,12 +1174,14 @@ class PlmDocument(models.Model):
             docArray.append(oid)  # Add requested document to package
         return self.browse(docArray)._data_get_files(listedFiles, forceFlag)
 
+    
     def action_view_rel_doc(self):
         action = self.env.ref('plm.act_view_doc_related').read()[0]
         action['domain'] = ['|', ('parent_id', 'in', self.ids),
                                  ('child_id', 'in', self.ids)]
         return action
 
+    
     def GetRelatedDocs(self, default=None):
         """
             Extract documents related to current one(s) (layouts, referred models, etc.)
@@ -1215,7 +1252,8 @@ class PlmDocument(models.Model):
         uiUser = userType.browse(userId)
         return uiUser.name
 
-    def _getbyrevision(self, engineering_document_name, revision):
+    
+    def _getbyrevision(self, name, revision):
         result = False
         for result in self.search([('engineering_document_name', '=', engineering_document_name),
                                    ('revisionid', '=', revision)]):
@@ -1535,6 +1573,7 @@ class PlmDocument(models.Model):
         logging.info("Time Spend For save structure is: %s" % (str(end - start)))
         return jsonify
 
+    
     def checkout(self, hostName, hostPws):
         """
         check out the current document
@@ -1547,6 +1586,7 @@ class PlmDocument(models.Model):
         res = self.env['plm.checkout'].create(values)
         return res.id
 
+    
     def canCheckOut(self, showError=False):
         for docBrws in self:
             if docBrws.is_checkout:
@@ -1573,6 +1613,7 @@ class PlmDocument(models.Model):
             return True
         return False
 
+    
     def getDocumentInfos(self):
         """
             Document infos for clone/revision procedure
@@ -1609,6 +1650,7 @@ class PlmDocument(models.Model):
                 'documents': linkedDocs,
                 'bom': []}
 
+    
     def computeLikedDocuments(self):
         """
             Get child documents in document relations
@@ -1621,12 +1663,14 @@ class PlmDocument(models.Model):
                 docList.append({'component': {}, 'document': linkedBrws.parent_id.getDocumentInfos()})
         return docList
 
+    
     def canBeRevised(self):
         for docBrws in self:
             if docBrws.state == 'released' and docBrws.ischecked_in():
                 return True
         return False
 
+    
     def cleanDocumentRelations(self):
         linkedDocEnv = self.env['ir.attachment.relation']
         for docBrws in self:
@@ -1866,6 +1910,7 @@ class PlmDocument(models.Model):
         result = [id for id in orig_ids if id in ids]
         return len(result) if count else list(result)
 
+    
     def open_related_document_revisions(self):
         ir_attachment_ids = self.search([('engineering_document_name', '=', self.engineering_document_name)])
         return {'name': _('Attachment Revs.'),
@@ -1946,6 +1991,7 @@ class PlmDocument(models.Model):
         ir_attachment_id, dbThread = clientArgs
         return self.browse(ir_attachment_id).canIUpload(dbThread)
 
+    
     def canIUpload(self, dbTheread):
         action = 'upload'
         plm_dbthread = self.env['plm.dbthread']
@@ -1989,4 +2035,55 @@ class PlmDocument(models.Model):
         return self.browse(docArray)._data_get_files(listedFiles,
                                                      forceFlag,
                                                      _local_server_name)
+
+    @api.model
+    def GetProductDocumentId(self, clientArgs):
+        componentAtts, documentAttrs = clientArgs
+        product_product_id = False
+        plm_document_id = False
+        engineering_code = componentAtts.get('engineering_code')
+        engineering_revision = componentAtts.get('engineering_revision', 0)
+        for product_product in self.env['product.product'].search([('engineering_code', '=', engineering_code),
+                                                                  ('engineering_revision', '=', engineering_revision)]):
+            product_product_id = product_product.id
+            break
+        document_name = documentAttrs.get('name')
+        document_revision = documentAttrs.get('revisionid', 0)
+        for plm_document in self.env['ir.attachment'].search([('name', '=', document_name),
+                                                             ('revisionid', '=', document_revision)]):
+            plm_document_id = plm_document.id
+            break
+        return product_product_id, plm_document_id
+
+    @api.model
+    def CheckOutRecursive(self, structure, pws_path='', hostname=''):
+        out = []
+        structure = json.loads(structure)
+        for dict_values in structure:
+            _comp_fields, doc_fields, _relation_fields = dict_values
+            doc_name = doc_fields.get('name', '')
+            doc_rev = doc_fields.get('revisionid', 0)
+            document_ids = self.search([
+                ('name', '=', doc_name),
+                ('revisionid', '=', doc_rev)
+                ])
+            for doc_id in document_ids:
+                is_check_in = doc_id.ischecked_in()
+                checkout_by_me = doc_id.isCheckedOutByMe()
+                doc_fields['documentID'] = doc_id.id
+                doc_fields['datas_fname'] = doc_id.datas_fname
+                if is_check_in:
+                    doc_id.checkout(hostname, pws_path)
+                    doc_fields['checkout'] = True
+                    out.append(doc_fields)
+                elif checkout_by_me:
+                    doc_fields['checkout'] = False
+                    out.append(doc_fields)
+                else:
+                    doc_fields['checkout'] = False
+                    doc_fields['err_msg'] = 'Document %r is in checkout by another user' % (doc_fields['datas_fname'])
+                    out.append(doc_fields)
+                break
+        return json.dumps(out)
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

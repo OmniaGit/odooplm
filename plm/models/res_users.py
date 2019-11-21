@@ -36,7 +36,6 @@ class ResUsersExt(models.Model):
     _inherit = 'res.users'
 
 
-    @api.multi
     def getMacros(self):
         '''
             Omnia Client Macro module make an overload of this function and enable macros

@@ -46,7 +46,7 @@ class PlmTreatment(models.Model):
     _sql_constraints = [
         ('name_uniq', 'unique(name)', _('Termic Treatment has to be unique !')),
     ]
-
+    
     def copy(self, default=None):
         if not default:
             default = {}
