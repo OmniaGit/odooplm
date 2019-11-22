@@ -29,6 +29,7 @@ from odoo import models
 from odoo import fields
 from odoo import api
 from odoo import _
+import logging
 
 
 class MrpBomLineExtension(models.Model):
@@ -36,8 +37,34 @@ class MrpBomLineExtension(models.Model):
     _inherit = 'mrp.bom.line'
     _order = "itemnum"
 
-    
+
+    def plm_sanitize(self, vals):
+        fields_view_get = self.fields_get_keys()
+        out = []
+        if isinstance(vals, (list, tuple)):
+            for k in vals:
+                if k in fields_view_get:
+                    out.append(k)
+            return out
+        else:
+            valsKey = list(vals.keys())
+            for k in valsKey:
+                if k not in fields_view_get:
+                    del vals[k]
+                    logging.warning("Removed Field %r" % k)
+        return vals
+
+    def read(self, fields=[], load='_classic_read'):
+        fields = self.plm_sanitize(fields)
+        return super(MrpBomLineExtension, self).read(fields=fields, load=load)
+
+    @api.model
+    def create(self, vals):
+        vals = self.plm_sanitize(vals)
+        return super(MrpBomLineExtension, self).create(vals)
+
     def write(self, vals):
+        vals = self.plm_sanitize(vals)
         ret = super(MrpBomLineExtension, self).write(vals)
         for line in self:
             line.bom_id.rebase_bom_weight()
@@ -96,7 +123,7 @@ class MrpBomLineExtension(models.Model):
     def _related_boms(self):
         for bom_line in self:
             if not bom_line.product_id:
-                bom_line.related_bom_ids = []
+                bom_line.related_bom_ids = [(5, False, False)]
             else:
                 bom_objs = self.env['mrp.bom'].search([
                     ('product_tmpl_id', '=', bom_line.product_id.product_tmpl_id.id),
@@ -104,9 +131,9 @@ class MrpBomLineExtension(models.Model):
                     ('active', '=', True)
                 ])
                 if not bom_objs:
-                    bom_line.related_bom_ids = []
+                    bom_line.related_bom_ids = [(5, False, False)]
                 else:
-                    bom_line.related_bom_ids = bom_objs.ids
+                    bom_line.related_bom_ids = [(6, False, bom_objs.ids)]
 
     
     def openRelatedBoms(self):

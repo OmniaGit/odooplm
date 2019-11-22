@@ -786,11 +786,19 @@ class PlmComponent(models.Model):
 
 #  ######################################################################################################################################33
     def plm_sanitize(self, vals):
-        valsKey = list(vals.keys())
-        for k in valsKey:
-            if k not in self.fields_get_keys():
-                del vals[k]
-                logging.warning("Removed Field %r" % k)
+        fields_view_get = self.fields_get_keys()
+        out = []
+        if isinstance(vals, (list, tuple)):
+            for k in vals:
+                if k in fields_view_get:
+                    out.append(k)
+            return out
+        else:
+            valsKey = list(vals.keys())
+            for k in valsKey:
+                if k not in fields_view_get:
+                    del vals[k]
+                    logging.warning("Removed Field %r" % k)
         return vals
 
     @api.model
@@ -893,6 +901,7 @@ class PlmComponent(models.Model):
             customFields = [field.replace('plm_m2o_', '') for field in fields if field.startswith('plm_m2o_')]
             fields.extend(customFields)
             fields = list(set(fields))
+            fields = self.plm_sanitize(fields)
             res = super(PlmComponent, self).read(fields=fields, load=load)
             res = self.readMany2oneFields(res, fields)
             return res

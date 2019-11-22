@@ -616,8 +616,28 @@ class MrpBomExtension(models.Model):
             super(MrpBomExtension, bom_brws).write({'weight_net': weight})
         return weight
 
+    def plm_sanitize(self, vals):
+        fields_view_get = self.fields_get_keys()
+        out = []
+        if isinstance(vals, (list, tuple)):
+            for k in vals:
+                if k in fields_view_get:
+                    out.append(k)
+            return out
+        else:
+            valsKey = list(vals.keys())
+            for k in valsKey:
+                if k not in fields_view_get:
+                    del vals[k]
+                    logging.warning("Removed Field %r" % k)
+        return vals
+
+    def read(self, fields=[], load='_classic_read'):
+        fields = self.plm_sanitize(fields)
+        return super(MrpBomExtension, self).read(fields=fields, load=load)
     
     def write(self, vals, check=True):
+        vals = self.plm_sanitize(vals)
         ret = super(MrpBomExtension, self).write(vals)
         for bom_brws in self:
             bom_brws.rebase_bom_weight()
@@ -625,6 +645,7 @@ class MrpBomExtension(models.Model):
 
     @api.model
     def create(self, vals):
+        vals = self.plm_sanitize(vals)
         ret = super(MrpBomExtension, self).create(vals)
         ret.rebase_bom_weight()
         return ret

@@ -29,6 +29,7 @@ from odoo import models
 from odoo import fields
 from odoo import api
 from odoo import _
+import logging
 
 USED_STATES = [('draft', _('Draft')),
                ('confirmed', _('Confirmed')),
@@ -147,6 +148,31 @@ class ProductTemplateExtension(models.Model):
                 'domain': [('id', 'in', self.getAllVersionTemplate().ids)],
                 'context': {}}
 
+    def plm_sanitize(self, vals):
+        fields_view_get = self.fields_get_keys()
+        out = []
+        if isinstance(vals, (list, tuple)):
+            for k in vals:
+                if k in fields_view_get:
+                    out.append(k)
+            return out
+        else:
+            valsKey = list(vals.keys())
+            for k in valsKey:
+                if k not in fields_view_get:
+                    del vals[k]
+                    logging.warning("Removed Field %r" % k)
+        return vals
+
+    @api.model
+    def create(self, vals):
+        vals = self.plm_sanitize(vals)
+        return super(ProductTemplateExtension, self).create(vals)
+
+    def write(self, vals):
+        vals = self.plm_sanitize(vals)
+        return super(ProductTemplateExtension, self).write(vals)
+        
     @api.model
     def init(self):
         cr = self.env.cr

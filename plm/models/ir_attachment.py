@@ -36,6 +36,7 @@ from odoo import _
 from collections import defaultdict
 import itertools
 import logging
+from pathlib import Path
 
 _logger = logging.getLogger(__name__)
 
@@ -119,7 +120,7 @@ class PlmDocument(models.Model):
             get the last rev
         """
         newIds = self._getlastrev(self.ids)
-        return self.browse(newIds).read(['name'])
+        return self.browse(newIds).read(['engineering_document_name'])
 
     @api.model
     def _isDownloadableFromServer(self, server_name):
@@ -706,8 +707,9 @@ class PlmDocument(models.Model):
                     
     @api.model
     def create(self, vals):
-        if self.env.context.get('odooPLM'):
-            vals['is_plm'] = True
+        if not self.env.context.get('odooPLM'):
+            return super(PlmDocument, self).create(vals)
+        vals['is_plm'] = True
         vals.update(self.checkMany2oneClient(vals))
         vals = self.plm_sanitize(vals)
         res = super(PlmDocument, self).create(vals)
@@ -758,7 +760,7 @@ class PlmDocument(models.Model):
 
     
     def writeCheckDatas(self, vals):
-        if 'datas' in list(vals.keys()) or 'name' in list(vals.keys()):
+        if 'datas' in list(vals.keys()) or 'engineering_document_name' in list(vals.keys()):
             for docBrws in self:
                 if docBrws.document_type.upper() in ['2D', '3D']:
                     if not docBrws._is_checkedout_for_me():
@@ -980,7 +982,7 @@ class PlmDocument(models.Model):
         def getcheckedfiles(files):
             res = []
             for fileName in files:
-                plmDocList = self.search([('name', '=', fileName)], order='revisionid')
+                plmDocList = self.search([('engineering_document_name', '=', fileName)], order='revisionid')
                 if len(plmDocList) > 0:
                     ids = plmDocList.ids
                     ids.sort()
@@ -1117,7 +1119,7 @@ class PlmDocument(models.Model):
         for docId in docArray:
             checkOutBrwsList = checkoutObj.search([('documentid', '=', docId), ('userid', '=', self.env.uid)])
             checkOutBrwsList.unlink()
-        return self.browse(docArray).read(['name'])
+        return self.browse(docArray).read(['engineering_document_name'])
 
     @api.model
     def GetSomeFiles(self,
@@ -1253,7 +1255,7 @@ class PlmDocument(models.Model):
         return uiUser.name
 
     
-    def _getbyrevision(self, name, revision):
+    def _getbyrevision(self, engineering_document_name, revision):
         result = False
         for result in self.search([('engineering_document_name', '=', engineering_document_name),
                                    ('revisionid', '=', revision)]):
@@ -1623,7 +1625,7 @@ class PlmDocument(models.Model):
                 'description': self.description or '',
                 'desc_modify': self.desc_modify or '',
                 'doc_type': self.document_type,
-                'name': self.name,
+                'engineering_document_name': self.name,
                 '_id': self.id,
                 'can_revise': self.canBeRevised(),
                 'DOC_TYPE': self.document_type
@@ -1954,8 +1956,6 @@ class PlmDocument(models.Model):
                         hostName=False,
                         hostPws=False):
         action = 'upload'
-        file_name = os.path.basename(documentAttribute.get('INTEGRATION_FILE_PATH'))
-        documentAttribute['name'] = file_name
         if documentAttribute.get("CUTTED_COMP", False):
             return False, 'jump'
         engineering_document_name = documentAttribute.get("engineering_document_name", False)
@@ -2047,9 +2047,9 @@ class PlmDocument(models.Model):
                                                                   ('engineering_revision', '=', engineering_revision)]):
             product_product_id = product_product.id
             break
-        document_name = documentAttrs.get('name')
+        document_name = documentAttrs.get('engineering_document_name')
         document_revision = documentAttrs.get('revisionid', 0)
-        for plm_document in self.env['ir.attachment'].search([('name', '=', document_name),
+        for plm_document in self.env['ir.attachment'].search([('engineering_document_name', '=', document_name),
                                                              ('revisionid', '=', document_revision)]):
             plm_document_id = plm_document.id
             break
@@ -2061,17 +2061,17 @@ class PlmDocument(models.Model):
         structure = json.loads(structure)
         for dict_values in structure:
             _comp_fields, doc_fields, _relation_fields = dict_values
-            doc_name = doc_fields.get('name', '')
+            doc_name = doc_fields.get('engineering_document_name', '')
             doc_rev = doc_fields.get('revisionid', 0)
             document_ids = self.search([
-                ('name', '=', doc_name),
+                ('engineering_document_name', '=', doc_name),
                 ('revisionid', '=', doc_rev)
                 ])
             for doc_id in document_ids:
                 is_check_in = doc_id.ischecked_in()
                 checkout_by_me = doc_id.isCheckedOutByMe()
                 doc_fields['documentID'] = doc_id.id
-                doc_fields['datas_fname'] = doc_id.datas_fname
+                doc_fields['name'] = doc_id.engineering_document_name
                 if is_check_in:
                     doc_id.checkout(hostname, pws_path)
                     doc_fields['checkout'] = True
@@ -2081,7 +2081,7 @@ class PlmDocument(models.Model):
                     out.append(doc_fields)
                 else:
                     doc_fields['checkout'] = False
-                    doc_fields['err_msg'] = 'Document %r is in checkout by another user' % (doc_fields['datas_fname'])
+                    doc_fields['err_msg'] = 'Document %r is in checkout by another user' % (doc_fields['engineering_document_name'])
                     out.append(doc_fields)
                 break
         return json.dumps(out)
