@@ -762,7 +762,10 @@ class PlmDocument(models.Model):
     def writeCheckDatas(self, vals):
         if 'datas' in list(vals.keys()) or 'engineering_document_name' in list(vals.keys()):
             for docBrws in self:
-                if docBrws.document_type.upper() in ['2D', '3D']:
+                document_type = docBrws.document_type
+                if not document_type:
+                    document_type = ''
+                if document_type.upper() in ['2D', '3D']:
                     if not docBrws._is_checkedout_for_me():
                         if not (self.env.user._is_admin() or self.env.user._is_superuser()):
                             raise UserError(_("You cannot edit a file not in check-out by you! User ID %s" % (self.env.uid)))
