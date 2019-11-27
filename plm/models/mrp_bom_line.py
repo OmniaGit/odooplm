@@ -24,6 +24,7 @@ Created on 25 Aug 2016
 
 @author: Daniel Smerghetto
 """
+import logging
 from odoo.exceptions import UserError
 from odoo import models
 from odoo import fields
@@ -37,8 +38,27 @@ class MrpBomLineExtension(models.Model):
     _order = "itemnum"
 
     type = fields.Selection(related="bom_id.type")
-
+    
+    def plm_sanitize(self, vals):
+        all_keys = self.fields_get_keys()
+        if isinstance(vals, dict):
+            valsKey = list(vals.keys())
+            for k in valsKey:
+                if k not in all_keys:
+                    del vals[k]
+                    logging.warning("Removed Field %r" % k)
+            return vals
+        else:
+            out = []
+            for k in vals:
+                if k in all_keys:
+                    out.append(k)
+                else:
+                    logging.warning("Removed Field %r" % k)
+            return out
+        
     def write(self, vals):
+        vals = self.plm_sanitize(vals)
         ret = super(MrpBomLineExtension, self).write(vals)
         for line in self:
             line.bom_id.rebase_bom_weight()

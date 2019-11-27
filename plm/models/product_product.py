@@ -786,12 +786,22 @@ class PlmComponent(models.Model):
 
 #  ######################################################################################################################################33
     def plm_sanitize(self, vals):
-        valsKey = list(vals.keys())
-        for k in valsKey:
-            if k not in self.fields_get_keys():
-                del vals[k]
-                logging.warning("Removed Field %r" % k)
-        return vals
+        all_keys = self.fields_get_keys()
+        if isinstance(vals, dict):
+            valsKey = list(vals.keys())
+            for k in valsKey:
+                if k not in all_keys:
+                    del vals[k]
+                    logging.warning("Removed Field %r" % k)
+            return vals
+        else:
+            out = []
+            for k in vals:
+                if k in all_keys:
+                    out.append(k)
+                else:
+                    logging.warning("Removed Field %r" % k)
+            return out
 
     def write(self, vals):
         if 'is_engcode_editable' not in vals:
@@ -892,6 +902,7 @@ class PlmComponent(models.Model):
             customFields = [field.replace('plm_m2o_', '') for field in fields if field.startswith('plm_m2o_')]
             fields.extend(customFields)
             fields = list(set(fields))
+            fields = self.plm_sanitize(fields)
             res = super(PlmComponent, self).read(fields=fields, load=load)
             res = self.readMany2oneFields(res, fields)
             return res
