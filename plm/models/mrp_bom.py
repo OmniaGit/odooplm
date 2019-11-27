@@ -86,7 +86,15 @@ class MrpBomExtension(models.Model):
                                 readonly=True,
                                 index=True,
                                 help=_('This is the document object that declares this BoM.'))
-
+    type = fields.Selection(
+        [('normal', _('Normal BoM')), ('phantom', _('Sets / Phantom'))],
+        _('BoM Type'),
+        required=True,
+        help=_(
+            "Phantom BOM: When processing a sales order for this product, the delivery order will contain the raw materials, instead of the finished product."
+            "Ship this product as a set of components (kit)."
+        )
+    )
     weight_net = fields.Float('Weight',
                               digits='Stock Weight',
                               help=_("The BoM net weight in Kg."),
@@ -150,7 +158,7 @@ class MrpBomExtension(models.Model):
         if len(tmp_ids) < 1:
             return prt_datas
         comp_type = self.env['product.product']
-        tmp_datas = comp_type.browse(tmp_ids).read()
+        tmp_datas = comp_type.browse(tmp_ids).read([])
         for tmp_data in tmp_datas:
             for key_data in tmp_data.keys():
                 if tmp_data[key_data] is None:
@@ -570,10 +578,10 @@ class MrpBomExtension(models.Model):
         if len(relations) < 1:  # no relation to save
             return False
 
-        parent_name, _parent_id, _child_name, _child_id, _source_id, rel_args = relations[0]
+        parent_name, _parent_id, _child_name, child_id, _source_id, rel_args = relations[0]
         if eco_module_installed is None:
             clean_old_eng_bom_lines(relations)
-        if not rel_args:  # Case of not children, so no more BOM for this product
+        if len(relations) == 1 and not child_id: # Case of not children, so no more BOM for this product
             return False
         bom_id = to_compute(parent_name, relations, kind_bom)
         clean_empty_boms()
@@ -625,8 +633,13 @@ class MrpBomExtension(models.Model):
                 else:
                     logging.warning("Removed Field %r" % k)
             return out
-        
-    def write(self, vals):
+
+
+    def read(self, fields=[], load='_classic_read'):
+        fields = self.plm_sanitize(fields)
+        return super(MrpBomExtension, self).read(fields=fields, load=load)
+    
+    def write(self, vals, check=True):
         vals = self.plm_sanitize(vals)
         ret = super(MrpBomExtension, self).write(vals)
         for bom_brws in self:
@@ -685,7 +698,6 @@ class MrpBomExtension(models.Model):
                                         'type': bom_type})
             self.env['mrp.bom.line'].create(relation_attributes).id
 
-      # Don't change me with @api.one or I don't work!!!
     def open_related_bom_lines(self):
         for bom_brws in self:
             def recursion(bom_brws_list):
@@ -735,8 +747,8 @@ class MrpBomExtension(models.Model):
             bomType = 'normal'
             if apps:
                 bomType = 'ebom'
-            parentOdooTuple, childrenOdooTuple = clientArgs
-            _state, parent_product_product_id, parent_ir_attachment_id = parentOdooTuple
+            parentOdooTuple, childrenOdooTuple  = clientArgs
+            l_tree_document_id, parent_product_product_id, parent_ir_attachment_id = parentOdooTuple
             parent_product_product_id = product_product.browse(parent_product_product_id)
             product_tmpl_id = parent_product_product_id.product_tmpl_id.id
             ir_attachment_relation.removeChildRelation(parent_ir_attachment_id)  # perform default unlink to HiTree, need to perform RfTree also
@@ -761,6 +773,9 @@ class MrpBomExtension(models.Model):
                 ir_attachment_relation.saveDocumentRelationNew(parent_ir_attachment_id,
                                                                ir_attachment_id,
                                                                link_kind=link_kind)
+                if l_tree_document_id:
+                    self.env['plm.component.document.rel'].createFromIds(self.env['product.product'].browse(product_product_id),
+                                                                         self.env['ir.attachment'].browse(l_tree_document_id))
             return True
         except Exception as ex:
             logging.error(ex)

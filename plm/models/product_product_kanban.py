@@ -34,6 +34,7 @@ class ProductProductKanban(models.Model):
 
     kanban_dashboard = fields.Text(compute='_kanban_dashboard')
 
+    
     def get_bom_dashboard_datas(self):
         number_documents = 0
         number_boms = 0
