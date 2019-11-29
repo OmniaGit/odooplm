@@ -1122,7 +1122,7 @@ class PlmDocument(models.Model):
         for docId in docArray:
             checkOutBrwsList = checkoutObj.search([('documentid', '=', docId), ('userid', '=', self.env.uid)])
             checkOutBrwsList.unlink()
-        return self.browse(docArray).read(['engineering_document_name'])
+        return self.browse(docArray).read(['name'])
 
     @api.model
     def GetSomeFiles(self,
