@@ -31,29 +31,16 @@ from odoo import api
 from odoo import _
 
 
-class PlmTreatment(models.Model):
-    _name = "plm.treatment"
-    _description = "Termic Treatment"
+class ResUsersExt(models.Model):
+    _name = 'res.users'
+    _inherit = 'res.users'
 
-    name = fields.Char(_('Specification'),
-                       size=128,
-                       required=True)
-    description = fields.Char(_('Description'),
-                              size=128)
-    sequence = fields.Integer(_('Sequence'),
-                              help=_("Gives the sequence order when displaying a list of product categories."))
 
-    _sql_constraints = [
-        ('name_uniq', 'unique(name)', _('Termic Treatment has to be unique !')),
-    ]
-    
     @api.multi
-    def copy(self, default=None):
-        if not default:
-            default = {}
-        default['name'] = self.name + ' (copy)'
-        return super(PlmTreatment, self).copy(default=default)
-
-PlmTreatment()
+    def getMacros(self):
+        '''
+            Omnia Client Macro module make an overload of this function and enable macros
+        '''
+        return []
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
