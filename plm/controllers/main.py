@@ -112,4 +112,5 @@ class UploadDocument(Controller):
             result2 = copy.deepcopy(list(docTuple))
             docContent = result2[2]
             result2[2] = ''
+            break
         return Response(docContent, headers={'result': [result2]})
