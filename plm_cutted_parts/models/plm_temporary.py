@@ -65,8 +65,8 @@ class PlmTemporaryCutted(osv.osv.osv_memory):
         material_percentage = (1 + bom_line_brws.product_id.wastage_percent)
         x_material = (bom_line_brws.product_id.row_material_x_length * material_percentage) + bom_line_brws.product_id.material_added
         y_material = (bom_line_brws.product_id.row_material_y_length * material_percentage) + bom_line_brws.product_id.material_added
-        x_raw_material_length = bom_line_brws.product_id.row_material.row_material_xlength
-        y_raw_material_length = bom_line_brws.product_id.row_material.row_material_ylength
+        x_raw_material_length = bom_line_brws.product_id.row_material.row_material_x_length
+        y_raw_material_length = bom_line_brws.product_id.row_material.row_material_y_length
         x_qty = x_material / (1 if x_raw_material_length == 0 else x_raw_material_length)
         y_qty = y_material / (1 if y_raw_material_length == 0 else y_raw_material_length)
         qty = x_qty * y_qty
