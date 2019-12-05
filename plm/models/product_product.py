@@ -562,20 +562,20 @@ class PlmComponent(models.Model):
         self.wf_message_post(body=_('Created Normal Bom.'))
         return False
 
-    def _action_ondocuments(self, action_name):
+    def _action_ondocuments(self, action_name, include_statuses=[]):
         """
             move workflow on documents having the same state of component
         """
         docIDs = []
         docInError = []
-        documentType = self.env['ir.attachment']
         for product_product_id in self:
-            if (action_name != 'transmit') and (action_name != 'reject') and (action_name != 'release'):
-                check_state = product_product_id.state
-            else:
-                check_state = 'confirmed'
+            if not include_statuses:
+                if (action_name != 'transmit') and (action_name != 'reject') and (action_name != 'release'):
+                    include_statuses = [product_product_id.state]
+                else:
+                    include_statuses = ['confirmed']
             for ir_attachment_id in product_product_id.linkeddocuments:
-                if ir_attachment_id.state == check_state:
+                if ir_attachment_id.state in include_statuses:
                     if ir_attachment_id.is_checkout:
                         docInError.append(_("Document %r : %r is checked out by user %r") % (ir_attachment_id.engineering_document_name, ir_attachment_id.revisionid, ir_attachment_id.checkout_user))
                         continue
@@ -587,7 +587,10 @@ class PlmComponent(models.Model):
                 msg = msg + "\n" + e
             msg = msg + _("\n\nCheck-In All the document in order to proceed !!")
             raise UserError(msg)
+        self.moveDocumentWorkflow(docIDs, action_name)
 
+    def moveDocumentWorkflow(self, docIDs, action_name):
+        documentType = self.env['ir.attachment']
         if len(docIDs) > 0:
             docBrws = documentType.browse(docIDs)
             if action_name == 'confirm':
@@ -691,10 +694,9 @@ class PlmComponent(models.Model):
            action to be executed for Released state
         """
         for comp_obj in self:
-            children_product_to_emit = []
+            children_product_to_emit = [comp_obj.id]
             product_tmpl_ids = []
             defaults = {}
-            prodTmplType = self.env['product.template']
             exclude_statuses = ['released', 'undermodify', 'obsoleted']
             include_statuses = ['confirmed']
             errors, product_ids = comp_obj._get_recursive_parts(exclude_statuses, include_statuses)
@@ -710,15 +712,15 @@ class PlmComponent(models.Model):
                     old_revision.wf_message_post(body=_('Status moved to: %s.' % (dict(self._fields.get('state').selection)[defaults['state']])))
             defaults['engineering_writable'] = False
             defaults['state'] = 'released'
-            self.browse(product_ids)._action_ondocuments('release')
+            self.browse(product_ids)._action_ondocuments('release', include_statuses)
             for currentProductId in allProdObjs:
                 if not currentProductId.release_date:
                     currentProductId.release_date = datetime.now()
                 if not(currentProductId.id in self.ids):
                     children_product_to_emit.append(currentProductId.id)
                 product_tmpl_ids.append(currentProductId.product_tmpl_id.id)
-            self.browse(children_product_to_emit).action_release()
-            objId = prodTmplType.browse(product_tmpl_ids).write(defaults)
+            self.browse(children_product_to_emit).write(defaults)
+            objId = self.env['product.template'].browse(product_tmpl_ids).write(defaults)
             if (objId):
                 self.browse(product_ids).wf_message_post(body=_('Status moved to: %s.' % (dict(self._fields.get('state').selection)[defaults['state']])))
             return objId
@@ -772,7 +774,7 @@ class PlmComponent(models.Model):
         if userErrors:
             raise UserError(userErrors)
         allIdsBrwsList = self.browse(allIDs)
-        allIdsBrwsList._action_ondocuments(doc_action)
+        allIdsBrwsList._action_ondocuments(doc_action, include_statuses)
         for currId in allIdsBrwsList:
             if not(currId.id in self.ids):
                 product_product_ids.append(currId.id)
