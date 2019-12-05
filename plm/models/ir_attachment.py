@@ -46,7 +46,6 @@ USED_STATES = [('draft', _('Draft')),
                ('released', _('Released')),
                ('undermodify', _('UnderModify')),
                ('obsoleted', _('Obsoleted'))]
-USE_DIC_STATES = dict(USED_STATES)
 
 PLM_NO_WRITE_STATE = ['confirmed', 'released', 'undermodify', 'obsoleted']
 
@@ -591,7 +590,7 @@ class PlmDocument(models.Model):
             objId = ir_attachment_id.with_context(newContext).write({'writable': writable,
                                                                      'state': state})
             if objId:
-                ir_attachment_id.wf_message_post(body=_('Status moved to: %s.' % (USE_DIC_STATES[state])))
+                ir_attachment_id.wf_message_post(body=_('Status moved to: %s.' % (dict(self._fields.get('state').selection)[state])))
                 out.append(objId)
         return out
 
@@ -648,7 +647,9 @@ class PlmDocument(models.Model):
             self.setCheckContextWrite(False)
             objId = self.write(defaults)
             if objId:
-                self.wf_message_post(body=_('Status moved to:%s.' % (USE_DIC_STATES[defaults['state']])))
+                self.wf_message_post(body=_('Status moved to:%s.' % (_('Status moved to: %s.' % (
+                    dict(self._fields.get('state').selection)[defaults['state']]
+                    )))))
             return objId
         return False
 

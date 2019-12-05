@@ -707,7 +707,7 @@ class PlmComponent(models.Model):
                     defaults['engineering_writable'] = False
                     defaults['state'] = 'obsoleted'
                     old_revision.product_tmpl_id.write(defaults)
-                    old_revision.wf_message_post(body=_('Status moved to: %s.' % (USE_DIC_STATES[defaults['state']])))
+                    old_revision.wf_message_post(body=_('Status moved to: %s.' % (dict(self._fields.get('state').selection)[defaults['state']])))
             defaults['engineering_writable'] = False
             defaults['state'] = 'released'
             self.browse(product_ids)._action_ondocuments('release')
@@ -720,7 +720,7 @@ class PlmComponent(models.Model):
             self.browse(children_product_to_emit).action_release()
             objId = prodTmplType.browse(product_tmpl_ids).write(defaults)
             if (objId):
-                self.browse(product_ids).wf_message_post(body=_('Status moved to: %s.' % (USE_DIC_STATES[defaults['state']])))
+                self.browse(product_ids).wf_message_post(body=_('Status moved to: %s.' % (dict(self._fields.get('state').selection)[defaults['state']])))
             return objId
         return False
 
@@ -777,11 +777,12 @@ class PlmComponent(models.Model):
             if not(currId.id in self.ids):
                 product_product_ids.append(currId.id)
             product_template_ids.append(currId.product_tmpl_id.id)
+            currId.write(defaults)
         if action:
             self.browse(product_product_ids).perform_action(action)
         objId = self.env['product.template'].browse(product_template_ids).write(defaults)
         if objId:
-            self.browse(allIDs).wf_message_post(body=_('Status moved to: %s.' % (USE_DIC_STATES[defaults['state']])))
+            self.browse(allIDs).wf_message_post(body=_('Status moved to: %s.' % (dict(self._fields.get('state').selection)[defaults['state']])))
         return objId
 
 #  ######################################################################################################################################33

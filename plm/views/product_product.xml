@@ -253,7 +253,7 @@
                                         name="action_rev_docs" string="Revision Rel Docs"/>
                             </group>
                             <group>
-                                <field name="linkeddocuments" nolabel="1" context="{'odooPLM': True}"  mode="kanban">
+                                <field name="linkeddocuments" nolabel="1" context="{'odooPLM': True}"  mode="kanban" domain="[('is_plm', '=', True)]">
                                 
                                 </field>
                             </group>
