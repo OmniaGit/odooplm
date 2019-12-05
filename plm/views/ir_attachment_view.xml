@@ -178,7 +178,7 @@
                   decoration-warning="state == 'undermodify'"
                   decoration-muted="state == 'obsoleted'">
 
-                <field name="engineering_document_name" select="True"/>
+                <field name="name" select="True"/>
                 <field name="revisionid" select="True"/>
                 <field name="state" select="True"/>
                 <field name="engineering_document_name" select="True"/>
@@ -350,7 +350,13 @@
                                                             </span>
                                                         </b>
                                                     </t>
-
+<!-- 													<t t-if="record.state not in ['draft', 'confirmed', 'released', 'undermodify', 'obsoleted']"> -->
+<!--                                                         <b> -->
+<!--                                                             <span style="color: black;padding-left: 5px;"> -->
+<!--                                                                 <field name="state"/> -->
+<!--                                                             </span> -->
+<!--                                                         </b> -->
+<!-- 													</t> -->
                                                 </td>
                                             </tr>
                                             <tr>
