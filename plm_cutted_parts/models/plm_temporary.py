@@ -56,7 +56,7 @@ class PlmTemporaryCutted(osv.osv.osv_memory):
                     if bom_line_brws.product_id.row_material:
                         self.cutted_part_action(bom_line_brws, explosion_action)
                     else:
-                        self.action_on_bom([bom_line_brws.product_id.id])
+                        self.action_on_bom([bom_line_brws.product_id.id], explosion_action)
 
     @api.model
     def cutted_part_action(self, bom_line_brws, explosion_action):
