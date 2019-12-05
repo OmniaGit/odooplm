@@ -33,7 +33,6 @@ from odoo.addons.plm.models.ir_attachment import USED_STATES
 
 USED_STATES.append(('suspended', _('Suspended')))
 
-USE_DIC_STATES = dict(USED_STATES)
 
 class PlmDocumentExtension(models.Model):
     _inherit = 'ir.attachment'
@@ -65,7 +64,9 @@ class PlmDocumentExtension(models.Model):
             self.setCheckContextWrite(False)
             obj_id = self.write(defaults)
             if obj_id:
-                self.wf_message_post(body=_('Status moved to:{}.'.format(USE_DIC_STATES[defaults['state']])))
+                self.wf_message_post(body=_('Status moved to:{}.'.format(
+                    dict(self._fields.get('state').selection)[defaults['state']]
+                    )))
             return obj_id
         return False
 
@@ -78,7 +79,9 @@ class PlmDocumentExtension(models.Model):
             self.setCheckContextWrite(False)
             obj_id = self.write(defaults)
             if obj_id:
-                self.wf_message_post(body=_('Status moved to:{}.'.format(USE_DIC_STATES[defaults['state']])))
+                self.wf_message_post(body=_('Status moved to:{}.'.format(
+                    dict(self._fields.get('state').selection)[defaults['state']]
+                    )))
             return obj_id
         return False
 
