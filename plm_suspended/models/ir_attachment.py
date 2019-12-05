@@ -74,7 +74,7 @@ class PlmDocumentExtension(models.Model):
             reactivate the object
         """
         if self.ischecked_in():
-            defaults = {'old_state': self.state, 'state': 'draft'}
+            defaults = {'old_state': self.state, 'state': self.old_state}
             self.setCheckContextWrite(False)
             obj_id = self.write(defaults)
             if obj_id:

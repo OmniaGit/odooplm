@@ -55,7 +55,7 @@ class ProductProduct(models.Model):
         """
             reactivate the object
         """
-        defaults = {'old_state': self.state, 'state': 'draft'}
+        defaults = {'old_state': self.state, 'state': self.old_state}
         obj_id = self.write(defaults)
         self.product_tmpl_id.write(defaults)
         if obj_id:
