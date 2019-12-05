@@ -934,7 +934,6 @@ class PlmDocument(models.Model):
                              help=_("The status of the product."),
                              readonly="True",
                              default='draft',
-                             required=True,
                              index=True)
     checkout_user = fields.Char(string=_("Checked-Out to"),
                                 compute=_get_checkout_state)

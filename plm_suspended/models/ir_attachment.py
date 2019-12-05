@@ -43,8 +43,7 @@ class PlmDocumentExtension(models.Model):
         _('Status'),
         help=_("The status of the product."),
         readonly="True",
-        default='draft',
-        required=True
+        default='draft'
     )
     old_state = fields.Char(
         size=128,
