@@ -322,41 +322,41 @@
                                                             </span>
                                                         </b>
                                                     </t>
-                                                    <t t-if="stateToUse == 'confirmed'">
+                                                    <t t-elif="stateToUse == 'confirmed'">
                                                         <b>
                                                             <span style="color: blue;padding-left: 5px;">
                                                                 <field name="state"/>
                                                             </span>
                                                         </b>
                                                     </t>
-                                                    <t t-if="stateToUse == 'released'">
+                                                    <t t-elif="stateToUse == 'released'">
                                                         <b>
                                                             <span style="color: rgba(0, 170, 34, 0.66);padding-left: 5px;">
                                                                 <field name="state"/>
                                                             </span>
                                                         </b>
                                                     </t>
-                                                    <t t-if="stateToUse == 'undermodify'">
+                                                    <t t-elif="stateToUse == 'undermodify'">
                                                         <b>
                                                             <span style="color: rgb(218, 159, 34);padding-left: 5px;">
                                                                 <field name="state"/>
                                                             </span>
                                                         </b>
                                                     </t>
-                                                    <t t-if="stateToUse == 'obsoleted'">
+                                                    <t t-elif="stateToUse == 'obsoleted'">
                                                         <b>
                                                             <span style="color: rgb(231, 43, 26);padding-left: 5px;">
                                                                 <field name="state"/>
                                                             </span>
                                                         </b>
                                                     </t>
-<!-- 													<t t-if="record.state not in ['draft', 'confirmed', 'released', 'undermodify', 'obsoleted']"> -->
-<!--                                                         <b> -->
-<!--                                                             <span style="color: black;padding-left: 5px;"> -->
-<!--                                                                 <field name="state"/> -->
-<!--                                                             </span> -->
-<!--                                                         </b> -->
-<!-- 													</t> -->
+													<t t-else="">
+                                                        <b>
+                                                            <span style="color: black;padding-left: 5px;">
+                                                                <field name="state"/>
+                                                            </span>
+                                                        </b>
+													</t>
                                                 </td>
                                             </tr>
                                             <tr>
