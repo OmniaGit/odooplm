@@ -58,7 +58,7 @@ class PlmDocumentRelations(models.Model):
     configuration = fields.Char(_('Configuration Name'),
                                 size=1024,
                                 index=True)
-    link_kind = fields.Char(_('Kind of Link'),
+    link_kind = fields.Char(_('Kind of Link'),      # LyTree | HiTree | RfTree | PkgTree
                             default='HiTree',
                             size=64,
                             required=True)
