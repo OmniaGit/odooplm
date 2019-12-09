@@ -727,7 +727,7 @@ class PlmDocument(models.Model):
         vals.update(self.checkMany2oneClient(vals))
         vals = self.plm_sanitize(vals)
         res = super(PlmDocument, self).write(vals)
-        self.check_unique()
+        # self.check_unique()
         return res
 
     
