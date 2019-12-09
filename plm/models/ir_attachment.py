@@ -675,16 +675,11 @@ class PlmDocument(models.Model):
                 logging.warning(_("Permission denied for folder %r." % (str(filestore))))
                 return ''
         return filestore
-
-    @api.model
-    def search(self, args, offset=0, limit=None, order=None, count=False):
-        return super(PlmDocument, self).search(args, offset, limit, order, count)
-
     
-    def check_unique(self):
-        for ir_attachment_id in self:
-            if self.search_count([('engineering_document_name', '=', ir_attachment_id.engineering_document_name),
-                                  ('revisionid', '=', ir_attachment_id.revisionid),
+    def check_unique(self, vals):
+        if 'engineering_document_name' in vals or  'revisionid' in vals:
+            if self.search_count([('engineering_document_name', '=', vals.get('engineering_document_name', self.engineering_document_name)),
+                                  ('revisionid', '=', vals.get('revisionid', self.revisionid)),
                                   ('document_type', 'in', ['2d', '3d'])]) > 1:
                 raise UserError(_('Document Already in the system'))
 
@@ -713,12 +708,14 @@ class PlmDocument(models.Model):
         vals['is_plm'] = True
         vals.update(self.checkMany2oneClient(vals))
         vals = self.plm_sanitize(vals)
+        res.check_unique(vals)
         res = super(PlmDocument, self).create(vals)
-        res.check_unique()
         return res
 
     
     def write(self, vals):
+        if not self.env.context.get('odooPLM'):
+            return super(PlmDocument, self).write(vals)
         check = self.env.context.get('check', True)
         if check:
             if not self.is_plm_state_writable() and not (self.env.user._is_admin() or self.env.user._is_superuser()):
@@ -726,8 +723,8 @@ class PlmDocument(models.Model):
         self.writeCheckDatas(vals)
         vals.update(self.checkMany2oneClient(vals))
         vals = self.plm_sanitize(vals)
+        self.check_unique(vals)
         res = super(PlmDocument, self).write(vals)
-        self.check_unique()
         return res
 
     
