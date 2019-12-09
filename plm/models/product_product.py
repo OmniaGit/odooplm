@@ -709,6 +709,7 @@ class PlmComponent(models.Model):
                     defaults['engineering_writable'] = False
                     defaults['state'] = 'obsoleted'
                     old_revision.product_tmpl_id.write(defaults)
+                    old_revision.write(defaults)
                     old_revision.wf_message_post(body=_('Status moved to: %s.' % (dict(self._fields.get('state').selection)[defaults['state']])))
             defaults['engineering_writable'] = False
             defaults['state'] = 'released'
