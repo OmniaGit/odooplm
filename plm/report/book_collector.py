@@ -129,33 +129,32 @@ def packDocuments(docRepository, documents, bookCollector):
     if not bookCollector:
         bookCollector = BookCollector()
     for document in documents:
-        if document.type == 'binary':
-            if document.id not in packed:
-                appendPage = False
-                if document.printout and document.printout != 'None':
-                    byteIoStream = BytesIO(base64.b64decode(document.printout))
+        if document.id not in packed:
+            appendPage = False
+            if document.printout and document.printout != 'None':
+                byteIoStream = BytesIO(base64.b64decode(document.printout))
+                appendPage = True
+            elif isPdf(document.name):
+                value = getDocumentStream(docRepository, document)
+                if value:
+                    byteIoStream = BytesIO(value)
                     appendPage = True
-                elif isPdf(document.name):
-                    value = getDocumentStream(docRepository, document)
-                    if value:
-                        byteIoStream = BytesIO(value)
-                        appendPage = True
-                if appendPage:
-                    page = PdfFileReader(byteIoStream)
-                    _orientation, paper = paperFormat(page.getPage(0).mediaBox)
-                    if(paper == 0):
-                        output0.append((byteIoStream, document.state))
-                    elif(paper == 1):
-                        output1.append((byteIoStream, document.state))
-                    elif(paper == 2):
-                        output2.append((byteIoStream, document.state))
-                    elif(paper == 3):
-                        output3.append((byteIoStream, document.state))
-                    elif(paper == 4):
-                        output4.append((byteIoStream, document.state))
-                    else:
-                        output0.append((byteIoStream, document.state))
-                    packed.append(document.id)
+            if appendPage:
+                page = PdfFileReader(byteIoStream)
+                _orientation, paper = paperFormat(page.getPage(0).mediaBox)
+                if(paper == 0):
+                    output0.append((byteIoStream, document.state))
+                elif(paper == 1):
+                    output1.append((byteIoStream, document.state))
+                elif(paper == 2):
+                    output2.append((byteIoStream, document.state))
+                elif(paper == 3):
+                    output3.append((byteIoStream, document.state))
+                elif(paper == 4):
+                    output4.append((byteIoStream, document.state))
+                else:
+                    output0.append((byteIoStream, document.state))
+                packed.append(document.id)
     for pag in output0 + output1 + output2 + output3 + output4:
         bookCollector.addPage(pag)
     if bookCollector is not None:
