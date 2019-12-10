@@ -623,15 +623,12 @@ class MrpBomExtension(models.Model):
             for k in valsKey:
                 if k not in all_keys:
                     del vals[k]
-                    logging.warning("Removed Field %r" % k)
             return vals
         else:
             out = []
             for k in vals:
                 if k in all_keys:
                     out.append(k)
-                else:
-                    logging.warning("Removed Field %r" % k)
             return out
 
 

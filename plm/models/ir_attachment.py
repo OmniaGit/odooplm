@@ -205,7 +205,7 @@ class PlmDocument(models.Model):
             try:
                 shutil.copyfile(self._full_path(ir_attachment_id.store_fname),
                                 self._full_path(random_name()))
-                if ir_attachment_id.is_plm:
+                if ir_attachment_id.is_plm and self.env.context.get("backup", True):
                     self.env['plm.backupdoc'].create({'userid': self.env.uid,
                                                       'existingfile': ir_attachment_id.name,
                                                       'documentid': ir_attachment_id.id,
@@ -273,39 +273,38 @@ class PlmDocument(models.Model):
         if len(listedFiles) > 0:
             datefiles, listfiles = listedFiles
         for objDoc in self.browse(targetIds):
-            if objDoc.type == 'binary':
-                checkOutUser = ''
-                isCheckedOutToMe = False
-                timeDoc = self.getLastTime(objDoc.id)
-                timeSaved = time.mktime(timeDoc.timetuple())
-                checkoutUserBrws = objDoc.get_checkout_user()
-                if checkoutUserBrws:
-                    checkOutUser = checkoutUserBrws.name
-                    if checkoutUserBrws.id == self.env.uid:
-                        isCheckedOutToMe = True
-                if (objDoc.name in listfiles):
-                    if forceFlag:
-                        isNewer = True
-                    else:
-                        listFileIndex = listfiles.index(objDoc.name)
-                        timefile = time.mktime(
-                            datetime.strptime(str(datefiles[listFileIndex]), '%Y-%m-%d %H:%M:%S').timetuple())
-                        isNewer = (timeSaved - timefile) > 5
-                    collectable = isNewer and not (isCheckedOutToMe)
+            checkOutUser = ''
+            isCheckedOutToMe = False
+            timeDoc = self.getLastTime(objDoc.id)
+            timeSaved = time.mktime(timeDoc.timetuple())
+            checkoutUserBrws = objDoc.get_checkout_user()
+            if checkoutUserBrws:
+                checkOutUser = checkoutUserBrws.name
+                if checkoutUserBrws.id == self.env.uid:
+                    isCheckedOutToMe = True
+            if (objDoc.name in listfiles):
+                if forceFlag:
+                    isNewer = True
                 else:
-                    collectable = True
-                objDatas = False
-                try:
-                    objDatas = objDoc.datas
-                except Exception as ex:
-                    logging.error(
-                        'Document with "id": %s  and "engineering_document_name": %s may contains no data!!         Exception: %s' % (
-                            objDoc.id, objDoc.engineering_document_name, ex))
-                if (objDoc.file_size < 1) and (objDatas):
-                    file_size = len(objDoc.datas)
-                else:
-                    file_size = objDoc.file_size
-                result.append((objDoc.id, objDoc.name, file_size, collectable, isCheckedOutToMe, checkOutUser))
+                    listFileIndex = listfiles.index(objDoc.name)
+                    timefile = time.mktime(
+                        datetime.strptime(str(datefiles[listFileIndex]), '%Y-%m-%d %H:%M:%S').timetuple())
+                    isNewer = (timeSaved - timefile) > 5
+                collectable = isNewer and not (isCheckedOutToMe)
+            else:
+                collectable = True
+            objDatas = False
+            try:
+                objDatas = objDoc.datas
+            except Exception as ex:
+                logging.error(
+                    'Document with "id": %s  and "engineering_document_name": %s may contains no data!!         Exception: %s' % (
+                        objDoc.id, objDoc.engineering_document_name, ex))
+            if (objDoc.file_size < 1) and (objDatas):
+                file_size = len(objDoc.datas)
+            else:
+                file_size = objDoc.file_size
+            result.append((objDoc.id, objDoc.name, file_size, collectable, isCheckedOutToMe, checkOutUser))
         return list(set(result))
 
     
@@ -690,15 +689,12 @@ class PlmDocument(models.Model):
             for k in valsKey:
                 if k not in all_keys:
                     del vals[k]
-                    logging.warning("Removed Field %r" % k)
             return vals
         else:
             out = []
             for k in vals:
                 if k in all_keys:
                     out.append(k)
-                else:
-                    logging.warning("Removed Field %r" % k)
             return out
                     
     @api.model
@@ -708,7 +704,7 @@ class PlmDocument(models.Model):
         vals['is_plm'] = True
         vals.update(self.checkMany2oneClient(vals))
         vals = self.plm_sanitize(vals)
-        res.check_unique(vals)
+        self.check_unique(vals)
         res = super(PlmDocument, self).create(vals)
         return res
 
