@@ -161,7 +161,6 @@ class ProductTemplateExtension(models.Model):
             for k in valsKey:
                 if k not in fields_view_get:
                     del vals[k]
-                    logging.warning("Removed Field %r" % k)
         return vals
 
     @api.model
