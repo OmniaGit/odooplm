@@ -42,4 +42,10 @@ class ResUsersExt(models.Model):
         '''
         return []
 
+    def getCustomProcedure(self):
+        '''
+            Omnia CustomProcedure module make an overload of this function and enable macros
+        '''
+        return '', ''
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
