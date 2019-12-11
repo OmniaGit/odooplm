@@ -1062,6 +1062,20 @@ class PlmDocument(models.Model):
         return self._data_check_files(outIds, listedFiles, forceFlag)
 
     @api.model
+    def GetDocumentInfosFromFileName(self, fileName):
+        """
+        get info of all the document related with the file name
+        """
+        out = []
+        for ir_attachment_id in self.search([('name', '=', fileName.get('file_name'))]):
+            out.append({'id': ir_attachment_id.id,
+                        'name': ir_attachment_id.name,
+                        'iconStream': ir_attachment_id.preview,
+                        'revisionid': ir_attachment_id.revisionid,
+                        'engineering_document_name': ir_attachment_id.engineering_document_name})
+        return out
+
+    @api.model
     def CheckInRecursive(self, request, default=None):
         """
             Evaluate documents to return

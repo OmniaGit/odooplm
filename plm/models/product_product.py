@@ -710,7 +710,7 @@ class PlmComponent(models.Model):
                     defaults['state'] = 'obsoleted'
                     old_revision.product_tmpl_id.write(defaults)
                     old_revision.write(defaults)
-                    old_revision.wf_message_post(body=_('Status moved to: %s.' % (dict(self._fields.get('state').selection)[defaults['state']])))
+                    old_revision.wf_message_post(body=_('Status moved to: %s.' % (dict(self._fields.get('state').selection(self))[defaults['state']])))
             defaults['engineering_writable'] = False
             defaults['state'] = 'released'
             self.browse(product_ids)._action_ondocuments('release', include_statuses)
@@ -723,7 +723,7 @@ class PlmComponent(models.Model):
             self.browse(children_product_to_emit).write(defaults)
             objId = self.env['product.template'].browse(product_tmpl_ids).write(defaults)
             if (objId):
-                self.browse(product_ids).wf_message_post(body=_('Status moved to: %s.' % (dict(self._fields.get('state').selection)[defaults['state']])))
+                self.browse(product_ids).wf_message_post(body=_('Status moved to: %s.' % (dict(self._fields.get('state').selection(self))[defaults['state']])))
             return objId
         return False
 
@@ -785,7 +785,8 @@ class PlmComponent(models.Model):
             self.browse(product_product_ids).perform_action(action)
         objId = self.env['product.template'].browse(product_template_ids).write(defaults)
         if objId:
-            self.browse(allIDs).wf_message_post(body=_('Status moved to: %s.' % (dict(self._fields.get('state').selection)[defaults['state']])))
+            
+            self.browse(allIDs).wf_message_post(body=_('Status moved to: %s.' % (dict(self._fields.get('state').selection(self))[defaults['state']])))
         return objId
 
 #  ######################################################################################################################################33
@@ -1094,7 +1095,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                 product_product_id.product_tmpl_id.state = 'undermodify'
                 product_product_id.product_tmpl_id.engineering_writable =  False
                 engineering_revision = int(product_product_id.engineering_revision) + 1
-                product_product_id.wf_message_post(body=_('Status moved to: %s.' % (USE_DIC_STATES['undermodify'])))
+                product_product_id.wf_message_post(body=_('Status moved to: %s.' % (dict(self._fields.get('state').selection(self))[defaults['state']])))
                 # store updated infos in "revision" object
                 defaults = {}
                 defaults['name'] = product_product_id.name                 # copy function needs an explicit name value
