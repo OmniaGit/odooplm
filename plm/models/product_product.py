@@ -702,6 +702,8 @@ class PlmComponent(models.Model):
             errors, product_ids = comp_obj._get_recursive_parts(exclude_statuses, include_statuses)
             if len(product_ids) < 1 or len(errors) > 0:
                 raise UserError(errors)
+            available_status = self._fields.get('state')._description_selection(self.env)
+            dict_status = dict(available_status)
             allProdObjs = self.browse(product_ids)
             for productBrw in allProdObjs:
                 old_revision = self._getbyrevision(productBrw.engineering_code, productBrw.engineering_revision - 1)
@@ -710,7 +712,8 @@ class PlmComponent(models.Model):
                     defaults['state'] = 'obsoleted'
                     old_revision.product_tmpl_id.write(defaults)
                     old_revision.write(defaults)
-                    old_revision.wf_message_post(body=_('Status moved to: %s.' % (dict(self._fields.get('state').selection(self))[defaults['state']])))
+                    status_lable = dict_status.get(defaults.get('state', ''), '')
+                    old_revision.wf_message_post(body=_('Status moved to: %s.' % (status_lable)))
             defaults['engineering_writable'] = False
             defaults['state'] = 'released'
             self.browse(product_ids)._action_ondocuments('release', include_statuses)
@@ -723,7 +726,8 @@ class PlmComponent(models.Model):
             self.browse(children_product_to_emit).write(defaults)
             objId = self.env['product.template'].browse(product_tmpl_ids).write(defaults)
             if (objId):
-                self.browse(product_ids).wf_message_post(body=_('Status moved to: %s.' % (dict(self._fields.get('state').selection(self))[defaults['state']])))
+                status_lable = dict_status.get(defaults.get('state', ''), '')
+                self.browse(product_ids).wf_message_post(body=_('Status moved to: %s.' % (status_lable)))
             return objId
         return False
 
@@ -785,8 +789,10 @@ class PlmComponent(models.Model):
             self.browse(product_product_ids).perform_action(action)
         objId = self.env['product.template'].browse(product_template_ids).write(defaults)
         if objId:
-            
-            self.browse(allIDs).wf_message_post(body=_('Status moved to: %s.' % (dict(self._fields.get('state').selection(self))[defaults['state']])))
+            available_status = self._fields.get('state')._description_selection(self.env)
+            dict_status = dict(available_status)
+            status_lable = dict_status.get(defaults.get('state', ''), '')
+            self.browse(allIDs).wf_message_post(body=_('Status moved to: %s.' % (status_lable)))
         return objId
 
 #  ######################################################################################################################################33
@@ -1095,7 +1101,10 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                 product_product_id.product_tmpl_id.state = 'undermodify'
                 product_product_id.product_tmpl_id.engineering_writable =  False
                 engineering_revision = int(product_product_id.engineering_revision) + 1
-                product_product_id.wf_message_post(body=_('Status moved to: %s.' % (dict(self._fields.get('state').selection(self))[defaults['state']])))
+                available_status = self._fields.get('state')._description_selection(self.env)
+                dict_status = dict(available_status)
+                status_lable = dict_status.get(product_product_id.state, '')
+                product_product_id.wf_message_post(body=_('Status moved to: %s.' % (status_lable)))
                 # store updated infos in "revision" object
                 defaults = {}
                 defaults['name'] = product_product_id.name                 # copy function needs an explicit name value

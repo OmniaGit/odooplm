@@ -589,7 +589,10 @@ class PlmDocument(models.Model):
             objId = ir_attachment_id.with_context(newContext).write({'writable': writable,
                                                                      'state': state})
             if objId:
-                ir_attachment_id.wf_message_post(body=_('Status moved to: %s.' % (dict(self._fields.get('state').selection)[state])))
+                available_status = self._fields.get('state')._description_selection(self.env)
+                dict_status = dict(available_status)
+                status_lable = dict_status.get(state, '')
+                ir_attachment_id.wf_message_post(body=_('Status moved to: %s.' % (status_lable)))
                 out.append(objId)
         return out
 
@@ -646,9 +649,10 @@ class PlmDocument(models.Model):
             self.setCheckContextWrite(False)
             objId = self.write(defaults)
             if objId:
-                self.wf_message_post(body=_('Status moved to:%s.' % (_('Status moved to: %s.' % (
-                    dict(self._fields.get('state').selection)[defaults['state']]
-                    )))))
+                available_status = self._fields.get('state')._description_selection(self.env)
+                dict_status = dict(available_status)
+                status_lable = dict_status.get(defaults.get('state', ''), '')
+                self.wf_message_post(body=_('Status moved to:%s.' % (_('Status moved to: %s.' % (status_lable)))))
             return objId
         return False
 
