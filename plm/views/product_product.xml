@@ -93,8 +93,11 @@
                                        attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
                                 <field name="tmp_treatment"
                                        attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
-                                <field name="weight" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"
-                                       digits="[14,3]"/>
+                                <label for="weight"/>
+                                <div class="o_row" name="weight" attrs="{'readonly':[('state','in',['released','obsoleted'])]}">
+                                    <field name="weight" attrs="{'readonly':[('state','in',['released','obsoleted'])]}" digits="[14,3]"/>
+                                    <span><field name="weight_uom_name"/></span>
+                                </div>
                                 <field name="uom_id"
                                        attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
                                 <field name="uom_po_id"
@@ -215,8 +218,11 @@
 	                           attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
 	                    <field name="tmp_treatment"
 	                           attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
-	                    <field name="weight" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"
-	                           digits="[14,3]"/>
+	                    <label for="weight"/>
+                        <div class="o_row" name="weight" attrs="{'readonly':[('state','in',['released','obsoleted'])]}">
+                            <field name="weight" attrs="{'readonly':[('state','in',['released','obsoleted'])]}" digits="[14,3]"/>
+                            <span><field name="weight_uom_name"/></span>
+                        </div>
 	                    <field name="uom_id"
 	                           attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
 	                    <field name="uom_po_id"
