@@ -51,7 +51,7 @@ class ProductProductExtended(models.Model):
         prodProdEnv = self.env['product.product']
         prodBrws = prodProdEnv.browse(product_id)
         if self.stateAllows(prodBrws, 'Component'):
-            revRes = prodBrws.NewRevision(prodBrws.id)
+            revRes = prodBrws.NewRevision()
             newID, _newIndex = revRes
             if not newID:
                 logging.error('[action_create_new_revision_by_server] newID: %r' % (newID))
