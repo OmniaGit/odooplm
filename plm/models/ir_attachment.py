@@ -147,12 +147,27 @@ class PlmDocument(models.Model):
                 responce, message = objDoc._isDownloadableFromServer(local_server_name)
                 if not responce:
                     local_server_name_errors.append(message)
-            if objDoc.type == 'binary':
-                timeDoc = self.getLastTime(objDoc.id)
-                timeSaved = time.mktime(timeDoc.timetuple())
-                try:
-                    isCheckedOutToMe = objDoc._is_checkedout_for_me()
-                    if not (objDoc.name in listfiles):
+            timeDoc = self.getLastTime(objDoc.id)
+            timeSaved = time.mktime(timeDoc.timetuple())
+            try:
+                isCheckedOutToMe = objDoc._is_checkedout_for_me()
+                if not (objDoc.name in listfiles):
+                    datas = False
+                    if local_server_name == 'odoo':
+                        datas = objDoc.datas
+                    result.append((objDoc.id,
+                                   objDoc.name,
+                                   datas,
+                                   isCheckedOutToMe,
+                                   timeDoc))
+                else:
+                    if forceFlag:
+                        isNewer = True
+                    else:
+                        timefile = time.mktime(datetime.strptime(str(datefiles[listfiles.index(objDoc.name)]),
+                                                                 '%Y-%m-%d %H:%M:%S').timetuple())
+                        isNewer = (timeSaved - timefile) > 5
+                    if (isNewer and not (isCheckedOutToMe)):
                         datas = False
                         if local_server_name == 'odoo':
                             datas = objDoc.datas
@@ -162,35 +177,19 @@ class PlmDocument(models.Model):
                                        isCheckedOutToMe,
                                        timeDoc))
                     else:
-                        if forceFlag:
-                            isNewer = True
-                        else:
-                            timefile = time.mktime(datetime.strptime(str(datefiles[listfiles.index(objDoc.name)]),
-                                                                     '%Y-%m-%d %H:%M:%S').timetuple())
-                            isNewer = (timeSaved - timefile) > 5
-                        if (isNewer and not (isCheckedOutToMe)):
-                            datas = False
-                            if local_server_name == 'odoo':
-                                datas = objDoc.datas
-                            result.append((objDoc.id,
-                                           objDoc.name,
-                                           datas,
-                                           isCheckedOutToMe,
-                                           timeDoc))
-                        else:
-                            result.append((objDoc.id,
-                                           objDoc.name,
-                                           False,
-                                           isCheckedOutToMe,
-                                           timeDoc))
-                except Exception as ex:
-                    logging.error(
-                        "_data_get_files : Unable to access to document (" + str(objDoc.engineering_document_name) + "). Error :" + str(ex))
-                    result.append((objDoc.id,
-                                   objDoc.name,
-                                   False,
-                                   True,
-                                   self.getServerTime()))
+                        result.append((objDoc.id,
+                                       objDoc.name,
+                                       False,
+                                       isCheckedOutToMe,
+                                       timeDoc))
+            except Exception as ex:
+                logging.error(
+                    "_data_get_files : Unable to access to document (" + str(objDoc.engineering_document_name) + "). Error :" + str(ex))
+                result.append((objDoc.id,
+                               objDoc.name,
+                               False,
+                               True,
+                               self.getServerTime()))
         if local_server_name != 'odoo':
             if local_server_name_errors:
                 return True, local_server_name_errors
@@ -338,22 +337,6 @@ class PlmDocument(models.Model):
                 'link_kind': brwEnt.link_kind,
             })
         return newDocBrws
-
-    @api.model
-    def _iswritable(self, oid):
-        if not oid.type == 'binary':
-            logging.warning(
-                "_iswritable : Part (" + str(oid.engineering_document_name) + "-" + str(oid.revisionid) + ") not writable as hyperlink.")
-            return False
-        if oid.state not in ('draft'):
-            logging.warning("_iswritable : Part (" + str(oid.engineering_document_name) + "-" + str(oid.revisionid) + ") in status ; " + str(
-                oid.state) + ".")
-            return False
-        if not oid.engineering_document_name:
-            logging.warning(
-                "_iswritable : Part (" + str(oid.engineering_document_name) + "-" + str(oid.revisionid) + ") without Engineering P/N.")
-            return False
-        return True
 
     def newVersion(self):
         """
