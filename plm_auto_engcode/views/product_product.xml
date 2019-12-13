@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Views -->
+
+    <record id="plm_auto_eng_code_base" model="ir.ui.view">
+        <field name="name">plm.auto.eng.code</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="plm.plm_component_base_form"/>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <field name="engineering_code" position="after">
+                <button name="generate_eng_code"
+                        type="object"
+                        class="btn btn-sm oe_stat_button"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="plm_auto_eng_code" model="ir.ui.view">
+        <field name="name">plm.auto.eng.code</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="plm.plm_product_product_normal_form_view_inherit"/>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <field name="engineering_code" position="after">
+                <button name="generate_eng_code"
+                        type="object"
+                        class="btn btn-sm oe_stat_button"
+                        icon="fa-magic"/>
+            </field>
+        </field>
+    </record>
+    
+</odoo>

@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution
@@ -20,30 +19,25 @@
 #
 ##############################################################################
 {
-    'name': 'PLM Batch conversion',
+    'name': 'PLM Automatic Engineering Code',
     'version': '12.0',
     'author': 'OmniaSolutions',
     'website': 'https://www.omniasolutions.website',
     'category': 'Product Lifecycle Management',
     'sequence': 15,
+    'summary': '',
+    'images': [],
     'license': 'AGPL-3',
-    'summary': 'PLM Integration with main CAD editors batch conversion tool',
     'depends': ['plm'],
     'description': """
-Manage Product Lifecycle Management in OpenERP
-==============================================
-Batch conversion tool
-Improve the plm module adding feature for converting cad files in different formats using a cad server machine
-in order to properly set this module you need a cad server machine.
-for more information send an e mail at info@omniasolutions.eu
     """,
-    'data': ['view/plm_component_action_extended.xml',
-             'view/data.xml'],
+    'data': [
+        'views/product_product.xml',
+        'views/sequence.xml',
+    ],
     'demo': [],
     'test': [],
     'installable': True,
     'application': False,
     'auto_install': False,
 }
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

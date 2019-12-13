@@ -52,3 +52,4 @@ class PlmConfigSettings(models.TransientModel):
     module_plm_client_customprocedure = fields.Boolean("Activate the PLM Client mapping")
     module_plm_box = fields.Boolean("PLM Box")
     module_plm_suspended = fields.Boolean("Manage Product suspend code")
+    module_plm_auto_engcode = fields.Boolean("Enable Automatic Engineering Code")
