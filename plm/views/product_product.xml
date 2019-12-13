@@ -132,17 +132,17 @@
                             </group>
                             <group col="4" colspan="4">
                                 <field name="std_umc1"
-                                       attrs="{'readonly':[('std_umc1','=',False),('state','in',['released','obsoleted'])]}"/>
+                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
                                 <field name="std_value1"
-                                       attrs="{'readonly':[('std_umc1','=',False),('state','in',['released','obsoleted'])]}"/>
+                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
                                 <field name="std_umc2"
-                                       attrs="{'readonly':[('std_umc2','=',False),('state','in',['released','obsoleted'])]}"/>
+                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
                                 <field name="std_value2"
-                                       attrs="{'readonly':[('std_umc2','=',False),('state','in',['released','obsoleted'])]}"/>
+                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
                                 <field name="std_umc3"
-                                       attrs="{'readonly':[('std_umc3','=',False),('state','in',['released','obsoleted'])]}"/>
+                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
                                 <field name="std_value3"
-                                       attrs="{'readonly':[('std_umc3','=',False),('state','in',['released','obsoleted'])]}"/>
+                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
                             </group>
                         </page>
                         <page string="CAD Property">
@@ -244,17 +244,17 @@
                             </group>
                             <group col="4" colspan="4">
                                 <field name="std_umc1"
-                                       attrs="{'readonly':[('std_umc1','=',False),('state','in',['released','obsoleted'])]}"/>
+                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
                                 <field name="std_value1"
-                                       attrs="{'readonly':[('std_umc1','=',False),('state','in',['released','obsoleted'])]}"/>
+                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
                                 <field name="std_umc2"
-                                       attrs="{'readonly':[('std_umc2','=',False),('state','in',['released','obsoleted'])]}"/>
+                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
                                 <field name="std_value2"
-                                       attrs="{'readonly':[('std_umc2','=',False),('state','in',['released','obsoleted'])]}"/>
+                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
                                 <field name="std_umc3"
-                                       attrs="{'readonly':[('std_umc3','=',False),('state','in',['released','obsoleted'])]}"/>
+                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
                                 <field name="std_value3"
-                                       attrs="{'readonly':[('std_umc3','=',False),('state','in',['released','obsoleted'])]}"/>
+                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
                             </group>
                         </page>
                         <page string="CAD Property">
