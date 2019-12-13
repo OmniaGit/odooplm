@@ -186,7 +186,7 @@ class ReportSpareDocumentOne(models.AbstractModel):
         ret = []
         doc_repository = self.env['ir.attachment']._get_filestore()
         for document in component.linkeddocuments:
-            if document.used_for_spare and (document.type == 'binary'):
+            if document.used_for_spare:
                 if document.printout and str(document.printout) != 'None':
                     ret.append(BytesIO(base64.b64decode(document.printout)))
                 elif is_pdf(document.name):
