@@ -960,7 +960,7 @@ class PlmDocument(models.Model):
                                      store=True,
                                      string=_('Document Type'))
     desc_modify = fields.Text(_('Modification Description'), default='')
-    is_plm = fields.Boolean('Is a plm Document')
+    is_plm = fields.Boolean('Is a plm Document', help=_("Should the document be backed up?"))
     attachment_release_user = fields.Many2one('res.users', string=_("Release User"))
     attachment_release_date = fields.Datetime(string=_('Release Datetime'))
     attachment_revision_count = fields.Integer(compute='_attachment_revision_count')
