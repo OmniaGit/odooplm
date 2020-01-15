@@ -68,6 +68,11 @@
                   </button>
                </div>
             </xpath>
+            <xpath expr="//h1" position="replace">
+                <h1>
+                    <field name="name" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                </h1>
+            </xpath>
             <xpath expr="//sheet/group[last()]" position="after">
                     <group name="doc_data">
                         <group name="main_doc_info">
