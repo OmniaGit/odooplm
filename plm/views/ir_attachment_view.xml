@@ -72,10 +72,8 @@
                     <group name="doc_data">
                         <group name="main_doc_info">
                             <strong>
-                                <field name="name" select="1"
-                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                                <field name="name" select="1" readonly="True"/>
                             </strong>
-                            
                             <strong>
                                 <field name="revisionid" readonly="True"/>
                             </strong>
