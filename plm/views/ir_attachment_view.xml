@@ -76,12 +76,6 @@
             <xpath expr="//sheet/group[last()]" position="after">
                     <group name="doc_data">
                         <group name="main_doc_info">
-                            <strong>
-                                <field name="name" select="1" readonly="True"/>
-                            </strong>
-                            <strong>
-                                <field name="revisionid" readonly="True"/>
-                            </strong>
                             <group string="Created and Modified" name="doc_user">
                                 <field name="create_uid"  readonly="1"/>
                                 <field name="create_date" readonly="1"/>
@@ -89,6 +83,7 @@
                                 <field name="write_date"  readonly="1"/>
                                 <field name="attachment_release_user"   readonly="1"/>
                                 <field name="attachment_release_date"  readonly="1"/>
+                                <field name="revisionid"  readonly="1"/>
                                 <field name="is_plm" group="base.group_no_one"/>
                             </group>
                         </group>
