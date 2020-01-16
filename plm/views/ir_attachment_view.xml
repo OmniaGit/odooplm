@@ -68,6 +68,7 @@
                   </button>
                </div>
             </xpath>
+
             <xpath expr="//div[@name='creation_div']" position="after">
                 <label for="write_uid" string="Modification"/>
                   <div name="modification_div">
@@ -78,6 +79,13 @@
                  <field name="attachment_release_date"  readonly="1"/>
                  <field name="is_plm" group="base.group_no_one"/>
             </xpath>
+
+            <xpath expr="//h1" position="replace">
+                <h1>
+                    <field name="name" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                </h1>
+            </xpath>
+            
             <xpath expr="//sheet/group[last()]" position="after">
                     <group name="doc_data">
                         <group name="main_doc_info">

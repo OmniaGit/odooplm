@@ -363,7 +363,7 @@ class PlmDocument(models.Model):
         """
             create a new version of the document (to WorkFlow calling)
         """
-        if self.NewRevision() is not None:
+        if self.NewRevision(self.id) is not None:
             return True
         return False
 
@@ -865,13 +865,14 @@ class PlmDocument(models.Model):
         self.env['plm.checkout'].browse(checkOutId).unlink()
         return self.id
 
-    @api.model
+    @api.multi
     def _is_checkout(self):
-        _docName, _docRev, chekOutUser, _hostName = self.getCheckedOut(self.id, None)
-        if chekOutUser:
-            self.is_checkout = True
-        else:
-            self.is_checkout = False
+        for record in self:
+            _docName, _docRev, chekOutUser, _hostName = self.getCheckedOut(record.id, None)
+            if chekOutUser:
+                record.is_checkout = True
+            else:
+                record.is_checkout = False
 
     def getFileExtension(self, docBrws):
         fileExtension = ''
@@ -957,7 +958,7 @@ class PlmDocument(models.Model):
                                      store=True,
                                      string=_('Document Type'))
     desc_modify = fields.Text(_('Modification Description'), default='')
-    is_plm = fields.Boolean('Is a plm Document')
+    is_plm = fields.Boolean('Is a plm Document', help=_("If the flag is set, the document is managed by the plm module, and imply its backup at each save and the visibility on some views."))
     attachment_release_user = fields.Many2one('res.users', string=_("Release User"))
     attachment_release_date = fields.Datetime(string=_('Release Datetime'))
     attachment_revision_count = fields.Integer(compute='_attachment_revision_count')
@@ -2082,5 +2083,19 @@ class PlmDocument(models.Model):
                     out.append(doc_fields)
                 break
         return json.dumps(out)
+
+    @api.model
+    def GetDocumentInfosFromFileName(self, fileName):
+        """
+        get info of all the document related with the file name
+        """
+        out = []
+        for ir_attachment_id in self.search([('datas_fname', '=', fileName.get('file_name'))]):
+            out.append({'id': ir_attachment_id.id,
+                        'name': ir_attachment_id.name,
+                        'iconStream': ir_attachment_id.preview,
+                        'revisionid': ir_attachment_id.revisionid,
+                        'name': ir_attachment_id.name})
+        return out
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
