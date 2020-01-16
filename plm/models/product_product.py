@@ -735,7 +735,7 @@ class PlmComponent(models.Model):
             allProdObjs = self.browse(product_ids)
             for productBrw in allProdObjs:
                 old_revision = self._getbyrevision(productBrw.engineering_code, productBrw.engineering_revision - 1)
-                if old_revision is not None:
+                if old_revision:
                     defaults['engineering_writable'] = False
                     defaults['state'] = 'obsoleted'
                     old_revision.product_tmpl_id.write(defaults)
@@ -821,12 +821,19 @@ class PlmComponent(models.Model):
 
 #  ######################################################################################################################################33
     def plm_sanitize(self, vals):
-        valsKey = list(vals.keys())
-        for k in valsKey:
-            if k not in self.fields_get_keys():
-                del vals[k]
-                logging.warning("Removed Field %r" % k)
-        return vals
+        all_keys = self.fields_get_keys()
+        if isinstance(vals, dict):
+            valsKey = list(vals.keys())
+            for k in valsKey:
+                if k not in all_keys:
+                    del vals[k]
+            return vals
+        else:
+            out = []
+            for k in vals:
+                if k in all_keys:
+                    out.append(k)
+            return out
 
     @api.model
     def variant_fields_to_keep(self):

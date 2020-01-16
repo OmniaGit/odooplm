@@ -696,15 +696,12 @@ class PlmDocument(models.Model):
             for k in valsKey:
                 if k not in all_keys:
                     del vals[k]
-                    logging.warning("Removed Field %r" % k)
             return vals
         else:
             out = []
             for k in vals:
                 if k in all_keys:
                     out.append(k)
-                else:
-                    logging.warning("Removed Field %r" % k)
             return out
                     
     @api.model
@@ -763,7 +760,7 @@ class PlmDocument(models.Model):
     def writeCheckDatas(self, vals):
         if 'datas' in list(vals.keys()) or 'name' in list(vals.keys()):
             for docBrws in self:
-                if docBrws.document_type.upper() in ['2D', '3D']:
+                if docBrws.document_type and docBrws.document_type.upper() in ['2D', '3D']:
                     if not docBrws._is_checkedout_for_me():
                         if not (self.env.user._is_admin() or self.env.user._is_superuser()):
                             raise UserError(_("You cannot edit a file not in check-out by you! User ID %s" % (self.env.uid)))
