@@ -21,3 +21,4 @@
 from . import product_template
 from . import mrp_bom_line
 from . import plm_temporary
+from . import product_product

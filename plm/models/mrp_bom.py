@@ -701,10 +701,15 @@ class MrpBomExtension(models.Model):
             add children rows
         """
         if self.id and child_id and source_document_id:
+            cutted_type = 'none'
+            if relation_attributes.get('CUTTED_COMP'):
+                cutted_type = 'client'
             relation_attributes.update({'bom_id': self.id,
                                         'product_id': child_id,
                                         'source_id': source_document_id,
-                                        'type': bom_type})
+                                        'type': bom_type,
+                                        'cutted_type': cutted_type
+                                        })
             self.env['mrp.bom.line'].create(relation_attributes).id
 
     @api.multi  # Don't change me with @api.one or I don't work!!!
