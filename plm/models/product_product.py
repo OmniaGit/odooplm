@@ -1046,7 +1046,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             try:
                 for refId in self.env[referredModel].search([('name', '=', cadVal)]):
                     return refId
-                if force_create:
+                if force_create and cadVal:
                     if referredModel in ['product.product', 'product.template']:
                         return False    # With False value field is not set
                     tmp_vals = {
