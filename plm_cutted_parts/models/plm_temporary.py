@@ -57,6 +57,27 @@ class PlmTemporaryCutted(osv.osv.osv_memory):
                         self.cutted_part_action(bom_line_brws, explosion_action)
                     else:
                         self.action_on_bom([bom_line_brws.product_id.id], explosion_action)
+            if not bom_brws_list:
+                if productBrowse.row_material:
+                    obj_boms = mrp_bom_type_object.search([('product_tmpl_id', '=', id_template),
+                                                           ('type', '=', 'normal')])
+                    if not obj_boms:
+                        vals = {
+                            'product_id': productBrowse.id,
+                            'product_tmpl_id': id_template,
+                            'type': 'normal',
+                            }
+                        obj_boms = mrp_bom_type_object.create(vals)
+                    for nbom in obj_boms:
+                        line_vals = {
+                            'bom_id': nbom.id,
+                            'product_id': productBrowse.row_material.id,
+                            'product_qty': 1,
+                            'x_length': productBrowse.row_material_x_length,
+                            'cutted_type': 'server'
+                            }
+                        bom_line_brws = self.env['mrp.bom.line'].create(line_vals)
+                        bom_line_brws.computeCuttedTotalQty()
 
     @api.model
     def cutted_part_action(self, bom_line_brws, explosion_action):
