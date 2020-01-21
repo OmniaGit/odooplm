@@ -105,7 +105,7 @@ class MrpBomLineTemplateCuttedParts(models.Model):
                     cutted_qty = bom_line_id.cutted_qty or 1
                     ret = ret * cutted_qty
                     return ret or 1
-        return 1
+            return bom_line_id.product_qty
 
     def computeTotalQty(self, xLenght, yLenght, cutted_qty):
         ret = xLenght * yLenght
