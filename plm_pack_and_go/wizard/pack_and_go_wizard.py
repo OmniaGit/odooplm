@@ -323,8 +323,13 @@ class PackAndGo(osv.osv.osv_memory):
     @api.multi
     def action_export_zip(self):
         """
-            action to import the data
+            action to export the data
         """
+
+        nonEmptyBoMError = UserError(_('You have to compute a non-empty BoM first.'))
+        if not self.export_3d and not self.export_2d and not self.export_pdf and not self.export_other:
+            raise nonEmptyBoMError
+
         def checkCreateFolder(path):
             if os.path.exists(path):
                 shutil.rmtree(path, ignore_errors=True)
