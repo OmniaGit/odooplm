@@ -87,6 +87,7 @@ class PlmDocumentRelations(models.Model):
         """
             Save Document relations
         """
+        #FIXME: Check if is used and if is used check LyTree because has reversed parent and child ids
         def cleanStructure(relations):
             res = {}
             cleanIds = []
