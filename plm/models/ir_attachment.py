@@ -2124,8 +2124,12 @@ class PlmDocument(models.Model):
                 doc_fields['documentID'] = doc_id.id
                 doc_fields['datas_fname'] = doc_id.datas_fname
                 if is_check_in:
-                    doc_id.checkout(hostname, pws_path)
-                    doc_fields['checkout'] = True
+                    try:
+                        doc_id.checkout(hostname, pws_path)
+                        doc_fields['checkout'] = True
+                    except Exception as ex:
+                        doc_fields['err_msg'] = 'Error during check-out %r %r' % (doc_fields['datas_fname'], ex)
+                        doc_fields['checkout'] = False
                     out.append(doc_fields)
                 elif checkout_by_me:
                     doc_fields['checkout'] = False

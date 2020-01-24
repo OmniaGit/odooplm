@@ -205,7 +205,8 @@
             '.sldasm',
             '.sldprt',
             '.par',
-            '.asm']</field>
+            '.asm',
+            '.psm']</field>
         </record>
 
         <record id="report_indentation_key" model="ir.config_parameter">
