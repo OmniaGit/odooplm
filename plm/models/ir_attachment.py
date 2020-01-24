@@ -234,19 +234,19 @@ class PlmDocument(models.Model):
         return result
 
     @api.model
-    def _relateddocs(self, doc_id, kinds, recursion=True):
+    def getRelatedOneLevelLinks(self, doc_id, kinds):
         result = []
         for link_kind in kinds:
             if link_kind == 'RfTree':
-                result.extend(self.getRelatedRfTree(doc_id, recursion))
+                result.extend(self.getRelatedRfTree(doc_id, False))
             elif link_kind == 'LyTree':
                 result.extend(self.getRelatedLyTree(doc_id))
             elif link_kind == 'HiTree':
-                result.extend(self.getRelatedHiTree(doc_id, recursion))
+                result.extend(self.getRelatedHiTree(doc_id, False))
             elif link_kind == 'PkgTree':
                 result.extend(self.getRelatedPkgTree(doc_id))
             else:
-                logging.warning('_relateddocs cannot find link_kind %r' % (link_kind))
+                logging.warning('getRelatedOneLevelLinks cannot find link_kind %r' % (link_kind))
         return list(set(result))
 
     @api.model
@@ -282,6 +282,8 @@ class PlmDocument(models.Model):
                      '|', 
                         ('parent_id', '=', doc_id),
                         ('child_id', '=', doc_id)]
+        if recursion:
+            to_search = [('link_kind', 'in', ['RfTree']),('parent_id', '=', doc_id)]
         doc_rel_ids = self.env['ir.attachment.relation'].search(to_search)
         for doc_rel_id in doc_rel_ids:
             if doc_rel_id.child_id.id == doc_id:
@@ -293,7 +295,19 @@ class PlmDocument(models.Model):
                 if recursion:
                     out.extend(self.getRelatedRfTree(doc_rel_id.child_id.id, recursion))
         return list(set(out))
-                
+
+    @api.model
+    def getRelatedPkgTree(self, doc_id):
+        out = []
+        if not doc_id:
+            logging.warning('Cannot get links from %r document' % (doc_id))
+            return []
+        to_search = [('link_kind', 'in', ['PkgTree']),
+                     ('parent_id', '=', doc_id)]
+        doc_rel_ids = self.env['ir.attachment.relation'].search(to_search)
+        for doc_rel_id in doc_rel_ids:
+            out.append(doc_rel_id.child_id.id)
+        return list(set(out))
 
     @api.model
     def getRelatedHiTree(self, doc_id, recursion=True):
@@ -316,17 +330,32 @@ class PlmDocument(models.Model):
         return out
 
     @api.model
-    def getRelatedPkgTree(self, doc_id):
-        out = []
-        if not doc_id:
-            logging.warning('Cannot get links from %r document' % (doc_id))
-            return []
-        to_search = [('link_kind', 'in', ['PkgTree']),
-                     ('parent_id', '=', doc_id)]
-        doc_rel_ids = self.env['ir.attachment.relation'].search(to_search)
-        for doc_rel_id in doc_rel_ids:
-            out.append(doc_rel_id.child_id.id)
-        return list(set(out))
+    def getRelatedAllLevelDocumentsTree(self, starting_doc_id):
+        outList = []
+        
+        def recursion(doc_id):
+            if not doc_id:
+                return
+            outList.append(doc_id)
+            doc_brws = self.browse(doc_id)
+            rf_tree_doc_ids = self.getRelatedRfTree(doc_id, recursion=False)
+            for rf_tree_doc_id in rf_tree_doc_ids:
+                outList.extend(recursion(rf_tree_doc_id))
+            outList.extend(rf_tree_doc_ids)
+            if doc_brws.is3D():
+                ly_tree_doc_ids = self.getRelatedLyTree(doc_id)
+                outList.extend(ly_tree_doc_ids)
+                outList.extend(self.getRelatedPkgTree(doc_id))
+                doc_ids = self.getRelatedHiTree(doc_id, recursion=False)
+                for child_doc_id in doc_ids:
+                    recursion(child_doc_id)
+            elif doc_brws.is2D():
+                model_doc_ids = self.getRelatedLyTree(doc_id)
+                for model_doc_id in model_doc_ids:
+                    recursion(model_doc_id)
+
+        recursion(starting_doc_id.id)
+        return list(set(outList))
 
     @api.multi
     def _data_check_files(self, targetIds, listedFiles=(), forceFlag=False):
@@ -656,6 +685,9 @@ class PlmDocument(models.Model):
             if objId:
                 ir_attachment_id.wf_message_post(body=_('Status moved to: %s.' % (USE_DIC_STATES[state])))
                 out.append(objId)
+            if ir_attachment_id.is3D():
+                pkg_doc_ids = self.getRelatedPkgTree(ir_attachment_id.id)
+                self.browse(pkg_doc_ids).commonWFAction(writable, state, check)
         return out
 
     @api.multi
@@ -1106,23 +1138,38 @@ class PlmDocument(models.Model):
             Evaluate documents to return
         """
         forceFlag = False
-        listed_models = []
         outIds = []
-        oid, listedFiles, selection = request
-        outIds.append(oid)
+        doc_id, listedFiles, selection = request
+        docBrws = self.browse(doc_id)
+        outIds.append(doc_id)
         if selection is False:
             selection = 1  # Case of selected
         if selection < 0:  # Case of force refresh PWS
             forceFlag = True
             selection = selection * (-1)
-        # Get relations due to layout connected
-        docArray = self._relateddocs(oid, ['LyTree'])
-        # Get Hierarchical tree relations due to children
-        modArray = self._explodedocs(oid, ['HiTree'], listed_models)
-        outIds = list(set(outIds + modArray + docArray))
+        if docBrws.is2D():
+            outIds.extend(self.getRelatedLyTree(doc_id))
+        outIds.extend(self.getRelatedHiTree(doc_id, recursion=True))
+        outIds = list(set(outIds))
         if selection == 2:  # Case of latest
             outIds = self._getlastrev(outIds)
         return self._data_check_files(outIds, listedFiles, forceFlag)
+
+    @api.multi
+    def is2D(self):
+        for docBrws in self:
+            if docBrws.document_type.upper() == '2D':
+                return True
+            break
+        return False
+
+    @api.multi
+    def is3D(self):
+        for docBrws in self:
+            if docBrws.document_type.upper() == '3D':
+                return True
+            break
+        return False
 
     @api.model
     def CheckInRecursive(self, request, default=None):
@@ -1154,7 +1201,7 @@ class PlmDocument(models.Model):
             selection = 1
         if selection < 0:
             selection = selection * (-1)
-        docArray = self.getRelatedDocumentsByDoc(docBrws)
+        docArray = self.getRelatedAllLevelDocumentsTree(docBrws)
         if selection == 2:
             docArray = self._getlastrev(docArray)
         checkoutObj = self.env['plm.checkout']
@@ -1162,23 +1209,6 @@ class PlmDocument(models.Model):
             checkOutBrwsList = checkoutObj.search([('documentid', '=', docId), ('userid', '=', self.env.uid)])
             checkOutBrwsList.unlink()
         return self.browse(docArray).read(['datas_fname'])
-
-    @api.model
-    def getRelatedDocumentsByDoc(self, starting_doc_id):
-        outList = []
-        
-        def recursion(doc_id):
-            if not doc_id:
-                return
-            outList.append(doc_id)
-            outList.extend(self.getRelatedRfTree(doc_id, recursion=False))
-            outList.extend(self.getRelatedLyTree(doc_id))
-            doc_ids = self.getRelatedHiTree(doc_id, recursion=False)
-            for child_doc_id in doc_ids:
-                recursion(child_doc_id)
-
-        recursion(starting_doc_id.id)
-        return list(set(outList))
 #                         
     @api.model
     def GetSomeFiles(self,
@@ -1217,10 +1247,9 @@ class PlmDocument(models.Model):
         related_documents = []
         read_docs = []
         for oid in self.ids:
-            kinds = ['RfTree',
-                     'LyTree',
-                     '']  # Fix for new style document relations
-            read_docs.extend(self._relateddocs(oid, kinds, False))
+            read_docs.extend(self.getRelatedRfTree(oid, recursion=False))
+            read_docs.extend(self.getRelatedLyTree(oid))
+        read_docs = list(set(read_docs))
         for document in self.browse(read_docs):
             related_documents.append([document.id,
                                       document.name,

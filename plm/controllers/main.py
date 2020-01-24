@@ -128,16 +128,18 @@ class UploadDocument(Controller):
                                                                          ('revisionid', '=', from_ir_attachment_id.revisionid)])
             to_write = {'datas': base64.b64encode(value1),
                         'name': filename,
+                        'datas_fname': filename,
                         'revisionid': from_ir_attachment_id.revisionid}
             link_id =  request.env['ir.attachment.relation']
             new_context = request.env.context.copy()
             new_context['backup'] = False
+            new_context['check'] = False    # Or zip file will not be updated if in check-in
             contex_brw = request.env['ir.attachment'].with_context(new_context)
             to_write['is_plm'] = True
             if not zip_ir_attachment_id:
                 zip_ir_attachment_id  = contex_brw.create(to_write)
             else:
-                contex_brw.write(to_write)
+                zip_ir_attachment_id.with_context(new_context).write(to_write)
                 link_id = link_id.search([('parent_id', '=', from_ir_attachment_id.id),
                                           ('child_id', '=', zip_ir_attachment_id.id),
                                           ('link_kind', '=', 'PkgTree')])
@@ -148,3 +150,18 @@ class UploadDocument(Controller):
             return Response('Zip Upload succeeded', status=200)
         logging.info('Zip no upload %r' % (attachment_id))
         return Response('Zip Failed upload', status=400)
+
+    @route('/plm_document_upload/get_zip_archive', type='http', auth='user', methods=['get'], csrf=False)
+    @webservice
+    def download_zip(self, ir_attachment_id=None, **kw):
+        try:
+            ir_attachment_id = json.loads(ir_attachment_id)
+            attachment = request.env['ir.attachment']
+            pkg_ids = attachment.getRelatedPkgTree(ir_attachment_id)
+            for pkg_id in pkg_ids:
+                pkg_brws = attachment.browse(pkg_id)
+                return Response(pkg_brws.datas,
+                                headers={'file_name': pkg_brws.name})
+            return Response(status=200)
+        except Exception as ex:
+            return Response(ex, json.dumps({}),status=500)

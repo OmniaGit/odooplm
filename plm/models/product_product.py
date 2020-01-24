@@ -589,6 +589,23 @@ class PlmComponent(models.Model):
         return False
 
     @api.multi
+    def checkWorkflow(self, docInError, linkeddocuments, check_state):
+        docIDs = []
+        attachment = self.env['ir.attachment']
+        for documentBrws in linkeddocuments:
+            if documentBrws.state == check_state:
+                if documentBrws.is_checkout:
+                    docInError.append(_("Document %r : %r is checked out by user %r") % (documentBrws.name, documentBrws.revisionid, documentBrws.checkout_user))
+                    continue
+                docIDs.append(documentBrws.id)
+                if documentBrws.is3D():
+                    doc_layout_ids = documentBrws.getRelatedLyTree(documentBrws.id)
+                    docIDs.extend(self.checkWorkflow(docInError, attachment.browse(doc_layout_ids), check_state))
+                    raw_doc_ids = documentBrws.getRelatedRfTree(documentBrws.id, recursion=True)
+                    docIDs.extend(self.checkWorkflow(docInError, attachment.browse(raw_doc_ids), check_state))
+        return list(set(docIDs))
+        
+    @api.multi
     def _action_ondocuments(self, action_name):
         """
             move workflow on documents having the same state of component
@@ -601,13 +618,7 @@ class PlmComponent(models.Model):
                 check_state = oldObject.state
             else:
                 check_state = 'confirmed'
-            for documentBrws in oldObject.linkeddocuments:
-                if documentBrws.state == check_state:
-                    if documentBrws.is_checkout:
-                        docInError.append(_("Document %r : %r is checked out by user %r") % (documentBrws.name, documentBrws.revisionid, documentBrws.checkout_user))
-                        continue
-                    if documentBrws.id not in docIDs:
-                        docIDs.append(documentBrws.id)
+            docIDs.extend(self.checkWorkflow(docInError, oldObject.linkeddocuments, check_state))
         if docInError:
             msg = _("Error on workflow operation")
             for e in docInError:
