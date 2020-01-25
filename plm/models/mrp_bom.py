@@ -701,10 +701,15 @@ class MrpBomExtension(models.Model):
             add children rows
         """
         if self.id and child_id and source_document_id:
+            cutted_type = 'none'
+            if relation_attributes.get('CUTTED_COMP'):
+                cutted_type = 'client'
             relation_attributes.update({'bom_id': self.id,
                                         'product_id': child_id,
                                         'source_id': source_document_id,
-                                        'type': bom_type})
+                                        'type': bom_type,
+                                        'cutted_type': cutted_type
+                                        })
             self.env['mrp.bom.line'].create(relation_attributes).id
 
     @api.multi  # Don't change me with @api.one or I don't work!!!
@@ -762,7 +767,7 @@ class MrpBomExtension(models.Model):
             parent_product_product_id = product_product.browse(parent_product_product_id)
             product_tmpl_id = parent_product_product_id.product_tmpl_id.id
             ir_attachment_relation.removeChildRelation(parent_ir_attachment_id)  # perform default unlink to HiTree, need to perform RfTree also
-            mrp_bom_found_id = False
+            mrp_bom_found_id = self.env['mrp.bom']
             for mrp_bom_id in self.search([('product_tmpl_id', '=', product_tmpl_id)]):
                 mrp_bom_found_id = mrp_bom_id
             if not mrp_bom_found_id:
@@ -780,12 +785,16 @@ class MrpBomExtension(models.Model):
                                                    relationAttributes,
                                                    bomType)
                 link_kind = relationAttributes.get('link_kind', 'HiTree')
+                if relationAttributes.get('RAW_COMP'):
+                    link_kind = 'RfTree'
                 ir_attachment_relation.saveDocumentRelationNew(parent_ir_attachment_id,
                                                                ir_attachment_id,
                                                                link_kind=link_kind)
                 if l_tree_document_id:
                     self.env['plm.component.document.rel'].createFromIds(self.env['product.product'].browse(product_product_id),
                                                                          self.env['ir.attachment'].browse(l_tree_document_id))
+            if not mrp_bom_found_id.bom_line_ids:
+                mrp_bom_found_id.unlink()
             return True
         except Exception as ex:
             logging.error(ex)

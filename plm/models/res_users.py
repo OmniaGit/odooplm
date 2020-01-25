@@ -36,11 +36,16 @@ class ResUsersExt(models.Model):
     _inherit = 'res.users'
 
 
-    @api.multi
     def getMacros(self):
         '''
             Omnia Client Macro module make an overload of this function and enable macros
         '''
         return []
+
+    def getCustomProcedure(self):
+        '''
+            Omnia CustomProcedure module make an overload of this function and enable macros
+        '''
+        return '', ''
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
