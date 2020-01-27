@@ -25,7 +25,13 @@
             </field>
             <field name="url" position="attributes">
                 <attribute name="attrs">{'invisible':[('type','=','binary')],'readonly':[('state','in',['released','obsoleted'])]}</attribute>
-            </field>            
+            </field>   
+            <xpath expr="//group/group[3]" position="attributes">
+                <attribute name="groups">plm.group_plm_view_user</attribute>
+            </xpath>
+            <xpath expr="//group/group[4]" position="attributes">
+                <attribute name="groups">plm.group_plm_view_user</attribute>
+            </xpath>
         <!-- Overload field -->
             <xpath expr="//sheet/h1" position="replace">
                 <h1>
@@ -124,31 +130,20 @@
             <xpath expr="//div[@name='creation_div']" position="after">
                 <label for="write_uid" string="Modification"/>
                   <div name="modification_div">
-                     <field name="write_uid" readonly="1" class="oe_inline"/> on
-                     <field name="write_date" readonly="1" class="oe_inline"/>
+                     <field name="write_uid"
+                            readonly="1"
+                            class="oe_inline"/> on
+                     <field name="write_date"
+                            readonly="1"
+                            class="oe_inline"/>
                  </div>
                  <field name="attachment_release_user"   readonly="1"/>
                  <field name="attachment_release_date"  readonly="1"/>
                  <field name="is_plm" group="base.group_no_one"/>
             </xpath>
-
-
             
             <xpath expr="//sheet/group[last()]" position="after">
                     <notebook>
-                        <page string="Attachment">
-                            <group>
-                                <group string="Attached To" name="group_resurse">
-                                    <newline/>
-                                    <field name="res_id" readonly="True"/>
-                                    <field name="res_model" readonly="True"/>
-                                </group>
-                                <group string="Related To" name="related">
-                                    <newline/>
-                                    <field name="res_name" readonly="1"/>
-                                </group>
-                            </group>
-                        </page>
                         <page string="Linked Parts" name="page_liked_parts">
                             <field colspan="4" name="linkedcomponents" nolabel="1"
                                    attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
@@ -167,6 +162,7 @@
                         </page>
                     </notebook>
             </xpath>
+
             <xpath expr="//sheet" position="after">
                 <div class="oe_chatter">
                    <field name="message_follower_ids" widget="mail_followers" modifiers="{}"/>
