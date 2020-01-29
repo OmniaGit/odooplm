@@ -365,39 +365,38 @@ class PlmDocument(models.Model):
         if len(listedFiles) > 0:
             datefiles, listfiles = listedFiles
         for objDoc in self.browse(targetIds):
-            if objDoc.type == 'binary':
-                checkOutUser = ''
-                isCheckedOutToMe = False
-                timeDoc = self.getLastTime(objDoc.id)
-                timeSaved = time.mktime(timeDoc.timetuple())
-                checkoutUserBrws = objDoc.get_checkout_user()
-                if checkoutUserBrws:
-                    checkOutUser = checkoutUserBrws.name
-                    if checkoutUserBrws.id == self.env.uid:
-                        isCheckedOutToMe = True
-                if (objDoc.datas_fname in listfiles):
-                    if forceFlag:
-                        isNewer = True
-                    else:
-                        listFileIndex = listfiles.index(objDoc.datas_fname)
-                        timefile = time.mktime(
-                            datetime.strptime(str(datefiles[listFileIndex]), '%Y-%m-%d %H:%M:%S').timetuple())
-                        isNewer = (timeSaved - timefile) > 5
-                    collectable = isNewer and not (isCheckedOutToMe)
+            checkOutUser = ''
+            isCheckedOutToMe = False
+            timeDoc = self.getLastTime(objDoc.id)
+            timeSaved = time.mktime(timeDoc.timetuple())
+            checkoutUserBrws = objDoc.get_checkout_user()
+            if checkoutUserBrws:
+                checkOutUser = checkoutUserBrws.name
+                if checkoutUserBrws.id == self.env.uid:
+                    isCheckedOutToMe = True
+            if (objDoc.datas_fname in listfiles):
+                if forceFlag:
+                    isNewer = True
                 else:
-                    collectable = True
-                objDatas = False
-                try:
-                    objDatas = objDoc.datas
-                except Exception as ex:
-                    logging.error(
-                        'Document with "id": %s  and "name": %s may contains no data!!         Exception: %s' % (
-                            objDoc.id, objDoc.name, ex))
-                if (objDoc.file_size < 1) and (objDatas):
-                    file_size = len(objDoc.datas)
-                else:
-                    file_size = objDoc.file_size
-                result.append((objDoc.id, objDoc.datas_fname, file_size, collectable, isCheckedOutToMe, checkOutUser))
+                    listFileIndex = listfiles.index(objDoc.datas_fname)
+                    timefile = time.mktime(
+                        datetime.strptime(str(datefiles[listFileIndex]), '%Y-%m-%d %H:%M:%S').timetuple())
+                    isNewer = (timeSaved - timefile) > 5
+                collectable = isNewer and not (isCheckedOutToMe)
+            else:
+                collectable = True
+            objDatas = False
+            try:
+                objDatas = objDoc.datas
+            except Exception as ex:
+                logging.error(
+                    'Document with "id": %s  and "name": %s may contains no data!!         Exception: %s' % (
+                        objDoc.id, objDoc.name, ex))
+            if (objDoc.file_size < 1) and (objDatas):
+                file_size = len(objDoc.datas)
+            else:
+                file_size = objDoc.file_size
+            result.append((objDoc.id, objDoc.datas_fname, file_size, collectable, isCheckedOutToMe, checkOutUser))
         return list(set(result))
 
     @api.multi
