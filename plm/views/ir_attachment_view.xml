@@ -7,6 +7,64 @@
         <field name="type">form</field>
         <field name="inherit_id" ref="base.view_attachment_form"/>
         <field name="arch" type="xml">
+        
+        <!-- Clean Up Standard field -->
+        <!-- overload attribites -->
+ 
+            <field name="name" position="attributes">
+                <attribute name="attrs">{'readonly':[('state','in',['released','obsoleted'])]}</attribute>
+            </field>
+            <field name="datas" position="attributes">
+                <attribute name="attrs">{'invisible':[('type','=','url')], 'readonly':[('state','in',['released','obsoleted'])]}</attribute>
+            </field>
+            <field name="datas_fname" position="attributes">
+                <attribute name="attrs">{'invisible':[('type','!=','url')],'readonly':[('state','in',['released','obsoleted'])]}</attribute>
+            </field>
+            <field name="type" position="attributes">
+                <attribute name="attrs">{'readonly':[('state','in',['released','obsoleted'])]}</attribute>
+            </field>
+            <field name="url" position="attributes">
+                <attribute name="attrs">{'invisible':[('type','=','binary')],'readonly':[('state','in',['released','obsoleted'])]}</attribute>
+            </field>   
+            <xpath expr="//group/group[3]" position="attributes">
+                <attribute name="groups">plm.group_plm_view_user</attribute>
+            </xpath>
+            <xpath expr="//group/group[4]" position="attributes">
+                <attribute name="groups">plm.group_plm_view_user</attribute>
+            </xpath>
+        <!-- Overload field -->
+            <xpath expr="//sheet/h1" position="replace">
+                <h1>
+                <group col="4">
+                    <div>
+	                    <field colspan="1"
+	                           class="oe_inline"
+	                           name="name"
+	                           nolabel="1"
+	                           
+	                           attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                        Rev.
+	                    <field colspan="1" 
+	                           class="oe_inline"
+	                           nolabel="1"
+	                           name="revisionid"
+	                           readonly="True"/>
+                    </div>
+                    <field colspan="2"
+                           name="preview"
+                           widget="image"
+                           readonly="1"
+                           nolabel="1"
+                           img_height="350"
+                           img_width="350"/>
+                    </group>
+                </h1>
+            </xpath>        
+        <!-- Add new Field -->
+            <field name="type" position="after">
+                <field name="document_type" attrs="{'invisible':[('type','=','url')], 'readonly':[('state','in',['released','obsoleted'])]}"/>
+            </field>
+            
             <xpath expr="//sheet" position="before">
                 <header>
                     <button name="action_release"
@@ -33,7 +91,7 @@
                 </header>
             </xpath>
             <xpath expr="//h1" position="before">
-                <div class="oe_button_box" name="button_box">
+                 <div class="oe_button_box" name="button_box">
                  <button class="oe_stat_button" icon="fa-sitemap" type="object" name="action_view_rel_doc">
                    <field name="document_rel_count" string="Documents" widget="statinfo"/>
                  </button>
@@ -50,16 +108,16 @@
                                />
                         
                   </button>
-	                <button name="open_related_document_revisions"
-	                        type="object"
-	                        string="BOM Rev."
-	                        class="oe_stat_button"
-	                        icon="fa-tasks"
-	                        attrs="{'invisible':[('attachment_revision_count','&lt;=','1')]}">
-	                        <field name="attachment_revision_count"
-	                               string=" "
-	                               widget="statinfo"/>
-	                </button>
+                    <button name="open_related_document_revisions"
+                            type="object"
+                            string="BOM Rev."
+                            class="oe_stat_button"
+                            icon="fa-tasks"
+                            attrs="{'invisible':[('attachment_revision_count','&lt;=','1')]}">
+                            <field name="attachment_revision_count"
+                                   string=" "
+                                   widget="statinfo"/>
+                    </button>
                   <button name="check_out_user"
                        icon="fa-user"
                        attrs="{'invisible': ['|',('checkout_user', '=', 'False'),
@@ -72,72 +130,20 @@
             <xpath expr="//div[@name='creation_div']" position="after">
                 <label for="write_uid" string="Modification"/>
                   <div name="modification_div">
-                     <field name="write_uid" readonly="1" class="oe_inline"/> on
-                     <field name="write_date" readonly="1" class="oe_inline"/>
+                     <field name="write_uid"
+                            readonly="1"
+                            class="oe_inline"/> on
+                     <field name="write_date"
+                            readonly="1"
+                            class="oe_inline"/>
                  </div>
                  <field name="attachment_release_user"   readonly="1"/>
                  <field name="attachment_release_date"  readonly="1"/>
                  <field name="is_plm" group="base.group_no_one"/>
             </xpath>
-
-            <xpath expr="//h1" position="replace">
-                <h1>
-                    <field name="name" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
-                </h1>
-            </xpath>
             
             <xpath expr="//sheet/group[last()]" position="after">
-                    <group name="doc_data">
-                        <group name="main_doc_info">
-                            <strong>
-                                <field name="name" select="1"
-                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
-                            </strong>
-                            
-                            <strong>
-                                <field name="revisionid" readonly="True"/>
-                            </strong>
-                        </group>
-                        <group name="doc_preview">
-                            <field
-                                    name="preview"
-                                    widget="image"
-                                    readonly="1"
-                                    nolabel="1"
-                                    img_height="350"
-                                    img_width="350"/>
-                        </group>
-                    </group>
                     <notebook>
-                        <page string="Attachment">
-                            <group string="File Data" name="FileData">
-                                <group attrs="{'invisible':[('type','=','url')]}" name="group_datas" colspan="4"
-                                       col="2">
-                                    <field name="datas" filename="datas_fname"
-                                           attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
-                                    <field name="datas_fname" select="1"
-                                           attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
-                                    <field name="document_type"
-                                           attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
-                                </group>
-                                <group name="group_url" colspan="4">
-                                    <field name="url" widget="url"
-                                           attrs="{'invisible':[('type','=','binary')],'readonly':[('state','in',['released','obsoleted'])]}"/>
-                                    <field name="type" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
-                                </group>
-                            </group>
-                            <group>
-                                <group string="Attached To" name="group_resurse">
-                                    <newline/>
-                                    <field name="res_id" readonly="True"/>
-                                    <field name="res_model" readonly="True"/>
-                                </group>
-                                <group string="Related To" name="related">
-                                    <newline/>
-                                    <field name="res_name" readonly="1"/>
-                                </group>
-                            </group>
-                        </page>
                         <page string="Linked Parts" name="page_liked_parts">
                             <field colspan="4" name="linkedcomponents" nolabel="1"
                                    attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
@@ -156,13 +162,14 @@
                         </page>
                     </notebook>
             </xpath>
+
             <xpath expr="//sheet" position="after">
                 <div class="oe_chatter">
                    <field name="message_follower_ids" widget="mail_followers" modifiers="{}"/>
                    <field name="message_ids" widget="mail_thread" modifiers="{}"/>
                 </div>
             </xpath>
-        </field>
+            </field>
     </record>
 
     <record model="ir.ui.view" id="ir_attachment_tree">
