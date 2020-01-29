@@ -1641,6 +1641,9 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         engineering_name = productAttribute.get('engineering_code', False)
         if not engineering_name:
             return False
+        if 'name' in productAttribute:
+            if not productAttribute['name']:
+                productAttribute['name'] = engineering_name
         for product_produc_id in self.search([('engineering_code', '=', engineering_name),
                                               ('engineering_revision', '=', productAttribute.get('engineering_revision', '0'))]):
             out_product_produc_id = product_produc_id
