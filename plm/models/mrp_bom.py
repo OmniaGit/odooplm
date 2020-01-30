@@ -790,7 +790,7 @@ class MrpBomExtension(models.Model):
                 ir_attachment_relation.saveDocumentRelationNew(parent_ir_attachment_id,
                                                                ir_attachment_id,
                                                                link_kind=link_kind)
-                if l_tree_document_id:
+                if l_tree_document_id and product_product_id:
                     self.env['plm.component.document.rel'].createFromIds(self.env['product.product'].browse(product_product_id),
                                                                          self.env['ir.attachment'].browse(l_tree_document_id))
             if not mrp_bom_found_id.bom_line_ids:
