@@ -2148,7 +2148,7 @@ class PlmDocument(models.Model):
         for ir_attachment_id in self.search([('datas_fname', '=', fileName.get('file_name'))], order='revisionid DESC', limit=1):
             out.append({'id': ir_attachment_id.id,
                         'name': ir_attachment_id.name,
-                        'iconStream': ir_attachment_id.preview,
+                        'iconStream': ir_attachment_id.preview or '',
                         'revisionid': ir_attachment_id.revisionid,
                         'name': ir_attachment_id.name})
         return out
