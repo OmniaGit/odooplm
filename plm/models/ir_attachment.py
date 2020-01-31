@@ -2092,16 +2092,18 @@ class PlmDocument(models.Model):
         plm_document_id = False
         engineering_code = componentAtts.get('engineering_code')
         engineering_revision = componentAtts.get('engineering_revision', 0)
-        for product_product in self.env['product.product'].search([('engineering_code', '=', engineering_code),
-                                                                  ('engineering_revision', '=', engineering_revision)]):
-            product_product_id = product_product.id
-            break
+        if engineering_code:
+            for product_product in self.env['product.product'].search([('engineering_code', '=', engineering_code),
+                                                                      ('engineering_revision', '=', engineering_revision)]):
+                product_product_id = product_product.id
+                break
         document_name = documentAttrs.get('name')
         document_revision = documentAttrs.get('revisionid', 0)
-        for plm_document in self.env['ir.attachment'].search([('name', '=', document_name),
-                                                             ('revisionid', '=', document_revision)]):
-            plm_document_id = plm_document.id
-            break
+        if document_name:
+            for plm_document in self.env['ir.attachment'].search([('name', '=', document_name),
+                                                                 ('revisionid', '=', document_revision)]):
+                plm_document_id = plm_document.id
+                break
         return product_product_id, plm_document_id
 
     @api.model
