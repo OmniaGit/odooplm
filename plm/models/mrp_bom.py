@@ -693,7 +693,7 @@ class MrpBomExtension(models.Model):
                                         'product_id': child_id,
                                         'source_id': source_document_id,
                                         'type': bom_type})
-            self.env['mrp.bom.line'].create(relation_attributes).id
+            return self.env['mrp.bom.line'].create(relation_attributes)
 
     def open_related_bom_lines(self):
         for bom_brws in self:
@@ -759,13 +759,23 @@ class MrpBomExtension(models.Model):
                                                     'type': bomType})
             else:
                 mrp_bom_found_id.delete_child_row(parent_ir_attachment_id)
+            #
             # add rows
+            #
+            summarize_bom =  self.env.context.get('SUMMARIZE_BOM', False)
+            cache_row = {}
             for product_product_id, ir_attachment_id, relationAttributes in childrenOdooTuple:
                 if mrp_bom_found_id and not relationAttributes.get('EXCLUDE', False):
-                    mrp_bom_found_id.add_child_row(product_product_id,
-                                                   parent_ir_attachment_id,
-                                                   relationAttributes,
-                                                   bomType)
+                    key = "%s_%s" % (product_product_id, parent_ir_attachment_id)
+                    if summarize_bom and key in cache_row:
+                        cache_row[key].product_qty += relationAttributes.get('product_qty', 1)
+                    else:
+                        mrp_bom_line_id = mrp_bom_found_id.add_child_row(product_product_id,
+                                                                         parent_ir_attachment_id,
+                                                                         relationAttributes,
+                                                                         bomType)
+                        if summarize_bom:
+                            cache_row[key] = mrp_bom_line_id
                 link_kind = relationAttributes.get('link_kind', 'HiTree')
                 ir_attachment_relation.saveDocumentRelationNew(parent_ir_attachment_id,
                                                                ir_attachment_id,

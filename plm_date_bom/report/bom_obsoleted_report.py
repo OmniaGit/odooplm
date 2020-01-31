@@ -25,7 +25,7 @@ Created on 19 Jul 2016
 
 @author: Daniel Smerghetto
 '''
-from openerp.addons.plm.report.bom_structure import ReportBomStructureAll
+from odoo.addons.plm.report.bom_structure import ReportBomStructureAll
 
 
 class ReportDocumentPdf(ReportBomStructureAll):
