@@ -1231,6 +1231,12 @@ class PlmDocument(models.Model):
         '''
             Return a new name due to sequence next number.
         '''
+        ctx = self.env.context
+        eng_code = ctx.get('engineering_code')
+        _eng_rev = ctx.get('engineering_revision')
+        _file_path = ctx.get('filePath')
+        if eng_code:
+            documentName = eng_code
         nextDocNum = self.env['ir.sequence'].next_by_code('plm.document.progress')
         return documentName + '-' + nextDocNum
 
