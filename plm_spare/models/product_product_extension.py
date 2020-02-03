@@ -50,6 +50,7 @@ class PlmComponentExtension(models.Model):
         self._create_local_spare_bom(self.id)
 
     def _create_local_spare_bom(self, prod_id):
+        ctx = self.env.context.copy()
         new_bom_brws = None
         if prod_id in self.processed_ids:
             return False
@@ -76,7 +77,8 @@ class PlmComponentExtension(models.Model):
                 if (not new_bom_brws) and normal_bom_brws_list:
                         new_bom_brws = normal_bom_brws_list[0].copy(defaults)
                 if new_bom_brws:
-                    new_bom_brws.with_context({'check': False}).write({'name': prod_prod_brws.name,
+                    ctx['check'] = False
+                    new_bom_brws.with_context(ctx).write({'name': prod_prod_brws.name,
                                       'product_id': prod_prod_brws.id,
                                       'type': 'spbom'})
                     ok_rows = self._summarizeBom(new_bom_brws.bom_line_ids)

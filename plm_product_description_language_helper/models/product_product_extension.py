@@ -106,6 +106,7 @@ class ProductProductExtension(models.Model):
         return super(ProductProductExtension, self).write(vals)
 
     def commonSpecialDescriptionCompute(self, vals, templateId, std_description_obj):
+        ctx = self.env.context.copy()
         for prodWriteObj in self:
             ir_translation_obj = self.env['ir.translation']
             vals_std_value1 = vals.get('std_value1', False)
@@ -123,7 +124,8 @@ class ProductProductExtension(models.Model):
             if std_description_obj and (vals_std_value1 is not False or vals_std_value2 is not False or vals_std_value3 is not False):
                 userLang = prodWriteObj.env.context.get('lang', 'en_US')
                 for langBrwsObj in self.env['res.lang'].search([]):
-                    thisObject = std_description_obj.with_context({'lang': langBrwsObj.code})
+                    ctx['lang'] = langBrwsObj.code
+                    thisObject = std_description_obj.with_context(ctx)
                     initVal = thisObject.name
                     if not initVal:
                         initVal = thisObject.description

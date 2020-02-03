@@ -41,6 +41,7 @@ class ProductProductExtension(models.Model):
         """
             create a new bom starting from ebom
         """
+        ctx = self.env.context.copy()
         bom_type = self.env['mrp.bom']
         bom_l_type = self.env['mrp.bom.line']
         prod_tmpl_obj = self.env['product.template']
@@ -90,7 +91,8 @@ class ProductProductExtension(models.Model):
                           'ebom_source_id': e_bom_id, }
                 if not variant_is_installed:
                     values['product_id'] = False
-                new_bom_brws.with_context({'check': False}).write(values)
+                ctx['check'] = False
+                new_bom_brws.with_context(ctx).write(values)
 
                 if summarize:
                     ok_rows = self._summarizeBom(new_bom_brws.bom_line_ids)
@@ -167,6 +169,7 @@ class ProductProductExtension(models.Model):
         """
             Create a new Normal Bom (recursive on all EBom children)
         """
+        ctx = self.env.context.copy()
         defaults = {}
         if idd in self.processedIds:
             return False
@@ -185,7 +188,8 @@ class ProductProductExtension(models.Model):
                 new_bom_brws = bom_brws.copy(defaults)
                 self.processedIds.append(idd)
                 if new_bom_brws:
-                    new_bom_brws.with_context({'check': False}).write(
+                    ctx['check'] = False
+                    new_bom_brws.with_context(ctx).write(
                         {'name': check_obj.name,
                          'product_id': check_obj.id,
                          'type': 'normal'})

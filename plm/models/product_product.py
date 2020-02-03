@@ -1086,6 +1086,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         """
             create a new revision of current component
         """
+        ctx = self.env.context.copy()
         newComponentId = False
         engineering_revision = 0
         for tmpObject in self:
@@ -1104,7 +1105,8 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                 defaults['engineering_writable'] = True
                 defaults['state'] = 'draft'
                 defaults['linkeddocuments'] = []                  # Clean attached documents for new revision object
-                newCompBrws = oldObject.with_context({'new_revision': True}).copy(defaults)
+                ctx['new_revision'] = True
+                newCompBrws = oldObject.with_context(ctx).copy(defaults)
                 oldObject.wf_message_post(body=_('Created : New Revision.'))
                 newComponentId = newCompBrws.id
                 break
@@ -1125,9 +1127,11 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         """
         give back the lines
         """
+        ctx = self.env.context.copy()
+        ctx['lang'] = 'en_GB'
         return [bomLineBrowse.itemnum,
                 emptyStringIfFalse(bomLineBrowse.product_id.name),
-                bomLineBrowse.product_id.with_context({'lang': 'en_GB'}).name,
+                bomLineBrowse.product_id.with_context(ctx).name,
                 bomLineBrowse.product_id.engineering_code,
                 bomLineBrowse.product_qty]
 

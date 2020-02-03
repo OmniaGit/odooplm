@@ -60,6 +60,8 @@ class ResGroups(models.Model):
 
     @api.multi
     def open_custommodule_edit(self):
+        ctx = self.env.context.copy()
+        ctx['erase_customprocedure'] = False
         for groupBrws in self:
             if groupBrws.custom_procedure:
                 fileReadableContent = base64.decodestring(groupBrws.custom_procedure)
@@ -69,6 +71,8 @@ class ResGroups(models.Model):
             
     @api.multi
     def open_custom_multicad_edit(self):
+        ctx = self.env.context.copy()
+        ctx['erase_multicad'] = False
         for groupBrws in self:
             if groupBrws.custom_multicad:
                 fileReadableContent = base64.decodestring(groupBrws.custom_multicad)
