@@ -1151,7 +1151,9 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                 defaults['engineering_writable'] = True
                 defaults['state'] = 'draft'
                 defaults['linkeddocuments'] = []                  # Clean attached documents for new revision object
-                newCompBrws = oldObject.with_context({'new_revision': True}).copy(defaults)
+                ctx = self.env.context.copy()
+                ctx['new_revision'] = True
+                newCompBrws = oldObject.with_context(ctx).copy(defaults)
                 oldObject.wf_message_post(body=_('Created : New Revision.'))
                 newComponentId = newCompBrws.id
                 break
