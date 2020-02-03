@@ -484,7 +484,9 @@ class PlmDocument(models.Model):
         for tmpObject in self.browse(docId):
             latestIDs = self.GetLatestIds([(tmpObject.name, tmpObject.revisionid, False)])
             for oldObject in self.browse(latestIDs):
-                oldObject.with_context({'check': False}).write({'state': 'undermodify'})
+                ctx = self.env.context.copy()
+                ctx['check'] = False
+                oldObject.with_context(ctx).write({'state': 'undermodify'})
                 defaults = {}
                 newRevIndex = int(oldObject.revisionid) + 1
                 defaults['name'] = oldObject.name
@@ -751,7 +753,9 @@ class PlmDocument(models.Model):
             blind write for xml-rpc call for recovering porpouse
             DO NOT USE FOR COMMON USE !!!!
         """
-        return self.with_context({'check': False}).write(vals)
+        ctx = self.env.context.copy()
+        ctx['check'] = False
+        return self.with_context(ctx).write(vals)
 
     #   Overridden methods for this entity
     @api.model
@@ -858,6 +862,8 @@ class PlmDocument(models.Model):
 
     @api.multi
     def unlink(self):
+        ctx = self.env.context.copy()
+        ctx['check'] = False
         values = {'state': 'released', }
         checkState = ('undermodify', 'obsoleted')
         for checkObj in self:
@@ -866,7 +872,7 @@ class PlmDocument(models.Model):
                 oldObject = docBrwsList[0]
                 if oldObject.state in checkState:
                     oldObject.wf_message_post(body=_('Removed : Latest Revision.'))
-                    if not oldObject.with_context({'check': False}).write(values):
+                    if not oldObject.with_context(ctx).write(values):
                         logging.warning(
                             "unlink : Unable to update state to old document (" + str(oldObject.name) + "-" + str(
                                 oldObject.revisionid) + ").")

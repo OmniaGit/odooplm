@@ -634,7 +634,7 @@ class MrpBomExtension(models.Model):
             Evaluates net weight for assembly, based on product ID
         """
         if not (parent_bom_id is None) or parent_bom_id:
-            bom_obj = self.with_context({}).browse(parent_bom_id)
+            bom_obj = self.browse(parent_bom_id)
             self.env['product.product'].browse([bom_obj.product_id.id]).write({'weight': weight})
 
     @api.multi
