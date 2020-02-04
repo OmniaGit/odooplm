@@ -734,7 +734,7 @@ class PlmComponent(models.Model):
            action to be executed for Released state
         """
         for comp_obj in self:
-            children_product_to_emit = []
+            children_product_to_emit = [comp_obj.id]
             product_tmpl_ids = []
             defaults = {}
             prodTmplType = self.env['product.template']

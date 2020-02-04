@@ -207,7 +207,7 @@ class PlmDocument(models.Model):
             try:
                 shutil.copyfile(self._full_path(ir_attachment_id.store_fname),
                                 self._full_path(random_name()))
-                if ir_attachment_id.is_plm:
+                if ir_attachment_id.is_plm and self.env.context.get("backup", True):
                     self.env['plm.backupdoc'].create({'userid': self.env.uid,
                                                       'existingfile': ir_attachment_id.datas_fname,
                                                       'documentid': ir_attachment_id.id,
@@ -475,6 +475,8 @@ class PlmDocument(models.Model):
 
         newID = None
         newRevIndex = False
+        ctx = self.env.context.copy()
+        ctx['check'] = False
         if isinstance(docId, (list, tuple)):
             if len(docId) > 1:
                 docId, newBomDocumentRevision = docId
@@ -484,8 +486,6 @@ class PlmDocument(models.Model):
         for tmpObject in self.browse(docId):
             latestIDs = self.GetLatestIds([(tmpObject.name, tmpObject.revisionid, False)])
             for oldObject in self.browse(latestIDs):
-                ctx = self.env.context.copy()
-                ctx['check'] = False
                 oldObject.with_context(ctx).write({'state': 'undermodify'})
                 defaults = {}
                 newRevIndex = int(oldObject.revisionid) + 1
@@ -772,10 +772,6 @@ class PlmDocument(models.Model):
                 return ''
         return filestore
 
-    @api.model
-    def search(self, args, offset=0, limit=None, order=None, count=False):
-        return super(PlmDocument, self).search(args, offset, limit, order, count)
-
     @api.multi
     def check_unique(self):
         for ir_attachment_id in self:
@@ -801,8 +797,9 @@ class PlmDocument(models.Model):
                     
     @api.model
     def create(self, vals):
-        if self.env.context.get('odooPLM'):
-            vals['is_plm'] = True
+        if not self.env.context.get('odooPLM'):
+            return super(PlmDocument, self).create(vals)
+        vals['is_plm'] = True
         vals.update(self.checkMany2oneClient(vals))
         vals = self.plm_sanitize(vals)
         res = super(PlmDocument, self).create(vals)
@@ -811,6 +808,8 @@ class PlmDocument(models.Model):
 
     @api.multi
     def write(self, vals):
+        if not self.env.context.get('odooPLM'):
+            return super(PlmDocument, self).write(vals)
         check = self.env.context.get('check', True)
         if check:
             if not self.is_plm_state_writable() and not (self.env.user._is_admin() or self.env.user._is_superuser()):
