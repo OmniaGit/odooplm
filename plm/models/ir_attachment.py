@@ -775,8 +775,8 @@ class PlmDocument(models.Model):
 
     def check_unique(self):
         for ir_attachment_id in self:
-            if self.search_count([('engineering_document_name', '=', ir_attachment_id.engineering_document_name)),
-                                  ('revisionid', '=', ir_attachment_id.revisionid)),
+            if self.search_count([('engineering_document_name', '=', ir_attachment_id.name),
+                                  ('revisionid', '=', ir_attachment_id.revisionid),
                                   ('document_type', 'in', ['2d', '3d'])]) > 1:
                 raise UserError(_('Document Already in the system'))
 
