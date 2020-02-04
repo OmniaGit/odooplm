@@ -89,10 +89,16 @@
                             <group colspan="4" col="4" name="technical_infos_group">
                                 <field name="tmp_material"
                                        attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                                <field name="engineering_material"
+                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}" colspan="2" groups='base.group_no_one'/>
                                 <field name="tmp_surface"
                                        attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                                <field name="engineering_surface"
+                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}" colspan="2" groups='base.group_no_one'/>
                                 <field name="tmp_treatment"
                                        attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                                <field name="engineering_treatment"
+                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}" colspan="2" groups='base.group_no_one'/>
                                 <label for="weight"/>
                                 <div class="o_row" name="weight" attrs="{'readonly':[('state','in',['released','obsoleted'])]}">
                                     <field name="weight" attrs="{'readonly':[('state','in',['released','obsoleted'])]}" digits="[14,3]"/>
@@ -117,17 +123,6 @@
                                        attrs="{'readonly':[('std_umc3','=',False),('state','in',['released','obsoleted'])]}"/>
                                 <field name="std_value3"
                                        attrs="{'readonly':[('std_umc3','=',False),('state','in',['released','obsoleted'])]}"/>
-                            </group>
-                        </page>
-                        <page string="CAD Property">
-                            <group name="cad_property_block">
-                                <field name="engineering_material"
-                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}" colspan="2"/>
-                                <field name="engineering_surface"
-                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}" colspan="2"/>
-                                <field name="engineering_treatment"
-                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}" colspan="2"/>
-
                             </group>
                         </page>
                         <page string="Linked Documents" name="linkeddocuments">
@@ -214,10 +209,16 @@
 	                <group colspan="4" col="4" name="technical_infos_group">
 	                    <field name="tmp_material"
 	                           attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                        <field name="engineering_material"
+                               attrs="{'readonly':[('state','in',['released','obsoleted'])]}" colspan="2" groups='base.group_no_one'/>
 	                    <field name="tmp_surface"
 	                           attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                        <field name="engineering_surface"
+                               attrs="{'readonly':[('state','in',['released','obsoleted'])]}" colspan="2" groups='base.group_no_one'/>
 	                    <field name="tmp_treatment"
 	                           attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                        <field name="engineering_treatment"
+                               attrs="{'readonly':[('state','in',['released','obsoleted'])]}" colspan="2" groups='base.group_no_one'/>
 	                    <label for="weight"/>
                         <div class="o_row" name="weight" attrs="{'readonly':[('state','in',['released','obsoleted'])]}">
                             <field name="weight" attrs="{'readonly':[('state','in',['released','obsoleted'])]}" digits="[14,3]"/>
@@ -242,15 +243,6 @@
                                        attrs="{'readonly':[('std_umc3','=',False),('state','in',['released','obsoleted'])]}"/>
                                 <field name="std_value3"
                                        attrs="{'readonly':[('std_umc3','=',False),('state','in',['released','obsoleted'])]}"/>
-                            </group>
-                            <group string="Cad reflaction prop" name="cad_property_block"  groups="base.group_no_one">
-                                <field name="engineering_material"
-                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}" colspan="2"/>
-                                <field name="engineering_surface"
-                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}" colspan="2"/>
-                                <field name="engineering_treatment"
-                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}" colspan="2"/>
-
                             </group>
                         </page>
                         <page string="Linked Documents" name="linkeddocuments">

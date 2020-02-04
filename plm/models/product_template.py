@@ -73,7 +73,7 @@ class ProductTemplateExtension(models.Model):
     engineering_code = fields.Char(_('Part Number'),
                                    index=True,
                                    help=_("This is engineering reference to manage a different P/N from item Name."),
-                                   size=64)
+                                   size=256)
 
     #   ####################################    Overload to set default values    ####################################
     standard_price = fields.Float('Cost',
