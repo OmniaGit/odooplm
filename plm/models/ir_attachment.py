@@ -442,7 +442,6 @@ class PlmDocument(models.Model):
             return False
         return True
 
-    @api.multi
     def newVersion(self):
         """
             create a new version of the document (to WorkFlow calling)
@@ -1157,7 +1156,6 @@ class PlmDocument(models.Model):
             outIds = self._getlastrev(outIds)
         return self._data_check_files(outIds, listedFiles, forceFlag)
 
-    @api.multi
     def is2D(self):
         for docBrws in self:
             if docBrws.document_type.upper() == '2D':
@@ -1165,7 +1163,6 @@ class PlmDocument(models.Model):
             break
         return False
 
-    @api.multi
     def is3D(self):
         for docBrws in self:
             if docBrws.document_type.upper() == '3D':

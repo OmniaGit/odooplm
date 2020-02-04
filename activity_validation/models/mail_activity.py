@@ -36,13 +36,11 @@ from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 class MailActivity(models.Model):
     _inherit = 'mail.activity'
     
-    @api.multi
     def action_done(self):
         """ Wrapper without feedback because web button add context as
         parameter, therefore setting context to feedback """
         return super(MailActivity, self).action_done()
     
-    @api.multi
     def action_done_schedule_next(self):
         """ Wrapper without feedback because web button add context as
         parameter, therefore setting context to feedback """

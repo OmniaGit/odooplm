@@ -372,7 +372,6 @@ class PlmComponent(models.Model):
         result.extend(bufferdata)
         return list(set(result))
 
-    @api.multi
     def summarize_level(self, recursion=False, flat=False, level=1, summarize=False, parentQty=1, bom_type=False):
         out = {}
         for product_product_id in self:
@@ -579,7 +578,6 @@ class PlmComponent(models.Model):
         self.wf_message_post(body=_('Created Normal Bom.'))
         return False
 
-    @api.multi
     def checkWorkflow(self, docInError, linkeddocuments, check_state):
         docIDs = []
         attachment = self.env['ir.attachment']
