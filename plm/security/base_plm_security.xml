@@ -23,7 +23,7 @@
         <field name="name">Administrator</field>
         <field name="category_id" ref="odooplm_module_category"/>
         <field name="implied_ids" eval="[(4, ref('group_plm_integration_user'))]"/>
-        <field name="users" eval="[(4, ref('base.user_root'))]"/>
+        <field name="users" eval="[(4, ref('base.user_admin'))]"/>
     </record>
     
 <!-- readonly_released  -->
@@ -31,7 +31,7 @@
         <field name="name">PLM Integration Readonly</field>
         <field name="category_id" ref="odooplm_module_category"/>
         <field name="implied_ids" eval="[(4, ref('group_plm_integration_user'))]"/>
-        <field name="users" eval="[(4, ref('base.user_root'))]"/>
+        <field name="users" eval="[(4, ref('base.user_admin'))]"/>
     </record>
 
 
