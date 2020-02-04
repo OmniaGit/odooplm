@@ -205,6 +205,12 @@ class MrpBomLineExtension(models.Model):
     related_document_ids = fields.One2many(compute='_related_doc_ids',
                                            comodel_name='ir.attachment',
                                            string=_('Related Documents'))
+    cutted_type = fields.Selection(
+        [('none', 'None'),
+         ('client', 'Client'),
+         ('server', 'Server')],
+        _('Cutted Compute Type'),
+        default='none')
 
     def plm_sanitize(self, vals):
         all_keys = self.fields_get_keys()

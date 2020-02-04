@@ -26,10 +26,10 @@ Created on 15 Jun 2016
 @author: Daniel Smerghetto
 '''
 
-from openerp import models
-from openerp import api
-from openerp import fields
-from openerp import _
+from odoo import models
+from odoo import api
+from odoo import fields
+from odoo import _
 
 
 class ProductProductExtension(models.Model):
