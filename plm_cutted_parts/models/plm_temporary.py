@@ -56,58 +56,82 @@ class PlmTemporaryCutted(osv.osv.osv_memory):
                     if bom_line_brws.product_id.row_material:
                         self.cutted_part_action(bom_line_brws, explosion_action)
                     else:
-                        self.action_on_bom([bom_line_brws.product_id.id])
+                        self.action_on_bom([bom_line_brws.product_id.id], explosion_action)
+            if not bom_brws_list:
+                if productBrowse.row_material:
+                    obj_boms = mrp_bom_type_object.search([('product_tmpl_id', '=', id_template),
+                                                           ('type', '=', 'normal')])
+                    if not obj_boms:
+                        vals = {
+                            'product_id': productBrowse.id,
+                            'product_tmpl_id': id_template,
+                            'type': 'normal',
+                            }
+                        obj_boms = mrp_bom_type_object.create(vals)
+                    for nbom in obj_boms:
+                        line_vals = {
+                            'bom_id': nbom.id,
+                            'product_id': productBrowse.row_material.id,
+                            'product_qty': 1,
+                            'x_length': productBrowse.row_material_x_length,
+                            'cutted_type': 'server'
+                            }
+                        bom_line_brws = self.env['mrp.bom.line'].create(line_vals)
+                        bom_line_brws.computeCuttedTotalQty()
 
     @api.model
     def cutted_part_action(self, bom_line_brws, explosion_action):
         mrp_bom_type_object = self.env.get('mrp.bom')
         mrp_bom_line_type_object = self.env.get('mrp.bom.line')
-        material_percentage = (1 + bom_line_brws.product_id.wastage_percent)
-        x_material = (bom_line_brws.product_id.row_material_x_length * material_percentage) + bom_line_brws.product_id.material_added
-        y_material = (bom_line_brws.product_id.row_material_y_length * material_percentage) + bom_line_brws.product_id.material_added
-        x_raw_material_length = bom_line_brws.product_id.row_material.row_material_xlength
-        y_raw_material_length = bom_line_brws.product_id.row_material.row_material_ylength
-        x_qty = x_material / (1 if x_raw_material_length == 0 else x_raw_material_length)
-        y_qty = y_material / (1 if y_raw_material_length == 0 else y_raw_material_length)
-        qty = x_qty * y_qty
-        common_values = {'x_length': x_material,
-                        'y_length': y_material,
-                        'product_qty': 1 if qty == 0 else qty,
-                        # set to 1 because odoo dose not manage qty==0
-                        'product_id': bom_line_brws.product_id.row_material.id,
-                        'product_rounding': bom_line_brws.product_id.bom_rounding}
         if explosion_action == 'replace':
-            common_values['product_qty'] = bom_line_brws.product_qty * common_values['product_qty']
-            bom_line_brws.write(common_values)
-        else:
+            x_len = mrp_bom_line_type_object.computeXLenghtByProduct(bom_line_brws.product_id)
+            y_len = mrp_bom_line_type_object.computeYLenghtByProduct(bom_line_brws.product_id)
+            to_write = {
+                'product_id': bom_line_brws.product_id.row_material.id,
+                'cutted_qty': bom_line_brws.product_qty,
+                'product_rounding': bom_line_brws.product_id.bom_rounding,
+                'cutted_type': 'none',
+                'product_qty': bom_line_brws.computeTotalQty(x_len, y_len, bom_line_brws.product_qty)
+                }
+            bom_line_brws.write(to_write)
+        elif explosion_action == 'explode':
             id_template = bom_line_brws.product_id.product_tmpl_id.id
             bom_brws_list = mrp_bom_type_object.search([('product_tmpl_id', '=', id_template),
-                                                      ('type', '=', 'normal')])
+                                                      ('type', '=', 'normal')
+                                                      ])
 
             if not bom_brws_list:
                 values = {'product_tmpl_id': id_template,
                           'type': 'normal'}
                 new_bom_brws = mrp_bom_type_object.create(values)
                 values = {'type': 'normal',
-                          'bom_id': new_bom_brws.id}
-                values.update(common_values)
+                          'bom_id': new_bom_brws.id,
+                          'product_id': bom_line_brws.product_id.row_material.id,
+                          'product_rounding': bom_line_brws.product_id.bom_rounding,
+                          'cutted_type': 'server'}
                 mrp_bom_line_type_object.create(values)
             else:
                 for bom_brws in bom_brws_list:
-                    if len(bom_brws.bom_line_ids) > 1:
+                    cuttedLines = bom_brws.bom_line_ids.filtered(lambda line: line.cutted_type == 'server')
+                    if len(cuttedLines) > 1:
                         raise osv.osv.except_osv(_('Bom Generation Error'),
                                                  'Bom "%s" has more than one line, please check better.' % (
                                                      bom_brws.product_tmpl_id.engineering_code))
-                    for bom_line_brws in bom_brws.bom_line_ids:
+                    for bom_line_brws in cuttedLines:
+                        bom_line_brws.product_id = bom_line_brws.bom_id.product_id.row_material.id
+                        bom_line_brws.computeCuttedTotalQty()
                         logging.info("Bom line updated %r" % bom_line_brws.id)
-                        bom_line_brws.write(common_values)
                         return
+        else:
+            raise NotImplementedError('Cutted part action %r' % (explosion_action))
 
     def action_create_normalBom(self):
         selected_ids = self.env.context.get('active_ids', [])
-        response = super(PlmTemporaryCutted, self).action_create_normalBom()
+        ctx = self.env.context.copy()
         for plmTmpObj in self:
             explosion_action = plmTmpObj.cutted_part_explosion
+            ctx['cutted_part_explosion'] = explosion_action
+            response = super(PlmTemporaryCutted, self.with_context(ctx)).action_create_normalBom()
             if explosion_action != 'none':
                 self.action_on_bom(selected_ids, explosion_action)
             return response

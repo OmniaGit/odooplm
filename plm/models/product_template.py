@@ -137,7 +137,10 @@ class ProductTemplateExtension(models.Model):
         get All version product_tempate based on this one
         """
         for product_template_id in self:
-            product_template_id.revision_count = product_template_id.search_count([('engineering_code', '=', product_template_id.engineering_code)])
+            if product_template_id.engineering_code:
+                product_template_id.revision_count = product_template_id.search_count([('engineering_code', '=', product_template_id.engineering_code)])
+            else:
+                product_template_id.revision_count = 0
 
     def open_related_revisions(self):
         return {'name': _('Products'),
