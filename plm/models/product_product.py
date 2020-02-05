@@ -186,8 +186,6 @@ class PlmComponent(models.Model):
             results = self.search([('name', '=', self.name)])
             if len(results) > 0:
                 raise UserError(_("Part %s already exists.\nClose with OK to reuse, with Cancel to discharge." % (self.name)))
-            if not self.engineering_code or self.engineering_code == '-':
-                self.engineering_code = self.name
 
     @api.onchange('tmp_material')
     def on_change_tmpmater(self):
@@ -707,7 +705,7 @@ class PlmComponent(models.Model):
             allProdObjs = self.browse(product_ids)
             for productBrw in allProdObjs:
                 old_revision = self._getbyrevision(productBrw.engineering_code, productBrw.engineering_revision - 1)
-                if old_revision is not None:
+                if old_revision:
                     defaults['engineering_writable'] = False
                     defaults['state'] = 'obsoleted'
                     old_revision.product_tmpl_id.write(defaults)
@@ -874,8 +872,7 @@ class PlmComponent(models.Model):
         name = vals.get('name')
         if not name and eng_code:
             vals['name'] = eng_code
-        if not vals.get('engineering_code') and name:
-            vals['engineering_code'] = name
+
         eng_rev = vals.get('engineering_revision', 0)
         eng_code = vals.get('engineering_code')
         if eng_code:
@@ -892,6 +889,8 @@ class PlmComponent(models.Model):
             res = super(PlmComponent, self).create(vals)
             return res
         except Exception as ex:
+            if isinstance(ex, UserError):
+                raise ex
             import psycopg2
             if isinstance(ex, psycopg2.IntegrityError):
                 msg = _('Error during component creation with values:\n')
@@ -905,7 +904,16 @@ class PlmComponent(models.Model):
                 raise Exception(msg)
             logging.error("(%s). It has tried to create with values : (%s)." % (str(ex), str(vals)))
             raise Exception(_(" (%r). It has tried to create with values : (%r).") % (ex, vals))
-
+    
+    def write(self, vals):
+        if 'is_engcode_editable' not in vals:
+            vals['is_engcode_editable'] = False
+        vals.update(self.checkMany2oneClient(vals))
+        vals = self.plm_sanitize(vals)
+        res =  super(PlmComponent, self).write(vals)
+        self.checkFromOdooPlm()
+        return res
+    
     def read(self, fields=[], load='_classic_read'):
         try:
             customFields = [field.replace('plm_m2o_', '') for field in fields if field.startswith('plm_m2o_')]
@@ -986,12 +994,13 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             out.append(tmpVals)
         return out
 
-    def write(self, vals):
-        if 'is_engcode_editable' not in vals:
-            vals['is_engcode_editable'] = False
-        vals.update(self.checkMany2oneClient(vals))
-        vals = self.plm_sanitize(vals)
-        return super(PlmComponent, self).write(vals)
+
+
+    def checkFromOdooPlm(self):
+        if self.env.context.get('odooPLM', False):
+            if not self.engineering_code:
+                raise UserError("Missing engineering code for plm data")
+        return True
 
     def checkMany2oneClient(self, vals, force_create=False):
         return self._checkMany2oneClient(self.env['product.product'], vals, force_create)

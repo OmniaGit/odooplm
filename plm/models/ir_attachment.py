@@ -265,7 +265,7 @@ class PlmDocument(models.Model):
         return list(set(result))
 
     
-    def _data_check_files(self, targetIds, listedFiles=(), forceFlag=False):
+    def _data_check_files(self, targetIds, listedFiles=(), forceFlag=False, retDict=False):
         result = []
         datefiles = []
         listfiles = []
@@ -303,7 +303,16 @@ class PlmDocument(models.Model):
                 file_size = len(objDoc.datas)
             else:
                 file_size = objDoc.file_size
-            result.append((objDoc.id, objDoc.name, file_size, collectable, isCheckedOutToMe, checkOutUser))
+            if retDict:
+                result.append({'docIDList': objDoc.id,
+                               'nameFile': objDoc.name,
+                               'fileSize': file_size,
+                               'collectable': collectable,
+                               'isCheckedOutToMeLastRev': isCheckedOutToMe,
+                               'checkOutUser': checkOutUser,
+                               'statte': objDoc.state})
+            else:
+                result.append((objDoc.id, objDoc.name, file_size, collectable, isCheckedOutToMe, checkOutUser))
         return list(set(result))
 
     
@@ -1047,7 +1056,7 @@ class PlmDocument(models.Model):
         if selection == 2:  # Case of latest
             outIds = self._getlastrev(outIds)
         return self._data_check_files(outIds, listedFiles, forceFlag)
-
+    
     @api.model
     def GetDocumentInfosFromFileName(self, fileName):
         """
@@ -1081,8 +1090,7 @@ class PlmDocument(models.Model):
         oid, _listedFiles, selection = request
         oid = getDocId(oid)
         docBrws = self.browse(oid)
-        checkRes = self.browse(oid).isCheckedOutByMe()
-        if not checkRes:
+        if not docBrws.isCheckedOutByMe():
             logging.info(
                 'Document %r is not in check out by user %r so cannot be checked-in recursively' % (oid, self.env.uid))
             return False

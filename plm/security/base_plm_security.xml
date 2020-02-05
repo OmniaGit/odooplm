@@ -164,7 +164,7 @@
         <field name="perm_read" eval="0"/>
         <field name="perm_write" eval="0"/>
         <field name="perm_create" eval="0"/>
-        <field name="domain_force" eval="[('state','not in',['draft', False])]"/>
+        <field name="domain_force" eval="[('state','not in',['draft', False]), ('is_plm','=', True)]"/>
         <field name="groups" eval="[(4, ref('group_plm_readonly_released'))]"/>
     </record>
     

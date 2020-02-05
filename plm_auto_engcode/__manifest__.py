@@ -32,7 +32,6 @@
     'description': """
     """,
     'data': [
-        'views/product_product.xml',
         'views/sequence.xml',
     ],
     'demo': [],

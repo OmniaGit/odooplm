@@ -30,13 +30,17 @@ from odoo import _
 from odoo.exceptions import UserError
 import logging
 
+    
+class ProductTemplate(models.Model):
+    _inherit = 'product.template'
 
-class ProductCuttedParts(models.Model):
-    _inherit = 'product.product'
-
-    def generate_eng_code(self):
-        for product_id in self:
-            product_id.engineering_code = self.env['ir.sequence'].next_by_code('plm.eng.code')
-            if not product_id.name:
-                product_id.name = product_id.engineering_code
-
+    def _getNewCode(self):
+        if self.env.context.get('odooPLM', False):
+           return self.env['ir.sequence'].next_by_code('plm.eng.code')        
+        return False
+    
+    engineering_code = fields.Char(_('Part Number'),
+                                   index=True,
+                                   default = _getNewCode,
+                                   help=_("This is engineering reference to manage a different P/N from item Name."),
+                                   size=64)
