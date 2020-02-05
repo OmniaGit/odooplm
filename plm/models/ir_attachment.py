@@ -105,7 +105,7 @@ class PlmDocument(models.Model):
     def _getlastrev(self, resIds):
         result = []
         for objDoc in self.browse(resIds):
-            doc_ids = self.search([('engineering_document_name', '=', objDoc.engineering_document_name)], order='revisionid').ids
+            doc_ids = self.search([('engineering_document_name', '=', objDoc.engineering_document_name)], order='revisionid DESC')
             for doc in doc_ids:
                 result.append(doc.id)
                 break
