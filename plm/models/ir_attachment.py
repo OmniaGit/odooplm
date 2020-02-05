@@ -36,7 +36,6 @@ from odoo import _
 from collections import defaultdict
 import itertools
 import logging
-from pathlib import Path
 
 _logger = logging.getLogger(__name__)
 
@@ -46,6 +45,7 @@ USED_STATES = [('draft', _('Draft')),
                ('released', _('Released')),
                ('undermodify', _('UnderModify')),
                ('obsoleted', _('Obsoleted'))]
+USE_DIC_STATES = dict(USED_STATES)
 
 PLM_NO_WRITE_STATE = ['confirmed', 'released', 'undermodify', 'obsoleted']
 
@@ -105,11 +105,11 @@ class PlmDocument(models.Model):
     def _getlastrev(self, resIds):
         result = []
         for objDoc in self.browse(resIds):
-            docIds = self.search([('engineering_document_name', '=', objDoc.engineering_document_name)], order='revisionid').ids
-            docIds.sort()  # Ids are not surely ordered, but revision are always in creation order.
-            if docIds:
-                result.append(docIds[len(docIds) - 1])
-            else:
+            doc_ids = self.search([('engineering_document_name', '=', objDoc.engineering_document_name)], order='revisionid').ids
+            for doc in doc_ids:
+                result.append(doc.id)
+                break
+            if not doc_ids:
                 logging.warning('[_getlastrev] No documents are found for object with engineering_document_name: "%s"' % (objDoc.engineering_document_name))
         return list(set(result))
 
@@ -231,39 +231,127 @@ class PlmDocument(models.Model):
         return result
 
     @api.model
-    def _relateddocs(self, oid, kinds, listed_documents=[], recursion=True):
+    def getRelatedOneLevelLinks(self, doc_id, kinds):
         result = []
-        if (oid in listed_documents):
-            return result
-        documentRelation = self.env['ir.attachment.relation']
-        docBrwsList = documentRelation.search([('child_id', '=', oid), ('link_kind', 'in', kinds)])
-        if len(docBrwsList) == 0:
-            return []
-        for child in docBrwsList:
-            if recursion:
-                listed_documents.append(oid)
-                result.extend(self._relateddocs(child.parent_id.id, kinds, listed_documents, recursion))
-            if child.parent_id:
-                result.append(child.parent_id.id)
+        for link_kind in kinds:
+            if link_kind == 'RfTree':
+                result.extend(self.getRelatedRfTree(doc_id, False))
+            elif link_kind == 'LyTree':
+                result.extend(self.getRelatedLyTree(doc_id))
+            elif link_kind == 'HiTree':
+                result.extend(self.getRelatedHiTree(doc_id, False))
+            elif link_kind == 'PkgTree':
+                result.extend(self.getRelatedPkgTree(doc_id))
+            else:
+                logging.warning('getRelatedOneLevelLinks cannot find link_kind %r' % (link_kind))
         return list(set(result))
 
     @api.model
-    def _relatedbydocs(self, oid, kinds, listed_documents=[], recursion=True):
-        result = []
-        if (oid in listed_documents):
-            return result
-        documentRelation = self.env['ir.attachment.relation']
-        docBrwsList = documentRelation.search([('parent_id', '=', oid), ('link_kind', 'in', kinds)])
-        if len(docBrwsList) == 0:
+    def getRelatedLyTree(self, doc_id):
+        out = []
+        if not doc_id:
+            logging.warning('Cannot get links from %r document' % (doc_id))
             return []
-        for child in docBrwsList:
-            if recursion:
-                listed_documents.append(oid)
-                result.extend(self._relatedbydocs(child.child_id.id, kinds, listed_documents, recursion))
-            if child.child_id.id:
-                result.append(child.child_id.id)
-        return list(set(result))
+        doc_brws = self.browse(doc_id)
+        doc_type = doc_brws.document_type.upper()
+        to_search = [('link_kind', 'in', ['LyTree']),
+                     '|', 
+                        ('parent_id', '=', doc_id),
+                        ('child_id', '=', doc_id)]
+        doc_rel_ids = self.env['ir.attachment.relation'].search(to_search)
+        for doc_rel_id in doc_rel_ids:
+            if doc_type == '3D':
+                out.append(doc_rel_id.parent_id.id)
+            elif doc_type == '2D':
+                out.append(doc_rel_id.child_id.id)
+            else:
+                logging.warning('Cannot get related LyTree from doc_type %r' % (doc_type))
+                return []
+        return list(set(out))
+    
+    @api.model
+    def getRelatedRfTree(self, doc_id, recursion=True):
+        out = []
+        if not doc_id:
+            logging.warning('Cannot get links from %r document' % (doc_id))
+            return []
+        to_search = [('link_kind', 'in', ['RfTree']),
+                     '|', 
+                        ('parent_id', '=', doc_id),
+                        ('child_id', '=', doc_id)]
+        if recursion:
+            to_search = [('link_kind', 'in', ['RfTree']),('parent_id', '=', doc_id)]
+        doc_rel_ids = self.env['ir.attachment.relation'].search(to_search)
+        for doc_rel_id in doc_rel_ids:
+            if doc_rel_id.child_id.id == doc_id:
+                out.append(doc_rel_id.parent_id.id)
+                if recursion:
+                    out.extend(self.getRelatedRfTree(doc_rel_id.parent_id.id, recursion))
+            else:
+                out.append(doc_rel_id.child_id.id)
+                if recursion:
+                    out.extend(self.getRelatedRfTree(doc_rel_id.child_id.id, recursion))
+        return list(set(out))
 
+    @api.model
+    def getRelatedPkgTree(self, doc_id):
+        out = []
+        if not doc_id:
+            logging.warning('Cannot get links from %r document' % (doc_id))
+            return []
+        to_search = [('link_kind', 'in', ['PkgTree']),
+                     ('parent_id', '=', doc_id)]
+        doc_rel_ids = self.env['ir.attachment.relation'].search(to_search)
+        for doc_rel_id in doc_rel_ids:
+            out.append(doc_rel_id.child_id.id)
+        return list(set(out))
+
+    @api.model
+    def getRelatedHiTree(self, doc_id, recursion=True):
+        '''
+            Get children HiTree documents
+        '''
+        out = []
+        if not doc_id:
+            logging.warning('Cannot get links from %r document' % (doc_id))
+            return []
+        document_rel_ids = self.env['ir.attachment.relation'].search([
+            ('link_kind', '=', 'HiTree'), 
+            ('parent_id', '=', doc_id)])
+        for document_rel_id in document_rel_ids:
+            child_id = document_rel_id.child_id.id
+            out.append(child_id)
+            if recursion:
+                out.extend(self.getRelatedHiTree(child_id, recursion))
+        return out
+
+    @api.model
+    def getRelatedAllLevelDocumentsTree(self, starting_doc_id):
+        outList = []
+        
+        def recursion(doc_id):
+            if not doc_id:
+                return
+            outList.append(doc_id)
+            doc_brws = self.browse(doc_id)
+            rf_tree_doc_ids = self.getRelatedRfTree(doc_id, recursion=False)
+            for rf_tree_doc_id in rf_tree_doc_ids:
+                outList.extend(recursion(rf_tree_doc_id))
+            outList.extend(rf_tree_doc_ids)
+            if doc_brws.is3D():
+                ly_tree_doc_ids = self.getRelatedLyTree(doc_id)
+                outList.extend(ly_tree_doc_ids)
+                outList.extend(self.getRelatedPkgTree(doc_id))
+                doc_ids = self.getRelatedHiTree(doc_id, recursion=False)
+                for child_doc_id in doc_ids:
+                    recursion(child_doc_id)
+            elif doc_brws.is2D():
+                model_doc_ids = self.getRelatedLyTree(doc_id)
+                for model_doc_id in model_doc_ids:
+                    recursion(model_doc_id)
+
+        recursion(starting_doc_id.id)
+        return list(set(outList))
     
     def _data_check_files(self, targetIds, listedFiles=(), forceFlag=False, retDict=False):
         result = []
@@ -347,11 +435,27 @@ class PlmDocument(models.Model):
             })
         return newDocBrws
 
+    @api.model
+    def _iswritable(self, oid):
+        if not oid.type == 'binary':
+            logging.warning(
+                "_iswritable : Part (" + str(oid.name) + "-" + str(oid.revisionid) + ") not writable as hyperlink.")
+            return False
+        if oid.state not in ('draft'):
+            logging.warning("_iswritable : Part (" + str(oid.name) + "-" + str(oid.revisionid) + ") in status ; " + str(
+                oid.state) + ".")
+            return False
+        if not oid.name:
+            logging.warning(
+                "_iswritable : Part (" + str(oid.name) + "-" + str(oid.revisionid) + ") without Engineering P/N.")
+            return False
+        return True
+
     def newVersion(self):
         """
             create a new version of the document (to WorkFlow calling)
         """
-        if self.NewRevision() is not None:
+        if self.NewRevision(self.id) is not None:
             return True
         return False
 
@@ -375,6 +479,8 @@ class PlmDocument(models.Model):
 
         newID = None
         newRevIndex = False
+        ctx = self.env.context.copy()
+        ctx['check'] = False
         if isinstance(docId, (list, tuple)):
             if len(docId) > 1:
                 docId, newBomDocumentRevision = docId
@@ -384,7 +490,7 @@ class PlmDocument(models.Model):
         for tmpObject in self.browse(docId):
             latestIDs = self.GetLatestIds([(tmpObject.engineering_document_name, tmpObject.revisionid, False)])
             for oldObject in self.browse(latestIDs):
-                oldObject.with_context({'check': False}).write({'state': 'undermodify'})
+                oldObject.with_context(ctx).write({'state': 'undermodify'})
                 defaults = {}
                 newRevIndex = int(oldObject.revisionid) + 1
                 defaults['engineering_document_name'] = oldObject.engineering_document_name
@@ -586,6 +692,9 @@ class PlmDocument(models.Model):
                 status_lable = dict_status.get(state, '')
                 ir_attachment_id.wf_message_post(body=_('Status moved to: %s.' % (status_lable)))
                 out.append(objId)
+            if ir_attachment_id.is3D():
+                pkg_doc_ids = self.getRelatedPkgTree(ir_attachment_id.id)
+                self.browse(pkg_doc_ids).commonWFAction(writable, state, check)
         return out
 
     
@@ -654,7 +763,9 @@ class PlmDocument(models.Model):
             blind write for xml-rpc call for recovering porpouse
             DO NOT USE FOR COMMON USE !!!!
         """
-        return self.with_context({'check': False}).write(vals)
+        ctx = self.env.context.copy()
+        ctx['check'] = False
+        return self.with_context(ctx).write(vals)
 
     #   Overridden methods for this entity
     @api.model
@@ -670,11 +781,11 @@ class PlmDocument(models.Model):
                 logging.warning(_("Permission denied for folder %r." % (str(filestore))))
                 return ''
         return filestore
-    
-    def check_unique(self, vals):
-        if 'engineering_document_name' in vals or  'revisionid' in vals:
-            if self.search_count([('engineering_document_name', '=', vals.get('engineering_document_name', self.engineering_document_name)),
-                                  ('revisionid', '=', vals.get('revisionid', self.revisionid)),
+
+    def check_unique(self):
+        for ir_attachment_id in self:
+            if self.search_count([('engineering_document_name', '=', ir_attachment_id.name),
+                                  ('revisionid', '=', ir_attachment_id.revisionid),
                                   ('document_type', 'in', ['2d', '3d'])]) > 1:
                 raise UserError(_('Document Already in the system'))
 
@@ -700,8 +811,8 @@ class PlmDocument(models.Model):
         vals['is_plm'] = True
         vals.update(self.checkMany2oneClient(vals))
         vals = self.plm_sanitize(vals)
-        self.check_unique(vals)
         res = super(PlmDocument, self).create(vals)
+        res.check_unique()
         return res
 
     
@@ -715,8 +826,8 @@ class PlmDocument(models.Model):
         self.writeCheckDatas(vals)
         vals.update(self.checkMany2oneClient(vals))
         vals = self.plm_sanitize(vals)
-        self.check_unique(vals)
         res = super(PlmDocument, self).write(vals)
+        self.check_unique()
         return res
 
     
@@ -752,16 +863,14 @@ class PlmDocument(models.Model):
     def writeCheckDatas(self, vals):
         if 'datas' in list(vals.keys()) or 'engineering_document_name' in list(vals.keys()):
             for docBrws in self:
-                document_type = docBrws.document_type
-                if not document_type:
-                    document_type = ''
-                if document_type.upper() in ['2D', '3D']:
+                if docBrws.document_type and docBrws.document_type.upper() in ['2D', '3D']:
                     if not docBrws._is_checkedout_for_me():
                         if not (self.env.user._is_admin() or self.env.user._is_superuser()):
                             raise UserError(_("You cannot edit a file not in check-out by you! User ID %s" % (self.env.uid)))
 
     
     def unlink(self):
+        ctx = self.env.context.copy()
         values = {'state': 'released', }
         checkState = ('undermodify', 'obsoleted')
         for checkObj in self:
@@ -770,7 +879,8 @@ class PlmDocument(models.Model):
                 oldObject = docBrwsList[0]
                 if oldObject.state in checkState:
                     oldObject.wf_message_post(body=_('Removed : Latest Revision.'))
-                    if not oldObject.with_context({'check': False}).write(values):
+                    ctx['check'] = False
+                    if not oldObject.with_context(ctx).write(values):
                         logging.warning(
                             "unlink : Unable to update state to old document (" + str(oldObject.engineering_document_name) + "-" + str(
                                 oldObject.revisionid) + ").")
@@ -948,7 +1058,7 @@ class PlmDocument(models.Model):
                                      store=True,
                                      string=_('Document Type'))
     desc_modify = fields.Text(_('Modification Description'), default='')
-    is_plm = fields.Boolean('Is a plm Document')
+    is_plm = fields.Boolean('Is a plm Document', help=_("If the flag is set, the document is managed by the plm module, and imply its backup at each save and the visibility on some views."))
     attachment_release_user = fields.Many2one('res.users', string=_("Release User"))
     attachment_release_date = fields.Datetime(string=_('Release Datetime'))
     attachment_revision_count = fields.Integer(compute='_attachment_revision_count')
@@ -1038,38 +1148,36 @@ class PlmDocument(models.Model):
             Evaluate documents to return
         """
         forceFlag = False
-        listed_models = []
-        listed_documents = []
         outIds = []
-        oid, listedFiles, selection = request
-        outIds.append(oid)
+        doc_id, listedFiles, selection = request
+        docBrws = self.browse(doc_id)
+        outIds.append(doc_id)
         if selection is False:
             selection = 1  # Case of selected
         if selection < 0:  # Case of force refresh PWS
             forceFlag = True
             selection = selection * (-1)
-        # Get relations due to layout connected
-        docArray = self._relateddocs(oid, ['LyTree'], listed_documents)
-        # Get Hierarchical tree relations due to children
-        modArray = self._explodedocs(oid, ['HiTree'], listed_models)
-        outIds = list(set(outIds + modArray + docArray))
+        if docBrws.is2D():
+            outIds.extend(self.getRelatedLyTree(doc_id))
+        outIds.extend(self.getRelatedHiTree(doc_id, recursion=True))
+        outIds = list(set(outIds))
         if selection == 2:  # Case of latest
             outIds = self._getlastrev(outIds)
         return self._data_check_files(outIds, listedFiles, forceFlag)
-    
-    @api.model
-    def GetDocumentInfosFromFileName(self, fileName):
-        """
-        get info of all the document related with the file name
-        """
-        out = []
-        for ir_attachment_id in self.search([('name', '=', fileName.get('file_name'))]):
-            out.append({'id': ir_attachment_id.id,
-                        'name': ir_attachment_id.name,
-                        'iconStream': ir_attachment_id.preview,
-                        'revisionid': ir_attachment_id.revisionid,
-                        'engineering_document_name': ir_attachment_id.engineering_document_name})
-        return out
+
+    def is2D(self):
+        for docBrws in self:
+            if docBrws.document_type.upper() == '2D':
+                return True
+            break
+        return False
+
+    def is3D(self):
+        for docBrws in self:
+            if docBrws.document_type.upper() == '3D':
+                return True
+            break
+        return False
 
     @api.model
     def CheckInRecursive(self, request, default=None):
@@ -1101,23 +1209,7 @@ class PlmDocument(models.Model):
             selection = 1
         if selection < 0:
             selection = selection * (-1)
-        documentRelation = self.env['ir.attachment.relation']
-        docArray = []
-
-        def recursionCompute(oid):
-            if oid in docArray:
-                return
-            else:
-                docArray.append(oid)
-            docBrwsList = documentRelation.search(['|', ('parent_id', '=', oid), ('child_id', '=', oid)])
-            for objRel in docBrwsList:
-                if objRel.link_kind in ['LyTree', 'RfTree'] and objRel.child_id.id not in docArray:
-                    docArray.append(objRel.child_id.id)
-                else:
-                    if objRel.parent_id.id == oid:
-                        recursionCompute(objRel.child_id.id)
-
-        recursionCompute(oid)
+        docArray = self.getRelatedAllLevelDocumentsTree(docBrws)
         if selection == 2:
             docArray = self._getlastrev(docArray)
         checkoutObj = self.env['plm.checkout']
@@ -1147,40 +1239,6 @@ class PlmDocument(models.Model):
         else:
             docArray = ids
         return self.browse(docArray)._data_get_files(listedFiles, forceFlag)
-
-    @api.model
-    def GetAllFiles(self, request, default=None):
-        """
-            Extract documents to be returned
-        """
-        forceFlag = False
-        listed_models = []
-        listed_documents = []
-        modArray = []
-        oid, listedFiles, selection = request
-        if not selection:
-            selection = 1
-
-        if selection < 0:
-            forceFlag = True
-            selection = selection * -1
-
-        kind = 'HiTree'  # Get Hierarchical tree relations due to children
-        docArray = self._explodedocs(oid, [kind], listed_models)
-        if oid not in docArray:
-            docArray.append(oid)  # Add requested document to package
-        for item in docArray:
-            kinds = ['LyTree', 'RfTree']  # Get relations due to layout connected
-            modArray.extend(self._relateddocs(item, kinds, listed_documents))
-            modArray.extend(self._explodedocs(item, kinds, listed_documents))
-        modArray.extend(docArray)
-        docArray = list(set(modArray))  # Get unique documents object IDs
-        if selection == 2:
-            docArray = self._getlastrev(docArray)
-        if oid not in docArray:
-            docArray.append(oid)  # Add requested document to package
-        return self.browse(docArray)._data_get_files(listedFiles, forceFlag)
-
     
     def action_view_rel_doc(self):
         action = self.env.ref('plm.act_view_doc_related').read()[0]
@@ -1194,14 +1252,11 @@ class PlmDocument(models.Model):
             Extract documents related to current one(s) (layouts, referred models, etc.)
         """
         related_documents = []
-        listed_documents = []
         read_docs = []
         for oid in self.ids:
-            kinds = ['RfTree',
-                     'LyTree',
-                     '']  # Fix for new style document relations
-            read_docs.extend(self._relateddocs(oid, kinds, listed_documents, False))
-            read_docs.extend(self._relatedbydocs(oid, kinds, listed_documents, False))
+            read_docs.extend(self.getRelatedRfTree(oid, recursion=False))
+            read_docs.extend(self.getRelatedLyTree(oid))
+        read_docs = list(set(read_docs))
         for document in self.browse(read_docs):
             related_documents.append([document.id,
                                       document.engineering_document_name,
@@ -1292,6 +1347,12 @@ class PlmDocument(models.Model):
         """
             Return a new name due to sequence next number.
         """
+        ctx = self.env.context
+        eng_code = ctx.get('engineering_code')
+        _eng_rev = ctx.get('engineering_revision')
+        _file_path = ctx.get('filePath')
+        if eng_code:
+            documentName = eng_code
         nextDocNum = self.env['ir.sequence'].next_by_code('ir.attachment.progress')
         return documentName + '-' + nextDocNum
 
@@ -2048,16 +2109,18 @@ class PlmDocument(models.Model):
         plm_document_id = False
         engineering_code = componentAtts.get('engineering_code')
         engineering_revision = componentAtts.get('engineering_revision', 0)
-        for product_product in self.env['product.product'].search([('engineering_code', '=', engineering_code),
-                                                                  ('engineering_revision', '=', engineering_revision)]):
-            product_product_id = product_product.id
-            break
+        if engineering_code:
+            for product_product in self.env['product.product'].search([('engineering_code', '=', engineering_code),
+                                                                      ('engineering_revision', '=', engineering_revision)]):
+                product_product_id = product_product.id
+                break
         document_name = documentAttrs.get('engineering_document_name')
         document_revision = documentAttrs.get('revisionid', 0)
-        for plm_document in self.env['ir.attachment'].search([('engineering_document_name', '=', document_name),
-                                                             ('revisionid', '=', document_revision)]):
-            plm_document_id = plm_document.id
-            break
+        if document_name:
+            for plm_document in self.env['ir.attachment'].search([('engineering_document_name', '=', document_name),
+                                                                 ('revisionid', '=', document_revision)]):
+                plm_document_id = plm_document.id
+                break
         return product_product_id, plm_document_id
 
     @api.model
@@ -2078,8 +2141,12 @@ class PlmDocument(models.Model):
                 doc_fields['documentID'] = doc_id.id
                 doc_fields['name'] = doc_id.engineering_document_name
                 if is_check_in:
-                    doc_id.checkout(hostname, pws_path)
-                    doc_fields['checkout'] = True
+                    try:
+                        doc_id.checkout(hostname, pws_path)
+                        doc_fields['checkout'] = True
+                    except Exception as ex:
+                        doc_fields['err_msg'] = 'Error during check-out %r %r' % (doc_fields['datas_fname'], ex)
+                        doc_fields['checkout'] = False
                     out.append(doc_fields)
                 elif checkout_by_me:
                     doc_fields['checkout'] = False
@@ -2091,4 +2158,50 @@ class PlmDocument(models.Model):
                 break
         return json.dumps(out)
 
+    @api.model
+    def GetDocumentInfosFromFileName(self, fileName):
+        """
+        get info of all the document related with the file name
+        """
+        out = []
+        for ir_attachment_id in self.search([('name', '=', fileName.get('file_name'))]):
+            out.append({'id': ir_attachment_id.id,
+                        'name': ir_attachment_id.name,
+                        'iconStream': ir_attachment_id.preview or '',
+                        'revisionid': ir_attachment_id.revisionid,
+                        'engineering_document_name': ir_attachment_id.engineering_document_name})
+        return out
+
+    @api.model
+    def GetAllFiles(self, request, default=None):
+        """
+            Extract documents to be returned
+        """
+        forceFlag = False
+        listed_models = []
+        listed_documents = []
+        modArray = []
+        oid, listedFiles, selection = request
+        if not selection:
+            selection = 1
+
+        if selection < 0:
+            forceFlag = True
+            selection = selection * -1
+
+        kind = 'HiTree'  # Get Hierarchical tree relations due to children
+        docArray = self._explodedocs(oid, [kind], listed_models)
+        if oid not in docArray:
+            docArray.append(oid)  # Add requested document to package
+        for item in docArray:
+            kinds = ['LyTree', 'RfTree']  # Get relations due to layout connected
+            modArray.extend(self._relateddocs(item, kinds, listed_documents))
+            modArray.extend(self._explodedocs(item, kinds, listed_documents))
+        modArray.extend(docArray)
+        docArray = list(set(modArray))  # Get unique documents object IDs
+        if selection == 2:
+            docArray = self._getlastrev(docArray)
+        if oid not in docArray:
+            docArray.append(oid)  # Add requested document to package
+        return self.browse(docArray)._data_get_files(listedFiles, forceFlag)
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

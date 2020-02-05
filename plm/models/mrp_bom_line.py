@@ -37,21 +37,7 @@ class MrpBomLineExtension(models.Model):
     _name = 'mrp.bom.line'
     _inherit = 'mrp.bom.line'
     _order = "itemnum"
-    
-    def plm_sanitize(self, vals):
-        all_keys = self.fields_get_keys()
-        if isinstance(vals, dict):
-            valsKey = list(vals.keys())
-            for k in valsKey:
-                if k not in all_keys:
-                    del vals[k]
-            return vals
-        else:
-            out = []
-            for k in vals:
-                if k in all_keys:
-                    out.append(k)
-            return out
+
 
     def read(self, fields=[], load='_classic_read'):
         fields = self.plm_sanitize(fields)
@@ -219,3 +205,24 @@ class MrpBomLineExtension(models.Model):
     related_document_ids = fields.One2many(compute='_related_doc_ids',
                                            comodel_name='ir.attachment',
                                            string=_('Related Documents'))
+    cutted_type = fields.Selection(
+        [('none', 'None'),
+         ('client', 'Client'),
+         ('server', 'Server')],
+        _('Cutted Compute Type'),
+        default='none')
+
+    def plm_sanitize(self, vals):
+        all_keys = self.fields_get_keys()
+        if isinstance(vals, dict):
+            valsKey = list(vals.keys())
+            for k in valsKey:
+                if k not in all_keys:
+                    del vals[k]
+            return vals
+        else:
+            out = []
+            for k in vals:
+                if k in all_keys:
+                    out.append(k)
+            return out

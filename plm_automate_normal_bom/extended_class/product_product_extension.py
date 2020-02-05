@@ -26,8 +26,8 @@ Created on 26 Jul 2016
 @author: Daniel Smerghetto
 '''
 import logging
-from openerp import models
-from openerp import api
+from odoo import models
+from odoo import api
 
 
 class ProdProdExtension(models.Model):

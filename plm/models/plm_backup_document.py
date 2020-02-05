@@ -105,6 +105,8 @@ class BackupDocWizard(osv.osv.osv_memory):
 
     
     def action_restore_document(self):
+        ctx = self.env.context.copy()
+        ctx['check'] = False
         documentId = False
         backupDocIds = self.env.context.get('active_ids', [])
         backupDocObj = self.env['plm.backupdoc']
@@ -119,7 +121,7 @@ class BackupDocWizard(osv.osv.osv_memory):
                       }
             if relDocBrws:
                 documentId = relDocBrws.id
-                writeRes = relDocBrws.sudo().with_context({'check': False}).write(values)
+                writeRes = relDocBrws.sudo().with_context(ctx).write(values)
                 if writeRes:
                     logging.info('[action_restore_document] Updated document %r' % (documentId))
                 else:

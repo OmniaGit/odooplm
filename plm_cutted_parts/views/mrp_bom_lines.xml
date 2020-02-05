@@ -4,13 +4,18 @@
     <record id="plm_cutted_parts_bom_line" model="ir.ui.view">
         <field name="name">plm.bom.form.cutted</field>
         <field name="model">mrp.bom</field>
-        <field name="inherit_id" ref="mrp.mrp_bom_form_view"/>
+        <field name="inherit_id" ref="plm.plm_bom_form_view"/>
         <field name="type">form</field>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_id']"  position="after">
+            <xpath expr="//field[@name='bom_line_ids']/tree/field[@name='hasChildBoms']" position="after">
                 <field name="x_length"/>
                 <field name="y_length"/>
+                <field name="cutted_qty"/>
+            </xpath>
+            <xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_id']" position="before">
+            	<field name="cutted_type"/>
             </xpath>
         </field>
     </record>
+
 </odoo>

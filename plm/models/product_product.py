@@ -348,7 +348,7 @@ class PlmComponent(models.Model):
                     }
 
     @api.model
-    def _getChildrenBom(self, component, level=0, currlevel=0):
+    def _getChildrenBom(self, component, level=0, currlevel=0, bom_type=False):
         """
             Return a flat list of each child, listed once, in a Bom ( level = 0 one level only, level = 1 all levels)
         """
@@ -357,12 +357,28 @@ class PlmComponent(models.Model):
         if level == 0 and currlevel > 1:
             return bufferdata
         for bomid in component.product_tmpl_id.bom_ids:
+            if bom_type:
+                if bomid.type != bom_type:
+                    continue
             for bomline in bomid.bom_line_ids:
-                children = self._getChildrenBom(bomline.product_id, level, currlevel + 1)
+                children = self._getChildrenBom(component=bomline.product_id,
+                                                level=level,
+                                                currlevel=currlevel + 1,
+                                                bom_type=bom_type)
                 bufferdata.extend(children)
                 bufferdata.append(bomline.product_id.id)
         result.extend(bufferdata)
         return list(set(result))
+
+    def summarize_level(self, recursion=False, flat=False, level=1, summarize=False, parentQty=1, bom_type=False):
+        out = {}
+        for product_product_id in self:
+            for bom_id in product_product_id.product_tmpl_id.bom_ids:
+                if bom_type:
+                    if bom_id.type != bom_type:
+                        continue
+                out[bom_id] = bom_id.summarize_level(recursion, flat, level, summarize, parentQty, bom_type)
+        return out
 
     @api.model
     def RegMessage(self, request, default=None):
@@ -560,25 +576,35 @@ class PlmComponent(models.Model):
         self.wf_message_post(body=_('Created Normal Bom.'))
         return False
 
+    def checkWorkflow(self, docInError, linkeddocuments, check_state):
+        docIDs = []
+        attachment = self.env['ir.attachment']
+        for documentBrws in linkeddocuments:
+            if documentBrws.state == check_state:
+                if documentBrws.is_checkout:
+                    docInError.append(_("Document %r : %r is checked out by user %r") % (documentBrws.name, documentBrws.revisionid, documentBrws.checkout_user))
+                    continue
+                docIDs.append(documentBrws.id)
+                if documentBrws.is3D():
+                    doc_layout_ids = documentBrws.getRelatedLyTree(documentBrws.id)
+                    docIDs.extend(self.checkWorkflow(docInError, attachment.browse(doc_layout_ids), check_state))
+                    raw_doc_ids = documentBrws.getRelatedRfTree(documentBrws.id, recursion=True)
+                    docIDs.extend(self.checkWorkflow(docInError, attachment.browse(raw_doc_ids), check_state))
+        return list(set(docIDs))
+
     def _action_ondocuments(self, action_name, include_statuses=[]):
         """
             move workflow on documents having the same state of component
         """
         docIDs = []
         docInError = []
-        for product_product_id in self:
-            if not include_statuses:
-                if (action_name != 'transmit') and (action_name != 'reject') and (action_name != 'release'):
-                    include_statuses = [product_product_id.state]
-                else:
-                    include_statuses = ['confirmed']
-            for ir_attachment_id in product_product_id.linkeddocuments:
-                if ir_attachment_id.state in include_statuses:
-                    if ir_attachment_id.is_checkout:
-                        docInError.append(_("Document %r : %r is checked out by user %r") % (ir_attachment_id.engineering_document_name, ir_attachment_id.revisionid, ir_attachment_id.checkout_user))
-                        continue
-                    if ir_attachment_id.id not in docIDs:
-                        docIDs.append(ir_attachment_id.id)
+        documentType = self.env['ir.attachment']
+        for oldObject in self:
+            if (action_name != 'transmit') and (action_name != 'reject') and (action_name != 'release'):
+                check_state = oldObject.state
+            else:
+                check_state = 'confirmed'
+            docIDs.extend(self.checkWorkflow(docInError, oldObject.linkeddocuments, check_state))
         if docInError:
             msg = _("Error on workflow operation")
             for e in docInError:
@@ -1026,7 +1052,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             try:
                 for refId in self.env[referredModel].search([('name', '=', cadVal)]):
                     return refId
-                if force_create:
+                if force_create and cadVal:
                     if referredModel in ['product.product', 'product.template']:
                         return False    # With False value field is not set
                     tmp_vals = {
@@ -1101,6 +1127,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         """
         newComponentId = False
         engineering_revision = 0
+        ctx = self.env.context.copy()
         for tmpObject in self:
             latestIDs = self.GetLatestIds([(tmpObject.engineering_code, tmpObject.engineering_revision, False)])
             for product_product_id in self.browse(latestIDs[-1]):
@@ -1122,7 +1149,8 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                 defaults['engineering_writable'] = True
                 defaults['state'] = 'draft'
                 defaults['linkeddocuments'] = []                  # Clean attached documents for new revision object
-                newCompBrws = product_product_id.with_context({'new_revision': True}).copy(defaults)
+                ctx['new_revision'] = True
+                newCompBrws = product_product_id.with_context(ctx).copy(defaults)
                 product_product_id.wf_message_post(body=_('Created : New Revision.'))
                 newComponentId = newCompBrws.id
                 break
@@ -1143,9 +1171,11 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         """
         give back the lines
         """
+        ctx = self.env.context.copy()
+        ctx['lang'] = 'en_GB'
         return [bomLineBrowse.itemnum,
                 emptyStringIfFalse(bomLineBrowse.product_id.name),
-                bomLineBrowse.product_id.with_context({'lang': 'en_GB'}).name,
+                bomLineBrowse.product_id.with_context(ctx).name,
                 bomLineBrowse.product_id.engineering_code,
                 bomLineBrowse.product_qty]
 
@@ -1608,6 +1638,9 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         engineering_name = productAttribute.get('engineering_code', False)
         if not engineering_name:
             return False
+        if 'name' in productAttribute:
+            if not productAttribute['name']:
+                productAttribute['name'] = engineering_name
         for product_produc_id in self.search([('engineering_code', '=', engineering_name),
                                               ('engineering_revision', '=', productAttribute.get('engineering_revision', '0'))]):
             out_product_produc_id = product_produc_id

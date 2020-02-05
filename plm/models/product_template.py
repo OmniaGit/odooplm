@@ -73,7 +73,7 @@ class ProductTemplateExtension(models.Model):
     engineering_code = fields.Char(_('Part Number'),
                                    index=True,
                                    help=_("This is engineering reference to manage a different P/N from item Name."),
-                                   size=64)
+                                   size=256)
 
     #   ####################################    Overload to set default values    ####################################
     standard_price = fields.Float('Cost',
@@ -137,7 +137,10 @@ class ProductTemplateExtension(models.Model):
         get All version product_tempate based on this one
         """
         for product_template_id in self:
-            product_template_id.revision_count = product_template_id.search_count([('engineering_code', '=', product_template_id.engineering_code)])
+            if product_template_id.engineering_code:
+                product_template_id.revision_count = product_template_id.search_count([('engineering_code', '=', product_template_id.engineering_code)])
+            else:
+                product_template_id.revision_count = 0
 
     def open_related_revisions(self):
         return {'name': _('Products'),

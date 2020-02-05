@@ -75,6 +75,16 @@
                   </button>
                </div>
             </xpath>
+            <xpath expr="//div[@name='creation_div']" position="after">
+                <label for="write_uid" string="Modification"/>
+                  <div name="modification_div">
+                     <field name="write_uid" readonly="1" class="oe_inline"/> on
+                     <field name="write_date" readonly="1" class="oe_inline"/>
+                 </div>
+                 <field name="attachment_release_user"   readonly="1"/>
+                 <field name="attachment_release_date"  readonly="1"/>
+                 <field name="is_plm" group="base.group_no_one"/>
+            </xpath>
             <xpath expr="//sheet/group[last()]" position="after">
                     <group name="doc_data">
                         <group string= "PLM Infos" name="main_doc_info">
@@ -87,15 +97,6 @@
 	                            <field string="Enineering revision"
 	                                   name="revisionid"
 	                                   readonly="True"/>
-                            </group>
-                            <group string="Created and Modified" name="doc_user">
-                                <field name="create_uid"  readonly="1"/>
-                                <field name="create_date" readonly="1"/>
-                                <field name="write_uid"   readonly="1"/>
-                                <field name="write_date"  readonly="1"/>
-                                <field name="attachment_release_user"   readonly="1"/>
-                                <field name="attachment_release_date"  readonly="1"/>
-                                <field name="is_plm" group="base.group_no_one"/>
                             </group>
                         </group>
                         <group name="doc_preview">

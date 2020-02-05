@@ -195,7 +195,10 @@
         <record id="file_extention_type_rel_2D" model="ir.config_parameter">
             <field name="key">file_exte_type_rel_2D</field>
             <field name="value">[
-            '.dwg', '.idw', 
+            '.dwg',
+            '.idw', 
+            '.dxf',
+            '.iges',
             '.e2', 
             '.slddrw',
             '.dft']</field>
@@ -205,9 +208,13 @@
             <field name="key">file_exte_type_rel_3D</field>
             <field name="value">[
             '.e3', 
-            '.iam', '.ipt', 
-            '.sldasm', '.sldprt',
-            '.par','.asm']</field>
+            '.iam',
+            '.ipt', 
+            '.sldasm',
+            '.sldprt',
+            '.par',
+            '.asm',
+            '.psm']</field>
         </record>
 
         <record id="report_indentation_key" model="ir.config_parameter">
