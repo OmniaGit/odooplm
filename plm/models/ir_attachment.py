@@ -1075,7 +1075,7 @@ class PlmDocument(models.Model):
         def getcheckedfiles(files):
             res = []
             for fileName in files:
-                plmDocList = self.search([('engineering_document_name', '=', fileName)], order='revisionid')
+                plmDocList = self.search([('name', '=', fileName)], order='revisionid')
                 if len(plmDocList) > 0:
                     ids = plmDocList.ids
                     ids.sort()
