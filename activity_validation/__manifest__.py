@@ -21,17 +21,23 @@
 ##############################################################################
 {
     'name': 'Activity Validation',
-    'version': '13.0',
+    'version': '13.0.0.1',
     'author': 'OmniaSolutions',
     'website': 'https://www.omniasolutions.website',
     'category': 'Custom',
     'sequence': 1,
     'summary': '',
-    'depends': ['base',
-                ],
+    'depends': [
+        'base',
+        'product',
+    ],
     'license': 'AGPL-3',
     'description': '',
-    'data': [],
+    'data': [
+        'security/ir.model.access.csv',
+        'data/mail_activity_data.xml',
+        'views/mail_activity_view.xml'
+    ],
     'demo': [],
     'test': [],
     'installable': False,

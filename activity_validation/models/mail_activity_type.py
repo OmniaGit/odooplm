@@ -36,6 +36,5 @@ from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
 class MailActivityType(models.Model):
     _inherit = 'mail.activity.type'
-    
-    template_validation = fields.One2many('mail.activity.validation')
-    
+
+    template_validation_ids = fields.One2many('mail.activity.validation', 'mail_activity_type_id', string="Template")

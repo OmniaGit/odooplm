@@ -34,20 +34,7 @@ from datetime import timedelta
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
 
-class MailActivityValidation(models.Model):
-    _name = "mail.activity.validation"
+class ResGroups(models.Model):
+    _inherit = 'res.groups'
 
-    _desctiption = "This object perform the validation managed by user"
-
-    mail_activity_type_id = fields.Many2one('mail.activity.type', string="Activity Type")
-
-    user_ids = fields.One2many('res.users', 'mail_activity_validation_id',
-                              string='Validation user involved')
-
-    group_ids = fields.One2many('res.groups', 'mail_activity_validation_id',
-                               string='Validation Groups',
-                               help="""All the user related to this group will be added as Validation user""")
-
-    response = fields.Selection([('ready', 'Ready'),
-                                 ('accepted', 'Accepted'),
-                                 ('rejected', 'Rejected')], string="Response")
+    mail_activity_validation_id = fields.Many2one('mail.activity.validation', string="Activity Validation")

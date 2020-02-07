@@ -33,19 +33,42 @@ from odoo.exceptions import UserError
 from datetime import timedelta
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
+
 class MailActivity(models.Model):
     _inherit = 'mail.activity'
-    
+
+    # parent/childs relation, i used of child_of
+    parent_id = fields.Many2one('mail.activity', 'Parent Activity', index=True, ondelete='set null',
+                                help="Initial thread message.")
+    child_ids = fields.One2many('mail.activity', 'parent_id', 'Child Activity')
+
+    is_product_activity = fields.Boolean(string='Is a Product Activity')
+
+    @api.onchange('activity_type_id')
+    def _onchange_activity_type_id(self):
+        is_product_activity = False
+        activity_type = self.activity_type_id
+        if activity_type:
+            xml_id = self.env.ref('activity_validation.mail_activity_product_validation')
+            if xml_id and (xml_id.id == activity_type.id):
+                is_product_activity = True
+        self.is_product_activity = is_product_activity
+
+
+    # ------------------------------------------------------
+    # Business Methods
+    # ------------------------------------------------------
+
     def action_done(self):
         """ Wrapper without feedback because web button add context as
         parameter, therefore setting context to feedback """
         return super(MailActivity, self).action_done()
-    
+
     def action_done_schedule_next(self):
         """ Wrapper without feedback because web button add context as
         parameter, therefore setting context to feedback """
         return super(MailActivity, self).action_done_schedule_next()
-    
+
     def unlink(self):
         """
         overload of the standard function in  order to do not delete the activity that are coming from activity validation
