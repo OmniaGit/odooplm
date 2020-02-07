@@ -34,13 +34,16 @@
     'license': 'AGPL-3',
     'description': '',
     'data': [
-        'security/ir.model.access.csv',
+        #'security/ir.model.access.csv',
         'data/mail_activity_data.xml',
-        'views/mail_activity_view.xml'
+        'views/mail_activity_type.xml',
+        'views/mail_activity.xml',
+        'views/mail_activity_children_rel.xml',
+        'security/security.xml',
     ],
     'demo': [],
     'test': [],
-    'installable': False,
+    'installable': True,
     'application': False,
     'auto_install': False,
 }

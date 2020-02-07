@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+<data noupdate="1">
+    <!-- View User  -->
+    <record id="group_force_activity_validation_admin" model="res.groups">
+        <field name="name">Force Activity Validation</field>
+        <field name="category_id" ref="plm.odooplm_module_category"/>
+        <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+    </record>
+
+    <record id="group_force_activity_validation_user" model="res.groups">
+        <field name="name">Activity User</field>
+        <field name="category_id" ref="plm.odooplm_module_category"/>
+        <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+    </record>
+
+    <record id="group_force_activity_validation_user_readonly" model="res.groups">
+        <field name="name">Activity User Readonly</field>
+        <field name="category_id" ref="plm.odooplm_module_category"/>
+        <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+    </record>
+
+
+
+
+	<!-- mail.activity.children.rel  -->
+    <record id="mail_activity_validation_children_readonly" model="ir.model.access">
+        <field name="name">Mail activity validation readonly</field>
+        <field name="model_id" ref="model_mail_activity_children_rel"/>
+        <field name="group_id" ref="activity_validation.group_force_activity_validation_user_readonly"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="0"/>
+        <field name="perm_create" eval="0"/>
+        <field name="perm_unlink" eval="0"/>
+    </record>
+    
+    <record id="mail_activity_validation_children_validation" model="ir.model.access">
+        <field name="name">Mail activity validation children</field>
+        <field name="model_id" ref="model_mail_activity_children_rel"/>
+        <field name="group_id" ref="activity_validation.group_force_activity_validation_user"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="1"/>
+        <field name="perm_create" eval="1"/>
+        <field name="perm_unlink" eval="1"/>
+    </record>
+    
+    <record id="mail_activity_validation_children_admin" model="ir.model.access">
+        <field name="name">Mail activity validation admin</field>
+        <field name="model_id" ref="model_mail_activity_children_rel"/>
+        <field name="group_id" ref="activity_validation.group_force_activity_validation_admin"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="1"/>
+        <field name="perm_create" eval="1"/>
+        <field name="perm_unlink" eval="1"/>
+    </record>
+
+</data>    
+  
+</odoo>

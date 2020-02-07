@@ -37,42 +37,115 @@ from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 class MailActivity(models.Model):
     _inherit = 'mail.activity'
 
-    # parent/childs relation, i used of child_of
-    parent_id = fields.Many2one('mail.activity', 'Parent Activity', index=True, ondelete='set null',
-                                help="Initial thread message.")
-    child_ids = fields.One2many('mail.activity', 'parent_id', 'Child Activity')
-
-    is_product_activity = fields.Boolean(string='Is a Product Activity')
+    plm_state = fields.Selection([('draft', _('draft')),
+                                  ('send_request', _('Send Request')),
+                                  ('reject_request', _('Reject Request')),
+                                  ('need_review', _('Need Review')),
+                                  ('confirmed', _('confirmed')),
+                                  ],
+                                  default='draft',
+                                 string=_('Plm State'))
+    children_ids = fields.Many2many('mail.activity.children.rel',
+                                    'activity_id_children_rel',
+                                    'activity_id',
+                                    'child_activity_obj_id',
+                                    _('Children Activities'))
+    name = fields.Char('Name')
 
     @api.onchange('activity_type_id')
-    def _onchange_activity_type_id(self):
-        is_product_activity = False
-        activity_type = self.activity_type_id
-        if activity_type:
-            xml_id = self.env.ref('activity_validation.mail_activity_product_validation')
-            if xml_id and (xml_id.id == activity_type.id):
-                is_product_activity = True
-        self.is_product_activity = is_product_activity
+    def changeActivityTypeId(self):
+        for activity_id in self:
+            activity_ids = []
+            target_activity_type_id = self.env.ref('activity_validation.mail_activity_product_validation')
+            if target_activity_type_id.id == activity_id.activity_type_id.id:
+                for user_id in target_activity_type_id.activity_user_ids:
+                    vals = {
+                        'name': '%s - %s' % (activity_id.activity_type_id.name, user_id.name),
+                        'user_id': user_id.id,
+                        'mail_children_activity_id': False,
+                        }
+                    rel_id = self.env['mail.activity.children.rel'].create(vals)
+                    activity_ids.append(rel_id.id)
+            activity_id.write({
+                'children_ids': [(6, False, activity_ids)]
+                })
 
+    def write(self, vals):
+        ret = super(MailActivity, self).write(vals)
+        for activity_id in self:
+            if self.env.user.has_group('activity_validation.group_force_activity_validation_admin'):
+                return ret
+            if activity_id.plm_state == 'confirmed':
+                raise UserError('You cannot modify a confirmed activity')
+        return ret
+        
 
-    # ------------------------------------------------------
-    # Business Methods
-    # ------------------------------------------------------
+    def action_close_dialog(self):
+        for line_id in self.children_ids:
+            if not line_id.mail_children_activity_id:
+                activity_vals = {
+                    'activity_type_id': self.activity_type_id.id,
+                    'date_deadline': self.date_deadline,
+                    'user_id': line_id.user_id.id,
+                    'plm_state': 'send_request',
+                    'name': line_id.name,
+                    }
+                new_activity_id = self.create(activity_vals)
+                line_id.mail_children_activity_id = new_activity_id.id
+        return {'type': 'ir.actions.act_window_close'}
+
+    def checkConfirmed(self, check=False):
+        if self.env.user.has_group('activity_validation.group_force_activity_validation_admin'):
+            return
+        for activity_id in self:
+            if check and activity_id.plm_state != 'confirmed':
+                raise UserError('Cannot confirm activity because some activities are not done.')
+            for child in activity_id.children_ids:
+                child.mail_children_activity_id.checkConfirmed(True)
 
     def action_done(self):
-        """ Wrapper without feedback because web button add context as
-        parameter, therefore setting context to feedback """
+        self.checkConfirmed()
+        self.plm_state = 'confirmed'
         return super(MailActivity, self).action_done()
 
     def action_done_schedule_next(self):
-        """ Wrapper without feedback because web button add context as
-        parameter, therefore setting context to feedback """
+        self.checkConfirmed()
+        self.plm_state = 'confirmed'
         return super(MailActivity, self).action_done_schedule_next()
 
     def unlink(self):
-        """
-        overload of the standard function in  order to do not delete the activity that are coming from activity validation
-        verifiy if activity is set t odone in the chatter
-        otherwise, create a storage for activity
-        """
+        for activity_id in self:
+            target_activity_type_id = self.env.ref('activity_validation.mail_activity_product_validation')
+            if target_activity_type_id.id == activity_id.activity_type_id.id:
+                return
         return super(MailActivity, self).unlink()
+
+    def action_confirm(self):
+        for activity_id in self:
+            activity_id.plm_state = 'confirmed'
+            return self.reopenActivity(activity_id.id)
+
+    def action_reject(self):
+        for activity_id in self:
+            activity_id.plm_state = 'reject_request'
+            return self.reopenActivity(activity_id.id)
+
+    def action_need_review(self):
+        for activity_id in self:
+            activity_id.plm_state = 'need_review'
+            return self.reopenActivity(activity_id.id)
+
+    def action_send_request(self):
+        for activity_id in self:
+            activity_id.plm_state = 'send_request'
+            return self.reopenActivity(activity_id.id)
+
+    def reopenActivity(self, res_id):
+        out_act_dict = {'name': _('Activity'),
+                        'view_type': 'form',
+                        'target': 'new',
+                        'res_model': 'mail.activity',
+                        'type': 'ir.actions.act_window',
+                        'view_mode': 'form',
+                        'res_id': res_id}
+        return out_act_dict

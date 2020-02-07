@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="mail_activity_view_form_popup_inherit" model="ir.ui.view">
+            <field name="name">mail.activity.inherit</field>
+            <field name="model">mail.activity</field>
+            <field name="inherit_id" ref="mail.mail_activity_view_form_popup" />
+            <field name="arch" type="xml">
+                <xpath expr="//sheet/group[last()]" position="after">
+                	<group>
+                    	<field name="plm_state" readonly="True"/>
+                    </group>
+                    <field name="children_ids"/>
+                </xpath>
+                <xpath expr="//sheet/footer//button[6]" position="after">
+                	<button string="Back Send Request" name="action_send_request" type="object" 
+                		attrs="{'invisible': ['|', ('id', '==', False), ('plm_state', '=', 'send_request')]}"/>
+                	<button string="Confirm" name="action_confirm" type="object" 
+                		attrs="{'invisible': ['|', ('id', '==', False), ('plm_state', '=', 'confirmed')]}"/>
+                	<button string="Reject" name="action_reject" type="object" 
+                		attrs="{'invisible': ['|', ('id', '==', False), ('plm_state', '=', 'reject_request')]}"/>
+                	<button string="Need Review" name="action_need_review" type="object" 
+                		attrs="{'invisible': ['|', ('id', '==', False), ('plm_state', '=', 'need_review')]}"/>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>

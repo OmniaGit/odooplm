@@ -34,7 +34,11 @@ from datetime import timedelta
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
 
-class ResUsers(models.Model):
-    _inherit = 'res.users'
+class MailActivityChildrenRel(models.Model):
+    _name = 'mail.activity.children.rel'
 
-    mail_activity_validation_id = fields.Many2one('mail.activity.validation', string="Activity Validation")
+    name = fields.Char('Name')
+    user_id = fields.Many2one('res.users', 'User')
+    activity_user_id = fields.Many2one(related='mail_children_activity_id.user_id')
+    mail_children_activity_id = fields.Many2one('mail.activity', 'Child Activity')
+    plm_state = fields.Selection(related='mail_children_activity_id.plm_state')

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+
+    <record model="ir.ui.view" id="mail_activity_children_rel_tree">
+        <field name="name">mail.activity.children.rel.tree</field>
+        <field name="model">mail.activity.children.rel</field>
+        <field name="type">tree</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <tree string="Children activities">
+                <field name="name"/>
+                <field name="user_id" attrs="{'invisible': [('mail_children_activity_id', '!=', False)]}"/>
+                <field name="activity_user_id" attrs="{'invisible': [('mail_children_activity_id', '==', False)]}"/>
+                <field name="mail_children_activity_id"/>
+                <field name="plm_state"/>
+            </tree>
+        </field>
+    </record>
+    
+</data>
+</odoo>
