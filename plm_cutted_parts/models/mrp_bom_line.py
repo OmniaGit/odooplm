@@ -48,6 +48,8 @@ class MrpBomLineTemplateCuttedParts(models.Model):
                 bom_line_id.x_length = self.computeXLenghtByProduct(bom_line_id.bom_id.product_id)
             elif bom_line_id.cutted_type == 'client':
                 bom_line_id.x_length = bom_line_id.client_x_length
+            else:
+                bom_line_id.x_length = 0
 
     def compute_y_length(self):
         for bom_line_id in self:
@@ -55,6 +57,8 @@ class MrpBomLineTemplateCuttedParts(models.Model):
                 bom_line_id.y_length = self.computeYLenghtByProduct(bom_line_id.bom_id.product_id)
             elif bom_line_id.cutted_type == 'client':
                 bom_line_id.y_length = bom_line_id.client_y_length
+            else:
+                bom_line_id.y_length = 0
 
     @api.model
     def computeYLenghtByProduct(self, product_id):

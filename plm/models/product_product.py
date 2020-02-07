@@ -180,13 +180,6 @@ class PlmComponent(models.Model):
             if self.std_description.description:
                 self.name = self.computeDescription(self.std_description, self.std_description.description, self.std_umc1, self.std_umc2, self.std_umc3, self.std_value1, self.std_value2, self.std_value3)
 
-    @api.onchange('name')
-    def on_change_name(self):
-        if self.name:
-            results = self.search([('name', '=', self.name)])
-            if len(results) > 0:
-                raise UserError(_("Part %s already exists.\nClose with OK to reuse, with Cancel to discharge." % (self.name)))
-
     @api.onchange('tmp_material')
     def on_change_tmpmater(self):
         if self.tmp_material:

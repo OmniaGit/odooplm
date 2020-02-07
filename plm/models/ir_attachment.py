@@ -105,7 +105,7 @@ class PlmDocument(models.Model):
     def _getlastrev(self, resIds):
         result = []
         for objDoc in self.browse(resIds):
-            doc_ids = self.search([('engineering_document_name', '=', objDoc.engineering_document_name)], order='revisionid').ids
+            doc_ids = self.search([('engineering_document_name', '=', objDoc.engineering_document_name)], order='revisionid DESC')
             for doc in doc_ids:
                 result.append(doc.id)
                 break
@@ -1084,7 +1084,7 @@ class PlmDocument(models.Model):
         def getcheckedfiles(files):
             res = []
             for fileName in files:
-                plmDocList = self.search([('engineering_document_name', '=', fileName)], order='revisionid')
+                plmDocList = self.search([('name', 'ilike', fileName)], order='revisionid DESC')
                 if len(plmDocList) > 0:
                     ids = plmDocList.ids
                     ids.sort()
