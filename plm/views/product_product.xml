@@ -181,6 +181,16 @@
                                string=" "
                                widget="statinfo"/>
                 </button>
+                <!-- need to be fixed in order to have tree like structure 
+                <button class="oe_stat_button"
+                        name="action_show_reference"
+                        type="object"
+                        icon="fa-level-up">
+                        <field string="Product Where Used"
+                               name="used_in_bom_count"
+                               widget="statinfo"/>
+                </button>
+                 -->
                 <button name="open_template"
                         type="object"
                         string="Template"
@@ -308,6 +318,5 @@
         <field name="view_id" ref="plm_component_base_tree"/>
         <field name="context">{"search_default_latest": 1, 'odooPLM': True}</field>
         <field name="domain">[('engineering_code','not in', ('', False))]</field>
-        <!-- fixme<field name="view_id_search" ref="plm_component_base_search"/> -->
     </record>
 </odoo>

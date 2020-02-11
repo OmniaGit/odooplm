@@ -1,20 +1,19 @@
 odoo.define('plm.plm_exploded_view', function (require) {
 'use strict';
 
+var ActionMixin = require('web.ActionMixin');
 var ajax = require('web.ajax');
-var ControlPanelMixin = require('web.ControlPanelMixin');
-var Context = require('web.Context');
+var concurrency = require('web.concurrency');
+var config = require('web.config');
 var core = require('web.core');
-var data = require('web.data');
-var pyeval = require('web.pyeval');
-var SearchView = require('web.SearchView');
+var mvc = require('web.mvc');
+
 var session = require('web.session');
-var Widget = require('web.Widget');
 
 var QWeb = core.qweb;
 var _t = core._t;
 
-var PlmExplodedWidget = Widget.extend(ControlPanelMixin, {
+var PlmExplodedWidget = mvc.Controller.extend(ActionMixin, {
 	title: core._t('Exploded View'),
     template: 'plm_exploded_view',
 	events: {

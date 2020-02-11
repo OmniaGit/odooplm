@@ -672,7 +672,7 @@ class MrpBomExtension(models.Model):
                                         'source_id': source_document_id,
                                         'type': bom_type,
                                         'cutted_type': cutted_type})
-            return self.env['mrp.bom.line'].create(relation_attributes).id
+            return self.env['mrp.bom.line'].create(relation_attributes)
 
     def open_related_bom_lines(self):
         for bom_brws in self:
