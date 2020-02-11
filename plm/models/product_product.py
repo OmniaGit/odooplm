@@ -734,7 +734,7 @@ class PlmComponent(models.Model):
            action to be executed for Released state
         """
         for comp_obj in self:
-            children_product_to_emit = [comp_obj.id]
+            children_product_to_emit = []
             product_tmpl_ids = []
             defaults = {}
             prodTmplType = self.env['product.template']
@@ -762,6 +762,7 @@ class PlmComponent(models.Model):
                 product_tmpl_ids.append(currentProductId.product_tmpl_id.id)
             self.browse(children_product_to_emit).action_release()
             objId = prodTmplType.browse(product_tmpl_ids).write(defaults)
+            comp_obj.write(defaults)
             if (objId):
                 self.browse(product_ids).wf_message_post(body=_('Status moved to: %s.' % (USE_DIC_STATES[defaults['state']])))
             return objId
