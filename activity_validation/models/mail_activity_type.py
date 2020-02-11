@@ -42,3 +42,8 @@ class MailActivityType(models.Model):
                                         'activity_type_id',
                                         'user_id',
                                         _('Template Documents'))
+    change_activity_type = fields.Selection(selection=[
+        ('request', _('Request')),
+        ('order', _('Order'))
+        ], string=_('Change Activity Type'))
+    

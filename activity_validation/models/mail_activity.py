@@ -56,9 +56,8 @@ class MailActivity(models.Model):
     def changeActivityTypeId(self):
         for activity_id in self:
             activity_ids = []
-            target_activity_type_id = self.env.ref('activity_validation.mail_activity_product_validation')
-            if target_activity_type_id.id == activity_id.activity_type_id.id:
-                for user_id in target_activity_type_id.activity_user_ids:
+            if activity_id.isCustomType():
+                for user_id in activity_id.activity_type_id.activity_user_ids:
                     vals = {
                         'name': '%s - %s' % (activity_id.activity_type_id.name, user_id.name),
                         'user_id': user_id.id,
@@ -113,10 +112,22 @@ class MailActivity(models.Model):
         self.plm_state = 'confirmed'
         return super(MailActivity, self).action_done_schedule_next()
 
+    def activity_format(self):
+        out = []
+        for res_dict in super(MailActivity, self).activity_format():
+            if res_dict.get('plm_state', 'draft') not in ['confirmed', 'reject_request']:
+                out.append(res_dict)
+        return out
+
+    def isCustomType(self):
+        for activity_id in self:
+            if activity_id.activity_type_id.change_activity_type in ['request', 'order']:
+                return True
+        return False
+        
     def unlink(self):
         for activity_id in self:
-            target_activity_type_id = self.env.ref('activity_validation.mail_activity_product_validation')
-            if target_activity_type_id.id == activity_id.activity_type_id.id:
+            if activity_id.isCustomType():
                 return
         return super(MailActivity, self).unlink()
 
