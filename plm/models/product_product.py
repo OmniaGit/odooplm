@@ -1014,12 +1014,11 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             out.append(tmpVals)
         return out
 
-
-
     def checkFromOdooPlm(self):
         if self.env.context.get('odooPLM', False):
-            if not self.engineering_code:
-                raise UserError("Missing engineering code for plm data")
+            for product_product_id in self:
+                if not product_product_id.engineering_code:  
+                    raise UserError("Missing engineering code for plm data")
         return True
 
     def checkMany2oneClient(self, vals, force_create=False):
