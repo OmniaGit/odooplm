@@ -142,20 +142,17 @@
                  <field name="is_plm" group="base.group_no_one"/>
             </xpath>
             
+            <xpath expr="//field[@name='description']" position="attributes">
+            	<attribute name="attrs">{'readonly':[('state','in',['released','obsoleted'])]}</attribute>
+            </xpath>
+            
             <xpath expr="//sheet/group[last()]" position="after">
                     <notebook>
                         <page string="Linked Parts" name="page_liked_parts">
                             <field colspan="4" name="linkedcomponents" nolabel="1"
                                    attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
                         </page>
-                        <page string="Indexed Content" name="page_indexed_content">
-                            <field name="index_content" colspan="4" nolabel="1"
-                                   attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
-                        </page>
                         <page string="Notes" name="page_notes">
-                            <label for="description" class="oe_edit_only"/>
-                            <field colspan="4" name="description" nolabel="1"
-                                   attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
                             <label for="desc_modify" class="oe_edit_only"/>
                             <field colspan="4" name="desc_modify" nolabel="1"
                                    attrs="{'readonly':[('state','in',['released','obsoleted'])], 'invisible': [('revisionid', '=', 0)]}"/>

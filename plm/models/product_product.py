@@ -198,15 +198,6 @@ class PlmComponent(models.Model):
             if self.std_description.description:
                 self.name = self.computeDescription(self.std_description, self.std_description.description, self.std_umc1, self.std_umc2, self.std_umc3, self.std_value1, self.std_value2, self.std_value3)
 
-    @api.onchange('name')
-    def on_change_name(self):
-        if self.name:
-            results = self.search([('name', '=', self.name)])
-            if len(results) > 0:
-                raise UserError(_("Part %s already exists.\nClose with OK to reuse, with Cancel to discharge." % (self.name)))
-            if not self.engineering_code or self.engineering_code == '-':
-                self.engineering_code = self.name
-
     @api.onchange('tmp_material')
     def on_change_tmpmater(self):
         if self.tmp_material:
@@ -776,6 +767,7 @@ class PlmComponent(models.Model):
                 product_tmpl_ids.append(currentProductId.product_tmpl_id.id)
             self.browse(children_product_to_emit).action_release()
             objId = prodTmplType.browse(product_tmpl_ids).write(defaults)
+            comp_obj.write(defaults)
             if (objId):
                 self.browse(product_ids).wf_message_post(body=_('Status moved to: %s.' % (USE_DIC_STATES[defaults['state']])))
             return objId
@@ -1165,7 +1157,9 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                 defaults['engineering_writable'] = True
                 defaults['state'] = 'draft'
                 defaults['linkeddocuments'] = []                  # Clean attached documents for new revision object
-                newCompBrws = oldObject.with_context({'new_revision': True}).copy(defaults)
+                ctx = self.env.context.copy()
+                ctx['new_revision'] = True
+                newCompBrws = oldObject.with_context(ctx).copy(defaults)
                 oldObject.wf_message_post(body=_('Created : New Revision.'))
                 newComponentId = newCompBrws.id
                 break
@@ -1655,6 +1649,9 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         engineering_name = productAttribute.get('engineering_code', False)
         if not engineering_name:
             return False
+        if 'name' in productAttribute:
+            if not productAttribute['name']:
+                productAttribute['name'] = engineering_name
         for product_produc_id in self.search([('engineering_code', '=', engineering_name),
                                               ('engineering_revision', '=', productAttribute.get('engineering_revision', '0'))]):
             out_product_produc_id = product_produc_id

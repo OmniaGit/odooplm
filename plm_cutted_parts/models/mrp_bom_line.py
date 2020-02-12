@@ -91,8 +91,10 @@ class MrpBomLineTemplateCuttedParts(models.Model):
 
     @api.multi
     def recomputeCuttedQty(self):
+        ctx = self.env.context.copy()
+        ctx['skip_cutted_recompute'] = True
         for bom_line_id in self:
-            bom_line_id.with_context({'skip_cutted_recompute': True}).product_qty = bom_line_id.computeCuttedTotalQty()
+            bom_line_id.with_context(ctx).product_qty = bom_line_id.computeCuttedTotalQty()
 
     @api.multi
     def computeCuttedTotalQty(self):

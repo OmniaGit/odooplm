@@ -23,7 +23,7 @@
         <field name="name">Administrator</field>
         <field name="category_id" ref="odooplm_module_category"/>
         <field name="implied_ids" eval="[(4, ref('group_plm_integration_user'))]"/>
-        <field name="users" eval="[(4, ref('base.user_root'))]"/>
+        <field name="users" eval="[(4, ref('base.user_admin'))]"/>
     </record>
     
 <!-- readonly_released  -->
@@ -31,7 +31,7 @@
         <field name="name">PLM Integration Readonly</field>
         <field name="category_id" ref="odooplm_module_category"/>
         <field name="implied_ids" eval="[(4, ref('group_plm_integration_user'))]"/>
-        <field name="users" eval="[(4, ref('base.user_root'))]"/>
+        <field name="users" eval="[(4, ref('base.user_admin'))]"/>
     </record>
 
 
@@ -424,7 +424,7 @@
         <field name="group_id" eval="group_plm_view_user"/>
         <field name="perm_read" eval="1"/>
         <field name="perm_write" eval="0"/>
-        <field name="perm_create" eval="0"/>
+        <field name="perm_create" eval="1"/>
         <field name="perm_unlink" eval="0"/>
     </record>
 
@@ -450,6 +450,16 @@
         <field name="perm_write" eval="0"/>
         <field name="perm_create" eval="0"/>
         <field name="perm_unlink" eval="0"/>
+    </record>
+
+    <record id="plm_ir_rule_admin" model="ir.model.access">
+        <field name="name">Plm Ir Rule</field>
+        <field name="model_id" ref="base.model_ir_rule"/>
+        <field name="group_id" ref="plm.group_plm_admin"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="1"/>
+        <field name="perm_create" eval="1"/>
+        <field name="perm_unlink" eval="1"/>
     </record>
 
 </odoo>

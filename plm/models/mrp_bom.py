@@ -634,7 +634,7 @@ class MrpBomExtension(models.Model):
             Evaluates net weight for assembly, based on product ID
         """
         if not (parent_bom_id is None) or parent_bom_id:
-            bom_obj = self.with_context({}).browse(parent_bom_id)
+            bom_obj = self.browse(parent_bom_id)
             self.env['product.product'].browse([bom_obj.product_id.id]).write({'weight': weight})
 
     @api.multi
@@ -779,7 +779,7 @@ class MrpBomExtension(models.Model):
                 mrp_bom_found_id.delete_child_row(parent_ir_attachment_id)
             # add rows
             for product_product_id, ir_attachment_id, relationAttributes in childrenOdooTuple:
-                if mrp_bom_found_id and not relationAttributes.get('EXCLUDE', False):
+                if mrp_bom_found_id and not relationAttributes.get('EXCLUDE', False) and product_product_id:
                     mrp_bom_found_id.add_child_row(product_product_id,
                                                    parent_ir_attachment_id,
                                                    relationAttributes,
@@ -790,7 +790,7 @@ class MrpBomExtension(models.Model):
                 ir_attachment_relation.saveDocumentRelationNew(parent_ir_attachment_id,
                                                                ir_attachment_id,
                                                                link_kind=link_kind)
-                if l_tree_document_id:
+                if l_tree_document_id and product_product_id:
                     self.env['plm.component.document.rel'].createFromIds(self.env['product.product'].browse(product_product_id),
                                                                          self.env['ir.attachment'].browse(l_tree_document_id))
             if not mrp_bom_found_id.bom_line_ids:

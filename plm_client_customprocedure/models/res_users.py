@@ -59,21 +59,25 @@ class ResUsers(models.Model):
  
     @api.multi
     def open_custommodule_edit(self):
+        ctx = self.env.context.copy()
+        ctx['erase_customprocedure'] = False
         for groupBrws in self:
             if groupBrws.custom_procedure:
                 fileReadableContent = base64.decodestring(groupBrws.custom_procedure)
                 if self.custom_read_content:
                     fileReadableContent = ''
-                self.with_context({'erase_customprocedure': False}).custom_read_content = fileReadableContent
+                self.with_context(ctx).custom_read_content = fileReadableContent
              
     @api.multi
     def open_custom_multicad_edit(self):
+        ctx = self.env.context.copy()
+        ctx['erase_multicad'] = False
         for groupBrws in self:
             if groupBrws.custom_multicad:
                 fileReadableContent = base64.decodestring(groupBrws.custom_multicad)
                 if self.custom_multicad_content:
                     fileReadableContent = ''
-                self.with_context({'erase_multicad': False}).custom_multicad_content = fileReadableContent
+                self.with_context(ctx).custom_multicad_content = fileReadableContent
  
     @api.multi
     def open_custommodule_save(self, vals):

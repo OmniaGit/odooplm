@@ -207,7 +207,7 @@ class PlmDocument(models.Model):
             try:
                 shutil.copyfile(self._full_path(ir_attachment_id.store_fname),
                                 self._full_path(random_name()))
-                if ir_attachment_id.is_plm:
+                if ir_attachment_id.is_plm and self.env.context.get("backup", True):
                     self.env['plm.backupdoc'].create({'userid': self.env.uid,
                                                       'existingfile': ir_attachment_id.datas_fname,
                                                       'documentid': ir_attachment_id.id,
@@ -314,7 +314,6 @@ class PlmDocument(models.Model):
         '''
             Get children HiTree documents
         '''
-        logging.error('getRelatedHiTree not implemented')
         out = []
         if not doc_id:
             logging.warning('Cannot get links from %r document' % (doc_id))
@@ -365,39 +364,38 @@ class PlmDocument(models.Model):
         if len(listedFiles) > 0:
             datefiles, listfiles = listedFiles
         for objDoc in self.browse(targetIds):
-            if objDoc.type == 'binary':
-                checkOutUser = ''
-                isCheckedOutToMe = False
-                timeDoc = self.getLastTime(objDoc.id)
-                timeSaved = time.mktime(timeDoc.timetuple())
-                checkoutUserBrws = objDoc.get_checkout_user()
-                if checkoutUserBrws:
-                    checkOutUser = checkoutUserBrws.name
-                    if checkoutUserBrws.id == self.env.uid:
-                        isCheckedOutToMe = True
-                if (objDoc.datas_fname in listfiles):
-                    if forceFlag:
-                        isNewer = True
-                    else:
-                        listFileIndex = listfiles.index(objDoc.datas_fname)
-                        timefile = time.mktime(
-                            datetime.strptime(str(datefiles[listFileIndex]), '%Y-%m-%d %H:%M:%S').timetuple())
-                        isNewer = (timeSaved - timefile) > 5
-                    collectable = isNewer and not (isCheckedOutToMe)
+            checkOutUser = ''
+            isCheckedOutToMe = False
+            timeDoc = self.getLastTime(objDoc.id)
+            timeSaved = time.mktime(timeDoc.timetuple())
+            checkoutUserBrws = objDoc.get_checkout_user()
+            if checkoutUserBrws:
+                checkOutUser = checkoutUserBrws.name
+                if checkoutUserBrws.id == self.env.uid:
+                    isCheckedOutToMe = True
+            if (objDoc.datas_fname in listfiles):
+                if forceFlag:
+                    isNewer = True
                 else:
-                    collectable = True
-                objDatas = False
-                try:
-                    objDatas = objDoc.datas
-                except Exception as ex:
-                    logging.error(
-                        'Document with "id": %s  and "name": %s may contains no data!!         Exception: %s' % (
-                            objDoc.id, objDoc.name, ex))
-                if (objDoc.file_size < 1) and (objDatas):
-                    file_size = len(objDoc.datas)
-                else:
-                    file_size = objDoc.file_size
-                result.append((objDoc.id, objDoc.datas_fname, file_size, collectable, isCheckedOutToMe, checkOutUser))
+                    listFileIndex = listfiles.index(objDoc.datas_fname)
+                    timefile = time.mktime(
+                        datetime.strptime(str(datefiles[listFileIndex]), '%Y-%m-%d %H:%M:%S').timetuple())
+                    isNewer = (timeSaved - timefile) > 5
+                collectable = isNewer and not (isCheckedOutToMe)
+            else:
+                collectable = True
+            objDatas = False
+            try:
+                objDatas = objDoc.datas
+            except Exception as ex:
+                logging.error(
+                    'Document with "id": %s  and "name": %s may contains no data!!         Exception: %s' % (
+                        objDoc.id, objDoc.name, ex))
+            if (objDoc.file_size < 1) and (objDatas):
+                file_size = len(objDoc.datas)
+            else:
+                file_size = objDoc.file_size
+            result.append((objDoc.id, objDoc.datas_fname, file_size, collectable, isCheckedOutToMe, checkOutUser))
         return list(set(result))
 
     @api.multi
@@ -477,6 +475,8 @@ class PlmDocument(models.Model):
 
         newID = None
         newRevIndex = False
+        ctx = self.env.context.copy()
+        ctx['check'] = False
         if isinstance(docId, (list, tuple)):
             if len(docId) > 1:
                 docId, newBomDocumentRevision = docId
@@ -486,7 +486,7 @@ class PlmDocument(models.Model):
         for tmpObject in self.browse(docId):
             latestIDs = self.GetLatestIds([(tmpObject.name, tmpObject.revisionid, False)])
             for oldObject in self.browse(latestIDs):
-                oldObject.with_context({'check': False}).write({'state': 'undermodify'})
+                oldObject.with_context(ctx).write({'state': 'undermodify'})
                 defaults = {}
                 newRevIndex = int(oldObject.revisionid) + 1
                 defaults['name'] = oldObject.name
@@ -753,7 +753,9 @@ class PlmDocument(models.Model):
             blind write for xml-rpc call for recovering porpouse
             DO NOT USE FOR COMMON USE !!!!
         """
-        return self.with_context({'check': False}).write(vals)
+        ctx = self.env.context.copy()
+        ctx['check'] = False
+        return self.with_context(ctx).write(vals)
 
     #   Overridden methods for this entity
     @api.model
@@ -769,10 +771,6 @@ class PlmDocument(models.Model):
                 logging.warning(_("Permission denied for folder %r." % (str(filestore))))
                 return ''
         return filestore
-
-    @api.model
-    def search(self, args, offset=0, limit=None, order=None, count=False):
-        return super(PlmDocument, self).search(args, offset, limit, order, count)
 
     @api.multi
     def check_unique(self):
@@ -799,8 +797,9 @@ class PlmDocument(models.Model):
                     
     @api.model
     def create(self, vals):
-        if self.env.context.get('odooPLM'):
-            vals['is_plm'] = True
+        if not self.env.context.get('odooPLM'):
+            return super(PlmDocument, self).create(vals)
+        vals['is_plm'] = True
         vals.update(self.checkMany2oneClient(vals))
         vals = self.plm_sanitize(vals)
         res = super(PlmDocument, self).create(vals)
@@ -809,6 +808,8 @@ class PlmDocument(models.Model):
 
     @api.multi
     def write(self, vals):
+        if not self.env.context.get('odooPLM'):
+            return super(PlmDocument, self).write(vals)
         check = self.env.context.get('check', True)
         if check:
             if not self.is_plm_state_writable() and not (self.env.user._is_admin() or self.env.user._is_superuser()):
@@ -860,6 +861,8 @@ class PlmDocument(models.Model):
 
     @api.multi
     def unlink(self):
+        ctx = self.env.context.copy()
+        ctx['check'] = False
         values = {'state': 'released', }
         checkState = ('undermodify', 'obsoleted')
         for checkObj in self:
@@ -868,7 +871,7 @@ class PlmDocument(models.Model):
                 oldObject = docBrwsList[0]
                 if oldObject.state in checkState:
                     oldObject.wf_message_post(body=_('Removed : Latest Revision.'))
-                    if not oldObject.with_context({'check': False}).write(values):
+                    if not oldObject.with_context(ctx).write(values):
                         logging.warning(
                             "unlink : Unable to update state to old document (" + str(oldObject.name) + "-" + str(
                                 oldObject.revisionid) + ").")
@@ -1074,7 +1077,7 @@ class PlmDocument(models.Model):
         def getcheckedfiles(files):
             res = []
             for fileName in files:
-                plmDocList = self.search([('datas_fname', '=', fileName)], order='revisionid')
+                plmDocList = self.search([('datas_fname', 'ilike', fileName)], order='revisionid DESC')
                 if len(plmDocList) > 0:
                     ids = plmDocList.ids
                     ids.sort()
@@ -1338,6 +1341,12 @@ class PlmDocument(models.Model):
         """
             Return a new name due to sequence next number.
         """
+        ctx = self.env.context
+        eng_code = ctx.get('engineering_code')
+        _eng_rev = ctx.get('engineering_revision')
+        _file_path = ctx.get('filePath')
+        if eng_code:
+            documentName = eng_code
         nextDocNum = self.env['ir.sequence'].next_by_code('ir.attachment.progress')
         return documentName + '-' + nextDocNum
 
@@ -2094,16 +2103,18 @@ class PlmDocument(models.Model):
         plm_document_id = False
         engineering_code = componentAtts.get('engineering_code')
         engineering_revision = componentAtts.get('engineering_revision', 0)
-        for product_product in self.env['product.product'].search([('engineering_code', '=', engineering_code),
-                                                                  ('engineering_revision', '=', engineering_revision)]):
-            product_product_id = product_product.id
-            break
+        if engineering_code:
+            for product_product in self.env['product.product'].search([('engineering_code', '=', engineering_code),
+                                                                      ('engineering_revision', '=', engineering_revision)]):
+                product_product_id = product_product.id
+                break
         document_name = documentAttrs.get('name')
         document_revision = documentAttrs.get('revisionid', 0)
-        for plm_document in self.env['ir.attachment'].search([('name', '=', document_name),
-                                                             ('revisionid', '=', document_revision)]):
-            plm_document_id = plm_document.id
-            break
+        if document_name:
+            for plm_document in self.env['ir.attachment'].search([('name', '=', document_name),
+                                                                 ('revisionid', '=', document_revision)]):
+                plm_document_id = plm_document.id
+                break
         return product_product_id, plm_document_id
 
     @api.model
@@ -2150,7 +2161,7 @@ class PlmDocument(models.Model):
         for ir_attachment_id in self.search([('datas_fname', '=', fileName.get('file_name'))]):
             out.append({'id': ir_attachment_id.id,
                         'name': ir_attachment_id.name,
-                        'iconStream': ir_attachment_id.preview,
+                        'iconStream': ir_attachment_id.preview or '',
                         'revisionid': ir_attachment_id.revisionid,
                         'name': ir_attachment_id.name})
         return out
