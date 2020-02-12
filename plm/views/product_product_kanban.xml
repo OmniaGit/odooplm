@@ -18,187 +18,90 @@
                 <field name="father_part_ids"/>
                 <field name="kanban_dashboard"/>
                 <templates>
-                    <t t-name="kanban-box">
-                        <div t-attf-class="#{kanban_color(0)}" style="max-height: 340px;">
+                 <t t-name="kanban-box">
+                            <div >
                             <t t-value="record.state.raw_value" t-set="stateToUse"/>
-                            <t t-value="JSON.parse(record.kanban_dashboard.raw_value)" t-set="dashboard"/>
-                            <t t-call="component-top"/>
-                            <div class="container o_kanban_view o_kanban_card_content o_visible">
-                                <div class="row">
-                                    <t t-call="previews"/>
-                                </div>
-                            </div>
-                            <div class="container o_kanban_view o_kanban_card_manage_pane o_invisible"
-                                 style="position: absolute;">
-                                <t t-call="component-manage"/>
-                            </div>
-                        </div>
-                    </t>
-
-                    <t t-name="component-top">
-                        <div class="o_kanban_card_header">
-                            <div class="o_kanban_image">
-                                <img alt="No Image" t-att-src="kanban_image('product.product', 'image_small', record.id.raw_value)"/>
-                            </div>
-                            <div class="oe_kanban_details">
-                                <div class="o_kanban_card_header_title">
-                                    <div class="o_primary" id='prod_name_div'>
-                                        <a type="object" name="open_action">
+                                <div t-attf-class="o_kanban_card_header">
+                                    <div class="o_kanban_card_header_title">
+                                        <div class="o_primary">
                                             <field name="name"/>
                                             -
                                             <field name="engineering_revision"/>
-                                        </a>
-                                    </div>
-                                </div>
-                                <div class="o_secondary" style="overflow: auto;">
-                                    <div class="state_style" style="float:left">
-                                        <p>State:</p>
-                                        <t t-if="stateToUse == 'draft'">
-                                            <div style="color: rgb(110, 51, 197);padding-left: 5px;">
-                                                <b>
-                                                    <field name="state"/>
-                                                </b>
-                                            </div>
-                                        </t>
-                                        <t t-if="stateToUse == 'confirmed'">
-                                            <div style="color: blue;padding-left: 5px;">
-                                                <b>
-                                                    <field name="state"/>
-                                                </b>
-                                            </div>
-                                        </t>
-                                        <t t-if="stateToUse == 'released'">
-                                            <div style="color: rgba(0, 170, 34, 0.66);padding-left: 5px;">
-                                                <b>
-                                                    <field name="state"/>
-                                                </b>
-                                            </div>
-                                        </t>
-                                        <t t-if="stateToUse == 'undermodify'">
-                                            <div style="color: rgb(218, 159, 34);padding-left: 5px;">
-                                                <b>
-                                                    <field name="state"/>
-                                                </b>
-                                            </div>
-                                        </t>
-                                        <t t-if="stateToUse == 'obsoleted'">
-                                            <div style="color: rgb(231, 43, 26);padding-left: 5px;">
-                                                <b>
-                                                    <field name="state"/>
-                                                </b>
-                                            </div>
-                                        </t>
-                                    </div>
-                                    <div style="float:right">
-                                        <div>
-                                            <a type="object" name="open_related_docs_action">
-                                                <span title="Number Related Documents">
+                                            -
+                                            <t t-if="stateToUse == 'draft'">
+                                                <span style="color: rgb(110, 51, 197);padding-left: 5px;">
                                                     <b>
-                                                        <t t-esc="dashboard.number_documents"/>
-                                                        Docs
+                                                        <field name="state"/>
                                                     </b>
                                                 </span>
-                                            </a>
-                                        </div>
-                                        <div>
-                                            <a type="object" name="open_related_boms_action">
-                                                <span title="Number Related Boms">
+                                            </t>
+                                            <t t-if="stateToUse == 'confirmed'">
+                                                <span style="color: blue;padding-left: 5px;">
                                                     <b>
-                                                        <t t-esc="dashboard.number_boms"/>
-                                                        Boms
+                                                        <field name="state"/>
                                                     </b>
                                                 </span>
-                                            </a>
+                                            </t>
+                                            <t t-if="stateToUse == 'released'">
+                                                <span style="color: rgba(0, 170, 34, 0.66);padding-left: 5px;">
+                                                    <b>
+                                                        <field name="state"/>
+                                                    </b>
+                                                </span>
+                                            </t>
+                                            <t t-if="stateToUse == 'undermodify'">
+                                                <span style="color: rgb(218, 159, 34);padding-left: 5px;">
+                                                    <b>
+                                                        <field name="state"/>
+                                                    </b>
+                                                </span>
+                                            </t>
+                                            <t t-if="stateToUse == 'obsoleted'">
+                                                <span style="color: rgb(231, 43, 26);padding-left: 5px;">
+                                                    <b>
+                                                        <field name="state"/>
+                                                    </b>
+                                                </span>
+                                            </t>
                                         </div>
+                                        <div class="o_secondary"><field name="name" /></div>
+                                    </div>
+                                    <div class="o_kanban_manage_button_section">
+                                        <a class="o_kanban_manage_toggle_button" href="#"><i class="fa fa-ellipsis-v" /></a>
                                     </div>
                                 </div>
-                                <div class="o_kanban_manage_button_section">
-                                    <a class="o_kanban_manage_toggle_button" href="#">More
-                                        <i class="fa fa-caret-down"/>
-                                    </a>
+                                <div class="container o_kanban_card_content">
+                                    <div class="row">
+                                    <div class="col-xs-6 o_kanban_primary_left">
+                                    <div style="display: -webkit-inline-box;" class="linked_document_container">
+			                            <t t-foreach="record.linkeddocuments.raw_value" t-as="documentId">
+			                                <div>
+			                                    <a type="object"
+			                                       role="button" 
+			                                       class="a_preview "
+			                                       name="action_show_reference"
+			                                       href="#"
+			                                       t-attf-data-context='{"ir_attachment_id": {{documentId}}}'
+			                                       >
+			                                       <img class="image_component_kanban"
+			                                            alt="No Image"
+			                                            t-att-src="kanban_image('ir.attachment', 'preview', documentId)"/>
+					                             </a>
+			                                </div>
+			                            </t>
+                                    </div>
+                                    </div>
+                                    </div>
+                                </div>
+                                <div class="container o_kanban_card_manage_pane dropdown-menu" role="menu">
+									  <a type="object" name="open_normal_bom"                        class="dropdown-item oe_kanban_action oe_kanban_action_a">Normal Boms</a>
+									  <a type="object" name="action_used_in_bom"                     class="dropdown-item oe_kanban_action oe_kanban_action_a">Where Used</a>
+									  <a type="action" name="plm.report_all_product_product_pdf"     class="dropdown-item oe_kanban_action oe_kanban_action_a">Print Bom All Levels</a>
+                                      <a type="action" name="plm.report_one_product_product_pdf"     class="dropdown-item oe_kanban_action oe_kanban_action_a">Print Bom One Level</a>
+                                      <a type="action" name="plm.report_product_product_pdf"         class="dropdown-item oe_kanban_action oe_kanban_action_a">Print Attached PDF</a>
                                 </div>
                             </div>
-                        </div>
-                    </t>
-
-                    <t t-name="component-manage">
-                        <div class="row">
-                            <div class="col-xs-4 o_kanban_card_manage_section o_kanban_manage_view more_containers"
-                                 style="width: 130px;">
-                                <div class="o_kanban_card_manage_title">
-                                    <span>View</span>
-                                </div>
-                                <div style="margin-bottom: 10px;">
-                                    <button type="object" id="normal_bom" name="open_normal_bom"
-                                            class="btn btn-primary btn-sm">Normal Boms
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="col-xs-4 o_kanban_card_manage_section o_kanban_manage_view more_containers"
-                                 style="width: 100px;">
-                                <div class="o_kanban_card_manage_title">
-                                    <span>New</span>
-                                </div>
-                                <div style="margin-bottom: 10px;">
-                                    <button type="object" id="normal_bom" name="create_normal_bom"
-                                            class="btn btn-primary btn-sm">Normal Bom
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-xs-4 o_kanban_card_manage_section o_kanban_manage_view more_containers"
-                                 style="width: 230px;">
-                                <div class="o_kanban_card_manage_title">
-                                    <span>Report</span>
-                                </div>
-                                <div style="margin-bottom: 10px;">
-                                    <button type="action" name="plm.report_all_product_product_pdf"
-                                            class="btn btn-primary btn-sm">Print Bom All Levels
-                                    </button>
-                                </div>
-                                <div style="margin-bottom: 10px;">
-                                    <button type="action" name="plm.report_one_product_product_pdf"
-                                            class="btn btn-primary btn-sm">Print Bom One Level
-                                    </button>
-                                </div>
-                                <div style="margin-bottom: 10px;">
-                                    <button type="action" name="plm.report_product_product_pdf"
-                                            class="btn btn-primary btn-sm">Print Attached PDF
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="col-xs-4 o_kanban_card_manage_section o_kanban_manage_view more_containers"
-                                 style="min-width: 250px;">
-                                <div class="o_kanban_card_manage_title">
-                                    <span>Action</span>
-                                </div>
-                                <div style="margin-bottom: 10px;">
-                                    <button type="action" name="plm.action_product_bom_structure_where"
-                                            class="btn btn-primary btn-sm">Product Where Used
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </t>
-
-                    <t t-name="previews">
-                        <div style="display: -webkit-inline-box;" class="linked_document_container">
-                            <t t-foreach="record.linkeddocuments.raw_value" t-as="documentId">
-                                <div>
-                                <!-- data-name="return_action_to_open"  -->
-                                    <a type="action" class="a_preview"
-                                        href="#"
-                                        data-context='{"xml_id":"plm_action_document_form", "id": documentId}'>
-                                        <img class="image_component_kanban"
-                                                alt="No Image"
-                                                t-att-src="kanban_image('ir.attachment', 'preview', documentId)"/>
-
-                                    </a>
-                                </div>
-                            </t>
-                        </div>
-                    </t>
+                        </t>
                 </templates>
             </kanban>
         </field>

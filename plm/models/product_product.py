@@ -66,13 +66,27 @@ class PlmComponent(models.Model):
 
     @api.multi
     def action_show_reference(self):
+        localCtx = self.env.context.copy()
+        ir_attachment_id = localCtx.get('ir_attachment_id')
+        return {'type': 'ir.actions.act_window',
+                'name': _('Document'),
+                'view_type': 'form',
+                'view_mode': 'form',
+                'res_model': 'ir.attachment',
+                'target': 'new',
+                'res_id': ir_attachment_id,
+                'context': localCtx,
+                }
+    @api.multi
+    def action_open_document(self):
         ctx = self.env.context.copy()
         ctx.update({'active_id': self.id,
                     'active_ids': self.ids})
         return {'type': 'ir.actions.client',
                 'tag': 'plm_exploded_view',
-                'context': ctx}
-
+                'context': ctx}        
+        
+        
     @api.multi
     def _father_part_compute(self, name='', arg={}):
         """ Gets father bom.

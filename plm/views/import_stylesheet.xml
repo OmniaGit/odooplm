@@ -3,7 +3,7 @@
     <!-- add css / js -->
     <template id="plm_backend" name="plm assets" inherit_id="web.assets_backend">
         <xpath expr="." position="inside">
-            <script type="text/javascript" src="/plm/static/src/js/plm_exploded_view.js"/>
+            <!-- <script type="text/javascript" src="/plm/static/src/js/plm_exploded_view.js"/> -->
             <script type="text/javascript" src="/plm/static/src/js/kanban.js"/>
         </xpath>
     </template>
