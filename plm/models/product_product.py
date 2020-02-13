@@ -64,12 +64,17 @@ class PlmComponent(models.Model):
         return super(PlmComponent, self).onchange(values, field_name, field_onchange)
 
     def action_show_reference(self):
-        ctx = self.env.context.copy()
-        ctx.update({'active_id': self.id,
-                    'active_ids': self.ids})
-        return {'type': 'ir.actions.client',
-                'tag': 'plm_exploded_view',
-                'context': ctx}
+        localCtx = self.env.context.copy()
+        ir_attachment_id = localCtx.get('ir_attachment_id')
+        return {'type': 'ir.actions.act_window',
+                'name': _('Document'),
+                'view_type': 'form',
+                'view_mode': 'form',
+                'res_model': 'ir.attachment',
+                'target': 'new',
+                'res_id': ir_attachment_id,
+                'context': localCtx,
+                }
 
     def _father_part_compute(self, name='', arg={}):
         """ Gets father bom.
