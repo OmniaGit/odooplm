@@ -279,11 +279,10 @@
         
         
         
-        
             <xpath expr="//kanban/field[1]" position="after">
                 <field name="linkeddocuments"/>
             </xpath>
-            
+
             <xpath expr="//div/div[@class='o_kanban_image']" position="replace">
                 <t t-if="image_small" >  
                     <div class="o_kanban_image">
@@ -297,7 +296,6 @@
                         <div style="display: -webkit-inline-box;">
                             <t t-foreach="record.linkeddocuments.raw_value" t-as="documentId">
                                 <t t-debug="plm"/>
-                               
                                 <div>
                                     <a type="object"
                                        role="button" 
@@ -305,9 +303,9 @@
                                        name="action_show_reference"
                                        href="#"
                                        t-attf-data-context='{"ir_attachment_id": {{documentId}}}'>
-                                        <img class="image_component_kanban"
-                                                alt="No Image"
-                                                t-att-src="kanban_image('ir.attachment', 'preview', documentId)"/>
+                                       <img class="image_component_kanban"
+                                            alt="No Image"
+                                            t-att-src="kanban_image('ir.attachment', 'preview', documentId)"/>
 
                                     </a>
                                 </div>

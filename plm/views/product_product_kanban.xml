@@ -24,10 +24,7 @@
                                 <div t-attf-class="o_kanban_card_header">
                                     <div class="o_kanban_card_header_title">
                                         <div class="o_primary">
-                                            <field name="name"/>
-                                            -
-                                            <field name="engineering_revision"/>
-                                            -
+                                            <field name="name"/>-<field name="engineering_revision"/>-
                                             <t t-if="stateToUse == 'draft'">
                                                 <span style="color: rgb(110, 51, 197);padding-left: 5px;">
                                                     <b>
@@ -94,11 +91,11 @@
                                     </div>
                                 </div>
                                 <div class="container o_kanban_card_manage_pane dropdown-menu" role="menu">
-									  <a type="object" name="open_normal_bom"                        class="dropdown-item oe_kanban_action oe_kanban_action_a">Normal Boms</a>
-									  <a type="object" name="action_used_in_bom"                     class="dropdown-item oe_kanban_action oe_kanban_action_a">Where Used</a>
-									  <a type="action" name="plm.report_all_product_product_pdf"     class="dropdown-item oe_kanban_action oe_kanban_action_a">Print Bom All Levels</a>
-                                      <a type="action" name="plm.report_one_product_product_pdf"     class="dropdown-item oe_kanban_action oe_kanban_action_a">Print Bom One Level</a>
-                                      <a type="action" name="plm.report_product_product_pdf"         class="dropdown-item oe_kanban_action oe_kanban_action_a">Print Attached PDF</a>
+								  <a type="object" name="open_normal_bom"                        class="dropdown-item oe_kanban_action oe_kanban_action_a">Normal Boms</a>
+								  <a type="object" name="action_used_in_bom"                     class="dropdown-item oe_kanban_action oe_kanban_action_a">Where Used</a>
+								  <a type="action" name="plm.report_all_product_product_pdf"     class="dropdown-item oe_kanban_action oe_kanban_action_a">Print Bom All Levels</a>
+                                     <a type="action" name="plm.report_one_product_product_pdf"     class="dropdown-item oe_kanban_action oe_kanban_action_a">Print Bom One Level</a>
+                                     <a type="action" name="plm.report_product_product_pdf"         class="dropdown-item oe_kanban_action oe_kanban_action_a">Print Attached PDF</a>
                                 </div>
                             </div>
                         </t>
