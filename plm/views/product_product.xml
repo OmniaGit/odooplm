@@ -277,8 +277,19 @@
         <field name="inherit_id" ref="product.product_kanban_view"/>
         <field name="arch" type="xml">
         
+        
+        
+        
             <xpath expr="//kanban/field[1]" position="after">
                 <field name="linkeddocuments"/>
+            </xpath>
+            
+            <xpath expr="//div/div[@class='o_kanban_image']" position="replace">
+                <t t-if="image_small" >  
+                    <div class="o_kanban_image">
+                        <img t-att-src="kanban_image('product.product', 'image_small', record.id.raw_value)" alt="Product"/>
+                    </div>
+                </t>
             </xpath>
             
             <xpath expr="//templates/t[1]" position="after">
@@ -288,10 +299,12 @@
                                 <t t-debug="plm"/>
                                
                                 <div>
-                                    <a type="action" class="a_preview"
-                                       data-context='{"xml_id":"plm_action_document_form", "id":8}'>
-
-
+                                    <a type="object"
+                                       role="button" 
+                                       class="a_preview "
+                                       name="action_show_reference"
+                                       href="#"
+                                       t-attf-data-context='{"ir_attachment_id": {{documentId}}}'>
                                         <img class="image_component_kanban"
                                                 alt="No Image"
                                                 t-att-src="kanban_image('ir.attachment', 'preview', documentId)"/>
