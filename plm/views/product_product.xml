@@ -265,23 +265,73 @@
         <field name="model">product.product</field>
         <field name="inherit_id" ref="product.product_kanban_view"/>
         <field name="arch" type="xml">
-        
             <xpath expr="//kanban/field[1]" position="after">
                 <field name="linkeddocuments"/>
+                <field name="engineering_code"/>
+                <field name="engineering_revision"/>
+                <field name="state"/>
+            </xpath>
+            
+            <xpath expr="//div/div[@class='o_kanban_image']" position="replace">
+                <t t-value="record.state.raw_value" t-set="stateToUse"/>
+                <field name="engineering_code"/>-
+                <field name="engineering_revision"/>-
+                <t t-if="stateToUse == 'draft'">
+				    <span style="color: rgb(110, 51, 197);padding-left: 5px;">
+				        <b>
+				            <field name="state"/>
+				        </b>
+				    </span>
+				</t>
+				<t t-if="stateToUse == 'confirmed'">
+				    <span style="color: blue;padding-left: 5px;">
+				        <b>
+				            <field name="state"/>
+				        </b>
+				    </span>
+				</t>
+				<t t-if="stateToUse == 'released'">
+				    <span style="color: rgba(0, 170, 34, 0.66);padding-left: 5px;">
+				        <b>
+				            <field name="state"/>
+				        </b>
+				    </span>
+				</t>
+				<t t-if="stateToUse == 'undermodify'">
+				    <span style="color: rgb(218, 159, 34);padding-left: 5px;">
+				        <b>
+				            <field name="state"/>
+				        </b>
+				    </span>
+				</t>
+				<t t-if="stateToUse == 'obsoleted'">
+				    <span style="color: rgb(231, 43, 26);padding-left: 5px;">
+				        <b>
+				            <field name="state"/>
+				        </b>
+				    </span>
+				</t>
+                <t t-if="image_small" >  
+                    <div class="o_kanban_image">
+                        <img t-att-src="kanban_image('product.product', 'image_small', record.id.raw_value)" alt="Product"/>
+                    </div>
+                </t>
             </xpath>
             
             <xpath expr="//templates/t[1]" position="after">
                  <t t-name="previews">
-                        <div style="display: -webkit-inline-box;">
+                        <div style="display: -webkit-inline-box;  padding-left: 10px;">
                             <t t-foreach="record.linkeddocuments.raw_value" t-as="documentId">
                                 <t t-debug="plm"/>
                                
                                 <div>
-                                    <a type="action" class="a_preview"
-                                       data-context='{"xml_id":"plm_action_document_form", "id":8}'>
-
-
-                                        <img class="image_component_kanban"
+                                    <a type="object"
+                                       role="button" 
+                                       class="a_preview "
+                                       name="action_show_reference"
+                                       href="#"
+                                       t-attf-data-context='{"ir_attachment_id": {{documentId}}}'>
+                                       <img class="image_component_kanban"
                                                 alt="No Image"
                                                 t-att-src="kanban_image('ir.attachment', 'preview', documentId)"/>
 
@@ -308,6 +358,5 @@
         <field name="view_id" ref="plm_component_base_tree"/>
         <field name="context">{"search_default_latest": 1, 'odooPLM': True}</field>
         <field name="domain">[('engineering_code','not in', ('', False))]</field>
-        <!-- fixme<field name="view_id_search" ref="plm_component_base_search"/> -->
     </record>
 </odoo>
