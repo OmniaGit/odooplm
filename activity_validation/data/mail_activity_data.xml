@@ -4,7 +4,7 @@
 
         <record id="mail_activity_change_request" model="mail.activity.type">
             <field name="name">Change Request</field>
-            <field name="icon">fa-tasks</field>
+            <field name="icon">fa-edit</field>
             <field name="sequence">3</field>
             <field name="res_model_id" ref="product.model_product_product"/>
             <field name="sequence">200</field>
@@ -13,7 +13,7 @@
 
         <record id="mail_activity_change_order" model="mail.activity.type">
             <field name="name">Change Order</field>
-            <field name="icon">fa-tasks</field>
+            <field name="icon">fa-gears</field>
             <field name="sequence">3</field>
             <field name="res_model_id" ref="product.model_product_product"/>
             <field name="sequence">200</field>

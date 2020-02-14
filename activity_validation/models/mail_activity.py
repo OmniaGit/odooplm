@@ -25,6 +25,7 @@ Created on Nov 16, 2019
 '''
 import logging
 import datetime
+from odoo import SUPERUSER_ID
 from odoo import models
 from odoo import fields
 from odoo import api
@@ -39,18 +40,16 @@ class MailActivity(models.Model):
 
     plm_state = fields.Selection([('draft', _('draft')),
                                   ('send_request', _('Send Request')),
-                                  ('reject_request', _('Reject Request')),
-                                  ('need_review', _('Need Review')),
-                                  ('confirmed', _('confirmed')),
+                                  ('in_progress', _('In Progress')),
+                                  ('finished', _('Done')),
                                   ],
                                   default='draft',
                                  string=_('Plm State'))
-    children_ids = fields.Many2many('mail.activity.children.rel',
-                                    'activity_id_children_rel',
-                                    'activity_id',
-                                    'child_activity_obj_id',
-                                    _('Children Activities'))
+    children_ids = fields.One2many('mail.activity.children.rel',
+                                   'mail_parent_activity_id',
+                                   _('Children Activities'))
     name = fields.Char('Name')
+    change_activity_type = fields.Selection(related='activity_type_id.change_activity_type')
 
     @api.onchange('activity_type_id')
     def changeActivityTypeId(self):
@@ -74,48 +73,35 @@ class MailActivity(models.Model):
         for activity_id in self:
             if self.env.user.has_group('activity_validation.group_force_activity_validation_admin'):
                 return ret
-            if activity_id.plm_state == 'confirmed':
+            if activity_id.plm_state == 'finished' and 'plm_state' not in vals:
                 raise UserError('You cannot modify a confirmed activity')
         return ret
-        
-
-    def action_close_dialog(self):
-        for line_id in self.children_ids:
-            if not line_id.mail_children_activity_id:
-                activity_vals = {
-                    'activity_type_id': self.activity_type_id.id,
-                    'date_deadline': self.date_deadline,
-                    'user_id': line_id.user_id.id,
-                    'plm_state': 'send_request',
-                    'name': line_id.name,
-                    }
-                new_activity_id = self.create(activity_vals)
-                line_id.mail_children_activity_id = new_activity_id.id
-        return {'type': 'ir.actions.act_window_close'}
 
     def checkConfirmed(self, check=False):
         if self.env.user.has_group('activity_validation.group_force_activity_validation_admin'):
             return
         for activity_id in self:
-            if check and activity_id.plm_state != 'confirmed':
+            if check and activity_id.plm_state != 'finished':
                 raise UserError('Cannot confirm activity because some activities are not done.')
             for child in activity_id.children_ids:
                 child.mail_children_activity_id.checkConfirmed(True)
 
     def action_done(self):
+        ret = super(MailActivity, self).action_done()
         self.checkConfirmed()
-        self.plm_state = 'confirmed'
-        return super(MailActivity, self).action_done()
+        self.plm_state = 'finished'
+        return ret
 
     def action_done_schedule_next(self):
+        ret = super(MailActivity, self).action_done_schedule_next()
         self.checkConfirmed()
-        self.plm_state = 'confirmed'
-        return super(MailActivity, self).action_done_schedule_next()
+        self.plm_state = 'finished'
+        return ret
 
     def activity_format(self):
         out = []
         for res_dict in super(MailActivity, self).activity_format():
-            if res_dict.get('plm_state', 'draft') not in ['confirmed', 'reject_request']:
+            if res_dict.get('plm_state', 'draft') not in ['finished']:
                 out.append(res_dict)
         return out
 
@@ -128,27 +114,47 @@ class MailActivity(models.Model):
     def unlink(self):
         for activity_id in self:
             if activity_id.isCustomType():
-                return
+                if not self.env.su:
+                    return
         return super(MailActivity, self).unlink()
 
-    def action_confirm(self):
+    def action_to_draft(self):
+        if not self.isCustomType():
+            return
+        for child_id in self.children_ids:
+            child_id.mail_children_activity_id.sudo().unlink()
+        self.children_ids = [(5, False, False)]
+        self.changeActivityTypeId()
         for activity_id in self:
-            activity_id.plm_state = 'confirmed'
+            activity_id.plm_state = 'draft'
             return self.reopenActivity(activity_id.id)
 
-    def action_reject(self):
+    def action_in_progress(self):
+        if not self.isCustomType():
+            return
         for activity_id in self:
-            activity_id.plm_state = 'reject_request'
-            return self.reopenActivity(activity_id.id)
-
-    def action_need_review(self):
-        for activity_id in self:
-            activity_id.plm_state = 'need_review'
+            activity_id.plm_state = 'in_progress'
             return self.reopenActivity(activity_id.id)
 
     def action_send_request(self):
+        if not self.isCustomType():
+            return
+        for line_id in self.children_ids:
+            if not line_id.mail_children_activity_id:
+                activity_vals = {
+                    'activity_type_id': self.activity_type_id.id,
+                    'date_deadline': self.date_deadline,
+                    'user_id': line_id.user_id.id,
+                    'plm_state': 'send_request',
+                    'name': line_id.name,
+                    'note': line_id.name,
+                    'res_model_id': self.res_model_id.id,
+                    'res_id': self.res_id,
+                    }
+                new_activity_id = self.create(activity_vals)
+                line_id.mail_children_activity_id = new_activity_id.id
+        self.plm_state = 'send_request'
         for activity_id in self:
-            activity_id.plm_state = 'send_request'
             return self.reopenActivity(activity_id.id)
 
     def reopenActivity(self, res_id):
@@ -160,3 +166,6 @@ class MailActivity(models.Model):
                         'view_mode': 'form',
                         'res_id': res_id}
         return out_act_dict
+
+
+

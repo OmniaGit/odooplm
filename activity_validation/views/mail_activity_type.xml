@@ -7,10 +7,11 @@
             <field name="model">mail.activity.type</field>
             <field name="inherit_id" ref="mail.mail_activity_type_view_form" />
             <field name="arch" type="xml">
+            
+            	<xpath expr="//field[@name='decoration_type']" position="after">
+            		<field name="change_activity_type"/>
+            	</xpath>
                 <xpath expr="//sheet/group//group[3]" position="after">
-                	<group>
-                		<field name="change_activity_type"/>
-                	</group>
                 	<group colspan="4">
                 		<label for="activity_user_ids" colspan="4"/>
                 		<field name="activity_user_ids" nolabel="1" colspan="4"/>

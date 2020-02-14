@@ -9,22 +9,34 @@
             <field name="arch" type="xml">
                 <xpath expr="//sheet/group[last()]" position="after">
                 	<group>
-                    	<field name="plm_state" readonly="True"/>
+                    	<field name="plm_state" readonly="True" widget="statusbar" statusbar_visible="draft,send_request,in_progress,finished,not_visible"/>
+                    	<button string="In Progress" name="action_in_progress" type="object" class="btn-primary"
+                			attrs="{'invisible': [('plm_state', '!=', 'send_request')]}"/>
+	                	<button string="To Draft" name="action_to_draft" type="object" class="btn-primary"
+	                		attrs="{'invisible': [('plm_state', 'not in', ['send_request', 'in_progress'])]}"/>
+	                	<button string="Send Request" name="action_send_request" type="object" class="btn-primary"
+	                		attrs="{'invisible': [('plm_state', '!=', 'draft')]}"/>
                     </group>
-                    <field name="children_ids"/>
-                </xpath>
-                <xpath expr="//sheet/footer//button[6]" position="after">
-                	<button string="Back Send Request" name="action_send_request" type="object" 
-                		attrs="{'invisible': ['|', ('id', '==', False), ('plm_state', '=', 'send_request')]}"/>
-                	<button string="Confirm" name="action_confirm" type="object" 
-                		attrs="{'invisible': ['|', ('id', '==', False), ('plm_state', '=', 'confirmed')]}"/>
-                	<button string="Reject" name="action_reject" type="object" 
-                		attrs="{'invisible': ['|', ('id', '==', False), ('plm_state', '=', 'reject_request')]}"/>
-                	<button string="Need Review" name="action_need_review" type="object" 
-                		attrs="{'invisible': ['|', ('id', '==', False), ('plm_state', '=', 'need_review')]}"/>
+		            <field name="children_ids" nolabel="1">
+			            <tree editable='bottom'>
+			                <field name="name"/>
+			                <field name="user_id"/>
+			                <field name="activity_user_id"/>
+			                <field name="plm_state" />
+			            </tree>
+			        </field>
                 </xpath>
             </field>
         </record>
+
+		<template id="plm_message_activity_done" inherit_id="mail.message_activity_done">
+		    <xpath expr="//div//p[1]" position="after">
+			    <t t-if="activity.change_activity_type in ['request', 'order']">
+			        <div>View: <a href="#" t-att-data-oe-id="activity.id" data-oe-model="mail.activity">Activity</a></div>
+			    </t>
+		    </xpath>
+		</template>
+
 
     </data>
 </odoo>
