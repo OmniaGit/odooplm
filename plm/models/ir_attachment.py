@@ -2139,7 +2139,7 @@ class PlmDocument(models.Model):
                 is_check_in = doc_id.ischecked_in()
                 checkout_by_me = doc_id.isCheckedOutByMe()
                 doc_fields['documentID'] = doc_id.id
-                doc_fields['name'] = doc_id.engineering_document_name
+                doc_fields['name'] = doc_id.name
                 if is_check_in:
                     try:
                         doc_id.checkout(hostname, pws_path)
