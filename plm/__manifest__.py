@@ -27,7 +27,7 @@
     'sequence': 15,
     'license': 'AGPL-3',
     'summary': 'PLM Integration with main CAD editors',
-    'images': ['static/img/spirale_me.PNG'],
+    'images': ['static/img/odoo_plm.png'],
     'depends': ['base',
                 'board',
                 'product',
