@@ -41,6 +41,7 @@ class PlmFinishing(models.Model):
                               size=128)
     sequence = fields.Integer(_('Sequence'),
                               help=_("Gives the sequence order when displaying a list of product categories."))
+    code = fields.Char('Code', size=2)
 
     _sql_constraints = [
         ('name_uniq', 'unique(name)', _('Surface Finishing has to be unique !')),
