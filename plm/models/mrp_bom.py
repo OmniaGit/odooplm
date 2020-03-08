@@ -669,21 +669,25 @@ class MrpBomExtension(models.Model):
         new_bom_brws = super(MrpBomExtension, self).copy(default)
         if new_bom_brws:
             for bom_line in new_bom_brws.bom_line_ids:
-                late_rev_id_c = self.env['product.product'].GetLatestIds([
-                    (bom_line.product_id.product_tmpl_id.engineering_code,
-                     False,
-                     False)
-                ])  # Get Latest revision of each Part
-                bom_line.sudo().write({'state': 'draft'})
-                bom_line.write({
+                if bom_line.product_id.product_tmpl_id.engineering_code:
+                    late_rev_id_c = self.env['product.product'].GetLatestIds([
+                        (bom_line.product_id.product_tmpl_id.engineering_code,
+                         False,
+                         False)
+                    ])  # Get Latest revision of each Part
+                    vals = {}
+                    if bom_line.source_id: 
+                        vals['source_id'] = False
+                    if bom_line.product_id.id not in late_rev_id_c:
+                        vals['state'] = 'draft'
+                        vals['name'] = bom_line.product_id.product_tmpl_id.name
+                        vals['product_id'] = late_rev_id_c[0]
+                    if vals:
+                        bom_line.sudo().write(vals)
+            if new_bom_brws.product_tmpl_id.engineering_code:
+                new_bom_brws.sudo().with_context({'check': False}).write({
                     'source_id': False,
-                    'name': bom_line.product_id.product_tmpl_id.name,
-                    'product_id': late_rev_id_c[0]
-                })
-            new_bom_brws.sudo().with_context({'check': False}).write({
-                'source_id': False,
-                'name': new_bom_brws.product_tmpl_id.name
-            })
+                    'name': new_bom_brws.product_tmpl_id.name})
         return new_bom_brws
 
     @api.one
