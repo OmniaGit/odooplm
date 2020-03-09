@@ -335,11 +335,11 @@ class PlmDocument(models.Model):
         
         def recursion(doc_id):
             if not doc_id:
-                return
+                return []
             if doc_id not in evaluated:
                 evaluated.append(doc_id)
             else:
-                return
+                return []
             outList.append(doc_id)
             doc_brws = self.browse(doc_id)
             rf_tree_doc_ids = self.getRelatedRfTree(doc_id, recursion=False)
