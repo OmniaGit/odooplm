@@ -357,6 +357,7 @@ class PlmDocument(models.Model):
                 model_doc_ids = self.getRelatedLyTree(doc_id)
                 for model_doc_id in model_doc_ids:
                     recursion(model_doc_id)
+            return []
 
         recursion(starting_doc_id.id)
         return list(set(outList))
