@@ -331,9 +331,14 @@ class PlmDocument(models.Model):
     @api.model
     def getRelatedAllLevelDocumentsTree(self, starting_doc_id):
         outList = []
+        evaluated = []
         
         def recursion(doc_id):
             if not doc_id:
+                return
+            if doc_id not in evaluated:
+                evaluated.append(doc_id)
+            else:
                 return
             outList.append(doc_id)
             doc_brws = self.browse(doc_id)
