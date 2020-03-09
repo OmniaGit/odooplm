@@ -332,11 +332,11 @@ class PlmDocument(models.Model):
         
         def recursion(doc_id):
             if not doc_id:
-                return
+                return []
             if doc_id not in evaluated:
                 evaluated.append(doc_id)
             else:
-                return
+                return []
             outList.append(doc_id)
             doc_brws = self.browse(doc_id)
             rf_tree_doc_ids = self.getRelatedRfTree(doc_id, recursion=False)
@@ -354,6 +354,7 @@ class PlmDocument(models.Model):
                 model_doc_ids = self.getRelatedLyTree(doc_id)
                 for model_doc_id in model_doc_ids:
                     recursion(model_doc_id)
+            return []
 
         recursion(starting_doc_id.id)
         return list(set(outList))
