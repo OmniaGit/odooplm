@@ -7,11 +7,11 @@
         <field name="type">form</field>
         <field name="priority" eval="16"/>
         <field name="arch" type="xml">
-            <group name="doc_user" position="inside">
+            <field name="name" position="before">
                 <field string="Spare Part"
                        name="used_for_spare"
                        attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
-            </group>
+            </field>
         </field>
     </record>
 </odoo>
