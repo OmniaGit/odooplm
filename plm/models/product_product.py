@@ -956,12 +956,12 @@ Your user does not have enough permissions to make this operation. Error: \n
 Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fix module to solve the problem.""" % (ex)
             raise ex
 
-    def copy(self, defaults={}):
+    def copy(self, default={}):
         """
             Overwrite the default copy method
         """
-        if not defaults:
-            defaults = {}
+        if not default:
+            default = {}
 
         def clearBrokenComponents():
             """
@@ -974,24 +974,32 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                 brokenComp.unlink()
 
         previous_name = self.name
-        if not defaults.get('name', False):
-            defaults['name'] = '-'                   # If field is required super of clone will fail returning False, this is the case
-            defaults['engineering_code'] = '-'
-            defaults['engineering_revision'] = 0
+        if not default.get('name', False):
+            default['name'] = '-'                   # If field is required super of clone will fail returning False, this is the case
+            default['engineering_code'] = '-'
+            default['engineering_revision'] = 0
             clearBrokenComponents()
-        if defaults.get('engineering_code', '') == '-':
+        if default.get('engineering_code', '') == '-':
             clearBrokenComponents()
         # assign default value
-        defaults['state'] = 'draft'
-        defaults['engineering_writable'] = True
-        defaults['linkeddocuments'] = []
-        defaults['release_date'] = False
-        objId = super(PlmComponent, self).copy(defaults)
+        default['state'] = 'draft'
+        default['engineering_writable'] = True
+        default['linkeddocuments'] = []
+        default['release_date'] = False
+        objId = super(PlmComponent, self).copy(default)
         if objId:
+            vals = self.fieldsToKeep()
+            vals.update(default)
+            objId.write(vals)
             objId.is_engcode_editable = True
             self.sudo().wf_message_post(body=_('Copied starting from : %s.' % previous_name))
         return objId
 
+    def fieldsToKeep(self, to_write=[]):
+        for vals in self.read(to_write):
+            return vals
+        return {}
+        
     def readMany2oneFields(self, readVals, fields):
         return self._readMany2oneFields(self.env['product.product'], readVals, fields)
 
