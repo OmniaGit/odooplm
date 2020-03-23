@@ -7,5 +7,12 @@
                 name="plm.ir_attachment_pdf"
                 report_type="qweb-html"
                 />
+              
+<!--         <report id="report_ir_attachment_pdf_pdf" -->
+<!--                 string="Print Pdf PDF" -->
+<!--                 model="ir.attachment" -->
+<!--                 name="plm.ir_attachment_pdf" -->
+<!--                 report_type="qweb-pdf" -->
+<!--                 /> -->
     </data>
 </odoo>
