@@ -31,9 +31,9 @@ from odoo import api
 
 
 class ProdProdExtension(models.Model):
-    _name = 'product.product'
     _inherit = 'product.product'
 
+    @api.model
     def generateAutomatedNBoms(self):
         '''
             Generate all normal boms starting from released components.

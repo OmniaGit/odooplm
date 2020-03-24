@@ -33,7 +33,7 @@ class ReportDocumentPdf(models.AbstractModel):
     _description = 'Report Document PDF'
 
     @api.model
-    def render_qweb_pdf(self, documents=None, data=None):
+    def _render_qweb_pdf(self, documents=None, data=None):
         docType = self.env['ir.attachment']
         docRepository = docType._get_filestore()
         userType = self.env['res.users']
@@ -46,7 +46,11 @@ class ReportDocumentPdf(models.AbstractModel):
         localDT = localDT.replace(microsecond=0)
         msg = "Printed by %r : %r " % (user.name, localDT.ctime())
         output = BookCollector(jumpFirst=False, customTest=(False, msg), bottomHeight=10)
-        documentContent = packDocuments(docRepository, documents, output)
+        return packDocuments(docRepository, documents, output)
+        
+    @api.model
+    def render_qweb_pdf(self, documents=None, data=None):
+        documentContent = self._render_qweb_pdf(documents, data)
         byteString = b"data:application/pdf;base64," + base64.b64encode(documentContent[0])
         return byteString.decode('UTF-8')
 
