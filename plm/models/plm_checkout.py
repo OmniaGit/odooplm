@@ -88,7 +88,7 @@ class PlmCheckout(models.Model):
     def create(self, vals):
         docBrws = self.env['ir.attachment'].browse(vals['documentid'])
         values = {'writable': True}
-        if not docBrws.write(values):
+        if not docBrws.sudo(True).write(values):
             logging.warning("create : Unable to check-out the required document (" + str(docBrws.engineering_document_name) + "-" + str(docBrws.revisionid) + ").")
             raise UserError(_("Unable to check-out the required document (" + str(docBrws.engineering_document_name) + "-" + str(docBrws.revisionid) + ")."))
         self._adjustRelations([docBrws.id])
