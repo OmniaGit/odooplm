@@ -352,7 +352,7 @@ class PlmComponent(models.Model):
         """
         result = []
         bufferdata = []
-        if level == 0 and currlevel > 1:
+        if level <= currlevel and level > 0:
             return bufferdata
         for bomid in component.product_tmpl_id.bom_ids:
             if bom_type:
@@ -722,8 +722,12 @@ class PlmComponent(models.Model):
             exclude_statuses = ['released', 'undermodify', 'obsoleted']
             include_statuses = ['confirmed']
             errors, product_ids = comp_obj._get_recursive_parts(exclude_statuses, include_statuses)
+            children_products = product_ids.copy()
             if len(product_ids) < 1 or len(errors) > 0:
                 raise UserError(errors)
+            children_products.remove(comp_obj.id)
+            if children_products:
+                self.browse(children_products).action_release()
             available_status = self._fields.get('state')._description_selection(self.env)
             dict_status = dict(available_status)
             allProdObjs = self.browse(product_ids)
@@ -1041,11 +1045,12 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
     def _checkMany2oneClient(self, obj, vals, force_create=False):
         out = {}
         customFields = [field.replace('plm_m2o_', '') for field in vals.keys() if field.startswith('plm_m2o_')]
-        fieldsGet = obj.fields_get(customFields)
-        for fieldName, fieldDefinition in fieldsGet.items():
-            refId = self.customFieldConvert(fieldDefinition, vals, fieldName, force_create=force_create)
-            if refId:
-                out[fieldName] = refId.id
+        if customFields:
+            fieldsGet = obj.fields_get(customFields)
+            for fieldName, fieldDefinition in fieldsGet.items():
+                refId = self.customFieldConvert(fieldDefinition, vals, fieldName, force_create=force_create)
+                if refId:
+                    out[fieldName] = refId.id
         return out
 
     def customFieldConvert(self, fieldDefinition, vals, fieldName, force_create=False):
