@@ -34,13 +34,17 @@ class ProdProdExtension(models.Model):
     _inherit = 'product.product'
 
     @api.model
-    def generateAutomatedNBoms(self):
+    def generateAutomatedNBoms(self, force_products=False):
         '''
             Generate all normal boms starting from released components.
         '''
         errors = []
         mrpBomObj = self.env['mrp.bom']
-        releasedComponents = self.search([('state', '=', 'released')])
+        releasedComponents = self.env['product.product']
+        if force_products:
+            releasedComponents = force_products
+        else:
+            releasedComponents = self.search([('state', '=', 'released')])
         logging.info('[Automate Nbom scheduler started] found %s components' % (len(releasedComponents.ids)))
         for prodBrws in releasedComponents:
             try:
