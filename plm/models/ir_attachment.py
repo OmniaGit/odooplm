@@ -990,7 +990,7 @@ class PlmDocument(models.Model):
             fileExtension = '.' + name.split('.')[-1]
         return fileExtension
 
-    @api.depends('engineering_document_name', 'revisionid', 'name')
+    @api.depends('name')
     def _compute_document_type(self):
         configParamObj = self.env['ir.config_parameter'].sudo()
         file_exte_2d_param = configParamObj._get_param('file_exte_type_rel_2D')
