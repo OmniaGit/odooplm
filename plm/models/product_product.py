@@ -746,9 +746,10 @@ class PlmComponent(models.Model):
             for currentProductId in allProdObjs:
                 if not currentProductId.release_date:
                     currentProductId.release_date = datetime.now()
-                if not(currentProductId.id in self.ids):
+                if currentProductId.id not in self.ids:
                     children_product_to_emit.append(currentProductId.id)
                 product_tmpl_ids.append(currentProductId.product_tmpl_id.id)
+            self.browse(children_product_to_emit).perform_action('release')
             self.browse(children_product_to_emit).write(defaults)
             objId = self.env['product.template'].browse(product_tmpl_ids).write(defaults)
             comp_obj.write(defaults)
