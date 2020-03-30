@@ -210,7 +210,7 @@ class ReportProductPdf(models.AbstractModel):
     _description = 'Report for producing pdf'
 
     @api.model
-    def render_qweb_pdf(self, products=None, level=0, checkState=False):
+    def _render_qweb_pdf(self, products=None, level=0, checkState=False):
         docRepository, mainBookCollector = commonInfos(self.env)
         documents = []
 
@@ -237,6 +237,10 @@ class ReportProductPdf(models.AbstractModel):
                                             documents,
                                             mainBookCollector)
             content = documentContent[0]
+        return content
+    
+    def render_qweb_pdf(self, products=None, level=0, checkState=False):
+        content = self._render_qweb_pdf(products, level, checkState)
         byteString = b"data:application/pdf;base64," + base64.b64encode(content)
         return byteString.decode('UTF-8')
 
