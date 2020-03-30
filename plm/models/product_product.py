@@ -1033,7 +1033,8 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         return out
 
     def checkFromOdooPlm(self):
-        if self.env.context.get('odooPLM', False):
+        new_revision = self.env.context.get('new_revision', False)
+        if self.env.context.get('odooPLM', False) and not new_revision:
             for product_product_id in self:
                 if not product_product_id.engineering_code:  
                     raise UserError("Missing engineering code for plm data")
@@ -1162,7 +1163,9 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                 defaults['state'] = 'draft'
                 defaults['linkeddocuments'] = []                  # Clean attached documents for new revision object
                 ctx['new_revision'] = True
-                newCompBrws = product_product_id.with_context(ctx).copy(defaults)
+                new_tmpl_id = product_product_id.product_tmpl_id.with_context(ctx).copy(defaults)
+                newCompBrws = new_tmpl_id.product_variant_id
+                newCompBrws.write(defaults)
                 product_product_id.wf_message_post(body=_('Created : New Revision.'))
                 newComponentId = newCompBrws.id
                 break
