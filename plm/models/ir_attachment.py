@@ -812,13 +812,16 @@ class PlmDocument(models.Model):
         res.check_unique()
         return res
 
+    def checkWriteAdmin(self):
+        return self.env.user._is_admin() or self.env.user._is_superuser()
+        
     @api.multi
     def write(self, vals):
         if not self.env.context.get('odooPLM'):
             return super(PlmDocument, self).write(vals)
         check = self.env.context.get('check', True)
         if check:
-            if not self.is_plm_state_writable() and not (self.env.user._is_admin() or self.env.user._is_superuser()):
+            if not self.is_plm_state_writable() and not self.checkWriteAdmin():
                 raise UserError(_("The active state does not allow you to make save action"))
         self.writeCheckDatas(vals)
         vals.update(self.checkMany2oneClient(vals))
@@ -858,11 +861,12 @@ class PlmDocument(models.Model):
 
     @api.multi
     def writeCheckDatas(self, vals):
+        check = self.env.context.get('check', True)
         if 'datas' in list(vals.keys()) or 'name' in list(vals.keys()):
             for docBrws in self:
                 if docBrws.document_type and docBrws.document_type.upper() in ['2D', '3D']:
                     if not docBrws._is_checkedout_for_me():
-                        if not (self.env.user._is_admin() or self.env.user._is_superuser()):
+                        if check and not self.checkWriteAdmin():
                             raise UserError(_("You cannot edit a file not in check-out by you! User ID %s" % (self.env.uid)))
 
     @api.multi
