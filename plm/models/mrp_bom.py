@@ -38,35 +38,6 @@ class MrpBomExtension(models.Model):
     _name = 'mrp.bom'
     _inherit = 'mrp.bom'
 
-    #  ######################################################################################################################################33
-
-    #   Overridden methods for this entity
-
-    # TODO: Da rivedere a causa del cambiamento in odoo
-    @api.model
-    def _bom_find(self, product_tmpl=None, product=None, picking_type=None, company_id=False):
-        """ Finds BoM for particular product and product uom.
-        @param product_tmpl: Selected product.
-        @param product: Unit of measure of a product.
-        @return: False or BoM id.
-        """
-        obj_bom = super(MrpBomExtension, self)._bom_find(
-            product_tmpl=product_tmpl,
-            product=product,
-            picking_type=picking_type,
-            company_id=company_id
-        )
-        if obj_bom:
-            odoo_plm_bom = ['ebom', 'spbom']
-            if obj_bom.type in odoo_plm_bom:
-                return self.search([
-                    ('product_id', '=', obj_bom.product_id.id),
-                    ('product_tmpl_id', '=', obj_bom.product_tmpl_id.id),
-                    ('type', 'not in', odoo_plm_bom)
-                ], limit=1)
-        return obj_bom
-
-    #  ######################################################################################################################################33
     @api.multi
     def _father_compute(self, name='', arg={}):
         """ Gets father bom.
@@ -710,9 +681,8 @@ class MrpBomExtension(models.Model):
                                         'product_id': child_id,
                                         'source_id': source_document_id,
                                         'type': bom_type,
-                                        'cutted_type': cutted_type
-                                        })
-            self.env['mrp.bom.line'].create(relation_attributes).id
+                                        'cutted_type': cutted_type})
+            return self.env['mrp.bom.line'].create(relation_attributes)
 
     @api.multi  # Don't change me with @api.one or I don't work!!!
     def open_related_bom_lines(self):
@@ -779,13 +749,23 @@ class MrpBomExtension(models.Model):
                                                     'type': bomType})
             else:
                 mrp_bom_found_id.delete_child_row(parent_ir_attachment_id)
+            #
             # add rows
+            #
+            summarize_bom =  self.env.context.get('SUMMARIZE_BOM', False)
+            cache_row = {}
             for product_product_id, ir_attachment_id, relationAttributes in childrenOdooTuple:
                 if mrp_bom_found_id and not relationAttributes.get('EXCLUDE', False) and product_product_id:
-                    mrp_bom_found_id.add_child_row(product_product_id,
-                                                   parent_ir_attachment_id,
-                                                   relationAttributes,
-                                                   bomType)
+                    key = "%s_%s" % (product_product_id, parent_ir_attachment_id)
+                    if summarize_bom and key in cache_row:
+                        cache_row[key].product_qty += relationAttributes.get('product_qty', 1)
+                    else:
+                        mrp_bom_line_id = mrp_bom_found_id.add_child_row(product_product_id,
+                                                                         parent_ir_attachment_id,
+                                                                         relationAttributes,
+                                                                         bomType)
+                        if summarize_bom:
+                            cache_row[key] = mrp_bom_line_id
                 link_kind = relationAttributes.get('link_kind', 'HiTree')
                 if relationAttributes.get('RAW_COMP'):
                     link_kind = 'RfTree'
@@ -801,3 +781,26 @@ class MrpBomExtension(models.Model):
         except Exception as ex:
             logging.error(ex)
             raise ex
+
+    @api.model
+    def _bom_find(self, product_tmpl=None, product=None, picking_type=None, company_id=False):
+        """ Finds BoM for particular product and product uom.
+        @param product_tmpl: Selected product.
+        @param product: Unit of measure of a product.
+        @return: False or BoM id.
+        """
+        obj_bom = super(MrpBomExtension, self)._bom_find(
+            product_tmpl=product_tmpl,
+            product=product,
+            picking_type=picking_type,
+            company_id=company_id
+        )
+        if obj_bom:
+            odoo_plm_bom = ['ebom', 'spbom']
+            if obj_bom.type in odoo_plm_bom:
+                return self.search([
+                    ('product_id', '=', obj_bom.product_id.id),
+                    ('product_tmpl_id', '=', obj_bom.product_tmpl_id.id),
+                    ('type', 'not in', odoo_plm_bom)
+                ], order='sequence, product_id', limit=1)
+        return obj_bom
