@@ -217,6 +217,15 @@
         <field name="perm_read" eval="1"/>
         <field name="perm_write" eval="1"/>
         <field name="perm_create" eval="1"/>
+        <field name="perm_unlink" eval="0"/>
+    </record>
+    <record id="plm_checkout_integration" model="ir.model.access">
+        <field name="name">PLM Check Out</field>
+        <field name="model_id" ref="model_plm_checkout"/>
+        <field name="group_id" eval="group_plm_integration_user"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="1"/>
+        <field name="perm_create" eval="1"/>
         <field name="perm_unlink" eval="1"/>
     </record>
     
@@ -231,6 +240,15 @@
         <field name="perm_read" eval="1"/>
         <field name="perm_write" eval="0"/>
         <field name="perm_create" eval="0"/>
+        <field name="perm_unlink" eval="0"/>
+    </record>
+    <record id="plm_description_integration" model="ir.model.access">
+        <field name="name">PLM Description</field>
+        <field name="model_id" ref="model_plm_description"/>
+        <field name="group_id" eval="group_plm_integration_user"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="1"/>
+        <field name="perm_create" eval="1"/>
         <field name="perm_unlink" eval="0"/>
     </record>
     <record id="plm_description_admin" model="ir.model.access">
@@ -279,6 +297,15 @@
         <field name="perm_create" eval="0"/>
         <field name="perm_unlink" eval="0"/>
     </record>
+    <record id="plm_finishing_integration" model="ir.model.access">
+        <field name="name">PLM Finishing</field>
+        <field name="model_id" ref="model_plm_finishing"/>
+        <field name="group_id" eval="group_plm_integration_user"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="1"/>
+        <field name="perm_create" eval="1"/>
+        <field name="perm_unlink" eval="0"/>
+    </record>
     <record id="plm_finishing_admin" model="ir.model.access">
         <field name="name">PLM Finishing</field>
         <field name="model_id" ref="model_plm_finishing"/>
@@ -302,6 +329,15 @@
        <field name="perm_create" eval="0"/>
        <field name="perm_unlink" eval="0"/>
    </record>
+    <record id="plm_treatment_integration" model="ir.model.access">
+        <field name="name">PLM Treatment</field>
+        <field name="model_id" ref="model_plm_treatment"/>
+        <field name="group_id" eval="group_plm_integration_user"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="1"/>
+        <field name="perm_create" eval="1"/>
+        <field name="perm_unlink" eval="0"/>
+    </record>
    <record id="plm_treatment_admin" model="ir.model.access">
        <field name="name">PLM Treatment</field>
        <field name="model_id" ref="model_plm_treatment"/>
@@ -322,6 +358,15 @@
         <field name="perm_read" eval="1"/>
         <field name="perm_write" eval="0"/>
         <field name="perm_create" eval="0"/>
+        <field name="perm_unlink" eval="0"/>
+    </record>
+    <record id="plm_material_integration" model="ir.model.access">
+        <field name="name">PLM Material</field>
+        <field name="model_id" ref="model_plm_material"/>
+        <field name="group_id" eval="group_plm_integration_user"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="1"/>
+        <field name="perm_create" eval="1"/>
         <field name="perm_unlink" eval="0"/>
     </record>
     <record id="plm_material_admin" model="ir.model.access">
