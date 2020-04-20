@@ -940,10 +940,15 @@ class PlmComponent(models.Model):
             vals['is_engcode_editable'] = False
         vals.update(self.checkMany2oneClient(vals))
         vals = self.plm_sanitize(vals)
+        for product in self:
+            template = product.product_tmpl_id
+            template.write({'uom_id': vals.get('uom_id', product.uom_id.id),
+                            'uom_po_id': vals.get('uom_po_id', product.uom_po_id.id),
+                            })
         res =  super(PlmComponent, self).write(vals)
         self.checkFromOdooPlm()
         return res
-    
+
     def read(self, fields=[], load='_classic_read'):
         try:
             customFields = [field.replace('plm_m2o_', '') for field in fields if field.startswith('plm_m2o_')]
