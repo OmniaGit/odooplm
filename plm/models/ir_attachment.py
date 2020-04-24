@@ -505,6 +505,12 @@ class PlmDocument(models.Model):
                 defaults['state'] = 'draft'
                 res = super(PlmDocument, oldObject).copy(defaults)
                 newID = res.id
+                res.revision_user = self.env.uid
+                res.revision_date = datetime.now()
+                res.attachment_release_user = False
+                res.attachment_release_date = False
+                res.workflow_user = False
+                res.workflow_date = False
                 if not newBomDocumentRevision:
                     setupSourceBoms(tmpObject, res)
                 oldObject.wf_message_post(body=_('Created : New Revision.'))
@@ -691,7 +697,10 @@ class PlmDocument(models.Model):
             newContext = self.env.context.copy()
             newContext['check'] = False
             objId = ir_attachment_id.with_context(newContext).write({'writable': writable,
-                                                                     'state': state})
+                                                                     'state': state,
+                                                                     'workflow_user': self.env.uid,
+                                                                     'workflow_date': datetime.now()
+                                                                     })
             if objId:
                 available_status = self._fields.get('state')._description_selection(self.env)
                 dict_status = dict(available_status)
@@ -1065,10 +1074,13 @@ class PlmDocument(models.Model):
                                      string=_('Document Type'))
     desc_modify = fields.Text(_('Modification Description'), default='')
     is_plm = fields.Boolean('Is a plm Document', help=_("If the flag is set, the document is managed by the plm module, and imply its backup at each save and the visibility on some views."))
-    attachment_release_user = fields.Many2one('res.users', string=_("Release User"))
-    attachment_release_date = fields.Datetime(string=_('Release Datetime'))
+    attachment_release_user = fields.Many2one('res.users', string=_("User Release"))
+    attachment_release_date = fields.Datetime(string=_('Datetime Release'))
     attachment_revision_count = fields.Integer(compute='_attachment_revision_count')
-
+    workflow_user = fields.Many2one('res.users', string=_("User Last Wkf"))
+    workflow_date = fields.Datetime(string=_('Datetime Last Wkf'))
+    revision_user = fields.Many2one('res.users', string=_("User Revision"))
+    revision_date = fields.Datetime(string=_('Datetime Revision'))
     
     def _attachment_revision_count(self):
         """

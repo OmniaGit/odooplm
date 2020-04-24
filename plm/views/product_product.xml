@@ -124,6 +124,14 @@
                                 <field name="std_value3"
                                        attrs="{'readonly':[('std_umc3','=',False),('state','in',['released','obsoleted'])]}"/>
                             </group>
+                            <group col="4" colspan="4" name="workflow_section">
+				                 <field name="release_user"   readonly="1"/>
+				                 <field name="release_date"  readonly="1"/>
+				                 <field name="revision_user"   readonly="1"/>
+				                 <field name="revision_date"  readonly="1"/>
+				                 <field name="workflow_user"   readonly="1"/>
+				                 <field name="workflow_date"  readonly="1"/>
+                            </group>
                         </page>
                         <page string="Linked Documents" name="linkeddocuments">
                             <group>
@@ -243,6 +251,14 @@
                                        attrs="{'readonly':[('std_umc3','=',False),('state','in',['released','obsoleted'])]}"/>
                                 <field name="std_value3"
                                        attrs="{'readonly':[('std_umc3','=',False),('state','in',['released','obsoleted'])]}"/>
+                            </group>
+                            <group col="4" colspan="4" name="workflow_section">
+				                 <field name="release_user"   readonly="1"/>
+				                 <field name="release_date"  readonly="1"/>
+				                 <field name="revision_user"   readonly="1"/>
+				                 <field name="revision_date"  readonly="1"/>
+				                 <field name="workflow_user"   readonly="1"/>
+				                 <field name="workflow_date"  readonly="1"/>
                             </group>
                         </page>
                         <page string="Linked Documents" name="linkeddocuments">

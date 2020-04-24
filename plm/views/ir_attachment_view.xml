@@ -75,15 +75,18 @@
                   </button>
                </div>
             </xpath>
-            <xpath expr="//div[@name='creation_div']" position="after">
-                <label for="write_uid" string="Modification"/>
-                  <div name="modification_div">
-                     <field name="write_uid" readonly="1" class="oe_inline"/> on
-                     <field name="write_date" readonly="1" class="oe_inline"/>
-                 </div>
-                 <field name="attachment_release_user"   readonly="1"/>
-                 <field name="attachment_release_date"  readonly="1"/>
-                 <field name="is_plm" group="base.group_no_one"/>
+            <xpath expr="//group[@name='description_group']" position="before">
+                 <group name="workflow_section" col="4" colspan="4">
+                     <field name="write_uid" readonly="1"/>
+                     <field name="write_date" readonly="1"/>
+	                 <field name="attachment_release_user"   readonly="1"/>
+	                 <field name="attachment_release_date"  readonly="1"/>
+	                 <field name="workflow_user"   readonly="1"/>
+	                 <field name="workflow_date"  readonly="1"/>
+	                 <field name="revision_user"   readonly="1"/>
+	                 <field name="revision_date"  readonly="1"/>
+	                 <field name="is_plm" group="base.group_no_one"/>
+	             </group>
             </xpath>
             <xpath expr="//sheet/group[last()]" position="after">
                     <group name="doc_data">

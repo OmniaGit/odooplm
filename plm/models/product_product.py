@@ -122,8 +122,6 @@ class PlmComponent(models.Model):
                                   readonly=True)
     write_date = fields.Datetime(_('Date Modified'),
                                  readonly=True)
-    release_date = fields.Datetime(_('Release Date'),
-                                   readonly=True)
     std_description = fields.Many2one('plm.description',
                                       _('Standard Description'),
                                       required=False,
@@ -157,6 +155,12 @@ class PlmComponent(models.Model):
     # of related fields and integration users doesn't have write permissions in std_description. The result is that
     # integration users can't create products if in changed values there is std_description
     revision_count = fields.Integer(compute='_revisions_count')
+    release_user = fields.Many2one('res.users', string=_("User Release"))
+    release_date = fields.Datetime(string=_('Datetime Release'))
+    workflow_user = fields.Many2one('res.users', string=_("User Last Wkf"))
+    workflow_date = fields.Datetime(string=_('Datetime Last Wkf'))
+    revision_user = fields.Many2one('res.users', string=_("User Revision"))
+    revision_date = fields.Datetime(string=_('Datetime Revision'))
 
     def _revisions_count(self):
         """
@@ -742,10 +746,13 @@ class PlmComponent(models.Model):
                     old_revision.wf_message_post(body=_('Status moved to: %s.' % (status_lable)))
             defaults['engineering_writable'] = False
             defaults['state'] = 'released'
+            defaults['release_user'] = self.env.uid
+            defaults['release_date'] = datetime.now()
             self.browse(product_ids)._action_ondocuments('release', include_statuses)
             for currentProductId in allProdObjs:
                 if not currentProductId.release_date:
                     currentProductId.release_date = datetime.now()
+                    currentProductId.release_user = self.env.uid
                 if currentProductId.id not in self.ids:
                     children_product_to_emit.append(currentProductId.id)
                 product_tmpl_ids.append(currentProductId.product_tmpl_id.id)
@@ -812,9 +819,14 @@ class PlmComponent(models.Model):
             if not(currId.id in self.ids):
                 product_product_ids.append(currId.id)
             product_template_ids.append(currId.product_tmpl_id.id)
+            defaults['workflow_user'] = self.env.uid
+            defaults['workflow_date'] = datetime.now()
             currId.write(defaults)
         if action:
-            self.browse(product_product_ids).perform_action(action)
+            product_ids = self.browse(product_product_ids)
+            product_ids.perform_action(action)
+            product_ids.workflow_user = self.env.uid
+            product_ids.workflow_date = datetime.now()
         objId = self.env['product.template'].browse(product_template_ids).write(defaults)
         if objId:
             available_status = self._fields.get('state')._description_selection(self.env)
@@ -1170,6 +1182,12 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                 ctx['new_revision'] = True
                 new_tmpl_id = product_product_id.product_tmpl_id.with_context(ctx).copy(defaults)
                 newCompBrws = new_tmpl_id.product_variant_id
+                defaults['revision_user'] = self.env.uid
+                defaults['revision_date'] = datetime.now()
+                defaults['release_user'] = False
+                defaults['release_date'] = False
+                defaults['workflow_user'] = False
+                defaults['workflow_date'] = False
                 newCompBrws.write(defaults)
                 product_product_id.wf_message_post(body=_('Created : New Revision.'))
                 newComponentId = newCompBrws.id
