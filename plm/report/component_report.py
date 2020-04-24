@@ -201,7 +201,8 @@ def commonInfos(env):
     msg = getBottomMessage(user, env.context)
     mainBookCollector = BookCollector(jumpFirst=False,
                                       customTest=(False, msg),
-                                      bottomHeight=10)
+                                      bottomHeight=10,
+                                      poolObj=env)
     return docRepository, mainBookCollector
 
 

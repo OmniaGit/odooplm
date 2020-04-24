@@ -42,7 +42,7 @@ def getDocumentStream(docRepository, objDoc):
 
 
 class BookCollector(object):
-    def __init__(self, jumpFirst=True, customTest=False, bottomHeight=20):
+    def __init__(self, jumpFirst=True, customTest=False, bottomHeight=20, poolObj=None):
         """
             jumpFirst = (True/False)
                 jump to add number at the first page
@@ -54,27 +54,31 @@ class BookCollector(object):
         self.customTest = customTest
         self.pageCount = 1
         self.bottomHeight = bottomHeight
+        self.poolObj = poolObj
 
     def getNextPageNumber(self, mediaBox, docState):
+
         def computeFont(x1, y1):
-            computedX1 = float(x1) / 2.834
+            computedX1 = float(x1)/2.834
             if y1 > x1:
-                # vertical
+                doc_orientation = 'vertical'
+                #vertical
                 if computedX1 <= 298:
                     self.bottomHeight = 6
-                    return 6
-                return 10
+                    return 6, doc_orientation
+                return 10, doc_orientation
             else:
-                # horizontal
+                doc_orientation = 'horizontal'
+                #horizontal
                 if computedX1 <= 421:
                     self.bottomHeight = 6
-                    return 6
-                return 10
+                    return 6, doc_orientation
+                return 10, doc_orientation
 
         pagetNumberBuffer = BytesIO()
         c = canvas.Canvas(pagetNumberBuffer)
         x, _y, x1, y1 = mediaBox
-        fontSize = computeFont(x1, y1)
+        fontSize, doc_orientation = computeFont(x1, y1)
         c.setFont("Helvetica", fontSize)
         if isinstance(self.customTest, tuple):
             page, message = self.customTest
@@ -89,26 +93,36 @@ class BookCollector(object):
                 c.drawString(float(x) + 20, self.bottomHeight, message)
         else:
             c.drawRightString(float(x1) - 50, self.bottomHeight, "Page: %r" % self.pageCount)
-        c.showPage()
-        c.save()
+#         c.showPage()
+#         c.save()
         self.pageCount += 1
-        return pagetNumberBuffer
+        return pagetNumberBuffer, c, doc_orientation
 
     def addPage(self, pageRes):
-        streamBuffer, docState = pageRes
+        streamBuffer, docObject = pageRes
+        docState = docObject.state
         mainPage = PdfFileReader(streamBuffer)
         for i in range(0, mainPage.getNumPages()):
-            if self.jumpFirst:
-                self.collector.addPage(mainPage.getPage(i))
-                self.jumpFirst = False
-            else:
-                numberPagerBuffer = self.getNextPageNumber(mainPage.getPage(i).mediaBox, docState)
-                numberPageReader = PdfFileReader(numberPagerBuffer)
-                pdfPage = mainPage.getPage(i)
-                toMerge = numberPageReader.getPage(0)
-                pdfPage.mergePage(toMerge)
-                pageToAddInCollector = mainPage.getPage(i)
-                self.collector.addPage(pageToAddInCollector)
+            try:
+                if self.jumpFirst:
+                    self.collector.addPage(mainPage.getPage(i))
+                    self.jumpFirst = False
+                else:
+                    numberPagerBuffer, canvas, doc_orientation = self.getNextPageNumber(mainPage.getPage(i).mediaBox, docState)
+                    try:
+                        _orientation, paper = paperFormat(mainPage.getPage(i).mediaBox)
+                        self.poolObj.get('ir.attachment').advancedPlmReportEngine(docObject, canvas, doc_orientation, paper)
+                    except Exception as ex:
+                        logging.warning(ex)
+                        logging.warning('advancedPlmReportEngine function not implemented in plm.document object')
+                    canvas.showPage()
+                    canvas.save()
+                    numberPageReader=PdfFileReader(numberPagerBuffer)  
+                    mainPage.getPage(i).mergePage(numberPageReader.getPage(0))
+                    self.collector.addPage(mainPage.getPage(i))
+            except Exception as ex:
+                logging.error(ex)
+                logging.error('Something went wrong during pdf generation')
 
     def printToFile(self, fileName):
         outputStream = open(fileName, "wb")
@@ -143,17 +157,17 @@ def packDocuments(docRepository, documents, bookCollector):
                 page = PdfFileReader(byteIoStream)
                 _orientation, paper = paperFormat(page.getPage(0).mediaBox)
                 if(paper == 0):
-                    output0.append((byteIoStream, document.state))
+                    output0.append((byteIoStream, document))
                 elif(paper == 1):
-                    output1.append((byteIoStream, document.state))
+                    output1.append((byteIoStream, document))
                 elif(paper == 2):
-                    output2.append((byteIoStream, document.state))
+                    output2.append((byteIoStream, document))
                 elif(paper == 3):
-                    output3.append((byteIoStream, document.state))
+                    output3.append((byteIoStream, document))
                 elif(paper == 4):
-                    output4.append((byteIoStream, document.state))
+                    output4.append((byteIoStream, document))
                 else:
-                    output0.append((byteIoStream, document.state))
+                    output0.append((byteIoStream, document))
                 packed.append(document.id)
     for pag in output0 + output1 + output2 + output3 + output4:
         bookCollector.addPage(pag)

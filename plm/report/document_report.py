@@ -45,7 +45,7 @@ class ReportDocumentPdf(models.AbstractModel):
         localDT = dt.astimezone(to_zone)
         localDT = localDT.replace(microsecond=0)
         msg = "Printed by %r : %r " % (user.name, localDT.ctime())
-        output = BookCollector(jumpFirst=False, customTest=(False, msg), bottomHeight=10)
+        output = BookCollector(jumpFirst=False, customTest=(False, msg), bottomHeight=10, poolObj=self.env)
         return packDocuments(docRepository, documents, output)
         
     @api.model
