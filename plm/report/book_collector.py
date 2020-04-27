@@ -42,7 +42,7 @@ def getDocumentStream(docRepository, objDoc):
 
 
 class BookCollector(object):
-    def __init__(self, jumpFirst=True, customTest=False, bottomHeight=20, poolObj=None):
+    def __init__(self, jumpFirst=True, customText=False, bottomHeight=20, poolObj=None):
         """
             jumpFirst = (True/False)
                 jump to add number at the first page
@@ -51,12 +51,24 @@ class BookCollector(object):
         """
         self.jumpFirst = jumpFirst
         self.collector = PdfFileWriter()
-        self.customTest = customTest
+        self.customText = customText
         self.pageCount = 1
         self.bottomHeight = bottomHeight
         self.poolObj = poolObj
 
-    def getNextPageNumber(self, mediaBox, docState):
+    def evalDictVals(self, dict_vals, doc_obj, page_count, user_id):
+        out = {}
+        for key, val in dict_vals.items():
+            if 'doc_obj' in val:
+                val = eval(val)
+            if 'page_count' in val:
+                val = eval(val)
+            if 'user_id' in val:
+                val = eval(val)
+            out[key] = val
+        return out
+            
+    def getNextPageNumber(self, mediaBox, docObject):
 
         def computeFont(x1, y1):
             computedX1 = float(x1)/2.834
@@ -80,27 +92,20 @@ class BookCollector(object):
         x, _y, x1, y1 = mediaBox
         fontSize, doc_orientation = computeFont(x1, y1)
         c.setFont("Helvetica", fontSize)
-        if isinstance(self.customTest, tuple):
-            page, message = self.customTest
-            message = message + '  State:%s' % (docState)
-            if page:
-                msg = "Page: %r%r" % (self.pageCount, message)
-                cha = len(msg)
-                c.drawRightString(float(x1) - cha, self.bottomHeight, " Page: %r" % self.pageCount)
-                c.drawString(float(x) + 20, self.bottomHeight, message)
-            else:
-                cha = len(str(message))
-                c.drawString(float(x) + 20, self.bottomHeight, message)
+        if isinstance(self.customText, tuple):
+            msg, msg_vals = self.customText
+            msg_vals = self.evalDictVals(msg_vals, docObject, self.pageCount, self.poolObj.user)
+            end_msg = msg % msg_vals
+            cha = len(end_msg)
+            c.drawRightString(float(x1) - cha, self.bottomHeight, " Page: %r" % self.pageCount)
+            c.drawString(float(x) + 20, self.bottomHeight, end_msg)
         else:
             c.drawRightString(float(x1) - 50, self.bottomHeight, "Page: %r" % self.pageCount)
-#         c.showPage()
-#         c.save()
         self.pageCount += 1
         return pagetNumberBuffer, c, doc_orientation
 
     def addPage(self, pageRes):
         streamBuffer, docObject = pageRes
-        docState = docObject.state
         mainPage = PdfFileReader(streamBuffer)
         for i in range(0, mainPage.getNumPages()):
             try:
@@ -108,10 +113,15 @@ class BookCollector(object):
                     self.collector.addPage(mainPage.getPage(i))
                     self.jumpFirst = False
                 else:
-                    numberPagerBuffer, canvas, doc_orientation = self.getNextPageNumber(mainPage.getPage(i).mediaBox, docState)
+                    page = mainPage.getPage(i)
+                    numberPagerBuffer, canvas, doc_orientation = self.getNextPageNumber(page.mediaBox, docObject)
                     try:
-                        _orientation, paper = paperFormat(mainPage.getPage(i).mediaBox)
-                        self.poolObj.get('ir.attachment').advancedPlmReportEngine(docObject, canvas, doc_orientation, paper)
+                        _orientation, paper = paperFormat(page.mediaBox)
+                        self.poolObj.get('ir.attachment').advancedPlmReportEngine(document=docObject,
+                                                                                  canvas=canvas,
+                                                                                  page_orientation=doc_orientation,
+                                                                                  paper=paper,
+                                                                                  page_obj=page)
                     except Exception as ex:
                         logging.warning(ex)
                         logging.warning('advancedPlmReportEngine function not implemented in plm.document object')

@@ -197,10 +197,20 @@ RjYxNzJGNDFCNzYwNjRBM0NDQjFEMTgxOTFCQgo+PgpzdGFydHhyZWYKODc0NwolJUVPRgo=""")
 
 def commonInfos(env):
     docRepository = env['ir.attachment']._get_filestore()
-    user = env['res.users'].browse(env.uid)
-    msg = getBottomMessage(user, env.context)
+    to_zone = tz.gettz(env.context.get('tz', 'Europe/Rome'))
+    from_zone = tz.tzutc()
+    dt = datetime.now()
+    dt = dt.replace(tzinfo=from_zone)
+    localDT = dt.astimezone(to_zone)
+    localDT = localDT.replace(microsecond=0)
+    msg = "Printed by '%(print_user)s' : %(date_now)s State: %(state)s"
+    msg_vals = {
+        'print_user': 'user_id.name',
+        'date_now': localDT.ctime(),
+        'state': 'doc_obj.state',
+            }
     mainBookCollector = BookCollector(jumpFirst=False,
-                                      customTest=(False, msg),
+                                      customText=(msg, msg_vals),
                                       bottomHeight=10,
                                       poolObj=env)
     return docRepository, mainBookCollector
