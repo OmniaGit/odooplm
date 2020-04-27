@@ -167,5 +167,9 @@ class MailActivity(models.Model):
                         'res_id': res_id}
         return out_act_dict
 
-
-
+    def name_get(self):
+        out = []
+        for activity in self:
+            name = '%s | %s' % (activity.summary or activity.activity_type_id.display_name, activity.user_id.display_name or '')
+            out.append((activity.id, name))
+        return out
