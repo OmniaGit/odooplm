@@ -826,6 +826,8 @@ class PlmDocument(models.Model):
         vals['is_plm'] = True
         vals.update(self.checkMany2oneClient(vals))
         vals = self.plm_sanitize(vals)
+        vals['workflow_user'] = self.env.uid
+        vals['workflow_date'] = datetime.now()
         res = super(PlmDocument, self).create(vals)
         res.check_unique()
         return res

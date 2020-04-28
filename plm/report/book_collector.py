@@ -59,13 +59,16 @@ class BookCollector(object):
     def evalDictVals(self, dict_vals, doc_obj, page_count, user_id):
         out = {}
         for key, val in dict_vals.items():
-            if 'doc_obj' in val:
-                val = eval(val)
-            if 'page_count' in val:
-                val = eval(val)
-            if 'user_id' in val:
-                val = eval(val)
-            out[key] = val
+            try:
+                if 'doc_obj' in val:
+                    val = eval(val)
+                elif 'page_count' in val:
+                    val = eval(val)
+                elif 'user_id' in val:
+                    val = eval(val)
+            except Exception as ex:
+                logging.error('Cannot eval attribute %r for report due to error %r' % (val, ex))
+            out[key] = val or ''
         return out
             
     def getNextPageNumber(self, mediaBox, docObject):
