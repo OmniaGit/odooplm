@@ -74,6 +74,7 @@ class PlmTemporaryCutted(osv.osv.osv_memory):
                             'product_id': productBrowse.row_material.id,
                             'product_qty': 1,
                             'x_length': productBrowse.row_material_x_length,
+                            'y_length': productBrowse.row_material_y_length,
                             'cutted_type': 'server'
                             }
                         bom_line_brws = self.env['mrp.bom.line'].create(line_vals)
