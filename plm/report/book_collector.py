@@ -46,7 +46,7 @@ class BookCollector(object):
         """
             jumpFirst = (True/False)
                 jump to add number at the first page
-            customTest=(True/False,message) / False
+            customText=(True/False,message) / False
                 Add page number -> True/False, Custom Message)
         """
         self.jumpFirst = jumpFirst

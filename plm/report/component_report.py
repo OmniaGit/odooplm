@@ -195,34 +195,34 @@ Pgo8QzNENkEzMUExNzE2RTVCMDIyOTE3RjhDOTFBQzUwOTc+IF0KL0RvY0NoZWNrc3VtIC8wQjMy
 RjYxNzJGNDFCNzYwNjRBM0NDQjFEMTgxOTFCQgo+PgpzdGFydHhyZWYKODc0NwolJUVPRgo=""")
 
 
-def commonInfos(env):
-    docRepository = env['ir.attachment']._get_filestore()
-    to_zone = tz.gettz(env.context.get('tz', 'Europe/Rome'))
-    from_zone = tz.tzutc()
-    dt = datetime.now()
-    dt = dt.replace(tzinfo=from_zone)
-    localDT = dt.astimezone(to_zone)
-    localDT = localDT.replace(microsecond=0)
-    msg = "Printed by '%(print_user)s' : %(date_now)s State: %(state)s"
-    msg_vals = {
-        'print_user': 'user_id.name',
-        'date_now': localDT.ctime(),
-        'state': 'doc_obj.state',
-            }
-    mainBookCollector = BookCollector(jumpFirst=False,
-                                      customText=(msg, msg_vals),
-                                      bottomHeight=10,
-                                      poolObj=env)
-    return docRepository, mainBookCollector
-
-
 class ReportProductPdf(models.AbstractModel):
     _name = 'report.plm.product_pdf'
     _description = 'Report for producing pdf'
 
+
+    def commonInfos(self):
+        docRepository = self.env['ir.attachment']._get_filestore()
+        to_zone = tz.gettz(self.env.context.get('tz', 'Europe/Rome'))
+        from_zone = tz.tzutc()
+        dt = datetime.now()
+        dt = dt.replace(tzinfo=from_zone)
+        localDT = dt.astimezone(to_zone)
+        localDT = localDT.replace(microsecond=0)
+        msg = "Printed by '%(print_user)s' : %(date_now)s State: %(state)s"
+        msg_vals = {
+            'print_user': 'user_id.name',
+            'date_now': localDT.ctime(),
+            'state': 'doc_obj.state',
+                }
+        mainBookCollector = BookCollector(jumpFirst=False,
+                                          customText=(msg, msg_vals),
+                                          bottomHeight=10,
+                                          poolObj=self.env)
+        return docRepository, mainBookCollector
+
     @api.model
     def _render_qweb_pdf(self, products=None, level=0, checkState=False):
-        docRepository, mainBookCollector = commonInfos(self.env)
+        docRepository, mainBookCollector = self.commonInfos()
         documents = []
 
         def getDocument(product, check):

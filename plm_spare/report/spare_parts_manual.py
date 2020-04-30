@@ -147,7 +147,7 @@ class ReportSpareDocumentOne(models.AbstractModel):
             'date_now': localDT.ctime(),
             'state': 'doc_obj.state',
                 }
-        main_book_collector = BookCollector(customTest=(msg, msg_vals))
+        main_book_collector = BookCollector(customText=(msg, msg_vals))
         for component in components:
             self.processed_objs = []
             buf = self.get_first_page([component.id])
