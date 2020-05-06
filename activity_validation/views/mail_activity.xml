@@ -37,6 +37,37 @@
 		    </xpath>
 		</template>
 
+    <record model="ir.ui.view" id="plm_activity_search">
+        <field name="name">plm.activity.search</field>
+        <field name="model">mail.activity</field>
+        <field name="type">search</field>
+        <field name="priority" eval="15"/>
+        <field name="arch" type="xml">
+            <search string="Activities">
+                <filter name="change_orders"
+                        string="ECR / ECO"
+                        domain="[('activity_type_id.change_activity_type','in', ('request', 'order'))]"
+                        />
+                <group expand="0" string="Group By">
+                	<filter string="Activity Type" name="group_activity_type" domain="[]" context="{'group_by': 'activity_type_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="plm_action_view_activities">
+        <field name="name">Activities</field>
+        <field name="res_model">mail.activity</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+            id="plm_menu_activities"
+            name="Activities"
+            parent="plm.plm_menu"
+            sequence="20"
+            action="plm_action_view_activities"
+            groups="plm.group_plm_integration_user"/>
 
     </data>
 </odoo>
