@@ -220,27 +220,27 @@ class ReportProductPdf(models.AbstractModel):
                                           poolObj=self.env)
         return docRepository, mainBookCollector
 
+    def getDocument(self, product, check):
+        out = []
+        for doc in product.linkeddocuments:
+            if check:
+                if doc.state in ['released', 'undermodify']:
+                    out.append(doc)
+                continue
+            out.append(doc)
+        return out
+
     @api.model
     def _render_qweb_pdf(self, products=None, level=0, checkState=False):
         docRepository, mainBookCollector = self.commonInfos()
         documents = []
 
-        def getDocument(product, check):
-            out = []
-            for doc in product.linkeddocuments:
-                if check:
-                    if doc.state in ['released', 'undermodify']:
-                        out.append(doc)
-                    continue
-                out.append(doc)
-            return out
-
         for product in products:
-            documents.extend(getDocument(product, checkState))
+            documents.extend(self.getDocument(product, checkState))
             if level > -1:
                 for childProduct in product._getChildrenBom(product, level):
                     childProduct = self.env['product.product'].browse(childProduct)
-                    documents.extend(getDocument(childProduct, checkState))
+                    documents.extend(self.getDocument(childProduct, checkState))
         if len(documents) == 0:
             content = getEmptyDocument()
         else:
