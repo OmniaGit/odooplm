@@ -48,7 +48,8 @@
                             type="object"
                             states="confirmed"
                             string="Release Component"
-                            class="oe_highlight"/>
+                            class="oe_highlight"
+                            groups="plm.group_plm_release_users"/>
                     <button name="action_draft"
                             type="object"
                             states="confirmed"
@@ -160,7 +161,8 @@
                             type="object"
                             states="confirmed"
                             string="Release Component"
-                            class="oe_highlight"/>
+                            class="oe_highlight"
+                            groups="plm.group_plm_release_users"/>
                     <button name="action_draft"
                             type="object"
                             states="confirmed"
