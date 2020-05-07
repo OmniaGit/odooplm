@@ -89,6 +89,8 @@ Supported Editors :
             'views/plm_material_view.xml',
             'views/product_product.xml',
             'views/product_template.xml',
+            'views/ir_config_parameter.xml',
+            'views/ir_cron.xml',
             #  'views/product_product_kanban.xml',
             'views/sequence.xml',
             'views/menu.xml',

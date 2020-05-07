@@ -25,6 +25,7 @@ import time
 import json
 import copy
 import shutil
+from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 from odoo import SUPERUSER_ID
 from datetime import datetime
 import odoo.tools as tools
@@ -2224,4 +2225,24 @@ class PlmDocument(models.Model):
         if oid not in docArray:
             docArray.append(oid)  # Add requested document to package
         return self.browse(docArray)._data_get_files(listedFiles, forceFlag)
+
+    @api.model
+    def updatePreviews(self):
+        """
+            Return a new name due to sequence next number.
+        """
+        configParamObj = self.env['ir.config_parameter'].sudo()
+        paramName = 'LAST_DT_PREVIEW_UPDATE'
+        last_update = configParamObj._get_param(paramName) or False
+        condition = [('is_plm', '=', True)]
+        if last_update and last_update != 'False':
+            last_update = datetime.strptime(last_update, DEFAULT_SERVER_DATETIME_FORMAT)
+            condition.append(('write_date', '>=', last_update))
+        for document_id in self.search(condition):
+            if document_id.is3D():
+                for product_id in document_id.linkedcomponents:
+                    product_id.image_1920 = document_id.preview
+                    product_id.product_tmpl_id.image_1920 = document_id.preview
+        configParamObj.set_param(paramName, datetime.now().strftime(DEFAULT_SERVER_DATETIME_FORMAT))
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -192,35 +192,6 @@
         
   </data>
   <data noupdate="1">
-        <record id="file_extention_type_rel_2D" model="ir.config_parameter">
-            <field name="key">file_exte_type_rel_2D</field>
-            <field name="value">[
-            '.dwg',
-            '.idw', 
-            '.dxf',
-            '.iges',
-            '.e2', 
-            '.slddrw',
-            '.dft']</field>
-        </record>
-
-        <record id="file_extention_type_rel_3D" model="ir.config_parameter">
-            <field name="key">file_exte_type_rel_3D</field>
-            <field name="value">[
-            '.e3', 
-            '.iam',
-            '.ipt', 
-            '.sldasm',
-            '.sldprt',
-            '.par',
-            '.asm',
-            '.psm']</field>
-        </record>
-
-        <record id="report_indentation_key" model="ir.config_parameter">
-            <field name="key">REPORT_INDENTATION_KEY</field>
-            <field name="value">- </field>
-        </record>
 
         <record id="action_update_doc_type" model="ir.actions.server">
             <field name="name">Recompute Doc Type</field>
