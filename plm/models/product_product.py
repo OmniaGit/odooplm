@@ -952,11 +952,17 @@ class PlmComponent(models.Model):
             vals['is_engcode_editable'] = False
         vals.update(self.checkMany2oneClient(vals))
         vals = self.plm_sanitize(vals)
-        for product in self:
-            template = product.product_tmpl_id
-            template.write({'uom_id': vals.get('uom_id', product.uom_id.id),
-                            'uom_po_id': vals.get('uom_po_id', product.uom_po_id.id),
-                            })
+#         for product in self:
+#             template = product.product_tmpl_id
+#             template.write({'uom_id': vals.get('uom_id', product.uom_id.id),
+#                             'uom_po_id': vals.get('uom_po_id', product.uom_po_id.id),
+#                             'categ_id': vals.get('categ_id', product.categ_id.id),
+#                             })
+#         for fieldName in ['categ_id', 'name']:
+#             if fieldName in vals:
+#                 del vals[fieldName]
+        if not self.description or ('description' in vals and not vals['description']):
+            vals['description'] = '.'
         res =  super(PlmComponent, self).write(vals)
         self.checkFromOdooPlm()
         return res
