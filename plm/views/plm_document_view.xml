@@ -97,7 +97,7 @@
                             <field colspan="4" name="linkedcomponents" nolabel="1"
                                    attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
                         </page>
-                        <page string="Indexed Content" groups="base.group_extended" name="page_indexed_content">
+                        <page string="Indexed Content" name="page_indexed_content">
                             <field name="index_content" colspan="4" nolabel="1"
                                    attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
                         </page>
