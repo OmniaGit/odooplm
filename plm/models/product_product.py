@@ -948,21 +948,13 @@ class PlmComponent(models.Model):
             raise Exception(_(" (%r). It has tried to create with values : (%r).") % (ex, vals))
     
     def write(self, vals):
-        if 'is_engcode_editable' not in vals:
-            vals['is_engcode_editable'] = False
-        vals.update(self.checkMany2oneClient(vals))
-        vals = self.plm_sanitize(vals)
-#         for product in self:
-#             template = product.product_tmpl_id
-#             template.write({'uom_id': vals.get('uom_id', product.uom_id.id),
-#                             'uom_po_id': vals.get('uom_po_id', product.uom_po_id.id),
-#                             'categ_id': vals.get('categ_id', product.categ_id.id),
-#                             })
-#         for fieldName in ['categ_id', 'name']:
-#             if fieldName in vals:
-#                 del vals[fieldName]
-        if not self.description or ('description' in vals and not vals['description']):
-            vals['description'] = '.'
+        for product in self:
+            if 'is_engcode_editable' not in vals:
+                vals['is_engcode_editable'] = False
+            vals.update(product.checkMany2oneClient(vals))
+            vals = product.plm_sanitize(vals)
+            if not product.description or ('description' in vals and not vals['description']):
+                vals['description'] = '.'
         res =  super(PlmComponent, self).write(vals)
         self.checkFromOdooPlm()
         return res
