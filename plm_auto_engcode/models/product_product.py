@@ -40,4 +40,5 @@ class ProductCuttedParts(models.Model):
             product_id.engineering_code = self.env['ir.sequence'].next_by_code('plm.eng.code')
             if not product_id.name:
                 product_id.name = product_id.engineering_code
+        return True
 
