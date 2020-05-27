@@ -14,6 +14,7 @@
                             string="Release Document"
                             class="oe_highlight"
                             type="object"
+                            groups="plm.group_plm_release_users"
                             attrs="{'invisible': ['|',('is_checkout','=',True)]}"
                     />
                     <button name="action_draft"
