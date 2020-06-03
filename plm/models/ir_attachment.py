@@ -706,7 +706,7 @@ class PlmDocument(models.Model):
                 available_status = self._fields.get('state')._description_selection(self.env)
                 dict_status = dict(available_status)
                 status_lable = dict_status.get(state, '')
-                ir_attachment_id.wf_message_post(body=_('Status moved to: %s.' % (status_lable)))
+                ir_attachment_id.wf_message_post(body=_('Status moved to: %s by %s.' % (status_lable, self.env.user.name)))
                 out.append(objId)
             if ir_attachment_id.is3D():
                 pkg_doc_ids = self.getRelatedPkgTree(ir_attachment_id.id)
@@ -769,7 +769,7 @@ class PlmDocument(models.Model):
                 available_status = self._fields.get('state')._description_selection(self.env)
                 dict_status = dict(available_status)
                 status_lable = dict_status.get(defaults.get('state', ''), '')
-                self.wf_message_post(body=_('Status moved to:%s.' % (_('Status moved to: %s.' % (status_lable)))))
+                self.wf_message_post(body=_('Status moved to: %s.' % (_('Status moved to: %s.' % (status_lable)))))
             return objId
         return False
 
