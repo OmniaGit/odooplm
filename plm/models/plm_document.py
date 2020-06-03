@@ -677,7 +677,7 @@ class PlmDocument(models.Model):
                             'state': state
                             })
         if objId:
-            self.wf_message_post(body=_('Status moved to: %s.' % (USEDIC_STATES[state])))
+            self.wf_message_post(body=_('Status moved to: %s by %s.' % (USEDIC_STATES[state], self.env.user.name)))
         return objId
 
     @api.multi
@@ -726,7 +726,7 @@ class PlmDocument(models.Model):
             self.setCheckContextWrite(False)
             objId = self.write(defaults)
             if objId:
-                self.wf_message_post(body=_('Status moved to:%s.' % (USEDIC_STATES[defaults['state']])))
+                self.wf_message_post(body=_('Status moved to: %s by %s.' % (USEDIC_STATES[defaults['state']], self.env.user.name)))
             return objId
         return False
 
