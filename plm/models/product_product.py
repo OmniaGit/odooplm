@@ -676,7 +676,10 @@ class PlmComponent(models.Model):
         """
         if not (body == ''):
             for comp_obj in self:
-                comp_obj.sudo().message_post(body=_(body))
+                try:
+                    comp_obj.message_post(body=_(body))
+                except:
+                    comp_obj.sudo().message_post(body=_(body))
 
     @api.multi
     def unlink(self):
@@ -755,7 +758,7 @@ class PlmComponent(models.Model):
                     defaults['engineering_writable'] = False
                     defaults['state'] = 'obsoleted'
                     old_revision.product_tmpl_id.write(defaults)
-                    old_revision.wf_message_post(body=_('Status moved to: %s.' % (USE_DIC_STATES[defaults['state']])))
+                    old_revision.wf_message_post(body=_('Status moved to: %s by %s.' % (USE_DIC_STATES[defaults['state']], self.env.user.name)))
             defaults['engineering_writable'] = False
             defaults['state'] = 'released'
             self.browse(product_ids)._action_ondocuments('release')
@@ -769,7 +772,7 @@ class PlmComponent(models.Model):
             objId = prodTmplType.browse(product_tmpl_ids).write(defaults)
             comp_obj.write(defaults)
             if (objId):
-                self.browse(product_ids).wf_message_post(body=_('Status moved to: %s.' % (USE_DIC_STATES[defaults['state']])))
+                self.browse(product_ids).wf_message_post(body=_('Status moved to: %s by %s.' % (USE_DIC_STATES[defaults['state']], self.env.user.name)))
             return objId
         return False
 
@@ -833,7 +836,7 @@ class PlmComponent(models.Model):
             self.browse(product_product_ids).perform_action(action)
         objId = self.env['product.template'].browse(product_template_ids).write(defaults)
         if objId:
-            self.browse(allIDs).wf_message_post(body=_('Status moved to: %s.' % (USE_DIC_STATES[defaults['state']])))
+            self.browse(allIDs).wf_message_post(body=_('Status moved to: %s by %s.' % (USE_DIC_STATES[defaults['state']], self.env.user.name)))
         return objId
 
 #  ######################################################################################################################################33
@@ -1148,7 +1151,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                 oldProdVals = {'engineering_writable': False,
                                'state': 'undermodify'}
                 self.browse([oldObject.id]).sudo().write(oldProdVals)
-                oldObject.wf_message_post(body=_('Status moved to: %s.' % (USE_DIC_STATES[oldProdVals['state']])))
+                oldObject.wf_message_post(body=_('Status moved to: %s by %s.' % (USE_DIC_STATES[oldProdVals['state']], self.env.user.name)))
                 # store updated infos in "revision" object
                 defaults = {}
                 defaults['name'] = oldObject.name                 # copy function needs an explicit name value

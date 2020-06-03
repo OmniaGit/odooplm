@@ -683,7 +683,7 @@ class PlmDocument(models.Model):
             objId = ir_attachment_id.with_context(newContext).write({'writable': writable,
                                                                      'state': state})
             if objId:
-                ir_attachment_id.wf_message_post(body=_('Status moved to: %s.' % (USE_DIC_STATES[state])))
+                ir_attachment_id.wf_message_post(body=_('Status moved to: %s by %s.' % (USE_DIC_STATES[state], self.env.user.name)))
                 out.append(objId)
             if ir_attachment_id.is3D():
                 pkg_doc_ids = self.getRelatedPkgTree(ir_attachment_id.id)
@@ -743,7 +743,7 @@ class PlmDocument(models.Model):
             self.setCheckContextWrite(False)
             objId = self.write(defaults)
             if objId:
-                self.wf_message_post(body=_('Status moved to:%s.' % (USE_DIC_STATES[defaults['state']])))
+                self.wf_message_post(body=_('Status moved to: %s by %s.' % (USE_DIC_STATES[defaults['state']], self.env.user.name)))
             return objId
         return False
 
