@@ -168,7 +168,7 @@
                                        attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
                                 <field name="uom_po_id"
                                        attrs="{'readonly':[('state','in',['released','obsoleted'])]}"
-                                       groups="base.group_extended"/>
+                                       groups="base.group_no_one"/>
                             </group>
                             <group col="4" colspan="4">
                                 <field name="std_umc1"

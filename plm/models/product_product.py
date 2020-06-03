@@ -353,7 +353,7 @@ class PlmComponent(models.Model):
                     }
 
     @api.model
-    def _getChildrenBom(self, component, level=0, currlevel=0):
+    def _getChildrenBom(self, component, level=0, currlevel=0, bom_type=False):
         """
             Return a flat list of each child, listed once, in a Bom ( level = 0 one level only, level = 1 all levels)
         """

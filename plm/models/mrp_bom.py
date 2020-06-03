@@ -34,6 +34,16 @@ from odoo import api
 from odoo import _
 
 
+class Production(models.Model):
+    _name = 'mrp.production'
+    _inherit = 'mrp.production'
+
+
+    @api.model
+    def create(self, vals):
+        return super(Production, self).create(vals)
+
+
 class MrpBomExtension(models.Model):
     _name = 'mrp.bom'
     _inherit = 'mrp.bom'
@@ -59,13 +69,11 @@ class MrpBomExtension(models.Model):
         if obj_bom:
             odoo_plm_bom = ['ebom', 'spbom']
             if obj_bom.type in odoo_plm_bom:
-                bom_brws_list = self.search([
+                return self.search([
                     ('product_id', '=', obj_bom.product_id.id),
                     ('product_tmpl_id', '=', obj_bom.product_tmpl_id.id),
                     ('type', 'not in', odoo_plm_bom)
-                ])
-                for bom_brws in bom_brws_list:
-                    return bom_brws
+                ], limit=1)
         return obj_bom
 
     #  ######################################################################################################################################33
