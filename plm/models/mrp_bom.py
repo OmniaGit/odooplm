@@ -111,7 +111,7 @@ class MrpBomExtension(models.Model):
                              string=_("Status"),
                              help=_("The status of the product in its LifeCycle."),
                              store=False)
-    description = fields.Char(related="product_tmpl_id.name",
+    description = fields.Char(related="product_tmpl_id.description",
                               string=_("Description"),
                               store=False)
     father_complete_ids = fields.Many2many('mrp.bom',
