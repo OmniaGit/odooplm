@@ -163,7 +163,7 @@ class MrpBomLineExtension(models.Model):
                              string=_("Status"),
                              help=_("The status of the product in its LifeCycle."),
                              store=False)
-    description = fields.Char(related="product_id.name",
+    description = fields.Text(related="product_id.description",
                               string=_("Description"),
                               store=False)
     weight_net = fields.Float(related="product_id.weight",
