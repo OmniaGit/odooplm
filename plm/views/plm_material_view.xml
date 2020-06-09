@@ -8,10 +8,11 @@
         <field name="arch" type="xml">
             <form string="Material">
             	<sheet>	
-                <group colspan="4" col="6">
+                <group colspan="4" col="4">
                     <field name="name" select="1" colspan="4"/>
                     <field name="description" select="1"/>
                     <field name="sequence"/>
+                    <field name="code"/>
                 </group>
                	</sheet> 
             </form>
@@ -25,9 +26,10 @@
         <field name="priority" eval="1"/>
         <field name="arch" type="xml">
             <tree string="Materials">
-                   <field name="name"/>
-                   <field name="description"/>
-                   <field name="sequence"/>
+                <field name="name"/>
+                <field name="description"/>
+                <field name="sequence"/>
+                <field name="code"/>
             </tree>
         </field>
     </record>

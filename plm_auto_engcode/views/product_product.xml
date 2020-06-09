@@ -11,7 +11,9 @@
             <field name="engineering_code" position="after">
                 <button name="generate_eng_code"
                         type="object"
-                        class="btn btn-sm oe_stat_button"/>
+                        class="btn btn-sm oe_stat_button"
+                        string="Generate Eng Code"
+                        />
             </field>
         </field>
     </record>
