@@ -28,7 +28,9 @@
     'summary': '',
     'images': [],
     'license': 'AGPL-3',
-    'depends': ['plm'],
+    'depends': ['plm',
+                'mrp_workorder',
+                ],
     'description': """
     """,
     'data': [
