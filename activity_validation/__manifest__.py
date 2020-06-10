@@ -30,6 +30,7 @@
     'depends': [
         'base',
         'product',
+        'mail',
     ],
     'license': 'AGPL-3',
     'description': '',
@@ -39,6 +40,7 @@
         'views/mail_activity_type.xml',
         'views/mail_activity.xml',
         'views/mail_activity_children_rel.xml',
+        'static/src/xml/import_js.xml',
         'security/security.xml',
     ],
     'demo': [],
