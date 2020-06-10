@@ -743,7 +743,7 @@ class PlmComponent(models.Model):
                     old_revision.product_tmpl_id.write(defaults)
                     old_revision.write(defaults)
                     status_lable = dict_status.get(defaults.get('state', ''), '')
-                    old_revision.wf_message_post(body=_('Status moved to: %s.' % (status_lable)))
+                    old_revision.wf_message_post(body=_('Status moved to: %s by %s.' % (status_lable, self.env.user.name)))
             defaults['engineering_writable'] = False
             defaults['state'] = 'released'
             defaults['release_user'] = self.env.uid
@@ -762,7 +762,7 @@ class PlmComponent(models.Model):
             comp_obj.write(defaults)
             if (objId):
                 status_lable = dict_status.get(defaults.get('state', ''), '')
-                self.browse(product_ids).wf_message_post(body=_('Status moved to: %s.' % (status_lable)))
+                self.browse(product_ids).wf_message_post(body=_('Status moved to: %s by %s.' % (status_lable, self.env.user.name)))
             return objId
         return False
 
@@ -832,7 +832,7 @@ class PlmComponent(models.Model):
             available_status = self._fields.get('state')._description_selection(self.env)
             dict_status = dict(available_status)
             status_lable = dict_status.get(defaults.get('state', ''), '')
-            self.browse(allIDs).wf_message_post(body=_('Status moved to: %s.' % (status_lable)))
+            self.browse(allIDs).wf_message_post(body=_('Status moved to: %s by %s.' % (status_lable, self.env.user.name)))
         return objId
 
 #  ######################################################################################################################################33
@@ -1168,7 +1168,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                 available_status = self._fields.get('state')._description_selection(self.env)
                 dict_status = dict(available_status)
                 status_lable = dict_status.get(product_product_id.state, '')
-                product_product_id.wf_message_post(body=_('Status moved to: %s.' % (status_lable)))
+                product_product_id.wf_message_post(body=_('Status moved to: %s by %s.' % (status_lable, self.env.user.name)))
                 # store updated infos in "revision" object
                 defaults = {}
                 defaults['name'] = product_product_id.name                 # copy function needs an explicit name value
