@@ -2,6 +2,17 @@
 <odoo>
     <data>
 
+        <record id="mail_activity_view_tree_activity_validaation" model="ir.ui.view">
+            <field name="name">mail.activity.view.tree.activity.validation</field>
+            <field name="model">mail.activity</field>
+            <field name="inherit_id" ref="mail.mail_activity_view_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='activity_type_id']" position="after">
+                	<field name="user_id"/>
+                </xpath>
+            </field>
+        </record>
+
         <record id="mail_activity_view_form_popup_inherit" model="ir.ui.view">
             <field name="name">mail.activity.inherit</field>
             <field name="model">mail.activity</field>
