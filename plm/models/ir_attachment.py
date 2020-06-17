@@ -2043,7 +2043,7 @@ class PlmDocument(models.Model):
                         hostName=False,
                         hostPws=False):
         action = 'upload'
-        if documentAttribute.get("CUTTED_COMP", False) or documentAttribute.get('LOCAL_COMPONENT', False):
+        if documentAttribute.get("CUTTED_COMP", False):
             return False, 'jump'
         engineering_document_name = documentAttribute.get("engineering_document_name", False)
         if not engineering_document_name:
