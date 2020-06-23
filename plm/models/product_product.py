@@ -956,6 +956,14 @@ class PlmComponent(models.Model):
             if not product.description or ('description' in vals and not vals['description']):
                 vals['description'] = '.'
         res =  super(PlmComponent, self).write(vals)
+        ctx = self.env.context.copy()
+        skip = ctx.get('skip_write_overload', False)
+        if not skip:
+            for product in self:
+                ctx['skip_write_overload'] = True
+                product.with_context(ctx).on_change_tmpmater()
+                product.with_context(ctx).on_change_tmpsurface()
+                product.with_context(ctx).on_change_tmptreatment()
         self.checkFromOdooPlm()
         return res
 
