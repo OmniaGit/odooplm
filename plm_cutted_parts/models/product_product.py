@@ -49,11 +49,6 @@ class ProductTemplateCuttedParts(models.Model):
 class ProductCuttedParts(models.Model):
     _inherit = 'product.product'
 
-    @api.onchange('is_row_material')
-    def onchange_is_row_material(self):
-        if self.is_row_material:
-            self.row_material = False
-
     @api.onchange('row_material_x_length')
     def onchange_row_material_x_length(self):
         if not self.row_material_x_length or self.row_material_x_length == 0.0:
