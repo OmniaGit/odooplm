@@ -432,7 +432,7 @@
 <!-- plm.dbthread  -->
 
     <record id="plm.dbthread" model="ir.model.access">
-        <field name="name">Product Price History</field>
+        <field name="name">Plm Db Thread</field>
         <field name="model_id" ref="model_plm_dbthread"/>
         <field name="group_id" eval="group_plm_integration_user"/>
         <field name="perm_read" eval="1"/>
