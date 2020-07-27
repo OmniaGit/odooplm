@@ -195,7 +195,7 @@
                            readonly="1"/>
             </xpath>
             <!--  -->
-            <xpath expr="//button[@name='action_view_mos']" position="after">
+            <xpath expr="//button[@name='toggle_active']" position="before">
                 <button name="open_related_revisions"
                         type="object"
                         string="Rev.s."
