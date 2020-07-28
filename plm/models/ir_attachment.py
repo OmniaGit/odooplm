@@ -2352,10 +2352,10 @@ class PlmDocument(models.Model):
             if doc_dict_3d:
                 if doc_dict_3d['check_in'] or (not doc_dict_3d['check_in'] and not doc_dict_3d['check_out_by_me']):
                     if doc_dict_3d['plm_cad_open_newer']:
-                        doc_dict_3d['msg'] = 'Model %r related to drawing %r is not updated.' % (doc_dict_3d['datas_fname'], tmp_dict['datas_fname'])
+                        doc_dict_3d['msg'] = 'Model %r related to drawing %r is not updated.' % (doc_dict_3d['name'], tmp_dict['name'])
                         appendItem(out['to_block'], doc_dict_3d)
                 elif forceCheckInModelByDrawing:
-                    doc_dict_3d['msg'] = 'Model %r related to drawing %r must be checked in or in check-out by another user.' % (doc_dict_3d['datas_fname'], tmp_dict['datas_fname'])
+                    doc_dict_3d['msg'] = 'Model %r related to drawing %r must be checked in or in check-out by another user.' % (doc_dict_3d['name'], tmp_dict['name'])
                     appendItem(out['to_block'], doc_dict_3d)
                     if doc_dict_3d in out['to_check']:
                         out['to_check'].remove(doc_dict_3d)
@@ -2373,7 +2373,7 @@ class PlmDocument(models.Model):
             if is_root:
                 if tmp_dict['check_in']:
                     if tmp_dict['plm_cad_open_newer']:
-                        tmp_dict['msg'] = 'Document %r already checked-in but not updated.' % (tmp_dict['datas_fname'])
+                        tmp_dict['msg'] = 'Document %r already checked-in but not updated.' % (tmp_dict['name'])
                         appendItem(out['to_info'], tmp_dict)
                     else:
                         tmp_dict['checked'] = True
@@ -2385,12 +2385,12 @@ class PlmDocument(models.Model):
                                       'keep_and_go': 'Keep check-out and check-in children'
                                       }
                 else:
-                    tmp_dict['msg'] = 'Document %r is in check-out by another user. Cannot check-in.' % (tmp_dict['datas_fname'])
+                    tmp_dict['msg'] = 'Document %r is in check-out by another user. Cannot check-in.' % (tmp_dict['name'])
                     appendItem(out['to_block'], tmp_dict)
             else:
                 if tmp_dict['check_in']:
                     if tmp_dict['plm_cad_open_newer']:
-                        tmp_dict['msg'] = 'Document %r already checked-in but not updated.' % (tmp_dict['datas_fname'])
+                        tmp_dict['msg'] = 'Document %r already checked-in but not updated.' % (tmp_dict['name'])
                         appendItem(out['to_info'], tmp_dict)
                     else:
                         tmp_dict['checked'] = True
@@ -2402,10 +2402,10 @@ class PlmDocument(models.Model):
                                       'keep_and_go': 'Keep check-out and check-in children'
                                       }
                 else:
-                    tmp_dict['msg'] = 'Document %r is in check-out by another user. Cannot check-in, skipped.' % (tmp_dict['datas_fname'])
+                    tmp_dict['msg'] = 'Document %r is in check-out by another user. Cannot check-in, skipped.' % (tmp_dict['name'])
                     appendItem(out['to_info'], tmp_dict)
                     if tmp_dict['plm_cad_open_newer']:
-                        tmp_dict['msg'] += '\nDocument %r in check-out by another user and not updated.' % (tmp_dict['datas_fname'])
+                        tmp_dict['msg'] += '\nDocument %r in check-out by another user and not updated.' % (tmp_dict['name'])
                         appendItem(out['to_info'], tmp_dict)
             return tmp_dict
             
