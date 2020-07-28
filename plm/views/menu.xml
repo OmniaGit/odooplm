@@ -73,6 +73,15 @@
             sequence="11"
     />
 
+	    <menuitem
+	        name="CAD Opens"
+	        action="plm.action_plm_cad_open"
+	        id="menu_cad_open"
+	        parent="plm.ir_attachment_form" 
+	    	sequence="15"
+	    	groups="plm.group_plm_admin,base.group_no_one"
+	    />
+
     <!-- Parent menu "Configuration" -->
     <menuitem
             name="Descriptions"

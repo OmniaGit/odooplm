@@ -902,7 +902,7 @@ class PlmComponent(models.Model):
 
     @api.model
     def checkVariantLinkeddocs(self, doc_ids):
-        for doc in self.env['plm.document'].browse(doc_ids):
+        for doc in self.env['ir.attachment'].browse(doc_ids):
             if not doc.ischecked_in():
                 raise UserError(_('Document %r with revision %r is in check-out, cannot create variant.' % (doc.name, doc.revisionid)))
 
