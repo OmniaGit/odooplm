@@ -86,6 +86,8 @@
                         icon="fa-folder-open"
                         class="btn btn-sm oe_stat_button"
                         attrs="{'invisible':[('related_document_ids', '=', [])]}"/>
+                <field name="itemnum"/>
+                <field name="itemlbl"/>
             </xpath>
             <xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_id']" position="after">
                 <field name="engineering_revision" readonly="True"/>
