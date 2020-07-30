@@ -36,6 +36,7 @@ from odoo import _
 from collections import defaultdict
 import itertools
 import logging
+from odoo.tools.misc import DEFAULT_SERVER_DATETIME_FORMAT
 
 _logger = logging.getLogger(__name__)
 
@@ -362,32 +363,21 @@ class PlmDocument(models.Model):
         recursion(starting_doc_id.id)
         return list(set(outList))
 
-    @api.multi
-    def _data_check_files(self, targetIds, listedFiles=(), forceFlag=False):
+    def _data_check_files(self, targetIds, listedFiles=(), forceFlag=False, retDict=False, hostname='', hostpws=''):
         result = []
-        datefiles = []
         listfiles = []
         if len(listedFiles) > 0:
-            datefiles, listfiles = listedFiles
+            _datefiles, listfiles = listedFiles
         for objDoc in self.browse(targetIds):
-            checkOutUser = ''
-            isCheckedOutToMe = False
-            timeDoc = self.getLastTime(objDoc.id)
-            timeSaved = time.mktime(timeDoc.timetuple())
-            checkoutUserBrws = objDoc.get_checkout_user()
-            if checkoutUserBrws:
-                checkOutUser = checkoutUserBrws.name
-                if checkoutUserBrws.id == self.env.uid:
-                    isCheckedOutToMe = True
-            if (objDoc.datas_fname in listfiles):
+            outId = objDoc.id
+            isCheckedOutToMe, checkOutUser = objDoc.checkoutByMeWithUser()
+            datas_fname = objDoc.name
+            if datas_fname in listfiles:
                 if forceFlag:
                     isNewer = True
                 else:
-                    listFileIndex = listfiles.index(objDoc.datas_fname)
-                    timefile = time.mktime(
-                        datetime.strptime(str(datefiles[listFileIndex]), '%Y-%m-%d %H:%M:%S').timetuple())
-                    isNewer = (timeSaved - timefile) > 5
-                collectable = isNewer and not (isCheckedOutToMe)
+                    isNewer = objDoc.checkNewer()
+                collectable = isNewer and not isCheckedOutToMe
             else:
                 collectable = True
             objDatas = False
@@ -395,13 +385,24 @@ class PlmDocument(models.Model):
                 objDatas = objDoc.datas
             except Exception as ex:
                 logging.error(
-                    'Document with "id": %s  and "name": %s may contains no data!!         Exception: %s' % (
-                        objDoc.id, objDoc.name, ex))
+                    'Document with "id": %s  and "engineering_document_name": %s may contains no data!!         Exception: %s' % (
+                        outId, objDoc.engineering_document_name, ex))
             if (objDoc.file_size < 1) and (objDatas):
                 file_size = len(objDoc.datas)
             else:
                 file_size = objDoc.file_size
-            result.append((objDoc.id, objDoc.datas_fname, file_size, collectable, isCheckedOutToMe, checkOutUser))
+            if retDict:
+                result.append({'docIDList': outId,
+                               'nameFile': objDoc.name,
+                               'fileSize': file_size,
+                               'collectable': collectable,
+                               'isCheckedOutToMeLastRev': isCheckedOutToMe,
+                               'checkOutUser': checkOutUser,
+                               'statte': objDoc.state})
+            else:
+                result.append((outId, objDoc.name, file_size, collectable, isCheckedOutToMe, checkOutUser))
+            if collectable:
+                self.browse(outId).setupCadOpen(hostname, hostpws, 'open')
         return list(set(result))
 
     @api.multi
@@ -1143,7 +1144,19 @@ class PlmDocument(models.Model):
             [('documentid', '=', self.id), ('userid', '=', self.env.uid)])
         for checkoutBrws in checkoutBrwsList:
             return checkoutBrws.id
-        return None
+        return False
+
+    def checkoutByMeWithUser(self):
+        isCheckedOutToMe = False
+        checkOutUser = ''
+        for objDoc in self:
+            checkoutUserBrws = objDoc.get_checkout_user()
+            if checkoutUserBrws:
+                checkOutUser = checkoutUserBrws.name
+                if checkoutUserBrws.id == self.env.user.id:
+                    isCheckedOutToMe = True
+                    break
+        return isCheckedOutToMe, checkOutUser
 
     @api.model
     def CheckAllFiles(self, request, default=None):
@@ -1152,7 +1165,7 @@ class PlmDocument(models.Model):
         """
         forceFlag = False
         outIds = []
-        doc_id, listedFiles, selection = request
+        doc_id, listedFiles, selection, hostname, hostpws = request
         docBrws = self.browse(doc_id)
         outIds.append(doc_id)
         if selection is False:
@@ -1166,7 +1179,7 @@ class PlmDocument(models.Model):
         outIds = list(set(outIds))
         if selection == 2:  # Case of latest
             outIds = self._getlastrev(outIds)
-        return self._data_check_files(outIds, listedFiles, forceFlag)
+        return self._data_check_files(outIds, listedFiles, forceFlag, False, hostname, hostpws)
 
     @api.multi
     def is2D(self):
@@ -1646,11 +1659,11 @@ class PlmDocument(models.Model):
         return jsonify
 
     @api.multi
-    def checkout(self, hostName, hostPws):
+    def checkout(self, hostName, hostPws, showError=True):
         """
         check out the current document
         """
-        self.canCheckOut(showError=True)
+        self.canCheckOut(showError=showError)
         values = {'userid': self.env.uid,
                   'hostname': hostName,
                   'hostpws': hostPws,
@@ -2026,18 +2039,22 @@ class PlmDocument(models.Model):
                         hostName=False,
                         hostPws=False):
         action = 'upload'
-        if documentAttribute.get("CUTTED_COMP", False):
+        if documentAttribute.get("CUTTED_COMP", False) or documentAttribute.get("VIRTUAL", False):
             return False, 'jump'
-        document_name = documentAttribute.get("name", False)
-        if not document_name:
+        name = documentAttribute.get("name", False)
+        if not name:
             raise UserError("Unable to create document with empty name %r" % (documentAttribute.get('KEY', '')))
 
+        plm_checkout_vals = {'userid': self.env.user.id,
+                             'hostname': hostName,
+                             'hostpws': hostPws}
         found = False
         ir_attachemnt_id = self.env['ir.attachment']
-        for seached_ir_attachemnt_id in self.search([('name', '=', document_name),
+        for seached_ir_attachemnt_id in self.search([('name', '=', name),
                                                      ('revisionid', '=', documentAttribute.get('revisionid', 0))]):
             found = True
             ir_attachemnt_id = seached_ir_attachemnt_id
+            plm_checkout_vals['documentid'] = ir_attachemnt_id.id
             break
         if found:  # write
             if ir_attachemnt_id.state not in ['released', 'obsoleted']:
@@ -2050,11 +2067,31 @@ class PlmDocument(models.Model):
                 action = 'jump'
         else:  # create
             ir_attachemnt_id = ir_attachemnt_id.create(documentAttribute)
-            self.env['plm.checkout'].create({'userid': self.env.user.id,
-                                             'hostname': hostName,
-                                             'hostpws': hostPws,
-                                             'documentid': ir_attachemnt_id.id})
+            plm_checkout_vals['documentid'] = ir_attachemnt_id.id
+            self.env['plm.checkout'].create(plm_checkout_vals)
         return ir_attachemnt_id, action
+
+    @api.multi
+    def getLastBackupDoc(self):
+        for document_id in self:
+            return self.env['plm.backupdoc'].search([('documentid', '=', document_id.id)], order='create_date DESC', limit=1)
+        return False
+
+    @api.multi
+    def setupCadOpen(self, hostname='', pws_path='', operation_type=''):
+        for doc_id in self:
+            plm_cad_open = self.env['plm.cad.open'].sudo()
+            last_bck = doc_id.getLastBackupDoc()
+            plm_cad_open_brws = plm_cad_open.search([('document_id', '=', doc_id.id)])
+            plm_cad_open_brws = plm_cad_open.create({
+                'plm_backup_doc_id': last_bck.id,
+                'userid': self.env.user.id,
+                'document_id': doc_id.id,
+                'pws_path': pws_path,
+                'hostname': hostname,
+                'operation_type': operation_type
+                })
+        return plm_cad_open_brws
 
     @api.model
     def clientCanIUpload(self, clientArgs):
@@ -2128,41 +2165,6 @@ class PlmDocument(models.Model):
         return product_product_id, plm_document_id
 
     @api.model
-    def CheckOutRecursive(self, structure, pws_path='', hostname=''):
-        out = []
-        structure = json.loads(structure)
-        for dict_values in structure:
-            _comp_fields, doc_fields, _relation_fields = dict_values
-            doc_name = doc_fields.get('name', '')
-            doc_rev = doc_fields.get('revisionid', 0)
-            document_ids = self.search([
-                ('name', '=', doc_name),
-                ('revisionid', '=', doc_rev)
-                ])
-            for doc_id in document_ids:
-                is_check_in = doc_id.ischecked_in()
-                checkout_by_me = doc_id.isCheckedOutByMe()
-                doc_fields['documentID'] = doc_id.id
-                doc_fields['datas_fname'] = doc_id.datas_fname
-                if is_check_in:
-                    try:
-                        doc_id.checkout(hostname, pws_path)
-                        doc_fields['checkout'] = True
-                    except Exception as ex:
-                        doc_fields['err_msg'] = 'Error during check-out %r %r' % (doc_fields['datas_fname'], ex)
-                        doc_fields['checkout'] = False
-                    out.append(doc_fields)
-                elif checkout_by_me:
-                    doc_fields['checkout'] = False
-                    out.append(doc_fields)
-                else:
-                    doc_fields['checkout'] = False
-                    doc_fields['err_msg'] = 'Document %r is in checkout by another user' % (doc_fields['datas_fname'])
-                    out.append(doc_fields)
-                break
-        return json.dumps(out)
-
-    @api.model
     def GetDocumentInfosFromFileName(self, fileName):
         """
         get info of all the document related with the file name
@@ -2175,5 +2177,252 @@ class PlmDocument(models.Model):
                         'revisionid': ir_attachment_id.revisionid,
                         'name': ir_attachment_id.name})
         return out
+
+    @api.multi
+    def checkNewer(self):
+        for document in self:
+            plm_cad_open = self.sudo().env['plm.cad.open'].getLastCadOpenByUser(document)
+            last_bck = self.env['plm.backupdoc'].getLastBckDocumentByUser(document)
+            if plm_cad_open.plm_backup_doc_id.id != last_bck.id:
+                return True
+        return False
+
+    def checkRelatedModelCheckIn(self, doc2d_id, docArray):
+        documentRelation = self.env['ir.attachment.relation']
+        doc_rels = documentRelation.search(['|', ('parent_id', '=', doc2d_id), ('child_id', '=', doc2d_id), ('link_kind', '=', 'LyTree')])
+        for doc_rel in doc_rels:
+            doc3d = False
+            child = doc_rel.child_id
+            parent = doc_rel.parent_id
+            if child.id == doc2d_id:
+                doc3d = parent
+            else:
+                doc3d = child
+            if doc3d.id not in docArray and not doc3d.ischecked_in:
+                return doc3d
+        return True
+
+    @api.model
+    def getPlmDTDelta(self):
+        configParamObj = self.sudo().env['ir.config_parameter']
+        PLM_DT_DELTA = configParamObj._get_param('PLM_DT_DELTA')
+        if not PLM_DT_DELTA:
+            PLM_DT_DELTA = 10
+        else:
+            try:
+                PLM_DT_DELTA = eval(PLM_DT_DELTA)
+            except Exception as ex:
+                logging.error('Cannot compute DT delta %r' % (ex))
+                PLM_DT_DELTA = 10
+        return PLM_DT_DELTA
+
+    @api.model
+    def getDocId(self, args):
+        docName = args.get('engineering_document_name')
+        docRev = args.get('revisionid')
+        docIds = self.search([('engineering_document_name', '=', docName), ('revisionid', '=', docRev)])
+        if not docIds:
+            logging.warning('Document with name "%s" and revision "%s" not found' % (docName, docRev))
+            return False
+        return docIds[0]
+
+    @api.model
+    def CheckIn2(self, request, default=None, force=False):
+        return self.CheckInRecursive2(request, default, force, recursive=False)
+
+    @api.model
+    def CheckInRecursive2(self, involved_docs_dict, **kargs):
+        """
+            Evaluate documents to return
+        """
+        involved_docs_dict = json.loads(involved_docs_dict)
+        for doc_vals in involved_docs_dict.get('to_check_in', []):
+            docId = doc_vals.get('id', False)
+            checked = doc_vals.get('checked', False)
+            if not docId:
+                raise UserError('Cannot check-in document with id False. Vals %r' % (doc_vals))
+            if checked:
+                checkoutId = self.env['plm.checkout'].search([('documentid', '=', docId), ('userid', '=', self.env.user.id)])
+                if checkoutId:
+                    checkoutId.unlink()
+        return True
+
+    @api.model
+    def preCheckInRecursive(self, doc_props, forceCheckInModelByDrawing=True, recursion=True):
+        out = {
+            'to_check_in': [],
+            'to_ask': [],
+            'to_block': [],
+            'to_info': [],
+            'to_check': [],
+            'already_checkin': [],
+               }
+        evaluated = {}
+        doc_props = json.loads(doc_props)
+        doc_id = doc_props.get('_id', False)
+        if not doc_id:
+            doc_id = self.getDocId(doc_props)
+            if not doc_id:
+                return out
+
+        def setupInfos(out, docBrws, PLM_DT_DELTA, is_root, doc_dict_3d=False):
+            
+            def appendItem(resDict, to_append):
+                for elem in resDict:
+                    if elem['datas_fname'] == to_append['datas_fname']:
+                        return
+                resDict.append(to_append)
+
+                
+            tmp_dict = {}
+            doc_id = docBrws.id
+            tmp_dict['id'] = docBrws.id
+            tmp_dict['datas_fname'] = docBrws.name
+            tmp_dict['name'] = docBrws.name
+            tmp_dict['document_type'] = docBrws.document_type.upper()
+            tmp_dict['write_date'] = docBrws.write_date.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+            tmp_dict['check_in'] = docBrws.ischecked_in()
+            tmp_dict['check_out_by_me'] = docBrws.isCheckedOutByMe()
+            tmp_dict['is_latest_rev'] = docBrws.isLatestRevision()
+            tmp_dict['children_2d'] = {}
+            tmp_dict['children_3d'] = {}
+            tmp_dict['children_3d_ref'] = {}
+            tmp_dict['PLM_DT_DELTA'] = PLM_DT_DELTA
+            tmp_dict['plm_cad_open_newer'] = docBrws.checkNewer()
+            tmp_dict['is_root'] = is_root
+            tmp_dict['msg'] = ''
+            if doc_dict_3d:
+                if doc_dict_3d['check_in'] or (not doc_dict_3d['check_in'] and not doc_dict_3d['check_out_by_me']):
+                    if doc_dict_3d['plm_cad_open_newer']:
+                        doc_dict_3d['msg'] = 'Model %r related to drawing %r is not updated.' % (doc_dict_3d['name'], tmp_dict['name'])
+                        appendItem(out['to_block'], doc_dict_3d)
+                elif forceCheckInModelByDrawing:
+                    doc_dict_3d['msg'] = 'Model %r related to drawing %r must be checked in or in check-out by another user.' % (doc_dict_3d['name'], tmp_dict['name'])
+                    appendItem(out['to_block'], doc_dict_3d)
+                    if doc_dict_3d in out['to_check']:
+                        out['to_check'].remove(doc_dict_3d)
+                    if doc_dict_3d in out['to_ask']:
+                        out['to_ask'].remove(doc_dict_3d)
+                    if doc_dict_3d in out['to_check_in']:
+                        out['to_check_in'].remove(doc_dict_3d)
+                    return
+                else:
+                    appendItem(out['to_check'], doc_dict_3d)
+                    tmp_dict['options'] = {
+                                      'discard': 'Discard and check-in',
+                                      'keep_and_go': 'Keep check-out and check-in children'
+                                      }
+            if is_root:
+                if tmp_dict['check_in']:
+                    if tmp_dict['plm_cad_open_newer']:
+                        tmp_dict['msg'] = 'Document %r already checked-in but not updated.' % (tmp_dict['name'])
+                        appendItem(out['to_info'], tmp_dict)
+                    else:
+                        tmp_dict['checked'] = True
+                        appendItem(out['already_checkin'], tmp_dict)
+                elif tmp_dict['check_out_by_me']:
+                    appendItem(out['to_check'], tmp_dict)
+                    tmp_dict['options'] = {
+                                      'discard': 'Discard and check-in',
+                                      'keep_and_go': 'Keep check-out and check-in children'
+                                      }
+                else:
+                    tmp_dict['msg'] = 'Document %r is in check-out by another user. Cannot check-in.' % (tmp_dict['name'])
+                    appendItem(out['to_block'], tmp_dict)
+            else:
+                if tmp_dict['check_in']:
+                    if tmp_dict['plm_cad_open_newer']:
+                        tmp_dict['msg'] = 'Document %r already checked-in but not updated.' % (tmp_dict['name'])
+                        appendItem(out['to_info'], tmp_dict)
+                    else:
+                        tmp_dict['checked'] = True
+                        appendItem(out['already_checkin'], tmp_dict)
+                elif tmp_dict['check_out_by_me']:
+                    appendItem(out['to_check'], tmp_dict)
+                    tmp_dict['options'] = {
+                                      'discard': 'Discard and check-in',
+                                      'keep_and_go': 'Keep check-out and check-in children'
+                                      }
+                else:
+                    tmp_dict['msg'] = 'Document %r is in check-out by another user. Cannot check-in, skipped.' % (tmp_dict['name'])
+                    appendItem(out['to_info'], tmp_dict)
+                    if tmp_dict['plm_cad_open_newer']:
+                        tmp_dict['msg'] += '\nDocument %r in check-out by another user and not updated.' % (tmp_dict['name'])
+                        appendItem(out['to_info'], tmp_dict)
+            return tmp_dict
+
+    @api.model
+    def preCheckOutRecursive(self, comp_vals):
+        comp_vals = json.loads(comp_vals)
+        out = []
+        for comp_val in comp_vals:
+            _comp_fields, doc_fields, _relation_fields = comp_val
+            doc_fields['err_msg'] = ''
+            doc_name = doc_fields.get('engineering_document_name', '')
+            doc_rev = doc_fields.get('revisionid', 0)
+            document_ids = self.search([
+                ('engineering_document_name', '=', doc_name),
+                ('revisionid', '=', doc_rev)
+                ])
+            for doc_id in document_ids:
+                doc_fields['name'] = doc_id.name
+                if not doc_id.isLatestRevision():
+                    doc_fields['checkout'] = False
+                    doc_fields['err_msg'] = 'Document %r is not at latest revision in PWS.' % (doc_fields['name'])
+                    out.append(doc_fields)
+                    continue
+                checkout_by_me = doc_id.isCheckedOutByMe()
+                if checkout_by_me:
+                    doc_fields['checkout'] = True
+                    out.append(doc_fields)
+                    continue
+                is_check_in = doc_id.ischecked_in()
+                if is_check_in:
+                    newer_in_odoo = doc_id.checkNewer()
+                    if newer_in_odoo:
+                        doc_fields['checkout'] = False
+                        doc_fields['newer'] = True
+                        doc_fields['err_msg'] = 'Document %r is not updated.' % (doc_fields['name'])
+                        out.append(doc_fields)
+                        continue
+                    doc_fields['checkout'] = True
+                    out.append(doc_fields)
+                else:
+                    doc_fields['checkout'] = False
+                    doc_fields['err_msg'] = 'Document %r is in checkout by another user.' % (doc_fields['name'])
+                    out.append(doc_fields)
+        return json.dumps(out)
+
+    @api.model
+    def CheckOutRecursive(self, structure, pws_path='', hostname='', force=False):
+        stop = False
+        structure = json.loads(structure)
+        for doc_fields in structure:
+            doc_name = doc_fields.get('engineering_document_name', '')
+            doc_rev = doc_fields.get('revisionid', 0)
+            document_ids = self.search([
+                ('engineering_document_name', '=', doc_name),
+                ('revisionid', '=', doc_rev)
+                ])
+            for doc_id in document_ids:
+                checkout = doc_fields.get('checkout', False)
+                doc_fields['checkout'] = False
+                isCheckoutByMe, _checkoutUser = doc_id.checkoutByMeWithUser()
+                newer = doc_fields.get('newer', False)
+                if newer and force:
+                    checkout = True
+                if not checkout:
+                    stop = True
+                if checkout:
+                    if isCheckoutByMe:
+                        doc_fields['checkout'] = True
+                        continue
+                    if not stop:
+                        doc_id.checkout(hostname, pws_path, showError=False)
+                        doc_id.setupCadOpen(hostname, pws_path, operation_type='check-out')
+                        doc_fields['checkout'] = True
+                    else:
+                        doc_fields['err_msg'] += '\nCannot checkout document %s.' % (doc_fields['name'])
+        return json.dumps(structure)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
