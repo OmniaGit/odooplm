@@ -2277,7 +2277,7 @@ class PlmDocument(models.Model):
             tmp_dict = {}
             doc_id = docBrws.id
             tmp_dict['id'] = docBrws.id
-            tmp_dict['datas_fname'] = docBrws.name
+            tmp_dict['datas_fname'] = docBrws.datas_fname
             tmp_dict['name'] = docBrws.name
             tmp_dict['document_type'] = docBrws.document_type.upper()
             tmp_dict['write_date'] = docBrws.write_date.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
@@ -2350,6 +2350,43 @@ class PlmDocument(models.Model):
                         tmp_dict['msg'] += '\nDocument %r in check-out by another user and not updated.' % (tmp_dict['datas_fname'])
                         appendItem(out['to_info'], tmp_dict)
             return tmp_dict
+            
+        def recursion(doc_id, out, evaluated, PLM_DT_DELTA, is_root=False, forceCheckInModelByDrawing=True, struct_type='3D', recursion=True):
+            if doc_id in evaluated.keys():
+                return {}
+            evaluated[doc_id] = {}
+            docs3D = self.browse(doc_id)
+            docs2D = self.env['ir.attachment']
+            fileType = docs3D.document_type.upper()
+            if fileType == '2D':
+                docs3D = self.browse(list(set(self.getRelatedLyTree(docs3D.id))))
+                setupInfos(out, docs3D, PLM_DT_DELTA, is_root)
+            for doc3D in docs3D:
+                doc_id_3d = doc3D.id
+                doc_dict_3d = setupInfos(out, doc3D, PLM_DT_DELTA, is_root)
+                if struct_type != '3D':
+                    docs2D = self.browse(list(set(self.getRelatedLyTree(doc_id_3d))))
+                    docs2D += docs2D
+                    for doc2d in docs2D:
+                        if fileType == '2D' and is_root and doc2d.id != doc_id:
+                            is_root = False
+                        setupInfos(out, doc2d, PLM_DT_DELTA, is_root, doc_dict_3d)
+                        if recursion:
+                            recursion(doc2d.id, out, evaluated, PLM_DT_DELTA, False, forceCheckInModelByDrawing, struct_type, recursion)
+                doc3DChildrens = self.browse(self.getRelatedHiTree(doc3D.id, recursion=False))
+                for doc3DChildren in doc3DChildrens:
+                    if recursion:
+                        recursion(doc3DChildren.id, out, evaluated, PLM_DT_DELTA, False, forceCheckInModelByDrawing, struct_type, recursion)
+                docsReference = self.browse(self.getRelatedRfTree(doc3D.id, recursion=False))
+                for doc3DChildrenRef in docsReference:
+                    if recursion:
+                        recursion(doc3DChildrenRef.id, out, evaluated, PLM_DT_DELTA, False, forceCheckInModelByDrawing, struct_type, recursion)
+
+        PLM_DT_DELTA =  self.getPlmDTDelta()
+        docs3D = self.browse(doc_id)
+        struct_type = docs3D.document_type.upper()
+        recursion(doc_id, out, evaluated, PLM_DT_DELTA, True, forceCheckInModelByDrawing, struct_type, recursion)
+        return json.dumps(out)
 
     @api.model
     def preCheckOutRecursive(self, comp_vals):
@@ -2365,7 +2402,7 @@ class PlmDocument(models.Model):
                 ('revisionid', '=', doc_rev)
                 ])
             for doc_id in document_ids:
-                doc_fields['datas_fname'] = doc_id.name
+                doc_fields['datas_fname'] = doc_id.datas_fname
                 if not doc_id.isLatestRevision():
                     doc_fields['checkout'] = False
                     doc_fields['err_msg'] = 'Document %r is not at latest revision in PWS.' % (doc_fields['datas_fname'])

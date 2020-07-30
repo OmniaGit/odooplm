@@ -41,6 +41,7 @@ class PlmBackupDocument(models.Model):
     """
     _name = 'plm.backupdoc'
     _description = "manage your document back up"
+    _order = 'id DESC'
 
     userid = fields.Many2one('res.users',
                              _('Related User'))
