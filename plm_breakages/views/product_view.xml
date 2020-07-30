@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+    
+    <record id="plm_product_product_normal_form_view_inherit" model="ir.ui.view">
+        <field name="name">plm.product.product.normal.form.view.inherit</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_normal_form_view"/>
+        <field name="arch" type="xml">
+        	<xpath expr="//button[@name='open_template']" position="after">
+        		<button name="open_breakages" type="object" class="oe_stat_button" icon="fa-chain-broken">
+                       	<field string="Breakages" name="breakages_count" widget="statinfo"/>
+                </button>
+            </xpath>
+            
+        </field>
+    </record>
+
+</data>
+</odoo>
