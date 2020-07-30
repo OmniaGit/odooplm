@@ -385,8 +385,8 @@ class PlmDocument(models.Model):
                 objDatas = objDoc.datas
             except Exception as ex:
                 logging.error(
-                    'Document with "id": %s  and "engineering_document_name": %s may contains no data!!         Exception: %s' % (
-                        outId, objDoc.engineering_document_name, ex))
+                    'Document with "id": %s  and "name": %s may contains no data!!         Exception: %s' % (
+                        outId, objDoc.name, ex))
             if (objDoc.file_size < 1) and (objDatas):
                 file_size = len(objDoc.datas)
             else:
@@ -2218,9 +2218,9 @@ class PlmDocument(models.Model):
 
     @api.model
     def getDocId(self, args):
-        docName = args.get('engineering_document_name')
+        docName = args.get('name')
         docRev = args.get('revisionid')
-        docIds = self.search([('engineering_document_name', '=', docName), ('revisionid', '=', docRev)])
+        docIds = self.search([('name', '=', docName), ('revisionid', '=', docRev)])
         if not docIds:
             logging.warning('Document with name "%s" and revision "%s" not found' % (docName, docRev))
             return False
@@ -2294,10 +2294,10 @@ class PlmDocument(models.Model):
             if doc_dict_3d:
                 if doc_dict_3d['check_in'] or (not doc_dict_3d['check_in'] and not doc_dict_3d['check_out_by_me']):
                     if doc_dict_3d['plm_cad_open_newer']:
-                        doc_dict_3d['msg'] = 'Model %r related to drawing %r is not updated.' % (doc_dict_3d['name'], tmp_dict['name'])
+                        doc_dict_3d['msg'] = 'Model %r related to drawing %r is not updated.' % (doc_dict_3d['datas_fname'], tmp_dict['datas_fname'])
                         appendItem(out['to_block'], doc_dict_3d)
                 elif forceCheckInModelByDrawing:
-                    doc_dict_3d['msg'] = 'Model %r related to drawing %r must be checked in or in check-out by another user.' % (doc_dict_3d['name'], tmp_dict['name'])
+                    doc_dict_3d['msg'] = 'Model %r related to drawing %r must be checked in or in check-out by another user.' % (doc_dict_3d['datas_fname'], tmp_dict['datas_fname'])
                     appendItem(out['to_block'], doc_dict_3d)
                     if doc_dict_3d in out['to_check']:
                         out['to_check'].remove(doc_dict_3d)
@@ -2315,7 +2315,7 @@ class PlmDocument(models.Model):
             if is_root:
                 if tmp_dict['check_in']:
                     if tmp_dict['plm_cad_open_newer']:
-                        tmp_dict['msg'] = 'Document %r already checked-in but not updated.' % (tmp_dict['name'])
+                        tmp_dict['msg'] = 'Document %r already checked-in but not updated.' % (tmp_dict['datas_fname'])
                         appendItem(out['to_info'], tmp_dict)
                     else:
                         tmp_dict['checked'] = True
@@ -2327,12 +2327,12 @@ class PlmDocument(models.Model):
                                       'keep_and_go': 'Keep check-out and check-in children'
                                       }
                 else:
-                    tmp_dict['msg'] = 'Document %r is in check-out by another user. Cannot check-in.' % (tmp_dict['name'])
+                    tmp_dict['msg'] = 'Document %r is in check-out by another user. Cannot check-in.' % (tmp_dict['datas_fname'])
                     appendItem(out['to_block'], tmp_dict)
             else:
                 if tmp_dict['check_in']:
                     if tmp_dict['plm_cad_open_newer']:
-                        tmp_dict['msg'] = 'Document %r already checked-in but not updated.' % (tmp_dict['name'])
+                        tmp_dict['msg'] = 'Document %r already checked-in but not updated.' % (tmp_dict['datas_fname'])
                         appendItem(out['to_info'], tmp_dict)
                     else:
                         tmp_dict['checked'] = True
@@ -2344,10 +2344,10 @@ class PlmDocument(models.Model):
                                       'keep_and_go': 'Keep check-out and check-in children'
                                       }
                 else:
-                    tmp_dict['msg'] = 'Document %r is in check-out by another user. Cannot check-in, skipped.' % (tmp_dict['name'])
+                    tmp_dict['msg'] = 'Document %r is in check-out by another user. Cannot check-in, skipped.' % (tmp_dict['datas_fname'])
                     appendItem(out['to_info'], tmp_dict)
                     if tmp_dict['plm_cad_open_newer']:
-                        tmp_dict['msg'] += '\nDocument %r in check-out by another user and not updated.' % (tmp_dict['name'])
+                        tmp_dict['msg'] += '\nDocument %r in check-out by another user and not updated.' % (tmp_dict['datas_fname'])
                         appendItem(out['to_info'], tmp_dict)
             return tmp_dict
 
@@ -2358,17 +2358,17 @@ class PlmDocument(models.Model):
         for comp_val in comp_vals:
             _comp_fields, doc_fields, _relation_fields = comp_val
             doc_fields['err_msg'] = ''
-            doc_name = doc_fields.get('engineering_document_name', '')
+            doc_name = doc_fields.get('name', '')
             doc_rev = doc_fields.get('revisionid', 0)
             document_ids = self.search([
-                ('engineering_document_name', '=', doc_name),
+                ('name', '=', doc_name),
                 ('revisionid', '=', doc_rev)
                 ])
             for doc_id in document_ids:
-                doc_fields['name'] = doc_id.name
+                doc_fields['datas_fname'] = doc_id.name
                 if not doc_id.isLatestRevision():
                     doc_fields['checkout'] = False
-                    doc_fields['err_msg'] = 'Document %r is not at latest revision in PWS.' % (doc_fields['name'])
+                    doc_fields['err_msg'] = 'Document %r is not at latest revision in PWS.' % (doc_fields['datas_fname'])
                     out.append(doc_fields)
                     continue
                 checkout_by_me = doc_id.isCheckedOutByMe()
@@ -2382,14 +2382,14 @@ class PlmDocument(models.Model):
                     if newer_in_odoo:
                         doc_fields['checkout'] = False
                         doc_fields['newer'] = True
-                        doc_fields['err_msg'] = 'Document %r is not updated.' % (doc_fields['name'])
+                        doc_fields['err_msg'] = 'Document %r is not updated.' % (doc_fields['datas_fname'])
                         out.append(doc_fields)
                         continue
                     doc_fields['checkout'] = True
                     out.append(doc_fields)
                 else:
                     doc_fields['checkout'] = False
-                    doc_fields['err_msg'] = 'Document %r is in checkout by another user.' % (doc_fields['name'])
+                    doc_fields['err_msg'] = 'Document %r is in checkout by another user.' % (doc_fields['datas_fname'])
                     out.append(doc_fields)
         return json.dumps(out)
 
@@ -2398,10 +2398,10 @@ class PlmDocument(models.Model):
         stop = False
         structure = json.loads(structure)
         for doc_fields in structure:
-            doc_name = doc_fields.get('engineering_document_name', '')
+            doc_name = doc_fields.get('name', '')
             doc_rev = doc_fields.get('revisionid', 0)
             document_ids = self.search([
-                ('engineering_document_name', '=', doc_name),
+                ('name', '=', doc_name),
                 ('revisionid', '=', doc_rev)
                 ])
             for doc_id in document_ids:
@@ -2422,7 +2422,7 @@ class PlmDocument(models.Model):
                         doc_id.setupCadOpen(hostname, pws_path, operation_type='check-out')
                         doc_fields['checkout'] = True
                     else:
-                        doc_fields['err_msg'] += '\nCannot checkout document %s.' % (doc_fields['name'])
+                        doc_fields['err_msg'] += '\nCannot checkout document %s.' % (doc_fields['datas_fname'])
         return json.dumps(structure)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
