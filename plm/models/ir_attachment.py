@@ -2468,6 +2468,6 @@ class PlmDocument(models.Model):
         doc_ids = json.loads(j_doc_ids)
         for doc_id in doc_ids:
             out.extend(self.getRelatedPkgTree(doc_id))
-        return out
+        return json.dumps(out)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
