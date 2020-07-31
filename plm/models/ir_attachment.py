@@ -393,14 +393,14 @@ class PlmDocument(models.Model):
                 file_size = objDoc.file_size
             if retDict:
                 result.append({'docIDList': outId,
-                               'nameFile': objDoc.name,
+                               'nameFile': objDoc.datas_fname,
                                'fileSize': file_size,
                                'collectable': collectable,
                                'isCheckedOutToMeLastRev': isCheckedOutToMe,
                                'checkOutUser': checkOutUser,
                                'statte': objDoc.state})
             else:
-                result.append((outId, objDoc.name, file_size, collectable, isCheckedOutToMe, checkOutUser))
+                result.append((outId, objDoc.datas_fname, file_size, collectable, isCheckedOutToMe, checkOutUser))
             if collectable:
                 self.browse(outId).setupCadOpen(hostname, hostpws, 'open')
         return list(set(result))
