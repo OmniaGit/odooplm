@@ -33,7 +33,6 @@ from odoo.exceptions import AccessError
 from odoo.exceptions import UserError
 from odoo import osv
 import odoo.tools as tools
-from __builtin__ import isinstance
 
 _logger = logging.getLogger(__name__)
 
