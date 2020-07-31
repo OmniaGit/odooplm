@@ -150,12 +150,28 @@ class PlmDocument(models.Model):
                 responce, message = objDoc._isDownloadableFromServer(local_server_name)
                 if not responce:
                     local_server_name_errors.append(message)
-            if objDoc.type == 'binary':
-                timeDoc = self.getLastTime(objDoc.id)
-                timeSaved = time.mktime(timeDoc.timetuple())
-                try:
-                    isCheckedOutToMe = objDoc._is_checkedout_for_me()
-                    if not (objDoc.datas_fname in listfiles):
+
+            timeDoc = self.getLastTime(objDoc.id)
+            timeSaved = time.mktime(timeDoc.timetuple())
+            try:
+                isCheckedOutToMe = objDoc._is_checkedout_for_me()
+                if not (objDoc.datas_fname in listfiles):
+                    datas = False
+                    if local_server_name == 'odoo':
+                        datas = objDoc.datas
+                    result.append((objDoc.id,
+                                   objDoc.datas_fname,
+                                   datas,
+                                   isCheckedOutToMe,
+                                   timeDoc))
+                else:
+                    if forceFlag:
+                        isNewer = True
+                    else:
+                        timefile = time.mktime(datetime.strptime(str(datefiles[listfiles.index(objDoc.datas_fname)]),
+                                                                 '%Y-%m-%d %H:%M:%S').timetuple())
+                        isNewer = (timeSaved - timefile) > 5
+                    if (isNewer and not (isCheckedOutToMe)):
                         datas = False
                         if local_server_name == 'odoo':
                             datas = objDoc.datas
@@ -165,35 +181,19 @@ class PlmDocument(models.Model):
                                        isCheckedOutToMe,
                                        timeDoc))
                     else:
-                        if forceFlag:
-                            isNewer = True
-                        else:
-                            timefile = time.mktime(datetime.strptime(str(datefiles[listfiles.index(objDoc.datas_fname)]),
-                                                                     '%Y-%m-%d %H:%M:%S').timetuple())
-                            isNewer = (timeSaved - timefile) > 5
-                        if (isNewer and not (isCheckedOutToMe)):
-                            datas = False
-                            if local_server_name == 'odoo':
-                                datas = objDoc.datas
-                            result.append((objDoc.id,
-                                           objDoc.datas_fname,
-                                           datas,
-                                           isCheckedOutToMe,
-                                           timeDoc))
-                        else:
-                            result.append((objDoc.id,
-                                           objDoc.datas_fname,
-                                           False,
-                                           isCheckedOutToMe,
-                                           timeDoc))
-                except Exception as ex:
-                    logging.error(
-                        "_data_get_files : Unable to access to document (" + str(objDoc.name) + "). Error :" + str(ex))
-                    result.append((objDoc.id,
-                                   objDoc.datas_fname,
-                                   False,
-                                   True,
-                                   self.getServerTime()))
+                        result.append((objDoc.id,
+                                       objDoc.datas_fname,
+                                       False,
+                                       isCheckedOutToMe,
+                                       timeDoc))
+            except Exception as ex:
+                logging.error(
+                    "_data_get_files : Unable to access to document (" + str(objDoc.name) + "). Error :" + str(ex))
+                result.append((objDoc.id,
+                               objDoc.datas_fname,
+                               False,
+                               True,
+                               self.getServerTime()))
         if local_server_name != 'odoo':
             if local_server_name_errors:
                 return True, local_server_name_errors
