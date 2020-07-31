@@ -871,11 +871,12 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
     def checkMany2oneClient(self, vals):
         out = {}
         customFields = [field.replace('plm_m2o_', '') for field in vals.keys() if field.startswith('plm_m2o_')]
-        fieldsGet = self.fields_get(customFields)
-        for fieldName, fieldDefinition in fieldsGet.items():
-            refId = self.customFieldConvert(fieldDefinition, vals, fieldName)
-            if refId:
-                out[fieldName] = refId.id
+        if customFields:
+            fieldsGet = self.fields_get(customFields)
+            for fieldName, fieldDefinition in fieldsGet.items():
+                refId = self.customFieldConvert(fieldDefinition, vals, fieldName)
+                if refId:
+                    out[fieldName] = refId.id
         return out
 
     @api.multi
