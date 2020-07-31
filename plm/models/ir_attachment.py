@@ -2462,4 +2462,12 @@ class PlmDocument(models.Model):
                         doc_fields['err_msg'] += '\nCannot checkout document %s.' % (doc_fields['datas_fname'])
         return json.dumps(structure)
 
+    @api.model
+    def cleanZipArchives(self, j_doc_ids):
+        out = []
+        doc_ids = json.loads(j_doc_ids)
+        for doc_id in doc_ids:
+            out.extend(self.getRelatedPkgTree(doc_id))
+        return out
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
