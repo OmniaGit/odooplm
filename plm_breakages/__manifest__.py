@@ -28,6 +28,7 @@
     'author': 'OmniaSolutions',
     'website': 'https://www.omniasolutions.website',
     'category': 'Custom',
+    'license': 'AGPL-3',
     'summary': 'PLM Breakages',
     'description': """PLM Breakages""",
     
