@@ -33,6 +33,7 @@ from odoo.exceptions import AccessError
 from odoo.exceptions import UserError
 from odoo import osv
 import odoo.tools as tools
+from __builtin__ import isinstance
 
 _logger = logging.getLogger(__name__)
 
@@ -1063,7 +1064,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         referredModel = fieldDefinition.get('relation', '')
         oldFieldName = 'plm_m2o_' + fieldName
         cadVal = vals.get(oldFieldName, '')
-        if fieldType == 'many2one':
+        if fieldType == 'many2one' and cadVal:
             try:
                 for refId in self.env[referredModel].search([('name', '=', cadVal)]):
                     return refId
