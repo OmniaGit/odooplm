@@ -371,7 +371,7 @@ class PlmDocument(models.Model):
         for objDoc in self.browse(targetIds):
             outId = objDoc.id
             isCheckedOutToMe, checkOutUser = objDoc.checkoutByMeWithUser()
-            datas_fname = objDoc.name
+            datas_fname = objDoc.datas_fname
             if datas_fname in listfiles:
                 if forceFlag:
                     isNewer = True
@@ -2181,7 +2181,7 @@ class PlmDocument(models.Model):
     @api.multi
     def checkNewer(self):
         for document in self:
-            plm_cad_open = self.sudo().env['plm.cad.open'].getLastCadOpenByUser(document)
+            plm_cad_open = self.env['plm.cad.open'].getLastCadOpenByUser(document)
             last_bck = self.env['plm.backupdoc'].getLastBckDocumentByUser(document)
             if plm_cad_open.plm_backup_doc_id.id != last_bck.id:
                 return True
