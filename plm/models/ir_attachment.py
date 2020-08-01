@@ -1663,24 +1663,26 @@ class PlmDocument(models.Model):
         """
         check out the current document
         """
-        self.canCheckOut(showError=showError)
-        values = {'userid': self.env.uid,
-                  'hostname': hostName,
-                  'hostpws': hostPws,
-                  'documentid': self.id}
-        res = self.env['plm.checkout'].create(values)
-        return res.id
+        check_out_id = False
+        check_res, msg = self.canCheckOut(showError=showError)
+        if check_res:
+            values = {'userid': self.env.uid,
+                      'hostname': hostName,
+                      'hostpws': hostPws,
+                      'documentid': self.id}
+            check_out_id = self.env['plm.checkout'].create(values)
+        return check_res, msg, check_out_id
 
     @api.multi
     def canCheckOut(self, showError=False):
         for docBrws in self:
             if docBrws.is_checkout:
-                msg = _("Unable to check-Out a document that is already checked id by user %r" % docBrws.checkout_user)
+                msg = _("Unable to check-Out document %r that is already checked id by user %r" % (docBrws.datas_fname, docBrws.checkout_user))
                 if showError:
                     raise UserError(msg)
                 return False, msg
             if docBrws.state != 'draft':
-                msg = _("Unable to check-Out a document that is in state %r" % docBrws.state)
+                msg = _("Unable to check-Out the document %r that is in state %r" % (docBrws.datas_fname, docBrws.state))
                 if showError:
                     raise UserError(msg)
                 return False, msg
@@ -2433,6 +2435,7 @@ class PlmDocument(models.Model):
     @api.model
     def CheckOutRecursive(self, structure, pws_path='', hostname='', force=False):
         stop = False
+        evaluated = []
         structure = json.loads(structure)
         for doc_fields in structure:
             doc_name = doc_fields.get('name', '')
@@ -2442,6 +2445,9 @@ class PlmDocument(models.Model):
                 ('revisionid', '=', doc_rev)
                 ])
             for doc_id in document_ids:
+                if doc_id in evaluated:
+                    continue
+                evaluated.append(doc_id)
                 checkout = doc_fields.get('checkout', False)
                 doc_fields['checkout'] = False
                 isCheckoutByMe, _checkoutUser = doc_id.checkoutByMeWithUser()
@@ -2455,9 +2461,12 @@ class PlmDocument(models.Model):
                         doc_fields['checkout'] = True
                         continue
                     if not stop:
-                        doc_id.checkout(hostname, pws_path, showError=False)
-                        doc_id.setupCadOpen(hostname, pws_path, operation_type='check-out')
-                        doc_fields['checkout'] = True
+                        res_flag, msg, _check_out_id = doc_id.checkout(hostname, pws_path, showError=False)
+                        if not res_flag:
+                            doc_fields['err_msg'] += msg
+                        else:
+                            doc_id.setupCadOpen(hostname, pws_path, operation_type='check-out')
+                            doc_fields['checkout'] = True
                     else:
                         doc_fields['err_msg'] += '\nCannot checkout document %s.' % (doc_fields['datas_fname'])
         return json.dumps(structure)
