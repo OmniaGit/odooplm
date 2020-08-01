@@ -17,6 +17,9 @@
             <field name="datas" position="attributes">
                 <attribute name="attrs">{'invisible':[('type','=','url')], 'readonly':[('state','in',['released','obsoleted'])]}</attribute>
             </field>
+            <field name="datas" position="before">
+                <field name="printout"  groups="base.group_no_one"/>
+            </field>
             <field name="datas_fname" position="attributes">
                 <attribute name="attrs">{'invisible':[('type','!=','url')],'readonly':[('state','in',['released','obsoleted'])]}</attribute>
             </field>
