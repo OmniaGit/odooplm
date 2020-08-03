@@ -2410,6 +2410,11 @@ class PlmDocument(models.Model):
                     doc_fields['err_msg'] = 'Document %r is not at latest revision in PWS.' % (doc_fields['datas_fname'])
                     out.append(doc_fields)
                     continue
+                if doc_id.state != 'draft':
+                    doc_fields['checkout'] = False
+                    doc_fields['err_msg'] = 'Document %r is not in draft state, cannot be checked out. Actual state: %r' % (doc_fields['datas_fname'], doc_id.state)
+                    out.append(doc_fields)
+                    continue
                 checkout_by_me = doc_id.isCheckedOutByMe()
                 if checkout_by_me:
                     doc_fields['checkout'] = True
