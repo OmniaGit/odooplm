@@ -47,8 +47,9 @@ class ReportDocumentPdf(models.AbstractModel):
         msg = "Printed by %r : %r " % (user.name, localDT.ctime())
         output = BookCollector(jumpFirst=False, customTest=(False, msg), bottomHeight=10)
         documentContent = packDocuments(docRepository, documents, output)
-        byteString = b"data:application/pdf;base64," + base64.b64encode(documentContent[0])
+        byteString = b"data:application/pdf;base64," + base64.b64encode(documentContent[0])        
         return byteString.decode('UTF-8')
+    
 
     @api.model
     def _get_report_values(self, docids, data=None):
