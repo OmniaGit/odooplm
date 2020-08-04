@@ -2369,7 +2369,6 @@ class PlmDocument(models.Model):
             fileType = docs3D.document_type.upper()
             if fileType == '2D':
                 docs3D = self.browse(list(set(self.getRelatedLyTree(docs3D.id))))
-                setupInfos(out, docs3D, PLM_DT_DELTA, is_root)
             for doc3D in docs3D:
                 doc_id_3d = doc3D.id
                 doc_dict_3d = setupInfos(out, doc3D, PLM_DT_DELTA, is_root)
