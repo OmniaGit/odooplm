@@ -2368,19 +2368,17 @@ class PlmDocument(models.Model):
             docs2D = self.env['ir.attachment']
             fileType = docs3D.document_type.upper()
             if fileType == '2D':
+                setupInfos(out, docs3D, PLM_DT_DELTA, is_root)
+                is_root = False
                 docs3D = self.browse(list(set(self.getRelatedLyTree(docs3D.id))))
             for doc3D in docs3D:
                 doc_id_3d = doc3D.id
                 doc_dict_3d = setupInfos(out, doc3D, PLM_DT_DELTA, is_root)
                 if struct_type != '3D':
-                    docs2D = self.browse(list(set(self.getRelatedLyTree(doc_id_3d))))
-                    docs2D += docs2D
+                    docs2D += self.browse(list(set(self.getRelatedLyTree(doc_id_3d))))
                     for doc2d in docs2D:
-                        if fileType == '2D' and is_root and doc2d.id != doc_id:
-                            is_root = False
-                        setupInfos(out, doc2d, PLM_DT_DELTA, is_root, doc_dict_3d)
-                        if recursion:
-                            recursion(doc2d.id, out, evaluated, PLM_DT_DELTA, False, forceCheckInModelByDrawing, struct_type, recursion)
+                        if doc2d.id != doc_id:
+                            setupInfos(out, doc2d, PLM_DT_DELTA, is_root, doc_dict_3d)
                 doc3DChildrens = self.browse(self.getRelatedHiTree(doc3D.id, recursion=False))
                 for doc3DChildren in doc3DChildrens:
                     if recursion:
