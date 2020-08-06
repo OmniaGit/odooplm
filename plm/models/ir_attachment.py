@@ -269,7 +269,7 @@ class PlmDocument(models.Model):
                 logging.warning('Cannot get related LyTree from doc_type %r' % (doc_type))
                 return []
         return list(set(out))
-    
+
     @api.model
     def getRelatedRfTree(self, doc_id, recursion=True):
         out = []
@@ -313,17 +313,24 @@ class PlmDocument(models.Model):
             Get children HiTree documents
         '''
         out = []
-        if not doc_id:
-            logging.warning('Cannot get links from %r document' % (doc_id))
-            return []
-        document_rel_ids = self.env['ir.attachment.relation'].search([
-            ('link_kind', '=', 'HiTree'), 
-            ('parent_id', '=', doc_id)])
-        for document_rel_id in document_rel_ids:
-            child_id = document_rel_id.child_id.id
-            out.append(child_id)
-            if recursion:
-                out.extend(self.getRelatedHiTree(child_id, recursion))
+        
+        def _getRelatedHiTree(doc_id, recursion):
+            if not doc_id:
+                logging.warning('Cannot get links from %r document' % (doc_id))
+                return []
+            document_rel_ids = self.env['ir.attachment.relation'].search([
+                ('link_kind', '=', 'HiTree'), 
+                ('parent_id', '=', doc_id)])
+            for document_rel_id in document_rel_ids:
+                child_id = document_rel_id.child_id.id
+                if child_id in out:
+                    logging.warning('Document %r document already found' % (doc_id))
+                    return
+                out.append(child_id)
+                if recursion:
+                    _getRelatedHiTree(child_id, recursion)
+
+        _getRelatedHiTree(doc_id, recursion)
         return out
 
     @api.model
@@ -1666,29 +1673,30 @@ class PlmDocument(models.Model):
         logging.info("Time Spend For save structure is: %s" % (str(end - start)))
         return jsonify
 
-    
     def checkout(self, hostName, hostPws, showError=True):
         """
         check out the current document
         """
-        self.canCheckOut(showError=showError)
-        values = {'userid': self.env.uid,
-                  'hostname': hostName,
-                  'hostpws': hostPws,
-                  'documentid': self.id}
-        res = self.env['plm.checkout'].create(values)
-        return res.id
+        check_out_id = False
+        check_res, msg = self.canCheckOut(showError=showError)
+        if check_res:
+            values = {'userid': self.env.uid,
+                      'hostname': hostName,
+                      'hostpws': hostPws,
+                      'documentid': self.id}
+            check_out_id = self.env['plm.checkout'].create(values)
+        return check_res, msg, check_out_id
 
     
     def canCheckOut(self, showError=False):
         for docBrws in self:
             if docBrws.is_checkout:
-                msg = _("Unable to check-Out a document that is already checked id by user %r" % docBrws.checkout_user)
+                msg = _("Unable to check-Out document %r that is already checked id by user %r" % (docBrws.datas_fname, docBrws.checkout_user))
                 if showError:
                     raise UserError(msg)
                 return False, msg
             if docBrws.state != 'draft':
-                msg = _("Unable to check-Out a document that is in state %r" % docBrws.state)
+                msg = _("Unable to check-Out the document %r that is in state %r" % (docBrws.datas_fname, docBrws.state))
                 if showError:
                     raise UserError(msg)
                 return False, msg
@@ -2417,20 +2425,17 @@ class PlmDocument(models.Model):
             docs2D = self.env['ir.attachment']
             fileType = docs3D.document_type.upper()
             if fileType == '2D':
-                docs3D = self.browse(list(set(self.getRelatedLyTree(docs3D.id))))
                 setupInfos(out, docs3D, PLM_DT_DELTA, is_root)
+                is_root = False
+                docs3D = self.browse(list(set(self.getRelatedLyTree(docs3D.id))))
             for doc3D in docs3D:
                 doc_id_3d = doc3D.id
                 doc_dict_3d = setupInfos(out, doc3D, PLM_DT_DELTA, is_root)
                 if struct_type != '3D':
-                    docs2D = self.browse(list(set(self.getRelatedLyTree(doc_id_3d))))
-                    docs2D += docs2D
+                    docs2D += self.browse(list(set(self.getRelatedLyTree(doc_id_3d))))
                     for doc2d in docs2D:
-                        if fileType == '2D' and is_root and doc2d.id != doc_id:
-                            is_root = False
-                        setupInfos(out, doc2d, PLM_DT_DELTA, is_root, doc_dict_3d)
-                        if recursion:
-                            recursion(doc2d.id, out, evaluated, PLM_DT_DELTA, False, forceCheckInModelByDrawing, struct_type, recursion)
+                        if doc2d.id != doc_id:
+                            setupInfos(out, doc2d, PLM_DT_DELTA, is_root, doc_dict_3d)
                 doc3DChildrens = self.browse(self.getRelatedHiTree(doc3D.id, recursion=False))
                 for doc3DChildren in doc3DChildrens:
                     if recursion:
@@ -2466,6 +2471,11 @@ class PlmDocument(models.Model):
                     doc_fields['err_msg'] = 'Document %r is not at latest revision in PWS.' % (doc_fields['name'])
                     out.append(doc_fields)
                     continue
+                if doc_id.state != 'draft':
+                    doc_fields['checkout'] = False
+                    doc_fields['err_msg'] = 'Document %r is not in draft state, cannot be checked out. Actual state: %r' % (doc_fields['name'], doc_id.state)
+                    out.append(doc_fields)
+                    continue
                 checkout_by_me = doc_id.isCheckedOutByMe()
                 if checkout_by_me:
                     doc_fields['checkout'] = True
@@ -2491,6 +2501,7 @@ class PlmDocument(models.Model):
     @api.model
     def CheckOutRecursive(self, structure, pws_path='', hostname='', force=False):
         stop = False
+        evaluated = []
         structure = json.loads(structure)
         for doc_fields in structure:
             doc_name = doc_fields.get('engineering_document_name', '')
@@ -2500,6 +2511,9 @@ class PlmDocument(models.Model):
                 ('revisionid', '=', doc_rev)
                 ])
             for doc_id in document_ids:
+                if doc_id in evaluated:
+                    continue
+                evaluated.append(doc_id)
                 checkout = doc_fields.get('checkout', False)
                 doc_fields['checkout'] = False
                 isCheckoutByMe, _checkoutUser = doc_id.checkoutByMeWithUser()
@@ -2513,11 +2527,22 @@ class PlmDocument(models.Model):
                         doc_fields['checkout'] = True
                         continue
                     if not stop:
-                        doc_id.checkout(hostname, pws_path, showError=False)
-                        doc_id.setupCadOpen(hostname, pws_path, operation_type='check-out')
-                        doc_fields['checkout'] = True
+                        res_flag, msg, _check_out_id = doc_id.checkout(hostname, pws_path, showError=False)
+                        if not res_flag:
+                            doc_fields['err_msg'] += msg
+                        else:
+                            doc_id.setupCadOpen(hostname, pws_path, operation_type='check-out')
+                            doc_fields['checkout'] = True
                     else:
                         doc_fields['err_msg'] += '\nCannot checkout document %s.' % (doc_fields['name'])
         return json.dumps(structure)
+
+    @api.model
+    def cleanZipArchives(self, j_doc_ids):
+        out = []
+        doc_ids = json.loads(j_doc_ids)
+        for doc_id in doc_ids:
+            out.extend(self.getRelatedPkgTree(doc_id))
+        return json.dumps(out)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

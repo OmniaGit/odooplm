@@ -182,4 +182,5 @@ class UploadDocument(Controller):
                 out.append((attachment_brws.id, attachment_brws.name, attachment_brws.write_date.strftime(DEFAULT_SERVER_DATETIME_FORMAT)))
             return Response(json.dumps(out))
         except Exception as ex:
+            logging.error(ex)
             return Response(ex, json.dumps([]),status=500)

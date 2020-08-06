@@ -580,18 +580,25 @@ class PlmComponent(models.Model):
 
     def checkWorkflow(self, docInError, linkeddocuments, check_state):
         docIDs = []
-        attachment = self.env['ir.attachment']
-        for documentBrws in linkeddocuments:
-            if documentBrws.state == check_state:
-                if documentBrws.is_checkout:
-                    docInError.append(_("Document %r : %r is checked out by user %r") % (documentBrws.name, documentBrws.revisionid, documentBrws.checkout_user))
-                    continue
-                docIDs.append(documentBrws.id)
-                if documentBrws.is3D():
-                    doc_layout_ids = documentBrws.getRelatedLyTree(documentBrws.id)
-                    docIDs.extend(self.checkWorkflow(docInError, attachment.browse(doc_layout_ids), check_state))
-                    raw_doc_ids = documentBrws.getRelatedRfTree(documentBrws.id, recursion=True)
-                    docIDs.extend(self.checkWorkflow(docInError, attachment.browse(raw_doc_ids), check_state))
+        
+        def _checkWorkflow(docInError, linkeddocuments, check_state):
+            attachment = self.env['ir.attachment']
+            for documentBrws in linkeddocuments:
+                if documentBrws.state == check_state:
+                    if documentBrws.is_checkout:
+                        docInError.append(_("Document %r : %r is checked out by user %r") % (documentBrws.name, documentBrws.revisionid, documentBrws.checkout_user))
+                        continue
+                    new_doc_id = documentBrws.id
+                    if new_doc_id in docIDs:
+                        continue
+                    docIDs.append(new_doc_id)
+                    if documentBrws.is3D():
+                        doc_layout_ids = documentBrws.getRelatedLyTree(documentBrws.id)
+                        _checkWorkflow(docInError, attachment.browse(doc_layout_ids), check_state)
+                        raw_doc_ids = documentBrws.getRelatedRfTree(documentBrws.id, recursion=True)
+                        _checkWorkflow(docInError, attachment.browse(raw_doc_ids), check_state)
+                        
+        _checkWorkflow(docInError, linkeddocuments, check_state)
         return list(set(docIDs))
 
     def _action_ondocuments(self, action_name, include_statuses=[]):
@@ -691,7 +698,7 @@ class PlmComponent(models.Model):
             defaults['state'] = status
             exclude_statuses = ['draft', 'released', 'undermodify', 'obsoleted']
             include_statuses = ['confirmed']
-            comp_obj.commonWFAction(status, action, doc_action, defaults, exclude_statuses, include_statuses)
+            comp_obj.commonWFAction(status, action, doc_action, defaults, exclude_statuses, include_statuses, recursive=False)
         return True
 
     def action_confirm(self):
@@ -807,12 +814,14 @@ class PlmComponent(models.Model):
         toCall = actions.get(action)
         return toCall()
 
-    def commonWFAction(self, status, action, doc_action, defaults=[], exclude_statuses=[], include_statuses=[]):
+    def commonWFAction(self, status, action, doc_action, defaults=[], exclude_statuses=[], include_statuses=[], recursive=True):
         product_product_ids = []
         product_template_ids = []
-        userErrors, allIDs = self._get_recursive_parts(exclude_statuses, include_statuses)
-        if userErrors:
-            raise UserError(userErrors)
+        allIDs = [self.id]
+        if recursive:
+            userErrors, allIDs = self._get_recursive_parts(exclude_statuses, include_statuses)
+            if userErrors:
+                raise UserError(userErrors)
         allIdsBrwsList = self.browse(allIDs)
         allIdsBrwsList._action_ondocuments(doc_action, include_statuses)
         for currId in allIdsBrwsList:
@@ -1084,7 +1093,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         referredModel = fieldDefinition.get('relation', '')
         oldFieldName = 'plm_m2o_' + fieldName
         cadVal = vals.get(oldFieldName, '')
-        if fieldType == 'many2one':
+        if fieldType == 'many2one' and cadVal:
             try:
                 for refId in self.env[referredModel].search([('name', '=', cadVal)]):
                     return refId
