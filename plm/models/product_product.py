@@ -609,9 +609,9 @@ class PlmComponent(models.Model):
                     docIDs.append(new_doc_id)
                     if documentBrws.is3D():
                         doc_layout_ids = documentBrws.getRelatedLyTree(new_doc_id)
-                        docIDs.extend(_checkWorkflow(docInError, attachment.browse(doc_layout_ids), check_state))
+                        _checkWorkflow(docInError, attachment.browse(doc_layout_ids), check_state)
                         raw_doc_ids = documentBrws.getRelatedRfTree(documentBrws.id, recursion=True)
-                        docIDs.extend(_checkWorkflow(docInError, attachment.browse(raw_doc_ids), check_state))
+                        _checkWorkflow(docInError, attachment.browse(raw_doc_ids), check_state)
         _checkWorkflow(docInError, linkeddocuments, check_state)
         return list(set(docIDs))
         
