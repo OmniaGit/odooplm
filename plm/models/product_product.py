@@ -596,18 +596,23 @@ class PlmComponent(models.Model):
     @api.multi
     def checkWorkflow(self, docInError, linkeddocuments, check_state):
         docIDs = []
-        attachment = self.env['ir.attachment']
-        for documentBrws in linkeddocuments:
-            if documentBrws.state == check_state:
-                if documentBrws.is_checkout:
-                    docInError.append(_("Document %r : %r is checked out by user %r") % (documentBrws.name, documentBrws.revisionid, documentBrws.checkout_user))
-                    continue
-                docIDs.append(documentBrws.id)
-                if documentBrws.is3D():
-                    doc_layout_ids = documentBrws.getRelatedLyTree(documentBrws.id)
-                    docIDs.extend(self.checkWorkflow(docInError, attachment.browse(doc_layout_ids), check_state))
-                    raw_doc_ids = documentBrws.getRelatedRfTree(documentBrws.id, recursion=True)
-                    docIDs.extend(self.checkWorkflow(docInError, attachment.browse(raw_doc_ids), check_state))
+        def _checkWorkflow(docInError, linkeddocuments, check_state):
+            attachment = self.env['ir.attachment']
+            for documentBrws in linkeddocuments:
+                if documentBrws.state == check_state:
+                    if documentBrws.is_checkout:
+                        docInError.append(_("Document %r : %r is checked out by user %r") % (documentBrws.name, documentBrws.revisionid, documentBrws.checkout_user))
+                        continue
+                    new_doc_id = documentBrws.id
+                    if new_doc_id in docIDs:
+                        continue
+                    docIDs.append(new_doc_id)
+                    if documentBrws.is3D():
+                        doc_layout_ids = documentBrws.getRelatedLyTree(new_doc_id)
+                        _checkWorkflow(docInError, attachment.browse(doc_layout_ids), check_state)
+                        raw_doc_ids = documentBrws.getRelatedRfTree(documentBrws.id, recursion=True)
+                        _checkWorkflow(docInError, attachment.browse(raw_doc_ids), check_state)
+        _checkWorkflow(docInError, linkeddocuments, check_state)
         return list(set(docIDs))
         
     @api.multi
