@@ -307,7 +307,9 @@ class PlmDocument(models.Model):
                      ('parent_id', '=', doc_id)]
         doc_rel_ids = self.env['ir.attachment.relation'].search(to_search)
         for doc_rel_id in doc_rel_ids:
-            out.append(doc_rel_id.child_id.id)
+            child_id = doc_rel_id.child_id.id
+            if child_id not in out:
+                out.append(child_id)
         return list(set(out))
 
     @api.model
@@ -328,7 +330,7 @@ class PlmDocument(models.Model):
                 child_id = document_rel_id.child_id.id
                 if child_id in out:
                     logging.warning('Document %r document already found' % (doc_id))
-                    return
+                    continue
                 out.append(child_id)
                 if recursion:
                     _getRelatedHiTree(child_id, recursion)
