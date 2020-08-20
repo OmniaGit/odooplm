@@ -308,6 +308,15 @@ class PlmDocument(models.Model):
         return list(set(out))
 
     @api.model
+    def getRelatedPkgTreeCount(self, doc_id):
+        if not doc_id:
+            logging.warning('Cannot get links from %r document' % (doc_id))
+            return 0
+        to_search = [('link_kind', 'in', ['PkgTree']),
+                     ('parent_id', '=', doc_id)]
+        return self.env['ir.attachment.relation'].search_count(to_search)
+
+    @api.model
     def getRelatedHiTree(self, doc_id, recursion=True):
         '''
             Get children HiTree documents
@@ -2540,7 +2549,8 @@ class PlmDocument(models.Model):
         out = []
         doc_ids = json.loads(j_doc_ids)
         for doc_id in doc_ids:
-            out.extend(self.getRelatedPkgTree(doc_id))
+            if self.getRelatedPkgTreeCount(doc_id)>0:
+                out.append(doc_id)
         return json.dumps(out)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
