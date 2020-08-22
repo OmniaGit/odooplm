@@ -39,7 +39,7 @@ class PlmBackupDocument(models.Model):
     """
         Only administrator is allowed to remove elements by this table
     """
-    _name = 'plm.backupdoc'
+    _name = 'plm.backupdoc' # plm_backupdoc
     _description = "manage your document back up"
     _order = 'id DESC'
 
