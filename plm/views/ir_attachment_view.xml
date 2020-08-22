@@ -98,6 +98,13 @@
                  <button class="oe_stat_button" icon="fa-sitemap" type="object" name="action_view_rel_doc">
                    <field name="document_rel_count" string="Documents" widget="statinfo"/>
                  </button>
+                 <button    class="oe_stat_button"
+                            icon="fa-archive"
+                            type="object"
+                            name="action_related_bck_doc"
+                            string="Backup" 
+                            group="base.group_no_one">
+                 </button>
                  <button name="toggle_check_out"
                          class="oe_stat_button"
                          icon="fa-unlock-alt" 

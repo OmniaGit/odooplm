@@ -2,7 +2,7 @@
 <odoo>
 <data>
     <!-- <menuitem name="Backup Documents View" id="plm_menu_backup" parent="ir_attachment_form" sequence="15"/> -->
-
+        
     <record model="ir.ui.view" id="view_plm_backupdoc">
         <field name="name">plm.backupdoc</field>
         <field name="model">plm.backupdoc</field>
