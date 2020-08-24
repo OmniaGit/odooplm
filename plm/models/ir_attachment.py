@@ -2375,38 +2375,78 @@ class PlmDocument(models.Model):
                         appendItem(out['to_info'], tmp_dict)
             return tmp_dict
             
-        def recursion(doc_id, out, evaluated, PLM_DT_DELTA, is_root=False, forceCheckInModelByDrawing=True, struct_type='3D', recursion=True):
+        def recursionf(doc_id,
+                       out,
+                       evaluated,
+                       PLM_DT_DELTA,
+                       is_root=False,
+                       forceCheckInModelByDrawing=True,
+                       struct_type='3D',
+                       recursion=True):
             if doc_id in evaluated.keys():
                 return {}
             evaluated[doc_id] = {}
-            docs3D = self.browse(doc_id)
+            active_doc_id = self.browse(doc_id)
             docs2D = self.env['ir.attachment']
-            fileType = docs3D.document_type.upper()
+            fileType = active_doc_id.document_type.upper()
             if fileType == '2D':
-                setupInfos(out, docs3D, PLM_DT_DELTA, is_root)
+                setupInfos(out,
+                           active_doc_id,
+                           PLM_DT_DELTA,
+                           is_root)
                 is_root = False
-                docs3D = self.browse(list(set(self.getRelatedLyTree(docs3D.id))))
-            for doc3D in docs3D:
+                active_doc_id = self.browse(list(set(self.getRelatedLyTree(active_doc_id.id))))
+            for doc3D in active_doc_id:
                 doc_id_3d = doc3D.id
-                doc_dict_3d = setupInfos(out, doc3D, PLM_DT_DELTA, is_root)
+                doc_dict_3d = setupInfos(out,
+                                         doc3D,
+                                         PLM_DT_DELTA,
+                                         is_root)
                 if struct_type != '3D':
                     docs2D += self.browse(list(set(self.getRelatedLyTree(doc_id_3d))))
                     for doc2d in docs2D:
                         if doc2d.id != doc_id:
-                            setupInfos(out, doc2d, PLM_DT_DELTA, is_root, doc_dict_3d)
-                doc3DChildrens = self.browse(self.getRelatedHiTree(doc3D.id, recursion=False))
+                            setupInfos(out,
+                                       doc2d,
+                                       PLM_DT_DELTA,
+                                       is_root,
+                                       doc_dict_3d)
+                doc3DChildrens = self.browse(self.getRelatedHiTree(doc3D.id,
+                                                                   recursion=False))
                 for doc3DChildren in doc3DChildrens:
                     if recursion:
-                        recursion(doc3DChildren.id, out, evaluated, PLM_DT_DELTA, False, forceCheckInModelByDrawing, struct_type, recursion)
-                docsReference = self.browse(self.getRelatedRfTree(doc3D.id, recursion=False))
+                        recursionf(doc3DChildren.id,
+                                   out,
+                                   evaluated,
+                                   PLM_DT_DELTA,
+                                   False,
+                                   forceCheckInModelByDrawing,
+                                   struct_type,
+                                   recursion)
+                docsReference = self.browse(self.getRelatedRfTree(doc3D.id,
+                                                                  recursion=False))
                 for doc3DChildrenRef in docsReference:
                     if recursion:
-                        recursion(doc3DChildrenRef.id, out, evaluated, PLM_DT_DELTA, False, forceCheckInModelByDrawing, struct_type, recursion)
+                        recursionf(doc3DChildrenRef.id,
+                                   out,
+                                   evaluated,
+                                   PLM_DT_DELTA,
+                                   False,
+                                   forceCheckInModelByDrawing,
+                                   struct_type,
+                                   recursion)
 
         PLM_DT_DELTA =  self.getPlmDTDelta()
-        docs3D = self.browse(doc_id)
-        struct_type = docs3D.document_type.upper()
-        recursion(doc_id, out, evaluated, PLM_DT_DELTA, True, forceCheckInModelByDrawing, struct_type, recursion)
+        active_doc_id = self.browse(doc_id)
+        struct_type = active_doc_id.document_type.upper()
+        recursionf(doc_id,
+                   out,
+                   evaluated,
+                   PLM_DT_DELTA,
+                   True,
+                   forceCheckInModelByDrawing,
+                   struct_type,
+                   recursion)
         return json.dumps(out)
 
     @api.model
