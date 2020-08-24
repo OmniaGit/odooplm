@@ -2289,15 +2289,18 @@ class PlmDocument(models.Model):
             if not doc_id:
                 return out
 
-        def setupInfos(out, docBrws, PLM_DT_DELTA, is_root, doc_dict_3d=False):
+        def setupInfos(out,
+                       docBrws,
+                       PLM_DT_DELTA,
+                       is_root,
+                       doc_dict_3d=False):
             
             def appendItem(resDict, to_append):
                 for elem in resDict:
                     if elem['datas_fname'] == to_append['datas_fname']:
                         return
                 resDict.append(to_append)
-
-                
+ 
             tmp_dict = {}
             doc_id = docBrws.id
             tmp_dict['id'] = docBrws.id
@@ -2321,7 +2324,14 @@ class PlmDocument(models.Model):
                         doc_dict_3d['msg'] = 'Model %r related to drawing %r is not updated.' % (doc_dict_3d['datas_fname'], tmp_dict['datas_fname'])
                         appendItem(out['to_block'], doc_dict_3d)
                 elif forceCheckInModelByDrawing:
-                    doc_dict_3d['msg'] = 'Model %r related to drawing %r must be checked in or in check-out by another user.' % (doc_dict_3d['datas_fname'], tmp_dict['datas_fname'])
+                    msg = 'Model %r related to drawing %r ' % (doc_dict_3d['datas_fname'], tmp_dict['datas_fname'])
+                    if doc_dict_3d['check_in']:
+                        msg += "is Checked in"
+                    if(not doc_dict_3d['check_in'] and not doc_dict_3d['check_out_by_me']):
+                        msg += "is checke-out by %r " % doc_dict_3d['check_out_by_me']
+                    if doc_dict_3d['plm_cad_open_newer']:
+                        msg += 'Cad date not aligned %r ' % doc_dict_3d['plm_cad_open_newer']
+                    doc_dict_3d['msg'] = msg
                     appendItem(out['to_block'], doc_dict_3d)
                     if doc_dict_3d in out['to_check']:
                         out['to_check'].remove(doc_dict_3d)
@@ -2398,6 +2408,8 @@ class PlmDocument(models.Model):
                 active_doc_id = self.browse(list(set(self.getRelatedLyTree(active_doc_id.id))))
             for doc3D in active_doc_id:
                 doc_id_3d = doc3D.id
+                if doc_id_3d in evaluated.keys():
+                    continue
                 doc_dict_3d = setupInfos(out,
                                          doc3D,
                                          PLM_DT_DELTA,
@@ -2405,6 +2417,8 @@ class PlmDocument(models.Model):
                 if struct_type != '3D':
                     docs2D += self.browse(list(set(self.getRelatedLyTree(doc_id_3d))))
                     for doc2d in docs2D:
+                        if doc2d.id in evaluated.keys():
+                            continue
                         if doc2d.id != doc_id:
                             setupInfos(out,
                                        doc2d,
