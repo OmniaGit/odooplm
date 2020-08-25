@@ -61,6 +61,7 @@ class Plm_box(models.Model):
                                     'plm_document_id',
                                     _('Documents')
                                     )
+
     plm_box_rel = fields.Many2many('plm.box',
                                    'plm_box_box_rel',
                                    'plm_box_parent_id',
