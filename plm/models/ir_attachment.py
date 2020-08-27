@@ -2403,7 +2403,7 @@ class PlmDocument(models.Model):
                            active_doc_id,
                            PLM_DT_DELTA,
                            is_root)
-                evaluated.append(active_doc_id)
+                evaluated.append(active_doc_id.id)
                 is_root = False
                 active_doc_id = self.browse(list(set(self.getRelatedLyTree(active_doc_id.id))))
             for doc3D in active_doc_id:
