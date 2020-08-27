@@ -172,7 +172,7 @@ class MrpBomLineExtension(models.Model):
     create_date = fields.Datetime(_('Creation Date'),
                                   readonly=True)
     source_id = fields.Many2one('ir.attachment',
-                                'name',
+                                'Source ID',
                                 ondelete='no action',
                                 readonly=True,
                                 index=True,
