@@ -2281,7 +2281,7 @@ class PlmDocument(models.Model):
             'to_check': [],
             'already_checkin': [],
                }
-        evaluated = {}
+        evaluated = []
         doc_props = json.loads(doc_props)
         doc_id = doc_props.get('_id', False)
         if not doc_id:
@@ -2393,9 +2393,8 @@ class PlmDocument(models.Model):
                        forceCheckInModelByDrawing=True,
                        struct_type='3D',
                        recursion=True):
-            if doc_id in evaluated.keys():
+            if doc_id in evaluated:
                 return {}
-            evaluated[doc_id] = {}
             active_doc_id = self.browse(doc_id)
             docs2D = self.env['ir.attachment']
             fileType = active_doc_id.document_type.upper()
@@ -2404,11 +2403,12 @@ class PlmDocument(models.Model):
                            active_doc_id,
                            PLM_DT_DELTA,
                            is_root)
+                evaluated.append(active_doc_id)
                 is_root = False
                 active_doc_id = self.browse(list(set(self.getRelatedLyTree(active_doc_id.id))))
             for doc3D in active_doc_id:
                 doc_id_3d = doc3D.id
-                if doc_id_3d in evaluated.keys():
+                if doc_id_3d in evaluated:
                     continue
                 doc_dict_3d = setupInfos(out,
                                          doc3D,
@@ -2417,7 +2417,7 @@ class PlmDocument(models.Model):
                 if struct_type != '3D':
                     docs2D += self.browse(list(set(self.getRelatedLyTree(doc_id_3d))))
                     for doc2d in docs2D:
-                        if doc2d.id in evaluated.keys():
+                        if doc2d.id in evaluated:
                             continue
                         if doc2d.id != doc_id:
                             setupInfos(out,
@@ -2449,6 +2449,7 @@ class PlmDocument(models.Model):
                                    forceCheckInModelByDrawing,
                                    struct_type,
                                    recursion)
+                evaluated.append(doc_id_3d)
 
         PLM_DT_DELTA =  self.getPlmDTDelta()
         active_doc_id = self.browse(doc_id)
