@@ -142,4 +142,13 @@
             parent="plm.plm_menu_relation"
             action="plm_action_normal_form"
     />
+    
+    <menuitem
+            name="BOM Lines"
+            id="menu_plm_bom_lines"
+            parent="plm.plm_menu_relation"
+            action="plm.plm_action_bom_lines"
+            groups="base.group_no_one"
+    />
+
 </odoo>

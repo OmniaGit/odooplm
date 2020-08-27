@@ -208,5 +208,11 @@
         <field name="view_id" ref="plm_bom_tree_structure"/>
     </record>
 
+    <record id="plm_action_bom_lines" model="ir.actions.act_window">
+        <field name="name">Bom Lines</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">mrp.bom.line</field>
+    </record>
+
 </odoo>
 
