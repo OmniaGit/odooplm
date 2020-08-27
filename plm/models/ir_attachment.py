@@ -2330,7 +2330,7 @@ class PlmDocument(models.Model):
             'to_check': [],
             'already_checkin': [],
                }
-        evaluated = {}
+        evaluated = []
         doc_props = json.loads(doc_props)
         doc_id = doc_props.get('_id', False)
         if not doc_id:
@@ -2425,7 +2425,7 @@ class PlmDocument(models.Model):
             return tmp_dict
             
         def recursion(doc_id, out, evaluated, PLM_DT_DELTA, is_root=False, forceCheckInModelByDrawing=True, struct_type='3D', recursion=True):
-            if doc_id in evaluated.keys():
+            if doc_id in evaluated:
                 return {}
             evaluated[doc_id] = {}
             docs3D = self.browse(doc_id)
@@ -2433,10 +2433,13 @@ class PlmDocument(models.Model):
             fileType = docs3D.document_type.upper()
             if fileType == '2D':
                 setupInfos(out, docs3D, PLM_DT_DELTA, is_root)
+                evaluated.append(docs3D.id)
                 is_root = False
                 docs3D = self.browse(list(set(self.getRelatedLyTree(docs3D.id))))
             for doc3D in docs3D:
                 doc_id_3d = doc3D.id
+                if doc_id_3d in evaluated:
+                    continue
                 doc_dict_3d = setupInfos(out, doc3D, PLM_DT_DELTA, is_root)
                 if struct_type != '3D':
                     docs2D += self.browse(list(set(self.getRelatedLyTree(doc_id_3d))))
@@ -2451,6 +2454,7 @@ class PlmDocument(models.Model):
                 for doc3DChildrenRef in docsReference:
                     if recursion:
                         recursion(doc3DChildrenRef.id, out, evaluated, PLM_DT_DELTA, False, forceCheckInModelByDrawing, struct_type, recursion)
+                evaluated.append(doc_id_3d)
 
         PLM_DT_DELTA =  self.getPlmDTDelta()
         docs3D = self.browse(doc_id)
