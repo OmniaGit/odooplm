@@ -2427,7 +2427,6 @@ class PlmDocument(models.Model):
         def recursion(doc_id, out, evaluated, PLM_DT_DELTA, is_root=False, forceCheckInModelByDrawing=True, struct_type='3D', recursion=True):
             if doc_id in evaluated:
                 return {}
-            evaluated[doc_id] = {}
             docs3D = self.browse(doc_id)
             docs2D = self.env['ir.attachment']
             fileType = docs3D.document_type.upper()
