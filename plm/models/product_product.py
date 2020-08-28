@@ -584,7 +584,7 @@ class PlmComponent(models.Model):
         def _checkWorkflow(docInError, linkeddocuments, check_state):
             attachment = self.env['ir.attachment']
             for documentBrws in linkeddocuments:
-                if documentBrws.state == check_state:
+                if documentBrws.state in check_state:
                     if documentBrws.is_checkout:
                         docInError.append(_("Document %r : %r is checked out by user %r") % (documentBrws.name, documentBrws.revisionid, documentBrws.checkout_user))
                         continue
@@ -610,9 +610,9 @@ class PlmComponent(models.Model):
         documentType = self.env['ir.attachment']
         for oldObject in self:
             if (action_name != 'transmit') and (action_name != 'reject') and (action_name != 'release'):
-                check_state = oldObject.state
+                check_state = [oldObject.state]
             else:
-                check_state = 'confirmed'
+                check_state = include_statuses
             docIDs.extend(self.checkWorkflow(docInError, oldObject.linkeddocuments, check_state))
         if docInError:
             msg = _("Error on workflow operation")
@@ -722,7 +722,7 @@ class PlmComponent(models.Model):
         return self.search([('engineering_code', '=', name),
                             ('engineering_revision', '=', revision)])
 
-    def action_release(self):
+    def action_release(self, include_statuses=['confirmed'], exclude_statuses = ['released', 'undermodify', 'obsoleted']):
         """
            action to be executed for Released state
         """
@@ -730,8 +730,6 @@ class PlmComponent(models.Model):
             children_product_to_emit = []
             product_tmpl_ids = []
             defaults = {}
-            exclude_statuses = ['released', 'undermodify', 'obsoleted']
-            include_statuses = ['confirmed']
             errors, product_ids = comp_obj._get_recursive_parts(exclude_statuses, include_statuses)
             children_products = product_ids.copy()
             if len(product_ids) < 1 or len(errors) > 0:
