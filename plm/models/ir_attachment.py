@@ -2427,6 +2427,10 @@ class PlmDocument(models.Model):
         def recursion(doc_id, out, evaluated, PLM_DT_DELTA, is_root=False, forceCheckInModelByDrawing=True, struct_type='3D', recursion=True):
             if doc_id in evaluated:
                 return {}
+<<<<<<< HEAD
+=======
+            evaluated.append(doc_id)
+>>>>>>> branch '13.0' of https://github.com/OmniaGit/odooplm.git
             docs3D = self.browse(doc_id)
             docs2D = self.env['ir.attachment']
             fileType = docs3D.document_type.upper()
