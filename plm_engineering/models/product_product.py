@@ -222,6 +222,7 @@ class ProductTemporaryNormalBom(osv.osv.osv_memory):
             migrate_custom_lines = obj_brws.migrate_custom_lines
             selected_ids = obj_brws.env.context.get('active_ids', [])
             obj_type = obj_brws.env.context.get('active_model', '')
+            skip_if_exists = obj_brws.env.context.get('skip_if_exists', False)
             if obj_type != 'product.product':
                 raise UserError(_("The creation of the normalBom works only on product_product object"))
             if not selected_ids:
@@ -233,6 +234,8 @@ class ProductTemporaryNormalBom(osv.osv.osv_memory):
                 obj_boms = obj_brws.env['mrp.bom'].search([('product_tmpl_id', '=', id_template),
                                                            ('type', '=', 'normal')])
                 if obj_boms:
+                    if skip_if_exists:
+                        continue
                     raise UserError(_("Normal BoM for Part '%s' and revision '%s' already exists." % (obj_boms.product_tmpl_id.engineering_code, obj_boms.product_tmpl_id.engineering_revision)))
                 line_messages_list = product_product_type_object.create_bom_from_ebom(
                     product_browse, 'normal',
