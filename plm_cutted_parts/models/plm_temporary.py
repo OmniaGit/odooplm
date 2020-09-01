@@ -119,7 +119,10 @@ class PlmTemporaryCutted(osv.osv.osv_memory):
                                                  'Bom "%s" has more than one line, please check better.' % (
                                                      bom_brws.product_tmpl_id.engineering_code))
                     for bom_line_brws in cuttedLines:
-                        bom_line_brws.product_id = bom_line_brws.bom_id.product_id.row_material.id
+                        raw_mat = bom_line_brws.bom_id.product_id
+                        if not bom_line_brws.bom_id.product_id:
+                            raw_mat = bom_line_brws.bom_id.product_tmpl_id.product_variant_id.row_material
+                        bom_line_brws.product_id = raw_mat.id
                         bom_line_brws.computeCuttedTotalQty()
                         logging.info("Bom line updated %r" % bom_line_brws.id)
                         return
