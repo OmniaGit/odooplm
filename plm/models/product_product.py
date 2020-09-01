@@ -823,7 +823,7 @@ class PlmComponent(models.Model):
         allIdsBrwsList = self.browse(allIDs)
         allIdsBrwsList._action_ondocuments(doc_action, include_statuses)
         for currId in allIdsBrwsList:
-            if not(currId.id in self.ids):
+            if not (currId.id in self.ids):
                 product_product_ids.append(currId.id)
             product_template_ids.append(currId.product_tmpl_id.id)
             defaults['workflow_user'] = self.env.uid
@@ -1064,7 +1064,8 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
 
     def checkFromOdooPlm(self):
         new_revision = self.env.context.get('new_revision', False)
-        if self.env.context.get('odooPLM', False) and not new_revision:
+        skip_missing_eng_code_check = self.env.context.get('skip_missing_eng_code_check', False)
+        if self.env.context.get('odooPLM', False) and not new_revision and not skip_missing_eng_code_check:
             for product_product_id in self:
                 if not product_product_id.engineering_code:  
                     raise UserError("Missing engineering code for plm data")
@@ -1072,7 +1073,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
 
     def checkMany2oneClient(self, vals, force_create=False):
         return self._checkMany2oneClient(self.env['product.product'], vals, force_create)
-        
+
     @api.model
     def _checkMany2oneClient(self, obj, vals, force_create=False):
         out = {}
