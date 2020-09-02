@@ -209,6 +209,7 @@ class MrpBomLineExtension(models.Model):
          ('server', 'Server')],
         _('Cutted Compute Type'),
         default='none')
+    ebom_source_id = fields.Integer('Source E-Bom ID')
 
     def plm_sanitize(self, vals):
         all_keys = self.fields_get_keys()
