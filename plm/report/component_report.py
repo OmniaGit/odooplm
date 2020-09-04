@@ -224,12 +224,15 @@ class ReportProductPdf(models.AbstractModel):
         out = []
         for doc in product.linkeddocuments:
             if check:
-                if doc.state in ['released', 'undermodify']:
+                if doc.state in self.allowed_states():
                     out.append(doc)
                 continue
             out.append(doc)
         return out
 
+    def allowed_states(self):
+        return ['released', 'undermodify']
+        
     @api.model
     def _render_qweb_pdf(self, products=None, level=0, checkState=False):
         docRepository, mainBookCollector = self.commonInfos()

@@ -98,6 +98,8 @@ class MrpBomExtension(models.Model):
 
     bom_revision_count = fields.Integer(related='product_tmpl_id.revision_count')
 
+    ebom_source_id = fields.Integer('Source Ebom ID')
+
     @api.model
     def init(self):
         self._packed = []
