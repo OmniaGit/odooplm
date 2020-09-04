@@ -25,6 +25,7 @@ import time
 import json
 import copy
 import shutil
+from odoo.tools.misc import DEFAULT_SERVER_DATETIME_FORMAT
 from odoo import SUPERUSER_ID
 from datetime import datetime
 import odoo.tools as tools
@@ -36,7 +37,7 @@ from odoo import _
 from collections import defaultdict
 import itertools
 import logging
-from odoo.tools.misc import DEFAULT_SERVER_DATETIME_FORMAT
+
 
 _logger = logging.getLogger(__name__)
 
@@ -706,7 +707,10 @@ class PlmDocument(models.Model):
             newContext = self.env.context.copy()
             newContext['check'] = False
             objId = ir_attachment_id.with_context(newContext).write({'writable': writable,
-                                                                     'state': state})
+                                                                     'state': state,
+                                                                     'workflow_user': self.env.uid,
+                                                                     'workflow_date': datetime.now()
+                                                                     })
             if objId:
                 ir_attachment_id.wf_message_post(body=_('Status moved to: %s by %s.' % (USE_DIC_STATES[state], self.env.user.name)))
                 out.append(objId)
@@ -827,6 +831,8 @@ class PlmDocument(models.Model):
         vals['is_plm'] = True
         vals.update(self.checkMany2oneClient(vals))
         vals = self.plm_sanitize(vals)
+        vals['workflow_user'] = self.env.uid
+        vals['workflow_date'] = datetime.now()
         res = super(PlmDocument, self).create(vals)
         res.check_unique()
         return res
@@ -891,7 +897,6 @@ class PlmDocument(models.Model):
     @api.multi
     def unlink(self):
         ctx = self.env.context.copy()
-        ctx['check'] = False
         values = {'state': 'released', }
         checkState = ('undermodify', 'obsoleted')
         for checkObj in self:
@@ -900,6 +905,7 @@ class PlmDocument(models.Model):
                 oldObject = docBrwsList[0]
                 if oldObject.state in checkState:
                     oldObject.wf_message_post(body=_('Removed : Latest Revision.'))
+                    ctx['check'] = False
                     if not oldObject.with_context(ctx).write(values):
                         logging.warning(
                             "unlink : Unable to update state to old document (" + str(oldObject.name) + "-" + str(
@@ -949,11 +955,12 @@ class PlmDocument(models.Model):
 
     @api.one
     def _get_checkout_state(self):
-        chechRes = self.getCheckedOut(self.id, None)
-        if chechRes:
-            self.checkout_user = str(chechRes[2])
-        else:
-            self.checkout_user = ''
+        for ir_attachment_id in self:
+            chechRes = self.getCheckedOut(ir_attachment_id.id, None)
+            if chechRes:
+                ir_attachment_id.checkout_user = str(chechRes[2])
+            else:
+                ir_attachment_id.checkout_user = ''
 
     @api.multi
     def toggle_check_out(self):
@@ -1087,6 +1094,10 @@ class PlmDocument(models.Model):
     attachment_release_user = fields.Many2one('res.users', string=_("Release User"))
     attachment_release_date = fields.Datetime(string=_('Release Datetime'))
     attachment_revision_count = fields.Integer(compute='_attachment_revision_count')
+    workflow_user = fields.Many2one('res.users', string=_("User Last Wkf"))
+    workflow_date = fields.Datetime(string=_('Datetime Last Wkf'))
+    revision_user = fields.Many2one('res.users', string=_("User Revision"))
+    revision_date = fields.Datetime(string=_('Datetime Revision'))
 
     @api.multi
     def _attachment_revision_count(self):
@@ -1094,7 +1105,10 @@ class PlmDocument(models.Model):
         get All version product_tempate based on this one
         """
         for ir_attachment_id in self:
-            ir_attachment_id.attachment_revision_count = ir_attachment_id.search_count([('name', '=', ir_attachment_id.name)])
+            if ir_attachment_id.name is not False:
+                ir_attachment_id.attachment_revision_count = ir_attachment_id.search_count([('name', '=', ir_attachment_id.name)])
+            else:
+                ir_attachment_id.attachment_revision_count = 0
 
     @api.model
     def CheckedIn(self, files, default=None):
@@ -1237,8 +1251,7 @@ class PlmDocument(models.Model):
         oid, _listedFiles, selection = request
         oid = getDocId(oid)
         docBrws = self.browse(oid)
-        checkRes = self.browse(oid).isCheckedOutByMe()
-        if not checkRes:
+        if not docBrws.isCheckedOutByMe():
             logging.info(
                 'Document %r is not in check out by user %r so cannot be checked-in recursively' % (oid, self.env.uid))
             return False
@@ -1320,7 +1333,8 @@ class PlmDocument(models.Model):
                 'Current document has not revisionid attribute %r.\n Cannot get related documents.' % (docProps))
             return False
         docName = docProps.get('name', '')
-        documentBrws = self.search([('name', '=', docName), ('revisionid', '=', docRev)])
+        documentBrws = self.search([('name', '=', docName),
+                                    ('revisionid', '=', docRev)])
         if not documentBrws:
             logging.warning(
                 'Unbale to find document %r with revision %r.\n Cannot get related documents.' % (docName, docRev))
@@ -1357,7 +1371,8 @@ class PlmDocument(models.Model):
     @api.multi
     def _getbyrevision(self, name, revision):
         result = False
-        for result in self.search([('name', '=', name), ('revisionid', '=', revision)]):
+        for result in self.search([('name', '=', name),
+                                   ('revisionid', '=', revision)]):
             return result
         return result
 
@@ -2188,6 +2203,15 @@ class PlmDocument(models.Model):
                 break
         return product_product_id, plm_document_id
 
+    @api.multi
+    def checkNewer(self):
+        for document in self:
+            plm_cad_open = self.sudo().env['plm.cad.open'].getLastCadOpenByUser(document)
+            last_bck = self.env['plm.backupdoc'].getLastBckDocumentByUser(document)
+            if plm_cad_open.plm_backup_doc_id.id != last_bck.id:
+                return True
+        return False
+
     @api.model
     def GetDocumentInfosFromFileName(self, fileName):
         """
@@ -2202,14 +2226,7 @@ class PlmDocument(models.Model):
                         'name': ir_attachment_id.name})
         return out
 
-    @api.multi
-    def checkNewer(self):
-        for document in self:
-            plm_cad_open = self.env['plm.cad.open'].getLastCadOpenByUser(document)
-            last_bck = self.env['plm.backupdoc'].getLastBckDocumentByUser(document)
-            if plm_cad_open.plm_backup_doc_id.id != last_bck.id:
-                return True
-        return False
+
 
     def checkRelatedModelCheckIn(self, doc2d_id, docArray):
         documentRelation = self.env['ir.attachment.relation']
@@ -2395,18 +2412,18 @@ class PlmDocument(models.Model):
                        recursion=True):
             if doc_id in evaluated:
                 return {}
-            active_doc_id = self.browse(doc_id)
+            docs3D = self.browse(doc_id)
             docs2D = self.env['ir.attachment']
-            fileType = active_doc_id.document_type.upper()
+            fileType = docs3D.document_type.upper()
             if fileType == '2D':
                 setupInfos(out,
-                           active_doc_id,
+                           docs3D,
                            PLM_DT_DELTA,
                            is_root)
-                evaluated.append(active_doc_id.id)
+                evaluated.append(docs3D.id)
                 is_root = False
-                active_doc_id = self.browse(list(set(self.getRelatedLyTree(active_doc_id.id))))
-            for doc3D in active_doc_id:
+                docs3D = self.browse(list(set(self.getRelatedLyTree(docs3D.id))))
+            for doc3D in docs3D:
                 doc_id_3d = doc3D.id
                 if doc_id_3d in evaluated:
                     continue
@@ -2452,8 +2469,8 @@ class PlmDocument(models.Model):
                 evaluated.append(doc_id_3d)
 
         PLM_DT_DELTA =  self.getPlmDTDelta()
-        active_doc_id = self.browse(doc_id)
-        struct_type = active_doc_id.document_type.upper()
+        docs3D = self.browse(doc_id)
+        struct_type = docs3D.document_type.upper()
         recursionf(doc_id,
                    out,
                    evaluated,
