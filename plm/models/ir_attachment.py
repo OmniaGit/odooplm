@@ -2565,7 +2565,6 @@ class PlmDocument(models.Model):
                 out.append(doc_id)
         return json.dumps(out)
 
-    @api.multi
     def action_related_bck_doc(self):
         self.ensure_one()
         action = self.env.ref('plm.action_plm_backupdoc').read()[0]
