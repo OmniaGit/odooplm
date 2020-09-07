@@ -2320,6 +2320,7 @@ class PlmDocument(models.Model):
  
             tmp_dict = {}
             doc_id = docBrws.id
+            evaluated.append(doc_id)
             tmp_dict['id'] = docBrws.id
             tmp_dict['datas_fname'] = docBrws.datas_fname
             tmp_dict['name'] = docBrws.name
@@ -2421,7 +2422,6 @@ class PlmDocument(models.Model):
                            docs3D,
                            PLM_DT_DELTA,
                            is_root)
-                evaluated.append(docs3D.id)
                 is_root = False
                 docs3D = self.browse(list(set(self.getRelatedLyTree(docs3D.id))))
             for doc3D in docs3D:
@@ -2467,7 +2467,6 @@ class PlmDocument(models.Model):
                                    forceCheckInModelByDrawing,
                                    struct_type,
                                    recursion)
-                evaluated.append(doc_id_3d)
 
         PLM_DT_DELTA =  self.getPlmDTDelta()
         docs3D = self.browse(doc_id)
