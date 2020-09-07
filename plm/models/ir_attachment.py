@@ -2311,6 +2311,7 @@ class PlmDocument(models.Model):
                 
             tmp_dict = {}
             doc_id = docBrws.id
+            evaluated.append(doc_id)
             tmp_dict['id'] = docBrws.id
             tmp_dict['datas_fname'] = docBrws.name
             tmp_dict['name'] = docBrws.name
@@ -2335,8 +2336,10 @@ class PlmDocument(models.Model):
                     msg = 'Model %r related to drawing %r ' % (doc_dict_3d['name'], tmp_dict['name'])
                     if doc_dict_3d['check_in']:
                         msg += "is Checked in"
-                    if(not doc_dict_3d['check_in'] and not doc_dict_3d['check_out_by_me']):
+                    if (not doc_dict_3d['check_in'] and not doc_dict_3d['check_out_by_me']):
                         msg += "is checke-out by %r " % doc_dict_3d['check_out_by_me']
+                    elif doc_dict_3d['check_out_by_me']:
+                        msg += "is in check-out by you."
                     if doc_dict_3d['plm_cad_open_newer']:
                         msg += 'Cad date not aligned %r ' % doc_dict_3d['plm_cad_open_newer']
                     doc_dict_3d['msg'] = msg
@@ -2411,7 +2414,6 @@ class PlmDocument(models.Model):
                            docs3D,
                            PLM_DT_DELTA,
                            is_root)
-                evaluated.append(docs3D.id)
                 is_root = False
                 docs3D = self.browse(list(set(self.getRelatedLyTree(docs3D.id))))
             for doc3D in docs3D:
@@ -2425,6 +2427,8 @@ class PlmDocument(models.Model):
                 if struct_type != '3D':
                     docs2D += self.browse(list(set(self.getRelatedLyTree(doc_id_3d))))
                     for doc2d in docs2D:
+                        if doc2d.id in evaluated:
+                            continue
                         if doc2d.id != doc_id:
                             setupInfos(out,
                                        doc2d,
@@ -2455,7 +2459,6 @@ class PlmDocument(models.Model):
                                    forceCheckInModelByDrawing,
                                    struct_type,
                                    recursion)
-                evaluated.append(doc_id_3d)
 
         PLM_DT_DELTA =  self.getPlmDTDelta()
         docs3D = self.browse(doc_id)
@@ -2565,7 +2568,6 @@ class PlmDocument(models.Model):
                 out.append(doc_id)
         return json.dumps(out)
 
-    @api.multi
     def action_related_bck_doc(self):
         self.ensure_one()
         action = self.env.ref('plm.action_plm_backupdoc').read()[0]
