@@ -2410,6 +2410,7 @@ class PlmDocument(models.Model):
                        forceCheckInModelByDrawing=True,
                        struct_type='3D',
                        recursion=True):
+            loggin.info("Evaluating %r" % doc_id)
             if doc_id in evaluated:
                 return {}
             docs3D = self.browse(doc_id)
