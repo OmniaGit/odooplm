@@ -43,12 +43,12 @@ class MrpBomLineExtension(models.Model):
         """
         bom_obj = self.env['mrp.bom']
         for bom_line in self:
-            for bom_id in self.search([('product_id', '=', bom_line.product_id.id),
-                                      ('product_tmpl_id', '=', bom_line.product_id.product_tmpl_id.id),
-                                      ('type', '=', bom_line.type)]):
-                child_bom = bom_obj.browse(bom_id)
-                for childBomLine in child_bom.bom_line_ids:
-                    childBomLine._get_child_bom_lines()
+            for bom_id in bom_obj.search([('product_id', '=', bom_line.product_id.id),
+                                          ('product_tmpl_id', '=', bom_line.product_id.product_tmpl_id.id),
+                                          ('type', '=', bom_line.type)]):
+                child_bom = bom_obj.browse(bom_id.id)
+                for child_bom_line in child_bom.bom_line_ids:
+                    child_bom_line._get_child_bom_lines()
                 self.child_line_ids = [x.id for x in child_bom.bom_line_ids]
                 return
             else:
@@ -62,10 +62,11 @@ class MrpBomLineExtension(models.Model):
             else:
                 if not self.hasChildBoms:
                     return []
-                return self.env['mrp.bom'].search([('product_tmpl_id', '=', bom_line.product_id.product_tmpl_id.id),
-                                                   ('type', '=', bom_line.type),
-                                                   ('active', '=', True)
-                                                   ])
+                return self.env['mrp.bom'].search([
+                    ('product_tmpl_id', '=', bom_line.product_id.product_tmpl_id.id),
+                    ('type', '=', bom_line.type),
+                    ('active', '=', True)
+                ])
 
     @api.one
     @api.depends('product_id')
@@ -126,7 +127,7 @@ class MrpBomLineExtension(models.Model):
                 out_act_dict['view_ids'] = [
                     (5, 0, 0),
                     (0, 0, {'view_mode': 'tree', 'view_id': self.env.ref('plm.plm_bom_tree_view').id}),
-                    (0, 0, {'view_mode': 'form', 'view_id': self.env.ref('plm.plm_bom_form_view').id})
+                    (0, 0, {'view_mode': 'form', 'view_id': self.env.ref('plm.plm_bom_form_view_eng').id})
                 ]
             elif line_brws.type == 'spbom':
                 domain.append(('type', '=', 'spbom'))
@@ -136,13 +137,13 @@ class MrpBomLineExtension(models.Model):
     @api.multi
     def openRelatedDocuments(self):
         domain = [('id', 'in', self.related_document_ids.ids)]
-        outActDict = {'name': _('Documents'),
-                      'view_type': 'form',
-                      'res_model': 'plm.document',
-                      'type': 'ir.actions.act_window',
-                      'view_mode': 'kanban,tree,form'}
-        outActDict['domain'] = domain
-        return outActDict
+        out_act_dict = {'name': _('Documents'), 
+			'view_type': 'form', 
+			'res_model': 'plm.document',
+            'type': 'ir.actions.act_window', 
+			'view_mode': 'tree,form', 
+			'domain': domain}
+        return out_act_dict
 
     @api.multi
     def _related_doc_ids(self):
@@ -153,7 +154,7 @@ class MrpBomLineExtension(models.Model):
                              string=_("Status"),
                              help=_("The status of the product in its LifeCycle."),
                              store=False)
-    description = fields.Text(related="product_id.description",
+    description = fields.Char(related="product_id.name",
                               string=_("Description"),
                               store=False)
     weight_net = fields.Float(related="product_id.weight",

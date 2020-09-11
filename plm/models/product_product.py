@@ -733,7 +733,7 @@ class PlmComponent(models.Model):
             allProdObjs = self.browse(product_ids)
             for productBrw in allProdObjs:
                 old_revision = self._getbyrevision(productBrw.engineering_code, productBrw.engineering_revision - 1)
-                if old_revision is not None:
+                if old_revision:
                     defaults['engineering_writable'] = False
                     defaults['state'] = 'obsoleted'
                     old_revision.product_tmpl_id.write(defaults)
