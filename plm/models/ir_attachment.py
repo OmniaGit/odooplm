@@ -2347,6 +2347,8 @@ class PlmDocument(models.Model):
                         msg += "is Checked in"
                     if(not doc_dict_3d['check_in'] and not doc_dict_3d['check_out_by_me']):
                         msg += "is checke-out by %r " % doc_dict_3d['check_out_by_me']
+                    elif doc_dict_3d['check_out_by_me']:
+                        msg += "is in check-out by you."
                     if doc_dict_3d['plm_cad_open_newer']:
                         msg += 'Cad date not aligned %r ' % doc_dict_3d['plm_cad_open_newer']
                     doc_dict_3d['msg'] = msg
