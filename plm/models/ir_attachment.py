@@ -1204,7 +1204,10 @@ class PlmDocument(models.Model):
         if docBrws.is2D():
             releted_doc_id = self.getRelatedLyTree(doc_id)
             if releted_doc_id:
-                outIds.append(releted_doc_id)
+                if isinstance(releted_doc_id, (list, tuple)):
+                    outIds.extend(releted_doc_id)
+                else:
+                    outIds.append(releted_doc_id)
                 outIds.extend(self.getRelatedHiTree(releted_doc_id, recursion=True))
         else:
             outIds.extend(self.getRelatedHiTree(doc_id, recursion=True))

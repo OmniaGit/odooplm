@@ -532,4 +532,17 @@
         <field name="perm_unlink" eval="0"/>
     </record>
 
+    <record id="plm_cad_config_parameter" model="ir.model.access">
+        <field name="name">PLM Ir config Parameters</field>
+        <field name="model_id" ref="base.model_ir_config_parameter"/>
+        <field name="group_id" ref="plm.group_plm_view_user"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="1"/>
+        <field name="perm_create" eval="1"/>
+        <field name="perm_unlink" eval="0"/>
+    </record>
+
+
+
+
 </odoo>
