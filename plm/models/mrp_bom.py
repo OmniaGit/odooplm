@@ -26,7 +26,7 @@ Created on 25 Aug 2016
 """
 import logging
 import sys
-
+import datetime
 import odoo.addons.decimal_precision as dp
 from odoo import models
 from odoo import fields
@@ -779,6 +779,7 @@ class MrpBomExtension(models.Model):
                                                                          self.env['ir.attachment'].browse(l_tree_document_id))
             if not mrp_bom_found_id.bom_line_ids:
                 mrp_bom_found_id.unlink()
+            mrp_bom_found_id.write({'write_date': datetime.datetime.now()})
             return True
         except Exception as ex:
             logging.error(ex)
