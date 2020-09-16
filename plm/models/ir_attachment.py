@@ -845,11 +845,13 @@ class PlmDocument(models.Model):
         if not self.env.context.get('odooPLM'):
             return super(PlmDocument, self).write(vals)
         check = self.env.context.get('check', True)
-        if check:
-            if not self.is_plm_state_writable() and not self.checkWriteAdmin():
-                msg = _("The active state does not allow you to make save action for document %r ID: %r") % (self.datas_fname, self.id)
-                logging.error(msg)
-                raise UserError(msg)
+        if check and not self.checkWriteAdmin():
+            for ir_attachment in self:
+                if not ir_attachment.is_plm_state_writable():
+                    msg = _("The active state does not allow you to make save action for document %r ID: %r") % (ir_attachment.datas_fname,
+                                                                                                                 ir_attachment.id)
+                    logging.error(msg)
+                    raise UserError(msg)
         self.writeCheckDatas(vals)
         vals.update(self.checkMany2oneClient(vals))
         vals = self.plm_sanitize(vals)
@@ -878,7 +880,7 @@ class PlmDocument(models.Model):
     def checkMany2oneClient(self, vals):
         return self.env['product.product']._checkMany2oneClient(self.env['ir.attachment'], vals)
 
-    @api.model
+    @api.multi
     def is_plm_state_writable(self):
         for customObject in self:
             if customObject.state in PLM_NO_WRITE_STATE:
