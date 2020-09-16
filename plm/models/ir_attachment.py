@@ -847,7 +847,9 @@ class PlmDocument(models.Model):
         check = self.env.context.get('check', True)
         if check:
             if not self.is_plm_state_writable() and not self.checkWriteAdmin():
-                raise UserError(_("The active state does not allow you to make save action for document %r") % self.datas_fname)
+                msg = _("The active state does not allow you to make save action for document %r ID: %r") % (self.datas_fname, self.id)
+                logging.error(msg)
+                raise UserError(msg)
         self.writeCheckDatas(vals)
         vals.update(self.checkMany2oneClient(vals))
         vals = self.plm_sanitize(vals)
@@ -2071,6 +2073,9 @@ class PlmDocument(models.Model):
                 product_product_id.id if product_product_id else False,
                 ir_attachment_id.id if ir_attachment_id else False)
 
+    def allowedStateForWrite(self):
+        return ['draft']
+
     @api.model
     def createFromProps(self,
                         documentAttribute={},
@@ -2096,7 +2101,7 @@ class PlmDocument(models.Model):
             plm_checkout_vals['documentid'] = ir_attachemnt_id.id
             break
         if found:  # write
-            if ir_attachemnt_id.state not in ['released', 'obsoleted']:
+            if ir_attachemnt_id.state in self.allowedStateForWrite():
                 if ir_attachemnt_id.needUpdate():
                     ir_attachemnt_id.write(documentAttribute)
                     action = ir_attachemnt_id.canIUpload(dbThread)
