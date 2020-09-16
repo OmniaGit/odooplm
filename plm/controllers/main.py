@@ -121,7 +121,7 @@ class UploadDocument(Controller):
     def get_files_write_time(self, ir_attachment_ids=None, **kw):
         try:
             ir_attachment_ids = json.loads(ir_attachment_ids)
-            attachment = request.env['ir.attachment']
+            attachment = request.env['plm.document']
             out = []
             for attachment_id in ir_attachment_ids:
                 attachment_brws = attachment.browse(attachment_id)
