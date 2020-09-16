@@ -125,7 +125,7 @@ class UploadDocument(Controller):
             out = []
             for attachment_id in ir_attachment_ids:
                 attachment_brws = attachment.browse(attachment_id)
-                out.append((attachment_brws.id, attachment_brws.datas_fname, attachment_brws.write_date.strftime(DEFAULT_SERVER_DATETIME_FORMAT)))
+                out.append((attachment_brws.id, attachment_brws.datas_fname, attachment_brws.write_date))
             return Response(json.dumps(out))
         except Exception as ex:
             logging.error(ex)
