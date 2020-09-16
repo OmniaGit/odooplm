@@ -847,7 +847,7 @@ class PlmDocument(models.Model):
         check = self.env.context.get('check', True)
         if check:
             if not self.is_plm_state_writable() and not self.checkWriteAdmin():
-                raise UserError(_("The active state does not allow you to make save action"))
+                raise UserError(_("The active state does not allow you to make save action for document %r") % self.datas_fname)
         self.writeCheckDatas(vals)
         vals.update(self.checkMany2oneClient(vals))
         vals = self.plm_sanitize(vals)
