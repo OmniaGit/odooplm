@@ -779,7 +779,8 @@ class MrpBomExtension(models.Model):
                                                                          self.env['ir.attachment'].browse(l_tree_document_id))
             if not mrp_bom_found_id.bom_line_ids:
                 mrp_bom_found_id.unlink()
-            mrp_bom_found_id.write({'write_date': datetime.datetime.now()})
+            else:
+                mrp_bom_found_id.write({'write_date': datetime.datetime.now()})
             return True
         except Exception as ex:
             logging.error(ex)
