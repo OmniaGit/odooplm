@@ -2282,7 +2282,7 @@ class PlmDocument(models.Model):
         return True
 
     @api.model
-    def preCheckInRecursive(self, doc_props, forceCheckInModelByDrawing=True, recursion=True):
+    def preCheckInRecursive(self, doc_props, forceCheckInModelByDrawing=True, recursion=True, onlyActiveDoc=False):
         out = {
             'to_check_in': [],
             'to_ask': [],
@@ -2417,6 +2417,8 @@ class PlmDocument(models.Model):
                            docs3D,
                            PLM_DT_DELTA,
                            is_root)
+                if onlyActiveDoc:
+                    return 
                 is_root = False
                 docs3D = self.browse(list(set(self.getRelatedLyTree(docs3D.id))))
             for doc3D in docs3D:
