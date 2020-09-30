@@ -2197,7 +2197,6 @@ class PlmDocument(models.Model):
                 break
         return product_product_id, plm_document_id
 
-    @api.multi
     def checkNewer(self):
         for document in self:
             plm_cad_open = self.sudo().env['plm.cad.open'].getLastCadOpenByUser(document, self.env.user)
