@@ -96,9 +96,10 @@ class PlmBackupDocument(models.Model):
             super(PlmBackupDocument, plm_backup_document_id).unlink()
 
     @api.model
-    def getLastBckDocumentByUser(self, doc_id):
+    def getLastBckDocumentByUser(self, doc_id, user_id):
         for obj in self.search([
             ('documentid', '=', doc_id.id),
+            ('userid', '=', user_id.id)
             ], order='create_date DESC', limit=1):
             return obj
         return self
