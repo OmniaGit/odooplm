@@ -2430,6 +2430,8 @@ class PlmDocument(models.Model):
                                          doc3D,
                                          PLM_DT_DELTA,
                                          is_root)
+                if not doc3D.isCheckedOutByMe():
+                    continue
                 if struct_type != '3D':
                     docs2D += self.browse(list(set(self.getRelatedLyTree(doc_id_3d))))
                     for doc2d in docs2D:
