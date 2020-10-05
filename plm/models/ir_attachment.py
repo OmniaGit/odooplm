@@ -2422,11 +2422,12 @@ class PlmDocument(models.Model):
                        forceCheckInModelByDrawing=True,
                        struct_type='3D',
                        recursion=True):
+
             logging.info("Evaluating %r" % doc_id)
             if doc_id in evaluated:
                 return {}
-            docs3D = self.browse(doc_id)
             docs2D = self.env['ir.attachment']
+            docs3D = self.browse(doc_id)
             fileType = docs3D.document_type.upper()
             if fileType == '2D':
                 setupInfos(out,
@@ -2445,6 +2446,8 @@ class PlmDocument(models.Model):
                                          doc3D,
                                          PLM_DT_DELTA,
                                          is_root)
+                if not doc3D.isCheckedOutByMe():
+                    continue
                 if struct_type != '3D':
                     docs2D += self.browse(list(set(self.getRelatedLyTree(doc_id_3d))))
                     for doc2d in docs2D:
