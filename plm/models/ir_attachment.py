@@ -406,7 +406,7 @@ class PlmDocument(models.Model):
                 logging.error(
                     'Document with "id": %s  and "name": %s may contains no data!!         Exception: %s' % (
                         outId, objDoc.name, ex))
-            if (objDoc.file_size < 1) and (objDatas):
+            if objDoc.file_size < 1 and objDatas:
                 file_size = len(objDoc.datas)
             else:
                 file_size = objDoc.file_size
@@ -417,12 +417,12 @@ class PlmDocument(models.Model):
                                'collectable': collectable,
                                'isCheckedOutToMeLastRev': isCheckedOutToMe,
                                'checkOutUser': checkOutUser,
-                               'statte': objDoc.state})
+                               'state': objDoc.state})
             else:
                 result.append((outId, objDoc.datas_fname, file_size, collectable, isCheckedOutToMe, checkOutUser))
             if collectable:
                 self.browse(outId).setupCadOpen(hostname, hostpws, 'open')
-        return list(set(result))
+        return result
 
     @api.multi
     def copy(self, defaults={}):
@@ -2215,6 +2215,8 @@ class PlmDocument(models.Model):
         for document in self:
             plm_cad_open = self.sudo().env['plm.cad.open'].getLastCadOpenByUser(document, self.env.user)
             last_bck = self.env['plm.backupdoc'].getLastBckDocumentByUser(document)
+            if not plm_cad_open.plm_backup_doc_id:
+                return False
             if plm_cad_open.plm_backup_doc_id.id != last_bck.id:
                 return True
         return False
@@ -2276,7 +2278,7 @@ class PlmDocument(models.Model):
 
     @api.model
     def CheckIn2(self, request, default=None, force=False):
-        return self.CheckInRecursive2(request, default, force, recursive=False)
+        return self.CheckInRecursive2(request, default=default, force=force, recursive=False)
 
     @api.model
     def CheckInRecursive2(self, involved_docs_dict, **kargs):
@@ -2296,7 +2298,7 @@ class PlmDocument(models.Model):
         return True
 
     @api.model
-    def preCheckInRecursive(self, doc_props, forceCheckInModelByDrawing=True, recursion=True):
+    def preCheckInRecursive(self, doc_props, forceCheckInModelByDrawing=True, recursion=True, onlyActiveDoc=False):
         out = {
             'to_check_in': [],
             'to_ask': [],
@@ -2420,17 +2422,20 @@ class PlmDocument(models.Model):
                        forceCheckInModelByDrawing=True,
                        struct_type='3D',
                        recursion=True):
+
             logging.info("Evaluating %r" % doc_id)
             if doc_id in evaluated:
                 return {}
-            docs3D = self.browse(doc_id)
             docs2D = self.env['ir.attachment']
+            docs3D = self.browse(doc_id)
             fileType = docs3D.document_type.upper()
             if fileType == '2D':
                 setupInfos(out,
                            docs3D,
                            PLM_DT_DELTA,
                            is_root)
+                if onlyActiveDoc:
+                    return
                 is_root = False
                 docs3D = self.browse(list(set(self.getRelatedLyTree(docs3D.id))))
             for doc3D in docs3D:
@@ -2441,6 +2446,8 @@ class PlmDocument(models.Model):
                                          doc3D,
                                          PLM_DT_DELTA,
                                          is_root)
+                if not doc3D.isCheckedOutByMe():
+                    continue
                 if struct_type != '3D':
                     docs2D += self.browse(list(set(self.getRelatedLyTree(doc_id_3d))))
                     for doc2d in docs2D:
