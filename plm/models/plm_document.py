@@ -891,23 +891,30 @@ class PlmDocument(models.Model):
         return fileExtension
 
     @api.multi
+    @api.depends('name', 'revisionid', 'datas_fname')
     def _compute_document_type(self):
-        configParamObj = self.env['ir.config_parameter']
-        str2DExtensions = configParamObj._get_param('file_exte_type_rel_2D')
-        str3DExtensions = configParamObj._get_param('file_exte_type_rel_3D')
+        configParamObj = self.env['ir.config_parameter'].sudo()
+        file_exte_2d_param = configParamObj._get_param('file_exte_type_rel_2D')
+        file_exte_3d_param = configParamObj._get_param('file_exte_type_rel_3D')
+        extensions2D = []
+        extensions3D = []
+        if file_exte_2d_param:
+            extensions2D = eval(file_exte_2d_param)
+        if file_exte_3d_param:
+            extensions3D = eval(file_exte_3d_param)
         for docBrws in self:
             try:
                 fileExtension = docBrws.getFileExtension(docBrws)
-                extensions2D = eval(str2DExtensions)
-                extensions3D = eval(str3DExtensions)
-                if fileExtension in extensions2D:
+                fileExtension = fileExtension.upper()
+                if fileExtension in [x.upper() for x in extensions2D]:
                     docBrws.document_type = '2d'
-                elif fileExtension in extensions3D:
+                elif fileExtension in [x.upper() for x in extensions3D]:
                     docBrws.document_type = '3d'
                 else:
                     docBrws.document_type = 'other'
             except Exception as ex:
                 logging.error('Unable to compute document type for document %r, error %r' % (docBrws.id, ex))
+
 
     revisionid = fields.Integer(_('Revision Index'),
                                 default=0,
