@@ -303,45 +303,47 @@ class PlmDocument(models.Model):
                 result.append(child.child_id.id)
         return list(set(result))
 
-    @api.multi
-    def _data_check_files(self, targetIds, listedFiles=(), forceFlag=False):
+    def _data_check_files(self, targetIds, listedFiles=(), forceFlag=False, retDict=False, hostname='', hostpws=''):
         result = []
-        datefiles = []
         listfiles = []
         if len(listedFiles) > 0:
-            datefiles, listfiles = listedFiles
+            _datefiles, listfiles = listedFiles
         for objDoc in self.browse(targetIds):
-            if objDoc.type == 'binary':
-                checkOutUser = ''
-                isCheckedOutToMe = False
-                timeDoc = self.getLastTime(objDoc.id)
-                timeSaved = time.mktime(timeDoc.timetuple())
-                checkoutUserBrws = objDoc.get_checkout_user()
-                if checkoutUserBrws:
-                    checkOutUser = checkoutUserBrws.name
-                    if checkoutUserBrws.id == self.env.uid:
-                        isCheckedOutToMe = True
-                if (objDoc.datas_fname in listfiles):
-                    if forceFlag:
-                        isNewer = True
-                    else:
-                        listFileIndex = listfiles.index(objDoc.datas_fname)
-                        timefile = time.mktime(datetime.strptime(str(datefiles[listFileIndex]), '%Y-%m-%d %H:%M:%S').timetuple())
-                        isNewer = (timeSaved - timefile) > 5
-                    collectable = isNewer and not(isCheckedOutToMe)
+            outId = objDoc.id
+            isCheckedOutToMe, checkOutUser = objDoc.checkoutByMeWithUser()
+            datas_fname = objDoc.datas_fname
+            if datas_fname in listfiles:
+                if forceFlag:
+                    isNewer = True
                 else:
-                    collectable = True
-                objDatas = False
-                try:
-                    objDatas = objDoc.datas
-                except Exception as ex:
-                    logging.error('Document with "id": %s  and "name": %s may contains no data!!         Exception: %s' % (objDoc.id, objDoc.name, ex))
-                if (objDoc.file_size < 1) and (objDatas):
-                    file_size = len(objDoc.datas)
-                else:
-                    file_size = objDoc.file_size
-                result.append((objDoc.id, objDoc.datas_fname, file_size, collectable, isCheckedOutToMe, checkOutUser))
-        return list(set(result))
+                    isNewer = objDoc.checkNewer()
+                collectable = isNewer and not isCheckedOutToMe
+            else:
+                collectable = True
+            objDatas = False
+            try:
+                objDatas = objDoc.datas
+            except Exception as ex:
+                logging.error(
+                    'Document with "id": %s  and "name": %s may contains no data!!         Exception: %s' % (
+                        outId, objDoc.name, ex))
+            if objDoc.file_size < 1 and objDatas:
+                file_size = len(objDoc.datas)
+            else:
+                file_size = objDoc.file_size
+            if retDict:
+                result.append({'docIDList': outId,
+                               'nameFile': objDoc.datas_fname,
+                               'fileSize': file_size,
+                               'collectable': collectable,
+                               'isCheckedOutToMeLastRev': isCheckedOutToMe,
+                               'checkOutUser': checkOutUser,
+                               'state': objDoc.state})
+            else:
+                result.append((outId, objDoc.datas_fname, file_size, collectable, isCheckedOutToMe, checkOutUser))
+            if collectable:
+                self.browse(outId).setupCadOpen(hostname, hostpws, 'open')
+        return result
 
     @api.multi
     def copy(self, defaults={}):
@@ -1537,17 +1539,19 @@ class PlmDocument(models.Model):
         return jsonify
 
     @api.multi
-    def checkout(self, hostName, hostPws):
+    def checkout(self, hostName, hostPws, showError=True):
         """
         check out the current document
         """
-        self.canCheckOut(showError=True)
-        values = {'userid': self.env.uid,
-                  'hostname': hostName,
-                  'hostpws': hostPws,
-                  'documentid': self.id}
-        res = self.env['plm.checkout'].create(values)
-        return res.id
+        check_out_id = False
+        check_res, msg = self.canCheckOut(showError=showError)
+        if check_res:
+            values = {'userid': self.env.uid,
+                      'hostname': hostName,
+                      'hostpws': hostPws,
+                      'documentid': self.id}
+            check_out_id = self.env['plm.checkout'].create(values)
+        return check_res, msg, check_out_id
 
     @api.multi
     def canCheckOut(self, showError=False):
@@ -1917,21 +1921,25 @@ class PlmDocument(models.Model):
                         hostName=False,
                         hostPws=False):
         action = 'upload'
-        if documentAttribute.get("CUTTED_COMP", False):
+        if documentAttribute.get("CUTTED_COMP", False) or documentAttribute.get("VIRTUAL", False):
             return False, 'jump'
-        document_name = documentAttribute.get("name", False)
-        if not document_name:
+        name = documentAttribute.get("name", False)
+        if not name:
             raise UserError("Unable to create document with empty name %r" % (documentAttribute.get('KEY', '')))
 
+        plm_checkout_vals = {'userid': self.env.user.id,
+                             'hostname': hostName,
+                             'hostpws': hostPws}
         found = False
         ir_attachemnt_id = self.env['plm.document']
-        for seached_ir_attachemnt_id in self.search([('name', '=', document_name),
+        for seached_ir_attachemnt_id in self.search([('name', '=', name),
                                                      ('revisionid', '=', documentAttribute.get('revisionid', 0))]):
             found = True
             ir_attachemnt_id = seached_ir_attachemnt_id
+            plm_checkout_vals['documentid'] = ir_attachemnt_id.id
             break
         if found:  # write
-            if ir_attachemnt_id.state not in ['released', 'obsoleted']:
+            if ir_attachemnt_id.state in self.allowedStateForWrite():
                 if ir_attachemnt_id.needUpdate():
                     ir_attachemnt_id.write(documentAttribute)
                     action = ir_attachemnt_id.canIUpload(dbThread)
@@ -1941,10 +1949,8 @@ class PlmDocument(models.Model):
                 action = 'jump'
         else:  # create
             ir_attachemnt_id = ir_attachemnt_id.create(documentAttribute)
-            self.env['plm.checkout'].create({'userid': self.env.user.id,
-                                             'hostname': hostName,
-                                             'hostpws': hostPws,
-                                             'documentid': ir_attachemnt_id.id})
+            plm_checkout_vals['documentid'] = ir_attachemnt_id.id
+            self.env['plm.checkout'].create(plm_checkout_vals)
         return ir_attachemnt_id, action
 
     @api.model
@@ -2551,5 +2557,43 @@ class PlmDocument(models.Model):
         action = self.env.ref('plm.action_plm_backupdoc').read()[0]
         action['domain'] = [('documentid', '=', self.id)]
         return action
+
+    def checkoutByMeWithUser(self):
+        isCheckedOutToMe = False
+        checkOutUser = ''
+        for objDoc in self:
+            checkoutUserBrws = objDoc.get_checkout_user()
+            if checkoutUserBrws:
+                checkOutUser = checkoutUserBrws.name
+                if checkoutUserBrws.id == self.env.user.id:
+                    isCheckedOutToMe = True
+                    break
+        return isCheckedOutToMe, checkOutUser
+
+    @api.multi
+    def getLastBackupDoc(self):
+        for document_id in self:
+            return self.env['plm.backupdoc'].search([('documentid', '=', document_id.id)],
+                                                    order='create_date DESC', limit=1)
+        return False
+
+    @api.multi
+    def setupCadOpen(self, hostname='', pws_path='', operation_type=''):
+        for doc_id in self:
+            plm_cad_open = self.env['plm.cad.open'].sudo()
+            last_bck = doc_id.getLastBackupDoc()
+            plm_cad_open_brws = plm_cad_open.search([('document_id', '=', doc_id.id)])
+            plm_cad_open_brws = plm_cad_open.create({
+                'plm_backup_doc_id': last_bck.id,
+                'userid': self.env.user.id,
+                'document_id': doc_id.id,
+                'pws_path': pws_path,
+                'hostname': hostname,
+                'operation_type': operation_type
+                })
+        return plm_cad_open_brws
+
+    def allowedStateForWrite(self):
+        return ['draft']
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
