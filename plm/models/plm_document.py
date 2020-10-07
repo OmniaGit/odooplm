@@ -2596,4 +2596,20 @@ class PlmDocument(models.Model):
     def allowedStateForWrite(self):
         return ['draft']
 
+    @api.multi
+    def is2D(self):
+        for docBrws in self:
+            if docBrws.document_type.upper() == '2D':
+                return True
+            break
+        return False
+
+    @api.multi
+    def is3D(self):
+        for docBrws in self:
+            if docBrws.document_type.upper() == '3D':
+                return True
+            break
+        return False
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
