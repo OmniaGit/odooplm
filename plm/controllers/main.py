@@ -130,3 +130,43 @@ class UploadDocument(Controller):
         except Exception as ex:
             logging.error(ex)
             return Response(ex, json.dumps([]),status=500)
+
+    @route('/plm_document_upload/extra_file', type='http', auth='user', methods=['POST'], csrf=False)
+    @webservice
+    def upload_extra_file(self, product_id='', doc_name='', doc_rev='0', related_attachment_id='', **kw):
+        logging.info('Start upload extra file %r' % (product_id))
+        product_id = eval(product_id)
+        doc_rev = eval(doc_rev)
+        related_attachment_id = eval(related_attachment_id)
+        if doc_name:
+            value1 = kw.get('file_stream').stream.read()
+            ir_attachment_id  = request.env['plm.document'].search([('name',  '=', doc_name),
+                                                                     ('revisionid', '=', doc_rev)])
+            to_write = {'datas': base64.b64encode(value1),
+                        'datas_fname': doc_name,
+                        'name': doc_name,
+                        'revisionid': ir_attachment_id.revisionid}
+            link_id =  request.env['plm.document.relation']
+            new_context = request.env.context.copy()
+            new_context['backup'] = False
+            new_context['check'] = False    # Or zip file will not be updated if in check-in
+            contex_brw = request.env['ir.attachment'].with_context(new_context)
+            to_write['is_plm'] = True
+            if not ir_attachment_id:
+                ir_attachment_id = contex_brw.create(to_write)
+            else:
+                ir_attachment_id.with_context(new_context).write(to_write)
+            if ir_attachment_id and related_attachment_id:
+                link_id = link_id.search([('parent_id', '=', related_attachment_id),
+                                          ('child_id', '=', ir_attachment_id.id),
+                                          ('link_kind', '=', 'ExtraTree')])
+            if not link_id:
+                request.env['plm.document.relation'].create({'parent_id': related_attachment_id,
+                                                              'child_id': ir_attachment_id.id,
+                                                              'link_kind': 'ExtraTree'})    
+            if product_id:
+                product_id = request.env['product.product'].browse(product_id)
+                request.env['plm.component.document.rel'].createFromIds(product_id, ir_attachment_id)           
+            return Response('Extra file Upload succeeded', status=200)
+        logging.info('Extra file no upload %r' % (ir_attachment_id))
+        return Response('Extra file Failed upload', status=400)
