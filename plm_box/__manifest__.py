@@ -21,7 +21,7 @@
 ##############################################################################
 {
     'name': 'Plm Box',
-    'version': '13.0',
+    'version': '14.0.1',
     'author': 'OmniaSolutions',
     'website': 'https://www.omniasolutions.website',
     'category': 'Custom',

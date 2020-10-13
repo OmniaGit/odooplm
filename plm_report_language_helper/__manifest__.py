@@ -21,7 +21,7 @@
 ##############################################################################
 {
     'name': 'Plm Report Language Helper',
-    'version': '1.1',
+    'version': '14.0.1',
     'author': 'OmniaSolutions',
     'website': 'http://www.omniasolutions.eu',
     'category': 'Product Lifecycle Management',
