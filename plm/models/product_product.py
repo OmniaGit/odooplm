@@ -373,13 +373,15 @@ class PlmComponent(models.Model):
         return list(set(result))
 
     def summarize_level(self, recursion=False, flat=False, level=1, summarize=False, parentQty=1, bom_type=False):
-        out = {}
+        out = []
         for product_product_id in self:
             for bom_id in product_product_id.product_tmpl_id.bom_ids:
                 if bom_type:
                     if bom_id.type != bom_type:
                         continue
-                out[bom_id] = bom_id.summarize_level(recursion, flat, level, summarize, parentQty, bom_type)
+                for v in bom_id.summarize_level(recursion, flat, level, summarize, parentQty).values():
+                    return v
+                break
         return out
 
     @api.model
@@ -580,18 +582,25 @@ class PlmComponent(models.Model):
 
     def checkWorkflow(self, docInError, linkeddocuments, check_state):
         docIDs = []
-        attachment = self.env['ir.attachment']
-        for documentBrws in linkeddocuments:
-            if documentBrws.state == check_state:
-                if documentBrws.is_checkout:
-                    docInError.append(_("Document %r : %r is checked out by user %r") % (documentBrws.name, documentBrws.revisionid, documentBrws.checkout_user))
-                    continue
-                docIDs.append(documentBrws.id)
-                if documentBrws.is3D():
-                    doc_layout_ids = documentBrws.getRelatedLyTree(documentBrws.id)
-                    docIDs.extend(self.checkWorkflow(docInError, attachment.browse(doc_layout_ids), check_state))
-                    raw_doc_ids = documentBrws.getRelatedRfTree(documentBrws.id, recursion=True)
-                    docIDs.extend(self.checkWorkflow(docInError, attachment.browse(raw_doc_ids), check_state))
+        
+        def _checkWorkflow(docInError, linkeddocuments, check_state):
+            attachment = self.env['ir.attachment']
+            for documentBrws in linkeddocuments:
+                if documentBrws.state in check_state:
+                    if documentBrws.is_checkout:
+                        docInError.append(_("Document %r : %r is checked out by user %r") % (documentBrws.name, documentBrws.revisionid, documentBrws.checkout_user))
+                        continue
+                    new_doc_id = documentBrws.id
+                    if new_doc_id in docIDs:
+                        continue
+                    docIDs.append(new_doc_id)
+                    if documentBrws.is3D():
+                        doc_layout_ids = documentBrws.getRelatedLyTree(documentBrws.id)
+                        _checkWorkflow(docInError, attachment.browse(doc_layout_ids), check_state)
+                        raw_doc_ids = documentBrws.getRelatedRfTree(documentBrws.id, recursion=True)
+                        _checkWorkflow(docInError, attachment.browse(raw_doc_ids), check_state)
+                        
+        _checkWorkflow(docInError, linkeddocuments, check_state)
         return list(set(docIDs))
 
     def _action_ondocuments(self, action_name, include_statuses=[]):
@@ -603,9 +612,9 @@ class PlmComponent(models.Model):
         documentType = self.env['ir.attachment']
         for oldObject in self:
             if (action_name != 'transmit') and (action_name != 'reject') and (action_name != 'release'):
-                check_state = oldObject.state
+                check_state = [oldObject.state]
             else:
-                check_state = 'confirmed'
+                check_state = include_statuses
             docIDs.extend(self.checkWorkflow(docInError, oldObject.linkeddocuments, check_state))
         if docInError:
             msg = _("Error on workflow operation")
@@ -691,7 +700,7 @@ class PlmComponent(models.Model):
             defaults['state'] = status
             exclude_statuses = ['draft', 'released', 'undermodify', 'obsoleted']
             include_statuses = ['confirmed']
-            comp_obj.commonWFAction(status, action, doc_action, defaults, exclude_statuses, include_statuses)
+            comp_obj.commonWFAction(status, action, doc_action, defaults, exclude_statuses, include_statuses, recursive=False)
         return True
 
     def action_confirm(self):
@@ -715,7 +724,7 @@ class PlmComponent(models.Model):
         return self.search([('engineering_code', '=', name),
                             ('engineering_revision', '=', revision)])
 
-    def action_release(self):
+    def action_release(self, include_statuses=['confirmed'], exclude_statuses = ['released', 'undermodify', 'obsoleted']):
         """
            action to be executed for Released state
         """
@@ -723,8 +732,6 @@ class PlmComponent(models.Model):
             children_product_to_emit = []
             product_tmpl_ids = []
             defaults = {}
-            exclude_statuses = ['released', 'undermodify', 'obsoleted']
-            include_statuses = ['confirmed']
             errors, product_ids = comp_obj._get_recursive_parts(exclude_statuses, include_statuses)
             children_products = product_ids.copy()
             if len(product_ids) < 1 or len(errors) > 0:
@@ -807,16 +814,18 @@ class PlmComponent(models.Model):
         toCall = actions.get(action)
         return toCall()
 
-    def commonWFAction(self, status, action, doc_action, defaults=[], exclude_statuses=[], include_statuses=[]):
+    def commonWFAction(self, status, action, doc_action, defaults=[], exclude_statuses=[], include_statuses=[], recursive=True):
         product_product_ids = []
         product_template_ids = []
-        userErrors, allIDs = self._get_recursive_parts(exclude_statuses, include_statuses)
-        if userErrors:
-            raise UserError(userErrors)
+        allIDs = [self.id]
+        if recursive:
+            userErrors, allIDs = self._get_recursive_parts(exclude_statuses, include_statuses)
+            if userErrors:
+                raise UserError(userErrors)
         allIdsBrwsList = self.browse(allIDs)
         allIdsBrwsList._action_ondocuments(doc_action, include_statuses)
         for currId in allIdsBrwsList:
-            if not(currId.id in self.ids):
+            if not (currId.id in self.ids):
                 product_product_ids.append(currId.id)
             product_template_ids.append(currId.product_tmpl_id.id)
             defaults['workflow_user'] = self.env.uid
@@ -1057,7 +1066,8 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
 
     def checkFromOdooPlm(self):
         new_revision = self.env.context.get('new_revision', False)
-        if self.env.context.get('odooPLM', False) and not new_revision:
+        skip_missing_eng_code_check = self.env.context.get('skip_missing_eng_code_check', False)
+        if self.env.context.get('odooPLM', False) and not new_revision and not skip_missing_eng_code_check:
             for product_product_id in self:
                 if not product_product_id.engineering_code:  
                     raise UserError("Missing engineering code for plm data")
@@ -1065,7 +1075,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
 
     def checkMany2oneClient(self, vals, force_create=False):
         return self._checkMany2oneClient(self.env['product.product'], vals, force_create)
-        
+
     @api.model
     def _checkMany2oneClient(self, obj, vals, force_create=False):
         out = {}
@@ -1084,7 +1094,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         referredModel = fieldDefinition.get('relation', '')
         oldFieldName = 'plm_m2o_' + fieldName
         cadVal = vals.get(oldFieldName, '')
-        if fieldType == 'many2one':
+        if fieldType == 'many2one' and cadVal:
             try:
                 for refId in self.env[referredModel].search([('name', '=', cadVal)]):
                     return refId

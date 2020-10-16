@@ -35,7 +35,6 @@ class MrpBomExtension(models.Model):
     _inherit = 'mrp.bom'
 
     type = fields.Selection(selection_add=[('ebom', 'Engineering BoM')])
-    ebom_source_id = fields.Integer('Source Ebom ID')
 
     @api.model
     def _get_in_bom(self, pid, sid=False):

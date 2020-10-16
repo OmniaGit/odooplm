@@ -45,10 +45,10 @@ class PlmCadOpen(models.Model):
     operation_type = fields.Char(_('Operation Type'))
 
     @api.model
-    def getLastCadOpenByUser(self, doc_id):
+    def getLastCadOpenByUser(self, doc_id, user_id):
         for plm_cad_open in self.search([
             ('document_id', '=', doc_id.id),
-            ('userid', '=', self.env.user.id),
+            ('userid', '=', user_id.id),
             ], order='create_date DESC', limit=1):
             return plm_cad_open
         return self

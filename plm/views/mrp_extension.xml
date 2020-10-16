@@ -88,6 +88,7 @@
                         attrs="{'invisible':[('related_document_ids', '=', [])]}"/>
                 <field name="itemnum"/>
                 <field name="itemlbl"/>
+                <field name="ebom_source_id" groups="base.group_no_one"/>
             </xpath>
             <xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_id']" position="after">
                 <field name="engineering_revision" readonly="True"/>
@@ -195,6 +196,7 @@
                 <field name="product_uom_id"/>
                 <field name="weight_net"/>
                 <field name="create_date" select="True"/>
+                <field name="ebom_source_id" groups="base.group_no_one"/>
             </tree>
         </field>
     </record>
@@ -206,6 +208,12 @@
         <field name="res_model">mrp.bom.line</field>
         <field name="domain">[('bom_id', 'in', active_ids)]</field>
         <field name="view_id" ref="plm_bom_tree_structure"/>
+    </record>
+
+    <record id="plm_action_bom_lines" model="ir.actions.act_window">
+        <field name="name">Bom Lines</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">mrp.bom.line</field>
     </record>
 
 </odoo>

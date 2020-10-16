@@ -41,6 +41,7 @@ class PlmBackupDocument(models.Model):
     """
     _name = 'plm.backupdoc'
     _description = "manage your document back up"
+    _order = 'id DESC'
 
     userid = fields.Many2one('res.users',
                              _('Related User'))
@@ -64,7 +65,7 @@ class PlmBackupDocument(models.Model):
         result = []
         for r in self:
             if r.documentid and r.userid:
-                name = "%s .. [%s]" % (r.documentid.engineering_document_name[:8], r.userid.engineering_document_name[:8])
+                name = "%s .. [%s]" % (r.documentid.engineering_document_name[:8], r.userid.display_name[:8])
             else:
                 name = "Error"
             result.append((r.id, name))
@@ -96,7 +97,7 @@ class PlmBackupDocument(models.Model):
     @api.model
     def getLastBckDocumentByUser(self, doc_id):
         for obj in self.search([
-            ('documentid', '=', doc_id.id),
+            ('documentid', '=', doc_id.id)
             ], order='create_date DESC', limit=1):
             return obj
         return self

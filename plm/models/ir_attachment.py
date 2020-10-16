@@ -269,7 +269,7 @@ class PlmDocument(models.Model):
                 logging.warning('Cannot get related LyTree from doc_type %r' % (doc_type))
                 return []
         return list(set(out))
-    
+
     @api.model
     def getRelatedRfTree(self, doc_id, recursion=True):
         out = []
@@ -304,8 +304,19 @@ class PlmDocument(models.Model):
                      ('parent_id', '=', doc_id)]
         doc_rel_ids = self.env['ir.attachment.relation'].search(to_search)
         for doc_rel_id in doc_rel_ids:
-            out.append(doc_rel_id.child_id.id)
+            child_id = doc_rel_id.child_id.id
+            if child_id not in out:
+                out.append(child_id)
         return list(set(out))
+
+    @api.model
+    def getRelatedPkgTreeCount(self, doc_id):
+        if not doc_id:
+            logging.warning('Cannot get links from %r document' % (doc_id))
+            return 0
+        to_search = [('link_kind', 'in', ['PkgTree']),
+                     ('parent_id', '=', doc_id)]
+        return self.env['ir.attachment.relation'].search_count(to_search)
 
     @api.model
     def getRelatedHiTree(self, doc_id, recursion=True):
@@ -313,17 +324,22 @@ class PlmDocument(models.Model):
             Get children HiTree documents
         '''
         out = []
-        if not doc_id:
-            logging.warning('Cannot get links from %r document' % (doc_id))
-            return []
-        document_rel_ids = self.env['ir.attachment.relation'].search([
-            ('link_kind', '=', 'HiTree'), 
-            ('parent_id', '=', doc_id)])
-        for document_rel_id in document_rel_ids:
-            child_id = document_rel_id.child_id.id
-            out.append(child_id)
-            if recursion:
-                out.extend(self.getRelatedHiTree(child_id, recursion))
+        def _getRelatedHiTree(doc_id, recursion):
+            if not doc_id:
+                logging.warning('Cannot get links from %r document' % (doc_id))
+                return []
+            document_rel_ids = self.env['ir.attachment.relation'].search([
+                ('link_kind', '=', 'HiTree'), 
+                ('parent_id', '=', doc_id)])
+            for document_rel_id in document_rel_ids:
+                child_id = document_rel_id.child_id.id
+                if child_id in out:
+                    logging.warning('Document %r document already found' % (doc_id))
+                    continue
+                out.append(child_id)
+                if recursion:
+                    _getRelatedHiTree(child_id, recursion)
+        _getRelatedHiTree(doc_id, recursion)
         return out
 
     @api.model
@@ -825,13 +841,15 @@ class PlmDocument(models.Model):
         res.check_unique()
         return res
 
+    def checkWriteAdmin(self):
+        return self.env.user._is_admin() or self.env.user._is_superuser()
     
     def write(self, vals):
         if not self.env.context.get('odooPLM'):
             return super(PlmDocument, self).write(vals)
         check = self.env.context.get('check', True)
         if check:
-            if not self.is_plm_state_writable() and not (self.env.user._is_admin() or self.env.user._is_superuser()):
+            if not self.is_plm_state_writable() and not self.checkWriteAdmin():
                 raise UserError(_("The active state does not allow you to make save action"))
         self.writeCheckDatas(vals)
         vals.update(self.checkMany2oneClient(vals))
@@ -871,11 +889,12 @@ class PlmDocument(models.Model):
 
     
     def writeCheckDatas(self, vals):
+        check = self.env.context.get('check', True)
         if 'datas' in list(vals.keys()) or 'engineering_document_name' in list(vals.keys()):
             for docBrws in self:
                 if docBrws.document_type and docBrws.document_type.upper() in ['2D', '3D']:
                     if not docBrws._is_checkedout_for_me():
-                        if not (self.env.user._is_admin() or self.env.user._is_superuser()):
+                        if check and not self.checkWriteAdmin():
                             raise UserError(_("You cannot edit a file not in check-out by you! User ID %s" % (self.env.uid)))
 
     
@@ -1069,8 +1088,8 @@ class PlmDocument(models.Model):
                                      string=_('Document Type'))
     desc_modify = fields.Text(_('Modification Description'), default='')
     is_plm = fields.Boolean('Is a plm Document', help=_("If the flag is set, the document is managed by the plm module, and imply its backup at each save and the visibility on some views."))
-    attachment_release_user = fields.Many2one('res.users', string=_("User Release"))
-    attachment_release_date = fields.Datetime(string=_('Datetime Release'))
+    attachment_release_user = fields.Many2one('res.users', string=_("Release User"))
+    attachment_release_date = fields.Datetime(string=_('Release Datetime'))
     attachment_revision_count = fields.Integer(compute='_attachment_revision_count')
     workflow_user = fields.Many2one('res.users', string=_("User Last Wkf"))
     workflow_date = fields.Datetime(string=_('Datetime Last Wkf'))
@@ -1183,8 +1202,15 @@ class PlmDocument(models.Model):
             forceFlag = True
             selection = selection * (-1)
         if docBrws.is2D():
-            outIds.extend(self.getRelatedLyTree(doc_id))
-        outIds.extend(self.getRelatedHiTree(doc_id, recursion=True))
+            releted_doc_id = self.getRelatedLyTree(doc_id)
+            if releted_doc_id:
+                if isinstance(releted_doc_id, (list, tuple)):
+                    outIds.extend(releted_doc_id)
+                else:
+                    outIds.append(releted_doc_id)
+                outIds.extend(self.getRelatedHiTree(releted_doc_id, recursion=True))
+        else:
+            outIds.extend(self.getRelatedHiTree(doc_id, recursion=True))
         outIds = list(set(outIds))
         if selection == 2:  # Case of latest
             outIds = self._getlastrev(outIds)
@@ -1666,29 +1692,30 @@ class PlmDocument(models.Model):
         logging.info("Time Spend For save structure is: %s" % (str(end - start)))
         return jsonify
 
-    
     def checkout(self, hostName, hostPws, showError=True):
         """
         check out the current document
         """
-        self.canCheckOut(showError=showError)
-        values = {'userid': self.env.uid,
-                  'hostname': hostName,
-                  'hostpws': hostPws,
-                  'documentid': self.id}
-        res = self.env['plm.checkout'].create(values)
-        return res.id
+        check_out_id = False
+        check_res, msg = self.canCheckOut(showError=showError)
+        if check_res:
+            values = {'userid': self.env.uid,
+                      'hostname': hostName,
+                      'hostpws': hostPws,
+                      'documentid': self.id}
+            check_out_id = self.env['plm.checkout'].create(values)
+        return check_res, msg, check_out_id
 
     
     def canCheckOut(self, showError=False):
         for docBrws in self:
             if docBrws.is_checkout:
-                msg = _("Unable to check-Out a document that is already checked id by user %r" % docBrws.checkout_user)
+                msg = _("Unable to check-Out document %r that is already checked id by user %r" % (docBrws.datas_fname, docBrws.checkout_user))
                 if showError:
                     raise UserError(msg)
                 return False, msg
             if docBrws.state != 'draft':
-                msg = _("Unable to check-Out a document that is in state %r" % docBrws.state)
+                msg = _("Unable to check-Out the document %r that is in state %r" % (docBrws.datas_fname, docBrws.state))
                 if showError:
                     raise UserError(msg)
                 return False, msg
@@ -2170,11 +2197,12 @@ class PlmDocument(models.Model):
                 break
         return product_product_id, plm_document_id
 
-
     def checkNewer(self):
         for document in self:
-            plm_cad_open = self.sudo().env['plm.cad.open'].getLastCadOpenByUser(document)
+            plm_cad_open = self.sudo().env['plm.cad.open'].getLastCadOpenByUser(document, self.env.user)
             last_bck = self.env['plm.backupdoc'].getLastBckDocumentByUser(document)
+            if not plm_cad_open.plm_backup_doc_id:
+                return False
             if plm_cad_open.plm_backup_doc_id.id != last_bck.id:
                 return True
         return False
@@ -2193,58 +2221,7 @@ class PlmDocument(models.Model):
                         'engineering_document_name': ir_attachment_id.engineering_document_name})
         return out
 
-    @api.model
-    def GetAllFiles(self, request, default=None):
-        """
-            Extract documents to be returned
-        """
-        forceFlag = False
-        listed_models = []
-        listed_documents = []
-        modArray = []
-        oid, listedFiles, selection = request
-        if not selection:
-            selection = 1
 
-        if selection < 0:
-            forceFlag = True
-            selection = selection * -1
-
-        kind = 'HiTree'  # Get Hierarchical tree relations due to children
-        docArray = self._explodedocs(oid, [kind], listed_models)
-        if oid not in docArray:
-            docArray.append(oid)  # Add requested document to package
-        for item in docArray:
-            kinds = ['LyTree', 'RfTree']  # Get relations due to layout connected
-            modArray.extend(self._relateddocs(item, kinds, listed_documents))
-            modArray.extend(self._explodedocs(item, kinds, listed_documents))
-        modArray.extend(docArray)
-        docArray = list(set(modArray))  # Get unique documents object IDs
-        if selection == 2:
-            docArray = self._getlastrev(docArray)
-        if oid not in docArray:
-            docArray.append(oid)  # Add requested document to package
-        return self.browse(docArray)._data_get_files(listedFiles, forceFlag)
-
-    @api.model
-    def updatePreviews(self):
-        """
-            Return a new name due to sequence next number.
-        """
-        configParamObj = self.env['ir.config_parameter'].sudo()
-        paramName = 'LAST_DT_PREVIEW_UPDATE'
-        last_update = configParamObj._get_param(paramName) or False
-        condition = [('is_plm', '=', True)]
-        if last_update and last_update != 'False':
-            last_update = datetime.strptime(last_update, DEFAULT_SERVER_DATETIME_FORMAT)
-            condition.append(('write_date', '>=', last_update))
-        for document_id in self.search(condition):
-            if document_id.is3D():
-                for product_id in document_id.linkedcomponents:
-                    product_id.image_1920 = document_id.preview
-                    product_id.product_tmpl_id.image_1920 = document_id.preview
-        configParamObj.set_param(paramName, datetime.now().strftime(DEFAULT_SERVER_DATETIME_FORMAT))
-  
     def checkRelatedModelCheckIn(self, doc2d_id, docArray):
         documentRelation = self.env['ir.attachment.relation']
         doc_rels = documentRelation.search(['|', ('parent_id', '=', doc2d_id), ('child_id', '=', doc2d_id), ('link_kind', '=', 'LyTree')])
@@ -2306,7 +2283,7 @@ class PlmDocument(models.Model):
         return True
 
     @api.model
-    def preCheckInRecursive(self, doc_props, forceCheckInModelByDrawing=True, recursion=True):
+    def preCheckInRecursive(self, doc_props, forceCheckInModelByDrawing=True, recursion=True, onlyActiveDoc=False):
         out = {
             'to_check_in': [],
             'to_ask': [],
@@ -2315,7 +2292,7 @@ class PlmDocument(models.Model):
             'to_check': [],
             'already_checkin': [],
                }
-        evaluated = {}
+        evaluated = []
         doc_props = json.loads(doc_props)
         doc_id = doc_props.get('_id', False)
         if not doc_id:
@@ -2323,7 +2300,11 @@ class PlmDocument(models.Model):
             if not doc_id:
                 return out
 
-        def setupInfos(out, docBrws, PLM_DT_DELTA, is_root, doc_dict_3d=False):
+        def setupInfos(out,
+                       docBrws,
+                       PLM_DT_DELTA,
+                       is_root,
+                       doc_dict_3d=False):
             
             def appendItem(resDict, to_append):
                 for elem in resDict:
@@ -2334,6 +2315,7 @@ class PlmDocument(models.Model):
                 
             tmp_dict = {}
             doc_id = docBrws.id
+            evaluated.append(doc_id)
             tmp_dict['id'] = docBrws.id
             tmp_dict['datas_fname'] = docBrws.name
             tmp_dict['name'] = docBrws.name
@@ -2355,7 +2337,16 @@ class PlmDocument(models.Model):
                         doc_dict_3d['msg'] = 'Model %r related to drawing %r is not updated.' % (doc_dict_3d['name'], tmp_dict['name'])
                         appendItem(out['to_block'], doc_dict_3d)
                 elif forceCheckInModelByDrawing:
-                    doc_dict_3d['msg'] = 'Model %r related to drawing %r must be checked in or in check-out by another user.' % (doc_dict_3d['name'], tmp_dict['name'])
+                    msg = 'Model %r related to drawing %r ' % (doc_dict_3d['name'], tmp_dict['name'])
+                    if doc_dict_3d['check_in']:
+                        msg += "is Checked in"
+                    if (not doc_dict_3d['check_in'] and not doc_dict_3d['check_out_by_me']):
+                        msg += "is checke-out by %r " % doc_dict_3d['check_out_by_me']
+                    elif doc_dict_3d['check_out_by_me']:
+                        msg += "is in check-out by you."
+                    if doc_dict_3d['plm_cad_open_newer']:
+                        msg += 'Cad date not aligned %r ' % doc_dict_3d['plm_cad_open_newer']
+                    doc_dict_3d['msg'] = msg
                     appendItem(out['to_block'], doc_dict_3d)
                     if doc_dict_3d in out['to_check']:
                         out['to_check'].remove(doc_dict_3d)
@@ -2409,41 +2400,85 @@ class PlmDocument(models.Model):
                         appendItem(out['to_info'], tmp_dict)
             return tmp_dict
             
-        def recursion(doc_id, out, evaluated, PLM_DT_DELTA, is_root=False, forceCheckInModelByDrawing=True, struct_type='3D', recursion=True):
-            if doc_id in evaluated.keys():
+        def recursionf(doc_id,
+                       out,
+                       evaluated,
+                       PLM_DT_DELTA,
+                       is_root=False,
+                       forceCheckInModelByDrawing=True,
+                       struct_type='3D',
+                       recursion=True):
+            if doc_id in evaluated:
                 return {}
-            evaluated[doc_id] = {}
             docs3D = self.browse(doc_id)
             docs2D = self.env['ir.attachment']
             fileType = docs3D.document_type.upper()
             if fileType == '2D':
+                setupInfos(out,
+                           docs3D,
+                           PLM_DT_DELTA,
+                           is_root)
+                if onlyActiveDoc:
+                    return 
+                is_root = False
                 docs3D = self.browse(list(set(self.getRelatedLyTree(docs3D.id))))
-                setupInfos(out, docs3D, PLM_DT_DELTA, is_root)
             for doc3D in docs3D:
                 doc_id_3d = doc3D.id
-                doc_dict_3d = setupInfos(out, doc3D, PLM_DT_DELTA, is_root)
+                if doc_id_3d in evaluated:
+                    continue
+                doc_dict_3d = setupInfos(out,
+                                         doc3D,
+                                         PLM_DT_DELTA,
+                                         is_root)
+                if not doc3D.isCheckedOutByMe():
+                    continue
                 if struct_type != '3D':
-                    docs2D = self.browse(list(set(self.getRelatedLyTree(doc_id_3d))))
-                    docs2D += docs2D
+                    docs2D += self.browse(list(set(self.getRelatedLyTree(doc_id_3d))))
                     for doc2d in docs2D:
-                        if fileType == '2D' and is_root and doc2d.id != doc_id:
-                            is_root = False
-                        setupInfos(out, doc2d, PLM_DT_DELTA, is_root, doc_dict_3d)
-                        if recursion:
-                            recursion(doc2d.id, out, evaluated, PLM_DT_DELTA, False, forceCheckInModelByDrawing, struct_type, recursion)
-                doc3DChildrens = self.browse(self.getRelatedHiTree(doc3D.id, recursion=False))
+                        if doc2d.id in evaluated:
+                            continue
+                        if doc2d.id != doc_id:
+                            setupInfos(out,
+                                       doc2d,
+                                       PLM_DT_DELTA,
+                                       is_root,
+                                       doc_dict_3d)
+                doc3DChildrens = self.browse(self.getRelatedHiTree(doc3D.id,
+                                                                   recursion=False))
                 for doc3DChildren in doc3DChildrens:
                     if recursion:
-                        recursion(doc3DChildren.id, out, evaluated, PLM_DT_DELTA, False, forceCheckInModelByDrawing, struct_type, recursion)
-                docsReference = self.browse(self.getRelatedRfTree(doc3D.id, recursion=False))
+                        recursionf(doc3DChildren.id,
+                                   out,
+                                   evaluated,
+                                   PLM_DT_DELTA,
+                                   False,
+                                   forceCheckInModelByDrawing,
+                                   struct_type,
+                                   recursion)
+                docsReference = self.browse(self.getRelatedRfTree(doc3D.id,
+                                                                  recursion=False))
                 for doc3DChildrenRef in docsReference:
                     if recursion:
-                        recursion(doc3DChildrenRef.id, out, evaluated, PLM_DT_DELTA, False, forceCheckInModelByDrawing, struct_type, recursion)
+                        recursionf(doc3DChildrenRef.id,
+                                   out,
+                                   evaluated,
+                                   PLM_DT_DELTA,
+                                   False,
+                                   forceCheckInModelByDrawing,
+                                   struct_type,
+                                   recursion)
 
         PLM_DT_DELTA =  self.getPlmDTDelta()
         docs3D = self.browse(doc_id)
         struct_type = docs3D.document_type.upper()
-        recursion(doc_id, out, evaluated, PLM_DT_DELTA, True, forceCheckInModelByDrawing, struct_type, recursion)
+        recursionf(doc_id,
+                   out,
+                   evaluated,
+                   PLM_DT_DELTA,
+                   True,
+                   forceCheckInModelByDrawing,
+                   struct_type,
+                   recursion)
         return json.dumps(out)
 
     @api.model
@@ -2464,6 +2499,11 @@ class PlmDocument(models.Model):
                 if not doc_id.isLatestRevision():
                     doc_fields['checkout'] = False
                     doc_fields['err_msg'] = 'Document %r is not at latest revision in PWS.' % (doc_fields['name'])
+                    out.append(doc_fields)
+                    continue
+                if doc_id.state != 'draft':
+                    doc_fields['checkout'] = False
+                    doc_fields['err_msg'] = 'Document %r is not in draft state, cannot be checked out. Actual state: %r' % (doc_fields['name'], doc_id.state)
                     out.append(doc_fields)
                     continue
                 checkout_by_me = doc_id.isCheckedOutByMe()
@@ -2491,6 +2531,7 @@ class PlmDocument(models.Model):
     @api.model
     def CheckOutRecursive(self, structure, pws_path='', hostname='', force=False):
         stop = False
+        evaluated = []
         structure = json.loads(structure)
         for doc_fields in structure:
             doc_name = doc_fields.get('engineering_document_name', '')
@@ -2500,6 +2541,9 @@ class PlmDocument(models.Model):
                 ('revisionid', '=', doc_rev)
                 ])
             for doc_id in document_ids:
+                if doc_id in evaluated:
+                    continue
+                evaluated.append(doc_id)
                 checkout = doc_fields.get('checkout', False)
                 doc_fields['checkout'] = False
                 isCheckoutByMe, _checkoutUser = doc_id.checkoutByMeWithUser()
@@ -2513,11 +2557,81 @@ class PlmDocument(models.Model):
                         doc_fields['checkout'] = True
                         continue
                     if not stop:
-                        doc_id.checkout(hostname, pws_path, showError=False)
-                        doc_id.setupCadOpen(hostname, pws_path, operation_type='check-out')
-                        doc_fields['checkout'] = True
+                        res_flag, msg, _check_out_id = doc_id.checkout(hostname, pws_path, showError=False)
+                        if not res_flag:
+                            doc_fields['err_msg'] += msg
+                        else:
+                            doc_id.setupCadOpen(hostname, pws_path, operation_type='check-out')
+                            doc_fields['checkout'] = True
                     else:
                         doc_fields['err_msg'] += '\nCannot checkout document %s.' % (doc_fields['name'])
         return json.dumps(structure)
 
+    @api.model
+    def cleanZipArchives(self, j_doc_ids):
+        out = []
+        doc_ids = json.loads(j_doc_ids)
+        for doc_id in doc_ids:
+            if self.getRelatedPkgTreeCount(doc_id)>0:
+                out.append(doc_id)
+        return json.dumps(out)
+
+    def action_related_bck_doc(self):
+        self.ensure_one()
+        action = self.env.ref('plm.action_plm_backupdoc').read()[0]
+        action['domain'] = [('documentid', '=', self.id)]
+        return action
+
+    @api.model
+    def GetAllFiles(self, request, default=None):
+        """
+            Extract documents to be returned
+        """
+        forceFlag = False
+        listed_models = []
+        listed_documents = []
+        modArray = []
+        oid, listedFiles, selection = request
+        if not selection:
+            selection = 1
+
+        if selection < 0:
+            forceFlag = True
+            selection = selection * -1
+
+        kind = 'HiTree'  # Get Hierarchical tree relations due to children
+        docArray = self._explodedocs(oid, [kind], listed_models)
+        if oid not in docArray:
+            docArray.append(oid)  # Add requested document to package
+        for item in docArray:
+            kinds = ['LyTree', 'RfTree']  # Get relations due to layout connected
+            modArray.extend(self._relateddocs(item, kinds, listed_documents))
+            modArray.extend(self._explodedocs(item, kinds, listed_documents))
+        modArray.extend(docArray)
+        docArray = list(set(modArray))  # Get unique documents object IDs
+        if selection == 2:
+            docArray = self._getlastrev(docArray)
+        if oid not in docArray:
+            docArray.append(oid)  # Add requested document to package
+        return self.browse(docArray)._data_get_files(listedFiles, forceFlag)
+
+    @api.model
+    def updatePreviews(self):
+        """
+            Return a new name due to sequence next number.
+        """
+        configParamObj = self.env['ir.config_parameter'].sudo()
+        paramName = 'LAST_DT_PREVIEW_UPDATE'
+        last_update = configParamObj._get_param(paramName) or False
+        condition = [('is_plm', '=', True)]
+        if last_update and last_update != 'False':
+            last_update = datetime.strptime(last_update, DEFAULT_SERVER_DATETIME_FORMAT)
+            condition.append(('write_date', '>=', last_update))
+        for document_id in self.search(condition):
+            if document_id.is3D():
+                for product_id in document_id.linkedcomponents:
+                    product_id.image_1920 = document_id.preview
+                    product_id.product_tmpl_id.image_1920 = document_id.preview
+        configParamObj.set_param(paramName, datetime.now().strftime(DEFAULT_SERVER_DATETIME_FORMAT))
+  
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

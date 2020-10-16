@@ -61,12 +61,10 @@ class MrpBomLineExtension(models.Model):
         """
         bom_obj = self.env['mrp.bom']
         for bom_line in self:
-            for bom_id in self.search(
-                    [('product_id', '=', bom_line.product_id.id),
-                     ('product_tmpl_id', '=', bom_line.product_id.product_tmpl_id.id),
-                     ('type', '=', bom_line.type)]
-            ):
-                child_bom = bom_obj.browse(bom_id)
+            for bom_id in bom_obj.search([('product_id', '=', bom_line.product_id.id),
+                                          ('product_tmpl_id', '=', bom_line.product_id.product_tmpl_id.id),
+                                          ('type', '=', bom_line.type)]):
+                child_bom = bom_obj.browse(bom_id.id)
                 for child_bom_line in child_bom.bom_line_ids:
                     child_bom_line._get_child_bom_lines()
                 self.child_line_ids = [x.id for x in child_bom.bom_line_ids]
@@ -181,7 +179,7 @@ class MrpBomLineExtension(models.Model):
     create_date = fields.Datetime(_('Creation Date'),
                                   readonly=True)
     source_id = fields.Many2one('ir.attachment',
-                                'engineering_document_name',
+                                'Source ID',
                                 ondelete='no action',
                                 readonly=True,
                                 index=True,
@@ -211,6 +209,7 @@ class MrpBomLineExtension(models.Model):
          ('server', 'Server')],
         _('Cutted Compute Type'),
         default='none')
+    ebom_source_id = fields.Integer('Source E-Bom ID')
 
     def plm_sanitize(self, vals):
         all_keys = self.fields_get_keys()
@@ -226,3 +225,24 @@ class MrpBomLineExtension(models.Model):
                 if k in all_keys:
                     out.append(k)
             return out
+
+    @api.model
+    def get_out_line_infos(self, productTmplBrws, prodQty, level, loopPosition):
+        res = {
+            'loop_position': loopPosition,
+            'row_bom_line': self.id,
+            'name': productTmplBrws.engineering_code,
+            'item': self.itemnum,
+            'pname': productTmplBrws.engineering_code,
+            'pdesc': _(productTmplBrws.name),
+            'pcode': self.product_id.default_code,
+            'previ': productTmplBrws.engineering_revision,
+            'pqty': prodQty,
+            'uname': self.product_uom_id.name,
+            'pweight': productTmplBrws.weight,
+            'code': self.product_id.default_code,
+            'level': level,
+            'prodBrws': self.product_id.id,
+            'prodTmplBrws': productTmplBrws.id,
+        }
+        return res

@@ -177,7 +177,7 @@ class PackAndGo(osv.osv.osv_memory):
 
         def recursionDocuments(docBrwsList):
             for docBrws in docBrwsList:
-                res = plmDocObject.CheckAllFiles([docBrws.id, [], False])   # Get all related documents to root documents
+                res = plmDocObject.CheckAllFiles([docBrws.id, [], False, '', ''])   # Get all related documents to root documents
                 for singleRes in res:
                     docId = singleRes[0]
                     if docId in checkedDocumentIds:

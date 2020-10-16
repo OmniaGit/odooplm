@@ -38,6 +38,7 @@ from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 class PlmDbthread(models.Model):
     _name = "plm.dbthread"
     _description = "Db Thread Saving Model"
+    _order = 'id DESC'
 
     documement_name_version = fields.Char(string="Document name and version",
                                           readonly=True,
