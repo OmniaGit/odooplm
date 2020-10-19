@@ -812,3 +812,60 @@ class MrpBomExtension(models.Model):
                     ('type', 'not in', odoo_plm_bom)
                 ], order='sequence, product_id', limit=1)
         return obj_bom
+
+    @api.model
+    def getBom(self):
+        newBom = None
+        for bomBws in self.related_bom_ids:
+            if bomBws.type == self.type:
+                newBom = bomBws
+                break
+        return newBom
+
+    @api.model
+    def summarize_level(self, recursion=False, flat=False, level=1, summarize=False, parentQty=1):
+        def updateQty(tmplId, qtyToAdd):
+            for localIndex, valsList in list(orderDict.items()):
+                count = 0
+                for res in valsList:
+                    tmplBrws = res.get('prodTmplBrws', False)
+                    if not tmplBrws:
+                        logging.error('Template browse not found printing bom: %r' % (res))
+                        continue
+                    if tmplBrws.id == tmplId:
+                        newQty = orderDict[localIndex][count]['pqty'] + qtyToAdd
+                        orderDict[localIndex][count]['pqty'] = newQty
+                        return
+                    count = count + 1
+
+        orderDict = {}
+        levelListed = []
+        i=1
+        for l in self.bom_line_ids:
+            index = l.itemnum
+            if index not in list(orderDict.keys()):
+                orderDict[index] = []
+            children = {}
+            productTmplObj = l.product_id.product_tmpl_id
+            prodTmlId = productTmplObj.id
+            if recursion or flat:
+                myNewBom = self.getBom(l)
+                if myNewBom:
+                    children = myNewBom.summarize_level(recursion,
+                                                        flat,
+                                                        level + 1,
+                                                        summarize,
+                                                        l.product_qty * parentQty)
+            if prodTmlId in levelListed and summarize:
+                qty = l.product_qty
+                updateQty(prodTmlId, qty)
+            else:
+                prodQty = l.product_qty
+                res = l.get_out_line_infos(productTmplObj, prodQty, level, loopPosition=i)
+                i = i + 1
+                if not summarize:
+                    res['level'] = level
+                levelListed.append(prodTmlId)
+                orderDict[index].append(res)
+        return orderDict
+

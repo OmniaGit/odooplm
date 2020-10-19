@@ -225,3 +225,24 @@ class MrpBomLineExtension(models.Model):
                 if k in all_keys:
                     out.append(k)
             return out
+
+    @api.model
+    def get_out_line_infos(self, productTmplBrws, prodQty, level, loopPosition):
+        res = {
+            'loop_position': loopPosition,
+            'row_bom_line': self.id,
+            'name': productTmplBrws.engineering_code,
+            'item': self.itemnum,
+            'pname': productTmplBrws.engineering_code,
+            'pdesc': _(productTmplBrws.name),
+            'pcode': self.product_id.default_code,
+            'previ': productTmplBrws.engineering_revision,
+            'pqty': prodQty,
+            'uname': self.product_uom_id.name,
+            'pweight': productTmplBrws.weight,
+            'code': self.product_id.default_code,
+            'level': level,
+            'prodBrws': self.product_id.id,
+            'prodTmplBrws': productTmplBrws.id,
+        }
+        return res

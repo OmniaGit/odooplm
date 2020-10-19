@@ -373,13 +373,15 @@ class PlmComponent(models.Model):
         return list(set(result))
 
     def summarize_level(self, recursion=False, flat=False, level=1, summarize=False, parentQty=1, bom_type=False):
-        out = {}
+        out = []
         for product_product_id in self:
             for bom_id in product_product_id.product_tmpl_id.bom_ids:
                 if bom_type:
                     if bom_id.type != bom_type:
                         continue
-                out[bom_id] = bom_id.summarize_level(recursion, flat, level, summarize, parentQty, bom_type)
+                for v in bom_id.summarize_level(recursion, flat, level, summarize, parentQty).values():
+                    return v
+                break
         return out
 
     @api.model
