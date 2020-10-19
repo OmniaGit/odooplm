@@ -1705,6 +1705,22 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             out_product_produc_id = self.create(productAttribute)
         return out_product_produc_id
 
+    @api.multi
+    def name_get(self):
+        result = []
+        for prod in self:
+            eng_code = '[%s] ' % (prod.default_code or '%s_%s' % (prod.engineering_code, prod.engineering_revision))
+            eng_code += prod.name
+            result.append((prod.id, eng_code))
+        return result
+
+    @api.model
+    def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None):
+        ret = super(PlmComponent, self)._name_search(name, args, operator, limit, name_get_uid)
+        product_ids = self._search([('engineering_code', operator, name)], limit=limit, access_rights_uid=name_get_uid)
+        ret += self.browse(product_ids).name_get()
+        return ret
+
 
 class PlmTemporayMessage(osv.osv.osv_memory):
     _name = "plm.temporary.message"
