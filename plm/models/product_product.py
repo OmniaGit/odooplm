@@ -1607,7 +1607,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                 'context': {}}
 
     @api.model
-    def createFromProps(self, productAttribute):
+    def createFromProps(self, productAttribute, ir_attachment_id=False):
         out_product_produc_id = self.env['product.product']
         found = False
         engineering_name = productAttribute.get('engineering_code', False)
@@ -1619,8 +1619,12 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             found = True
             break
         if found:  # Write
-            if product_produc_id.state not in ['released', 'obsoleted']:
-                out_product_produc_id.write(productAttribute)
+            checkOutByMe = True
+            if ir_attachment_id:
+                checkOutByMe, _username = ir_attachment_id.checkoutByMeWithUser()
+            if checkOutByMe:
+                if product_produc_id.state not in ['released', 'obsoleted']:
+                    out_product_produc_id.write(productAttribute)
         else:  # write
             out_product_produc_id = self.create(productAttribute)
         return out_product_produc_id
