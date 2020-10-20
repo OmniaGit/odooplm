@@ -1711,7 +1711,6 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             out_product_produc_id = self.create(productAttribute)
         return out_product_produc_id
 
-    @api.multi
     def name_get(self):
         result = []
         for prod in self:
