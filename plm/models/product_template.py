@@ -103,7 +103,7 @@ class ProductTemplateExtension(models.Model):
         for productBrws in self:
             if self.env.user.has_group('plm.group_plm_admin'):
                 productBrws.is_engcode_editable = True
-            if productBrws.engineering_code in ['', False, '-']:
+            elif productBrws.engineering_code in ['', False, '-']:
                 productBrws.is_engcode_editable = True
             else:
                 productBrws.is_engcode_editable = False
