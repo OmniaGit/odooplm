@@ -35,6 +35,7 @@ from . import ir_attachment_relations
 from . import product_product_document_rel
 from . import product_product_kanban
 from . import plm_backup_document
+from . import plm_cad_open
 from . import plm_checkout
 from . import plm_config_settings
 from . import mrp_bom
@@ -43,4 +44,4 @@ from . import report_on_document
 from . import plm_temporary
 from . import plm_dbthread
 from . import res_users
-from . import plm_cad_open
+

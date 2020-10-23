@@ -75,7 +75,8 @@ class PlmTemporaryCutted(osv.osv.osv_memory):
                             'product_qty': 1,
                             'x_length': productBrowse.row_material_x_length,
                             'y_length': productBrowse.row_material_y_length,
-                            'cutted_type': 'server'
+                            'cutted_type': 'server',
+                            'cutted_qty': productBrowse.row_material_factor,
                             }
                         bom_line_brws = self.env['mrp.bom.line'].create(line_vals)
                         bom_line_brws.computeCuttedTotalQty()
@@ -92,7 +93,8 @@ class PlmTemporaryCutted(osv.osv.osv_memory):
                 'cutted_qty': bom_line_brws.product_qty,
                 'product_rounding': bom_line_brws.product_id.bom_rounding,
                 'cutted_type': 'none',
-                'product_qty': bom_line_brws.computeTotalQty(x_len, y_len, bom_line_brws.product_qty)
+                'product_qty': bom_line_brws.computeTotalQty(x_len, y_len, bom_line_brws.product_qty),
+                'cutted_qty': bom_line_brws.product_id.row_material_factor,
                 }
             bom_line_brws.write(to_write)
         elif explosion_action == 'explode':
@@ -109,7 +111,9 @@ class PlmTemporaryCutted(osv.osv.osv_memory):
                           'bom_id': new_bom_brws.id,
                           'product_id': bom_line_brws.product_id.row_material.id,
                           'product_rounding': bom_line_brws.product_id.bom_rounding,
-                          'cutted_type': 'server'}
+                          'cutted_type': 'server',
+                          'cutted_qty': new_bom_brws.product_id.row_material_factor,
+                          }
                 mrp_bom_line_type_object.create(values)
             else:
                 for bom_brws in bom_brws_list:

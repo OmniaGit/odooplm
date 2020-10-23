@@ -34,6 +34,7 @@ import logging
 class ProductTemplateCuttedParts(models.Model):
     _inherit = 'product.template'
     row_material = fields.Many2one('product.product', _("Raw Material Product"))
+    row_material_factor = fields.Float('Raw Material Factor')
     row_material_x_length = fields.Float(_("Raw Material x length"), default=1.0)
     row_material_y_length = fields.Float(_("Raw Material y length"), default=1.0)
     wastage_percent = fields.Float(_("Percent Wastage"), default=0.0, help="""
