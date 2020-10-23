@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data> 
+	
+    <record model="ir.ui.view" id="view_client_macro_form">
+        <field name="name">client.macro.form.view</field>
+        <field name="model">client.macro</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Macro">
+                <group col="2">
+               		<field name="name"/>
+               		<field name="integration"/>
+               		<field name="module_name"/>
+               		<field name="procedure_name"/>
+               		<field name="db_datas" filename="name"/>
+                </group>
+            </form>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="view_client_macro_tree">
+        <field name="name">client.macro.tree.view</field>
+        <field name="model">client.macro</field>
+        <field name="type">tree</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <tree string="Macro">
+           		<field name="name"/>
+           		<field name="integration"/>
+           		<field name="module_name"/>
+           		<field name="procedure_name"/>
+            </tree>
+        </field>
+    </record>
+        
+</data>
+</openerp>

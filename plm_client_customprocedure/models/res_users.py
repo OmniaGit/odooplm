@@ -121,7 +121,7 @@ class ResUsers(models.Model):
                     if not res:
                         continue
                     else:
-                        logging.info('Got CustomProcedure file from group %r-%r with ID %r' % (groupBrws.category_id.name, groupBrws.name, groupBrws.id))
+                        logging.info('Got CustomProcedure file from group %r-%r with ID %r' % (groupBrws.sudo().category_id.name, groupBrws.name, groupBrws.id))
                         return fileContent, fileName
         return '', ''
 
@@ -137,7 +137,7 @@ class ResUsers(models.Model):
                     if not res:
                         continue
                     else:
-                        logging.info('Got Multicad file from group %r-%r with ID %r' % (groupBrws.category_id.name, groupBrws.name, groupBrws.id))
+                        logging.info('Got Multicad file from group %r-%r with ID %r' % (groupBrws.sudo().category_id.name, groupBrws.name, groupBrws.id))
                         return fileContent, fileName
         return '', ''
 
