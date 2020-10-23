@@ -101,6 +101,8 @@ class ProductTemplateExtension(models.Model):
     @api.multi
     def _compute_eng_code_editable(self):
         for productBrws in self:
+            if self.env.user.has_group('plm.group_plm_admin'):
+                productBrws.is_engcode_editable = True
             if productBrws.engineering_code in ['', False, '-']:
                 productBrws.is_engcode_editable = True
             else:
