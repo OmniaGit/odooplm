@@ -71,7 +71,7 @@ class ProductProductExtension(models.Model):
             raise UserError(_("Could not convert source bom to %r" % new_bom_type))
         product_template_id = obj_product_product_brw.product_tmpl_id.id
         bom_brws_list = bom_type.search([('product_tmpl_id', '=', product_template_id),
-                                         ('type', '=', new_bom_type)], order='engineering_revision DESC', limit=1)
+                                         ('type', '=', new_bom_type)], limit=1)
         if bom_brws_list:
             for bom_brws in bom_brws_list:
                 for bom_line in bom_brws.bom_line_ids:
@@ -79,7 +79,7 @@ class ProductProductExtension(models.Model):
                 break
         else:
             eng_bom_brws_list = bom_type.search([('product_tmpl_id', '=', product_template_id),
-                                                 ('type', '=', 'ebom')], order='engineering_revision DESC', limit=1)
+                                                 ('type', '=', 'ebom')], limit=1)
             if not eng_bom_brws_list:
                 logging.info('No EBOM or NBOM found for template id: {}'.format(product_template_id))
                 return []
