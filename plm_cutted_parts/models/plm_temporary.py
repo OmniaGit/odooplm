@@ -91,7 +91,6 @@ class PlmTemporaryCutted(osv.osv.osv_memory):
             y_len = mrp_bom_line_type_object.computeYLenghtByProduct(bom_line_brws.product_id)
             to_write = {
                 'product_id': bom_line_brws.product_id.row_material.id,
-                'cutted_qty': bom_line_brws.product_qty,
                 'product_rounding': bom_line_brws.product_id.bom_rounding,
                 'cutted_type': 'none',
                 'product_qty': bom_line_brws.computeTotalQty(x_len, y_len, bom_line_brws.product_qty),
@@ -106,6 +105,7 @@ class PlmTemporaryCutted(osv.osv.osv_memory):
 
             if not bom_brws_list:
                 values = {'product_tmpl_id': id_template,
+                          'product_id': bom_line_brws.product_id.id,
                           'type': 'normal'}
                 new_bom_brws = mrp_bom_type_object.create(values)
                 values = {'type': 'normal',
@@ -113,9 +113,10 @@ class PlmTemporaryCutted(osv.osv.osv_memory):
                           'product_id': bom_line_brws.product_id.row_material.id,
                           'product_rounding': bom_line_brws.product_id.bom_rounding,
                           'cutted_type': 'server',
-                          'cutted_qty': new_bom_brws.product_id.row_material_factor,
+                          'cutted_qty': bom_line_brws.product_id.row_material_factor,
                           }
-                mrp_bom_line_type_object.create(values)
+                bom_line_brws = mrp_bom_line_type_object.create(values)
+                bom_line_brws.computeCuttedTotalQty()
             else:
                 for bom_brws in bom_brws_list:
                     cuttedLines = bom_brws.bom_line_ids.filtered(lambda line: line.cutted_type == 'server')
