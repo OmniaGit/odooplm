@@ -221,7 +221,9 @@ class plm_compare_bom(osv.osv.osv_memory):
     def computeByQty(self, bom1Dict, bom2Dict):
 
         def checkAndAdd(leftDict, rightDict, listToAppend):
-            for product_id, toCreateValsList in leftDict.items():
+            leftDictCopy = leftDict.copy()
+            rightDictCopy = rightDict.copy()
+            for product_id, toCreateValsList in leftDictCopy.items():
                 if product_id not in rightDict:
                     # Setup new on left side
                     for toCreateVals in toCreateValsList:
@@ -250,7 +252,7 @@ class plm_compare_bom(osv.osv.osv_memory):
                         leftItems.append(self.getLeftBomObj(toCreateVals))
 
                     # Setup right product elements
-                    for toCreateVals in rightDict[product_id]:
+                    for toCreateVals in rightDictCopy[product_id]:
                         toCreateVals['reason'] = _('Changed')
                         rightItems.append(self.getRightBomObj(toCreateVals))
                     del leftDict[product_id]
