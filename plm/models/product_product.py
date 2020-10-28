@@ -62,12 +62,7 @@ class PlmComponent(models.Model):
 
     @api.multi
     def action_show_reference(self):
-        ctx = self.env.context.copy()
-        ctx.update({'active_id': self.id,
-                    'active_ids': self.ids})
-        return {'type': 'ir.actions.client',
-                'tag': 'plm_exploded_view',
-                'context': ctx}
+        return self.action_used_in_bom()
 
     @api.multi
     def _father_part_compute(self, name='', arg={}):
