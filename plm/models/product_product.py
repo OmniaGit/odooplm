@@ -1167,6 +1167,13 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             return tmplBrws.action_view_mos()
         logging.warning('[action_view_mos] product with id %s does not have a related template' % (self.id))
 
+    def NewRevDefault(self):
+        """
+        This function is here to performe the overload of the fields during the new revision
+        """
+        return {}
+    
+    
     def NewRevision(self):
         """
             create a new revision of current component
@@ -1198,6 +1205,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                 ctx['new_revision'] = True
                 new_tmpl_id = product_product_id.product_tmpl_id.with_context(ctx).copy(defaults)
                 newCompBrws = new_tmpl_id.product_variant_id
+                defaults.update(product_product_id.NewRevDefault())
                 defaults['revision_user'] = self.env.uid
                 defaults['revision_date'] = datetime.now()
                 defaults['release_user'] = False
