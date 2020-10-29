@@ -225,7 +225,7 @@
                         help="Created today"/>
                 <separator orientation="vertical"/>
                 <field name="engineering_document_name"/>
-                <field name="engineering_document_name"/>
+                <field name="name"/>
                 <field name="create_uid">
                     <filter name="create_by_me"
                             string="Create by me"
@@ -304,6 +304,12 @@
                                             <tr>
                                                 <td>
                                                     <strong>Name:</strong>
+                                                    <field name="name"/>
+                                                </td>
+                                            </tr>
+                                            <tr t-if="engineering_document_name != False">
+                                                <td>
+                                                    <strong>Engineering Name:</strong>
                                                     <field name="engineering_document_name"/>
                                                 </td>
                                             </tr>

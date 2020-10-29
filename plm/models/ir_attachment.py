@@ -2046,10 +2046,6 @@ class PlmDocument(models.Model):
         component_props, document_props, dbThread = clientArg[0]
         host_name = clientArg[1]
         host_pws = clientArg[2]
-        #  generate component
-        product_product_id = self.env['product.product'].createFromProps(component_props)
-        if not product_product_id:
-            logging.warning("Unable to create / get product_product from %s" % component_props)
         #  generate document
         ir_attachment_id, action = self.env['ir.attachment'].createFromProps(document_props,
                                                                              dbThread,
@@ -2057,6 +2053,11 @@ class PlmDocument(models.Model):
                                                                              host_pws)
         if not ir_attachment_id:
             logging.warning("Unable to create / get ir_attachment from %s" % document_props)
+        #  generate component
+        product_product_id = self.env['product.product'].createFromProps(component_props, ir_attachment_id)
+        if not product_product_id:
+            logging.warning("Unable to create / get product_product from %s" % component_props)
+
         #  generate link
         if product_product_id and ir_attachment_id:
             self.env['plm.component.document.rel'].createFromIds(product_product_id,

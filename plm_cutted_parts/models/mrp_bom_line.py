@@ -29,23 +29,27 @@ from odoo import fields
 from odoo import api
 from odoo import _
 
-
+                
 class MrpBomLineTemplateCuttedParts(models.Model):
     _inherit = 'mrp.bom.line'
+
     x_length = fields.Float(compute='compute_x_length',
                             string=_("X Length"),
                             default=0.0)
     y_length = fields.Float(compute='compute_y_length',
                             string=_("Y Length"),
                             default=0.0)
-    client_x_length = fields.Float('Cutted Qty', default=0)
-    client_y_length = fields.Float('Cutted Qty', default=0)
+    client_x_length = fields.Float('Cutted X Qty', default=0)
+    client_y_length = fields.Float('Cutted Y Qty', default=0)
     cutted_qty = fields.Float('Cutted Qty', default=0)
-        
+
     def compute_x_length(self):
         for bom_line_id in self:
             if bom_line_id.cutted_type == 'server':
-                bom_line_id.x_length = self.computeXLenghtByProduct(bom_line_id.bom_id.product_id)
+                product = bom_line_id.bom_id.product_id
+                if not product:
+                    product = bom_line_id.bom_id.product_tmpl_id.product_variant_id
+                bom_line_id.x_length = self.computeXLenghtByProduct(product)
             elif bom_line_id.cutted_type == 'client':
                 bom_line_id.x_length = bom_line_id.client_x_length
             else:
@@ -54,7 +58,10 @@ class MrpBomLineTemplateCuttedParts(models.Model):
     def compute_y_length(self):
         for bom_line_id in self:
             if bom_line_id.cutted_type == 'server':
-                bom_line_id.y_length = self.computeYLenghtByProduct(bom_line_id.bom_id.product_id)
+                product = bom_line_id.bom_id.product_id
+                if not product:
+                    product = bom_line_id.bom_id.product_tmpl_id.product_variant_id
+                bom_line_id.y_length = self.computeYLenghtByProduct(product)
             elif bom_line_id.cutted_type == 'client':
                 bom_line_id.y_length = bom_line_id.client_y_length
             else:
@@ -64,25 +71,21 @@ class MrpBomLineTemplateCuttedParts(models.Model):
     def computeYLenghtByProduct(self, product_id):
         material_percentage = product_id.wastage_percent or 1
         material_added = product_id.material_added
-        row_material_y_length = product_id.row_material_y_length
-        y_raw_material_length = product_id.row_material.row_material_y_length
-        new_qty = (row_material_y_length * material_percentage) + material_added
-        return new_qty / (1 if y_raw_material_length == 0 else y_raw_material_length)
-        
+        new_qty = (product_id.row_material_y_length * material_percentage) + material_added
+        return new_qty
+
     def computeXLenghtByProduct(self, product_id):
         material_percentage = product_id.wastage_percent or 1
         material_added = product_id.material_added
-        row_material_x_length = product_id.row_material_x_length
-        x_raw_material_length = product_id.row_material.row_material_x_length
-        new_qty = (row_material_x_length * material_percentage) + material_added
-        return new_qty / (1 if x_raw_material_length == 0 else x_raw_material_length)
-    
+        new_qty = (product_id.row_material_x_length * material_percentage) + material_added
+        return new_qty 
+
     def write(self, vals):
         res = super(MrpBomLineTemplateCuttedParts, self).write(vals)
         if not self.env.context.get('skip_cutted_recompute'):
             self.recomputeCuttedQty()
         return res
-    
+
     @api.model
     def create(self, vals):
         res = super(MrpBomLineTemplateCuttedParts, self).create(vals)
@@ -112,5 +115,3 @@ class MrpBomLineTemplateCuttedParts(models.Model):
         cutted_qty = cutted_qty or 1
         ret = ret * cutted_qty
         return ret or 1
-        
-        

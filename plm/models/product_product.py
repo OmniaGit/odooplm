@@ -1694,7 +1694,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                 'context': {}}
 
     @api.model
-    def createFromProps(self, productAttribute):
+    def createFromProps(self, productAttribute, ir_attachment_id=False):
         out_product_produc_id = self.env['product.product']
         found = False
         engineering_name = productAttribute.get('engineering_code', False)
@@ -1709,11 +1709,30 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             found = True
             break
         if found:  # Write
-            if product_produc_id.state not in ['released', 'obsoleted']:
-                out_product_produc_id.write(productAttribute)
+            checkOutByMe = True
+            if ir_attachment_id:
+                checkOutByMe, _username = ir_attachment_id.checkoutByMeWithUser()
+            if checkOutByMe:
+                if product_produc_id.state not in ['released', 'obsoleted']:
+                    out_product_produc_id.write(productAttribute)
         else:  # write
             out_product_produc_id = self.create(productAttribute)
         return out_product_produc_id
+
+    def name_get(self):
+        result = []
+        for prod in self:
+            eng_code = '[%s] ' % (prod.default_code or '%s_%s' % (prod.engineering_code, prod.engineering_revision))
+            eng_code += prod.name
+            result.append((prod.id, eng_code))
+        return result
+
+    @api.model
+    def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None):
+        product_ids = self._search([('engineering_code', operator, name)] + args, limit=limit, access_rights_uid=name_get_uid)
+        ret = self.browse(product_ids).name_get()
+        ret += super(PlmComponent, self)._name_search(name, args, operator, limit, name_get_uid)
+        return ret
 
 
 class PlmTemporayMessage(osv.osv.osv_memory):
