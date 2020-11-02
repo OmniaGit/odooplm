@@ -870,21 +870,29 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             fieldsGet = self.fields_get(customFields)
             for fieldName, fieldDefinition in fieldsGet.items():
                 refId = self.customFieldConvert(fieldDefinition, vals, fieldName)
+                out[fieldName] = False
                 if refId:
                     out[fieldName] = refId.id
         return out
 
     @api.multi
-    def customFieldConvert(self, fieldDefinition, vals, fieldName):
+    def customFieldConvert(self, fieldDefinition, vals, fieldName, force_create=False):
         refId = False
         fieldType = fieldDefinition.get('type', '')
         referredModel = fieldDefinition.get('relation', '')
         oldFieldName = 'plm_m2o_' + fieldName
         cadVal = vals.get(oldFieldName, '')
-        if fieldType == 'many2one':
+        if fieldType == 'many2one' and cadVal:
             try:
                 for refId in self.env[referredModel].search([('name', '=', cadVal)]):
                     return refId
+                if force_create and cadVal:
+                    if referredModel in ['product.product', 'product.template']:
+                        return False    # With False value field is not set
+                    tmp_vals = {
+                        'name': cadVal
+                    }
+                    refId = self.sudo().env[referredModel].create(tmp_vals)
             except Exception as ex:
                 logging.warning(ex)
         return refId
