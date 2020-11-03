@@ -1041,7 +1041,10 @@ class PlmDocument(models.Model):
                               default=True)
     printout = fields.Binary(_('Printout Content'),
                              help=_("Print PDF content."))
-    preview = fields.Image(_('Preview Content'), max_width=1920, max_height=1920, attachment=False)
+    preview = fields.Image(_('Preview Content'),
+                           max_width=1920,
+                           max_height=1920,
+                           attachment=False)
     state = fields.Selection(USED_STATES,
                              _('Status'),
                              help=_("The status of the product."),

@@ -37,6 +37,9 @@
                 'plm'],
     #'installable': False,
     'data': [
+        # Security
+        'security/base_plm_security.xml',
+        # Views
         'views/breakages_view.xml',
         'views/product_view.xml',
         'views/bom_view.xml'
