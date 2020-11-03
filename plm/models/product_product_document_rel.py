@@ -33,14 +33,14 @@ from odoo import _
 class PlmComponentDocumentRel(models.Model):
     _name = 'plm.component.document.rel'
     _description = "Component Document Relations"
-
+    
     component_id = fields.Many2one('product.product',
                                    _('Linked Component'),
-                                   index=True,
+                                   required=True,
                                    ondelete='cascade')
     document_id = fields.Many2one('ir.attachment',
                                   _('Linked Document'),
-                                  index=True,
+                                  required=True,
                                   ondelete='cascade')
 
     _sql_constraints = [

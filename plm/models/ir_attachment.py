@@ -1056,10 +1056,9 @@ class PlmDocument(models.Model):
                                         'component_id',
                                         _('Linked Parts'))
     document_rel_count = fields.Integer(compute=_get_n_rel_doc)
-    datas = fields.Binary(string=_('File Content'),
+    datas = fields.Binary(string='File Content (base64))',
                           compute='_compute_datas',
-                          inverse='_inverse_datas',
-                          method=True)
+                          inverse='_inverse_datas')
     document_type = fields.Selection([('other', _('Other')),
                                       ('2d', _('2D')),
                                       ('3d', _('3D')),
