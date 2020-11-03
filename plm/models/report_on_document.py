@@ -30,7 +30,6 @@ _logger = logging.getLogger(__name__)
 
 class report_plm_document_file(models.Model):
     _name = "report.plm_document.file"
-    _table = "report_plm_document_file"
     _description = "Files details by Directory"
     _auto = False
 
@@ -45,7 +44,7 @@ class report_plm_document_file(models.Model):
                                readonly=True)
     _order = "month"
 
-    @api.model
+    @api.model_cr
     def init(self):
         cr = self.env.cr
         tools.drop_view_if_exists(cr, 'report_plm_document_file')
