@@ -27,10 +27,8 @@
     'category': 'Custom',
     'sequence': 1,
     'summary': '',
-    'depends': [
-        'base',
-        'product',
-        'mail',
+    'depends': ['mail',
+                'plm',
     ],
     'license': 'AGPL-3',
     'description': '',
