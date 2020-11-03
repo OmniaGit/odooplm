@@ -54,11 +54,14 @@
         <field name="type">search</field>
         <field name="priority" eval="15"/>
         <field name="arch" type="xml">
-            <search string="Activities">
+            <search string="Activities">   
                 <filter name="change_orders"
                         string="ECR / ECO"
                         domain="[('activity_type_id.change_activity_type','in', ('request', 'order'))]"
                         />
+                        <field name="res_name"/>
+                        <field name="user_id"/>
+                        <field name="activity_type_id"/>
                 <group expand="0" string="Group By">
                 	<filter string="Activity Type" name="group_activity_type" domain="[]" context="{'group_by': 'activity_type_id'}"/>
                 </group>
