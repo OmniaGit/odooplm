@@ -38,8 +38,8 @@ class MrpBomLineTemplateCuttedParts(models.Model):
     y_length = fields.Float(compute='compute_y_length',
                             string=_("Y Length"),
                             default=0.0)
-    client_x_length = fields.Float('Cutted Qty', default=0)
-    client_y_length = fields.Float('Cutted Qty', default=0)
+    client_x_length = fields.Float('X Cutted Qty', default=0)
+    client_y_length = fields.Float('Y Cutted Qty', default=0)
     cutted_qty = fields.Float('Cutted Qty', default=0)
         
     def compute_x_length(self):

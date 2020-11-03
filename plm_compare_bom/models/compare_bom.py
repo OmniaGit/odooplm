@@ -140,32 +140,32 @@ class plm_compare_bom(osv.osv.osv_memory):
                               required=True,
                               ondelete='cascade')
     type_id1 = fields.Selection(related="bom_id1.type",
-                                string=_('BoM Type'))
+                                string=_('BoM Type 1'))
     part_id1 = fields.Many2one('product.template',
                                related='bom_id1.product_tmpl_id',
-                               string='Part',
+                               string='Part 1',
                                ondelete='cascade')
     revision1 = fields.Integer(related="part_id1.engineering_revision",
-                               string=_("Revision"),
+                               string=_("Revision 1"),
                                store=False)
     description1 = fields.Char(related="part_id1.name",
-                               string=_("Description"),
+                               string=_("Description 1"),
                                store=False)
     bom_id2 = fields.Many2one('mrp.bom',
                               _('BoM 2'),
                               required=True,
                               ondelete='cascade')
     type_id2 = fields.Selection(related="bom_id2.type",
-                                string=_('BoM Type'))
+                                string=_('BoM Type 2'))
     part_id2 = fields.Many2one('product.template',
                                related='bom_id2.product_tmpl_id',
-                               string='Part',
+                               string='Part 2',
                                ondelete='cascade')
     revision2 = fields.Integer(related="part_id2.engineering_revision",
-                               string=_("Revision"),
+                               string=_("Revision 2"),
                                store=False)
     description2 = fields.Char(related="part_id2.name",
-                               string=_("Description"),
+                               string=_("Description 2"),
                                store=False)
     anotinb = fields.One2many('plm.adding.bom',
                               'bom_id',

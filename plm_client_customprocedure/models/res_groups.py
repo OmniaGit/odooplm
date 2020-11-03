@@ -41,12 +41,12 @@ class ResGroups(models.Model):
     _inherit = 'res.groups'
 
     custom_procedure = fields.Binary(string=_('Client CustomProcedure'))
-    custom_procedure_fname = fields.Char(_("New File name"))
-    custom_read_content = fields.Text('Modif Content', default='')
+    custom_procedure_fname = fields.Char(_("Custom Procedure File name"))
+    custom_read_content = fields.Text('Custom Read Content', default='')
 
     custom_multicad = fields.Binary(string=_('Client Multicad'))
-    custom_multicad_fname = fields.Char(_("New File name"))
-    custom_multicad_content = fields.Text('Modif Content', default='')
+    custom_multicad_fname = fields.Char(_("MultiCad File name"))
+    custom_multicad_content = fields.Text('Custom Multicad Content', default='')
 
     def write(self, vals):
         erase = self.env.context.get('erase_multicad', True)

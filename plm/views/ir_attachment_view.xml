@@ -296,9 +296,7 @@
                             <table>
                                 <tr>
                                     <td>
-                                        <img t-att-src="kanban_image('ir.attachment', 'preview', record.id.raw_value)"
-                                            alt=""
-                                            height="150" width="150"/>
+                                        <img t-att-src="kanban_image('ir.attachment', 'preview', record.id.raw_value)" alt="Preview" height="150" width="150"/>
                                     </td>
                                     <td style="padding-left:10px; vertical-align: middle;">
                                         <table>

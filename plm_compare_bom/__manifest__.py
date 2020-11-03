@@ -35,8 +35,10 @@ Allow to compare two boms
 ==============================================
     """,
     'data': [
-            'views/compare_bom_view.xml',
-    ],
+            # security
+            'security/plm_security.xml',
+            # views
+            'views/compare_bom_view.xml'],
     'demo': [],
     'test': [],
     'installable': True,
