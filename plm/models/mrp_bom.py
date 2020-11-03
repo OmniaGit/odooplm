@@ -98,9 +98,8 @@ class MrpBomExtension(models.Model):
 
     bom_revision_count = fields.Integer(related='product_tmpl_id.revision_count')
 
-    @api.model
-    def init(self):
-        self._packed = []
+#     def init(self):
+#         self._packed = []
 
     @api.model
     def _get_in_bom(self, pid, sid=False):

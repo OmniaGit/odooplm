@@ -34,14 +34,17 @@ class PlmComponentDocumentRel(models.Model):
     _name = 'plm.component.document.rel'
     _description = "Component Document Relations"
 
+    name = fields.Char('Relation Name')
     component_id = fields.Many2one('product.product',
                                    _('Linked Component'),
-                                   index=True,
-                                   ondelete='cascade')
+                                   ondelete='cascade',
+                                   required=True,
+                                   )
     document_id = fields.Many2one('ir.attachment',
                                   _('Linked Document'),
-                                  index=True,
-                                  ondelete='cascade')
+                                  ondelete='cascade',
+                                  required=True,
+                                  )
 
     _sql_constraints = [
         ('relation_unique', 'unique(component_id,document_id)', _('Component and Document relation has to be unique !')),

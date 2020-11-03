@@ -86,7 +86,7 @@
 	                 <field name="workflow_date"  readonly="1"/>
 	                 <field name="revision_user"   readonly="1"/>
 	                 <field name="revision_date"  readonly="1"/>
-	                 <field name="is_plm" group="base.group_no_one"/>
+	                 <field name="is_plm" groups="base.group_no_one"/>
 	             </group>
             </xpath>
             <xpath expr="//sheet/group[last()]" position="after">
@@ -104,13 +104,14 @@
                             </group>
                         </group>
                         <group name="doc_preview">
-                            <field
-                                    name="preview"
-                                    widget="image"
-                                    readonly="1"
-                                    nolabel="1"
-                                    img_height="350"
-                                    img_width="350"/>
+                        	<field name="preview" widget="image"/>
+<!--                             <field -->
+<!--                                     name="preview" -->
+<!--                                     widget="image" -->
+<!--                                     readonly="1" -->
+<!--                                     nolabel="1" -->
+<!--                                     img_height="350" -->
+<!--                                     img_width="350"/> -->
                         </group>
                     </group>
                     <notebook>
