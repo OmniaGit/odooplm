@@ -3,14 +3,9 @@
     <menuitem
             id="plm_menu"
             name="PLM"
-            icon="terp-stock"
-            web_icon="plm,static/src/img/PLMmodule.png"
-            web_icon_hover="plm,static/src/img/PLMmodule-hoover.png"
             groups="plm.group_plm_admin,plm.group_plm_integration_user,plm.group_plm_view_user,plm.group_plm_readonly_released"
 
     />
-    <!-- action = "plm.open_board_plm_manager"  -->
-    <!-- Parent menu "PLM Module"  -->
     <menuitem
             id="plm_component_menu_view"
             name="Components"

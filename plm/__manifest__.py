@@ -23,7 +23,7 @@
     'version': '14.0.1',
     'author': 'OmniaSolutions',
     'website': 'https://www.omniasolutions.website',
-    'category': 'Product Lifecycle Management',
+    'category': 'Manufacturing/Product Lifecycle Management',
     'sequence': 15,
     'license': 'AGPL-3',
     'summary': 'PLM Integration with main CAD editors',

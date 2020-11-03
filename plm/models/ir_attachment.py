@@ -778,8 +778,12 @@ class PlmDocument(models.Model):
     #   Overridden methods for this entity
     @api.model
     def _get_filestore(self):
-        dms_Root_Path = tools.config.get('document_path', os.path.join(tools.config['root_path'], 'filestore'))
-        filestore = os.path.join(dms_Root_Path, self.env.cr.dbname)
+        document_path = tools.config.get('document_path')
+        filestore = ''
+        if document_path:
+            filestore = os.path.join(document_path, self.env.cr.dbname)
+        else:
+            filestore = tools.config.filestore(self._cr.dbname)
         try:
             os.makedirs(filestore)
         except OSError as ex:
@@ -1037,8 +1041,7 @@ class PlmDocument(models.Model):
                               default=True)
     printout = fields.Binary(_('Printout Content'),
                              help=_("Print PDF content."))
-    preview = fields.Binary(_('Preview Content'),
-                            help=_("Static preview."))
+    preview = fields.Image(_('Preview Content'), max_width=1920, max_height=1920, attachment=False)
     state = fields.Selection(USED_STATES,
                              _('Status'),
                              help=_("The status of the product."),
@@ -1056,9 +1059,11 @@ class PlmDocument(models.Model):
                                         'component_id',
                                         _('Linked Parts'))
     document_rel_count = fields.Integer(compute=_get_n_rel_doc)
+
     datas = fields.Binary(string='File Content (base64))',
                           compute='_compute_datas',
                           inverse='_inverse_datas')
+
     document_type = fields.Selection([('other', _('Other')),
                                       ('2d', _('2D')),
                                       ('3d', _('3D')),

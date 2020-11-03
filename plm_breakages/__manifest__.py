@@ -35,7 +35,7 @@
     'depends': ['base',
                 'product', 
                 'plm'],
-
+    #'installable': False,
     'data': [
         'views/breakages_view.xml',
         'views/product_view.xml',

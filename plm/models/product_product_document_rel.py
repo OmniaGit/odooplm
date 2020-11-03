@@ -33,15 +33,20 @@ from odoo import _
 class PlmComponentDocumentRel(models.Model):
     _name = 'plm.component.document.rel'
     _description = "Component Document Relations"
-    
+
+
+
     component_id = fields.Many2one('product.product',
                                    _('Linked Component'),
                                    required=True,
                                    ondelete='cascade')
+
+
     document_id = fields.Many2one('ir.attachment',
                                   _('Linked Document'),
                                   required=True,
                                   ondelete='cascade')
+
 
     _sql_constraints = [
         ('relation_unique', 'unique(component_id,document_id)', _('Component and Document relation has to be unique !')),
