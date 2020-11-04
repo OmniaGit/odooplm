@@ -18,7 +18,7 @@
             		<button name="action_switch_pdf" type="object" attrs="{'invisible': ('use_plm_pdf', '=', False)}" class="btn-secondary o_workorder_icon_btn" string="PLM PDF" icon="fa-camera" aria-label="Dropdown menu" title="Dropdown menu"/>
             	</xpath>
             	
-            	<xpath expr="//div[@class='workorder_pdf']" position="after">
+            	<xpath expr="//div[hasclass('workorder_pdf')]" position="after">
             		<div>
             			<field name="plm_pdf" widget="mrp_pdf_viewer_no_reload" attrs="{'invisible': ['|', ('view_plm_pdf', '=', False), ('plm_pdf', '=', False)]}"/>
             		</div>
