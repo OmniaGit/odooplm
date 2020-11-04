@@ -1,25 +1,29 @@
 <?xml version="1.0"?>
 <odoo>
-    <record id="report_product_product_spare_parts_pdf"
-            string="Print Spare Parts Manual"
-            model="product.product"
-            name="plm_spare.pdf_all"
-            report_type="qweb-html"
-            file=""
-    />
-    <record id="report_product_product_spare_parts_pdf_one"
-            string="Print Spare Parts Manual One Level"
-            model="product.product"
-            name="plm_spare.pdf_one"
-            report_type="qweb-html"
-            file=""
-    />
-    <record id="report_product_product_spare_header"
-            model="product.product"
-            string="Print Spare Header"
-            report_type="qweb-html"
-            name="plm_spare.bom_spare_header"
-            file="plm_spare.bom_spare_header"
-            groups="plm.group_plm_admin"
-    />
+     <record id="report_product_product_spare_parts_pdf" model="ir.actions.report">
+        <field name="name">Print Spare Parts Manual</field>
+        <field name="model">product.product</field>
+        <field name="report_type">qweb-html</field>
+        <field name="report_name">plm_spare.pdf_all</field>
+        <field name="binding_type">report</field>
+    </record>
+
+     <record id="report_product_product_spare_parts_pdf_one" model="ir.actions.report">
+        <field name="name">Print Spare Parts Manual One Level</field>
+        <field name="model">product.product</field>
+        <field name="report_type">qweb-html</field>
+        <field name="report_name">plm_spare.pdf_one</field>
+        <field name="binding_type">report</field>
+    </record>
+    
+    <record id="report_product_product_spare_header" model="ir.actions.report">
+        <field name="name">Print Spare Header</field>
+        <field name="model">product.product</field>
+        <field name="report_type">qweb-html</field>
+        <field name="report_name">plm_spare.bom_spare_header</field>
+        <field name="report_file">plm_spare.bom_spare_header</field>
+        <field name="binding_type">report</field>
+        <field name="groups_id" eval="[(6, 0, [ref('plm.group_plm_admin')])]"/>
+    </record>  
+    
 </odoo>

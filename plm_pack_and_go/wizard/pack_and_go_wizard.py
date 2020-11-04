@@ -118,13 +118,13 @@ class PackAndGo(osv.osv.osv_memory):
                                     ('3d2d', _('3D + 2D')),
                                     ('all', _('2D + 3D + PDF')),
                                     ], _('Export Type'), default='all')
-    export_3d = fields.Many2many('pack_and_go_view', 'export3d_pack', 'pack_view_id', 'pack_and_go_id', _('Select Rows to export'))
-    export_2d = fields.Many2many('pack_and_go_view', 'export2d_pack', 'pack_view_id', 'pack_and_go_id', _('Select Rows to export'))
-    export_pdf = fields.Many2many('pack_and_go_view', 'exportpdf_pack', 'pack_view_id', 'pack_and_go_id', _('Select Rows to export'))
+    export_3d = fields.Many2many('pack_and_go_view', 'export3d_pack', 'pack_view_id', 'pack_and_go_id', _('Select 3D Rows to export'))
+    export_2d = fields.Many2many('pack_and_go_view', 'export2d_pack', 'pack_view_id', 'pack_and_go_id', _('Select 2D Rows to export'))
+    export_pdf = fields.Many2many('pack_and_go_view', 'exportpdf_pack', 'pack_view_id', 'pack_and_go_id', _('Select PDF Rows to export'))
     export_other = fields.Many2many('pack_and_go_view', 'exportother_pack', 'pack_view_id', 'pack_and_go_id', _('Select Rows to export'))
 
-    force_types_3d = fields.Many2one('pack_and_go_types', _('Force Types'))
-    force_types_2d = fields.Many2one('pack_and_go_types', _('Force Types'))
+    force_types_3d = fields.Many2one('pack_and_go_types', _('Force 3D Types'))
+    force_types_2d = fields.Many2one('pack_and_go_types', _('Force 2D Types'))
 
     convertion_server_available = fields.Boolean(_('Conversion server available'), default=False)
     datas = fields.Binary(string="Download")

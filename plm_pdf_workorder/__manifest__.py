@@ -39,7 +39,7 @@
     ],
     'demo': [],
     'test': [],
-    'installable': False, # FIXME: mrp_workorder has been moved to enterprise
+    'installable': True, # FIXME: mrp_workorder has been moved to enterprise
     'application': False,
     'auto_install': False,
 }
