@@ -35,10 +35,13 @@
                 ],
     'license': 'AGPL-3',
     'description': '',
-    'data': ['views/non_cad_doc.xml',
-             'views/box_object_rel.xml',
-             'views/plm_box_sequence_data.xml',
-             ],
+    'data': [
+        # security
+        'security/plm_security.xml',
+        # views
+        'views/non_cad_doc.xml',
+        'views/box_object_rel.xml',
+        'views/plm_box_sequence_data.xml'],
     'demo': [],
     'test': [],
     'installable': True,

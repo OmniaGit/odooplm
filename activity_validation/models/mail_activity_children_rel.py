@@ -36,6 +36,7 @@ from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
 class MailActivityChildrenRel(models.Model):
     _name = 'mail.activity.children.rel'
+    _description = "Activiti children relation"
 
     name = fields.Char('Name')
     user_id = fields.Many2one('res.users', 'User')

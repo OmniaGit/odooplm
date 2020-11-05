@@ -27,21 +27,22 @@
     'category': 'Custom',
     'sequence': 1,
     'summary': '',
-    'depends': [
-        'base',
-        'product',
-        'mail',
+    'depends': ['mail',
+                'plm',
     ],
     'license': 'AGPL-3',
     'description': '',
     'data': [
-        #'security/ir.model.access.csv',
+        # security
+        'security/security.xml',
+        # data
         'data/mail_activity_data.xml',
+        # views
         'views/mail_activity_type.xml',
         'views/mail_activity.xml',
         'views/mail_activity_children_rel.xml',
+        # static
         'static/src/xml/import_js.xml',
-        'security/security.xml',
     ],
     'demo': [],
     'test': [],

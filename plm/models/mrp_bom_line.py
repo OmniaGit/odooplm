@@ -200,7 +200,6 @@ class MrpBomLineExtension(models.Model):
     related_bom_ids = fields.One2many(compute='_related_boms',
                                       comodel_name='mrp.bom',
                                       string='Related BOMs',
-                                      digits=0,
                                       readonly=True)
     related_document_ids = fields.One2many(compute='_related_doc_ids',
                                            comodel_name='ir.attachment',

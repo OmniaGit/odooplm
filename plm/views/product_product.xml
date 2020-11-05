@@ -290,7 +290,7 @@
                 <field name="state"/>
             </xpath>
             
-            <xpath expr="//div/div[@class='o_kanban_image']" position="replace">
+            <xpath expr="//div/div[hasclass('o_kanban_image')]" position="replace">
                 <t t-value="record.state.raw_value" t-set="stateToUse"/>
                 <field name="engineering_code"/>-
                 <field name="engineering_revision"/>-

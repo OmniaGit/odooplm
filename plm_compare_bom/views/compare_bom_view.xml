@@ -50,16 +50,17 @@
                 <field name="bom_are_equal" invisible="True"/>
                 <div style="text-align: left; font-size: 18px"
                      attrs="{'invisible': [('bom_are_equal','=', False)]}">
-                    <span class="fa fa-exclamation-triangle" 
-                          style="color:blu;width:100%;text-align:left;font-size:60px"></span>
-                    <br/>Attention: The two bom are equal  !!
+                    <span title="Attentio_bom_equal"
+                          class="fa fa-exclamation-triangle" 
+                          style="color:blu;width:100%;text-align:left;font-size:60px">Attention: The two bom are equal  !!<br/></span>
                 </div>
                 <field name="to_update" invisible="True"/>
                 <div style="text-align: left; font-size: 18px"
                     attrs="{'invisible': [('to_update','=', False)]}">
-                    <span class="fa fa-exclamation-triangle"
-                          style="color:red;width:100%;text-align:left;font-size:60px"></span>
-                    <br/>Attention: there are some change you need to save it !!
+                    <span title="Attention_some_change"
+                          class="fa fa-exclamation-triangle"
+                          style="color:red;width:100%;text-align:left;font-size:60px">Attention: there are some change you need to save it !!<br/></span>
+                    
                     <button type="object" name="update_bom" icon="fa-save"/>
                 </div>                
                 <group col="16" colspan="4">

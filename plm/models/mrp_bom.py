@@ -99,10 +99,6 @@ class MrpBomExtension(models.Model):
     bom_revision_count = fields.Integer(related='product_tmpl_id.revision_count')
 
     @api.model
-    def init(self):
-        self._packed = []
-
-    @api.model
     def _get_in_bom(self, pid, sid=False):
         bom_l_type = self.env['mrp.bom.line']
         bom_line_brws_list = bom_l_type.search([
@@ -180,7 +176,6 @@ class MrpBomExtension(models.Model):
         """
             Return a list of all fathers of a Part (all levels)
         """
-        self._packed = []
         rel_datas = []
         if len(res_ids) < 1:
             return None
@@ -247,7 +242,6 @@ class MrpBomExtension(models.Model):
         """
             Returns a list of all children in a Bom (all levels)
         """
-        self._packed = []
         obj_id, _source_id, last_rev = values
         # get all ids of the children product in structured way like [[id,child_ids]]
         rel_datas = [obj_id, self._explode_bom(self._get_bom(obj_id), False, last_rev)]
@@ -308,7 +302,6 @@ class MrpBomExtension(models.Model):
             Return a list of all children in a Bom taken once (all levels)
         """
         comp_id, _source_id, latest_flag = values
-        self._packed = []
         prod_tmpl_id = self.get_tmplt_id_from_product_id(comp_id)
         bom_id = self._get_bom(prod_tmpl_id)
         explosed_bom_ids = self._explode_bom(bom_id, True, latest_flag)
@@ -321,7 +314,7 @@ class MrpBomExtension(models.Model):
         """
             Execute implosion for a a bom object
         """
-
+        _packed=[]
         def get_product_id(bom_local_obj):
             prod_id = bom_local_obj.product_id.id
             if not prod_id:
@@ -337,9 +330,9 @@ class MrpBomExtension(models.Model):
                 continue
             bom_obj = bom_line_obj.bom_id
             parent_bom_id = bom_obj.id
-            if parent_bom_id in self._packed:
+            if parent_bom_id in _packed:
                 continue
-            self._packed.append(parent_bom_id)
+            _packed.append(parent_bom_id)
             bom_fth_obj = bom_obj.with_context({})
             inner_ids = self._implode_bom(self._get_in_bom(get_product_id(bom_fth_obj)))
             prod_id = bom_fth_obj.product_id.id
@@ -360,7 +353,6 @@ class MrpBomExtension(models.Model):
         """
             Return a list of all fathers of a Part (all levels)
         """
-        self._packed = []
         rel_datas = []
         if len(res_ids) < 1:
             return None
@@ -379,7 +371,6 @@ class MrpBomExtension(models.Model):
         """
             Return a list of all children in a Bom ( level = 0 one level only, level = 1 all levels)
         """
-        self._packed = []
         result = []
         if level == 0 and curr_level > 1:
             return result

@@ -34,7 +34,9 @@
 Download BOM structure files from a component
 ==============================================
     """,
-    'data': ['views/plm_component_action_extended.xml',
+    'data': [# security
+             'security/plm_security.xml',
+             # views'views/plm_component_action_extended.xml',
              'views/ir_parameters.xml'],
     'demo': [],
     'test': [],

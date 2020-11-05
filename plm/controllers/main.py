@@ -69,6 +69,7 @@ class UploadDocument(Controller):
                         'name': filename}
             preview = kw.get('preview', '')
             if preview:
+                #to_write['preview'] = preview.stream.read()
                 val_2 = base64.b64encode(preview.stream.read())
                 to_write['preview'] = val_2
             doc_brws = request.env['ir.attachment'].browse(doc_id)

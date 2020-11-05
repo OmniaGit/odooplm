@@ -21,9 +21,6 @@
         <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
     </record>
 
-
-
-
 	<!-- mail.activity.children.rel  -->
     <record id="mail_activity_validation_children_readonly" model="ir.model.access">
         <field name="name">Mail activity validation readonly</field>
