@@ -1084,6 +1084,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             fieldsGet = obj.fields_get(customFields)
             for fieldName, fieldDefinition in fieldsGet.items():
                 refId = self.customFieldConvert(fieldDefinition, vals, fieldName, force_create=force_create)
+                out[fieldName] = False
                 if refId:
                     out[fieldName] = refId.id
         return out
