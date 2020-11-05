@@ -172,6 +172,7 @@ class MrpBomLineExtension(models.Model):
          ('phantom', _('Sets / Phantom'))],
         _('BoM Type'),
         required=True,
+        default="normal",
         help=_(
             "Phantom BOM: When processing a sales order for this product, the delivery order will contain the raw materials, instead of the finished product."
             " Ship this product as a set of components (kit).")

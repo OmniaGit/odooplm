@@ -44,7 +44,7 @@ class report_plm_document_file(models.Model):
                                readonly=True)
     _order = "month"
 
-    @api.model
+    @api.model_cr
     def init(self):
         cr = self.env.cr
         tools.drop_view_if_exists(cr, 'report_plm_document_file')
@@ -63,6 +63,7 @@ class report_plm_document_file(models.Model):
 
 class report_plm_document_user(models.Model):
     _name = "report.plm_document.user"
+    _table = "report_plm_document_user"
     _description = "Files details by Users"
     _auto = False
 
@@ -111,6 +112,7 @@ class report_plm_document_user(models.Model):
 
 class report_plm_files_partner(models.Model):
     _name = "report.plm_files.partner"
+    _table = "report_plm_files_partner"
     _description = "Files details by Partners"
     _auto = False
 
@@ -144,6 +146,7 @@ class report_plm_files_partner(models.Model):
 
 class report_plm_document_wall(models.Model):
     _name = "report.plm_document.wall"
+    _table = "report_plm_document_wall"
     _description = "Users that did not inserted documents since one month"
     _auto = False
 
