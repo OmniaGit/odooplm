@@ -2085,7 +2085,7 @@ class PlmDocument(models.Model):
                         hostName=False,
                         hostPws=False):
         action = 'upload'
-        if documentAttribute.get("CUTTED_COMP", False) or documentAttribute.get("VIRTUAL", False):
+        if documentAttribute.get("CUTTED_COMP", False) or documentAttribute.get("VIRTUAL", False) or documentAttribute.get('ONLY_COMP', False):
             return False, 'jump'
         name = documentAttribute.get("name", False)
         if not name:
