@@ -26,8 +26,7 @@ Created on 25/mag/2016
 
 import logging
 import tempfile
-from odoo import models, fields, api, _, osv
-from odoo import tools
+from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 import base64
 import os
@@ -36,7 +35,7 @@ import requests
 _logger = logging.getLogger(__name__)
 
 
-class plm_temporary_batch_converter(osv.osv.osv_memory):
+class plm_temporary_batch_converter(models.TransientModel):
     _name = 'plm.convert'
     _description = "Temp Class for batch converter"
 
