@@ -103,6 +103,11 @@ class plm_temporary_batch_converter(osv.osv.osv_memory):
         calculate the conversion extension
         """
         name = self.env.context.get('name', False)
+        active_id = self.env.context.get('active_id', False)
+        active_model = self.env.context.get('active_model', False)
+        if not name:
+            if active_id and active_model:
+                name = self.env[active_model].browse(active_id).name
         if name:
             _, file_extension = os.path.splitext(name)
             _, avilableFormat = self.getCadAndConvertionAvailabe(file_extension)
