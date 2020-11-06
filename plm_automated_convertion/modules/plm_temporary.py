@@ -73,7 +73,7 @@ class plm_temporary_batch_converter(osv.osv.osv_memory):
                          document,
                          targetIntegration,
                          targetExtention,
-                         newFileName=False):
+                         newFileName):
         serverName = self.env['ir.config_parameter'].get_param('plm_convetion_server')
         if not serverName:
             raise Exception("Configure plm_convetion_server to use this functionality")
@@ -90,8 +90,6 @@ class plm_temporary_batch_converter(osv.osv.osv_memory):
             except Exception as _ex:
                 logging.error('Cannot convert file %r' % (document, response.content.decode('utf-8')))
             raise UserError("Conversion of cad server failed, check the cad server log")
-        if not newFileName:
-            newFileName = document.name + targetExtention
         newTarget = os.path.join(tempfile.gettempdir(), newFileName)
         with open(newTarget, 'wb') as f:
             f.write(response.content)
