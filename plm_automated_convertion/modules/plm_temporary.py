@@ -54,17 +54,13 @@ class plm_temporary_batch_converter(models.TransientModel):
     def getAllFiles(self, document):
         out = {}
         attachment = self.env['ir.attachment']
-        full_file_path = document._full_path(document.store_fname)
-        with open(full_file_path, 'rb') as root_file:
-            out['root_file'] = (document.name, root_file.read())
+        out['root_file'] = (document.name, document.datas)
         request = (document.id, [], -1, '', '')
         for outId, _, _, _, _, _ in attachment.CheckAllFiles(request):
             if outId == document.id:
                 continue
             child_document = attachment.browse(outId)
-            child_full_path = child_document._full_path(child_document.store_fname)
-            with open(child_full_path, 'rb') as child_file:
-                out[child_document.name] = child_file.read()
+            out[child_document.name] = child_document.datas
         return out
 
     @api.model
@@ -103,7 +99,7 @@ class plm_temporary_batch_converter(models.TransientModel):
         active_id = self.env.context.get('active_id', False)
         active_model = self.env.context.get('active_model', False)
         if not name:
-            if active_id and active_model:
+            if active_id and active_model and active_model == 'ir.attachment':
                 name = self.env[active_model].browse(active_id).name
         if name:
             _, file_extension = os.path.splitext(name)
@@ -163,7 +159,7 @@ class plm_temporary_batch_converter(models.TransientModel):
                 fileContent = f.read()
                 if fileContent:
                     self.write({'downloadDatas': base64.b64encode(fileContent),
-                                'name': os.path.basename(convertedFile)})
+                                'datas_fname': os.path.basename(convertedFile)})
                     break
             break
         return {'name': _('File Converted'),
@@ -171,6 +167,6 @@ class plm_temporary_batch_converter(models.TransientModel):
                 "view_mode": 'form',
                 'res_model': self._name,
                 'target': 'new',
-                'res_id': self.id[0],
+                'res_id': self.id,
                 'type': 'ir.actions.act_window',
                 'domain': "[]"}
