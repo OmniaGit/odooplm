@@ -54,21 +54,18 @@ class plm_temporary_batch_converter(osv.osv.osv_memory):
     @api.model
     def getAllFiles(self, document):
         out = {}
-        ir_attachment = self.env['ir.attachment']
-        fileStoreLocation = ir_attachment._get_filestore()
-
-        def templateFile(docId):
-            document = ir_attachment.browse(docId)
-            return {document.name: (document.name,
-                                    file(os.path.join(fileStoreLocation, document.store_fname), 'rb'))}
-        out['root_file'] = (document.name,
-                            file(os.path.join(fileStoreLocation, document.store_fname), 'rb'))
-        objDocu = self.env['ir.attachment']
-        request = (document.id, [], -1)
-        for outId, _, _, _, _, _ in objDocu.CheckAllFiles(request):
+        attachment = self.env['ir.attachment']
+        full_file_path = document._full_path(document.store_fname)
+        with open(full_file_path, 'rb') as root_file:
+            out['root_file'] = (document.name, root_file.read())
+        request = (document.id, [], -1, '', '')
+        for outId, _, _, _, _, _ in attachment.CheckAllFiles(request):
             if outId == document.id:
                 continue
-            out.update(templateFile(outId))
+            child_document = attachment.browse(outId)
+            child_full_path = child_document._full_path(child_document.store_fname)
+            with open(child_full_path, 'rb') as child_file:
+                out[child_document.name] = child_file.read()
         return out
 
     @api.model
@@ -88,6 +85,10 @@ class plm_temporary_batch_converter(osv.osv.osv_memory):
                                  params=params,
                                  files=self.getAllFiles(document))
         if response.status_code != 200:
+            try:
+                logging.error('Cannot convert file %r due to error %r' % (document, response.content.decode('utf-8')))
+            except Exception as _ex:
+                logging.error('Cannot convert file %r' % (document, response.content.decode('utf-8')))
             raise UserError("Conversion of cad server failed, check the cad server log")
         if not newFileName:
             newFileName = document.name + targetExtention
@@ -124,13 +125,12 @@ class plm_temporary_batch_converter(osv.osv.osv_memory):
         out = []
         for brwWizard in self:
             _, fileExtension = os.path.splitext(self.document_id.name)
-            cadName, _ = self.getCadAndConvertionAvailabe(fileExtension)
-            newFileName = ''
-            for component in brwWizard.document_id.linkedcomponents:
-                newFileName = component.engineering_code + brwWizard.targetFormat
-            if newFileName == '':
-                newFileName = self.document_id.name + '.' + brwWizard.targetFormat
-            newFilePath = self.getFileConverted(brwWizard.document_id,
+            cadName, _ = brwWizard.getCadAndConvertionAvailabe(fileExtension)
+            if not brwWizard.document_id:
+                raise UserError('Cannot convert missing document! Select it!')
+            clean_name, _ext = os.path.splitext(brwWizard.document_id.name)
+            newFileName = clean_name + brwWizard.targetFormat
+            newFilePath = brwWizard.getFileConverted(brwWizard.document_id,
                                                 cadName,
                                                 brwWizard.targetFormat,
                                                 newFileName)
