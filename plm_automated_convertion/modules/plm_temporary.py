@@ -68,7 +68,9 @@ class plm_temporary_batch_converter(models.TransientModel):
                          document,
                          targetIntegration,
                          targetExtention,
-                         newFileName):
+                         newFileName,
+                         raiseError=True):
+        error = ''
         serverName = self.env['ir.config_parameter'].get_param('plm_convetion_server')
         if not serverName:
             raise Exception("Configure plm_convetion_server to use this functionality")
@@ -81,14 +83,20 @@ class plm_temporary_batch_converter(models.TransientModel):
                                  files=self.getAllFiles(document))
         if response.status_code != 200:
             try:
-                logging.error('Cannot convert file %r due to error %r' % (document, response.content.decode('utf-8')))
+                err = 'Cannot convert file %r due to error %r' % (document, response.content.decode('utf-8'))
+                logging.error(err)
+                error = err
             except Exception as _ex:
-                logging.error('Cannot convert file %r' % (document, response.content.decode('utf-8')))
-            raise UserError("Conversion of cad server failed, check the cad server log")
+                err = 'Cannot convert file %r' % (document, response.content.decode('utf-8'))
+                logging.error(err)
+                error = err
+            if raiseError:
+                raise UserError("Conversion of cad server failed, check the cad server log")
         newTarget = os.path.join(tempfile.gettempdir(), newFileName)
-        with open(newTarget, 'wb') as f:
-            f.write(response.content)
-        return newTarget
+        if not error:
+            with open(newTarget, 'wb') as f:
+                f.write(response.content)
+        return newTarget, error
 
     @api.model
     def calculate_available_extention(self):
@@ -128,7 +136,7 @@ class plm_temporary_batch_converter(models.TransientModel):
                 raise UserError('Cannot convert missing document! Select it!')
             clean_name, _ext = os.path.splitext(brwWizard.document_id.name)
             newFileName = clean_name + brwWizard.targetFormat
-            newFilePath = brwWizard.getFileConverted(brwWizard.document_id,
+            newFilePath, _ = brwWizard.getFileConverted(brwWizard.document_id,
                                                 cadName,
                                                 brwWizard.targetFormat,
                                                 newFileName)

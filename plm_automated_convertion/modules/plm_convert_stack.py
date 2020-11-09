@@ -26,6 +26,7 @@ Created on Sep 7, 2019
 from odoo import models
 from odoo import fields
 from odoo import api
+import os
 
 
 class PlmConvertStack(models.Model):
@@ -41,6 +42,7 @@ class PlmConvertStack(models.Model):
     start_document_id = fields.Many2one('ir.attachment', 'Starting Document')
     end_document_id = fields.Many2one('ir.attachment', 'Converted Document')
     output_name_rule = fields.Char('Output Name Rule')
+    error_string = fields.Text('Error')
     
     def setToConvert(self):
         for convertStack in self:
@@ -53,3 +55,44 @@ class PlmConvertStack(models.Model):
             ret.sequence = ret.id
         return ret
 
+    def generateConvertedDocuments(self):
+        toConvert =  self.search([('conversion_done', '=', False)], order='sequence ASC')
+        for convertion in toConvert:
+            plm_convert = self.env['plm.convert']
+            cadName, _ = plm_convert.getCadAndConvertionAvailabe(convertion.start_format)
+            if not cadName:
+                convertion.error_string = 'Cannot get Cad name'
+                continue
+            if not convertion.start_document_id:
+                convertion.error_string = 'Starting document not set'
+                continue
+            clean_name, _ext = os.path.splitext(convertion.start_document_id.name)
+            newFileName = clean_name + convertion.end_format
+            newFilePath, error = plm_convert.getFileConverted(convertion.start_document_id,
+                                                       cadName,
+                                                       convertion.end_format,
+                                                       newFileName,
+                                                       False)
+            if error:
+                convertion.error_string = error
+                continue
+            if not os.path.exists(newFilePath):
+                convertion.error_string = 'File not converted'
+                continue
+            attachment = self.env['ir.attachment']
+            target_attachment = self.env['ir.attachment']
+            attachment_ids = attachment.search([('name', '=', newFileName)])
+            with open(newFilePath, 'rb') as fileObj:
+                content = fileObj.read()
+                if attachment_ids:
+                    attachment_ids.write({'datas': content})
+                    target_attachment = attachment_ids[0]
+                else:
+                    target_attachment = attachment.create({
+                        'linkedcomponents': [(6, False, convertion.start_document_id.linkedcomponents.ids)],
+                        'name': newFileName,
+                        'datas': content,
+                        'state': convertion.start_document_id.state
+                        })
+            convertion.end_document_id = target_attachment.id
+            convertion.conversion_done = True

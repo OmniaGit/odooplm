@@ -39,6 +39,7 @@
 		                <field name="start_document_id" readonly="True"/>
 		                <field name="end_document_id" readonly="True"/>
 		                <field name="conversion_done"/>
+		                <field name="error_string" readonly="True"/>
 	                </group>
                	</sheet> 
             </form>
@@ -60,6 +61,7 @@
                 <field name="end_document_id"/>
                 <field name="conversion_done"/>
                 <button name="setToConvert" type="object" attrs="{'invisible': [('conversion_done', '=', False)]}" icon="fa-arrow-circle-right"></button>
+                <field name="error_string"/>
             </tree>
         </field>
     </record>
