@@ -38,7 +38,11 @@ in order to properly set this module you need a cad server machine.
 for more information send an e mail at info@omniasolutions.eu
     """,
     'data': ['view/plm_component_action_extended.xml',
-             'view/data.xml'],
+             'view/security.xml',
+             'view/data.xml',
+             'view/plm_convert_rule.xml',
+             'view/plm_convert_stack.xml',
+             ],
     'demo': [],
     'test': [],
     'installable': True,

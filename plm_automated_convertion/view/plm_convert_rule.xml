@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+
+    <record model="ir.ui.view" id="plm_convert_rule_search">
+        <field name="name">plm.convert.rule.search</field>
+        <field name="model">plm.convert.rule</field>
+        <field name="type">search</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <search string="Plm Convert Rule">
+            	<field name="product_category"/>
+            	<field name="output_name_rule"/>
+	            <field name="start_format"/>
+	            <field name="end_format"/>
+                <group expand="0" string="Group By...">
+                    <filter string="Category" icon="terp-personal" domain="[]" context="{'group_by':'product_category'}" name="convert_rule_category"/>
+                </group>
+            </search>
+     	</field>
+    </record>
+
+    <record model="ir.ui.view" id="plm_convert_rule_form">
+        <field name="name">plm.convert.rule.form</field>
+        <field name="model">plm.convert.rule</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Plm Convert Rule">
+            	<sheet>	
+	                <group >
+		                <field name="start_format"/>
+		                <field name="end_format"/>
+		                <field name="product_category"/>
+		                <field name="output_name_rule"/>
+	                </group>
+               	</sheet> 
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="plm_convert_rule_tree">
+        <field name="name">plm.convert.rule.tree</field>
+        <field name="model">plm.convert.rule</field>
+        <field name="type">tree</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <tree string="Plm Convert Rule">
+                <field name="start_format"/>
+                <field name="end_format"/>
+                <field name="product_category"/>
+                <field name="output_name_rule"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="plm_convert_rule_action">
+        <field name="name">Plm Convert Rule</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">plm.convert.rule</field>
+        <field name="view_id" ref="plm_convert_rule_tree"/>
+        <field name="search_view_id" ref="plm_convert_rule_search"/>
+    </record>
+
+    <menuitem
+            id="plm_convert_rule_menu"
+            name="Plm Convert Rule"
+            parent="plm.plm_menu_dictionaries"
+            groups="plm_automated_convertion.group_plm_convert_view"
+            action="plm_convert_rule_action"/>
+
+</data>
+</odoo>
+

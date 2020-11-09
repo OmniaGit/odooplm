@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+
+    <record model="ir.ui.view" id="plm_convert_stack_search">
+        <field name="name">plm.convert.stack.search</field>
+        <field name="model">plm.convert.stack</field>
+        <field name="type">search</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <search string="Plm Convert Stack">
+                <filter icon="terp-go-month" string="Converted" separator="1" name="done_conversions"
+                         domain="[('conversion_done','=', True)]"/>
+                <filter icon="terp-go-month" string="Not Converted" separator="1" name="not_conversions"
+                         domain="[('conversion_done','=', False)]"/>
+            	<field name="product_category"/>
+            	<field name="start_document_id"/>
+	            <field name="start_format"/>
+	            <field name="end_format"/>
+                <group expand="0" string="Group By...">
+                    <filter string="Category" icon="terp-personal" domain="[]" context="{'group_by':'product_category'}" name="convert_stack_category"/>
+                </group>
+            </search>
+     	</field>
+    </record>
+
+    <record model="ir.ui.view" id="plm_convert_stack_form">
+        <field name="name">plm.convert.stack.form</field>
+        <field name="model">plm.convert.stack</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Plm Convert Stack">
+            	<sheet>	
+	                <group >
+		                <field name="sequence"/>
+		                <field name="start_format"/>
+		                <field name="end_format"/>
+		                <field name="product_category"/>
+		                <field name="start_document_id" readonly="True"/>
+		                <field name="end_document_id" readonly="True"/>
+		                <field name="conversion_done"/>
+	                </group>
+               	</sheet> 
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="plm_convert_stack_tree">
+        <field name="name">plm.convert.stack.tree</field>
+        <field name="model">plm.convert.stack</field>
+        <field name="type">tree</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <tree string="Plm Convert Stack">
+                <field name="sequence" widget="handle"/>
+                <field name="start_format"/>
+                <field name="end_format"/>
+                <field name="product_category"/>
+                <field name="start_document_id"/>
+                <field name="end_document_id"/>
+                <field name="conversion_done"/>
+                <button name="setToConvert" type="object" attrs="{'invisible': [('conversion_done', '=', False)]}" icon="fa-arrow-circle-right"></button>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="plm_convert_stack_action">
+        <field name="name">Plm Convert Stack</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">plm.convert.stack</field>
+        <field name="view_id" ref="plm_convert_stack_tree"/>
+        <field name="search_view_id" ref="plm_convert_stack_search"/>
+    </record>
+
+    <menuitem
+            id="plm_convert_stack_menu"
+            name="Plm Convert Stack"
+            parent="plm.plm_menu_dictionaries"
+            groups="plm_automated_convertion.group_plm_convert_view"
+            action="plm_convert_stack_action"/>
+
+</data>
+</odoo>
+
