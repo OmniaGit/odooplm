@@ -92,7 +92,8 @@ class PlmConvertStack(models.Model):
                         'linkedcomponents': [(6, False, convertion.start_document_id.linkedcomponents.ids)],
                         'name': newFileName,
                         'datas': content,
-                        'state': convertion.start_document_id.state
+                        'state': convertion.start_document_id.state,
+                        'is_plm': True,
                         })
             convertion.end_document_id = target_attachment.id
             convertion.conversion_done = True
