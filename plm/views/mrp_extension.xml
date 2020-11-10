@@ -86,15 +86,15 @@
                         icon="fa-folder-open"
                         class="btn btn-sm oe_stat_button"
                         attrs="{'invisible':[('related_document_ids', '=', [])]}"/>
-                <field name="itemnum"/>
-                <field name="itemlbl"/>
+                <field name="itemnum" optional="hide"/>
+                <field name="itemlbl" optional="hide"/>
                 <field name="ebom_source_id" groups="base.group_no_one"/>
             </xpath>
             <xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_id']" position="after">
                 <field name="engineering_revision" readonly="True"/>
-                <field name="state" readonly="True"/>
+                <field name="state" readonly="True" optional="show"/>
                 <field name="description" readonly="True"/>
-                <field name="source_id" string="Source Relation Document"/>
+                <field name="source_id" string="Source Relation Document" optional="hide"/>
             </xpath>
 
             <xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_qty']" position="after">
