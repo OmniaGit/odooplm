@@ -24,30 +24,19 @@ Created on Mar 30, 2016
 @author: Daniel Smerghetto
 """
 from odoo import models
-from odoo import fields
 from odoo import api
 from odoo import _
 from odoo.exceptions import UserError
 import logging
 
 
-class ProductTemplateCuttedParts(models.Model):
-    _inherit = 'product.template'
-    row_material = fields.Many2one('product.product', _("Raw Material Product"))
-    row_material_x_length = fields.Float(_("Raw Material x length"), default=1.0)
-    row_material_y_length = fields.Float(_("Raw Material y length"), default=1.0)
-    wastage_percent = fields.Float(_("Percent Wastage"), default=0.0, help="""
-    Final Qty = (Raw Material x/y length * Percent Wastage) + Material Wastage.
-    So value of 1.10 means 10% of wastage.""")
-    material_added = fields.Float(_("Material Wastage"), default=0.0, help="""
-    Final Qty = (Raw Material x/y length * Percent Wastage) + Material Wastage.
-    So material westage is simply added to the quantity computation.""")
-    is_row_material = fields.Boolean(_("Is Raw Material"))
-    bom_rounding = fields.Float(_("Product Rounding"), default=0.0)
-
-
 class ProductCuttedParts(models.Model):
     _inherit = 'product.product'
+    
+    @api.onchange('is_row_material')
+    def onchange_is_row_material(self):
+        if self.is_row_material:
+            self.row_material = False
 
     @api.onchange('row_material_x_length')
     def onchange_row_material_x_length(self):
