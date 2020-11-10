@@ -35,6 +35,8 @@ import logging
 class ir_attachment(models.Model):
     _inherit = 'ir.attachment'
 
+    is_converted_document = fields.Boolean('Is Converted Document')
+
     def show_convert_wizard(self):
         context = dict(self.env.context or {})
         context['default_document_id'] = self.id

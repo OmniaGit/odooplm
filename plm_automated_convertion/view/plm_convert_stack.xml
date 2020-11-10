@@ -13,6 +13,8 @@
                          domain="[('conversion_done','=', True)]"/>
                 <filter icon="terp-go-month" string="Not Converted" separator="1" name="not_conversions"
                          domain="[('conversion_done','=', False)]"/>
+                <filter icon="terp-go-month" string="Errors" separator="1" name="plm_convert_errors"
+                         domain="[('error_string','not in', [False, ''])]"/>
             	<field name="product_category"/>
             	<field name="start_document_id"/>
 	            <field name="start_format"/>

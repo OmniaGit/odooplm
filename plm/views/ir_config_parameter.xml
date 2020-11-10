@@ -28,7 +28,8 @@
             '.sldprt',
             '.par',
             '.asm',
-            '.psm']</field>
+            '.psm',
+            '.step']</field>
         </record>
 
         <record id="report_indentation_key" model="ir.config_parameter">

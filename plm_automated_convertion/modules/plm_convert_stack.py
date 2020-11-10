@@ -66,9 +66,17 @@ class PlmConvertStack(models.Model):
             if not convertion.start_document_id:
                 convertion.error_string = 'Starting document not set'
                 continue
-            clean_name, _ext = os.path.splitext(convertion.start_document_id.name)
+            document = convertion.start_document_id
+            components = document.linkedcomponents.sorted(lambda line: line.engineering_revision)
+            component = self.env['product.product']
+            if components:
+                component = components[0]
+            rule = '{document.name}_{document.revisionid}'
+            if convertion.output_name_rule:
+                rule = convertion.output_name_rule
+            clean_name = rule.format(**{'component': component, 'document': document, 'env': self.env})
             newFileName = clean_name + convertion.end_format
-            newFilePath, error = plm_convert.getFileConverted(convertion.start_document_id,
+            newFilePath, error = plm_convert.getFileConverted(document,
                                                        cadName,
                                                        convertion.end_format,
                                                        newFileName,
@@ -89,11 +97,13 @@ class PlmConvertStack(models.Model):
                     target_attachment = attachment_ids[0]
                 else:
                     target_attachment = attachment.create({
-                        'linkedcomponents': [(6, False, convertion.start_document_id.linkedcomponents.ids)],
+                        'linkedcomponents': [(6, False, document.linkedcomponents.ids)],
                         'name': newFileName,
                         'datas': content,
                         'state': convertion.start_document_id.state,
                         'is_plm': True,
+                        'engineering_document_name': newFileName,
+                        'is_converted_document': True,
                         })
             convertion.end_document_id = target_attachment.id
             convertion.conversion_done = True

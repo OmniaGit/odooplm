@@ -34,4 +34,6 @@ class PlmConvertRule(models.Model):
     start_format = fields.Char('Start Format')
     end_format = fields.Char('End Format')
     product_category = fields.Many2one('product.category', 'Category')
-    output_name_rule = fields.Char('Output Name Rule')
+    server_id = fields.Many2one('plm.convert.servers', 'Conversion Server')
+    output_name_rule = fields.Char('Output Name Rule', default='{document.name}_{document.revisionid}')
+

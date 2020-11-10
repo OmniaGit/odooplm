@@ -43,6 +43,8 @@ for more information send an e mail at info@omniasolutions.eu
              'view/plm_convert_rule.xml',
              'view/plm_convert_stack.xml',
              'view/ir_cron.xml',
+             'view/ir_attachment.xml',
+             'view/plm_convert_servers.xml',
              ],
     'demo': [],
     'test': [],

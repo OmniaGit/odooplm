@@ -28,10 +28,53 @@
             <form string="Plm Convert Rule">
             	<sheet>	
 	                <group >
-		                <field name="start_format"/>
-		                <field name="end_format"/>
-		                <field name="product_category"/>
+		                <field name="start_format" placeholder=".ipt" required="True"/>
+		                <field name="end_format" placeholder=".step" required="True"/>
+		                <field name="product_category" required="True"/>
+		                <field name="server_id" required="True"/>
 		                <field name="output_name_rule"/>
+	                    <i class="fa fa-info fa-3x text-info float-left" role="img" aria-label="Info" title="Info"/>
+	                    <p>
+	                    	<h3>Output Filename Rule</h3>
+	                   	</p>
+	                    <div>
+	                      <p>
+	                         Available accessors to compute the rule are:
+	                         	<ol>
+		                         	<li> document	: Document that needs to be converted</li>
+		                         	<li> component : Starting from the document to be converted we get the related component</li>
+		                         	<li> env		: Odoo environment</li>
+	                         	</ol>
+	                      </p>
+	                      <p>
+	                        Default rule is {document.name}_{document.revisionid}
+	                      </p>
+	                      <p>
+	                         Example:
+	                      </p>
+	                      <p>
+	                         We have a document with
+	                         	<ol>
+		                         	<li> name	: Abc</li>
+		                         	<li> revisionid : 3</li>
+	                         	</ol>
+	                         We have a component with
+	                         	<ol>
+		                         	<li> name	: Abc_prod</li>
+		                         	<li> engineering_revision : 2</li>
+	                         	</ol>
+	                         Starting from the rule
+	                      </p>
+	                      <p>
+	                         {document.name}_{document.revisionid}_{component.name}_{component.engineering_revision}
+	                      </p>
+	                      <p>
+	                         We will have
+	                      </p>
+	                      <p>
+	                         Abc_3_Abc_prod_2
+	                      </p>
+	                    </div>
 	                </group>
                	</sheet> 
             </form>
@@ -49,6 +92,7 @@
                 <field name="end_format"/>
                 <field name="product_category"/>
                 <field name="output_name_rule"/>
+                <field name="server_id"/>
             </tree>
         </field>
     </record>

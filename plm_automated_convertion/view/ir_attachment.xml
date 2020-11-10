@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record model="ir.ui.view" id="view_attachment_form_plm_convert_hinerit">
+        <field name="name">ir.attachment.convert</field>
+        <field name="model">ir.attachment</field>
+        <field name="priority" eval="1"/>
+        <field name="type">form</field>
+        <field name="inherit_id" ref="plm.view_attachment_form_plm_hinerit"/>
+        <field name="arch" type="xml">
+			<xpath expr="//field[@name='is_plm']" position="before">
+				<field name="is_converted_document" group="base.group_no_one"/>
+			</xpath>
+        </field>
+    </record>
+
+
+
+</odoo>
