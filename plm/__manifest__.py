@@ -91,6 +91,8 @@ Supported Editors :
             'views/plm_cad_open.xml',
             'views/sequence.xml',
             'views/menu.xml',
+            'views/ir_cron.xml',
+            'views/ir_config_parameter.xml',
             # Reports Template
             'report/bom_structure_report_template.xml',
             'report/document_report_templates.xml',

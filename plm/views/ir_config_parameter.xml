@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data noupdate="1">
+        <record id="file_extention_type_rel_2D" model="ir.config_parameter">
+            <field name="key">file_exte_type_rel_2D</field>
+            <field name="value">[
+            '.dwg',
+            '.idw', 
+            '.dxf',
+            '.iges',
+            '.e2', 
+            '.slddrw',
+            '.dft']</field>
+        </record>
+
+        <record id="file_extention_type_rel_3D" model="ir.config_parameter">
+            <field name="key">file_exte_type_rel_3D</field>
+            <field name="value">[
+            '.e3', 
+            '.iam',
+            '.ipt', 
+            '.sldasm',
+            '.sldprt',
+            '.par',
+            '.asm',
+            '.psm']</field>
+        </record>
+
+        <record id="report_indentation_key" model="ir.config_parameter">
+            <field name="key">REPORT_INDENTATION_KEY</field>
+            <field name="value">- </field>
+        </record>
+
+        <record id="parameter_last_dt_preview_update" model="ir.config_parameter">
+            <field name="key">LAST_DT_PREVIEW_UPDATE</field>
+            <field name="value">False</field>
+        </record>
+
+        <record id="action_update_doc_type" model="ir.actions.server">
+            <field name="name">Recompute Doc Type</field>
+            <field name="type">ir.actions.server</field>
+            <field name="state">code</field>
+            <field name="model_id" ref="base.model_ir_attachment"/>
+<!--             <field name="binding_model_id" ref="base.model_ir_attachment"/> enable to have in action menu-->
+            <field name="code">
+records._compute_document_type()
+            </field>
+        </record>
+
+    </data>
+</openerp>
