@@ -1,53 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
     <data>
-       <record id="plm_missing_bom_tree_view" model="ir.ui.view">
-            <field name="name">plm.missing.bom.tree</field>
-            <field name="model">plm.missing.bom</field>
-            <field name="type">tree</field>
-        	<field name="priority" eval="10"/>
-            <field name="arch" type="xml">
-                <tree string="BoM Relations in Bom 2"
-            	decoration-bf="reason != ''"
-            	decoration-success="reason == 'Added'"
-            	decoration-warning="reason == 'Changed'"
-            	decoration-muted="reason == 'Changed Qty'"
-                >
-                    <field name="itemnum" select="True"/>
-                    <field name="bom_idrow" invisible="True"/>
-                    <field name="part_id" select="True"/>
-                    <field name="revision" select="True"/>
-                    <field name="description" select="True"/>
-                    <field name="itemqty" select="True"/>
-                    <field invisible="True" name="reason"/>
-                </tree>
-            </field>
-        </record>
-
-
-        <record id="plm_adding_bom_tree_view" model="ir.ui.view">
-            <field name="name">plm.adding.bom.tree</field>
-            <field name="model">plm.adding.bom</field>
-            <field name="type">tree</field>
-            <field name="priority" eval="10"/>
-            <field name="arch" type="xml">
-                <tree 
-            	decoration-bf="reason != ''"
-            	decoration-success="reason == 'Added'"
-            	decoration-warning="reason == 'Changed'"
-            	decoration-muted="reason == 'Changed Qty'"
-             	string="BoM Relations in Bom 1">
-                    <field name="itemnum" select="True"/>
-                    <field name="bom_idrow" invisible="True"/>
-                    <field name="part_id" select="True"/>
-                    <field name="revision" select="True"/>
-                    <field name="description" select="True"/>
-                    <field name="itemqty" select="True"/>
-                    <field invisible="True" name="reason"/>
-                </tree>
-            </field>
-        </record>
-
 
         <record model="ir.ui.view" id="view_plm_compare_bom">
             <field name="name">Compare BoMs</field>
@@ -56,7 +9,7 @@
             <field name="priority" eval="10"/>
             <field name="arch" type="xml">
                 <form string="Compare BoMs">
-                    <label string="This wizard will allow to compare two Bill of Materials." colspan="4"/>
+                    <div>This wizard will allow to compare two Bill of Materials."</div>
                     <group col="2" colspan="4">
                     	<field name="bom_id1"/>
                     	<field name="bom_id2"/>
@@ -93,7 +46,22 @@
         <field name="priority" eval="15"/>
         <field name="arch" type="xml">
             <form string="Visualize BoM">
-                <group col="8" colspan="4">
+                <field name="bom_are_equal" invisible="True"/>
+                <div style="text-align: left; font-size: 18px"
+                     attrs="{'invisible': [('bom_are_equal','=', False)]}">
+                    <span class="fa fa-exclamation-triangle" 
+                          style="color:blu;width:100%;text-align:left;font-size:60px"></span>
+                    <br/>Attention: The two bom are equal  !!
+                </div>
+                <field name="to_update" invisible="True"/>
+                <div style="text-align: left; font-size: 18px"
+                    attrs="{'invisible': [('to_update','=', False)]}">
+                    <span class="fa fa-exclamation-triangle"
+                          style="color:red;width:100%;text-align:left;font-size:60px"></span>
+                    <br/>Attention: there are some change you need to save it !!
+                    <button type="object" name="update_bom" icon="fa-save"/>
+                </div>                
+                <group col="16" colspan="4">
 	                <group col="4" colspan="4">
 	                	<field name="bom_id1" readonly="True"/>
 	                	<field name="type_id1" readonly="True"/>
@@ -109,18 +77,71 @@
 	              		<field name="description2" readonly="True"/>
 	                </group>
                 </group>
-                <notebook colspan="4">
-	                <page string="Differences Between BoMs">
-	                    <group colspan="4" col="4">
-	                        <group col="2" colspan="2">
-			                	<field colspan="2" name="anotinb" nolabel="1" widget="one2many_list" readonly="True"/>
-	                        </group>
-	                    	<group col="2" colspan="2">
-	                    		<field colspan="2" name="bnotina" nolabel="1" widget="one2many_list" readonly="True"/>
-	                		</group>
-	            		</group>
-	                </page>
-                </notebook>
+                <group colspan="4" col="4">
+                    <group col="2" colspan="2">
+               	        <field colspan="2" name="anotinb" nolabel="1" readonly="True">
+               	            <tree  decoration-bf="reason != ''"
+                                   decoration-success="reason == 'added'"
+                                   decoration-warning="reason == 'changed'"
+                                   decoration-muted="reason == 'changed_qty'">
+                                    <button name="delete_bom_line"
+                                            type="object"
+                                            string="Delete Left"
+                                            class="oe_stat_button"
+                                            icon="fa-trash-o"/>
+               	                    <field name="itemnum" select="True"/>
+                                    <field name="bom_idrow" groups="base.group_no_one"/>
+                                    <field name="part_id" select="True"/>
+                                    <field name="revision" select="True"/>
+                                    <field name="description" select="True"/>
+                                    <field name="itemqty" select="True"/>
+                                    <field name="reason" groups="base.group_no_one"/>
+                                    <button name="copy_right_left"
+                                            type="object"
+                                            string="Copy Left"
+                                            class="oe_stat_button"
+                                            icon="fa-angle-right"/>
+                                    <button name="move_right_left"
+                                            type="object"
+                                            string="Move Left"
+                                            class="oe_stat_button"
+                                            icon="fa-angle-double-right"/>                                        
+               	             </tree>
+               	        </field>
+                    </group>
+                 	<group col="2" colspan="2">
+                 		<field colspan="2" name="bnotina" nolabel="1" readonly="True">
+                 		     <tree decoration-bf="reason != ''"
+                                   decoration-success="reason == 'added'"
+                                   decoration-warning="reason == 'changed'"
+                                   decoration-muted="reason == 'changed_qty'">
+                                    <button name="copy_left_right"
+                                            type="object"
+                                            string="Copy Right"
+                                            class="oe_stat_button"
+                                            icon="fa-angle-left"/>
+                                    <button name="move_left_left"
+                                            type="object"
+                                            string="Move Left"
+                                            class="oe_stat_button"
+                                            icon="fa-angle-double-left"/>
+                 		        <field name="itemnum" select="True"/>
+                                    <field name="bom_idrow" groups="base.group_no_one"/>
+                                    <field name="part_id" select="True"/>
+                                    <field name="revision" select="True"/>
+                                    <field name="description" select="True"/>
+                                    <field name="itemqty" select="True"/>
+                                    <field name="reason" groups="base.group_no_one"/>
+                                    <button name="delete_bom_line"
+                                            type="object"
+                                            string="Delete Left"
+                                            class="oe_stat_button"
+                                            icon="fa-trash-o"/>
+                            </tree>  
+                        </field>
+             		</group>
+         		</group>
+
             </form>
         </field>
      </record>
