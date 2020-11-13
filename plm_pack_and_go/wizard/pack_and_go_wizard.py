@@ -43,6 +43,7 @@ _logger = logging.getLogger(__name__)
 
 class AvailableTypes(osv.osv.osv_memory):
     _name = 'pack_and_go_types'
+    _description = "Description of pack and go"
 
     name = fields.Char(_('Name'))
     pack_and_go_view_id = fields.Many2one('pack_and_go_view')
@@ -50,6 +51,7 @@ class AvailableTypes(osv.osv.osv_memory):
 
 class AdvancedPackView(osv.osv.osv_memory):
     _name = 'pack_and_go_view'
+    _description = "Manage pack view for exporting"
 
     @api.model
     def _getComponentDescription(self):
@@ -86,7 +88,7 @@ class AdvancedPackView(osv.osv.osv_memory):
 
 class PackAndGo(osv.osv.osv_memory):
     _name = 'pack.and_go'
-    _inherit = 'ir.attachment'
+    _description = "Main wizard collector for pack and go"
 
     def setComponentFromContext(self):
         """
@@ -124,7 +126,9 @@ class PackAndGo(osv.osv.osv_memory):
     force_types_3d = fields.Many2one('pack_and_go_types', _('Force Types'))
     force_types_2d = fields.Many2one('pack_and_go_types', _('Force Types'))
 
-    convertion_server_available = fields.Boolean(_('Convertion server available'), default=False)
+    convertion_server_available = fields.Boolean(_('Conversion server available'), default=False)
+    datas = fields.Binary(string="Download")
+    datas_fname = fields.Char(string="File Name")
 
     @api.multi
     def computeExportRelField(self, forceType=False):
@@ -321,6 +325,11 @@ class PackAndGo(osv.osv.osv_memory):
         """
             action to import the data
         """
+
+        nonEmptyBoMError = UserError(_('You have to compute a non-empty BoM first.'))
+        if not self.export_3d and not self.export_2d and not self.export_pdf and not self.export_other:
+            raise nonEmptyBoMError
+
         def checkCreateFolder(path):
             if os.path.exists(path):
                 shutil.rmtree(path, ignore_errors=True)
@@ -376,12 +385,14 @@ class PackAndGo(osv.osv.osv_memory):
             shutil.copyfile(filePath, outFilePath)
 
         def exportSingle(docBws):
-            fileName = os.path.join(tmpSubFolder, self.env.cr.dbname, docBws.store_fname)
-            if os.path.exists(fileName):
-                outFilePath = os.path.join(outZipFile, docBws.datas_fname)
-                shutil.copyfile(fileName, outFilePath)
-            else:
-                logging.error('Unable to export file from document ID %r. File %r does not exists.' % (docBws.id, fileName))
+            fromFile = docBws._full_path(docBws.store_fname)
+            if not os.path.exists(fromFile):
+                fromFile = os.path.join(tmpSubFolder, docBws.env.cr.dbname, docBws.store_fname)
+                if os.path.exists(fromFile):
+                    outFilePath = os.path.join(outZipFile, docBws.datas_fname)
+                    shutil.copyfile(fromFile, outFilePath)
+                else:
+                    logging.error('Unable to export file from document ID %r. File %r does not exists.' % (docBws.id, docBws.datas_fname))
 
         export2D()
         export3D()
