@@ -360,9 +360,10 @@ class PackAndGo(osv.osv.osv_memory):
         def exportPdf():
             for lineBrws in self.export_pdf:
                 docBws = lineBrws.document_id
-                outFilePath = os.path.join(outZipFile, docBws.name + '.' + 'pdf')
-                with open(outFilePath, 'wb') as fileObj:
-                    fileObj.write(base64.b64decode(docBws.printout))
+                if docBws and docBws.printout:
+                    outFilePath = os.path.join(outZipFile, docBws.name + '.' + 'pdf')
+                    with open(outFilePath, 'wb') as fileObj:
+                        fileObj.write(base64.b64decode(docBws.printout))
 
         def exportOther():
             for lineBrws in self.export_other:
