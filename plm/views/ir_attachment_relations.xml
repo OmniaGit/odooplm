@@ -9,10 +9,12 @@
             <field name="arch" type="xml">
                 <form string="Show Document Relation">
                 <sheet>	
+                <field name="configuration" readonly="True"/>
+                <field name="link_kind" readonly="True"/>
                 <group colspan="4" col="4">
 	               	<separator colspan="4" string="Parent Preview"/>
 	                <group colspan="2" col="2">
-	                    <field name="parent_id" readonly="True"/>
+	                    <field name="parent_id" readonly="True" domain="[('is_plm', '=', True)]"/>
 	                    <field name="parent_revision" readonly="True"/>
 	                    <field name="parent_state" readonly="True"/>
 	                </group>
@@ -27,7 +29,7 @@
   					<newline/>
 	            	<separator colspan="4" string="Child Preview"/>
 	                <group colspan="2" col="2">
-	                    <field name="child_id" readonly="True"/>
+	                    <field name="child_id" readonly="True" domain="[('is_plm', '=', True)]"/>
 	                    <field name="child_revision" readonly="True"/>
 	                    <field name="child_state" readonly="True"/>
 	                </group>
@@ -42,6 +44,27 @@
                 </group>
                	</sheet> 
                </form>
+            </field>
+        </record>
+
+        <record id="plm_docbom_form_view_readonly" model="ir.ui.view">
+            <field name="name">plm.docbom.form.view.readonly</field>
+            <field name="model">ir.attachment.relation</field>
+            <field name="inherit_id" ref="plm.plm_docbom_form_view" />
+            <field name="groups_id" eval="[(6, 0, [ref('plm.group_plm_admin')])]" />                
+            <field name="arch" type="xml">                                   
+                <field name="parent_id" position="attributes">
+                   <attribute name="readonly">0</attribute>                   
+                </field>                             
+                <field name="child_id" position="attributes">
+                   <attribute name="readonly">0</attribute>                   
+                </field>  
+                <field name="configuration" position="attributes">
+                   <attribute name="readonly">0</attribute>                   
+                </field>                             
+                <field name="link_kind" position="attributes">
+                   <attribute name="readonly">0</attribute>                   
+                </field>
             </field>
         </record>
 
