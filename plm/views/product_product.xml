@@ -87,7 +87,19 @@
                             <group name="group_general">
                                 <field name="categ_id" string="Category"/>
                             </group>
-                            <group colspan="4" col="4" name="technical_infos_group">
+                            <group col="4" colspan="4" name='uom_weight'>
+                                <label for="weight"/>
+                                <div class="o_row" name="weight" attrs="{'readonly':[('state','in',['released','obsoleted'])]}">
+                                    <field name="weight" attrs="{'readonly':[('state','in',['released','obsoleted'])]}" digits="[14,3]"/>
+                                    <span><field name="weight_uom_name"/></span>
+                                </div>
+                                <field name="uom_id"
+                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                                <field name="uom_po_id"
+                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"
+                                       groups="base.group_no_one"/>
+                            </group>
+                            <group colspan="4" col="4" name="technical_infos_group" string="Material / Surface / Treatment">
                                 <field name="tmp_material"
                                        attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
                                 <field name="engineering_material"
@@ -100,18 +112,9 @@
                                        attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
                                 <field name="engineering_treatment"
                                        attrs="{'readonly':[('state','in',['released','obsoleted'])]}" colspan="2" groups='base.group_no_one'/>
-                                <label for="weight"/>
-                                <div class="o_row" name="weight" attrs="{'readonly':[('state','in',['released','obsoleted'])]}">
-                                    <field name="weight" attrs="{'readonly':[('state','in',['released','obsoleted'])]}" digits="[14,3]"/>
-                                    <span><field name="weight_uom_name"/></span>
-                                </div>
-                                <field name="uom_id"
-                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
-                                <field name="uom_po_id"
-                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"
-                                       groups="base.group_no_one"/>
                             </group>
-                            <group col="4" colspan="4">
+                            <group col="4" colspan="4" string="Standard Description Parameters">
+<!--                             	<a target="new"  href="https://www.omniasolutions.website/blog/developer-and-it-here-you-will-find-post-regarding-very-technical-aspect-of-programming-and-it-those-thinks-are-daily-used-by-omniasolutions-and-we-hope-you-that-will-help-you-3/post/standard-description-39" title="Standard description parameters info" colspan="4"><i class="fa fa-info-circle"></i></a> -->
                                 <field name="std_umc1"
                                        attrs="{'readonly':[('std_umc1','=',False),('state','in',['released','obsoleted'])]}"/>
                                 <field name="std_value1"
@@ -125,7 +128,7 @@
                                 <field name="std_value3"
                                        attrs="{'readonly':[('std_umc3','=',False),('state','in',['released','obsoleted'])]}"/>
                             </group>
-                            <group col="4" colspan="4" name="workflow_section">
+                            <group col="4" colspan="4" name="workflow_section" string="Workflow">
 				                 <field name="release_user"   readonly="1"/>
 				                 <field name="release_date"  readonly="1"/>
 				                 <field name="revision_user"   readonly="1"/>
@@ -216,31 +219,34 @@
             </xpath>
             <xpath expr="//notebook[last()]" position="inside">
                 <page name="technical_infos" string="Technical Information">
-	                <group colspan="4" col="4" name="technical_infos_group">
-	                    <field name="tmp_material"
-	                           attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
-                        <field name="engineering_material"
-                               attrs="{'readonly':[('state','in',['released','obsoleted'])]}" colspan="2" groups='base.group_no_one'/>
-	                    <field name="tmp_surface"
-	                           attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
-                        <field name="engineering_surface"
-                               attrs="{'readonly':[('state','in',['released','obsoleted'])]}" colspan="2" groups='base.group_no_one'/>
-	                    <field name="tmp_treatment"
-	                           attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
-                        <field name="engineering_treatment"
-                               attrs="{'readonly':[('state','in',['released','obsoleted'])]}" colspan="2" groups='base.group_no_one'/>
-	                    <label for="weight"/>
-                        <div class="o_row" name="weight" attrs="{'readonly':[('state','in',['released','obsoleted'])]}">
-                            <field name="weight" attrs="{'readonly':[('state','in',['released','obsoleted'])]}" digits="[14,3]"/>
-                            <span><field name="weight_uom_name"/></span>
-                        </div>
-	                    <field name="uom_id"
-	                           attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
-	                    <field name="uom_po_id"
-	                           attrs="{'readonly':[('state','in',['released','obsoleted'])]}"
-	                           groups="base.group_no_one"/>
-	                </group>
-                            <group col="4" colspan="4">
+                            <group col="4" colspan="4" name='uom_weight'>
+                                <label for="weight"/>
+                                <div class="o_row" name="weight" attrs="{'readonly':[('state','in',['released','obsoleted'])]}">
+                                    <field name="weight" attrs="{'readonly':[('state','in',['released','obsoleted'])]}" digits="[14,3]"/>
+                                    <span><field name="weight_uom_name"/></span>
+                                </div>
+                                <field name="uom_id"
+                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                                <field name="uom_po_id"
+                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"
+                                       groups="base.group_no_one"/>
+                            </group>
+                            <group colspan="4" col="4" name="technical_infos_group" string="Material / Surface / Treatment">
+                                <field name="tmp_material"
+                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                                <field name="engineering_material"
+                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}" colspan="2" groups='base.group_no_one'/>
+                                <field name="tmp_surface"
+                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                                <field name="engineering_surface"
+                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}" colspan="2" groups='base.group_no_one'/>
+                                <field name="tmp_treatment"
+                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                                <field name="engineering_treatment"
+                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}" colspan="2" groups='base.group_no_one'/>
+                            </group>
+                            <group col="4" colspan="4" string="Standard Description Parameters">
+<!--                                 <a target="new"  href="https://www.omniasolutions.website/blog/developer-and-it-here-you-will-find-post-regarding-very-technical-aspect-of-programming-and-it-those-thinks-are-daily-used-by-omniasolutions-and-we-hope-you-that-will-help-you-3/post/standard-description-39" title="Standard description parameters info" colspan="4"><i class="fa fa-info-circle"></i></a> -->
                                 <field name="std_umc1"
                                        attrs="{'readonly':[('std_umc1','=',False),('state','in',['released','obsoleted'])]}"/>
                                 <field name="std_value1"
@@ -254,7 +260,7 @@
                                 <field name="std_value3"
                                        attrs="{'readonly':[('std_umc3','=',False),('state','in',['released','obsoleted'])]}"/>
                             </group>
-                            <group col="4" colspan="4" name="workflow_section">
+                            <group col="4" colspan="4" name="workflow_section" string="Workflow">
 				                 <field name="release_user"   readonly="1"/>
 				                 <field name="release_date"  readonly="1"/>
 				                 <field name="revision_user"   readonly="1"/>
