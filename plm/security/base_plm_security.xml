@@ -178,6 +178,7 @@
     <record id="plm_backupdoc_view" model="ir.model.access">
         <field name="name">PLM Back Up Document</field>
         <field name="model_id" ref="model_plm_backupdoc"/>
+        <field name="group_id" eval="group_plm_view_user"/>
         <field name="perm_read" eval="1"/>
         <field name="perm_write" eval="0"/>
         <field name="perm_create" eval="0"/>
