@@ -1060,7 +1060,8 @@ class PlmDocument(models.Model):
                                         'plm_component_document_rel',
                                         'document_id',
                                         'component_id',
-                                        _('Linked Parts'))
+                                        _('Linked Parts'),
+                                        ondelete='cascade')
     document_rel_count = fields.Integer(compute=_get_n_rel_doc)
 
     datas = fields.Binary(string='File Content (base64))',
