@@ -24,6 +24,7 @@ Created on 25 Aug 2016
 
 @author: Daniel Smerghetto
 """
+from . import base
 from . import product_product_document_rel
 from . import plm_treatment
 from . import plm_finishing

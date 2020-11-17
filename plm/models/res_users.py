@@ -47,5 +47,8 @@ class ResUsersExt(models.Model):
             Omnia CustomProcedure module make an overload of this function and enable macros
         '''
         return '', ''
-
+    
+    @api.model
+    def koo_context_get(self):
+        return dict(self.context_get())
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

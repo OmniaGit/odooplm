@@ -48,8 +48,8 @@ class IrAttachment(models.Model):
         get All version product_tempate based on this one
         """
         for ir_attachment_id in self:
-            ir_attachment_id.count_plm_document_action_syncronize = self.env['plm.document.action.syncronize'].search_count([('ir_attachment_id', '=', ir_attachment_id.id),
-                                                                                                                             ('done', '=', False)])
+            ir_attachment_id.count_plm_document_action_syncronize = 0 or self.env['plm.document.action.syncronize'].search_count([('ir_attachment_id', '=', ir_attachment_id.id),
+                                                                                                                                  ('done', '=', False)])
 
     @api.model
     def thereIsPendingSyncronizations(self, plm_remote_server_id):

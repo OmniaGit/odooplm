@@ -2314,7 +2314,7 @@ class PlmDocument(models.Model):
         return True
 
     @api.model
-    def preCheckInRecursive(self, doc_props, forceCheckInModelByDrawing=True, recursion=True):
+    def preCheckInRecursive(self, doc_props, forceCheckInModelByDrawing=True, recursion=True, onlyActiveDoc=False):
         out = {
             'to_check_in': [],
             'to_ask': [],
@@ -2323,7 +2323,7 @@ class PlmDocument(models.Model):
             'to_check': [],
             'already_checkin': [],
                }
-        evaluated = {}
+        evaluated = []
         doc_props = json.loads(doc_props)
         doc_id = doc_props.get('_id', False)
         if not doc_id:
@@ -2331,7 +2331,11 @@ class PlmDocument(models.Model):
             if not doc_id:
                 return out
 
-        def setupInfos(out, docBrws, PLM_DT_DELTA, is_root, doc_dict_3d=False):
+        def setupInfos(out,
+                       docBrws,
+                       PLM_DT_DELTA,
+                       is_root,
+                       doc_dict_3d=False):
             
             def appendItem(resDict, to_append):
                 for elem in resDict:
@@ -2342,6 +2346,7 @@ class PlmDocument(models.Model):
                 
             tmp_dict = {}
             doc_id = docBrws.id
+            evaluated.append(doc_id)
             tmp_dict['id'] = docBrws.id
             tmp_dict['datas_fname'] = docBrws.name
             tmp_dict['name'] = docBrws.name
@@ -2363,7 +2368,16 @@ class PlmDocument(models.Model):
                         doc_dict_3d['msg'] = 'Model %r related to drawing %r is not updated.' % (doc_dict_3d['name'], tmp_dict['name'])
                         appendItem(out['to_block'], doc_dict_3d)
                 elif forceCheckInModelByDrawing:
-                    doc_dict_3d['msg'] = 'Model %r related to drawing %r must be checked in or in check-out by another user.' % (doc_dict_3d['name'], tmp_dict['name'])
+                    msg = 'Model %r related to drawing %r ' % (doc_dict_3d['name'], tmp_dict['name'])
+                    if doc_dict_3d['check_in']:
+                        msg += "is Checked in"
+                    if (not doc_dict_3d['check_in'] and not doc_dict_3d['check_out_by_me']):
+                        msg += "is checke-out by %r " % doc_dict_3d['check_out_by_me']
+                    elif doc_dict_3d['check_out_by_me']:
+                        msg += "is in check-out by you."
+                    if doc_dict_3d['plm_cad_open_newer']:
+                        msg += 'Cad date not aligned %r ' % doc_dict_3d['plm_cad_open_newer']
+                    doc_dict_3d['msg'] = msg
                     appendItem(out['to_block'], doc_dict_3d)
                     if doc_dict_3d in out['to_check']:
                         out['to_check'].remove(doc_dict_3d)
@@ -2417,41 +2431,85 @@ class PlmDocument(models.Model):
                         appendItem(out['to_info'], tmp_dict)
             return tmp_dict
             
-        def recursion(doc_id, out, evaluated, PLM_DT_DELTA, is_root=False, forceCheckInModelByDrawing=True, struct_type='3D', recursion=True):
-            if doc_id in evaluated.keys():
+        def recursionf(doc_id,
+                       out,
+                       evaluated,
+                       PLM_DT_DELTA,
+                       is_root=False,
+                       forceCheckInModelByDrawing=True,
+                       struct_type='3D',
+                       recursion=True):
+            if doc_id in evaluated:
                 return {}
-            evaluated[doc_id] = {}
             docs3D = self.browse(doc_id)
             docs2D = self.env['ir.attachment']
             fileType = docs3D.document_type.upper()
             if fileType == '2D':
+                setupInfos(out,
+                           docs3D,
+                           PLM_DT_DELTA,
+                           is_root)
+                if onlyActiveDoc:
+                    return 
+                is_root = False
                 docs3D = self.browse(list(set(self.getRelatedLyTree(docs3D.id))))
-                setupInfos(out, docs3D, PLM_DT_DELTA, is_root)
             for doc3D in docs3D:
                 doc_id_3d = doc3D.id
-                doc_dict_3d = setupInfos(out, doc3D, PLM_DT_DELTA, is_root)
+                if doc_id_3d in evaluated:
+                    continue
+                doc_dict_3d = setupInfos(out,
+                                         doc3D,
+                                         PLM_DT_DELTA,
+                                         is_root)
+                if not doc3D.isCheckedOutByMe():
+                    continue
                 if struct_type != '3D':
-                    docs2D = self.browse(list(set(self.getRelatedLyTree(doc_id_3d))))
-                    docs2D += docs2D
+                    docs2D += self.browse(list(set(self.getRelatedLyTree(doc_id_3d))))
                     for doc2d in docs2D:
-                        if fileType == '2D' and is_root and doc2d.id != doc_id:
-                            is_root = False
-                        setupInfos(out, doc2d, PLM_DT_DELTA, is_root, doc_dict_3d)
-                        if recursion:
-                            recursion(doc2d.id, out, evaluated, PLM_DT_DELTA, False, forceCheckInModelByDrawing, struct_type, recursion)
-                doc3DChildrens = self.browse(self.getRelatedHiTree(doc3D.id, recursion=False))
+                        if doc2d.id in evaluated:
+                            continue
+                        if doc2d.id != doc_id:
+                            setupInfos(out,
+                                       doc2d,
+                                       PLM_DT_DELTA,
+                                       is_root,
+                                       doc_dict_3d)
+                doc3DChildrens = self.browse(self.getRelatedHiTree(doc3D.id,
+                                                                   recursion=False))
                 for doc3DChildren in doc3DChildrens:
                     if recursion:
-                        recursion(doc3DChildren.id, out, evaluated, PLM_DT_DELTA, False, forceCheckInModelByDrawing, struct_type, recursion)
-                docsReference = self.browse(self.getRelatedRfTree(doc3D.id, recursion=False))
+                        recursionf(doc3DChildren.id,
+                                   out,
+                                   evaluated,
+                                   PLM_DT_DELTA,
+                                   False,
+                                   forceCheckInModelByDrawing,
+                                   struct_type,
+                                   recursion)
+                docsReference = self.browse(self.getRelatedRfTree(doc3D.id,
+                                                                  recursion=False))
                 for doc3DChildrenRef in docsReference:
                     if recursion:
-                        recursion(doc3DChildrenRef.id, out, evaluated, PLM_DT_DELTA, False, forceCheckInModelByDrawing, struct_type, recursion)
+                        recursionf(doc3DChildrenRef.id,
+                                   out,
+                                   evaluated,
+                                   PLM_DT_DELTA,
+                                   False,
+                                   forceCheckInModelByDrawing,
+                                   struct_type,
+                                   recursion)
 
         PLM_DT_DELTA =  self.getPlmDTDelta()
         docs3D = self.browse(doc_id)
         struct_type = docs3D.document_type.upper()
-        recursion(doc_id, out, evaluated, PLM_DT_DELTA, True, forceCheckInModelByDrawing, struct_type, recursion)
+        recursionf(doc_id,
+                   out,
+                   evaluated,
+                   PLM_DT_DELTA,
+                   True,
+                   forceCheckInModelByDrawing,
+                   struct_type,
+                   recursion)
         return json.dumps(out)
 
     @api.model
