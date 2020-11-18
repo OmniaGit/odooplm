@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="plm_web_3d_sale_website_sale_view_product_image_form" model="ir.ui.view">
+        <field name="name">plm.web.3d.sale.website_sale.view.product.image.form</field>
+        <field name="model">product.image</field>
+        <field name="inherit_id" ref="website_sale.view_product_image_form"/>
+        <field name="arch" type="xml">    
+	        <xpath expr="//field[@name='video_url']" position="after">
+	           <label for="ir_attachment_webgl_id" string="WebGl Document"/><br/>
+	           <field name="ir_attachment_webgl_id"></field><br/>
+	        </xpath>
+        </field>
+    </record>
+</odoo>
