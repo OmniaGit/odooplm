@@ -24,16 +24,24 @@ Created on 17 Nov 2020
 @author: mboscolo
 '''
 import logging
-import datetime
 from odoo import models
 from odoo import fields
 from odoo import api
 from odoo import _
 from odoo.exceptions import UserError
 from datetime import timedelta
+from datetime import date
+from datetime import datetime
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 import json
-    
+
+def json_serial(obj):
+    """JSON serializer for objects not serializable by default json code"""
+
+    if isinstance(obj, (datetime, date)):
+        return obj.isoformat()
+    raise TypeError ("Type %s not serializable" % type(obj))
+
 class Base(models.AbstractModel):
     _inherit = 'base'
     
@@ -41,7 +49,7 @@ class Base(models.AbstractModel):
     @api.model
     def koo_fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
         def sanitize(dict_from):
-            return json.loads(json.dumps(dict_from).replace("null", "false"))
+            return json.loads(json.dumps(dict_from, default=json_serial).replace("null", "false"))
         f = self.fields_view_get(view_id, view_type, toolbar, submenu)
         for key in ['field_parent', 'name', 'type', 'view_id', 'base_model', 'fields', 'toolbar']:
             if key in f:

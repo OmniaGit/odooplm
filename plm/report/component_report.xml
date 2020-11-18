@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <odoo>
   	<data>
-
         <record id="report_all_product_product_pdf" model="ir.actions.report">
             <field name="name">Bom All Levels PDF Drawings</field>
             <field name="model">product.product</field>
@@ -18,7 +17,7 @@
             <field name="binding_type">report</field>
         </record>
 
-        <record id="report_product_product_pdf_latest" model="ir.actions.report">
+        <record id="report_product_product_pdf" model="ir.actions.report">
             <field name="name">PDF Drawings</field>
             <field name="model">product.product</field>
             <field name="report_type">qweb-html</field>
