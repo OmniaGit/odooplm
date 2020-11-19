@@ -61,7 +61,6 @@ class ProductImage(models.Model):
             if url:
                 image.embed_code = '<iframe loading="lazy" src="%s"></iframe>' % url #.replace("http:","").replace("https:","")
             
-            
     @api.onchange('ir_attachment_webgl_id')
     def attach_preview(self):
         for product_image in self:
@@ -71,6 +70,10 @@ class ProductImage(models.Model):
                     stream = getWebGlBase64()
                 product_image.image_1920 = stream
             
-    
-    
+#    def get3dWebGl(self):
+#        for image in self:
+#            url = image.ir_attachment_webgl_id.get_url_for_3dWebModel()
+#            if url:
+#                return '<iframe class="embed-responsive-item" allowFullScreen="true" frameborder="0" src="%s"></iframe>' % url
+#        return '<p></p>'
     
