@@ -20,28 +20,10 @@
 ##############################################################################
 
 """
-Created on 25 Aug 2016
+Created on 13/11/2020
 
-@author: Daniel Smerghetto
+@author: Matteo Boscolo
 """
-from . import base
-from . import product_product_document_rel
-from . import plm_treatment
-from . import plm_finishing
-from . import plm_material
-from . import product_template
-from . import plm_descriptions             # Has to be before "product_product_extension" due to related field
-from . import product_product              # Has to be before "ir_attachment" due to related field
-from . import ir_attachment                # Has to be before "ir_attachment_relations" due to related field
-from . import ir_attachment_relations
-from . import product_product_kanban
-from . import plm_backup_document
-from . import plm_checkout
-from . import plm_config_settings
-from . import mrp_bom
-from . import mrp_bom_line
-from . import report_on_document
-from . import plm_temporary
-from . import plm_dbthread
-from . import res_users
-from . import plm_cad_open
+
+from . import models
+from . import controllers

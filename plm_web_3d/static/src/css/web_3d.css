@@ -1,0 +1,30 @@
+#odoo_plm_title {
+  line-height:10px;
+  border: 2px solid #997992;
+  font-weight: bold;
+  text-align: center;
+  margin: 5px;
+}
+
+#odoo_canvas{
+    width:90%;
+}
+
+.plm_web_button{
+	background-color: wite;
+    border: 1px solid #997992;
+    cursor:pointer;
+    overflow: hidden;
+    outline:none;
+    height: 40px;
+}
+#bottom_command{
+	color: #997992;
+	margin: 5px;
+}
+#main_3d_web{
+	margin: auto;
+	max-width: 90%;
+	padding: 5px;
+	text-align: center;
+}

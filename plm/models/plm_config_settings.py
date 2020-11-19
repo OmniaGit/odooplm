@@ -54,3 +54,5 @@ class PlmConfigSettings(models.TransientModel):
     module_plm_suspended = fields.Boolean("Manage Product suspend code")
     module_plm_auto_engcode = fields.Boolean("Enable Automatic Engineering Code")
     module_plm_bom_summarize = fields.Boolean("Enable Bom sommarization during the client upload")
+    module_activity_validation = fields.Boolean("Enable Eco /Ecr")
+    module_plm_web_3d = fields.Boolean("Enable 3D WebGl")

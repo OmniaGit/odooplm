@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
 ##############################################################################
 #
-#    OmniaSolutions, Your own solutions
-#    Copyright (C) 2010 OmniaSolutions (<http://omniasolutions.eu>). All Rights Reserved
+#    OmniaSolutions, Open Source Management Solution    
+#    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -19,36 +19,4 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
-'''
-Created on 25 Aug 2016
-
-@author: Daniel Smerghetto
-'''
-from odoo import models
-from odoo import fields
-from odoo import api
-from odoo import _
-
-
-class ResUsersExt(models.Model):
-    _name = 'res.users'
-    _inherit = 'res.users'
-
-
-    def getMacros(self):
-        '''
-            Omnia Client Macro module make an overload of this function and enable macros
-        '''
-        return []
-
-    def getCustomProcedure(self):
-        '''
-            Omnia CustomProcedure module make an overload of this function and enable macros
-        '''
-        return '', ''
-    
-    @api.model
-    def koo_context_get(self):
-        return dict(self.context_get())
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+from . import main

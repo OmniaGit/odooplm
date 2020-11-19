@@ -39,13 +39,15 @@ class PlmComponentDocumentRel(models.Model):
     component_id = fields.Many2one('product.product',
                                    _('Linked Component'),
                                    required=True,
-                                   ondelete='cascade')
+                                   #ondelete='cascade'
+                                   )
 
 
     document_id = fields.Many2one('ir.attachment',
                                   _('Linked Document'),
                                   required=True,
-                                  ondelete='cascade')
+                                  #ondelete='cascade'
+                                  )
 
 
     _sql_constraints = [

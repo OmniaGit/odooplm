@@ -101,7 +101,8 @@ class PlmComponent(models.Model):
                                        'plm_component_document_rel',
                                        'component_id',
                                        'document_id',
-                                       _('Linked Docs'))
+                                       _('Linked Docs'),
+                                       ondelete='cascade')
     tmp_material = fields.Many2one('plm.material',
                                    _('Raw Material'),
                                    required=False,
