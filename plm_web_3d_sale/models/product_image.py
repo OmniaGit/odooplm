@@ -55,9 +55,9 @@ class ProductImage(models.Model):
                                                      ('public', '=', True)])
 
     def _compute_embed_code(self):
+        super(ProductImage, self)._compute_embed_code()
         for image in self:
             url = image.ir_attachment_webgl_id.get_url_for_3dWebModel()
-            image.embed_code = False
             if url:
                 image.embed_code = '<iframe loading="lazy" src="%s"></iframe>' % url #.replace("http:","").replace("https:","")
             
