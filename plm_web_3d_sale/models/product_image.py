@@ -57,8 +57,10 @@ class ProductImage(models.Model):
     def _compute_embed_code(self):
         for image in self:
             url = image.ir_attachment_webgl_id.get_url_for_3dWebModel()
+            image.embed_code = False
             if url:
-                image.embed_code = '<iframe src="%s"></iframe>' % url #.replace("http:","").replace("https:","")
+                image.embed_code = '<iframe loading="lazy" src="%s"></iframe>' % url #.replace("http:","").replace("https:","")
+            
             
     @api.onchange('ir_attachment_webgl_id')
     def attach_preview(self):

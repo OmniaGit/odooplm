@@ -1,9 +1,9 @@
 #odoo_plm_title {
   line-height:10px;
   border: 2px solid #997992;
-  width: 90%;
   font-weight: bold;
   text-align: center;
+  margin: 5px;
 }
 
 #odoo_canvas{
@@ -20,4 +20,11 @@
 }
 #bottom_command{
 	color: #997992;
+	margin: 5px;
+}
+#main_3d_web{
+	margin: auto;
+	max-width: 90%;
+	padding: 5px;
+	text-align: center;
 }
