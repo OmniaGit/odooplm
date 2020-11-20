@@ -114,6 +114,7 @@
                                        attrs="{'readonly':[('state','in',['released','obsoleted'])]}" colspan="2" groups='base.group_no_one'/>
                             </group>
                             <group col="4" colspan="4" string="Standard Description Parameters">
+                                <a target="new"  href="https://www.omniasolutions.website/blog/developer-and-it-here-you-will-find-post-regarding-very-technical-aspect-of-programming-and-it-those-thinks-are-daily-used-by-omniasolutions-and-we-hope-you-that-will-help-you-3/post/standard-description-39" title="Standard description parameters info" colspan="4"><i class="fa fa-info-circle"></i></a>
                                 <field name="std_umc1"
                                        attrs="{'readonly':[('std_umc1','=',False),('state','in',['released','obsoleted'])]}"/>
                                 <field name="std_value1"
@@ -245,6 +246,7 @@
                                        attrs="{'readonly':[('state','in',['released','obsoleted'])]}" colspan="2" groups='base.group_no_one'/>
                             </group>
                             <group col="4" colspan="4" string="Standard Description Parameters">
+                                <a target="new"  href="https://www.omniasolutions.website/blog/developer-and-it-here-you-will-find-post-regarding-very-technical-aspect-of-programming-and-it-those-thinks-are-daily-used-by-omniasolutions-and-we-hope-you-that-will-help-you-3/post/standard-description-39" title="Standard description parameters info" colspan="4"><i class="fa fa-info-circle"></i></a>
                                 <field name="std_umc1"
                                        attrs="{'readonly':[('std_umc1','=',False),('state','in',['released','obsoleted'])]}"/>
                                 <field name="std_value1"
