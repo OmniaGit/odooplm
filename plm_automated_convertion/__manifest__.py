@@ -20,7 +20,7 @@
 #
 ##############################################################################
 {
-    'name': 'Product Lifecycle Management Batch conversion',
+    'name': 'PLM Batch conversion',
     'version': '13.0',
     'author': 'OmniaSolutions',
     'website': 'https://www.omniasolutions.website',
