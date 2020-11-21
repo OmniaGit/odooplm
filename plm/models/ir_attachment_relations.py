@@ -77,7 +77,15 @@ class PlmDocumentRelations(models.Model):
     def name_get(self):
         result = []
         for r in self:
-            name = "%s .. %s.." % (r.parent_id.engineering_document_name[:8], r.child_id.engineering_document_name[:8])
+            if r.parent_id.engineering_document_name:
+                parent_name = r.parent_id.engineering_document_name[:8]
+            else:
+                parent_name = r.parent_id.name[:8]
+            if r.child_id.engineering_document_name:
+                child_name = r.child_id.engineering_document_name[:8]
+            else:
+                child_name = r.child_id.name[:8]
+            name = "%s .. %s.." % (parent_name, child_name)
             result.append((r.id, name))
         return result
 
