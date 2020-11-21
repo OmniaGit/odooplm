@@ -12,12 +12,22 @@
       <body style="margin: 0;">
       	<div id="main_3d_web">
 	        <script type="module" src="../plm_web_3d/static/src/js/web_3d.js"></script>
-	        <span id="active_model" t-att-active_model="document_id"></span>
+	        <span id="active_model" t-att-active_model="document_id" t-att-document_name="document_name"></span>
 	        <div id="odoo_plm_title"><p>OdooPLM WebGl 3d</p></div>
-	        <canvas id="odoo_canvas"></canvas>
-	        <div id="bottom_command">
-	            <button id="fit_view" class="plm_web_button"><i class="fa fa-home"></i> Fit</button>
-	        </div>
+            <div class='main_command_slide'>
+                <div class='activator'>
+                    <div class="img">
+                      <hr class="c"/>
+                      <hr class="c"/>
+                      <hr class="c"/>
+                    </div>	        
+        	        <div id="bottom_command">
+        	            <button id="fit_view" class="plm_web_button"><i class="fa fa-home"></i> Fit</button>
+        	            <button id="togle_background" class="plm_web_button"><i class="fa fa-home"></i> T.Bck</button>
+        	        </div>
+                </div>
+            </div>
+            <canvas id="odoo_canvas"></canvas>
 	    </div>
       </body>
     </html>

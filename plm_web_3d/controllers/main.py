@@ -22,8 +22,9 @@ def webservice(f):
 class Web3DView(Controller):
     @route('/plm/show_treejs_model', type='http', auth='public')
     @webservice
-    def show_treejs_model(self, document_id):
-        return request.render('plm_web_3d.main_treejs_view', {'document_id': document_id})
+    def show_treejs_model(self, document_id, document_name):
+        return request.render('plm_web_3d.main_treejs_view', {'document_id': document_id,
+                                                              'document_name': document_name})
 
     @route('/plm/download_treejs_model', type='http', auth='public')
     @webservice

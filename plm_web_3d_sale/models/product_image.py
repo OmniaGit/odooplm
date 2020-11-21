@@ -59,7 +59,7 @@ class ProductImage(models.Model):
         for image in self:
             url = image.ir_attachment_webgl_id.get_url_for_3dWebModel()
             if url:
-                image.embed_code = '<iframe loading="lazy" src="%s"></iframe>' % url #.replace("http:","").replace("https:","")
+                image.embed_code = '<iframe id="embedded_odoo_plm_webgl" src="%s"></iframe>' % url #.replace("http:","").replace("https:","")
             
     @api.onchange('ir_attachment_webgl_id')
     def attach_preview(self):

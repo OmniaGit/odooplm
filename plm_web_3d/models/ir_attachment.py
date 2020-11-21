@@ -34,7 +34,7 @@ from odoo.exceptions import UserError
 from datetime import timedelta
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 import urllib.parse
-SUPPORTED_WEBGL_EXTENTION = ['.gltf','.glb','.fbx']
+SUPPORTED_WEBGL_EXTENTION = ['.gltf','.glb','.fbx','.obj','.wrl','.json']
 
 class IrAttachment(models.Model):
     _inherit = ['ir.attachment']
@@ -65,12 +65,14 @@ class IrAttachment(models.Model):
             base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
             url_params = None
             if ir_attachment.isWebGl():
-                url_params = urllib.parse.urlencode({'document_id': ir_attachment.id})
+                url_params = urllib.parse.urlencode({'document_id': ir_attachment.id,
+                                                     'document_name': ir_attachment.name})
             else:
                 for rel in attach_relations.search([('parent_id', '=', ir_attachment.id),
                                                     ('link_kind','=','Web3DTree')]):
                     
-                    url_params = urllib.parse.urlencode({'document_id': rel.child_id.id})
+                    url_params = urllib.parse.urlencode({'document_id': rel.child_id.id,
+                                                         'document_name': rel.child_id.name})
             if url_params:
                 return "%s/plm/show_treejs_model?%s" % (base_url, url_params)
     
