@@ -2634,5 +2634,11 @@ class PlmDocument(models.Model):
                     product_id.image_1920 = document_id.preview
                     product_id.product_tmpl_id.image_1920 = document_id.preview
         configParamObj.set_param(paramName, datetime.now().strftime(DEFAULT_SERVER_DATETIME_FORMAT))
-  
+
+    @api.model
+    def check(self, mode, values=None):
+        if self.env.context.get('odooPLM'):
+            return True
+        return super(PlmDocument, self).check(mode, values)
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
