@@ -30,6 +30,7 @@
 		                <field name="protocol" required="True"/>
 		                <field name="port" required="True" placeholder="5000"/>
 		                <field name="sequence"/>
+		                <field name="timeout"/>
 		                <button name='testConnection' type="object" string="Test"></button>
 	                </group>
 	                <group>

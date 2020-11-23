@@ -40,14 +40,25 @@ class plm_temporary_batch_converter(models.TransientModel):
     _description = "Temp Class for batch converter"
 
     @api.model
-    def getCadAndConvertionAvailabe(self, fromExtention):
-        main_server = self.env['plm.convert.servers'].getMainServer()
-        base_url = main_server.getBaseUrl()
-        url = base_url + '/odooplm/api/v1.0/getAvailableExtention'
-        response = requests.get(url)
-        if response.status_code != 200:
-            raise UserError("Conversion of cad server failed, check the cad server log")
-        return response.json().get(str(fromExtention).lower(), ('', []))
+    def getCadAndConvertionAvailabe(self, fromExtention, main_server=False, timeout_sec=False, raiseErr=False):
+        void_ret = ('', [])
+        try:
+            if not main_server:
+                main_server = self.env['plm.convert.servers'].getMainServer()
+            base_url = main_server.getBaseUrl()
+            timeout = main_server.getTimeOut()
+            if timeout_sec:
+                timeout = timeout_sec
+            url = base_url + '/odooplm/api/v1.0/getAvailableExtention'
+            response = requests.get(url, timeout=timeout)
+            if response.status_code != 200:
+                raise UserError("Conversion of cad server failed, check the cad server log")
+            return response.json().get(str(fromExtention).lower(), void_ret)
+        except Exception as ex:
+            logging.error(ex)
+            if raiseErr:
+                raise Exception(ex)
+            return void_ret
 
     @api.model
     def getAllFiles(self, document):
@@ -68,17 +79,22 @@ class plm_temporary_batch_converter(models.TransientModel):
                          targetIntegration,
                          targetExtention,
                          newFileName,
-                         raiseError=True):
+                         raiseError=True,
+                         main_server=False):
         error = ''
-        main_server = self.env['plm.convert.servers'].getMainServer()
+        if not main_server:
+            main_server = self.env['plm.convert.servers'].getMainServer()
         base_url = main_server.getBaseUrl()
         url = base_url + '/odooplm/api/v1.0/saveas'
         params = {}
         params['targetExtention'] = targetExtention
         params['integrationName'] = targetIntegration
-        response = requests.post(url,
-                                 params=params,
-                                 files=self.getAllFiles(document))
+        try:
+            response = requests.post(url,
+                                     params=params,
+                                     files=self.getAllFiles(document))
+        except Exception as ex:
+            return '', ex
         if response.status_code != 200:
             try:
                 err = 'Cannot convert file %r due to error %r' % (document, response.content.decode('utf-8'))

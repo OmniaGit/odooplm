@@ -43,6 +43,7 @@ class PlmConvertStack(models.Model):
     end_document_id = fields.Many2one('ir.attachment', 'Converted Document')
     output_name_rule = fields.Char('Output Name Rule')
     error_string = fields.Text('Error')
+    server_id = fields.Many2one('plm.convert.servers', 'Conversion Server')
     
     def setToConvert(self):
         for convertStack in self:
@@ -59,7 +60,11 @@ class PlmConvertStack(models.Model):
         toConvert =  self.search([('conversion_done', '=', False)], order='sequence ASC')
         for convertion in toConvert:
             plm_convert = self.env['plm.convert']
-            cadName, _ = plm_convert.getCadAndConvertionAvailabe(convertion.start_format)
+            try:
+                cadName, _ = plm_convert.getCadAndConvertionAvailabe(convertion.start_format, convertion.server_id, raiseErr=True)
+            except Exception as ex:
+                convertion.error_string = ex
+                continue
             if not cadName:
                 convertion.error_string = 'Cannot get Cad name'
                 continue
@@ -80,7 +85,8 @@ class PlmConvertStack(models.Model):
                                                        cadName,
                                                        convertion.end_format,
                                                        newFileName,
-                                                       False)
+                                                       False,
+                                                       main_server=convertion.server_id)
             if error:
                 convertion.error_string = error
                 continue
@@ -107,3 +113,4 @@ class PlmConvertStack(models.Model):
                         })
             convertion.end_document_id = target_attachment.id
             convertion.conversion_done = True
+            convertion.error_string = ''

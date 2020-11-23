@@ -42,6 +42,7 @@ class PlmConvertServers(models.Model):
     port = fields.Char('Server Port')
     proc_to_kill = fields.Char('Process To Kill')
     client_processes = fields.Text('Client Processes')
+    timeout = fields.Float('Connection timeout', default=2)
 
     def getBaseUrl(self):
         for server in self:
@@ -58,12 +59,18 @@ class PlmConvertServers(models.Model):
             ret.sequence = ret.id
         return ret
 
+    def getTimeOut(self):
+        for server in self:
+            if server.timeout:
+                return server.timeout
+            return 2
+
     def testConnection(self):
         for server in self:
             base_url = server.getBaseUrl()
             url = base_url + '/odooplm/api/v1.0/isalive'
             try:
-                response = requests.get(url)
+                response = requests.get(url, timeout=self.getTimeOut())
             except Exception as ex:
                 raise UserError("Server not correctly defined. Error %r" % (ex))
             if response.status_code != 200:
@@ -93,7 +100,7 @@ class PlmConvertServers(models.Model):
                 params = {}
                 params['pid'] = server.proc_to_kill
                 try:
-                    response = requests.post(url, params=params)
+                    response = requests.post(url, params=params, timeout=self.getTimeOut())
                 except Exception as ex:
                     raise UserError('Cannot kill process due to error %r' % (ex))
                 if response.status_code != 200:
@@ -108,7 +115,7 @@ class PlmConvertServers(models.Model):
             base_url = server.getBaseUrl()
             url = base_url + '/odooplm/api/v1.0/get_processes_details'
             try:
-                response = requests.get(url)
+                response = requests.get(url, timeout=self.getTimeOut())
             except Exception as ex:
                 raise UserError("Cannot get process list. Error %r" % (ex))
             if response.status_code != 200:
