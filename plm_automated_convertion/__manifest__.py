@@ -45,6 +45,7 @@ for more information send an e mail at info@omniasolutions.eu
              'view/ir_cron.xml',
              'view/ir_attachment.xml',
              'view/plm_convert_servers.xml',
+             'view/ir_action_server.xml',
              ],
     'demo': [],
     'test': [],

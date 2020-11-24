@@ -27,6 +27,7 @@ from odoo import models
 from odoo import fields
 from odoo import api
 import os
+import logging
 
 
 class PlmConvertStack(models.Model):
@@ -57,6 +58,7 @@ class PlmConvertStack(models.Model):
         return ret
 
     def generateConvertedDocuments(self):
+        logging.info('generateConvertedDocuments started')
         toConvert =  self.search([('conversion_done', '=', False)], order='sequence ASC')
         for convertion in toConvert:
             plm_convert = self.env['plm.convert']
@@ -76,10 +78,14 @@ class PlmConvertStack(models.Model):
             component = self.env['product.product']
             if components:
                 component = components[0]
-            rule = '{document.name}_{document.revisionid}'
+            rule = "'%s_%s' % (document.name, document.revisionid)"
             if convertion.output_name_rule:
                 rule = convertion.output_name_rule
-            clean_name = rule.format(**{'component': component, 'document': document, 'env': self.env})
+            try:
+                clean_name = eval(rule, {'component': component, 'document': document, 'env': self.env})
+            except Exception as ex:
+                convertion.error_string = 'Cannot evaluate rule %s due to error %r' % (rule, ex)
+                continue
             newFileName = clean_name + convertion.end_format
             newFilePath, error = plm_convert.getFileConverted(document,
                                                        cadName,
@@ -114,3 +120,4 @@ class PlmConvertStack(models.Model):
             convertion.end_document_id = target_attachment.id
             convertion.conversion_done = True
             convertion.error_string = ''
+        logging.info('generateConvertedDocuments ended')

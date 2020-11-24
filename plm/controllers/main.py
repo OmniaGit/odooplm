@@ -8,6 +8,7 @@ from odoo import _
 from odoo.http import Controller, route, request, Response
 import copy
 from odoo.tools.misc import DEFAULT_SERVER_DATETIME_FORMAT
+from odoo.exceptions import UserError
 
 
 def webservice(f):
