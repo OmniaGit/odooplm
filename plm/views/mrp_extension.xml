@@ -38,6 +38,9 @@
                 <field name="description" select="True"/>
                 <field name="state" select="True"/>
             </field>
+		  <xpath expr="//field[@name='product_tmpl_id']" position="attributes">
+		    <attribute name="widget">res_partner_many2one</attribute>
+		  </xpath>
         </field>
     </record>
 
@@ -64,7 +67,7 @@
             </div>
             <field name="product_tmpl_id" position="replace">
                 <field name="product_tmpl_id" context="{'default_type': 'product'}"
-                       options="{'no_open':True,'no_create':True}"/>
+                       options="{'no_create':True}"/>
             </field>
             <field name="product_id" position="after">
                 <field name="engineering_revision" readonly="True"/>
