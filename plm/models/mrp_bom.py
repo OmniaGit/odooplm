@@ -800,11 +800,12 @@ class MrpBomExtension(models.Model):
             company_id=company_id
         )
         if obj_bom:
-            odoo_plm_bom = ['ebom', 'spbom']
-            if obj_bom.type in odoo_plm_bom:
-                return self.search([
-                    ('product_id', '=', obj_bom.product_id.id),
-                    ('product_tmpl_id', '=', obj_bom.product_tmpl_id.id),
-                    ('type', 'not in', odoo_plm_bom)
-                ], order='sequence, product_id', limit=1)
+            available_types = ['normal', 'phantom']
+            if obj_bom.type not in available_types:
+                available_types = [obj_bom.type]
+            return self.search([
+                ('product_id', '=', obj_bom.product_id.id),
+                ('product_tmpl_id', '=', obj_bom.product_tmpl_id.id),
+                ('type', 'in', available_types)
+            ], order='sequence, product_id', limit=1)
         return obj_bom
