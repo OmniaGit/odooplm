@@ -47,7 +47,7 @@
 	                         	</ol>
 	                      </p>
 	                      <p>
-	                        Default rule is {document.name}_{document.revisionid}
+	                        Default rule is '%s_%s' % (document.name, document.revisionid)
 	                      </p>
 	                      <p>
 	                         Example:
@@ -66,13 +66,13 @@
 	                         Starting from the rule
 	                      </p>
 	                      <p>
-	                         {document.name}_{document.revisionid}_{component.name}_{component.engineering_revision}
+	                         '%s_%s___%s_%s' % (document.name, document.revisionid, component.name, component.engineering_revision)
 	                      </p>
 	                      <p>
 	                         We will have
 	                      </p>
 	                      <p>
-	                         Abc_3_Abc_prod_2
+	                         Abc_3___Abc_prod_2
 	                      </p>
 	                    </div>
 	                </group>
