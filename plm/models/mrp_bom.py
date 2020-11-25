@@ -809,4 +809,3 @@ class MrpBomExtension(models.Model):
                 ('type', 'in', available_types)
             ], order='sequence, product_id', limit=1)
         return obj_bom
-
