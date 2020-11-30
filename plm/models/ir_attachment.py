@@ -319,12 +319,13 @@ class PlmDocument(models.Model):
         return self.env['ir.attachment.relation'].search_count(to_search)
 
     @api.model
-    def getRelatedHiTree(self, doc_id, recursion=True):
+    def getRelatedHiTree(self, doc_id, recursion=True, getRftree=False):
         '''
             Get children HiTree documents
         '''
         out = []
-        def _getRelatedHiTree(doc_id, recursion):
+
+        def _getRelatedHiTree(doc_id, recursion, getRftree):
             if not doc_id:
                 logging.warning('Cannot get links from %r document' % (doc_id))
                 return []
@@ -336,10 +337,13 @@ class PlmDocument(models.Model):
                 if child_id in out:
                     logging.warning('Document %r document already found' % (doc_id))
                     continue
+                if getRftree:
+                    out.extend(self.getRelatedRfTree(child_id, recursion=True))
                 out.append(child_id)
                 if recursion:
-                    _getRelatedHiTree(child_id, recursion)
-        _getRelatedHiTree(doc_id, recursion)
+                    _getRelatedHiTree(child_id, recursion, getRftree=True)
+
+        _getRelatedHiTree(doc_id, recursion, getRftree)
         return out
 
     @api.model
@@ -1208,9 +1212,9 @@ class PlmDocument(models.Model):
                     outIds.extend(releted_doc_id)
                 else:
                     outIds.append(releted_doc_id)
-                outIds.extend(self.getRelatedHiTree(releted_doc_id, recursion=True))
+                outIds.extend(self.getRelatedHiTree(releted_doc_id, recursion=True, getRftree=True))
         else:
-            outIds.extend(self.getRelatedHiTree(doc_id, recursion=True))
+            outIds.extend(self.getRelatedHiTree(doc_id, recursion=True, getRftree=True))
         outIds = list(set(outIds))
         if selection == 2:  # Case of latest
             outIds = self._getlastrev(outIds)
