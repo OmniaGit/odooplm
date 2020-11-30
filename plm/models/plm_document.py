@@ -1042,9 +1042,9 @@ class PlmDocument(models.Model):
             releted_doc_id = self.getRelatedLyTree(doc_id)
             if releted_doc_id:
                 outIds.extend(self.getRelatedLyTree(doc_id))
-                outIds.extend(self.getRelatedHiTree(releted_doc_id, recursion=True))
+                outIds.extend(self.getRelatedHiTree(releted_doc_id, recursion=True, getRftree=True))
         else:
-            outIds.extend(self.getRelatedHiTree(doc_id, recursion=True))
+            outIds.extend(self.getRelatedHiTree(doc_id, recursion=True, getRftree=True))
         outIds = list(set(outIds))
         if selection == 2:  # Case of latest
             outIds = self._getlastrev(outIds)
@@ -2098,7 +2098,7 @@ class PlmDocument(models.Model):
         return self.env['plm.document.relation'].search_count(to_search)
 
     @api.model
-    def getRelatedHiTree(self, doc_id, recursion=True):
+    def getRelatedHiTree(self, doc_id, recursion=True, getRftree=False):
         '''
             Get children HiTree documents
         '''
@@ -2115,11 +2115,13 @@ class PlmDocument(models.Model):
                 if child_id in out:
                     logging.warning('Document %r document already found' % (doc_id))
                     continue
+                if getRftree:
+                    self.getRelatedRfTree(doc_id, recursion=True)
                 out.append(child_id)
                 if recursion:
-                    _getRelatedHiTree(child_id, recursion)
+                    _getRelatedHiTree(child_id, recursion, getRftree)
                     
-        _getRelatedHiTree(doc_id, recursion)
+        _getRelatedHiTree(doc_id, recursion, getRftree)
         return out
 
     @api.model
