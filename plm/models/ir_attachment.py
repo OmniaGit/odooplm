@@ -341,7 +341,7 @@ class PlmDocument(models.Model):
                     out.extend(self.getRelatedRfTree(child_id, recursion=True))
                 out.append(child_id)
                 if recursion:
-                    _getRelatedHiTree(child_id, recursion, getRftree=True)
+                    _getRelatedHiTree(child_id, recursion, getRftree)
 
         _getRelatedHiTree(doc_id, recursion, getRftree)
         return out
