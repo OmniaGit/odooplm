@@ -1632,6 +1632,19 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             out_product_produc_id = self.create(productAttribute)
         return out_product_produc_id
 
+    @api.multi
+    def name_get(self):
+        result = []
+        for prod in self:
+            eng_code = ''
+            if prod.default_code:
+                eng_code = '[%s] ' % (prod.default_code)
+            elif prod.engineering_code:
+                eng_code = '[%s] ' % ('%s_%s' % (prod.engineering_code, prod.engineering_revision))
+            eng_code += prod.name
+            result.append((prod.id, eng_code))
+        return result
+
 PlmComponent()
 
 
