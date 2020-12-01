@@ -1684,7 +1684,11 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
     def name_get(self):
         result = []
         for prod in self:
-            eng_code = '[%s] ' % (prod.default_code or '%s_%s' % (prod.engineering_code, prod.engineering_revision))
+            eng_code = ''
+            if prod.default_code:
+                eng_code = '[%s] ' % (prod.default_code)
+            elif prod.engineering_code:
+                eng_code = '[%s] ' % ('%s_%s' % (prod.engineering_code, prod.engineering_revision))
             eng_code += prod.name
             result.append((prod.id, eng_code))
         return result
