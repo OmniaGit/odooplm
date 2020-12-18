@@ -43,72 +43,55 @@ class ProductProductExtension(models.Model):
         """
         bom_type = self.env['mrp.bom']
         bom_l_type = self.env['mrp.bom.line']
-        prod_tmpl_obj = self.env['product.template']
         stock_config_settings = self.env['res.config.settings']
         variant_is_installed = False
         if len(stock_config_settings.search([('group_product_variant', '=', 1)])) > 0:
             variant_is_installed = True
         collect_list = []
-
-        def get_previous_normal_bom(bomBrws, exclude_bom_id=False):
-            out_bom_brws = []
-            engineering_code = bomBrws.product_tmpl_id.engineering_code
-            previous_rev_product_brws_list = prod_tmpl_obj.search([('engineering_code', '=', engineering_code)], order='engineering_revision desc')
-            for prod_brws in previous_rev_product_brws_list:
-                old_bom_brws_list = bom_type.search([('product_tmpl_id', '=', prod_brws.id),
-                                                     ('type', '=', new_bom_type)])
-                for old_bom_brws in old_bom_brws_list:
-                    if old_bom_brws == exclude_bom_id:
-                        continue
-                    out_bom_brws.append(old_bom_brws)
-                if out_bom_brws:
-                    break
-            return out_bom_brws
-
         e_bom_id = False
         new_nbom_id = False
-        if new_bom_type not in ['normal', 'phantom']:
-            raise UserError(_("Could not convert source bom to %r" % new_bom_type))
-        product_template_id = obj_product_product_brw.product_tmpl_id.id
+        self.checkAvailableConversionType(new_bom_type)
+        product_template_id = obj_product_product_brw.product_tmpl_id
         normal_boms = self.generateChildrenBoms(product_template_id.id, new_bom_type, summarize)
-        if not normal_boms:
-            eng_bom_brws_list = self.getEbom(product_template_id)
-            if not eng_bom_brws_list:
-                logging.info('No EBOM or NBOM found for template id: %r' % (product_template_id.id))
-                return []
-            for e_bom_brws in eng_bom_brws_list:
-                e_bom_id = e_bom_brws.id
-                new_bom_brws = e_bom_brws.copy({})
-                new_nbom_id = new_bom_brws
-                values = {'name': obj_product_product_brw.name,
-                          'product_tmpl_id': product_template_id,
-                          'type': new_bom_type,
-                          'ebom_source_id': e_bom_id, }
-                if not variant_is_installed:
-                    values['product_id'] = False
-                new_bom_brws.write(values)
+        if normal_boms:
+            normal_boms.active = False
+        eng_bom_brws_list = self.getEbom(product_template_id)
+        if not eng_bom_brws_list:
+            logging.info('No EBOM or NBOM found for template id: %r' % (product_template_id.id))
+            return []
+        for e_bom_brws in eng_bom_brws_list:
+            e_bom_id = e_bom_brws.id
+            new_bom_brws = e_bom_brws.copy({})
+            new_nbom_id = new_bom_brws
+            values = {'name': obj_product_product_brw.name,
+                      'product_tmpl_id': product_template_id.id,
+                      'type': new_bom_type,
+                      'ebom_source_id': e_bom_id,}
+            if not variant_is_installed:
+                values['product_id'] = False
+            new_bom_brws.write(values)
 
-                if summarize:
-                    ok_rows = self._summarizeBom(new_bom_brws.bom_line_ids)
-                    # remove not summarized lines
-                    for bom_line in list(set(new_bom_brws.bom_line_ids) ^ set(ok_rows)):
-                        bom_line.unlink()
-                    # update the quantity with the summarized values
-                    for bom_line in ok_rows:
-                        bom_line.write({
-                            'type': new_bom_type,
-                            'source_id': False,
-                            'product_qty': bom_line.product_qty,
-                            'ebom_source_id': e_bom_id,
-                        })
-                        self.create_bom_from_ebom(bom_line.product_id, new_bom_type, summarize=summarize)
-                else:
-                    for line_brws in new_bom_brws.bom_line_ids:
-                        self.create_bom_from_ebom(line_brws.product_id, new_bom_type, summarize=summarize)
-                        line_brws.type = new_bom_type
-                        line_brws.ebom_source_id = e_bom_id
-                obj_product_product_brw.wf_message_post(body=_('Created %r' % new_bom_type))
-                break
+            if summarize:
+                ok_rows = self._summarizeBom(new_bom_brws.bom_line_ids)
+                # remove not summarized lines
+                for bom_line in list(set(new_bom_brws.bom_line_ids) ^ set(ok_rows)):
+                    bom_line.unlink()
+                # update the quantity with the summarized values
+                for bom_line in ok_rows:
+                    bom_line.write({
+                        'type': new_bom_type,
+                        'source_id': False,
+                        'product_qty': bom_line.product_qty,
+                        'ebom_source_id': e_bom_id,
+                    })
+                    self.create_bom_from_ebom(bom_line.product_id, new_bom_type, summarize=summarize)
+            else:
+                for line_brws in new_bom_brws.bom_line_ids:
+                    self.create_bom_from_ebom(line_brws.product_id, new_bom_type, summarize=summarize)
+                    line_brws.type = new_bom_type
+                    line_brws.ebom_source_id = e_bom_id
+            obj_product_product_brw.wf_message_post(body=_('Created %r' % new_bom_type))
+            break
         if new_nbom_id and e_bom_id and migrate_custom_lines:
             # if e_bom_id --> normal BOM was not existing
             ebom_id = bom_type.browse(e_bom_id)
@@ -117,7 +100,20 @@ class ProductProductExtension(models.Model):
                 collect_list.extend(
                     self.addOldBomLines(old_n_bom, new_nbom_id, bom_l_type, new_bom_type, ebom_id, bom_type,
                                         summarize))
+        if new_nbom_id and migrate_custom_lines and normal_boms:
+            self.addOldNormalCustomBomLines(new_nbom_id, normal_boms)
         return collect_list
+
+    @api.model
+    def checkAvailableConversionType(self, new_bom_type):
+        if new_bom_type not in ['normal', 'phantom']:
+            raise UserError(_("Could not convert source bom to %r" % new_bom_type))
+
+    @api.model
+    def addOldNormalCustomBomLines(self, newNormal, oldNormal):
+        for line in oldNormal.bom_line_ids:
+            if not line.ebom_source_id:
+                line.copy(default={'bom_id': newNormal.id})
 
     @api.model
     def addOldBomLines(self, old_n_bom, new_bom_brws, bom_line_obj, new_bom_type, bom_brws, bom_type, summarize=False):
@@ -183,6 +179,7 @@ class ProductProductExtension(models.Model):
                     new_bom_brws.write(
                         {'name': check_obj.name,
                          'product_id': check_obj.id,
+                         'product_tmpl_id': check_obj.product_tmpl_id.id,
                          'type': 'normal'},
                         check=False)
                     ok_rows = self._summarizeBom(new_bom_brws.bom_line_ids)
@@ -264,7 +261,7 @@ class ProductTemporaryNormalBom(osv.osv.osv_memory):
                 if obj_boms:
                     if skip_if_exists:
                         continue
-                    raise UserError(_("Normal BoM for Part '%s' and revision '%s' already exists." % (obj_boms.product_tmpl_id.engineering_code, obj_boms.product_tmpl_id.engineering_revision)))
+#                     raise UserError(_("Normal BoM for Part '%s' and revision '%s' already exists." % (obj_boms.product_tmpl_id.engineering_code, obj_boms.product_tmpl_id.engineering_revision)))
                 line_messages_list = product_product_type_object.create_bom_from_ebom(
                     product_browse, 'normal',
                     obj_brws.summarize,
