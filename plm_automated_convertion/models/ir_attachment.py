@@ -30,6 +30,7 @@ from odoo import fields
 from odoo import api
 from odoo import _
 import logging
+import os
 
 
 class ir_attachment(models.Model):
@@ -50,3 +51,46 @@ class ir_attachment(models.Model):
                'target': 'new'
                }
         return out
+
+    def checkParentCateg(self, categ):
+        all_categs = categ
+        for categ_id in categ.parent_id:
+            all_categs += categ_id
+            all_categs += self.checkParentCateg(categ_id)
+        return all_categs
+
+    def generateConvertedFiles(self):
+        convert_stacks = self.env["plm.convert.stack"]
+        for document in self:
+            if document.linkedcomponents and document.document_type in ['2d', '3d']:
+                components = document.linkedcomponents.sorted(lambda line: line.engineering_revision)
+                component = components[0]
+                convert_rule = self.env["plm.convert.rule"].sudo()
+                convert_stack = self.env["plm.convert.stack"].sudo()
+                _clean_name, ext = os.path.splitext(document.name)
+                parent_categs = self.checkParentCateg(component.categ_id)
+                rules = convert_rule.search([
+                    ('product_category', 'in', parent_categs.ids),
+                    ('start_format', 'ilike', ext) 
+                    ])
+                for rule in rules:
+                    stacks = convert_stack.search([
+                        ('start_format', '=', ext),
+                        ('end_format', '=', rule.end_format),
+                        ('start_document_id', '=', document.id),
+                        ('server_id', '=', rule.server_id.id),
+                        ('conversion_done', '=', False)
+                        ])
+                    if not stacks:
+                        convert_stacks += convert_stack.create({
+                            'start_format': ext,
+                            'end_format' : rule.end_format,
+                            'product_category': component.categ_id.id,
+                            'start_document_id': document.id,
+                            'output_name_rule': rule.output_name_rule,
+                            'server_id': rule.server_id.id,
+                            })
+                    else:
+                        convert_stacks += stacks
+        return convert_stacks
+

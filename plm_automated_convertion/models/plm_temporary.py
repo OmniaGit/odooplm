@@ -132,8 +132,7 @@ class plm_temporary_batch_converter(models.TransientModel):
     document_id = fields.Many2one('ir.attachment',
                                   'Related Document')
     targetFormat = fields.Selection(selection='calculate_available_extention',
-                                    string='Conversion Format',
-                                    required=True)
+                                    string='Conversion Format')
     downloadDatas = fields.Binary('Download',
                                   attachment=True)
     datas_fname = fields.Char("New File name")
@@ -149,6 +148,8 @@ class plm_temporary_batch_converter(models.TransientModel):
             if not brwWizard.document_id:
                 raise UserError('Cannot convert missing document! Select it!')
             clean_name, _ext = os.path.splitext(brwWizard.document_id.name)
+            if not brwWizard.targetFormat:
+                raise UserError('Need to setup target format!')
             newFileName = clean_name + brwWizard.targetFormat
             newFilePath, _ = brwWizard.getFileConverted(brwWizard.document_id,
                                                 cadName,
@@ -192,3 +193,6 @@ class plm_temporary_batch_converter(models.TransientModel):
                 'res_id': self.id,
                 'type': 'ir.actions.act_window',
                 'domain': "[]"}
+
+    def action_force_product_conversion(self):
+        return self.env['product.product'].browse(self.env.context['active_ids']).forceRecursiveConvert()

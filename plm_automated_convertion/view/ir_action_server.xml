@@ -14,6 +14,17 @@ records.generateConvertedDocuments()
             </field>
         </record>
 
+<!--         <record id="action_server_run_converter_product" model="ir.actions.server"> -->
+<!--             <field name="name">Force Recursive Convert</field> -->
+<!--             <field name="type">ir.actions.server</field> -->
+<!--             <field name="state">code</field> -->
+<!--             <field name="model_id" ref="product.model_product_product"/> -->
+<!-- 			<field name="binding_model_id" ref="product.model_product_product"/> -->
+<!--             <field name="code"> -->
+<!-- records.forceRecursiveConvert() -->
+<!--             </field> -->
+<!--         </record> -->
+
     </data>
 
 </odoo>
