@@ -37,7 +37,7 @@ Improve the plm module adding feature for converting cad files in different form
 in order to properly set this module you need a cad server machine.
 for more information send an e mail at info@omniasolutions.eu
     """,
-    'data': ['view/plm_component_action_extended.xml',
+    'data': ['view/plm_convert.xml',
              'view/security.xml',
              'view/data.xml',
              'view/plm_convert_rule.xml',
