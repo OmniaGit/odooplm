@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+
     <record model="ir.ui.view" id="view_attachment_form_plm_convert_hinerit">
         <field name="name">ir.attachment.convert</field>
         <field name="model">ir.attachment</field>
@@ -13,6 +14,16 @@
         </field>
     </record>
 
-
+	<record id="plm_batch_convertion_ir_attachment" model="ir.ui.view">
+		<field name="name">plm.batch.convertion.ir.attachment</field>
+		<field name="model">ir.attachment</field>
+		<field name="inherit_id" ref="plm.ir_attachment_tree"/>
+		<field name="priority" eval="3"/>
+		<field name="arch" type="xml">
+			<field name="engineering_document_name" position="before">
+				<button icon="fa-openid" string="Convert" name="show_convert_wizard" type="object"/>	
+			</field>
+		</field>
+	</record>
 
 </odoo>

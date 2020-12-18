@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 	<data>
+
 		<record id="act_plm_convert_form" model="ir.ui.view">
         	<field name="name">plm.convert.form</field>
         	<field name="model">plm.convert</field>
@@ -23,18 +24,6 @@
 			</field>
 		</record>
 		
-		<record id="plm_batch_convertion_ir_attachment" model="ir.ui.view">
-			<field name="name">plm.batch.convertion.ir.attachment</field>
-			<field name="model">ir.attachment</field>
-			<field name="inherit_id" ref="plm.ir_attachment_tree"/>
-			<field name="priority" eval="3"/>
-			<field name="arch" type="xml">
-				<field name="engineering_document_name" position="before">
-					<button icon="fa-openid" string="Convert" name="show_convert_wizard" type="object"/>	
-				</field>
-			</field>
-		</record>
-		
 		<record model="ir.actions.act_window" id="act_view_doc_convert">
             <field name="name">Convert File</field>
             <field name="res_model">plm.convert</field>
@@ -43,6 +32,7 @@
             <field name="target">new</field>
             <field name="view_mode">form</field>
         </record>
+
 	</data>
 </odoo>
           
