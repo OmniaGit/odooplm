@@ -70,18 +70,11 @@ class ProductProductExtension(models.Model):
         if new_bom_type not in ['normal', 'phantom']:
             raise UserError(_("Could not convert source bom to %r" % new_bom_type))
         product_template_id = obj_product_product_brw.product_tmpl_id.id
-        bom_brws_list = bom_type.search([('product_tmpl_id', '=', product_template_id),
-                                         ('type', '=', new_bom_type)], limit=1)
-        if bom_brws_list:
-            for bom_brws in bom_brws_list:
-                for bom_line in bom_brws.bom_line_ids:
-                    self.create_bom_from_ebom(bom_line.product_id, new_bom_type, summarize)
-                break
-        else:
-            eng_bom_brws_list = bom_type.search([('product_tmpl_id', '=', product_template_id),
-                                                 ('type', '=', 'ebom')], limit=1)
+        normal_boms = self.generateChildrenBoms(product_template_id.id, new_bom_type, summarize)
+        if not normal_boms:
+            eng_bom_brws_list = self.getEbom(product_template_id)
             if not eng_bom_brws_list:
-                logging.info('No EBOM or NBOM found for template id: {}'.format(product_template_id))
+                logging.info('No EBOM or NBOM found for template id: %r' % (product_template_id.id))
                 return []
             for e_bom_brws in eng_bom_brws_list:
                 e_bom_id = e_bom_brws.id
@@ -119,7 +112,7 @@ class ProductProductExtension(models.Model):
         if new_nbom_id and e_bom_id and migrate_custom_lines:
             # if e_bom_id --> normal BOM was not existing
             ebom_id = bom_type.browse(e_bom_id)
-            old_bom_list = get_previous_normal_bom(ebom_id, new_nbom_id)
+            old_bom_list = self.get_previous_normal_bom(ebom_id, new_nbom_id, new_bom_type)
             for old_n_bom in old_bom_list:
                 collect_list.extend(
                     self.addOldBomLines(old_n_bom, new_nbom_id, bom_l_type, new_bom_type, ebom_id, bom_type,
@@ -209,6 +202,41 @@ class ProductProductExtension(models.Model):
                     self._create_normalBom(bom_line.product_id.id)
         return False
 
+    @api.model
+    def get_previous_normal_bom(self, bomBrws, exclude_bom_id=False, new_bom_type='normal'):
+        prod_tmpl_obj = self.env['product.template']
+        bom_type = self.env['mrp.bom']
+        out_bom_brws = []
+        engineering_code = bomBrws.product_tmpl_id.engineering_code
+        previous_rev_product_brws_list = prod_tmpl_obj.search([('engineering_code', '=', engineering_code)], order='engineering_revision desc')
+        for prod_brws in previous_rev_product_brws_list:
+            old_bom_brws_list = bom_type.search([('product_tmpl_id', '=', prod_brws.id),
+                                                 ('type', '=', new_bom_type)])
+            for old_bom_brws in old_bom_brws_list:
+                if old_bom_brws == exclude_bom_id:
+                    continue
+                out_bom_brws.append(old_bom_brws)
+            if out_bom_brws:
+                break
+        return out_bom_brws
+
+    @api.model
+    def generateChildrenBoms(self, product_template_id, new_bom_type, summarize):
+        bom_type = self.env['mrp.bom']
+        bom_brws_list = bom_type.search([('product_tmpl_id', '=', product_template_id),
+                                         ('type', '=', new_bom_type)], order='engineering_revision DESC', limit=1)
+        if bom_brws_list:
+            for bom_brws in bom_brws_list:
+                for bom_line in bom_brws.bom_line_ids:
+                    self.create_bom_from_ebom(bom_line.product_id, new_bom_type, summarize)
+                break
+        return bom_brws_list
+
+    @api.model
+    def getEbom(self, product_template_id):
+        return self.env['mrp.bom'].search([('product_tmpl_id', '=', product_template_id.id),
+                                ('type', '=', 'ebom')], order='engineering_revision DESC', limit=1)
+
 
 class ProductTemporaryNormalBom(osv.osv.osv_memory):
     _inherit = "plm.temporary"
@@ -224,7 +252,7 @@ class ProductTemporaryNormalBom(osv.osv.osv_memory):
             obj_type = obj_brws.env.context.get('active_model', '')
             skip_if_exists = obj_brws.env.context.get('skip_if_exists', False)
             if obj_type != 'product.product':
-                raise UserError(_("The creation of the normalBom works only on product_product object"))
+                raise UserError(_("The creation of the normalBom works only on product_product object (Variants, Plm Components)"))
             if not selected_ids:
                 raise UserError(_("Select a product before to continue"))
             obj_type = obj_brws.env.context.get('active_model', False)
