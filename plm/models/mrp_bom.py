@@ -790,7 +790,7 @@ class MrpBomExtension(models.Model):
             return out
 
     @api.model
-    def _bom_find(self, product_tmpl=None, product=None, picking_type=None, company_id=False):
+    def _bom_find(self, product_tmpl=None, product=None, picking_type=None, company_id=False, bom_type=False):
         """ Finds BoM for particular product and product uom.
         @param product_tmpl: Selected product.
         @param product: Unit of measure of a product.
@@ -800,7 +800,8 @@ class MrpBomExtension(models.Model):
             product_tmpl=product_tmpl,
             product=product,
             picking_type=picking_type,
-            company_id=company_id
+            company_id=company_id,
+            bom_type=bom_type
         )
         if obj_bom:
             available_types = ['normal', 'phantom']
