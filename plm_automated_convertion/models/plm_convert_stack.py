@@ -28,6 +28,7 @@ from odoo import fields
 from odoo import api
 import os
 import logging
+import base64
 
 
 class PlmConvertStack(models.Model):
@@ -105,7 +106,7 @@ class PlmConvertStack(models.Model):
             with open(newFilePath, 'rb') as fileObj:
                 content = fileObj.read()
                 if attachment_ids:
-                    attachment_ids.write({'datas': content})
+                    attachment_ids.write({'datas': base64.encodestring(content)})
                     target_attachment = attachment_ids[0]
                 else:
                     target_attachment = attachment.create({
