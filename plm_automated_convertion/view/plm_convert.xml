@@ -52,7 +52,7 @@
             <field name="name">Force Recursive Convert</field>
             <field name="res_model">plm.convert</field>
             <field name="binding_model_id" ref="model_product_product"/>
-            <field name="context">{'default_document_id': active_id}</field>
+            <field name="context">{'default_document_id': False}</field>
             <field name="target">new</field>
             <field name="view_mode">form</field>
             <field name="view_id" ref="plm_automated_convertion.act_plm_convert_product_form"/>
