@@ -120,4 +120,5 @@ class PlmConvertStack(models.Model):
             convertion.end_document_id = target_attachment.id
             convertion.conversion_done = True
             convertion.error_string = ''
+            self.env.cr.commit()
         logging.info('generateConvertedDocuments ended')
