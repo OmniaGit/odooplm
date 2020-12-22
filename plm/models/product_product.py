@@ -925,8 +925,7 @@ class PlmComponent(models.Model):
         name = vals.get('name')
         if not name and eng_code:
             vals['name'] = eng_code
-        if not vals.get('engineering_code') and name:
-            vals['engineering_code'] = name
+
         eng_rev = vals.get('engineering_revision', 0)
         eng_code = vals.get('engineering_code')
         if eng_code:
