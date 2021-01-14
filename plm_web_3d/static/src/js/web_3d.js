@@ -52,10 +52,12 @@ function fitCameraToSelection( camera, controls, selection, fitOffset = 1.2 ) {
 	  
 	  camera.near = distance / 100;
 	  camera.far = distance * 100;
+	  scene.fog.near = camera.far
+	  scene.fog.far	 = camera.far * 10
 	  camera.updateProjectionMatrix();
 
 	  camera.position.copy( controls.target ).sub(direction);
-	  resetLight(size);
+	  resetLight(box, maxSize);
 	  controls.update();
 	  render();
 };
@@ -75,6 +77,7 @@ function addAmbient(){
 	  scene.add( planeMeshFloar );
 	  planeGrid.material.opacity = 0.2;
 	  planeGrid.material.transparent = true;
+	  planeGrid.receiveShadow=true;
 	  scene.add( planeGrid );
 	  tecnicalBckground();
 }
@@ -115,6 +118,10 @@ function imageBckground(){
 function init() {
   const canvas = document.querySelector('#odoo_canvas');
   renderer = new THREE.WebGLRenderer({canvas});
+  renderer.gammaInput = true;
+  renderer.gammaOutput = true;
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
   scene = new THREE.Scene();
   addAmbient();
   render();
@@ -128,7 +135,7 @@ function loadDocumentFromOdoo(){
 	const document_name = document.querySelector('#active_model').getAttribute('document_name');
 	var file_path =  '../web/content/ir.attachment/' + document_id + '/datas/' + document_name;
 	var exte = document_name.split('.').pop();
-	if (['glb'].includes(exte)){ 
+	if (['glb','gltf'].includes(exte)){ 
 		loadGltx(document_name, file_path);
 	}
 	if (['fbx'].includes(exte)){
@@ -137,8 +144,8 @@ function loadDocumentFromOdoo(){
 	if (['obj'].includes(exte)){
 		loadoBJLoader(document_name, file_path);
 	}
-	if (['loadvRMLLoader'].includes(exte)){
-		loadoloader(document_name, file_path);
+	if (['wrl'].includes(exte)){
+		loadvRMLLoader(document_name, file_path);
 	}
 	if (['json'].includes(exte)){
 		loadoloader(document_name, file_path);
@@ -154,7 +161,6 @@ function loadGltx(document_name, file_path){
 			addItemToSeen(children[i])
 		}
 		fitCameraToSelection(camera, controls, fit_item, 1.1);
-		render();
 	}, undefined, function ( error ) {
 		console.error( error.toString() );
 	});	
@@ -163,13 +169,12 @@ function loadGltx(document_name, file_path){
 
 function loadfBXLoader(document_name, file_path){
 	fBXLoader.load( file_path, function ( gltf ) {
-		var children = gltf.scene.children; 
+		var children = gltf.children; 
 		var i;
 		for (i = 0; i < children.length; i++) {
 			addItemToSeen(children[i])
 		}
 		fitCameraToSelection(camera, controls, fit_item, 1.1);
-		render();
 	}, undefined, function ( error ) {
 		console.error( error.toString() );
 	});	
@@ -185,7 +190,6 @@ function loadoBJLoader(document_name, file_path){
 			addItemToSeen(children[i])
 		}
 		fitCameraToSelection(camera, controls, fit_item, 1.1);
-		render();
 	}, undefined, function ( error ) {
 		console.error( error.toString() );
 	});	
@@ -229,6 +233,8 @@ function loadvRMLLoader(document_name, file_path){
 	
 }
 function addItemToSeen(object){
+	object.receiveShadow=true;
+	object.castShadow=true;
 	scene.add(object);
 	fit_item.push(object)	
 }
@@ -250,11 +256,12 @@ function addOrbit(){
 	controls.update();
 }
 
-function resetLight(size) {
-	var mult = 100;
-	var x = size.x * mult;
-	var y = size.x * mult;
-	var z = size.x * mult;
+function resetLight(bbox, size) {
+	var mult = size * 1000;
+	var center = bbox.getCenter();
+	var x = center.x + mult;
+	var y = center.y + mult;
+	var z = center.z + mult;
 	light1.position.z = z;
 	light1.position.y = - y;
 	light1.position.x = - x;
@@ -267,7 +274,7 @@ function resetLight(size) {
 }
 
 function addLight(){
-	
+	const sphereSize = 20;
 	const group = new THREE.Group();
 	scene.add( group );
 
@@ -276,24 +283,21 @@ function addLight(){
 	light1.position.y = - 70;
 	light1.position.x = - 70;
 	scene.add( light1 );
-
 	
 	light2 = new THREE.PointLight( 0xffdddd, 1.0 );
 	light2.position.z = 70;
 	light2.position.x = - 70;
 	light2.position.y = 70;
 	scene.add( light2 );
-
 	
 	light3 = new THREE.PointLight( 0xddddff, 1.0 );
 	light3.position.z = 70;
 	light3.position.x = 70;
 	light3.position.y = - 70;
 	scene.add( light3 );
-	
-	
+
 	var lightAmbient = new THREE.AmbientLight(0xffffff, 0.6);
-	scene.add(lightAmbient); 
+	scene.add(lightAmbient);
 }
 
 function render() {

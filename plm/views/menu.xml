@@ -3,6 +3,7 @@
     <menuitem
             id="plm_menu"
             name="PLM"
+            web_icon="plm,static/description/icon.png"
             groups="plm.group_plm_admin,plm.group_plm_integration_user,plm.group_plm_view_user,plm.group_plm_readonly_released"
 
     />
