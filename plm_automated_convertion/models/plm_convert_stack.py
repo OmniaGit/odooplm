@@ -104,17 +104,25 @@ class PlmConvertStack(models.Model):
             target_attachment = self.env['ir.attachment']
             attachment_ids = attachment.search([('name', '=', newFileName)])
             content = ''
+            logging.info('Reading converted file %r' % (newFilePath))
+            if not os.path.exists(newFilePath):
+                msg = 'Cannot find file %r' % (newFilePath)
+                logging.error(msg)
+                convertion.error_string = msg
+                continue
             with open(newFilePath, 'rb') as fileObj:
                 content = fileObj.read()
             if content:
+                logging.info('File size %r, content len %r' % (os.path.getsize(newFilePath), len(content)))
+                encoded_content = base64.encodestring(content)
                 if attachment_ids:
-                    attachment_ids.write({'datas': base64.encodestring(content)})
+                    attachment_ids.write({'datas': encoded_content})
                     target_attachment = attachment_ids[0]
                 else:
                     target_attachment = attachment.create({
                         'linkedcomponents': [(6, False, document.linkedcomponents.ids)],
                         'name': newFileName,
-                        'datas': content,
+                        'datas': encoded_content,
                         'state': convertion.start_document_id.state,
                         'is_plm': True,
                         'engineering_document_name': newFileName,
@@ -122,6 +130,7 @@ class PlmConvertStack(models.Model):
                         })
                 try:
                     os.remove(newFilePath)
+                    logging.info('Removed file %r' % (newFilePath))
                 except Exception as ex:
                     logging.warning(ex)
             else:
