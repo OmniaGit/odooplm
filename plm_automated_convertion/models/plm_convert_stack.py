@@ -103,8 +103,10 @@ class PlmConvertStack(models.Model):
             attachment = self.env['ir.attachment']
             target_attachment = self.env['ir.attachment']
             attachment_ids = attachment.search([('name', '=', newFileName)])
+            content = ''
             with open(newFilePath, 'rb') as fileObj:
                 content = fileObj.read()
+            if content:
                 if attachment_ids:
                     attachment_ids.write({'datas': base64.encodestring(content)})
                     target_attachment = attachment_ids[0]
@@ -118,6 +120,14 @@ class PlmConvertStack(models.Model):
                         'engineering_document_name': newFileName,
                         'is_converted_document': True,
                         })
+                try:
+                    os.remove(newFilePath)
+                except Exception as ex:
+                    logging.warning(ex)
+            else:
+                msg = 'Cannot convert document %r because no content is provided. Convert stack %r' % (document.id, convertion.id)
+                logging.error(msg)
+                convertion.error_string = msg
             convertion.end_document_id = target_attachment.id
             convertion.conversion_done = True
             convertion.error_string = ''

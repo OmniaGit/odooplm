@@ -44,6 +44,7 @@
 		                <field name="server_id"/>
 		                <field name="output_name_rule"/>
 		                <field name="error_string" readonly="True"/>
+		                <field name="write_date"/>
 	                </group>
                	</sheet> 
             </form>
@@ -67,6 +68,7 @@
                 <field name="conversion_done"/>
                 <button name="setToConvert" type="object" attrs="{'invisible': [('conversion_done', '=', False)]}" icon="fa-arrow-circle-right"></button>
                 <field name="error_string"/>
+                <field name="write_date"/>
             </tree>
         </field>
     </record>
