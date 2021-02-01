@@ -81,6 +81,9 @@ class ProductProductExtended(models.Model):
     @api.multi
     def docRev(self, prodBrws, newID, prodProdEnv):
         createdDocIds = []
+        mapping_docs = {}
+        vals_to_create = {}
+        attachment_relation = self.env['ir.attachment.relation']
         for docBrws in prodBrws.linkeddocuments:
             if self.stateAllows(docBrws, 'Document'):
                 resDoc = docBrws.NewRevision(docBrws.id)
@@ -89,8 +92,33 @@ class ProductProductExtended(models.Model):
                 if not newDocID:
                     logging.error('[action_create_new_revision_by_server] newDocID: %r' % (newDocID))
                     raise UserError(_('Something wrong happens during new document revision process.'))
+                mapping_docs[docBrws.id] = newDocID
                 createdDocIds.append(newDocID)
         prodProdEnv.browse(newID).linkeddocuments = createdDocIds
+        for old_doc_id, new_doc_id in mapping_docs.items():
+            old_relation = attachment_relation.search(['|', 
+                                                       ('parent_id', '=', old_doc_id),
+                                                       ('child_id', '=', old_doc_id)])
+            for old_doc_rel in old_relation:
+                if old_doc_rel.parent_id.id == old_doc_id:
+                    if old_doc_rel.child_id.id in mapping_docs.keys():
+                        vals_to_create = {'parent_id': new_doc_id,
+                                          'child_id': mapping_docs.get(old_doc_rel.child_id.id),
+                                          'link_kind': old_doc_rel.link_kind}
+                        if not attachment_relation.search([('parent_id', '=', vals_to_create.get('parent_id')),
+                                                           ('child_id', '=', vals_to_create.get('child_id')),
+                                                           ('link_kind', '=', vals_to_create.get('link_kind'))]):
+                            attachment_relation.create(vals_to_create)
+                if old_doc_rel.child_id.id == old_doc_id:
+                    if old_doc_rel.parent_id.id in mapping_docs.keys():
+                        vals_to_create = {'parent_id': mapping_docs.get(old_doc_rel.parent_id.id),
+                                          'child_id': new_doc_id,
+                                          'link_kind': old_doc_rel.link_kind}
+                        if not attachment_relation.search([('parent_id', '=', vals_to_create.get('parent_id')),
+                                                           ('child_id', '=', vals_to_create.get('child_id')),
+                                                           ('link_kind', '=', vals_to_create.get('link_kind'))]):
+                            attachment_relation.create(vals_to_create)
+
 
     @api.multi
     def commonBomRev(self, oldProdBrws, newID, prodProdEnv, bomType):
