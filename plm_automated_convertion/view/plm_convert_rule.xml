@@ -32,6 +32,7 @@
 		                <field name="end_format" placeholder=".step" required="True"/>
 		                <field name="product_category" required="True"/>
 		                <field name="server_id" required="True"/>
+		                <field name="convert_alone_documents"/>
 		                <field name="output_name_rule"/>
 	                    <i class="fa fa-info fa-3x text-info float-left" role="img" aria-label="Info" title="Info"/>
 	                    <p>

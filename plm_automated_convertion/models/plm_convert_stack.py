@@ -116,7 +116,9 @@ class PlmConvertStack(models.Model):
                 logging.info('File size %r, content len %r' % (os.path.getsize(newFilePath), len(content)))
                 encoded_content = base64.encodestring(content)
                 if attachment_ids:
-                    attachment_ids.write({'datas': encoded_content})
+                    attachment_ids.write({'datas': encoded_content,
+                                          'source_convert_document': document.id
+                                          })
                     target_attachment = attachment_ids[0]
                 else:
                     target_attachment = attachment.create({
@@ -127,6 +129,7 @@ class PlmConvertStack(models.Model):
                         'is_plm': True,
                         'engineering_document_name': newFileName,
                         'is_converted_document': True,
+                        'source_convert_document': document.id
                         })
                 try:
                     os.remove(newFilePath)

@@ -35,12 +35,15 @@ import logging
 class ProductProduct(models.Model):
     _inherit = 'product.product'
 
-    def forceRecursiveConvert(self):
+    def forceRecursiveConvert(self, recursive=True):
         convert_stacks = self.env['plm.convert.stack']
         for product in self:
             document_ids = []
             for document in product.linkeddocuments:
-                document_ids.extend(document.getRelatedAllLevelDocumentsTree(document))
+                if recursive:
+                    document_ids.extend(document.getRelatedAllLevelDocumentsTree(document))
+                else:
+                    document_ids.append(document.id)
             convert_stacks = self.env['ir.attachment'].browse(list(set(document_ids))).generateConvertedFiles()
         return {'name': _('Convert Stack'),
                 'res_model': "plm.convert.stack",

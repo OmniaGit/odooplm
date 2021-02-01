@@ -37,6 +37,8 @@ class ir_attachment(models.Model):
     _inherit = 'ir.attachment'
 
     is_converted_document = fields.Boolean('Is Converted Document')
+    source_convert_document = fields.Many2one('ir.attachment', 'Source Convert Document')
+    converted_documents = fields.One2many('ir.attachment', 'source_convert_document', 'Converted documents')
 
     def show_convert_wizard(self):
         context = dict(self.env.context or {})
@@ -62,18 +64,25 @@ class ir_attachment(models.Model):
     def generateConvertedFiles(self):
         convert_stacks = self.env["plm.convert.stack"]
         for document in self:
-            if document.linkedcomponents and document.document_type in ['2d', '3d']:
+            if document.document_type in ['2d', '3d']:
+                categ = self.env['product.category']
                 components = document.linkedcomponents.sorted(lambda line: line.engineering_revision)
-                component = components[0]
+                if components:
+                    component = components[0]
+                    categ = component.categ_id
                 convert_rule = self.env["plm.convert.rule"].sudo()
                 convert_stack = self.env["plm.convert.stack"].sudo()
                 _clean_name, ext = os.path.splitext(document.name)
-                parent_categs = self.checkParentCateg(component.categ_id)
-                rules = convert_rule.search([
-                    ('product_category', 'in', parent_categs.ids),
-                    ('start_format', 'ilike', ext) 
-                    ])
+                parent_categs = self.checkParentCateg(categ)
+                rules = convert_rule.search([('product_category', 'in', parent_categs.ids),
+                                             ('start_format', 'ilike', ext) 
+                                             ])
+                rules += convert_rule.search([('convert_alone_documents', '=', True),
+                                             ('start_format', 'ilike', ext) 
+                                             ])
                 for rule in rules:
+                    if not components and not rule.convert_alone_documents:
+                        continue
                     stacks = convert_stack.search([
                         ('start_format', '=', ext),
                         ('end_format', '=', rule.end_format),
@@ -85,7 +94,7 @@ class ir_attachment(models.Model):
                         convert_stacks += convert_stack.create({
                             'start_format': ext,
                             'end_format' : rule.end_format,
-                            'product_category': component.categ_id.id,
+                            'product_category': categ.id,
                             'start_document_id': document.id,
                             'output_name_rule': rule.output_name_rule,
                             'server_id': rule.server_id.id,
