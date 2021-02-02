@@ -276,12 +276,7 @@ class PlmDocument(models.Model):
         if not doc_id:
             logging.warning('Cannot get links from %r document' % (doc_id))
             return []
-        to_search = [('link_kind', 'in', ['RfTree']),
-                     '|', 
-                        ('parent_id', '=', doc_id),
-                        ('child_id', '=', doc_id)]
-        if recursion:
-            to_search = [('link_kind', 'in', ['RfTree']),('parent_id', '=', doc_id)]
+        to_search = [('link_kind', 'in', ['RfTree']),('parent_id', '=', doc_id)]
         doc_rel_ids = self.env['ir.attachment.relation'].search(to_search)
         for doc_rel_id in doc_rel_ids:
             if doc_rel_id.child_id.id == doc_id:
