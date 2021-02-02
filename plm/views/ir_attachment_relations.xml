@@ -8,43 +8,63 @@
         	<field name="priority" eval="10"/>
             <field name="arch" type="xml">
                 <form string="Show Document Relation">
-                <sheet>	
-                <group colspan="4" col="4">
-	               	<separator colspan="4" string="Parent Preview"/>
-	                <group colspan="2" col="2">
-	                    <field name="parent_id" readonly="True"/>
-	                    <field name="parent_revision" readonly="True"/>
-	                    <field name="parent_state" readonly="True"/>
-	                </group>
-	                <group colspan="2" col="2">
-	                 	<field  name="parent_preview" colspan="2"
-								widget="image" 
-	                     		readonly="1"
-	                        	nolabel="1"
-	                        	img_height="400"
-	                        	img_width="400"/>
-	                </group>
-  					<newline/>
-	            	<separator colspan="4" string="Child Preview"/>
-	                <group colspan="2" col="2">
-	                    <field name="child_id" readonly="True"/>
-	                    <field name="child_revision" readonly="True"/>
-	                    <field name="child_state" readonly="True"/>
-	                </group>
-	                <group colspan="2" col="2">
-	                    <field  name="child_preview" colspan="2"
-								widget="image" 
-	                     		readonly="1"
-	                        	nolabel="1"
-	                        	img_height="400"
-	                        	img_width="400"/>
-	                </group>
-                </group>
-               	</sheet> 
+	                <sheet>	
+		                <group colspan="4" col="4">
+		                	<group colspan="2" col="2">	
+		                		<field name="link_kind" readonly="True"/>
+		                	</group>
+			               	<separator colspan="4" string="Parent Preview"/>
+			                <group colspan="2" col="2">	
+			                    <field name="parent_id" readonly="True"/>
+			                    <field name="parent_revision"/>
+			                    <field name="parent_state"/>
+			                </group>
+			                <group colspan="2" col="2">
+			                 	<field  name="parent_preview" colspan="2"
+										widget="image" 
+			                     		readonly="1"
+			                        	nolabel="1"
+			                        	img_height="400"
+			                        	img_width="400"/>
+			                </group>
+		  					<newline/>
+			            	<separator colspan="4" string="Child Preview"/>
+			                <group colspan="2" col="2">
+			                    <field name="child_id" readonly="True"/>
+			                    <field name="child_revision"/>
+			                    <field name="child_state"/>
+			                </group>
+			                <group colspan="2" col="2">
+			                    <field  name="child_preview" colspan="2"
+										widget="image" 
+			                     		readonly="1"
+			                        	nolabel="1"
+			                        	img_height="400"
+			                        	img_width="400"/>
+			                </group>
+		                </group>
+	               	</sheet> 
                </form>
             </field>
         </record>
 
+    <record id="plm_docbom_form_view_admin" model="ir.ui.view">
+        <field name="name">plm.doc.relation.form.admin</field>
+        <field name="model">ir.attachment.relation</field>
+        <field name="inherit_id" ref="plm.plm_docbom_form_view"/>
+        <field name="groups_id" eval="[(4, ref('plm.group_plm_admin'))]"/>
+        <field name="arch" type="xml">
+            <field name="link_kind" position="attributes">
+                <attribute name="readonly">False</attribute>
+            </field>
+            <field name="parent_id" position="attributes">
+                <attribute name="readonly">False</attribute>
+            </field>
+            <field name="child_id" position="attributes">
+                <attribute name="readonly">False</attribute>
+            </field>
+        </field>
+    </record>
 
        <record id="plm_docbom_tree_view" model="ir.ui.view">
             <field name="name">plm.doc.relation.tree</field>

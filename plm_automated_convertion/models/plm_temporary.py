@@ -136,6 +136,7 @@ class plm_temporary_batch_converter(models.TransientModel):
     downloadDatas = fields.Binary('Download',
                                   attachment=True)
     datas_fname = fields.Char("New File name")
+    recursive_convert = fields.Boolean("Recursive convert", default=True)
 
     def convert(self):
         """
@@ -195,4 +196,4 @@ class plm_temporary_batch_converter(models.TransientModel):
                 'domain': "[]"}
 
     def action_force_product_conversion(self):
-        return self.env['product.product'].browse(self.env.context['active_ids']).forceRecursiveConvert()
+        return self.env['product.product'].browse(self.env.context['active_ids']).forceRecursiveConvert(self.recursive_convert)
