@@ -305,6 +305,20 @@ class PlmDocument(models.Model):
         return list(set(out))
 
     @api.model
+    def getRelatedExtraTree(self, doc_id, recursion=True):
+        out = []
+        if not doc_id:
+            logging.warning('Cannot get links from %r document' % (doc_id))
+            return []
+        to_search = [('link_kind', 'in', ['ExtraTree']),('parent_id', '=', doc_id)]
+        doc_rel_ids = self.env['ir.attachment.relation'].search(to_search)
+        for doc_rel_id in doc_rel_ids:
+            out.append(doc_rel_id.child_id.id)
+            if recursion:
+                out.extend(self.getRelatedExtraTree(doc_rel_id.child_id.id, recursion))
+        return list(set(out))
+
+    @api.model
     def getRelatedPkgTreeCount(self, doc_id):
         if not doc_id:
             logging.warning('Cannot get links from %r document' % (doc_id))
@@ -511,6 +525,11 @@ class PlmDocument(models.Model):
                 defaults['revisionid'] = newRevIndex
                 defaults['writable'] = True
                 defaults['state'] = 'draft'
+                extra_doc_ids = self.getRelatedExtraTree(oldObject.id, recursion=True)
+                self.browse(extra_doc_ids).with_context(ctx).write({
+                    'revisionid': oldObject.revisionid,
+                    'state': 'undermodify',
+                    })
                 res = super(PlmDocument, oldObject).copy(defaults)
                 newID = res.id
                 res.revision_user = self.env.uid
@@ -740,13 +759,15 @@ class PlmDocument(models.Model):
             release the object
         """
         to_release = self.env['ir.attachment']
+        ctx = self.env.context.copy()
+        ctx['check'] = False
         for oldObject in self:
-            lastDocBrws = self._getbyrevision(oldObject.engineering_document_name, oldObject.revisionid - 1)
-            if lastDocBrws:
+            lastDocBrwsList = self._getbyrevision(oldObject.engineering_document_name, oldObject.revisionid - 1)
+            for lastDocBrws in lastDocBrwsList:
                 lastDocBrws.commonWFAction(False, 'obsoleted', False)
+                extra_doc_ids = self.getRelatedExtraTree(lastDocBrws.id, recursion=True)
+                self.browse(extra_doc_ids).with_context(ctx).write({'state': 'obsoleted'})
             if oldObject.ischecked_in():
-                ctx = self.env.context.copy()
-                ctx['check'] = False
                 oldObject.with_context(ctx).attachment_release_user = self.env.uid
                 oldObject.with_context(ctx).attachment_release_date = datetime.utcnow()
                 to_release += oldObject
@@ -1363,7 +1384,7 @@ class PlmDocument(models.Model):
 
     
     def _getbyrevision(self, engineering_document_name, revision):
-        result = False
+        result = self.env['ir.attachment']
         for result in self.search([('engineering_document_name', '=', engineering_document_name),
                                    ('revisionid', '=', revision)]):
             return result
