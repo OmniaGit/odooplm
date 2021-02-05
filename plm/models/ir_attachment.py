@@ -346,11 +346,11 @@ class PlmDocument(models.Model):
                 if child_id in out:
                     logging.warning('Document %r document already found' % (doc_id))
                     continue
-                if getRftree:
-                    out.extend(self.getRelatedRfTree(child_id, recursion=True))
                 out.append(child_id)
                 if recursion:
                     _getRelatedHiTree(child_id, recursion, getRftree)
+            if getRftree:
+                out.extend(self.getRelatedRfTree(doc_id, recursion=True))
 
         _getRelatedHiTree(doc_id, recursion, getRftree)
         return out
