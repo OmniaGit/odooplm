@@ -346,8 +346,11 @@ class PackAndGo(osv.osv.osv_memory):
             for lineBrws in self.export_pdf:
                 docBws = lineBrws.document_id
                 outFilePath = os.path.join(outZipFile, docBws.name + '.' + 'pdf')
-                with open(outFilePath, 'wb') as fileObj:
-                    fileObj.write(base64.b64decode(docBws.printout))
+                if docBws.printout:
+                    with open(outFilePath, 'wb') as fileObj:
+                        fileObj.write(base64.b64decode(docBws.printout))
+                else:
+                    logging.warning('Cannot get PDF file for document %r' % (docBws.name))
 
         def exportOther():
             for lineBrws in self.export_other:
