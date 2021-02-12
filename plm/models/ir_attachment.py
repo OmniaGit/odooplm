@@ -307,22 +307,31 @@ class PlmDocument(models.Model):
         return list(set(out))
 
     @api.model
-    def getRelatedHiTree(self, doc_id, recursion=True):
+    def getRelatedHiTree(self, doc_id, recursion=True, getRftree=False):
         '''
             Get children HiTree documents
         '''
         out = []
-        if not doc_id:
-            logging.warning('Cannot get links from %r document' % (doc_id))
-            return []
-        document_rel_ids = self.env['ir.attachment.relation'].search([
-            ('link_kind', '=', 'HiTree'), 
-            ('parent_id', '=', doc_id)])
-        for document_rel_id in document_rel_ids:
-            child_id = document_rel_id.child_id.id
-            out.append(child_id)
-            if recursion:
-                out.extend(self.getRelatedHiTree(child_id, recursion))
+
+        def _getRelatedHiTree(doc_id, recursion, getRftree):
+            if not doc_id:
+                logging.warning('Cannot get links from %r document' % (doc_id))
+                return []
+            document_rel_ids = self.env['ir.attachment.relation'].search([
+                ('link_kind', '=', 'HiTree'), 
+                ('parent_id', '=', doc_id)])
+            for document_rel_id in document_rel_ids:
+                child_id = document_rel_id.child_id.id
+                if child_id in out:
+                    logging.warning('Document %r document already found' % (doc_id))
+                    continue
+                out.append(child_id)
+                if recursion:
+                    _getRelatedHiTree(child_id, recursion, getRftree)
+            if getRftree:
+                out.extend(self.getRelatedRfTree(doc_id, recursion=True))
+
+        _getRelatedHiTree(doc_id, recursion, getRftree)
         return out
 
     @api.model
