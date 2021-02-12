@@ -1704,14 +1704,17 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
 
     def name_get(self):
         result = []
-        for prod in self:
+        ret = super(PlmComponent, self).name_get()
+        for res in ret:
+            prod_id, desc = res
             eng_code = ''
+            prod = self.browse(prod_id)
             if prod.default_code:
                 eng_code = '[%s] ' % (prod.default_code)
             elif prod.engineering_code:
                 eng_code = '[%s] ' % ('%s_%s' % (prod.engineering_code, prod.engineering_revision))
             eng_code += prod.name
-            result.append((prod.id, eng_code))
+            result.append((prod_id, '%s %s' % (eng_code, desc)))
         return result
 
     @api.model
