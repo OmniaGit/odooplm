@@ -558,7 +558,7 @@ class PlmComponent(models.Model):
             self.ids = [self.ids]
         tobeReleasedIDs.extend(self.ids)
         for prodBrws in self:
-            for childProdBrws in self.browse(self._getChildrenBom(prodBrws, 1)):
+            for childProdBrws in self.browse(self._getChildrenBom(prodBrws, 1)).filtered(lambda x: x.engineering_code not in [False, '']):
                 if (childProdBrws.state not in exclude_statuses) and (childProdBrws.state not in include_statuses):
                     errors.append(_("Product code: %r revision %r status %r") % (childProdBrws.engineering_code, childProdBrws.engineering_revision, childProdBrws.state))
                     continue
@@ -739,6 +739,7 @@ class PlmComponent(models.Model):
             available_status = self._fields.get('state')._description_selection(self.env)
             dict_status = dict(available_status)
             allProdObjs = self.browse(product_ids)
+            allProdObjs = allProdObjs.filtered(lambda x: x.engineering_code not in [False, ''])
             for productBrw in allProdObjs:
                 old_revision = self._getbyrevision(productBrw.engineering_code, productBrw.engineering_revision - 1)
                 if old_revision:
@@ -818,6 +819,7 @@ class PlmComponent(models.Model):
         if userErrors:
             raise UserError(userErrors)
         allIdsBrwsList = self.browse(allIDs)
+        allIdsBrwsList = allIdsBrwsList.filtered(lambda x: x.engineering_code not in [False, ''])
         allIdsBrwsList._action_ondocuments(doc_action, include_statuses)
         for currId in allIdsBrwsList:
             if not(currId.id in self.ids):
