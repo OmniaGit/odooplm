@@ -1729,6 +1729,9 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             elif prod.engineering_code:
                 eng_code = '[%s] ' % ('%s_%s' % (prod.engineering_code, prod.engineering_revision))
             eng_code += prod.name
+            variant = prod.product_template_attribute_value_ids._get_combination_name()
+            if variant:
+                eng_code += ' (%s)' % variant
             result.append((prod.id, eng_code))
         return result
 
