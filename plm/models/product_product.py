@@ -556,7 +556,7 @@ class PlmComponent(models.Model):
             self.ids = [self.ids]
         tobeReleasedIDs.extend(self.ids)
         for prodBrws in self:
-            for childProdBrws in self.browse(self._getChildrenBom(prodBrws, 1)):
+            for childProdBrws in self.browse(self._getChildrenBom(prodBrws, 1)).filtered(lambda x: x.engineering_code not in [False, '']):
                 if (childProdBrws.state not in exclude_statuses) and (childProdBrws.state not in include_statuses):
                     errors.append(_("Product code: %r revision %r status %r") % (childProdBrws.engineering_code, childProdBrws.engineering_revision, childProdBrws.state))
                     continue
@@ -581,41 +581,39 @@ class PlmComponent(models.Model):
         return False
 
     def checkWorkflow(self, docInError, linkeddocuments, check_state):
-        docIDs = []
+        docIDs = self.env['ir.attachment']
         
-        def _checkWorkflow(docInError, linkeddocuments, check_state):
+        def _checkWorkflow(docIDs, docInError, linkeddocuments, check_state):
             attachment = self.env['ir.attachment']
             for documentBrws in linkeddocuments:
                 if documentBrws.state in check_state:
                     if documentBrws.is_checkout:
                         docInError.append(_("Document %r : %r is checked out by user %r") % (documentBrws.name, documentBrws.revisionid, documentBrws.checkout_user))
                         continue
-                    new_doc_id = documentBrws.id
-                    if new_doc_id in docIDs:
+                    if documentBrws in docIDs:
                         continue
-                    docIDs.append(new_doc_id)
+                    docIDs += documentBrws
                     if documentBrws.is3D():
                         doc_layout_ids = documentBrws.getRelatedLyTree(documentBrws.id)
-                        _checkWorkflow(docInError, attachment.browse(doc_layout_ids), check_state)
+                        docIDs += _checkWorkflow(docIDs, docInError, attachment.browse(doc_layout_ids), check_state)
                         raw_doc_ids = documentBrws.getRelatedRfTree(documentBrws.id, recursion=True)
-                        _checkWorkflow(docInError, attachment.browse(raw_doc_ids), check_state)
+                        docIDs += _checkWorkflow(docIDs, docInError, attachment.browse(raw_doc_ids), check_state)
+            return docIDs
                         
-        _checkWorkflow(docInError, linkeddocuments, check_state)
-        return list(set(docIDs))
+        return _checkWorkflow(docIDs, docInError, linkeddocuments, check_state)
 
     def _action_ondocuments(self, action_name, include_statuses=[]):
         """
             move workflow on documents having the same state of component
         """
-        docIDs = []
+        docIDs = self.env['ir.attachment']
         docInError = []
-        documentType = self.env['ir.attachment']
         for oldObject in self:
             if (action_name != 'transmit') and (action_name != 'reject') and (action_name != 'release'):
                 check_state = [oldObject.state]
             else:
                 check_state = include_statuses
-            docIDs.extend(self.checkWorkflow(docInError, oldObject.linkeddocuments, check_state))
+            docIDs += self.checkWorkflow(docInError, oldObject.linkeddocuments, check_state)
         if docInError:
             msg = _("Error on workflow operation")
             for e in docInError:
@@ -623,9 +621,11 @@ class PlmComponent(models.Model):
             msg = msg + _("\n\nCheck-In All the document in order to proceed !!")
             raise UserError(msg)
         self.moveDocumentWorkflow(docIDs, action_name)
+        return docIDs.browse(list(set(docIDs.ids)))
 
     def moveDocumentWorkflow(self, docIDs, action_name):
         documentType = self.env['ir.attachment']
+        docIDs = list(set(docIDs.ids))
         if len(docIDs) > 0:
             docBrws = documentType.browse(docIDs)
             if action_name == 'confirm':
@@ -742,6 +742,7 @@ class PlmComponent(models.Model):
             available_status = self._fields.get('state')._description_selection(self.env)
             dict_status = dict(available_status)
             allProdObjs = self.browse(product_ids)
+            allProdObjs = allProdObjs.filtered(lambda x: x.engineering_code not in [False, ''])
             for productBrw in allProdObjs:
                 old_revision = self._getbyrevision(productBrw.engineering_code, productBrw.engineering_revision - 1)
                 if old_revision:
@@ -755,7 +756,10 @@ class PlmComponent(models.Model):
             defaults['state'] = 'released'
             defaults['release_user'] = self.env.uid
             defaults['release_date'] = datetime.now()
-            self.browse(product_ids)._action_ondocuments('release', include_statuses)
+            docIDs = self.browse(product_ids)._action_ondocuments('release', include_statuses)
+            for doc in docIDs:
+                allProdObjs += doc.linkedcomponents.filtered(lambda x: x.engineering_revision == doc.revisionid)
+            allProdObjs = allProdObjs.browse(list(set(allProdObjs.ids)))
             for currentProductId in allProdObjs:
                 if not currentProductId.release_date:
                     currentProductId.release_date = datetime.now()
@@ -823,7 +827,11 @@ class PlmComponent(models.Model):
             if userErrors:
                 raise UserError(userErrors)
         allIdsBrwsList = self.browse(allIDs)
-        allIdsBrwsList._action_ondocuments(doc_action, include_statuses)
+        allIdsBrwsList.filtered(lambda x: x.engineering_code not in [False, ''])
+        docIDs = allIdsBrwsList._action_ondocuments(doc_action, include_statuses)
+        for doc in docIDs:
+            allIdsBrwsList += doc.linkedcomponents.filtered(lambda x: x.engineering_revision == doc.revisionid)
+        allIdsBrwsList = allIdsBrwsList.browse(list(set(allIdsBrwsList.ids)))
         for currId in allIdsBrwsList:
             if not (currId.id in self.ids):
                 product_product_ids.append(currId.id)
@@ -1722,17 +1730,24 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
 
     def name_get(self):
         result = []
-        for prod in self:
+        ret = super(PlmComponent, self).name_get()
+        for res in ret:
+            prod_id, desc = res
             eng_code = ''
+            prod = self.browse(prod_id)
             if prod.default_code:
                 eng_code = '[%s] ' % (prod.default_code)
             elif prod.engineering_code:
                 eng_code = '[%s] ' % ('%s_%s' % (prod.engineering_code, prod.engineering_revision))
             eng_code += prod.name
+<<<<<<< HEAD
             variant = prod.product_template_attribute_value_ids._get_combination_name()
             if variant:
                 eng_code += ' (%s)' % variant
             result.append((prod.id, eng_code))
+=======
+            result.append((prod_id, '%s %s' % (eng_code, desc)))
+>>>>>>> branch '13.0' of https://github.com/OmniaGit/odooplm.git
         return result
 
     @api.model
