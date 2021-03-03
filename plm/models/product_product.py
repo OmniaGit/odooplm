@@ -694,13 +694,11 @@ class PlmComponent(models.Model):
         for comp_obj in self:
             defaults = {}
             status = 'draft'
-            action = 'draft'
             doc_action = 'draft'
             defaults['engineering_writable'] = True
             defaults['state'] = status
-            exclude_statuses = ['draft', 'released', 'undermodify', 'obsoleted']
-            include_statuses = ['confirmed']
-            comp_obj.commonWFAction(status, action, doc_action, defaults, exclude_statuses, include_statuses, recursive=False)
+            exclude_statuses = ['released', 'undermodify', 'obsoleted']
+            comp_obj.commonWFAction(doc_action, defaults, exclude_statuses, recursive=False)
         return True
 
     def action_confirm(self):
@@ -710,72 +708,12 @@ class PlmComponent(models.Model):
         for comp_obj in self:
             defaults = {}
             status = 'confirmed'
-            action = 'confirm'
             doc_action = 'confirm'
             defaults['engineering_writable'] = False
             defaults['state'] = status
-            exclude_statuses = ['confirmed', 'released', 'undermodify', 'obsoleted']
-            include_statuses = ['draft']
-            comp_obj.commonWFAction(status, action, doc_action, defaults, exclude_statuses, include_statuses)
+            exclude_statuses = ['released', 'undermodify', 'obsoleted']
+            comp_obj.commonWFAction(doc_action, defaults, exclude_statuses)
         return True
-
-    @api.model
-    def _getbyrevision(self, name, revision):
-        return self.search([('engineering_code', '=', name),
-                            ('engineering_revision', '=', revision)])
-
-    def action_release(self, include_statuses=['confirmed'], exclude_statuses = ['released', 'undermodify', 'obsoleted']):
-        """
-           action to be executed for Released state
-        """
-        for comp_obj in self:
-            children_product_to_emit = []
-            product_tmpl_ids = []
-            defaults = {}
-            errors, product_ids = comp_obj._get_recursive_parts(exclude_statuses, include_statuses)
-            children_products = product_ids.copy()
-            if len(product_ids) < 1 or len(errors) > 0:
-                raise UserError(errors)
-            children_products.remove(comp_obj.id)
-            if children_products:
-                self.browse(children_products).action_release()
-            available_status = self._fields.get('state')._description_selection(self.env)
-            dict_status = dict(available_status)
-            allProdObjs = self.browse(product_ids)
-            allProdObjs = allProdObjs.filtered(lambda x: x.engineering_code not in [False, ''])
-            for productBrw in allProdObjs:
-                old_revision = self._getbyrevision(productBrw.engineering_code, productBrw.engineering_revision - 1)
-                if old_revision:
-                    defaults['engineering_writable'] = False
-                    defaults['state'] = 'obsoleted'
-                    old_revision.product_tmpl_id.write(defaults)
-                    old_revision.write(defaults)
-                    status_lable = dict_status.get(defaults.get('state', ''), '')
-                    old_revision.wf_message_post(body=_('Status moved to: %s by %s.' % (status_lable, self.env.user.name)))
-            defaults['engineering_writable'] = False
-            defaults['state'] = 'released'
-            defaults['release_user'] = self.env.uid
-            defaults['release_date'] = datetime.now()
-            docIDs = self.browse(product_ids)._action_ondocuments('release', include_statuses)
-            for doc in docIDs:
-                allProdObjs += doc.linkedcomponents.filtered(lambda x: x.engineering_revision == doc.revisionid)
-            allProdObjs = allProdObjs.browse(list(set(allProdObjs.ids)))
-            for currentProductId in allProdObjs:
-                if not currentProductId.release_date:
-                    currentProductId.release_date = datetime.now()
-                    currentProductId.release_user = self.env.uid
-                if currentProductId.id not in self.ids:
-                    children_product_to_emit.append(currentProductId.id)
-                product_tmpl_ids.append(currentProductId.product_tmpl_id.id)
-            self.browse(children_product_to_emit).perform_action('release')
-            self.browse(children_product_to_emit).write(defaults)
-            objId = self.env['product.template'].browse(product_tmpl_ids).write(defaults)
-            comp_obj.write(defaults)
-            if (objId):
-                status_lable = dict_status.get(defaults.get('state', ''), '')
-                self.browse(product_ids).wf_message_post(body=_('Status moved to: %s by %s.' % (status_lable, self.env.user.name)))
-            return objId
-        return False
 
     def action_obsolete(self):
         """
@@ -784,13 +722,11 @@ class PlmComponent(models.Model):
         for comp_obj in self:
             defaults = {}
             status = 'obsoleted'
-            action = 'obsolete'
             doc_action = 'obsolete'
             defaults['engineering_writable'] = False
             defaults['state'] = status
-            exclude_statuses = ['draft', 'confirmed', 'undermodify', 'obsoleted']
-            include_statuses = ['released']
-            comp_obj.commonWFAction(status, action, doc_action, defaults, exclude_statuses, include_statuses)
+            exclude_statuses = ['draft', 'confirmed', 'undermodify']
+            comp_obj.commonWFAction(doc_action, defaults, exclude_statuses)
         return True
 
     def action_reactivate(self):
@@ -800,13 +736,11 @@ class PlmComponent(models.Model):
         for comp_obj in self:
             defaults = {}
             status = 'released'
-            action = ''
             doc_action = 'release'
             defaults['engineering_writable'] = True
             defaults['state'] = status
-            exclude_statuses = ['draft', 'confirmed', 'released', 'undermodify', 'obsoleted']
-            include_statuses = ['obsoleted']
-            comp_obj.commonWFAction(status, action, doc_action, defaults, exclude_statuses, include_statuses)
+            exclude_statuses = ['draft', 'confirmed', 'undermodify', 'obsoleted']
+            comp_obj.commonWFAction(doc_action, defaults, exclude_statuses)
         return True
 
     def perform_action(self, action):
@@ -818,41 +752,133 @@ class PlmComponent(models.Model):
         toCall = actions.get(action)
         return toCall()
 
-    def commonWFAction(self, status, action, doc_action, defaults=[], exclude_statuses=[], include_statuses=[], recursive=True):
-        product_product_ids = []
-        product_template_ids = []
-        allIDs = [self.id]
+    @api.model
+    def _getbyrevision(self, name, revision):
+        return self.search([('engineering_code', '=', name),
+                            ('engineering_revision', '=', revision)])
+
+    def action_force_release(self):
+        """
+            action to be executed for Draft state
+        """
+        ctx = self.env.context.copy()
+        ctx['FORCE_PLM_WF'] = True
+        return self.with_context(ctx).action_release()
+
+    def action_release(self):
+        """
+           action to be executed for Released state
+        """
+        available_status = self._fields.get('state')._description_selection(self.env)
+        dict_status = dict(available_status)
+        for comp_obj in self:
+            defaults = {}
+            status = 'released'
+            doc_action = 'release'
+            defaults['engineering_writable'] = True
+            defaults['state'] = status
+            exclude_statuses = ['draft', 'confirmed', 'undermodify', 'obsoleted']
+            components, _documents = comp_obj.commonWFAction(doc_action, defaults, exclude_statuses)
+            for component in components:
+                old_revision = self._getbyrevision(component.engineering_code, component.engineering_revision - 1)
+                if old_revision:
+                    defaults['engineering_writable'] = False
+                    defaults['state'] = 'obsoleted'
+                    old_revision.product_tmpl_id.write(defaults)
+                    old_revision.write(defaults)
+                    status_lable = dict_status.get(defaults.get('state', ''), '')
+                    old_revision.wf_message_post(body=_('Status moved to: %s by %s.' % (status_lable, self.env.user.name)))
+                if not component.release_date:
+                    component.release_date = datetime.now()
+                    component.release_user = self.env.uid
+        return True
+
+    def checkStateCondition(self, obj, exclude_statuses, to_state, FORCE_MOVE_WF):
+        msg = ''
+        wrong_obj = self.env[obj._name]
+        if obj.state in exclude_statuses:
+            add_to_wrong = True
+            if to_state == 'released' and obj.state in self.allowedForceStates():
+                if FORCE_MOVE_WF:
+                    add_to_wrong = False
+            if add_to_wrong:
+                msg += '%s %s with state %s not allowed.\n' % (obj._name, obj.engineering_document_name, obj.state)
+                wrong_obj += obj
+        return msg, wrong_obj
+
+    def allowedForceStates(self):
+        return ['draft']
+
+    def checkDocuments(self, to_state, msg, wrong_documents, docs_to_check, documents, isRoot=True, exclude_statuses=[], FORCE_MOVE_WF=False, recursive=True):
+        for document in docs_to_check:
+            if document.id in documents:
+                continue
+            else:
+                documents.append(document.id)
+            tmp_msg, wrong_obj = self.checkStateCondition(document, exclude_statuses, to_state, FORCE_MOVE_WF)
+            msg += tmp_msg
+            wrong_documents += wrong_obj
+            if not document.ischecked_in():
+                msg += 'Document %s with state %s is not in check-in.\n' % (document.display_name, document.state)
+                wrong_documents += document
+            else:
+                if isRoot:
+                    doc_type = document.document_type.upper()
+                    if doc_type in ['2D', '3D'] and recursive:
+                        new_docs = document.getRelatedAllLevelDocumentsTree(document)
+                        wrong_documents_new, msg, documents_new = self.checkDocuments(to_state, msg, wrong_documents, self.env['ir.attachment'].browse(new_docs), documents, isRoot, exclude_statuses, FORCE_MOVE_WF)
+                        wrong_documents += wrong_documents_new
+                        documents.extend(documents_new)
+                else:
+                    new_docs = document.getRelatedOneLevelLinks(document.id, ['RfTree', 'LyTree', 'HiTree', 'PkgTree'])
+                    wrong_documents_new, msg, documents_new = self.checkDocuments(to_state, msg, wrong_documents, self.env['ir.attachment'].browse(new_docs), documents, isRoot, exclude_statuses, FORCE_MOVE_WF)
+                    wrong_documents += wrong_documents_new
+                    documents.extend(documents_new)
+        return wrong_documents, msg, documents
+
+    def commonWFAction(self, doc_action, defaults={}, exclude_statuses=[], recursive=True):
+        components = self
+        to_state = defaults['state']
+        msg = 'Cannot move workflow\n'
+        wrong_components = self.env['product.product']
+        wrong_documents = self.env['ir.attachment']
+        documents = []
+        FORCE_MOVE_WF = self.env.context.get('FORCE_PLM_WF', False)
         if recursive:
-            userErrors, allIDs = self._get_recursive_parts(exclude_statuses, include_statuses)
-            if userErrors:
-                raise UserError(userErrors)
-        allIdsBrwsList = self.browse(allIDs)
-        allIdsBrwsList.filtered(lambda x: x.engineering_code not in [False, ''])
-        docIDs = allIdsBrwsList._action_ondocuments(doc_action, include_statuses)
-        for doc in docIDs:
-            allIdsBrwsList += doc.linkedcomponents.filtered(lambda x: x.engineering_revision == doc.revisionid)
-        allIdsBrwsList = allIdsBrwsList.browse(list(set(allIdsBrwsList.ids)))
-        for currId in allIdsBrwsList:
-            if not (currId.id in self.ids):
-                product_product_ids.append(currId.id)
-            product_template_ids.append(currId.product_tmpl_id.id)
-            defaults['workflow_user'] = self.env.uid
-            defaults['workflow_date'] = datetime.now()
-            currId.write(defaults)
-        if action:
-            product_ids = self.browse(product_product_ids)
-            product_ids.perform_action(action)
-            product_ids.workflow_user = self.env.uid
-            product_ids.workflow_date = datetime.now()
-        objId = self.env['product.template'].browse(product_template_ids).write(defaults)
-        if objId:
+            for bom_id in self.bom_ids:
+                res = bom_id.getRecursiveComponents(components, wrong_components, exclude_statuses=exclude_statuses, force_move=FORCE_MOVE_WF)
+                components += res[0]
+                wrong_components += res[1]
+        wrong_components = wrong_components.filtered(lambda x: x.engineering_code not in [False, ''])
+        wrong_components = wrong_components.union()
+        components = components.filtered(lambda x: x.engineering_code not in [False, ''])
+        components = components.union()
+        for component in components:
+            tmp_wrong_documents, msg, documents = self.checkDocuments(to_state, msg, wrong_documents, component.linkeddocuments, documents, component == self, exclude_statuses, FORCE_MOVE_WF, recursive)
+            wrong_documents += tmp_wrong_documents
+        if wrong_components or wrong_documents:
+            for wcomp in wrong_components:
+                if to_state == 'released' and wcomp.state in self.allowedForceStates():
+                    if FORCE_MOVE_WF:
+                        wcomp.FORCE_MOVE_WF = True
+                        continue
+                msg += 'Component %s with state %s cannot be moved.\n' % (wcomp.display_name, wcomp.state)
+            raise UserError(msg)
+        documents = list(set(documents))
+        self.moveDocumentWorkflow(documents, doc_action)
+        components.workflow_user = self.env.uid
+        components.workflow_date = datetime.now()
+        product_template_ids = []
+        for comp in components:
+            product_template_ids.append(comp.product_tmpl_id.id)
+        res = self.env['product.template'].browse(product_template_ids).write(defaults)
+        if res:
             available_status = self._fields.get('state')._description_selection(self.env)
             dict_status = dict(available_status)
             status_lable = dict_status.get(defaults.get('state', ''), '')
-            self.browse(allIDs).wf_message_post(body=_('Status moved to: %s by %s.' % (status_lable, self.env.user.name)))
-        return objId
+            components.wf_message_post(body=_('Status moved to: %s by %s.' % (status_lable, self.env.user.name)))
+        return components, documents
 
-#  ######################################################################################################################################33
     def plm_sanitize(self, vals):
         all_keys = self.fields_get_keys()
         if isinstance(vals, dict):

@@ -44,12 +44,6 @@
         <field name="arch" type="xml">
             <form string="Engineering Product" version="7.0">
                 <header>
-                    <button name="action_release"
-                            type="object"
-                            states="confirmed"
-                            string="Release Component"
-                            class="oe_highlight"
-                            groups="plm.group_plm_release_users"/>
                     <button name="action_draft"
                             type="object"
                             states="confirmed"
@@ -60,6 +54,18 @@
                             states="draft"
                             string="Confirm Component"
                             class="oe_highlight"/>
+                    <button name="action_release"
+                            type="object"
+                            states="confirmed"
+                            string="Release Component"
+                            class="oe_highlight"
+                            groups="plm.group_plm_release_users"/>
+                    <button name="action_force_release"
+                            type="object"
+                            states="confirmed"
+                            string="Force Release Component"
+                            class="oe_highlight"
+                            groups="plm.group_plm_release_users,plm.group_plm_force_wf"/>
                     <field name="state"
                            widget="statusbar"
                            statusbar_visible="draft,confirmed,released"
@@ -160,12 +166,6 @@
         <field name="inherit_id" ref="product.product_normal_form_view"/>
         <field name="arch" type="xml">
             <xpath expr="//header" position="inside">
-                    <button name="action_release"
-                            type="object"
-                            states="confirmed"
-                            string="Release Component"
-                            class="oe_highlight"
-                            groups="plm.group_plm_release_users"/>
                     <button name="action_draft"
                             type="object"
                             states="confirmed"
@@ -175,6 +175,18 @@
                             states="draft"
                             string="Confirm Component"
                             class="oe_highlight"/>
+                    <button name="action_release"
+                            type="object"
+                            states="confirmed"
+                            string="Release Component"
+                            class="oe_highlight"
+                            groups="plm.group_plm_release_users"/>
+                    <button name="action_force_release"
+                            type="object"
+                            states="confirmed"
+                            string="Force Release Component"
+                            class="oe_highlight"
+                            groups="plm.group_plm_release_users,plm.group_plm_force_wf"/>
                     <field name="state"
                            widget="statusbar"
                            statusbar_visible="draft,confirmed,released"

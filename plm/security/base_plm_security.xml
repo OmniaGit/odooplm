@@ -39,6 +39,12 @@
         <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
     </record>
 
+    <record id="group_plm_force_wf" model="res.groups">
+        <field name="name">PLM / Force Workflow</field>
+        <field name="category_id" ref="plm.odooplm_module_category"/>
+        <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+    </record>
+
 <!-- product.product  -->
     <record id="plm_product_product_view" model="ir.model.access">
         <field name="name">PLM Product Product</field>

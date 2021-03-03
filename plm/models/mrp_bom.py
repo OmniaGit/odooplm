@@ -870,3 +870,31 @@ class MrpBomExtension(models.Model):
                 orderDict[index].append(res)
         return orderDict
 
+    def getRecursiveComponents(self, components, wrong_components, exclude_statuses=[], force_move=False):
+        for bom_id in self:
+            bom_product = self.env['product.product']
+            if bom_id.product_id:
+                bom_product = bom_id.product_id
+            elif bom_id.product_tmpl_id:
+                bom_product = self.env['product.product'].search([('product_tmpl_id', '=', bom_id.product_tmpl_id.id)], limit=1)
+            if bom_product.state in exclude_statuses:
+                wrong_components += bom_product
+                if not force_move:
+                    continue
+            if bom_product in components and bom_id != self:
+                continue
+            for bom_line_id in bom_id.bom_line_ids:
+                bom_line_product = bom_line_id.product_id
+                if bom_line_product in components:
+                    continue
+                for child_bom in bom_line_product.bom_ids:
+                    res = child_bom.getRecursiveComponents(components, wrong_components, exclude_statuses)
+                    components += res[0]
+                    wrong_components += res[1]
+                if bom_line_product.state in exclude_statuses:
+                    wrong_components += bom_line_product
+                    if not force_move:
+                        continue
+                components += bom_line_product
+        return components, wrong_components
+                    
