@@ -2659,4 +2659,14 @@ class PlmDocument(models.Model):
             return True
         return super(PlmDocument, self).check(mode, values)
 
+    def name_get(self):
+        result = []
+        ret = super(PlmDocument, self).name_get()
+        for doc_id, val in ret:
+            doc = self.browse(doc_id)
+            if doc.engineering_document_name:
+                val = '[%s_%s] %s' % (doc.engineering_document_name, doc.revisionid, doc.name)
+            result.append((doc_id, val))
+        return result
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

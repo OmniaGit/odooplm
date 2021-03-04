@@ -44,7 +44,7 @@
                                 <div class="o_kanban_card_header_title">
                                     <div class="o_primary" id='prod_name_div'>
                                         <a type="object" name="open_action">
-                                            <field name="name"/>
+                                            <field name="engineering_document_name"/>
                                             -
                                             <field name="engineering_revision"/>
                                         </a>

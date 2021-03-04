@@ -297,7 +297,7 @@
                                     <td>
                                         <img t-att-src="kanban_image('ir.attachment', 'preview', record.id.raw_value)"
                                             alt=""
-                                            height="150" width="150"/>
+                                            height="130" width="130"/>
                                     </td>
                                     <td style="padding-left:10px; vertical-align: middle;">
                                         <table>
@@ -307,9 +307,9 @@
                                                     <field name="name"/>
                                                 </td>
                                             </tr>
-                                            <tr t-if="engineering_document_name != False">
+                                            <tr>
                                                 <td>
-                                                    <strong>Engineering Name:</strong>
+                                                    <strong>Eng. Name:</strong>
                                                     <field name="engineering_document_name"/>
                                                 </td>
                                             </tr>
