@@ -44,16 +44,16 @@
         <field name="arch" type="xml">
             <form string="Engineering Product" version="7.0">
                 <header>
-                    <button name="action_draft"
-                            type="object"
-                            states="confirmed"
-                            string="Correct Component"
-                    />
                     <button name="action_confirm"
                             type="object"
                             states="draft"
                             string="Confirm Component"
                             class="oe_highlight"/>
+                    <button name="action_draft"
+                            type="object"
+                            states="confirmed"
+                            string="Correct Component"
+                    />
                     <button name="action_release"
                             type="object"
                             states="confirmed"
@@ -166,15 +166,15 @@
         <field name="inherit_id" ref="product.product_normal_form_view"/>
         <field name="arch" type="xml">
             <xpath expr="//header" position="inside">
-                    <button name="action_draft"
-                            type="object"
-                            states="confirmed"
-                            string="Correct Component"/>
                     <button name="action_confirm"
                             type="object"
                             states="draft"
                             string="Confirm Component"
                             class="oe_highlight"/>
+                    <button name="action_draft"
+                            type="object"
+                            states="confirmed"
+                            string="Correct Component"/>
                     <button name="action_release"
                             type="object"
                             states="confirmed"

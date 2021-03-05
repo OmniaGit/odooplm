@@ -697,8 +697,9 @@ class PlmComponent(models.Model):
             doc_action = 'draft'
             defaults['engineering_writable'] = True
             defaults['state'] = status
-            exclude_statuses = ['released', 'undermodify', 'obsoleted']
-            comp_obj.commonWFAction(doc_action, defaults, exclude_statuses, recursive=False)
+            skip_states = ['released', 'undermodify', 'obsoleted', 'draft']
+            error_states = []
+            comp_obj.commonWFAction(doc_action, defaults, error_states, skip_states, recursive=False, direction='forward')
         return True
 
     def action_confirm(self):
@@ -711,8 +712,9 @@ class PlmComponent(models.Model):
             doc_action = 'confirm'
             defaults['engineering_writable'] = False
             defaults['state'] = status
-            exclude_statuses = ['released', 'undermodify', 'obsoleted']
-            comp_obj.commonWFAction(doc_action, defaults, exclude_statuses)
+            skip_states = ['confirmed', 'released', 'undermodify', 'obsoleted']
+            error_states = []
+            comp_obj.commonWFAction(doc_action, defaults, error_states, skip_states, direction='forward')
         return True
 
     def action_obsolete(self):
@@ -725,8 +727,9 @@ class PlmComponent(models.Model):
             doc_action = 'obsolete'
             defaults['engineering_writable'] = False
             defaults['state'] = status
-            exclude_statuses = ['draft', 'confirmed', 'undermodify']
-            comp_obj.commonWFAction(doc_action, defaults, exclude_statuses)
+            skip_states = ['draft', 'confirmed', 'obsoleted']
+            error_states = []
+            comp_obj.commonWFAction(doc_action, defaults, error_states, skip_states, direction='forward')
         return True
 
     def action_reactivate(self):
@@ -739,8 +742,9 @@ class PlmComponent(models.Model):
             doc_action = 'release'
             defaults['engineering_writable'] = True
             defaults['state'] = status
-            exclude_statuses = ['draft', 'confirmed', 'undermodify', 'obsoleted']
-            comp_obj.commonWFAction(doc_action, defaults, exclude_statuses)
+            skip_states = ['draft', 'confirmed', 'released']
+            error_states = []
+            comp_obj.commonWFAction(doc_action, defaults, error_states, skip_states, direction='back')
         return True
 
     def perform_action(self, action):
@@ -777,8 +781,9 @@ class PlmComponent(models.Model):
             doc_action = 'release'
             defaults['engineering_writable'] = True
             defaults['state'] = status
-            exclude_statuses = ['draft', 'confirmed', 'undermodify', 'obsoleted']
-            components, _documents = comp_obj.commonWFAction(doc_action, defaults, exclude_statuses)
+            skip_states = ['undermodify', 'obsoleted', 'released']
+            error_states = ['draft', ]
+            components, _documents = comp_obj.commonWFAction(doc_action, defaults, error_states, skip_states, direction='forward')
             for component in components:
                 old_revision = self._getbyrevision(component.engineering_code, component.engineering_revision - 1)
                 if old_revision:
@@ -793,10 +798,12 @@ class PlmComponent(models.Model):
                     component.release_user = self.env.uid
         return True
 
-    def checkStateCondition(self, obj, exclude_statuses, to_state, FORCE_MOVE_WF):
+    def checkStateCondition(self, obj, exclude_statuses, to_state, FORCE_MOVE_WF, skip_states=[]):
         msg = ''
         wrong_obj = self.env[obj._name]
-        if obj.state in exclude_statuses:
+        if obj.state in skip_states:
+            pass
+        elif obj.state in exclude_statuses:
             add_to_wrong = True
             if to_state == 'released' and obj.state in self.allowedForceStates():
                 if FORCE_MOVE_WF:
@@ -809,15 +816,19 @@ class PlmComponent(models.Model):
     def allowedForceStates(self):
         return ['draft']
 
-    def checkDocuments(self, to_state, msg, wrong_documents, docs_to_check, documents, isRoot=True, exclude_statuses=[], FORCE_MOVE_WF=False, recursive=True):
+    def checkDocuments(self, to_state, msg, wrong_documents, docs_to_check, documents, isRoot=True, exclude_statuses=[], FORCE_MOVE_WF=False, recursive=True, skip_states=[], stop_level=False):
         for document in docs_to_check:
+            if document.state in skip_states:
+                continue
             if document.id in documents:
                 continue
             else:
                 documents.append(document.id)
-            tmp_msg, wrong_obj = self.checkStateCondition(document, exclude_statuses, to_state, FORCE_MOVE_WF)
+            tmp_msg, wrong_obj = self.checkStateCondition(document, exclude_statuses, to_state, FORCE_MOVE_WF, skip_states)
             msg += tmp_msg
             wrong_documents += wrong_obj
+            if stop_level:
+                continue
             if not document.ischecked_in():
                 msg += 'Document %s with state %s is not in check-in.\n' % (document.display_name, document.state)
                 wrong_documents += document
@@ -826,17 +837,15 @@ class PlmComponent(models.Model):
                     doc_type = document.document_type.upper()
                     if doc_type in ['2D', '3D'] and recursive:
                         new_docs = document.getRelatedAllLevelDocumentsTree(document)
-                        wrong_documents_new, msg, documents_new = self.checkDocuments(to_state, msg, wrong_documents, self.env['ir.attachment'].browse(new_docs), documents, isRoot, exclude_statuses, FORCE_MOVE_WF)
+                        wrong_documents_new, msg, _documents_new = self.checkDocuments(to_state, msg, wrong_documents, self.env['ir.attachment'].browse(new_docs), documents, False, exclude_statuses, FORCE_MOVE_WF, skip_states=skip_states)
                         wrong_documents += wrong_documents_new
-                        documents.extend(documents_new)
                 else:
                     new_docs = document.getRelatedOneLevelLinks(document.id, ['RfTree', 'LyTree', 'HiTree', 'PkgTree'])
-                    wrong_documents_new, msg, documents_new = self.checkDocuments(to_state, msg, wrong_documents, self.env['ir.attachment'].browse(new_docs), documents, isRoot, exclude_statuses, FORCE_MOVE_WF)
+                    wrong_documents_new, msg, _documents_new = self.checkDocuments(to_state, msg, wrong_documents, self.env['ir.attachment'].browse(new_docs), documents, isRoot, exclude_statuses, FORCE_MOVE_WF, stop_level=True, skip_states=skip_states)
                     wrong_documents += wrong_documents_new
-                    documents.extend(documents_new)
         return wrong_documents, msg, documents
 
-    def commonWFAction(self, doc_action, defaults={}, exclude_statuses=[], recursive=True):
+    def commonWFAction(self, doc_action, defaults={}, exclude_statuses=[], skip_states=[], recursive=True, direction='forward'):
         components = self
         to_state = defaults['state']
         msg = 'Cannot move workflow\n'
@@ -846,7 +855,7 @@ class PlmComponent(models.Model):
         FORCE_MOVE_WF = self.env.context.get('FORCE_PLM_WF', False)
         if recursive:
             for bom_id in self.bom_ids:
-                res = bom_id.getRecursiveComponents(components, wrong_components, exclude_statuses=exclude_statuses, force_move=FORCE_MOVE_WF)
+                res = bom_id.getRecursiveComponents(components, wrong_components, exclude_statuses=exclude_statuses, skip_states=skip_states, force_move=FORCE_MOVE_WF)
                 components += res[0]
                 wrong_components += res[1]
         wrong_components = wrong_components.filtered(lambda x: x.engineering_code not in [False, ''])
@@ -854,7 +863,7 @@ class PlmComponent(models.Model):
         components = components.filtered(lambda x: x.engineering_code not in [False, ''])
         components = components.union()
         for component in components:
-            tmp_wrong_documents, msg, documents = self.checkDocuments(to_state, msg, wrong_documents, component.linkeddocuments, documents, component == self, exclude_statuses, FORCE_MOVE_WF, recursive)
+            tmp_wrong_documents, msg, documents = self.checkDocuments(to_state, msg, wrong_documents, component.linkeddocuments, documents, component == self, exclude_statuses, FORCE_MOVE_WF, recursive, skip_states=skip_states)
             wrong_documents += tmp_wrong_documents
         if wrong_components or wrong_documents:
             for wcomp in wrong_components:
