@@ -578,4 +578,7 @@
         <field name="perm_unlink" eval="1"/>
     </record>
 
+
+
+
 </odoo>
