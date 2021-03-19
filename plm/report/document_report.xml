@@ -4,9 +4,11 @@
         <record id="report_ir_attachment_pdf" model="ir.actions.report">
             <field name="name">Print Pdf</field>
             <field name="model">ir.attachment</field>
+            <field name="binding_model_id" ref="model_ir_attachment"/> 
             <field name="report_type">qweb-html</field>
             <field name="report_name">plm.ir_attachment_pdf</field>
             <field name="binding_type">report</field>
         </record>
+
     </data>
 </odoo>
