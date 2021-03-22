@@ -198,7 +198,7 @@ class UploadDocument(Controller):
             to_write = {'datas': base64.b64encode(value1),
                         'datas_fname': doc_name,
                         'name': doc_name,
-                        'revisionid': ir_attachment_id.revisionid}
+                        'revisionid': doc_rev}
             link_id =  request.env['ir.attachment.relation']
             new_context = request.env.context.copy()
             new_context['backup'] = False
