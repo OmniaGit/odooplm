@@ -212,3 +212,9 @@ class MrpBomLineExtension(models.Model):
          ('server', 'Server')],
         _('Cutted Compute Type'),
         default='none')
+
+    @api.onchange('product_id')
+    def changeProduct(self):
+        for line in self:
+            if line.product_id == line.bom_id.product_id:
+                line.product_id = False
