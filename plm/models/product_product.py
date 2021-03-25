@@ -874,7 +874,7 @@ class PlmComponent(models.Model):
                 msg += 'Component %s with state %s cannot be moved.\n' % (wcomp.display_name, wcomp.state)
             raise UserError(msg)
         documents = list(set(documents))
-        self.moveDocumentWorkflow(documents, doc_action)
+        self.moveDocumentWorkflow(self.env['ir.attachment'].browse(documents), doc_action)
         components.workflow_user = self.env.uid
         components.workflow_date = datetime.now()
         product_template_ids = []
