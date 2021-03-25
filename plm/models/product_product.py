@@ -881,6 +881,7 @@ class PlmComponent(models.Model):
         for comp in components:
             product_template_ids.append(comp.product_tmpl_id.id)
         res = self.env['product.template'].browse(product_template_ids).write(defaults)
+        components.write(defaults)
         if res:
             available_status = self._fields.get('state')._description_selection(self.env)
             dict_status = dict(available_status)
