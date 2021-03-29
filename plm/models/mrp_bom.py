@@ -205,7 +205,7 @@ class MrpBomExtension(models.Model):
                'bom_qty': mpr_bom_line_id.product_qty,
                'bom_line_id': mpr_bom_line_id.id,
                'bom_id': mpr_bom_line_id.bom_id.id}
-        out.update(self.where_used_headerP(product_id))
+        out.update(self.where_used_header_p(product_id))
         return out
 
     def where_used_header_p(self, product_id):
