@@ -1682,17 +1682,15 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
     @api.multi
     def name_get(self):
         result = []
-        for prod in self:
-            eng_code = ''
+        ret = super(PlmComponent, self).name_get()
+        for res in ret:
+            prod_id, eng_code = res
+            prod = self.browse(prod_id)
             if prod.default_code:
-                eng_code = '[%s] ' % (prod.default_code)
+                result.append(res)
+                continue
             elif prod.engineering_code:
-                eng_code = '[%s] ' % ('%s_%s' % (prod.engineering_code, prod.engineering_revision))
-            eng_code += prod.name
-            variable_attributes = prod.attribute_line_ids.filtered(lambda l: len(l.value_ids) > 1).mapped('attribute_id')
-            variant = prod.attribute_value_ids._variant_name(variable_attributes)
-            if variant:
-                eng_code += ' (%s)' % variant
+                eng_code = '[%s_%s] %s' % (prod.engineering_code, prod.engineering_revision, eng_code)
             result.append((prod.id, eng_code))
         return result
 
