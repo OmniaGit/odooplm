@@ -65,7 +65,7 @@ class PlmBackupDocument(models.Model):
         result = []
         for r in self:
             if r.documentid and r.userid:
-                name = "%s .. [%s]" % (r.documentid.engineering_document_name[:8], r.userid.display_name[:8])
+                name = "%s - R:%s - [%s]" % (r.documentid.engineering_document_name, r.documentid.revisionid, r.userid.display_name)
             else:
                 name = "Error"
             result.append((r.id, name))
