@@ -40,6 +40,7 @@ from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
 from odoo.addons.plm.report.book_collector import BookCollector
 from odoo.addons.plm.report.book_collector import getBottomMessage
+from dateutil import tz
 
 
 def is_pdf(file_name):
@@ -134,9 +135,19 @@ class ReportSpareDocumentOne(models.AbstractModel):
 
         component_type = self.env['product.product']
         bom_type = self.env['mrp.bom']
-        user = self.env['res.users'].browse(self.env.uid)
-        msg = getBottomMessage(user, self.env.context)
-        main_book_collector = BookCollector(customTest=(True, msg))
+        to_zone = tz.gettz(self.env.context.get('tz', 'Europe/Rome'))
+        from_zone = tz.tzutc()
+        dt = datetime.now()
+        dt = dt.replace(tzinfo=from_zone)
+        localDT = dt.astimezone(to_zone)
+        localDT = localDT.replace(microsecond=0)
+        msg = "Printed by '%(print_user)s' : %(date_now)s State: %(state)s"
+        msg_vals = {
+            'print_user': 'user_id.name',
+            'date_now': localDT.ctime(),
+            'state': 'doc_obj.state',
+                }
+        main_book_collector = BookCollector(customText=(msg, msg_vals))
         for component in components:
             self.processed_objs = []
             buf = self.get_first_page([component.id])
@@ -186,7 +197,7 @@ class ReportSpareDocumentOne(models.AbstractModel):
         ret = []
         doc_repository = self.env['ir.attachment']._get_filestore()
         for document in component.linkeddocuments:
-            if document.used_for_spare and (document.type == 'binary'):
+            if document.used_for_spare:
                 if document.printout and str(document.printout) != 'None':
                     ret.append(BytesIO(base64.b64decode(document.printout)))
                 elif is_pdf(document.name):

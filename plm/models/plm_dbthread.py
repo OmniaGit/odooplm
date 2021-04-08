@@ -64,8 +64,8 @@ class PlmDbthread(models.Model):
                 if key:
                     self.create({'documement_name_version': key,
                                  'threadCode': threadCode})
-        return threadCode   
-    
+        return threadCode
+
     @api.model
     def cleadUpPrevious(self,
                         document_key,

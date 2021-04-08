@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+<data>
+	
+	<record model="ir.ui.view" id="breakages_tree_view">
+            <field name="name">breakages.tree</field>
+            <field name="model">plm.breakages</field>
+            <field name="arch" type="xml">
+                <tree string="Breakages Tree">
+                	<field name="name"/>
+                	<field name="product_id"/>
+                	<field name="parent_id"/>
+                	<field name="partner_id"/>
+                	<field name="lot_number"/>
+                	<field name="date"/>
+                </tree>
+            </field>
+    </record>
+    
+     <record model="ir.ui.view" id="breakages_form_view">
+            <field name="name">breakages.form</field>
+            <field name="model">plm.breakages</field>
+            <field name="arch" type="xml">
+                <form string="Breakages Form">
+                	<sheet>
+                    	<div class="oe_title">
+                     		<h1>
+                     			<field name="name"/>
+                        	</h1>
+                    	</div>                    
+     					<group>
+                       		<group>
+                          		<field name="product_id"/>
+                          		<field name="parent_id"/>
+                            	<field name="partner_id"/>
+                        	</group>
+                        	<group>
+                        		<field name="lot_number" attrs="{'invisible':['|',('tracking','in',['none']),('product_id','=',False)]}"/>
+                        		<field name="date"/>
+                        		<field name="tracking" invisible="1"/>
+                        	</group>
+                       		<field name="notes" nolabel="1" widget="html"/>
+                    	</group>
+           			</sheet>
+           			<div class="oe_chatter">
+                    	<field name="message_follower_ids" widget="mail_followers"/>
+                    	<field name="message_ids" widget="mail_thread"/>
+                	</div>
+                </form>
+            </field>
+    </record>
+    
+    <record model="ir.ui.view" id="breakages_pivot_view">
+            <field name="name">breakages.pivot</field>
+            <field name="model">plm.breakages</field>
+            <field name="arch" type="xml">
+                <pivot string="Breakages">
+                    <field name="product_id" type="row"/>
+                </pivot>
+            </field>
+        </record>
+
+	<record model="ir.actions.act_window" id="breakages_menu_action">
+		<field name="name">Product Breakages</field>
+		<field name="res_model">plm.breakages</field>
+		<field name="view_mode">tree,form,pivot</field>
+	</record>
+	
+    
+    <menuitem 
+    		id="breakages_menu"
+    		name="Product Breakages"
+    		parent="plm.plm_component_menu_view"
+    		action="breakages_menu_action"
+    />
+    
+    <record id="seq_plm_breakages" model="ir.sequence">
+	    <field name="name">PLM Breakages</field>
+	    <field name="code">plm.breakages</field>
+	    <field name="prefix">B</field>
+	    <field name="padding">5</field>
+	    <field name="company_id" eval="False"/>
+    </record>
+    
+</data>
+</odoo> 

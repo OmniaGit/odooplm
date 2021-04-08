@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-extend="mail.activity_items">
+        <t t-jquery=".o_thread_message .o_mail_info .o_thread_message_collapse" t-operation="before">
+			<div>State:<h6 style="color:black;"><span t-esc="activity.plm_state" /></h6></div>
+        </t>
+    </t>
+
+	<t t-extend="mail.activity_thread_message_tools">
+		<t t-jquery=".o_mark_as_done" t-operation="replace" >
+			<t t-if="activity.change_activity_type != 'request' and activity.change_activity_type != 'order'">
+	            <span t-if="activity.activity_category !== 'upload_file'" class="o_mark_as_done" data-toggle="popover" t-att-data-activity-id="activity.id" t-att-data-force-next-activity="activity.force_next" t-att-data-previous-activity-type-id="activity.activity_type_id[0]">
+	                <a role="button" href="#" class="btn btn-link btn-success text-muted o_activity_link mr8">
+	                <i class="fa fa-check"/> Mark Done </a>
+	            </span>
+			</t>
+		</t>
+		
+		<t t-jquery=".o_unlink_activity" t-operation="replace" >
+			<t t-if="activity.change_activity_type != 'request' and activity.change_activity_type != 'order'">
+	            <span t-if="activity.activity_category !== 'upload_file'" class="o_mark_as_done" data-toggle="popover" t-att-data-activity-id="activity.id" t-att-data-force-next-activity="activity.force_next" t-att-data-previous-activity-type-id="activity.activity_type_id[0]">
+		            <a role="button" href="#" class="btn btn-link btn-danger text-muted o_unlink_activity o_activity_link" t-att-data-activity-id="activity.id">
+		                <i class="fa fa-times"/> Cancel
+		            </a>
+	            </span>
+			</t>
+			
+<!-- 			<t t-if="activity.change_activity_type == 'request' or activity.change_activity_type == 'order'"> -->
+<!--                 <a t-if="activity.plm_state == 'send_request'" -->
+<!--                     t-att-href="activity.action_in_progress()" title="In Progress" aria-label="In Progress" class="btn btn-sm btn-primary" role="button"> -->
+<!--                     <i class="fa fa-arrow-right"/><span class='d-none d-md-inline'> In Progress</span> -->
+<!--                 </a> -->
+<!--             </t> -->
+			
+		</t>
+		
+	</t>
+
+			<!-- <attribute  t-if="0" name="style" value="display: none;" />
+			activity.activity_type_id.change_activity_type in ('request', 'order') -->
+			
+<!--     
+
+<t t-extend="mail.activity_thread_message_tools">
+        <t t-jquery=".o_thread_message_tools" t-operation="before">
+        
+            <a t-if="activity.plm_state == 'send_request'" role="button" name="action_in_progress" href="#" class="btn btn-link btn-secondary text-muted" t-att-data-activity-id="activity.id">
+                <i class="fa fa-arrow-right"/> In Progress
+            </a>
+        
+            <span t-if="activity.plm_state == 'send_request'" t-att-data-activity-id="activity.id">                
+                <a role="button" type="object" name="action_in_progress" href="#" class="btn btn-link btn-secondary text-muted o_edit_activity o_activity_link">
+                	<i class="fa fa-arrow-right"/> In Progress 
+               	</a>
+            </span>
+            <span t-if="activity.plm_state in ('send_request', 'in_progress')" class="o_mark_as_done" t-att-data-activity-id="activity.id">                
+                <a role="button" type="object" name="action_to_draft" href="#" class="btn btn-link btn-success text-muted o_activity_link mr8">
+                	<i class="fa fa-arrow-left"/> To Draft 
+               	</a>
+            </span>
+            <span t-if="activity.plm_state == 'draft'" t-att-data-activity-id="activity.id">                
+                <a role="button" type="object" name="action_send_request" href="#" class="btn btn-link btn-success text-muted o_activity_link mr8">
+                	<i class="fa fa-arrow-right"/> Send Request 
+               	</a>
+            </span>
+        </t>
+    </t> -->
+
+</templates>

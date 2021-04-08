@@ -195,41 +195,52 @@ Pgo8QzNENkEzMUExNzE2RTVCMDIyOTE3RjhDOTFBQzUwOTc+IF0KL0RvY0NoZWNrc3VtIC8wQjMy
 RjYxNzJGNDFCNzYwNjRBM0NDQjFEMTgxOTFCQgo+PgpzdGFydHhyZWYKODc0NwolJUVPRgo=""")
 
 
-def commonInfos(env):
-    docRepository = env['ir.attachment']._get_filestore()
-    user = env['res.users'].browse(env.uid)
-    msg = getBottomMessage(user, env.context)
-    mainBookCollector = BookCollector(jumpFirst=False,
-                                      customTest=(False, msg),
-                                      bottomHeight=10)
-    return docRepository, mainBookCollector
-
-
 class ReportProductPdf(models.AbstractModel):
     _name = 'report.plm.product_pdf'
     _description = 'Report for producing pdf'
 
+
+    def commonInfos(self):
+        docRepository = self.env['ir.attachment']._get_filestore()
+        to_zone = tz.gettz(self.env.context.get('tz', 'Europe/Rome'))
+        from_zone = tz.tzutc()
+        dt = datetime.now()
+        dt = dt.replace(tzinfo=from_zone)
+        localDT = dt.astimezone(to_zone)
+        localDT = localDT.replace(microsecond=0)
+        msg = "Printed by '%(print_user)s' : %(date_now)s State: %(state)s"
+        msg_vals = {
+            'print_user': 'user_id.name',
+            'date_now': localDT.ctime(),
+            'state': 'doc_obj.state',
+                }
+        mainBookCollector = BookCollector(jumpFirst=False,
+                                          customText=(msg, msg_vals),
+                                          bottomHeight=10,
+                                          poolObj=self.env)
+        return docRepository, mainBookCollector
+
+    def getDocument(self, product, check):
+        out = []
+        for doc in product.linkeddocuments:
+            if check:
+                if doc.state in ['released', 'undermodify']:
+                    out.append(doc)
+                continue
+            out.append(doc)
+        return out
+
     @api.model
-    def render_qweb_pdf(self, products=None, level=0, checkState=False):
-        docRepository, mainBookCollector = commonInfos(self.env)
+    def _render_qweb_pdf(self, products=None, level=0, checkState=False):
+        docRepository, mainBookCollector = self.commonInfos()
         documents = []
 
-        def getDocument(product, check):
-            out = []
-            for doc in product.linkeddocuments:
-                if check:
-                    if doc.state in ['released', 'undermodify']:
-                        out.append(doc)
-                    continue
-                out.append(doc)
-            return out
-
         for product in products:
-            documents.extend(getDocument(product, checkState))
+            documents.extend(self.getDocument(product, checkState))
             if level > -1:
                 for childProduct in product._getChildrenBom(product, level):
                     childProduct = self.env['product.product'].browse(childProduct)
-                    documents.extend(getDocument(childProduct, checkState))
+                    documents.extend(self.getDocument(childProduct, checkState))
         if len(documents) == 0:
             content = getEmptyDocument()
         else:
@@ -237,6 +248,10 @@ class ReportProductPdf(models.AbstractModel):
                                             documents,
                                             mainBookCollector)
             content = documentContent[0]
+        return content
+    
+    def render_qweb_pdf(self, products=None, level=0, checkState=False):
+        content = self._render_qweb_pdf(products, level, checkState)
         byteString = b"data:application/pdf;base64," + base64.b64encode(content)
         return byteString.decode('UTF-8')
 

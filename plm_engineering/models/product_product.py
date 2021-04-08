@@ -93,7 +93,7 @@ class ProductProductExtension(models.Model):
                           'ebom_source_id': e_bom_id, }
                 if not variant_is_installed:
                     values['product_id'] = False
-                new_bom_brws.write(values, check=False)
+                new_bom_brws.write(values)
 
                 if summarize:
                     ok_rows = self._summarizeBom(new_bom_brws.bom_line_ids)

@@ -21,7 +21,7 @@
 ##############################################################################
 {
     'name': 'PLM Web Revision',
-    'version': '1.1',
+    'version': '14.0.1',
     'author': 'OmniaSolutions',
     'website': 'https://www.omniasolutions.website',
     'category': 'Product Lifecycle Management',

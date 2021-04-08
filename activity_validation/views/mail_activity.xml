@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="mail_activity_view_tree_activity_validaation" model="ir.ui.view">
+            <field name="name">mail.activity.view.tree.activity.validation</field>
+            <field name="model">mail.activity</field>
+            <field name="inherit_id" ref="mail.mail_activity_view_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='activity_type_id']" position="after">
+                	<field name="user_id"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="mail_activity_view_form_popup_inherit" model="ir.ui.view">
+            <field name="name">mail.activity.inherit</field>
+            <field name="model">mail.activity</field>
+            <field name="inherit_id" ref="mail.mail_activity_view_form_popup" />
+            <field name="arch" type="xml">
+                <xpath expr="//sheet/group[last()]" position="after">
+                	<group>
+                    	<field name="plm_state" readonly="True" widget="statusbar" statusbar_visible="draft,send_request,in_progress,finished,not_visible"/>
+                    	<button string="In Progress" name="action_in_progress" type="object" class="btn-primary"
+                			attrs="{'invisible': [('plm_state', '!=', 'send_request')]}"/>
+	                	<button string="To Draft" name="action_to_draft" type="object" class="btn-primary"
+	                		attrs="{'invisible': [('plm_state', 'not in', ['send_request', 'in_progress'])]}"/>
+	                	<button string="Send Request" name="action_send_request" type="object" class="btn-primary"
+	                		attrs="{'invisible': [('plm_state', '!=', 'draft')]}"/>
+                    </group>
+		            <field name="children_ids" nolabel="1">
+			            <tree editable='bottom'>
+			                <field name="name"/>
+			                <field name="user_id"/>
+			                <field name="activity_user_id"/>
+			                <field name="plm_state" />
+			            </tree>
+			        </field>
+                </xpath>
+            </field>
+        </record>
+
+		<template id="plm_message_activity_done" inherit_id="mail.message_activity_done">
+		    <xpath expr="//div//p[1]" position="after">
+			    <t t-if="activity.change_activity_type in ['request', 'order']">
+			        <div>View: <a href="#" t-att-data-oe-id="activity.id" data-oe-model="mail.activity">Activity</a></div>
+			    </t>
+		    </xpath>
+		</template>
+
+    <record model="ir.ui.view" id="plm_activity_search">
+        <field name="name">plm.activity.search</field>
+        <field name="model">mail.activity</field>
+        <field name="type">search</field>
+        <field name="priority" eval="15"/>
+        <field name="arch" type="xml">
+            <search string="Activities">   
+                <filter name="change_orders"
+                        string="ECR / ECO"
+                        domain="[('activity_type_id.change_activity_type','in', ('request', 'order'))]"
+                        />
+                        <field name="res_name"/>
+                        <field name="user_id"/>
+                        <field name="activity_type_id"/>
+                <group expand="0" string="Group By">
+                	<filter string="Activity Type" name="group_activity_type" domain="[]" context="{'group_by': 'activity_type_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="plm_action_view_activities">
+        <field name="name">Activities</field>
+        <field name="res_model">mail.activity</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+            id="plm_menu_activities"
+            name="Activities"
+            parent="plm.plm_menu"
+            sequence="20"
+            action="plm_action_view_activities"
+            groups="plm.group_plm_integration_user"/>
+
+    </data>
+</odoo>

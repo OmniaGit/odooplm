@@ -18,6 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+from . import product_product
 from . import product_template
 from . import mrp_bom_line
 from . import plm_temporary

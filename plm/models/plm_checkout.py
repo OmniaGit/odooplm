@@ -61,6 +61,7 @@ class PlmCheckout(models.Model):
         ('documentid', 'unique (documentid)', _('The documentid must be unique !'))
     ]
 
+    
     def name_get(self):
         result = []
         for r in self:
@@ -87,7 +88,7 @@ class PlmCheckout(models.Model):
     def create(self, vals):
         docBrws = self.env['ir.attachment'].browse(vals['documentid'])
         values = {'writable': True}
-        if not docBrws.write(values):
+        if not docBrws.sudo(True).write(values):
             logging.warning("create : Unable to check-out the required document (" + str(docBrws.engineering_document_name) + "-" + str(docBrws.revisionid) + ").")
             raise UserError(_("Unable to check-out the required document (" + str(docBrws.engineering_document_name) + "-" + str(docBrws.revisionid) + ")."))
         self._adjustRelations([docBrws.id])
@@ -95,6 +96,7 @@ class PlmCheckout(models.Model):
         docBrws.wf_message_post(body=_('Checked-Out ID %r' % (newCheckoutBrws.id)))
         return newCheckoutBrws
 
+    
     def unlink(self):
         documentType = self.env['ir.attachment']
         docids = []

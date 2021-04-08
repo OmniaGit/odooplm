@@ -33,4 +33,4 @@ from odoo import _
 class MrpBomExtension(models.Model):
     _inherit = 'mrp.bom'
 
-    type = fields.Selection(selection_add=[('spbom', 'Spare BoM')])
+    type = fields.Selection(selection_add=[('spbom', 'Spare BoM')], ondelete={'spbom': 'cascade'})

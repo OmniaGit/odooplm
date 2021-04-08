@@ -50,7 +50,7 @@ def md5(fname):
 
 class PlmRemoteServer(models.Model):
     _name = "plm.remote.server"
-
+    _description = "Plm Remote server"
     name = fields.Char("Server Name")
     login = fields.Char("Login")
     password = fields.Char("Password")

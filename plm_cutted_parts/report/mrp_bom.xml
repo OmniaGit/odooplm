@@ -56,12 +56,12 @@
         </t>
     </template>
 
-    <!-- QWeb Reports -->
-    <report
-            id="report_bom_structure_all_cutted"
-            model="mrp.bom"
-            string="Cutted Parts"
-            report_type="qweb-html"
-            name="plm_cutted_parts.bom_structure_all_cutted"
-    />
+    <record id="report_bom_structure_all_cutted" model="ir.actions.report">
+        <field name="name">Cutted Parts</field>
+        <field name="model">mrp.bom</field>
+        <field name="report_type">qweb-html</field>
+        <field name="report_name">plm_cutted_parts.bom_structure_all_cutted</field>
+        <field name="binding_type">report</field>
+    </record>  
+        
 </odoo>

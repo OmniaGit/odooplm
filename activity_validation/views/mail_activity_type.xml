@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="mail_activity_type_view_form_multiactivity" model="ir.ui.view">
+            <field name="name">mail.activity.type.view.form.multiactivity</field>
+            <field name="model">mail.activity.type</field>
+            <field name="inherit_id" ref="mail.mail_activity_type_view_form" />
+            <field name="arch" type="xml">
+            
+            	<xpath expr="//field[@name='summary']" position="after">
+            		<field name="change_activity_type"/>
+            	</xpath>
+            	<!--
+            	<field name="default_description" position="before">
+                    <field name="activity_user_ids" />
+                </field>
+                -->
+            </field>
+        </record>
+
+    </data>
+</odoo>

@@ -48,6 +48,7 @@ def correctDate(fromTimeStr, context):
 
 class Plm_box(models.Model):
     _name = 'plm.box'
+    _description = 'Model to manage a box inside the plm module'
     _inherit = 'mail.thread'
 
     name = fields.Char(_('Code'))

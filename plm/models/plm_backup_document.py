@@ -64,12 +64,13 @@ class PlmBackupDocument(models.Model):
         result = []
         for r in self:
             if r.documentid and r.userid:
-                name = "%s .. [%s]" % (r.documentid.engineering_document_name[:8], r.userid.engineering_document_name[:8])
+                name = "%s - R:%s - [%s]" % (r.documentid.engineering_document_name, r.documentid.revisionid, r.userid.display_name)
             else:
                 name = "Error"
             result.append((r.id, name))
         return result
 
+    
     def unlink(self):
         documentType = self.env['ir.attachment']
         for plm_backup_document_id in self:
@@ -92,6 +93,14 @@ class PlmBackupDocument(models.Model):
                     continue
             super(PlmBackupDocument, plm_backup_document_id).unlink()
 
+    @api.model
+    def getLastBckDocumentByUser(self, doc_id):
+        for obj in self.search([
+            ('documentid', '=', doc_id.id),
+            ], order='create_date DESC', limit=1):
+            return obj
+        return self
+
 
 class BackupDocWizard(osv.osv.osv_memory):
     """
@@ -104,6 +113,8 @@ class BackupDocWizard(osv.osv.osv_memory):
 
     
     def action_restore_document(self):
+        ctx = self.env.context.copy()
+        ctx['check'] = False
         documentId = False
         backupDocIds = self.env.context.get('active_ids', [])
         backupDocObj = self.env['plm.backupdoc']
@@ -118,7 +129,7 @@ class BackupDocWizard(osv.osv.osv_memory):
                       }
             if relDocBrws:
                 documentId = relDocBrws.id
-                writeRes = relDocBrws.sudo().with_context({'check': False}).write(values)
+                writeRes = relDocBrws.sudo().with_context(ctx).write(values)
                 if writeRes:
                     logging.info('[action_restore_document] Updated document %r' % (documentId))
                 else:

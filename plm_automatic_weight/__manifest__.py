@@ -20,7 +20,7 @@
 ##############################################################################
 {
     'name': 'PLM Automatic Weight',
-    'version': '11.0',
+    'version': '14.0.1',
     'author': 'OmniaSolutions',
     'website': 'http://www.omniasolutions.eu',
     'category': 'Product Lifecycle Management',

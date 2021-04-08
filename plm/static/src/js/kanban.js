@@ -39,13 +39,9 @@ var PlmKanbanRecord = KanbanRecord.include({
 	    	var images = self.$el.find('img.image_component_kanban');
 	    	if(images){
 		    	$.each(images, function(i, val){
-		    		//#$(val).css({"transform-origin": "0% 0%"});
-		    		//$(val).css({"transform-origin": "100% 0%");
 		    		$(val).hover(onHoverIn);
-		    		//$(val).hover(onHoverIn, onHoverOut);
 		    	});
 	    	}
-	    	//$(".image_component_kanban").hover(onHover);
 	    });
 	},	
 });

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+
+    <record model="ir.ui.view" id="plm_cad_open_search">
+        <field name="name">plm.cad.open.search</field>
+        <field name="model">plm.cad.open</field>
+        <field name="type">search</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <search string="Checked-Out Document">
+                <filter icon="terp-go-month" string="  Last Month  " separator="1" name="cad_open_last_month"
+                         domain="[('create_date','&lt;=', (datetime.date.today() - datetime.timedelta(day=31,months=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today() - datetime.timedelta(day=1,months=1)).strftime('%%Y-%%m-%%d'))]"
+                         help="Checked-Out in last month"/>
+                <filter icon="terp-go-month" string="  Last Week  " separator="1" name="cad_open_last_week"
+                         domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"
+                         help="Checked-Out in last week"/>
+                <filter icon="terp-go-month" string="  Latest 7 Days  " separator="1" name="cad_open_last_7_days"
+                         domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
+                         help="Checked-Out in last week"/>
+                 <filter icon="terp-go-month" string="  Yesterday  " separator="1" name="cad_open_yesterday"
+                         domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
+                         help="Checked-Out Yesterday"/>
+                 <filter icon="terp-go-month" string="  Today  " separator="1" name="cad_open_today"
+                         domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
+                         help="Checked-Out today"/>
+                <newline/>
+               	<separator orientation="vertical"/>
+            	<field name="document_id"/>
+            	<field name="userid"/>
+               	<separator orientation="vertical"/>
+                <field name="userid" nolabel="1">
+ 					<filter string="Created by me" icon="terp-personal" domain="[('userid', '=', uid)]" name="cad_open_create_created_by_me"/>
+                </field>
+                <group expand="0" string="Group By...">
+                    <filter string="Hostname" icon="terp-personal" domain="[]" context="{'group_by':'hostname'}" name="cad_open_hostname"/>
+                    <filter string="Create by Month" icon="terp-personal" domain="[]" context="{'group_by':'create_date'}" name="cad_open_created_month"/>
+                    <filter string="Creator" icon="terp-personal" domain="[]" context="{'group_by':'userid'}" name="cad_open_creator"/>
+                    <filter string="Document" icon="terp-personal" domain="[]" context="{'group_by':'document_id'}" name="cad_open_document"/>
+                </group>
+            </search>
+     	</field>
+    </record>
+
+    <record model="ir.ui.view" id="plm_cad_open_form">
+        <field name="name">plm.cad.open.form</field>
+        <field name="model">plm.cad.open</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Plm checkout">
+            	<sheet>	
+                <group >
+	                <field name="userid" select="1"/>
+	                <field name="document_id" select="1"/>
+	                <field name="rel_doc_rev"/>
+	                <field name="plm_backup_doc_id" select="1"/>
+	                <field name="pws_path"/>
+	                <field name="hostname"/>
+	                <field name="operation_type"/>
+	                <field name="create_date"/>
+                </group>
+               	</sheet> 
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="plm_cad_open_tree">
+        <field name="name">plm.cad.open.tree</field>
+        <field name="model">plm.cad.open</field>
+        <field name="type">tree</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <tree string="Plm Cad Open" create="false" edit="false">
+                <field name="userid" select="1"/>
+                <field name="document_id" select="1"/>
+                <field name="rel_doc_rev"/>
+                <field name="plm_backup_doc_id" select="1"/>
+                <field name="hostname"/>
+                <field name="operation_type"/>
+                <field name="create_date"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_plm_cad_open">
+        <field name="name">Plm Cad Open</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">plm.cad.open</field>
+        <field name="view_id" ref="plm_cad_open_tree"/>
+        <field name="search_view_id" ref="plm_cad_open_search"/>
+    </record>
+ 
+</data>
+</odoo>
+

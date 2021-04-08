@@ -1,60 +1,52 @@
 <?xml version="1.0"?>
 <odoo>
   	<data>
-   
-        <report id="report_all_product_product_pdf"
-                string="Bom All Levels PDF Drawings"
-                model="product.product"
-                name="plm.all_product_pdf"
-                report_type="qweb-html"
-                file=""
-                />
-    </data>
-    <data>
-        <report id="report_one_product_product_pdf"
-                string="Bom One Level PDF Drawings"
-                model="product.product"
-                name="plm.one_product_pdf"
-                report_type="qweb-html"
-                file=""
-                />
-    </data>
-    <data>
-        <report id="report_product_product_pdf"
-                string="PDF Drawings"
-                model="product.product"
-                name="plm.product_pdf"
-                report_type="qweb-html"
-                file=""
-                />
-    </data>
+        <record id="report_all_product_product_pdf" model="ir.actions.report">
+            <field name="name">Bom All Levels PDF Drawings</field>
+            <field name="model">product.product</field>
+            <field name="report_type">qweb-html</field>
+            <field name="report_name">plm.all_product_pdf</field>
+            <field name="binding_type">report</field>
+        </record>
 
-    <data>
-        <report id="report_product_product_pdf_latest"
-                string="Production PDF Drawings" 
-                model="product.product"
-                name="plm.product_production_pdf_latest"
-                report_type="qweb-html"
-                file=""
-                />
-    </data>   
-    
-    <data>
-        <report id="report_product_product_one_pdf_latest"
-                string="Production First Level PDF Drawings" 
-                model="product.product"
-                name="plm.product_production_one_pdf_latest"
-                report_type="qweb-html"
-                file=""
-                />
-    </data>   
-    <data>
-        <report id="report_product_product_all_pdf_latest"
-                string="Production All Level PDF Drawings" 
-                model="product.product"
-                name="plm.product_production_all_pdf_latest"
-                report_type="qweb-html"
-                file=""
-                />
+        <record id="report_one_product_product_pdf" model="ir.actions.report">
+            <field name="name">Bom One Level PDF Drawings</field>
+            <field name="model">product.product</field>
+            <field name="report_type">qweb-html</field>
+            <field name="report_name">plm.one_product_pdf</field>
+            <field name="binding_type">report</field>
+        </record>
+
+        <record id="report_product_product_pdf" model="ir.actions.report">
+            <field name="name">PDF Drawings</field>
+            <field name="model">product.product</field>
+            <field name="report_type">qweb-html</field>
+            <field name="report_name">plm.product_pdf</field>
+            <field name="binding_type">report</field>
+        </record>
+
+        <record id="report_product_product_pdf_latest" model="ir.actions.report">
+            <field name="name">Production PDF Drawings</field>
+            <field name="model">product.product</field>
+            <field name="report_type">qweb-html</field>
+            <field name="report_name">plm.product_production_pdf_latest</field>
+            <field name="binding_type">report</field>
+        </record>
+
+        <record id="report_product_product_one_pdf_latest" model="ir.actions.report">
+            <field name="name">Production First Level PDF Drawings</field>
+            <field name="model">product.product</field>
+            <field name="report_type">qweb-html</field>
+            <field name="report_name">plm.product_production_one_pdf_latest</field>
+            <field name="binding_type">report</field>
+        </record>
+
+        <record id="report_product_product_all_pdf_latest" model="ir.actions.report">
+            <field name="name">Production All Level PDF Drawings</field>
+            <field name="model">product.product</field>
+            <field name="report_type">qweb-html</field>
+            <field name="report_name">plm.product_production_all_pdf_latest</field>
+            <field name="binding_type">report</field>
+        </record>
     </data>   
 </odoo>

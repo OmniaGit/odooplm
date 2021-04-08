@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<!-- plm_temporary_date_compute -->
+    <record id="plm_temporary_date_compute_view" model="ir.model.access">
+        <field name="name">PLM Temporary date compute</field>
+        <field name="model_id" ref="model_plm_temporary_date_compute"/>
+        <field name="group_id" ref="plm.group_plm_view_user"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="1"/>
+        <field name="perm_create" eval="1"/>
+        <field name="perm_unlink" eval="1"/>
+    </record>
+</odoo>

@@ -21,7 +21,7 @@
 ##############################################################################
 {
     'name': 'Plm Report Language Helper',
-    'version': '1.1',
+    'version': '14.0.1',
     'author': 'OmniaSolutions',
     'website': 'http://www.omniasolutions.eu',
     'category': 'Product Lifecycle Management',
@@ -32,7 +32,10 @@
     'depends': ['plm', 'plm_spare'],
     'description': """Manage multilanguage PLM reports
     """,
-    'data': ['views/plm_component_action_extended.xml'],
+    'data': [# security
+             'security/plm_security.xml',
+             # views
+             'views/plm_component_action_extended.xml'],
     'demo': [],
     'test': [],
     'installable': True,

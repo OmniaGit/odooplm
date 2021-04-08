@@ -1,0 +1,96 @@
+#odoo_plm_title {
+  line-height:10px;
+  border: 2px solid #997992;
+  font-weight: bold;
+  text-align: center;
+  margin: 5px;
+}
+
+#odoo_canvas{
+    width:100%;
+    display:inline-block;
+}
+
+.plm_web_button{
+	background-color: wite;
+    border: 1px solid #997992;
+    cursor:pointer;
+    overflow: hidden;
+    outline:none;
+    height: 40px;
+}
+#bottom_command{
+	color: #997992;
+	margin: 5px;
+}
+#main_3d_web{
+	margin: auto;
+	max-width: 90%;
+	padding: 5px;
+	text-align: center;
+	
+}
+.main_command_slide {
+  height: 20px;
+  width: 90%;
+  border: 1px solid black;
+  overflow: hidden;
+  position: absolute;
+  transition: height 0.1s;
+  -moz-transition: height 0.1s;
+  /* Firefox 4 */
+  -webkit-transition: height 0.1s;
+  /* Safari and Chrome */
+  -o-transition: height 0.1s;
+  /* Opera */
+  transform-origin: bottom;  
+}
+.main_command_slide:hover{
+	 height: 80px;
+	       
+}
+.main_command_slide .activator {
+  height: 80px;
+  width: 100%;
+
+}
+
+.img {
+  
+  text-align: center;
+  margin: 1px;
+  height: 20px;
+  width: 100%;
+  float: top;
+}
+
+.content {
+  display: none;
+  margin: 1px;
+}
+
+.activator:hover {}
+
+.activator:hover .content {
+  display: block;
+}
+
+.activator:hover .img {
+  float: bottom;
+}
+
+hr {
+  background-color: lightblue;
+  border: 1px solid black;
+}
+hr.c {
+  margin-top: 2px;
+  margin-bottom: 2px;
+  margin-right: 45%;
+  margin-left: 45%;
+}
+
+hr.e {
+  margin-top: 2px;
+  margin-bottom: 2px;
+}

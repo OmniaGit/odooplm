@@ -41,12 +41,12 @@ class ResGroups(models.Model):
     _inherit = 'res.groups'
 
     custom_procedure = fields.Binary(string=_('Client CustomProcedure'))
-    custom_procedure_fname = fields.Char(_("New File name"))
-    custom_read_content = fields.Text('Modif Content', default='')
+    custom_procedure_fname = fields.Char(_("Custom Procedure File name"))
+    custom_read_content = fields.Text('Custom Read Content', default='')
 
     custom_multicad = fields.Binary(string=_('Client Multicad'))
-    custom_multicad_fname = fields.Char(_("New File name"))
-    custom_multicad_content = fields.Text('Modif Content', default='')
+    custom_multicad_fname = fields.Char(_("MultiCad File name"))
+    custom_multicad_content = fields.Text('Custom Multicad Content', default='')
 
     def write(self, vals):
         erase = self.env.context.get('erase_multicad', True)
@@ -58,20 +58,24 @@ class ResGroups(models.Model):
         return super(ResGroups, self).write(vals)
 
     def open_custommodule_edit(self):
+        ctx = self.env.context.copy()
+        ctx['erase_customprocedure'] = False
         for groupBrws in self:
             if groupBrws.custom_procedure:
                 fileReadableContent = base64.decodestring(groupBrws.custom_procedure)
                 if self.custom_read_content:
                     fileReadableContent = ''
-                self.with_context({'erase_customprocedure': False}).custom_read_content = fileReadableContent
+                self.with_context(ctx).custom_read_content = fileReadableContent
 
     def open_custom_multicad_edit(self):
+        ctx = self.env.context.copy()
+        ctx['erase_multicad'] = False
         for groupBrws in self:
             if groupBrws.custom_multicad:
                 fileReadableContent = base64.decodestring(groupBrws.custom_multicad)
                 if self.custom_multicad_content:
                     fileReadableContent = ''
-                self.with_context({'erase_multicad': False}).custom_multicad_content = fileReadableContent
+                self.with_context(ctx).custom_multicad_content = fileReadableContent
 
     def open_custommodule_save(self, vals):
         for groupBrws in self:

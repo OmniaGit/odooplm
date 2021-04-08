@@ -9,7 +9,6 @@
         <t t-set="data_report_dpi" t-value="110"/>
 
         <t t-call="web.internal_layout">
-        	<div style="border-bottom: 1px solid black;"></div>
             <div class="page" align="center">
                 <h2><span t-esc="bom_type(o)"/></h2>
 				<table style="width: 100%; border: 1px solid rgb(202, 202, 202);"  class="table"> 

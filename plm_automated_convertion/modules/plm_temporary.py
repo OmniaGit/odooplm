@@ -26,9 +26,9 @@ Created on 25/mag/2016
 
 import logging
 import tempfile
-from openerp import models, fields, api, _, osv
-from openerp import tools
-from openerp.exceptions import UserError
+from odoo import models, fields, api, _, osv
+from odoo import tools
+from odoo.exceptions import UserError
 import base64
 import os
 import shutil

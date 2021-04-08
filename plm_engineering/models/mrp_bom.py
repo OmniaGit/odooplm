@@ -34,7 +34,7 @@ from odoo import _
 class MrpBomExtension(models.Model):
     _inherit = 'mrp.bom'
 
-    type = fields.Selection(selection_add=[('ebom', 'Engineering BoM')])
+    type = fields.Selection(selection_add=[('ebom', 'Engineering BoM')], ondelete={'ebom': 'cascade'})
     ebom_source_id = fields.Integer('Source Ebom ID')
 
     @api.model

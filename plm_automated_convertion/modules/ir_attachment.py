@@ -24,11 +24,11 @@ Created on 03/nov/2016
 @author: mboscolo
 '''
 
-from openerp.exceptions import UserError
-from openerp import models
-from openerp import fields
-from openerp import api
-from openerp import _
+from odoo.exceptions import UserError
+from odoo import models
+from odoo import fields
+from odoo import api
+from odoo import _
 import logging
 
 

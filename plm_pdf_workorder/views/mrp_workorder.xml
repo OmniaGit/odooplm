@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <data>
+    
+        <record id="mrp_workorder_view_form_tablet_pdf_workorder" model="ir.ui.view">
+            <field name="name">mrp.workorder.view.form.inherit.quality.tablet.new.pdf.workorder</field>
+            <field name="model">mrp.workorder</field>
+            <field name="inherit_id" ref="mrp_workorder.mrp_workorder_view_form_tablet"/>
+            <field name="arch" type="xml">
+            
+            	<xpath expr="//field[@name='component_qty_to_do']" position="after">
+                    <field name="view_plm_pdf" invisible="1"/>
+                    <field name="use_plm_pdf" invisible="1"/>
+            	</xpath>
+            	
+            	<xpath expr="//button[@name='action_menu']" position="after">
+            		<button name="action_switch_pdf" type="object" attrs="{'invisible': ('use_plm_pdf', '=', False)}" class="btn-secondary o_workorder_icon_btn" string="PLM PDF" icon="fa-camera" aria-label="Dropdown menu" title="Dropdown menu"/>
+            	</xpath>
+            	
+            	<xpath expr="//div[hasclass('workorder_pdf')]" position="after">
+            		<div>
+            			<field name="plm_pdf" widget="mrp_pdf_viewer_no_reload" attrs="{'invisible': ['|', ('view_plm_pdf', '=', False), ('plm_pdf', '=', False)]}"/>
+            		</div>
+            	</xpath>
+            	
+            	<xpath expr="//field[@name='worksheet']" position="attributes">
+            		<attribute name="attrs">{'invisible': ['|', ('view_plm_pdf', '=', True), '|', ('worksheet_type', '=', 'google_slide'), '&amp;', ('is_last_step', '=', True), ('is_first_step', '=', False)]}</attribute>
+            	</xpath>
+            	
+            	<xpath expr="//field[@name='worksheet_google_slide']" position="attributes">
+            		<attribute name="attrs">{'invisible': ['|', ('view_plm_pdf', '=', True), '|', ('worksheet_type', '=', 'pdf'), '&amp;', ('is_last_step', '=', True), ('is_first_step', '=', False)]}</attribute>
+            	</xpath>
+            	
+            </field>
+        </record>  
+
+    </data>
+
+</odoo>
