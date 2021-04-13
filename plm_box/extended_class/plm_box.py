@@ -316,11 +316,10 @@ class Plm_box(models.Model):
         docState = plmDocObj.getDocumentState({'docName': docBrws.name})
         if docState in ['check-out', 'check-out-by-me']:
             getCheckOutUser = docBrws.getCheckOutUser()
-        writeVal = datetime.datetime.strptime(docBrws.write_date, DEFAULT_SERVER_DATETIME_FORMAT)
         return {'revisionid': docBrws.revisionid,
                 'datas_fname': docBrws.datas_fname,
                 'create_date': docBrws.create_date,
-                'write_date': correctDate(writeVal, self.env.context),
+                'write_date': correctDate(docBrws.write_date, self.env.context),
                 'description': docBrws.description,
                 'fileName': docBrws.datas_fname,
                 'state': docBrws.state,
@@ -578,5 +577,10 @@ class Plm_box(models.Model):
             outDict['readonly'] = boxBrws.boxReadonlyCompute()
         return outDict
 
+
+    @api.model
+    def getUuid(self):
+        param = self.env['ir.config_parameter'].sudo()
+        return param.get_param('database.uuid')
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

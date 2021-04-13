@@ -39,8 +39,7 @@ DEFAULT_SERVER_DATETIME_FORMAT = "%s %s" % (DEFAULT_SERVER_DATE_FORMAT, DEFAULT_
 
 
 def correctDate(fromTimeStr, context):
-    serverUtcTime = parser.parse(fromTimeStr.strftime(DEFAULT_SERVER_DATETIME_FORMAT))
-    utcDate = serverUtcTime.replace(tzinfo=pytz.utc).astimezone(pytz.timezone(context.get('tz', 'Europe/Rome')))
+    utcDate = fromTimeStr.replace(tzinfo=pytz.utc).astimezone(pytz.timezone(context.get('tz', 'Europe/Rome')))
     return utcDate.replace(tzinfo=None)
 
 
@@ -144,8 +143,7 @@ class Plm_box_document(models.Model):
         for docBrws in docBrwsList:
             del valuesDict['docName']
             if docBrws.write(valuesDict):
-                writeVal = datetime.datetime.strptime(docBrws.write_date, DEFAULT_SERVER_DATETIME_FORMAT)
-                return correctDate(writeVal, self.env.context)
+                return correctDate(docBrws.write_date, self.env.context)
         return False
 
     @api.model
