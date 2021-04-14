@@ -183,7 +183,7 @@ class Plm_box_document(models.Model):
     def getLastTime(self, oid, default=None):
         document = self.browse(oid)
         plm_cad_open = self.sudo().env['plm.cad.open'].getLastCadOpenByUser(document, self.env.user)
-        return plm_cad_open.create_date
+        return plm_cad_open.create_date or document.write_date or document.create_date
         
 Plm_box_document()
 
