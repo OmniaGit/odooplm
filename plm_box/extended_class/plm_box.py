@@ -583,4 +583,5 @@ class Plm_box(models.Model):
         param = self.env['ir.config_parameter'].sudo()
         return param.get_param('database.uuid')
 
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

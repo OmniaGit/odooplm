@@ -29,8 +29,7 @@ from odoo import fields
 from odoo import _
 from odoo import api
 import logging
-import datetime
-from dateutil import parser
+import xmlrpc
 import pytz
 
 DEFAULT_SERVER_DATE_FORMAT = "%Y-%m-%d"
@@ -82,11 +81,7 @@ class Plm_box_document(models.Model):
         docName, docRevision = vals
         docIds = self.search([('name', '=', docName), ('revisionid', '=', docRevision)]).ids
         if docIds:
-            files = self.GetSomeFiles((docIds, [[], []], False))
-            if files:
-                files[0] = list(files[0])
-                files[0][0] = docName
-                return files
+            return self.GetSomeFiles((docIds, [[], []], False))
 
     @api.model
     def checkInOrFalse(self, docDict):
@@ -94,11 +89,21 @@ class Plm_box_document(models.Model):
         docRev = docDict.get('revisionId', '')
         docContent = docDict.get('fileContent', '')
         force = docDict.get('force', False)
+        lastupdate = docDict.get('lastupdate', '')
         docBrowseList = self.search([('name', '=', docName)])
-        if docBrowseList and not force:
-            clientBytesContent = docContent.encode(encoding='utf_8', errors='strict')
-            if docBrowseList[0].datas + '\n'.encode(encoding='utf_8', errors='strict') != clientBytesContent:
-                return 'File changed'
+        if not force:
+            for document in docBrowseList:
+                if lastupdate:
+                    plm_cad_open = self.sudo().env['plm.cad.open'].getLastCadOpenByUser(document, self.env.user)
+                    if lastupdate > plm_cad_open.create_date:
+                        return 'File changed'
+                else:
+                    if isinstance(docContent, xmlrpc.client.Binary):
+                        docContent = docContent.data
+                    if isinstance(docContent, str):
+                        docContent = docContent.encode(encoding='utf_8', errors='strict')
+                    if document.datas != docContent:
+                        return 'File changed'
         docIds = self.search([('name', '=', docName), ('revisionid', '=', docRev)]).ids
         if len(docIds) == 1:
             chckOutDocs = self.env.get('plm.checkout').search([('documentid', '=', docIds[0]), ('userid', '=', self.env.uid)])
@@ -113,6 +118,8 @@ class Plm_box_document(models.Model):
         plmCheckOutObj = self.env.get('plm.checkout')
         docBrwsList = self.search([('name', '=', docName), ('revisionid', '=', docRev)])
         for docBrws in docBrwsList:
+            if docBrws.checkNewer():
+                return False
             docState = docBrws.state
             docId = docBrws.id
             if not docState or docState != 'draft':
@@ -172,6 +179,12 @@ class Plm_box_document(models.Model):
                 return 'check-in'
         return 'check-out-by-me'
 
+    @api.model
+    def getLastTime(self, oid, default=None):
+        document = self.browse(oid)
+        plm_cad_open = self.sudo().env['plm.cad.open'].getLastCadOpenByUser(document, self.env.user)
+        return plm_cad_open.create_date
+        
 Plm_box_document()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

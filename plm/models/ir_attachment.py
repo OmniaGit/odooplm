@@ -37,7 +37,7 @@ from odoo import _
 from collections import defaultdict
 import itertools
 import logging
-
+import xmlrpc
 
 _logger = logging.getLogger(__name__)
 
@@ -835,6 +835,10 @@ class PlmDocument(models.Model):
         vals = self.plm_sanitize(vals)
         vals['workflow_user'] = self.env.uid
         vals['workflow_date'] = datetime.now()
+        datas = vals.get('datas', '')
+        if datas:
+            if isinstance(datas, xmlrpc.client.Binary):
+                vals['datas'] = datas.data
         res = super(PlmDocument, self).create(vals)
         res.check_unique()
         return res
@@ -854,6 +858,10 @@ class PlmDocument(models.Model):
                                                                                                                  ir_attachment.id)
                     logging.error(msg)
                     raise UserError(msg)
+        datas = vals.get('datas', '')
+        if datas:
+            if isinstance(datas, xmlrpc.client.Binary):
+                vals['datas'] = datas.data
         self.writeCheckDatas(vals)
         vals.update(self.checkMany2oneClient(vals))
         vals = self.plm_sanitize(vals)
@@ -2125,6 +2133,11 @@ class PlmDocument(models.Model):
             return self.env['plm.backupdoc'].search([('documentid', '=', document_id.id)], order='create_date DESC', limit=1)
         return False
 
+    @api.multi
+    def setupCadOpenRPC(self, hostname='', pws_path='', operation_type=''):
+        ret = self.setupCadOpen(hostname, pws_path, operation_type)
+        return ret.ids
+        
     @api.multi
     def setupCadOpen(self, hostname='', pws_path='', operation_type=''):
         for doc_id in self:
