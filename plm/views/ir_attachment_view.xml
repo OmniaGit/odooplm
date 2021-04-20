@@ -104,7 +104,7 @@
                             </group>
                         </group>
                         <group name="doc_preview">
-                        	<field name="preview" widget="image"/>
+                        	<field name="preview" widget="image" nolabel="1"/>
 <!--                             <field -->
 <!--                                     name="preview" -->
 <!--                                     widget="image" -->
