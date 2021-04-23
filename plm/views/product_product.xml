@@ -69,18 +69,15 @@
 
                 <sheet>
                 
-                    <field name="type" invisible="1"/>
-                    <field name="name" string="Description"/>
-                    <group name="plm_fields_area" colspan="6" col="2">
-                        <field name="is_engcode_editable" invisible="1"/>
-                        <field name="engineering_code" attrs="{'readonly':[('is_engcode_editable','=', False)]}"
-                               select="1"/>
+                    <group name="plm_fields_area" colspan="6" col="6">
+	                    <field name="name" string="Description" colspan="6"/>
+                        <field name="engineering_code" colspan="4" attrs="{'readonly':[('is_engcode_editable','=', False)]}" select="1"/>
                         <field name="engineering_revision" colspan="2" attrs="{'readonly':[('is_engcode_editable','=', False)]}"/>
-                        <field name="std_description"
-                               attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
-                        <field name="source_product" invisible="1"/>
-                        <field name="desc_modify"
-                               attrs="{'readonly':[('state','in',['released','obsoleted'])], 'invisible': [('engineering_revision', '=', 0)]}"/>
+                        <field name="std_description" colspan="6" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                        <field name="desc_modify" colspan="6" attrs="{'readonly':[('state','in',['released','obsoleted'])], 'invisible': [('engineering_revision', '=', 0)]}"/>
+	                    <field name="type" invisible="1"/>
+	                    <field name="source_product" invisible="1"/>
+	                    <field name="is_engcode_editable" invisible="1"/>
                     </group>
                     <notebook colspan="6" col="6">
                         <page name="technical_infos" string="Technical Information">
@@ -113,7 +110,7 @@
                                 <field name="engineering_treatment"
                                        attrs="{'readonly':[('state','in',['released','obsoleted'])]}" colspan="2" groups='base.group_no_one'/>
                             </group>
-                            <group col="4" colspan="4" string="Standard Description Parameters">
+                            <group name="std_desc_attrs" col="4" colspan="4" string="Standard Description Parameters">
                             	<a target="new"  href="https://www.omniasolutions.website/blog/developer-and-it-here-you-will-find-post-regarding-very-technical-aspect-of-programming-and-it-those-thinks-are-daily-used-by-omniasolutions-and-we-hope-you-that-will-help-you-3/post/standard-description-39" title="Standard description parameters info" colspan="4"><i class="fa fa-info-circle"></i></a>
                                 <field name="std_umc1"
                                        attrs="{'readonly':[('std_umc1','=',False),('state','in',['released','obsoleted'])]}"/>
