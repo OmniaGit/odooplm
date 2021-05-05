@@ -871,6 +871,13 @@ class MrpBomExtension(models.Model):
         return orderDict
 
     def getRecursiveComponents(self, components, wrong_components, exclude_statuses=[], skip_states=[], force_move=False):
+        
+        def checkAdd(out, to_adds):
+            for to_add in to_adds:
+                if to_add not in out:
+                    out += to_add
+            return out
+
         for bom_id in self:
             bom_product = self.env['product.product']
             if bom_id.product_id:
@@ -891,14 +898,15 @@ class MrpBomExtension(models.Model):
                     continue
                 for child_bom in bom_line_product.bom_ids:
                     res = child_bom.getRecursiveComponents(components, wrong_components, exclude_statuses, skip_states, force_move)
-                    components += res[0]
-                    wrong_components += res[1]
+                    true_cops, wrong_comps = res
+                    components = checkAdd(components, true_cops)
+                    wrong_components = checkAdd(wrong_components, wrong_comps)
                 if bom_line_product.state in exclude_statuses:
-                    wrong_components += bom_line_product
+                    wrong_components = checkAdd(wrong_components, bom_line_product)
                     if not force_move:
                         continue
                 elif bom_line_product.state in skip_states:
                     continue
-                components += bom_line_product
+                components = checkAdd(components, bom_line_product)
         return components, wrong_components
                     
