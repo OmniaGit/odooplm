@@ -584,4 +584,36 @@ class Plm_box(models.Model):
         return param.get_param('database.uuid')
 
 
+    def checkRecursiveBoxPresent(self, targetBox):
+        evaluated = []
+        ret = False
+        for parentBox in self:
+            if parentBox.id in evaluated:
+                continue
+            for child in parentBox.plm_box_rel:
+                if targetBox == child:
+                    ret = True
+                    break
+                ret, childEval = child.checkRecursiveBoxPresent(targetBox)
+                evaluated.extend(childEval)
+                if ret:
+                    break
+            evaluated.append(parentBox.id)
+        return ret, evaluated
+
+    @api.model
+    def canDeleteLocalBox(self, boxName, primaryBoxes):
+        targetBox = self.search([('name', '=', boxName)])
+        if not targetBox:
+            return True
+        for primaryBoxName in primaryBoxes:
+            if primaryBoxName == boxName:
+                continue
+            primaryBox = self.search([('name', '=', primaryBoxName)])
+            present, _ = primaryBox.checkRecursiveBoxPresent(targetBox)
+            if present:
+                return False
+        return True
+            
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

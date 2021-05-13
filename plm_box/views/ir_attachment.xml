@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record model="ir.ui.view" id="view_attachment_form_plm_box">
+        <field name="name">ir.attachment.form.box</field>
+        <field name="model">ir.attachment</field>
+        <field name="type">form</field>
+        <field name="inherit_id" ref="plm.view_attachment_form_plm_hinerit"/>
+        <field name="arch" type="xml">
+ 
+            <field name="is_plm" position="after">
+                <field name="is_plm_box" readonly="1"/>
+            </field>
+
+        </field>
+    </record>
+
+
+</odoo>

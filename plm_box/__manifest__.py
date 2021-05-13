@@ -38,6 +38,7 @@
     'data': ['views/non_cad_doc.xml',
              'views/box_object_rel.xml',
              'views/plm_box_sequence_data.xml',
+             'views/ir_attachment.xml',
              'security/security.xml',
              ],
     'demo': [],

@@ -46,6 +46,7 @@ class Plm_box_document(models.Model):
     _inherit = 'ir.attachment'
 
     name = fields.Char(_('Attachment Name'), required=False)
+    is_plm_box = fields.Boolean('Is Plm Box document')
 
     @api.model
     def create(self, vals):

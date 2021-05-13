@@ -22,7 +22,7 @@
 	                	<field name="create_date" readonly="1"/>
 	                    <field name="description" widget="link"/>
 	                    <field name="version" />
-	                    <field name="document_rel" />
+	                    <field name="document_rel" domain="[('is_plm_box', '=', True)]"/>
 	                    <!--
 	                    <field name="obj_rel" editable="bottom" widget="one2many_list">
 							<tree string="Relation" editable="bottom">
