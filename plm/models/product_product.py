@@ -1780,6 +1780,8 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
 
     @api.model
     def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None):
+        if not args:
+            args = []
         product_ids = self._search([('engineering_code', operator, name)] + args, limit=limit, access_rights_uid=name_get_uid)
         ret = self.browse(product_ids).name_get()
         ret += super(PlmComponent, self)._name_search(name, args, operator, limit, name_get_uid)
