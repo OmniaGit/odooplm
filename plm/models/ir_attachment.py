@@ -403,7 +403,7 @@ class PlmDocument(models.Model):
                                'collectable': collectable,
                                'isCheckedOutToMeLastRev': isCheckedOutToMe,
                                'checkOutUser': checkOutUser,
-                               'statte': objDoc.state})
+                               'state': objDoc.state})
             else:
                 result.append((outId, objDoc.name, file_size, collectable, isCheckedOutToMe, checkOutUser))
             if collectable:
