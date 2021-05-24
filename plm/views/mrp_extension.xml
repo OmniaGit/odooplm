@@ -74,17 +74,20 @@
             </field>
             <xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_id']" position="before">
                 <field name="related_bom_ids" invisible="True"/>
+                <field name="hasChildBoms" invisible="True"/>
                 <button name="openRelatedBoms"
                         type="object"
                         icon="fa-level-down" 
                         class="btn btn-sm oe_stat_button"
-                        attrs="{'invisible':[('related_bom_ids', '=', [])]}"/>
+                        attrs="{'invisible':[('hasChildBoms', '=', False)]}"/>
                 <field name="related_document_ids" invisible="True"/>
                 <button name="openRelatedDocuments"
                         type="object"
                         icon="fa-folder-open"
                         class="btn btn-sm oe_stat_button"
                         attrs="{'invisible':[('related_document_ids', '=', [])]}"/>
+                <field name="itemnum"/>
+                <field name="itemlbl"/>
             </xpath>
             <xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_id']" position="after">
                 <field name="engineering_revision" readonly="True"/>

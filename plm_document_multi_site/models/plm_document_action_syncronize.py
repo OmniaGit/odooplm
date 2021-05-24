@@ -38,6 +38,7 @@ from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
 class PlmDocumentActionSyncronize(models.Model):
     _name = "plm.document.action.syncronize"
+    _description = "Plm Document Action Syncronize"
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
     plm_remote_server_id = fields.Many2one('plm.remote.server',

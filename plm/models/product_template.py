@@ -29,6 +29,7 @@ from odoo import models
 from odoo import fields
 from odoo import api
 from odoo import _
+import logging
 
 USED_STATES = [('draft', _('Draft')),
                ('confirmed', _('Confirmed')),
@@ -72,7 +73,7 @@ class ProductTemplateExtension(models.Model):
     engineering_code = fields.Char(_('Part Number'),
                                    index=True,
                                    help=_("This is engineering reference to manage a different P/N from item Name."),
-                                   size=64)
+                                   size=256)
 
     #   ####################################    Overload to set default values    ####################################
     standard_price = fields.Float('Cost',
@@ -136,7 +137,10 @@ class ProductTemplateExtension(models.Model):
         get All version product_tempate based on this one
         """
         for product_template_id in self:
-            product_template_id.revision_count = product_template_id.search_count([('engineering_code', '=', product_template_id.engineering_code)])
+            if product_template_id.engineering_code:
+                product_template_id.revision_count = product_template_id.search_count([('engineering_code', '=', product_template_id.engineering_code)])
+            else:
+                product_template_id.revision_count = 0
 
     def open_related_revisions(self):
         return {'name': _('Products'),
@@ -146,6 +150,66 @@ class ProductTemplateExtension(models.Model):
                 'type': 'ir.actions.act_window',
                 'domain': [('id', 'in', self.getAllVersionTemplate().ids)],
                 'context': {}}
+
+    def plm_sanitize(self, vals):
+        fields_view_get = self.fields_get_keys()
+        out = []
+        if isinstance(vals, (list, tuple)):
+            for k in vals:
+                if k in fields_view_get:
+                    out.append(k)
+            return out
+        else:
+            valsKey = list(vals.keys())
+            for k in valsKey:
+                if k not in fields_view_get:
+                    del vals[k]
+        return vals
+
+    @api.model
+    def create(self, vals):
+        vals = self.plm_sanitize(vals)
+        return super(ProductTemplateExtension, self).create(vals)
+
+    def write(self, vals):
+        vals = self.plm_sanitize(vals)
+        return super(ProductTemplateExtension, self).write(vals)
+
+    def copy(self, default={}):
+        """
+            Overwrite the default copy method
+        """
+        if not self.engineering_code:
+            return super(ProductTemplateExtension, self).copy(default)
+        if not default:
+            default = {}
+
+        def clearBrokenComponents():
+            """
+                Remove broken components before make the copy. So the procedure will not fail
+            """
+            # Do not check also for name because may cause an error in revision procedure
+            # due to translations
+            brokenComponents = self.search([('engineering_code', '=', '-')])
+            for brokenComp in brokenComponents:
+                brokenComp.unlink()
+
+        if not default.get('name', False):
+            default['name'] = '-'                   # If field is required super of clone will fail returning False, this is the case
+            default['engineering_code'] = '-'
+            default['engineering_revision'] = 0
+            clearBrokenComponents()
+        if default.get('engineering_code', '') == '-':
+            clearBrokenComponents()
+        # assign default value
+        default['state'] = 'draft'
+        default['engineering_writable'] = True
+        default['linkeddocuments'] = []
+        default['release_date'] = False
+        objId = super(ProductTemplateExtension, self).copy(default)
+        if objId:
+            objId.is_engcode_editable = True
+        return objId
 
     @api.model
     def init(self):

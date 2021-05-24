@@ -33,20 +33,27 @@ class ReportDocumentPdf(models.AbstractModel):
     _description = 'Report Document PDF'
 
     @api.model
-    def render_qweb_pdf(self, documents=None, data=None):
+    def _render_qweb_pdf(self, documents=None, data=None):
         docType = self.env['ir.attachment']
         docRepository = docType._get_filestore()
-        userType = self.env['res.users']
-        user = userType.browse(self.env.uid)
         to_zone = tz.gettz(self.env.context.get('tz', 'Europe/Rome'))
         from_zone = tz.tzutc()
         dt = datetime.now()
         dt = dt.replace(tzinfo=from_zone)
         localDT = dt.astimezone(to_zone)
         localDT = localDT.replace(microsecond=0)
-        msg = "Printed by %r : %r " % (user.name, localDT.ctime())
-        output = BookCollector(jumpFirst=False, customTest=(False, msg), bottomHeight=10)
-        documentContent = packDocuments(docRepository, documents, output)
+        msg = "Printed by '%(print_user)s' : %(date_now)s State: %(state)s"
+        msg_vals = {
+            'print_user': 'user_id.name',
+            'date_now': localDT.ctime(),
+            'state': 'doc_obj.state',
+                }
+        output = BookCollector(jumpFirst=False, customText=(msg, msg_vals), bottomHeight=10, poolObj=self.env)
+        return packDocuments(docRepository, documents, output)
+        
+    @api.model
+    def render_qweb_pdf(self, documents=None, data=None):
+        documentContent = self._render_qweb_pdf(documents, data)
         byteString = b"data:application/pdf;base64," + base64.b64encode(documentContent[0])
         return byteString.decode('UTF-8')
 

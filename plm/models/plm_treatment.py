@@ -37,7 +37,8 @@ class PlmTreatment(models.Model):
 
     name = fields.Char(_('Specification'),
                        size=128,
-                       required=True)
+                       required=True,
+                       translate=True)
     description = fields.Char(_('Description'),
                               size=128)
     sequence = fields.Integer(_('Sequence'),
@@ -46,7 +47,7 @@ class PlmTreatment(models.Model):
     _sql_constraints = [
         ('name_uniq', 'unique(name)', _('Termic Treatment has to be unique !')),
     ]
-
+    
     def copy(self, default=None):
         if not default:
             default = {}

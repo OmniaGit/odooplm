@@ -58,7 +58,7 @@ class PlmDocumentRelations(models.Model):
     configuration = fields.Char(_('Configuration Name'),
                                 size=1024,
                                 index=True)
-    link_kind = fields.Char(_('Kind of Link'),
+    link_kind = fields.Char(_('Kind of Link'),      # LyTree | HiTree | RfTree | PkgTree
                             default='HiTree',
                             size=64,
                             required=True)
@@ -77,7 +77,15 @@ class PlmDocumentRelations(models.Model):
     def name_get(self):
         result = []
         for r in self:
-            name = "%s .. %s.." % (r.parent_id.engineering_document_name[:8], r.child_id.engineering_document_name[:8])
+            if r.parent_id.engineering_document_name:
+                parent_name = r.parent_id.engineering_document_name[:8]
+            else:
+                parent_name = r.parent_id.name[:8]
+            if r.child_id.engineering_document_name:
+                child_name = r.child_id.engineering_document_name[:8]
+            else:
+                child_name = r.child_id.name[:8]
+            name = "%s .. %s.." % (parent_name, child_name)
             result.append((r.id, name))
         return result
 
@@ -128,7 +136,7 @@ class PlmDocumentRelations(models.Model):
 
     @api.model
     def saveDocumentRelationNew(self, parent_ir_attachment_id, child_ir_attachment_id, link_kind='HiTree'):
-        if not parent_ir_attachment_id and child_ir_attachment_id:
+        if not parent_ir_attachment_id or not child_ir_attachment_id:
             return False
         if self.search_count([('parent_id', '=', parent_ir_attachment_id),
                               ('child_id', '=', child_ir_attachment_id),

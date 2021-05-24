@@ -9,18 +9,17 @@
         <field name="arch" type="xml">
             <xpath expr="//header" position="inside">
                 <button name="action_suspend"
-                        states="draft"
                         type="object"
                         string="Suspend"
                         class="oe_highlight"
-                        attrs="{'invisible': ['|',('is_checkout','=',True)]}"
+                        attrs="{'invisible': ['|',('is_checkout','=',True), ('state', 'in', ['suspended'])]}"
                 />
                 <button name="action_unsuspend"
                         states="suspended"
                         type="object"
                         string="Un-Suspend"
                         class="oe_highlight"
-                        attrs="{'invisible': ['|',('is_checkout','=',True), ('state', 'not in', ['suspended'])]}"
+                        attrs="{'invisible': ['|', ('is_checkout','=',True), ('state', 'not in', ['suspended'])]}"
                 />
             </xpath>
         </field>

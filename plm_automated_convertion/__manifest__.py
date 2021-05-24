@@ -21,7 +21,7 @@
 ##############################################################################
 {
     'name': 'Product Lifecycle Management Batch conversion',
-    'version': '13.0',
+    'version': '14.0.1',
     'author': 'OmniaSolutions',
     'website': 'https://www.omniasolutions.website',
     'category': 'Product Lifecycle Management',
@@ -37,7 +37,10 @@ Improve the plm module adding feature for converting cad files in different form
 in order to properly set this module you need a cad server machine.
 for more information send an e mail at info@omniasolutions.eu
     """,
-    'data': ['view/plm_component_action_extended.xml',
+    'data': [# security
+             'security/plm_security.xml',
+             # views
+             'view/plm_component_action_extended.xml',
              'view/data.xml'],
     'demo': [],
     'test': [],

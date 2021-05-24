@@ -13,11 +13,11 @@
 		        		<field string = "Converted File" name="downloadDatas" readonly="1" filename="datas_fname"/>
 	            	</group>	
 	        		<separator string=""/>
-            		<group colspan="4" col="4">
-            			<button special="cancel" string="Cancel"/>
-            			<button string="Convert to folder" name="action_create_coversion" type="object"/>
-            			<button string="Convert and Downlaod" name="action_create_convert_download" type="object"/>
-            		</group>	        		
+            		<footer>
+                        <button special="cancel" string="Cancel"/>
+                        <button string="Convert to folder" name="action_create_coversion" type="object"/>
+                        <button string="Convert and Downlaod" name="action_create_convert_download" type="object"/>
+                    </footer>        		
 				</form>
 			</field>
 		</record>
@@ -34,6 +34,14 @@
 			</field>
 		</record>
 		
+		<record model="ir.actions.act_window" id="act_view_doc_convert">
+            <field name="name">Convert File</field>
+            <field name="res_model">plm.convert</field>
+            <field name="binding_model_id" ref="model_ir_attachment"/>
+            <field name="context">{'default_document_id': active_id}</field>
+            <field name="target">new</field>
+            <field name="view_mode">form</field>
+        </record>
 	</data>
 </odoo>
           

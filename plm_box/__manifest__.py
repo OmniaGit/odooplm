@@ -21,7 +21,7 @@
 ##############################################################################
 {
     'name': 'Plm Box',
-    'version': '13.0',
+    'version': '14.0.1',
     'author': 'OmniaSolutions',
     'website': 'https://www.omniasolutions.website',
     'category': 'Custom',
@@ -35,10 +35,13 @@
                 ],
     'license': 'AGPL-3',
     'description': '',
-    'data': ['views/non_cad_doc.xml',
-             'views/box_object_rel.xml',
-             'views/plm_box_sequence_data.xml',
-             ],
+    'data': [
+        # security
+        'security/plm_security.xml',
+        # views
+        'views/non_cad_doc.xml',
+        'views/box_object_rel.xml',
+        'views/plm_box_sequence_data.xml'],
     'demo': [],
     'test': [],
     'installable': True,

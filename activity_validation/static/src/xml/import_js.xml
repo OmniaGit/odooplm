@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+ 
+         <template id="assets_backend" name="mail assets" inherit_id="mail.assets_backend">
+            <xpath expr="." position="inside">
+ 				<script type="text/javascript" src="/activity_validation/static/src/js/systray_activity_menu.js"></script>
+ 			</xpath>
+ 		</template>
+ 	
+	</data>
+</odoo>

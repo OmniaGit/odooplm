@@ -3,13 +3,10 @@
     <menuitem
             id="plm_menu"
             name="PLM"
-            icon="terp-stock"
-            web_icon="plm,static/src/img/PLMmodule.png"
-            web_icon_hover="plm,static/src/img/PLMmodule-hoover.png"
+            web_icon="plm,static/description/icon.png"
+            groups="plm.group_plm_admin,plm.group_plm_integration_user,plm.group_plm_view_user,plm.group_plm_readonly_released"
 
     />
-    <!-- action = "plm.open_board_plm_manager"  -->
-    <!-- Parent menu "PLM Module"  -->
     <menuitem
             id="plm_component_menu_view"
             name="Components"
@@ -71,6 +68,15 @@
             parent="plm.ir_attachment_form"
             sequence="11"
     />
+
+	    <menuitem
+	        name="CAD Opens"
+	        action="plm.action_plm_cad_open"
+	        id="menu_cad_open"
+	        parent="plm.ir_attachment_form" 
+	    	sequence="15"
+	    	groups="plm.group_plm_admin,base.group_no_one"
+	    />
 
     <!-- Parent menu "Configuration" -->
     <menuitem

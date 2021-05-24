@@ -24,11 +24,13 @@ Created on 25 Aug 2016
 
 @author: Daniel Smerghetto
 """
+import logging
 from odoo.exceptions import UserError
 from odoo import models
 from odoo import fields
 from odoo import api
 from odoo import _
+import logging
 
 
 class MrpBomLineExtension(models.Model):
@@ -36,9 +38,18 @@ class MrpBomLineExtension(models.Model):
     _inherit = 'mrp.bom.line'
     _order = "itemnum"
 
-    type = fields.Selection(related="bom_id.type")
+
+    def read(self, fields=[], load='_classic_read'):
+        fields = self.plm_sanitize(fields)
+        return super(MrpBomLineExtension, self).read(fields=fields, load=load)
+
+    @api.model
+    def create(self, vals):
+        vals = self.plm_sanitize(vals)
+        return super(MrpBomLineExtension, self).create(vals)
 
     def write(self, vals):
+        vals = self.plm_sanitize(vals)
         ret = super(MrpBomLineExtension, self).write(vals)
         for line in self:
             line.bom_id.rebase_bom_weight()
@@ -63,12 +74,13 @@ class MrpBomLineExtension(models.Model):
             else:
                 self.child_line_ids = False
 
+    
     def get_related_boms(self):
         for bom_line in self:
-            if not self.product_id:
-                self.related_bom_id = []
+            if not bom_line.product_id:
+                bom_line.related_bom_id = []
             else:
-                if not self.hasChildBoms:
+                if not bom_line.hasChildBoms:
                     return []
                 return self.env['mrp.bom'].search([
                     ('product_tmpl_id', '=', bom_line.product_id.product_tmpl_id.id),
@@ -79,8 +91,8 @@ class MrpBomLineExtension(models.Model):
     @api.depends('product_id')
     def _has_children_boms(self):
         for bom_line in self:
-            if not self.product_id:
-                self.hasChildBoms = False
+            if not bom_line.product_id:
+                bom_line.hasChildBoms = False
             else:
                 num_boms = self.env['mrp.bom'].search_count([
                     ('product_tmpl_id', '=', bom_line.product_id.product_tmpl_id.id),
@@ -88,15 +100,15 @@ class MrpBomLineExtension(models.Model):
                     ('active', '=', True)
                 ])
                 if num_boms:
-                    self.hasChildBoms = True
+                    bom_line.hasChildBoms = True
                 else:
-                    self.hasChildBoms = False
+                    bom_line.hasChildBoms = False
 
     @api.depends('product_id')
     def _related_boms(self):
         for bom_line in self:
-            if not self.product_id:
-                self.related_bom_id = []
+            if not bom_line.product_id:
+                bom_line.related_bom_ids = [(5, False, False)]
             else:
                 bom_objs = self.env['mrp.bom'].search([
                     ('product_tmpl_id', '=', bom_line.product_id.product_tmpl_id.id),
@@ -104,10 +116,11 @@ class MrpBomLineExtension(models.Model):
                     ('active', '=', True)
                 ])
                 if not bom_objs:
-                    self.related_bom_ids = False
+                    bom_line.related_bom_ids = [(5, False, False)]
                 else:
-                    self.related_bom_ids = bom_objs.ids
+                    bom_line.related_bom_ids = [(6, False, bom_objs.ids)]
 
+    
     def openRelatedBoms(self):
         related_boms = self.get_related_boms()
         if not related_boms:
@@ -139,6 +152,7 @@ class MrpBomLineExtension(models.Model):
         out_act_dict['domain'] = domain
         return out_act_dict
 
+    
     def openRelatedDocuments(self):
         domain = [('id', 'in', self.related_document_ids.ids)]
         out_act_dict = {'name': _('Documents'),
@@ -149,6 +163,7 @@ class MrpBomLineExtension(models.Model):
                         'domain': domain}
         return out_act_dict
 
+    
     def _related_doc_ids(self):
         for bom_line_brws in self:
             bom_line_brws.related_document_ids = bom_line_brws.product_id.linkeddocuments
@@ -157,7 +172,7 @@ class MrpBomLineExtension(models.Model):
                              string=_("Status"),
                              help=_("The status of the product in its LifeCycle."),
                              store=False)
-    description = fields.Char(related="product_id.name",
+    description = fields.Text(related="product_id.description",
                               string=_("Description"),
                               store=False)
     weight_net = fields.Float(related="product_id.weight",
@@ -171,7 +186,7 @@ class MrpBomLineExtension(models.Model):
                                 readonly=True,
                                 index=True,
                                 help=_("This is the document object that declares this BoM."))
-
+    type = fields.Selection(related="bom_id.type")
     itemnum = fields.Integer(_('CAD Item Position'), help=_(
         "This is the item reference position into the CAD document that declares this BoM."))
     itemlbl = fields.Char(_('CAD Item Position Label'), size=64)
@@ -185,8 +200,28 @@ class MrpBomLineExtension(models.Model):
     related_bom_ids = fields.One2many(compute='_related_boms',
                                       comodel_name='mrp.bom',
                                       string='Related BOMs',
-                                      digits=0,
                                       readonly=True)
     related_document_ids = fields.One2many(compute='_related_doc_ids',
                                            comodel_name='ir.attachment',
                                            string=_('Related Documents'))
+    cutted_type = fields.Selection(
+        [('none', 'None'),
+         ('client', 'Client'),
+         ('server', 'Server')],
+        _('Cutted Compute Type'),
+        default='none')
+
+    def plm_sanitize(self, vals):
+        all_keys = self.fields_get_keys()
+        if isinstance(vals, dict):
+            valsKey = list(vals.keys())
+            for k in valsKey:
+                if k not in all_keys:
+                    del vals[k]
+            return vals
+        else:
+            out = []
+            for k in vals:
+                if k in all_keys:
+                    out.append(k)
+            return out

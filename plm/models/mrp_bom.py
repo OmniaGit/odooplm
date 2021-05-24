@@ -26,7 +26,6 @@ Created on 25 Aug 2016
 """
 import logging
 import sys
-
 import odoo.addons.decimal_precision as dp
 from odoo import models
 from odoo import fields
@@ -71,7 +70,7 @@ class MrpBomExtension(models.Model):
                              string=_("Status"),
                              help=_("The status of the product in its LifeCycle."),
                              store=False)
-    description = fields.Char(related="product_tmpl_id.name",
+    description = fields.Text(related="product_tmpl_id.description",
                               string=_("Description"),
                               store=False)
     father_complete_ids = fields.Many2many('mrp.bom',
@@ -86,7 +85,7 @@ class MrpBomExtension(models.Model):
                                 readonly=True,
                                 index=True,
                                 help=_('This is the document object that declares this BoM.'))
-
+    type = fields.Selection(selection_add=[('normal', _('Normal BoM'))], required=True)
     weight_net = fields.Float('Weight',
                               digits='Stock Weight',
                               help=_("The BoM net weight in Kg."),
@@ -98,10 +97,6 @@ class MrpBomExtension(models.Model):
                                           store=False)
 
     bom_revision_count = fields.Integer(related='product_tmpl_id.revision_count')
-
-    @api.model
-    def init(self):
-        self._packed = []
 
     @api.model
     def _get_in_bom(self, pid, sid=False):
@@ -150,7 +145,7 @@ class MrpBomExtension(models.Model):
         if len(tmp_ids) < 1:
             return prt_datas
         comp_type = self.env['product.product']
-        tmp_datas = comp_type.browse(tmp_ids).read()
+        tmp_datas = comp_type.browse(tmp_ids).read([])
         for tmp_data in tmp_datas:
             for key_data in tmp_data.keys():
                 if tmp_data[key_data] is None:
@@ -181,7 +176,6 @@ class MrpBomExtension(models.Model):
         """
             Return a list of all fathers of a Part (all levels)
         """
-        self._packed = []
         rel_datas = []
         if len(res_ids) < 1:
             return None
@@ -204,7 +198,7 @@ class MrpBomExtension(models.Model):
                'bom_qty': mpr_bom_line_id.product_qty,
                'bom_line_id': mpr_bom_line_id.id,
                'bom_id': mpr_bom_line_id.bom_id.id}
-        out.update(self.where_used_headerP(product_id))
+        out.update(self.where_used_header_p(product_id))
         return out
 
     def where_used_header_p(self, product_id):
@@ -248,7 +242,6 @@ class MrpBomExtension(models.Model):
         """
             Returns a list of all children in a Bom (all levels)
         """
-        self._packed = []
         obj_id, _source_id, last_rev = values
         # get all ids of the children product in structured way like [[id,child_ids]]
         rel_datas = [obj_id, self._explode_bom(self._get_bom(obj_id), False, last_rev)]
@@ -309,7 +302,6 @@ class MrpBomExtension(models.Model):
             Return a list of all children in a Bom taken once (all levels)
         """
         comp_id, _source_id, latest_flag = values
-        self._packed = []
         prod_tmpl_id = self.get_tmplt_id_from_product_id(comp_id)
         bom_id = self._get_bom(prod_tmpl_id)
         explosed_bom_ids = self._explode_bom(bom_id, True, latest_flag)
@@ -322,7 +314,7 @@ class MrpBomExtension(models.Model):
         """
             Execute implosion for a a bom object
         """
-
+        _packed=[]
         def get_product_id(bom_local_obj):
             prod_id = bom_local_obj.product_id.id
             if not prod_id:
@@ -338,9 +330,9 @@ class MrpBomExtension(models.Model):
                 continue
             bom_obj = bom_line_obj.bom_id
             parent_bom_id = bom_obj.id
-            if parent_bom_id in self._packed:
+            if parent_bom_id in _packed:
                 continue
-            self._packed.append(parent_bom_id)
+            _packed.append(parent_bom_id)
             bom_fth_obj = bom_obj.with_context({})
             inner_ids = self._implode_bom(self._get_in_bom(get_product_id(bom_fth_obj)))
             prod_id = bom_fth_obj.product_id.id
@@ -361,7 +353,6 @@ class MrpBomExtension(models.Model):
         """
             Return a list of all fathers of a Part (all levels)
         """
-        self._packed = []
         rel_datas = []
         if len(res_ids) < 1:
             return None
@@ -380,7 +371,6 @@ class MrpBomExtension(models.Model):
         """
             Return a list of all children in a Bom ( level = 0 one level only, level = 1 all levels)
         """
-        self._packed = []
         result = []
         if level == 0 and curr_level > 1:
             return result
@@ -570,10 +560,10 @@ class MrpBomExtension(models.Model):
         if len(relations) < 1:  # no relation to save
             return False
 
-        parent_name, _parent_id, _child_name, _child_id, _source_id, rel_args = relations[0]
+        parent_name, _parent_id, _child_name, child_id, _source_id, rel_args = relations[0]
         if eco_module_installed is None:
             clean_old_eng_bom_lines(relations)
-        if not rel_args:  # Case of not children, so no more BOM for this product
+        if len(relations) == 1 and not child_id: # Case of not children, so no more BOM for this product
             return False
         bom_id = to_compute(parent_name, relations, kind_bom)
         clean_empty_boms()
@@ -594,10 +584,9 @@ class MrpBomExtension(models.Model):
             Evaluates net weight for assembly, based on product ID
         """
         if not (parent_bom_id is None) or parent_bom_id:
-            bom_obj = self.with_context({}).browse(parent_bom_id)
+            bom_obj = self.browse(parent_bom_id)
             self.env['product.product'].browse([bom_obj.product_id.id]).write({'weight': weight})
 
-    
     def rebase_bom_weight(self):
         """
             Evaluates net weight for assembly, based on BoM ID
@@ -608,8 +597,12 @@ class MrpBomExtension(models.Model):
             super(MrpBomExtension, bom_brws).write({'weight_net': weight})
         return weight
 
+    def read(self, fields=[], load='_classic_read'):
+        fields = self.plm_sanitize(fields)
+        return super(MrpBomExtension, self).read(fields=fields, load=load)
     
     def write(self, vals, check=True):
+        vals = self.plm_sanitize(vals)
         ret = super(MrpBomExtension, self).write(vals)
         for bom_brws in self:
             bom_brws.rebase_bom_weight()
@@ -617,6 +610,7 @@ class MrpBomExtension(models.Model):
 
     @api.model
     def create(self, vals):
+        vals = self.plm_sanitize(vals)
         ret = super(MrpBomExtension, self).create(vals)
         ret.rebase_bom_weight()
         return ret
@@ -660,13 +654,16 @@ class MrpBomExtension(models.Model):
             add children rows
         """
         if self.id and child_id and source_document_id:
+            cutted_type = 'none'
+            if relation_attributes.get('CUTTED_COMP'):
+                cutted_type = 'client'
             relation_attributes.update({'bom_id': self.id,
                                         'product_id': child_id,
                                         'source_id': source_document_id,
-                                        'type': bom_type})
-            self.env['mrp.bom.line'].create(relation_attributes).id
+                                        'type': bom_type,
+                                        'cutted_type': cutted_type})
+            return self.env['mrp.bom.line'].create(relation_attributes)
 
-      # Don't change me with @api.one or I don't work!!!
     def open_related_bom_lines(self):
         for bom_brws in self:
             def recursion(bom_brws_list):
@@ -716,12 +713,12 @@ class MrpBomExtension(models.Model):
             bomType = 'normal'
             if apps:
                 bomType = 'ebom'
-            parentOdooTuple, childrenOdooTuple = clientArgs
-            _state, parent_product_product_id, parent_ir_attachment_id = parentOdooTuple
+            parentOdooTuple, childrenOdooTuple  = clientArgs
+            l_tree_document_id, parent_product_product_id, parent_ir_attachment_id = parentOdooTuple
             parent_product_product_id = product_product.browse(parent_product_product_id)
             product_tmpl_id = parent_product_product_id.product_tmpl_id.id
             ir_attachment_relation.removeChildRelation(parent_ir_attachment_id)  # perform default unlink to HiTree, need to perform RfTree also
-            mrp_bom_found_id = False
+            mrp_bom_found_id = self.env['mrp.bom']
             for mrp_bom_id in self.search([('product_tmpl_id', '=', product_tmpl_id)]):
                 mrp_bom_found_id = mrp_bom_id
             if not mrp_bom_found_id:
@@ -731,18 +728,74 @@ class MrpBomExtension(models.Model):
                                                     'type': bomType})
             else:
                 mrp_bom_found_id.delete_child_row(parent_ir_attachment_id)
+            #
             # add rows
+            #
+            summarize_bom =  self.env.context.get('SUMMARIZE_BOM', False)
+            cache_row = {}
             for product_product_id, ir_attachment_id, relationAttributes in childrenOdooTuple:
-                if mrp_bom_found_id and not relationAttributes.get('EXCLUDE', False):
-                    mrp_bom_found_id.add_child_row(product_product_id,
-                                                   parent_ir_attachment_id,
-                                                   relationAttributes,
-                                                   bomType)
+                if mrp_bom_found_id and not relationAttributes.get('EXCLUDE', False) and product_product_id:
+                    key = "%s_%s" % (product_product_id, parent_ir_attachment_id)
+                    if summarize_bom and key in cache_row:
+                        cache_row[key].product_qty += relationAttributes.get('product_qty', 1)
+                    else:
+                        mrp_bom_line_id = mrp_bom_found_id.add_child_row(product_product_id,
+                                                                         parent_ir_attachment_id,
+                                                                         relationAttributes,
+                                                                         bomType)
+                        if summarize_bom:
+                            cache_row[key] = mrp_bom_line_id
                 link_kind = relationAttributes.get('link_kind', 'HiTree')
+                if relationAttributes.get('RAW_COMP'):
+                    link_kind = 'RfTree'
                 ir_attachment_relation.saveDocumentRelationNew(parent_ir_attachment_id,
                                                                ir_attachment_id,
                                                                link_kind=link_kind)
+                if l_tree_document_id and product_product_id:
+                    self.env['plm.component.document.rel'].createFromIds(self.env['product.product'].browse(product_product_id),
+                                                                         self.env['ir.attachment'].browse(l_tree_document_id))
+            if not mrp_bom_found_id.bom_line_ids:
+                mrp_bom_found_id.unlink()
             return True
         except Exception as ex:
             logging.error(ex)
             raise ex
+
+    def plm_sanitize(self, vals):
+        all_keys = self.fields_get_keys()
+        if isinstance(vals, dict):
+            valsKey = list(vals.keys())
+            for k in valsKey:
+                if k not in all_keys:
+                    del vals[k]
+            return vals
+        else:
+            out = []
+            for k in vals:
+                if k in all_keys:
+                    out.append(k)
+            return out
+
+    @api.model
+    def _bom_find(self, product_tmpl=None, product=None, picking_type=None, company_id=False, bom_type='normal'):
+        """ Finds BoM for particular product and product uom.
+        @param product_tmpl: Selected product.
+        @param product: Unit of measure of a product.
+        @return: False or BoM id.
+        """
+        obj_bom = super(MrpBomExtension, self)._bom_find(
+            product_tmpl=product_tmpl,
+            product=product,
+            picking_type=picking_type,
+            company_id=company_id
+        )
+        if obj_bom:
+            available_types = ['normal', 'phantom']
+            if obj_bom.type not in available_types:
+                available_types = [obj_bom.type]
+            return self.search([
+                ('product_id', '=', obj_bom.product_id.id),
+                ('product_tmpl_id', '=', obj_bom.product_tmpl_id.id),
+                ('type', 'in', available_types)
+            ], order='sequence, product_id', limit=1)
+        return obj_bom
