@@ -24,7 +24,6 @@ Created on Sep 7, 2019
 @author: mboscolo
 '''
 import logging
-import odoo.addons.decimal_precision as dp
 from odoo import models
 from odoo import fields
 from odoo import api
@@ -36,13 +35,13 @@ class PlmCadOpen(models.Model):
     _description = "Opens made by the client"
     _order = 'id DESC'
 
-    plm_backup_doc_id = fields.Many2one('plm.backupdoc', 'Backup Document Reference')
-    userid = fields.Many2one('res.users', _('Related User'))
-    document_id = fields.Many2one('ir.attachment', _('Related Document'))
+    plm_backup_doc_id = fields.Many2one('plm.backupdoc', 'Backup Document Reference', index=True)
+    userid = fields.Many2one('res.users', _('Related User'), index=True)
+    document_id = fields.Many2one('ir.attachment', _('Related Document'), index=True)
     rel_doc_rev = fields.Integer(related='document_id.revisionid', string="Revision", store=True)
     pws_path = fields.Char(_('PWS Path'))
     hostname = fields.Char(_('Hostname'))
-    operation_type = fields.Char(_('Operation Type'))
+    operation_type = fields.Char(_('Operation Type'), index=True)
 
     @api.model
     def getLastCadOpenByUser(self, doc_id, user_id):
@@ -52,3 +51,28 @@ class PlmCadOpen(models.Model):
             ], order='create_date DESC', limit=1):
             return plm_cad_open
         return self
+
+    @api.model
+    def run_clean_cad_open_bck_scheduler(self):
+        logging.info('Start Cad open Clean Scheduler')
+        rel_dict = {}
+        cad_open_ids = self.search(args=[], order='create_date desc')
+        for index, cad_open_id in enumerate(cad_open_ids):
+            if index % 1000 == 0:
+                self.env.cr.commit()
+            doc_id = cad_open_id.document_id.id
+            if doc_id not in rel_dict:
+                rel_dict[doc_id] = []
+            if cad_open_id.operation_type not in rel_dict[doc_id]:
+                rel_dict[doc_id].append(cad_open_id.operation_type)
+            else:
+                self.env['plm.cad.open.bck'].create({
+                    'plm_backup_doc_id': cad_open_id.plm_backup_doc_id.id,
+                    'userid': cad_open_id.userid.id,
+                    'document_id': cad_open_id.document_id.id,
+                    'pws_path': cad_open_id.pws_path,
+                    'hostname': cad_open_id.hostname,
+                    'operation_type': cad_open_id.operation_type,
+                    })
+                cad_open_id.unlink()
+        logging.info('End Cad open Clean Scheduler')
