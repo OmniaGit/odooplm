@@ -598,7 +598,24 @@
         <field name="perm_unlink" eval="0"/>
     </record>
 
+    <record id="plm_act_window_view" model="ir.model.access">
+        <field name="name">PLM Act Window</field>
+        <field name="model_id" ref="base.model_ir_actions_act_window"/>
+        <field name="group_id" ref="plm.group_plm_view_user"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="0"/>
+        <field name="perm_create" eval="0"/>
+        <field name="perm_unlink" eval="0"/>
+    </record>
 
-
+    <record id="plm_act_window_view_view" model="ir.model.access">
+        <field name="name">PLM Act Window View</field>
+        <field name="model_id" ref="base.model_ir_actions_act_window_view"/>
+        <field name="group_id" ref="plm.group_plm_view_user"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="0"/>
+        <field name="perm_create" eval="0"/>
+        <field name="perm_unlink" eval="0"/>
+    </record>
 
 </odoo>
