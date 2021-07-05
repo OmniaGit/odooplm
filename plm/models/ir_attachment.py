@@ -2189,7 +2189,7 @@ class PlmDocument(models.Model):
 
     def checkNewer(self):
         for document in self:
-            plm_cad_open = self.sudo().env['plm.cad.open'].getLastCadOpenByUser(document)
+            plm_cad_open = self.sudo().env['plm.cad.open'].getLastCadOpenByUser(document, self.env.user)
             last_bck = self.env['plm.backupdoc'].getLastBckDocumentByUser(document)
             if plm_cad_open.plm_backup_doc_id.id != last_bck.id:
                 return True
