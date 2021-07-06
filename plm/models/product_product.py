@@ -23,7 +23,7 @@ import logging
 from datetime import datetime
 import os
 import json
-
+import traceback
 from odoo import models
 from odoo import fields
 from odoo import api
@@ -933,6 +933,7 @@ class PlmComponent(models.Model):
                                         ('engineering_revision', '=', eng_rev)
                                         ])
             if prodBrwsList:
+                traceback.print_stack()
                 raise UserError('Component %r already exists' % (vals['engineering_code']))
         try:
             vals['is_engcode_editable'] = False
