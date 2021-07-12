@@ -933,8 +933,11 @@ class PlmComponent(models.Model):
                                         ('engineering_revision', '=', eng_rev)
                                         ])
             if prodBrwsList:
-                traceback.print_stack()
-                raise UserError('Component %r already exists' % (vals['engineering_code']))
+                try:
+                    raise UserError('Component %r already exists' % (vals['engineering_code']))
+                except Exception as ex:
+                    traceback.print_stack()
+                    raise UserError('Component %r already exists' % (vals['engineering_code']))
         try:
             vals['is_engcode_editable'] = False
             vals.update(self.checkMany2oneClient(vals))
