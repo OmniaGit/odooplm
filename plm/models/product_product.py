@@ -926,6 +926,7 @@ class PlmComponent(models.Model):
         if not name and eng_code:
             vals['name'] = eng_code
 
+        logging.info(vals)
         eng_rev = vals.get('engineering_revision', 0)
         eng_code = vals.get('engineering_code')
         if eng_code:
