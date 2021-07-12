@@ -937,7 +937,8 @@ class PlmComponent(models.Model):
                 try:
                     raise UserError('Component %r already exists' % (vals['engineering_code']))
                 except Exception as ex:
-                    traceback.print_stack()
+                    for line in traceback.format_stack():
+                        logging.info(line)
                     raise UserError('Component %r already exists test' % (vals['engineering_code']))
         try:
             vals['is_engcode_editable'] = False
