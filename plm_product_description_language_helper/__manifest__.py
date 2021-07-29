@@ -1,8 +1,7 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
-#    OmniaSolutions, Open Source Management Solution    
-#    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
+#    OmniaSolutions, Open Source Management Solution
+#    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>).
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -17,27 +16,21 @@
 #
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#http://www.spamhaus.org/query/bl?ip=93.66.161.145
+# http://www.spamhaus.org/query/bl?ip=93.66.161.145
 ##############################################################################
 {
-    'name': 'PLM Product Description Language Helper',
-    'version': '14.0.1',
-    'author': 'OmniaSolutions',
-    'website': 'http://www.omniasolutions.eu',
-    'category': 'Product Lifecycle Management',
-    'sequence': 15,
-    'summary': 'PLM Product Description Language Helper',
-    'images': [],
-    'license': 'AGPL-3',
-    'depends': ['plm'],
-    'description': """ """,
-    'data': ['views/translation.xml',
-             'views/plm_description_extension.xml'],
-    'demo': [],
-    'test': [],
-    'installable': True,
-    'application': False,
-    'auto_install': False,
+    "name": "PLM Product Description Language Helper",
+    "version": "14.0.1.0.0",
+    "author": "OmniaSolutions",
+    "website": "https://github.com/OmniaGit/odooplm",
+    "category": "Product Lifecycle Management",
+    "sequence": 15,
+    "summary": "PLM Product Description Language Helper",
+    "images": [],
+    "license": "AGPL-3",
+    "depends": ["plm"],
+    "data": ["views/translation.xml", "views/plm_description_extension.xml"],
+    "installable": True,
+    "application": False,
+    "auto_install": False,
 }
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

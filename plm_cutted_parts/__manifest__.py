@@ -1,7 +1,7 @@
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution
-#    Copyright (C) 2010-2019 OmniaSolutions (<https://www.omniasolutions.website>). All Rights Reserved
+#    Copyright (C) 2010-2019 OmniaSolutions (<https://www.omniasolutions.website>).
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -19,29 +19,25 @@
 #
 ##############################################################################
 {
-    'name': 'PLM Cutted Parts',
-    'version': '14.0.1',
-    'author': 'OmniaSolutions',
-    'website': 'https://www.omniasolutions.website',
-    'category': 'Product Lifecycle Management',
-    'sequence': 15,
-    'summary': '',
-    'images': [],
-    'license': 'AGPL-3',
-    'depends': ['plm', 'plm_engineering'],
-    'description': """
-Manage bom explosion for cutted parts
-==============================================
-    """,
-    'data': [
-        'views/product.xml',
-        'views/mrp_bom_lines.xml',
-        'report/mrp_bom.xml',
-        'security/base_plm_security.xml',
+    "name": "PLM Cutted Parts",
+    "version": "14.0.1.0.0",
+    "author": "OmniaSolutions",
+    "website": "https://github.com/OmniaGit/odooplm",
+    "category": "Product Lifecycle Management",
+    "sequence": 15,
+    "summary": "Manage bom explosion for cutted parts",
+    "images": [],
+    "license": "AGPL-3",
+    "depends": ["plm", "plm_engineering"],
+    "data": [
+        "views/product.xml",
+        "views/mrp_bom_lines.xml",
+        "report/mrp_bom.xml",
+        "security/base_plm_security.xml",
     ],
-    'demo': [],
-    'test': [],
-    'installable': True,
-    'application': False,
-    'auto_install': False,
+    "demo": [],
+    "test": [],
+    "installable": True,
+    "application": False,
+    "auto_install": False,
 }

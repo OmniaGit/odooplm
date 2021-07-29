@@ -1,8 +1,7 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution
-#    Copyright (C) 2010-2019 OmniaSolutions (<https://www.omniasolutions.website>). All Rights Reserved
+#    Copyright (C) 2010-2019 OmniaSolutions (<https://www.omniasolutions.website>).
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -20,32 +19,26 @@
 #
 ##############################################################################
 {
-    'name': 'PLM Date Bom',
-    'version': '14.0.1',
-    'author': 'OmniaSolutions',
-    'license': 'AGPL-3',
-    'website': 'https://www.omniasolutions.website',
-    'category': 'Product Lifecycle Management',
-    'sequence': 15,
-    'summary': '',
-    'images': [],
-    'depends': ['plm'],
-    'description': """
-Allow to compute boms due to date
-==============================================
-    """,
-    'data': [# security
-             'security/plm_security.xml',
-             # views
-             'views/mrp_bom_extension.xml',
-             'views/data.xml',
-             #'report/bom_structure_report_extension.xml',
+    "name": "PLM Date Bom",
+    "version": "14.0.1.0.0",
+    "author": "OmniaSolutions",
+    "license": "AGPL-3",
+    "website": "https://github.com/OmniaGit/odooplm",
+    "category": "Product Lifecycle Management",
+    "sequence": 15,
+    "summary": "Allow to compute boms due to date",
+    "images": [],
+    "depends": ["plm"],
+    "data": [  # security
+        "security/plm_security.xml",
+        # views
+        "views/mrp_bom_extension.xml",
+        "views/data.xml",
+        # 'report/bom_structure_report_extension.xml',
     ],
-    'demo': [],
-    'test': [],
-    'installable': True,
-    'application': False,
-    'auto_install': False,
+    "demo": [],
+    "test": [],
+    "installable": True,
+    "application": False,
+    "auto_install": False,
 }
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
