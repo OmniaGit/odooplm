@@ -223,7 +223,14 @@ class PlmComponent(models.Model):
                         mrpBomLine.bom_id.get_where_used_structure(filterBomType)))
         return out
 
-
+    @api.model
+    def getLatestReleasedRevision(self):
+        for product_id in self.search([('engineering_code', '=', self.engineering_code)], order="engineering_code desc"):
+            if product_id.id != self.id:
+                if product_id.state in ['released', 'undermodifie']:
+                    return product_id
+        return self
+    
 #   Internal methods
     def _packfinalvalues(self, fmt, value=False, value2=False, value3=False):
         """
