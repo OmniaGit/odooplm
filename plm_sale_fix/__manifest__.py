@@ -1,7 +1,7 @@
 ##############################################################################
 #
-#    OmniaSolutions, Open Source Management Solution    
-#    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
+#    OmniaSolutions, Open Source Management Solution
+#    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>).
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -19,26 +19,23 @@
 #
 ##############################################################################
 {
-    'name': 'Plm Sale Fix',
-    'version': '14.0.1',
-    'author': 'OmniaSolutions',
-    'website': 'http://www.omniasolutions.eu',
-    'category': 'Product Lifecycle Management',
-    'sequence': 15,
-    'license': 'AGPL-3',
-    'summary': '',
-    'images': [],
-    'depends': ['plm', 'sale'],
-    'description': """
-    """,
-    'data': [
+    "name": "Plm Sale Fix",
+    "version": "14.0.1.0.0",
+    "author": "OmniaSolutions",
+    "website": "https://github.com/OmniaGit/odooplm",
+    "category": "Product Lifecycle Management",
+    "sequence": 15,
+    "license": "AGPL-3",
+    "summary": "",
+    "images": [],
+    "depends": ["plm", "sale"],
+    "data": [
         # security
-        'security/base_plm_security.xml',
+        "security/base_plm_security.xml",
     ],  # After component_report.xml
-
-    'demo': [],
-    'test': [],
-    'installable': True,
-    'application': False,
-    'auto_install': False,
+    "demo": [],
+    "test": [],
+    "installable": True,
+    "application": False,
+    "auto_install": False,
 }

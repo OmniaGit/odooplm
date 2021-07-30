@@ -1,8 +1,7 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution
-#    Copyright (C) 2010-2019 OmniaSolutions (<https://www.omniasolutions.website>). All Rights Reserved
+#    Copyright (C) 2010-2019 OmniaSolutions (<https://www.omniasolutions.website>).
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -20,33 +19,24 @@
 #
 ##############################################################################
 {
-    'name': 'Product Lifecycle Management Batch conversion',
-    'version': '14.0.1',
-    'author': 'OmniaSolutions',
-    'website': 'https://www.omniasolutions.website',
-    'category': 'Product Lifecycle Management',
-    'sequence': 15,
-    'license': 'AGPL-3',
-    'summary': 'PLM Integration with main CAD editors batch conversion tool',
-    'depends': ['plm'],
-    'description': """
-Manage Product Lifecycle Management in OpenERP
-==============================================
-Batch conversion tool
-Improve the plm module adding feature for converting cad files in different formats using a cad server machine
-in order to properly set this module you need a cad server machine.
-for more information send an e mail at info@omniasolutions.eu
-    """,
-    'data': [# security
-             'security/plm_security.xml',
-             # views
-             'view/plm_component_action_extended.xml',
-             'view/data.xml'],
-    'demo': [],
-    'test': [],
-    'installable': True,
-    'application': False,
-    'auto_install': False,
+    "name": "Product Lifecycle Management Batch conversion",
+    "version": "14.0.1.0.0",
+    "author": "OmniaSolutions",
+    "website": "https://github.com/OmniaGit/odooplm",
+    "category": "Product Lifecycle Management",
+    "sequence": 15,
+    "license": "AGPL-3",
+    "summary": "PLM Integration with main CAD editors batch conversion tool",
+    "depends": ["plm"],
+    "data": [  # security
+        "security/plm_security.xml",
+        # views
+        "view/plm_component_action_extended.xml",
+        "view/data.xml",
+    ],
+    "demo": [],
+    "test": [],
+    "installable": True,
+    "application": False,
+    "auto_install": False,
 }
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -1,8 +1,7 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution
-#    Copyright (C) 2010-2019 OmniaSolutions (<https://www.omniasolutions.website>). All Rights Reserved
+#    Copyright (C) 2010-2019 OmniaSolutions (<https://www.omniasolutions.website>).
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -20,30 +19,23 @@
 #
 ##############################################################################
 {
-    'name': 'PLM Client Custom Procedure',
-    'version': '14.0.1',
-    'author': 'OmniaSolutions',
-    'website': 'https://www.omniasolutions.website',
-    'category': 'Product Lifecycle Management',
-    'sequence': 15,
-    'summary': 'PLM Client Custom Procedure',
-    'images': [],
-    'license': 'AGPL-3',
-    'depends': ['plm'],
-    'description': """ 
-    Allow to use custom client properties mapping
-    """,
-    'data': [
-        'views/res_users.xml',
-        'views/res_groups.xml',
-       ],
-    'demo': [
-        ],
-    'test': [
-        ],
-    'installable': True,
-    'application': False,
-    'auto_install': False,
+    "name": "PLM Client Custom Procedure",
+    "version": "14.0.1.0.0",
+    "author": "OmniaSolutions",
+    "website": "https://github.com/OmniaGit/odooplm",
+    "category": "Product Lifecycle Management",
+    "sequence": 15,
+    "summary": "PLM Client Custom Procedure",
+    "images": [],
+    "license": "AGPL-3",
+    "depends": ["plm"],
+    "data": [
+        "views/res_users.xml",
+        "views/res_groups.xml",
+    ],
+    "demo": [],
+    "test": [],
+    "installable": True,
+    "application": False,
+    "auto_install": False,
 }
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
