@@ -92,7 +92,7 @@ Supported Editors :
             'views/ir_config_parameter.xml',
             'views/ir_cron.xml',
             'views/plm_cad_open.xml',
-            #  'views/product_product_kanban.xml',
+            'views/plm_cad_open_bck.xml',
             'views/sequence.xml',
             'views/menu.xml',
             # Reports Template

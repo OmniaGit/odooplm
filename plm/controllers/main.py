@@ -82,7 +82,8 @@ class UploadDocument(Controller):
 
     @route('/plm_document_upload/download', type='http', auth='user', methods=['GET'])
     @webservice
-    def download(self, requestvals, **kw):
+    def download(self, requestvals='[[],[],-1]', **kw):
+        logging.info('Download with arguments %r kw %r' % (requestvals, kw))
         if not requestvals:
             logging.info('No file requests to download')
             return Response([], status=200)

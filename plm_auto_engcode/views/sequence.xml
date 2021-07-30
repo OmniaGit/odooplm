@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
 
-    <data>
-
+    <data noupdate="1">
         <record id="seq_plm_eng_code" model="ir.sequence">
             <field name="name">PLM Engineering Code Sequence</field>
             <field name="code">plm.eng.code</field>
