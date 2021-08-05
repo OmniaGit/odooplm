@@ -124,14 +124,17 @@ class UploadDocument(Controller):
     @route('/plm_document_upload/zip_archive', type='http', auth='user', methods=['POST'], csrf=False)
     @webservice
     def upload_zip(self, attachment_id=None, filename='', **kw):
-        logging.info('start upload %r' % (attachment_id))
+        logging.info('start upload zip %r' % (attachment_id))
         if attachment_id:
             attachment_id = json.loads(attachment_id)
             value1 = kw.get('file_stream').stream.read()
             from_ir_attachment_id = request.env['ir.attachment'].browse(attachment_id)
             zip_name, _zipExtention = os.path.splitext(filename)
-            zip_ir_attachment_id  = request.env['ir.attachment'].search([('engineering_document_name',  '=', zip_name),
-                                                                         ('revisionid', '=', from_ir_attachment_id.revisionid)])
+            zip_ir_attachment_id  = request.env['ir.attachment'].search([('engineering_document_name',  'in', [zip_name, filename]),
+                                                                         ('revisionid', '=', from_ir_attachment_id.revisionid),
+                                                                         ('document_type', '=', 'other'),
+                                                                         ('name', '=', filename)
+                                                                         ])
             to_write = {'datas': base64.b64encode(value1),
                         'name': filename,
                         'engineering_document_name': zip_name,
@@ -143,8 +146,13 @@ class UploadDocument(Controller):
             contex_brw = request.env['ir.attachment'].with_context(new_context)
             to_write['is_plm'] = True
             if not zip_ir_attachment_id:
+                if from_ir_attachment_id.engineering_document_name == zip_name:
+                    to_write['engineering_document_name'] = filename
                 zip_ir_attachment_id  = contex_brw.create(to_write)
             else:
+                del to_write['name']
+                del to_write['engineering_document_name']
+                del to_write['revisionid']
                 zip_ir_attachment_id.with_context(new_context).write(to_write)
                 link_id = link_id.search([('parent_id', '=', from_ir_attachment_id.id),
                                           ('child_id', '=', zip_ir_attachment_id.id),
