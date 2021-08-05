@@ -1,7 +1,7 @@
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution
-#    Copyright (C) 2010-2019 OmniaSolutions (<https://www.omniasolutions.website>). All Rights Reserved
+#    Copyright (C) 2010-2019 OmniaSolutions (<https://www.omniasolutions.website>).
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -19,24 +19,20 @@
 #
 ##############################################################################
 {
-    'name': 'PLM Auto Internal Reference',
-    'version': '14.0.1',
-    'author': 'OmniaSolutions',
-    'website': 'http://www.omniasolutions.website',
-    'category': 'Product Lifecycle Management',
-    'sequence': 15,
-    'license': 'AGPL-3',
-    'summary': '',
-    'images': [],
-    'depends': ['plm'],
-    'description': """
-Allow to compute boms due to date
-==============================================
-    """,
-    'data': ['views/product_product.xml'],
-    'demo': [],
-    'test': [],
-    'installable': True,
-    'application': False,
-    'auto_install': False,
+    "name": "PLM Auto Internal Reference",
+    "version": "14.0.1.0.0",
+    "author": "OmniaSolutions",
+    "website": "https://github.com/OmniaGit/odooplm",
+    "category": "Product Lifecycle Management",
+    "sequence": 15,
+    "license": "AGPL-3",
+    "summary": "Allow to compute boms due to date",
+    "images": [],
+    "depends": ["plm"],
+    "data": ["views/product_product.xml"],
+    "demo": [],
+    "test": [],
+    "installable": True,
+    "application": False,
+    "auto_install": False,
 }

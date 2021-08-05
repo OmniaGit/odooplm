@@ -1,8 +1,7 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
-#    OmniaSolutions, Open Source Management Solution    
-#    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
+#    OmniaSolutions, Open Source Management Solution
+#    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>).
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -20,29 +19,24 @@
 #
 ##############################################################################
 {
-    'name': 'Plm Pack and Go',
-    'version': '14.0.1',
-    'author': 'OmniaSolutions',
-    'website': 'http://www.omniasolutions.eu',
-    'category': 'Product Lifecycle Management',
-    'sequence': 15,
-    'summary': '',
-    'license': 'AGPL-3',
-    'images': [],
-    'depends': ['plm'],
-    'description': """
-Download BOM structure files from a component
-==============================================
-    """,
-    'data': [# security
-             'security/plm_security.xml',
-             # views'views/plm_component_action_extended.xml',
-             'views/ir_parameters.xml'],
-    'demo': [],
-    'test': [],
-    'installable': True,
-    'application': False,
-    'auto_install': False,
+    "name": "Plm Pack and Go",
+    "version": "14.0.1.0.0",
+    "author": "OmniaSolutions",
+    "website": "https://github.com/OmniaGit/odooplm",
+    "category": "Product Lifecycle Management",
+    "sequence": 15,
+    "summary": "Download BOM structure files from a component",
+    "license": "AGPL-3",
+    "images": [],
+    "depends": ["plm"],
+    "data": [  # security
+        "security/plm_security.xml",
+        # views'views/plm_component_action_extended.xml',
+        "views/ir_parameters.xml",
+    ],
+    "demo": [],
+    "test": [],
+    "installable": True,
+    "application": False,
+    "auto_install": False,
 }
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

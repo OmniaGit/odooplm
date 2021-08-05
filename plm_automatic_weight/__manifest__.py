@@ -1,7 +1,7 @@
 ##############################################################################
 #
-#    OmniaSolutions, Open Source Management Solution    
-#    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
+#    OmniaSolutions, Open Source Management Solution
+#    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>).
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -19,27 +19,24 @@
 #
 ##############################################################################
 {
-    'name': 'PLM Automatic Weight',
-    'version': '14.0.1',
-    'author': 'OmniaSolutions',
-    'website': 'http://www.omniasolutions.eu',
-    'category': 'Product Lifecycle Management',
-    'sequence': 15,
-    'summary': 'PLM Weight Automatic Calculation',
-    'images': [],
-    'depends': ['plm'],
-    'license': 'AGPL-3',
-    'description': """ """,
-    'data': [
-        'settings_and_data/datas.xml',
-        'views/component_extension.xml',
-        'views/bom_extension.xml',
+    "name": "PLM Automatic Weight",
+    "version": "14.0.1.0.0",
+    "author": "OmniaSolutions",
+    "website": "https://github.com/OmniaGit/odooplm",
+    "category": "Product Lifecycle Management",
+    "sequence": 15,
+    "summary": "PLM Weight Automatic Calculation",
+    "images": [],
+    "depends": ["plm"],
+    "license": "AGPL-3",
+    "data": [
+        "settings_and_data/datas.xml",
+        "views/component_extension.xml",
+        "views/bom_extension.xml",
     ],
-    'demo': [
-    ],
-    'test': [
-    ],
-    'installable': True,
-    'application': False,
-    'auto_install': False,
+    "demo": [],
+    "test": [],
+    "installable": True,
+    "application": False,
+    "auto_install": False,
 }

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, ERP-PLM-CAD Open Source Solution
@@ -19,28 +18,24 @@
 #
 ##############################################################################
 {
-    'name': 'PLM Document Syncronization',
-    'version': '14.0.1',
-    'author': 'OmniaSolutions',
-    'website': 'https://www.omniasolutions.website',
-    'category': 'Product Lifecycle Management',
-    'sequence': 15,
-    'license': 'AGPL-3',
-    'summary': 'PLM document server syncronization',
-    'images': [],
-    'depends': ['plm'],
-    'description': """This modules allows you the synchronization with multi site with slow network connection
-                    in order to make it work you also need a special server.
-                    ask www.omniasolutions.website for itB""",
-    'data': ['views/ir_attachment.xml',
-             'views/plm_remote_server.xml',
-             'views/plm_document_action_syncronize.xml',
-             'data/server_action.xml',
-             'security/base_plm_web_rev_security.xml',
-             ],
-    'installable': True,
-    'application': False,
-    'auto_install': False,
+    "name": "PLM Document Syncronization",
+    "version": "14.0.1.0.0",
+    "author": "OmniaSolutions",
+    "website": "https://github.com/OmniaGit/odooplm",
+    "category": "Product Lifecycle Management",
+    "sequence": 15,
+    "license": "AGPL-3",
+    "summary": "PLM document server syncronization",
+    "images": [],
+    "depends": ["plm"],
+    "data": [
+        "views/ir_attachment.xml",
+        "views/plm_remote_server.xml",
+        "views/plm_document_action_syncronize.xml",
+        "data/server_action.xml",
+        "security/base_plm_web_rev_security.xml",
+    ],
+    "installable": True,
+    "application": False,
+    "auto_install": False,
 }
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
