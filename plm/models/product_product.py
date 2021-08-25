@@ -374,6 +374,7 @@ class PlmComponent(models.Model):
                 if bomid.type != bom_type:
                     continue
             for bomline in bomid.bom_line_ids:
+                logging.info('bomline.product_id %r' % (bomline.product_id))
                 children = self._getChildrenBom(component=bomline.product_id,
                                                 level=level,
                                                 currlevel=currlevel + 1,
