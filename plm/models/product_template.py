@@ -99,6 +99,24 @@ class ProductTemplateExtension(models.Model):
         ('partnumber_uniq', 'unique (engineering_code,engineering_revision)', _('Part Number has to be unique!'))
     ]
 
+    def isLastVersion(self):
+        for tempate_id in self:
+            if tempate_id.id in tempate_id._getlastrev():
+                return True
+            return False
+        
+        
+    def _getlastrev(self):
+        result = []
+        for product_template_id in self:
+            product_template_ids = self.search([('engineering_code', '=', product_template_id.engineering_code)], order='engineering_revision DESC')
+            for prod in product_template_ids:
+                result.append(prod.id)
+                break
+            if not product_template_ids:
+                logging.warning('[_getlastrev] No Product are found for object with engineering_code: "%s"' % (product_template_id.engineering_code))
+        return list(set(result))  
+        
     def _compute_eng_code_editable(self):
         for productBrws in self:
             if productBrws.engineering_code in ['', False, '-']:
