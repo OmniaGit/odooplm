@@ -1,8 +1,7 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
-#    OmniaSolutions, Open Source Management Solution    
-#    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
+#    OmniaSolutions, Open Source Management Solution
+#    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>).
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -20,24 +19,22 @@
 #
 ##############################################################################
 {
-    'name': 'PLM Web Revision',
-    'version': '14.0.1',
-    'author': 'OmniaSolutions',
-    'website': 'https://www.omniasolutions.website',
-    'category': 'Product Lifecycle Management',
-    'sequence': 15,
-    'license': 'AGPL-3',
-    'summary': 'PLM Revision from web side',
-    'images': [],
-    'depends': ['plm'],
-    'description': """Allow to create new revision from WEB""",
-    'data': ['views/component_view_extension.xml',
-             'views/ir_attachment_extension.xml',
-             'security/base_plm_web_rev_security.xml',
-             ],
-    'installable': True,
-    'application': False,
-    'auto_install': False,
+    "name": "PLM Web Revision",
+    "version": "14.0.1.0.0",
+    "author": "OmniaSolutions",
+    "website": "https://github.com/OmniaGit/odooplm",
+    "category": "Product Lifecycle Management",
+    "sequence": 15,
+    "license": "AGPL-3",
+    "summary": "PLM Revision from web side",
+    "images": [],
+    "depends": ["plm"],
+    "data": [
+        "views/component_view_extension.xml",
+        "views/ir_attachment_extension.xml",
+        "security/base_plm_web_rev_security.xml",
+    ],
+    "installable": True,
+    "application": False,
+    "auto_install": False,
 }
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

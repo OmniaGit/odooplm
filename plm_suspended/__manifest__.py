@@ -1,7 +1,7 @@
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution
-#    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
+#    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>).
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -19,28 +19,24 @@
 #
 ##############################################################################
 {
-    'name': 'PLM Suspended State',
-    'version': '14.0.1',
-    'author': 'OmniaSolutions',
-    'website': 'http://www.omniasolutions.eu',
-    'category': 'Product Lifecycle Management',
-    'sequence': 15,
-    'license': 'AGPL-3',
-    'summary': '',
-    'images': [],
-    'depends': ['mrp', 'plm'],
-    'description': """
-Add obsolete status to the work flow
-==============================================
-    """,
-    'data': [
+    "name": "PLM Suspended State",
+    "version": "14.0.1.0.0",
+    "author": "OmniaSolutions",
+    "website": "https://github.com/OmniaGit/odooplm",
+    "category": "Product Lifecycle Management",
+    "sequence": 15,
+    "license": "AGPL-3",
+    "summary": "Add obsolete status to the work flow",
+    "images": [],
+    "depends": ["mrp", "plm"],
+    "data": [
         # views
-        'views/plm_product_view.xml',
-        'views/ir_attachment_view.xml',
+        "views/plm_product_view.xml",
+        "views/ir_attachment_view.xml",
     ],
-    'demo': [],
-    'test': [],
-    'installable': True,
-    'application': False,
-    'auto_install': False,
+    "demo": [],
+    "test": [],
+    "installable": True,
+    "application": False,
+    "auto_install": False,
 }

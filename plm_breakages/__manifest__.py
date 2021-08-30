@@ -1,7 +1,7 @@
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
-#    Copyright (C) 2020 OmniaSolutions (<https://omniasolutions.website>). All Rights Reserved
+#    Copyright (C) 2020 OmniaSolutions (<https://omniasolutions.website>).
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -23,25 +23,20 @@
 # 23-06-2020
 
 {
-    'name': "PLM Breakages",
-    'version': '14.0.1',
-    'author': 'OmniaSolutions',
-    'website': 'https://www.omniasolutions.website',
-    'category': 'Custom',
-    'license': 'AGPL-3',
-    'summary': 'PLM Breakages',
-    'description': """PLM Breakages""",
-    
-    'depends': ['base',
-                'product', 
-                'plm'],
-    #'installable': False,
-    'data': [
+    "name": "PLM Breakages",
+    "version": "14.0.1.0.0",
+    "author": "OmniaSolutions",
+    "website": "https://github.com/OmniaGit/odooplm",
+    "category": "Custom",
+    "license": "AGPL-3",
+    "summary": "PLM Breakages",
+    "depends": ["base", "product", "plm"],
+    "data": [
         # Security
-        'security/base_plm_security.xml',
+        "security/base_plm_security.xml",
         # Views
-        'views/breakages_view.xml',
-        'views/product_view.xml',
-        'views/bom_view.xml'
+        "views/breakages_view.xml",
+        "views/product_view.xml",
+        "views/bom_view.xml",
     ],
 }

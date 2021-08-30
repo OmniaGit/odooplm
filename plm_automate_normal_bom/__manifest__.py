@@ -1,8 +1,7 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution
-#    Copyright (C) 2010-2019 OmniaSolutions (<https://www.omniasolutions.website>). All Rights Reserved
+#    Copyright (C) 2010-2019 OmniaSolutions (<https://www.omniasolutions.website>).
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -20,28 +19,22 @@
 #
 ##############################################################################
 {
-    'name': 'PLM Automate Normal Bom',
-    'version': '14.0.1',
-    'author': 'OmniaSolutions',
-    'website': 'https://www.omniasolutions.website',
-    'category': 'Product Lifecycle Management',
-    'sequence': 15,
-    'summary': '',
-    'license': 'AGPL-3',
-    'images': [],
-    'depends': ['plm', 'plm_engineering'],
-    'description': """
-Allow to create normal boms if not exists and product are released.
-==============================================
-    """,
-    'data': [
-            'views/settings.xml',
+    "name": "PLM Automate Normal Bom",
+    "version": "14.0.1.0.0",
+    "author": "OmniaSolutions",
+    "website": "https://github.com/OmniaGit/odooplm",
+    "category": "Product Lifecycle Management",
+    "sequence": 15,
+    "summary": "Allow to create normal boms if not exists and product are released.",
+    "license": "AGPL-3",
+    "images": [],
+    "depends": ["plm", "plm_engineering"],
+    "data": [
+        "views/settings.xml",
     ],
-    'demo': [],
-    'test': [],
-    'installable': True,
-    'application': False,
-    'auto_install': False,
+    "demo": [],
+    "test": [],
+    "installable": True,
+    "application": False,
+    "auto_install": False,
 }
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

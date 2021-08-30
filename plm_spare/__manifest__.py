@@ -1,7 +1,7 @@
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution
-#    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
+#    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>).
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -19,34 +19,29 @@
 #
 ##############################################################################
 {
-    'name': 'PLM Spare',
-    'version': '14.0.1',
-    'author': 'OmniaSolutions',
-    'website': 'http://www.omniasolutions.eu',
-    'category': 'Product Lifecycle Management',
-    'sequence': 15,
-    'license': 'AGPL-3',
-    'summary': '',
-    'images': [],
-    'depends': ['plm'],
-    'description': """
-Add spare BOM and Spare Parts Manual
-==============================================
-    """,
-    'data': [
+    "name": "PLM Spare",
+    "version": "14.0.1.0.0",
+    "author": "OmniaSolutions",
+    "website": "https://github.com/OmniaGit/odooplm",
+    "category": "Product Lifecycle Management",
+    "sequence": 15,
+    "license": "AGPL-3",
+    "summary": "Add spare BOM and Spare Parts Manual",
+    "images": [],
+    "depends": ["plm"],
+    "data": [
         # views
-        'views/plm_description_extension.xml',
-        'views/sparebom_view.xml',
-        'views/ir_attachment_view.xml',
+        "views/plm_description_extension.xml",
+        "views/sparebom_view.xml",
+        "views/ir_attachment_view.xml",
         # 'views/product_product_kanban.xml',
         # reporting
-        'report/bom_structure_report.xml',
-        'report/product_product_report.xml',
-
+        "report/bom_structure_report.xml",
+        "report/product_product_report.xml",
     ],
-    'demo': [],
-    'test': [],
-    'installable': True,
-    'application': False,
-    'auto_install': False,
+    "demo": [],
+    "test": [],
+    "installable": True,
+    "application": False,
+    "auto_install": False,
 }

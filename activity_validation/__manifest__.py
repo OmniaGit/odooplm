@@ -1,9 +1,7 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution
-#    Copyright (C) 2010-2019 OmniaSolutions (<https://www.omniasolutions.website>). All Rights Reserved
-#    $Id$
+#    Copyright (C) 2010-2019 OmniaSolutions (<https://www.omniasolutions.website>).
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -20,36 +18,34 @@
 #
 ##############################################################################
 {
-    'name': 'Activity Validation',
-    'version': '14.0.1',
-    'author': 'OmniaSolutions',
-    'website': 'https://www.omniasolutions.website',
-    'category': 'Custom',
-    'sequence': 1,
-    'summary': '',
-    'depends': ['mail',
-                'plm',
+    "name": "Activity Validation",
+    "version": "14.0.1.0.0",
+    "author": "OmniaSolutions",
+    "website": "https://github.com/OmniaGit/odooplm",
+    "category": "Custom",
+    "sequence": 1,
+    "summary": "",
+    "depends": [
+        "mail",
+        "plm",
     ],
-    'license': 'AGPL-3',
-    'description': '',
-    'data': [
+    "license": "AGPL-3",
+    "data": [
         # security
-        'security/security.xml',
+        "security/security.xml",
         # data
-        'data/mail_activity_data.xml',
+        "data/mail_activity_data.xml",
         # views
-        'views/mail_activity_type.xml',
-        'views/mail_activity.xml',
-        'views/mail_activity_children_rel.xml',
+        "views/mail_activity_type.xml",
+        "views/mail_activity.xml",
+        "views/mail_activity_children_rel.xml",
         # static
-        'static/src/xml/import_js.xml',
+        "static/src/xml/import_js.xml",
     ],
-    'demo': [],
-    'test': [],
-    'qweb': ['static/src/xml/*.xml'],
-    'installable': True,
-    'application': False,
-    'auto_install': False,
+    "demo": [],
+    "test": [],
+    "qweb": ["static/src/xml/*.xml"],
+    "installable": True,
+    "application": False,
+    "auto_install": False,
 }
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

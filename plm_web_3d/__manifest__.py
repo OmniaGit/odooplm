@@ -1,7 +1,7 @@
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution
-#    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
+#    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>).
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -19,31 +19,25 @@
 #
 ##############################################################################
 {
-    'name': 'PLM Web 3d Support',
-    'version': '14.0.1',
-    'author': 'OmniaSolutions',
-    'website': 'http://www.omniasolutions.eu',
-    'category': 'Product Lifecycle Management',
-    'sequence': 15,
-    'license': 'AGPL-3',
-    'summary': '',
-    'images': [],
-    'depends': ['plm'],
-    'description': """
-This module allows you to rendere the 3d sean in the odoo web interface using treejs
-====================================================================================
-    """,
-    'data': [
+    "name": "PLM Web 3d Support",
+    "version": "14.0.1.0.0",
+    "author": "OmniaSolutions",
+    "website": "https://github.com/OmniaGit/odooplm",
+    "category": "Product Lifecycle Management",
+    "sequence": 15,
+    "license": "AGPL-3",
+    "summary": "",
+    "images": [],
+    "depends": ["plm"],
+    "data": [
         # views
-        'views/ir_attachment.xml',
-        'views/web_template.xml'
+        "views/ir_attachment.xml",
+        "views/web_template.xml",
     ],
-    'qweb': [
-        
-    ],
-    'demo': [],
-    'test': [],
-    'installable': True,
-    'application': False,
-    'auto_install': False,
+    "qweb": [],
+    "demo": [],
+    "test": [],
+    "installable": True,
+    "application": False,
+    "auto_install": False,
 }
