@@ -39,6 +39,15 @@ from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 class MrpProduction(models.Model):
     _inherit = 'mrp.production'      
 
+    show_new_version = fields.Boolean("Internal field for showing message", compute="_getShowNewVersion")
+    
+    def _getShowNewVersion(self):
+        """
+        """
+        for mrp_production in self:
+            mrp_production.show_new_version = not mrp_production.product_id.product_tmpl_id.isLastVersion()
+        
+    
     def update_row_line_form_bom(self):
         for mrp_production_id in self:
             if mrp_production_id.state in ['draft', 'confirmed', 'planned', 'progress']:
@@ -46,17 +55,26 @@ class MrpProduction(models.Model):
                 if new_product_id.id != mrp_production_id.product_id.id:
                     product_done_qty = {}
                     for move_line_id in mrp_production_id.move_raw_ids + mrp_production_id.move_finished_ids:
+                        move_line_id.exists()
                         product_done_qty[move_line_id.product_id.engineering_code] = move_line_id.quantity_done
                         try:
-                            move_line_id.action_cancel()
-                            move_line_id.unlink()
+                            move_line_id._action_cancel()
+                            move_line_id.action_archive()
                         except Exception as ex:
                             logging.warning("Unable to perform action_cancel confirm and reserve the product")
-                            move_line_id.confirm_and_reverse()    
+                            move_line_id.confirm_and_reverse()
+         
                     mrp_production_id.product_id = new_product_id.id 
                     mrp_production_id.message_post(body="Product and BOM Updated by procedure [%s, %s]" % (new_product_id.engineering_code, new_product_id.engineering_revision))
                     mrp_production_id.onchange_product_id()
-                    mrp_production_id._generate_moves()
+                    mrp_production_id._onchange_bom_id()
+                    mrp_production_id._onchange_location()
+                    mrp_production_id._onchange_location_dest()
+                    mrp_production_id._onchange_move_finished()
+                    mrp_production_id._onchange_move_raw()
+                    mrp_production_id._onchange_workorder_ids()
+                    
+                    #mrp_production_id._generate_moves()
                     for move_line_id in mrp_production_id.move_raw_ids + mrp_production_id.move_finished_ids:
                         if move_line_id.product_id.engineering_code in product_done_qty:
                             move_line_id.quantity_done = product_done_qty[move_line_id.product_id.engineering_code]
