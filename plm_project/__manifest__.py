@@ -32,6 +32,8 @@
     "data": [
         "views/project.xml",
         "views/product.xml",
+        "views/project_task.xml",
+        "views/mail_activity_type.xml",
     ],
     "demo": [],
     "test": [],

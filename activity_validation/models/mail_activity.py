@@ -88,14 +88,16 @@ class MailActivity(models.Model):
 
     def action_done(self):
         ret = super(MailActivity, self).action_done()
-        self.checkConfirmed()
-        self.plm_state = 'finished'
+        if self.exists():
+            self.checkConfirmed()
+            self.plm_state = 'finished'
         return ret
 
     def action_done_schedule_next(self):
         ret = super(MailActivity, self).action_done_schedule_next()
-        self.checkConfirmed()
-        self.plm_state = 'finished'
+        if self.exists():
+            self.checkConfirmed()
+            self.plm_state = 'finished'
         return ret
 
     def activity_format(self):
@@ -173,3 +175,7 @@ class MailActivity(models.Model):
             name = '%s | %s' % (activity.summary or activity.activity_type_id.display_name, activity.user_id.display_name or '')
             out.append((activity.id, name))
         return out
+
+    @api.model
+    def create(self, vals):
+        return super(MailActivity, self).create(vals)
