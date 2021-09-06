@@ -18,17 +18,32 @@
             <field name="model">mail.activity</field>
             <field name="inherit_id" ref="mail.mail_activity_view_form_popup" />
             <field name="arch" type="xml">
-                <xpath expr="//sheet/group[last()]" position="after">
+
+            	<xpath expr="//group[3]" position="before">
+            		<field name="plm_state" readonly="True" 
+            			widget="statusbar" 
+            			statusbar_visible="draft,in_progress,done,eco,exception,cancel"
+            			colspan="4"
+            			attrs="{'invisible': [('change_activity_type', '!=', 'request')], 'readonly': [('change_activity_type', '=', 'plm_activity')]}"
+            			/>
+            		<field name="change_activity_type" invisible="True"/>
+            	</xpath>
+
+                <xpath expr="//footer/button[@name='action_done_schedule_next']" position="after">
                 	<group>
-                    	<field name="plm_state" readonly="True" widget="statusbar" statusbar_visible="draft,send_request,in_progress,finished,not_visible"/>
-                    	<button string="In Progress" name="action_in_progress" type="object" class="btn-primary"
-                			attrs="{'invisible': [('plm_state', '!=', 'send_request')]}"/>
-	                	<button string="To Draft" name="action_to_draft" type="object" class="btn-primary"
-	                		attrs="{'invisible': [('plm_state', 'not in', ['send_request', 'in_progress'])]}"/>
-	                	<button string="Send Request" name="action_send_request" type="object" class="btn-primary"
-	                		attrs="{'invisible': [('plm_state', '!=', 'draft')]}"/>
+                    	<button string="ECR to progress" name="action_in_progress" type="object" class="btn-primary"
+                			attrs="{'invisible': ['|', ('plm_state', '!=', 'draft'), ('change_activity_type', '!=', 'request')]}"/>
+	                	<button string="ECR to draft" name="action_to_draft" type="object" class="btn-primary"
+	                		attrs="{'invisible': ['|', ('plm_state', 'not in', ['in_progress', 'exception']), ('change_activity_type', '!=', 'request')]}"/>
+	                	<button string="ECR Exception" name="action_to_exception" type="object" class="btn-primary"
+	                		attrs="{'invisible': [('change_activity_type', '!=', 'request')]}"/>
+	                	<button string="ECR to change order" name="action_to_eco" type="object" class="btn-primary"
+	                		attrs="{'invisible': ['|', ('plm_state', '!=', 'in_progress'), ('change_activity_type', '!=', 'request')]}"/>
                     </group>
-		            <field name="children_ids" nolabel="1">
+                </xpath>
+
+                <xpath expr="//field[@name='note']" position="before">
+		            <field name="children_ids" nolabel="1" attrs="{'invisible': [('change_activity_type', '!=', 'request')], 'readonly': [('change_activity_type', '=', 'plm_activity')]}">
 			            <tree editable='bottom'>
 			                <field name="name"/>
 			                <field name="user_id"/>
@@ -37,12 +52,29 @@
 			            </tree>
 			        </field>
                 </xpath>
+                
+                <xpath expr="//footer/button[@name='action_done']" position="attributes">
+                	<attribute name="attrs">{'invisible': [('change_activity_type', 'in', ['request', 'plm_activity'])]}</attribute>
+                </xpath>
+                
+                <xpath expr="//footer/button[@name='action_done_schedule_next']" position="attributes">
+                	<attribute name="attrs">{'invisible': [('change_activity_type', 'in', ['request', 'plm_activity'])]}</attribute>
+                </xpath>
+                
+                <xpath expr="//footer/button[@name='action_done_schedule_next']" position="attributes">
+                	<attribute name="attrs">{'invisible': [('change_activity_type', 'in', ['request', 'plm_activity'])]}</attribute>
+                </xpath>
+                
+                <xpath expr="//footer/button[@name='action_close_dialog']" position="attributes">
+                	<attribute name="attrs">{'invisible': [('change_activity_type', 'in', ['request', 'plm_activity'])]}</attribute>
+                </xpath>
+                
             </field>
         </record>
 
 		<template id="plm_message_activity_done" inherit_id="mail.message_activity_done">
 		    <xpath expr="//div//p[1]" position="after">
-			    <t t-if="activity.change_activity_type in ['request', 'order']">
+			    <t t-if="activity.change_activity_type in ['request', 'plm_activity']">
 			        <div>View: <a href="#" t-att-data-oe-id="activity.id" data-oe-model="mail.activity">Activity</a></div>
 			    </t>
 		    </xpath>

@@ -47,3 +47,4 @@ from . import res_users
 from . import plm_cad_open
 from . import ir_ui_view
 from . import plm_cad_open_bck
+from . import mail_activity_type

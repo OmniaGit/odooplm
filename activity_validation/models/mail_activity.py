@@ -39,9 +39,11 @@ class MailActivity(models.Model):
     _inherit = 'mail.activity'
 
     plm_state = fields.Selection([('draft', _('draft')),
-                                  ('send_request', _('Send Request')),
                                   ('in_progress', _('In Progress')),
-                                  ('finished', _('Done')),
+                                  ('cancel', _('Cancel')),
+                                  ('done', _('Done')),
+                                  ('exception', _('Exception')),
+                                  ('eco', _('Change Order')),
                                   ],
                                   default='draft',
                                  string=_('Plm State'))
@@ -131,14 +133,41 @@ class MailActivity(models.Model):
             activity_id.plm_state = 'draft'
             return self.reopenActivity(activity_id.id)
 
-    def action_in_progress(self):
+    def action_to_exception(self):
         if not self.isCustomType():
             return
+        self.changeActivityTypeId()
         for activity_id in self:
-            activity_id.plm_state = 'in_progress'
+            activity_id.plm_state = 'exception'
+            parents = self.getParentActivity(activity_id)
+            parents.plm_state = 'exception'
             return self.reopenActivity(activity_id.id)
 
-    def action_send_request(self):
+    def getParentActivity(self, activity_id):
+        parent_activity = self.env['mail.activity.children.rel'].search([
+            ('mail_children_activity_id', '=', activity_id.id)])
+        return parent_activity.mapped('mail_parent_activity_id')
+
+    def action_to_eco(self):
+        if not self.isCustomType():
+            return
+        self.changeActivityTypeId()
+        for activity_id in self:
+            activity_id.plm_state = 'eco'
+            parents = self.getParentActivity(activity_id)
+            for parent_activity in parents:
+                close = True
+                for child_activity_id in parent_activity.children_ids:
+                    if child_activity_id.plm_state != 'eco':
+                        close = False
+                if close:
+                    parent_activity.activity_type_id = self.env.ref('plm.mail_activity_plm_activity')
+                    parent_activity.action_to_eco()
+            if not parents:
+                activity_id.activity_type_id = self.env.ref('plm.mail_activity_plm_activity')
+            return self.reopenActivity(activity_id.id)
+
+    def action_in_progress(self):
         if not self.isCustomType():
             return
         for line_id in self.children_ids:
@@ -147,7 +176,7 @@ class MailActivity(models.Model):
                     'activity_type_id': self.activity_type_id.id,
                     'date_deadline': self.date_deadline,
                     'user_id': line_id.user_id.id,
-                    'plm_state': 'send_request',
+                    'plm_state': 'in_progress',
                     'name': line_id.name,
                     'note': line_id.name,
                     'res_model_id': self.res_model_id.id,
@@ -155,7 +184,7 @@ class MailActivity(models.Model):
                     }
                 new_activity_id = self.create(activity_vals)
                 line_id.mail_children_activity_id = new_activity_id.id
-        self.plm_state = 'send_request'
+        self.plm_state = 'in_progress'
         for activity_id in self:
             return self.reopenActivity(activity_id.id)
 
