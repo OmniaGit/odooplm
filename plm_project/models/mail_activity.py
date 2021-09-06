@@ -35,7 +35,7 @@ class MailActivity(models.Model):
     def _action_done(self, feedback=False, attachment_ids=False):
         for activity in self:
             if self.checkProdConfirmedType(activity):
-                if self.checkSameUser(activity):
+                if not self.checkSameUser(activity):
                     raise UserError(_('You cannot mark as done a "Product Confirmed" activity if is not assigned to you.'))
         messages, activities = super(MailActivity, self)._action_done(feedback=feedback, attachment_ids=attachment_ids)
         for message in messages:
@@ -51,20 +51,20 @@ class MailActivity(models.Model):
         return False
 
     def checkSameUser(self, activity):
-        if self.env.user != activity.user_id or self.env.user.has_group('plm.group_plm_admin'):
+        if self.env.user == activity.user_id or self.env.user.has_group('plm.group_plm_admin'):
             return True
         return False
 
     def unlink(self):
         for activity in self:
             if self.checkProdConfirmedType(activity):
-                if self.checkSameUser(activity):
+                if not self.checkSameUser(activity):
                     raise UserError(_('You cannot unlink a "Product Confirmed" activity if is not assigned to you.'))
         return super(MailActivity, self).unlink()
 
     def write(self, vals):
         for activity in self:
             if self.checkProdConfirmedType(activity):
-                if self.checkSameUser(activity):
+                if not self.checkSameUser(activity):
                     raise UserError(_('You cannot edit a "Product Confirmed" activity if is not assigned to you.'))
         return super(MailActivity, self).write(vals)
