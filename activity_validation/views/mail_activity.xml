@@ -23,40 +23,24 @@
                 	<group col="9">
                 		<button string="Progress" name="action_in_progress" type="object" class="btn-primary" 
                 			attrs="{'invisible': ['|', ('change_activity_type', 'not in', ['request', 'plm_activity']), ('plm_state', 'not in', ['draft'])]}"/>
+                		<button string="Progress" name="action_in_progress" type="object" class="btn-primary" 
+                			attrs="{'invisible': ['|', '|', ('change_activity_type', 'not in', ['request', 'plm_activity']), ('plm_state', 'not in', ['exception']), ('has_parent', '=', False)]}"/>
                 		<button string="ECO" name="action_to_eco" type="object" class="btn-primary" 
                 			attrs="{'invisible': ['|', '|', ('plm_state', 'not in', ['in_progress', 'exception']), ('has_parent', '=', True), ('has_parent_eco', '=', True)]}"/>
                 		<button string="Draft" name="action_to_draft" type="object" class="btn-primary" 
                 			attrs="{'invisible': [('plm_state', 'not in', ['in_progress'])]}"/>
                 		<button string="Exception" name="action_to_exception" type="object" class="btn-primary" 
-                			attrs="{'invisible': [('plm_state', 'not in', ['eco'])]}"/>
+                			attrs="{'invisible': ['|', ('change_activity_type', 'not in', ['request', 'plm_activity']), ('plm_state', 'not in', ['eco', 'in_progress'])]}"/>
                 		<button string="Cancel" name="action_to_cancel" type="object" class="btn-primary" 
                 			attrs="{'invisible': ['|', ('change_activity_type', 'not in', ['request', 'plm_activity']), ('plm_state', 'not in', ['exception', 'draft', 'eco', 'in_progress'])]}"/>
                 		<button string="Done" name="action_to_done" type="object" class="btn-primary" 
                 			attrs="{'invisible': ['|', ('change_activity_type', 'not in', ['request', 'plm_activity']), ('plm_state', 'not in', ['exception', 'eco', 'in_progress'])]}"/>
-<!--                     	<button string="ECR to progress" name="action_in_progress" type="object" class="btn-primary" -->
-<!--                 			attrs="{'invisible': ['|', '|', ('plm_state', 'not in', ['draft']), ('change_activity_type', 'not in', ['request']), ('has_parent', '=', True)]}"/> -->
-<!-- 	                	<button string="ECR to draft" name="action_to_draft" type="object" class="btn-primary" -->
-<!-- 	                		attrs="{'invisible': ['|', '|', ('plm_state', 'not in', ['in_progress', 'cancel']), ('change_activity_type', '!=', 'request'), ('has_parent', '=', True)]}"/> -->
-<!-- 	                	<button string="ECR to ECO" name="action_to_eco" type="object" class="btn-primary" -->
-<!-- 	                		attrs="{'invisible': ['|', '|', ('plm_state', 'not in', ['in_progress', 'exception']), ('change_activity_type', '!=', 'request'), ('has_parent', '=', True)]}"/> -->
-<!-- 	                	<button string="ECR Approve" name="action_to_approve" type="object" class="btn-primary" -->
-<!-- 	                		attrs="{'invisible': ['|', ('change_activity_type', '!=', 'request'), ('has_parent', '=', False)]}"/> -->
-<!-- 	                	<button string="ECO Approve" name="action_to_approve_eco_parent" type="object" class="btn-primary" -->
-<!-- 	                		attrs="{'invisible': ['|', ('change_activity_type', '!=', 'request'), ('plm_state', 'not in', ['eco'])]}"/> -->
-<!-- 	                	<button string="ECO Cancel" name="action_to_cancel_parent" type="object" class="btn-primary" -->
-<!-- 	                		attrs="{'invisible': ['|', ('change_activity_type', '!=', 'request'), ('plm_state', 'not in', ['exception'])]}"/> -->
-<!-- 	                	<button string="ECO Approve" name="action_to_approve_eco" type="object" class="btn-primary" -->
-<!-- 	                		attrs="{'invisible': ['|', ('change_activity_type', '!=', 'plm_activity'), ('plm_state', 'not in', ['draft'])]}"/> -->
-<!-- 	                	<button string="ECO Cancel" name="action_to_cancel" type="object" class="btn-primary" -->
-<!-- 	                		attrs="{'invisible': ['|', ('change_activity_type', '!=', 'plm_activity'), ('plm_state', 'not in', ['draft'])]}"/> -->
-<!-- 	                	<button string="ECR Exception" name="action_to_exception" type="object" class="btn-primary" -->
-<!-- 	                		attrs="{'invisible': ['|', ('change_activity_type', 'not in', ['request']), ('plm_state', 'in', ['exception', 'in_progress', 'done'])]}"/> -->
                     </group>
             		<field name="plm_state" readonly="True" 
             			widget="statusbar" 
             			statusbar_visible="draft,in_progress,eco,exception"
             			colspan="4"
-            			attrs="{'invisible': [('change_activity_type', 'not in', ['request'])], 'readonly': [('change_activity_type', '=', 'plm_activity')]}"
+            			attrs="{'invisible': [('change_activity_type', 'not in', ['request', 'plm_activity'])], 'readonly': [('change_activity_type', '=', 'plm_activity')]}"
             			/>
             		<group>
 	            		<field name="change_activity_type" groups="base.group_no_one"/>

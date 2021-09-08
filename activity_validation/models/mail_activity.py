@@ -24,15 +24,11 @@ Created on Nov 16, 2019
 @author: mboscolo
 '''
 import logging
-import datetime
-from odoo import SUPERUSER_ID
 from odoo import models
 from odoo import fields
 from odoo import api
 from odoo import _
 from odoo.exceptions import UserError
-from datetime import timedelta
-from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
 
 class MailActivity(models.Model):
@@ -180,7 +176,6 @@ class MailActivity(models.Model):
                 if child_rel.mail_children_activity_id.plm_state == 'draft':
                     child_rel.mail_children_activity_id.unlink()
                     child_rel.unlink()
-        # self.children_ids = [(5, False, False)]
 
     def action_to_draft(self):
         self.clearChildrenActivities()
@@ -192,10 +187,12 @@ class MailActivity(models.Model):
     def action_to_done(self):
         for activity_id in self:
             activity_id.plm_state = 'done'
-            if not activity_id.is_eco:
-                parents = self.getParentECRActivity(activity_id)
-            else:
+            if activity_id.is_eco:
+                self.checkChildrenECODone(activity_id)
                 parents = self.getParentECOActivity(activity_id)
+            else:
+                self.checkChildrenECRDone(activity_id)
+                parents = self.getParentECRActivity(activity_id)
             close = True
             if parents.children_ids:
                 for child_activity_id in parents.children_ids:
@@ -216,49 +213,42 @@ class MailActivity(models.Model):
             parents.plm_state = 'exception'
             return self.reopenActivity(activity_id.id)
 
-    def action_to_approve(self):
-        if not self.isCustomType():
-            return
-        for activity_id in self:
-            activity_id.plm_state = 'done'
-            parents = self.getParentActivity(activity_id)
-            for parent_activity in parents:
-                close = True
-                for child_activity_id in parent_activity.children_ids:
-                    if child_activity_id.plm_state != 'done':
-                        close = False
-                if close:
-                    parent_activity.action_to_eco()
-            #return self.reopenActivity(activity_id.id)
-
-    def action_to_approve_eco_parent(self):
-        for activity_id in self:
-            activity_id.plm_state = 'done'
-            activity_id._action_done()
-        
-    def action_to_approve_eco(self):
-        for activity_id in self:
-            activity_id.plm_state = 'done'
-            close = True
-            if activity_id.mail_parent_eco_activity_id:
-                for child in activity_id.mail_parent_eco_activity_id.eco_child_ids:
-                    if child.plm_state != 'done':
-                        close = False
-                if close:
-                    activity_id.mail_parent_eco_activity_id.plm_state = 'done'
-                    activity_id.mail_parent_eco_activity_id._action_done()
-            #return self.reopenActivity(activity_id.id)
-
-    def action_to_cancel_parent(self):
-        self.action_to_cancel()
-
     def action_to_cancel(self):
         for activity_id in self:
             activity_id.plm_state = 'cancel'
+            self.cancelChildrenECO(activity_id)
+            self.cancelChildrenECR(activity_id)
             activity_id._action_done()
-        
+
+    def cancelChildrenECR(self, activity_id):
+        for child in activity_id.children_ids:
+            if child.plm_state not in ['done', 'cancel']:
+                child.action_to_cancel()
+
+    def cancelChildrenECO(self, activity_id):
+        for child in activity_id.children_ids:
+            if child.plm_state not in ['done', 'cancel']:
+                child.mail_children_activity_id.action_to_cancel()
+
+    def checkChildrenECODone(self, activity_id):
+        do_eco = True
+        for child in activity_id.eco_child_ids:
+            if child.plm_state not in ['done', 'cancel']:
+                do_eco = False
+        if not do_eco:
+            raise UserError(_('You cannot move to Done because there are pending ECO activities.'))
+
+    def checkChildrenECRDone(self, activity_id):
+        do_ecr = True
+        for child in activity_id.children_ids:
+            if child.plm_state not in ['done', 'cancel']:
+                do_ecr = False
+        if not do_ecr:
+            raise UserError(_('You cannot move to ECO or to Done because there are pending ECR activities.'))
+
     def action_to_eco(self):
         for activity_id in self:
+            self.checkChildrenECRDone(activity_id)
             activity_id.plm_state = 'eco'
             activity_id.is_eco = True
 
