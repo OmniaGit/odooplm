@@ -65,7 +65,7 @@
 		            	context="{'default_res_model_id': res_model_id, 'default_activity_type_id': default_plm_activity, 'default_res_id': res_id}">
 		            	<tree editable='bottom' can_create="true" >
 			                <field name="res_name" invisible="True"/>
-			                <field name="activity_type_id"/>
+			                <field name="activity_type_id" invisible="True"/>
 			                <field name="summary"/>
 			                <field name="date_deadline"/>
 			                <field name="user_id"/>
