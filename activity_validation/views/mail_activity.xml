@@ -21,19 +21,19 @@
 
             	<xpath expr="//group[3]" position="before">
                 	<group col="9">
-                		<button string="Progress" name="action_in_progress" type="object" class="btn-primary" 
+                		<button string="Progress" name="action_in_progress" type="object" class="btn-primary" icon="fa-gears"
                 			attrs="{'invisible': ['|', ('change_activity_type', 'not in', ['request', 'plm_activity']), ('plm_state', 'not in', ['draft'])]}"/>
-                		<button string="Progress" name="action_in_progress" type="object" class="btn-primary" 
+                		<button string="Progress" name="action_in_progress" type="object" class="btn-primary"  icon="fa-gears"
                 			attrs="{'invisible': ['|', '|', ('change_activity_type', 'not in', ['request', 'plm_activity']), ('plm_state', 'not in', ['exception']), ('has_parent', '=', False)]}"/>
-                		<button string="ECO" name="action_to_eco" type="object" class="btn-primary" 
+                		<button string="ECO" name="action_to_eco" type="object" class="btn-primary" icon="fa-list-alt"
                 			attrs="{'invisible': ['|', '|', ('plm_state', 'not in', ['in_progress', 'exception']), ('has_parent', '=', True), ('has_parent_eco', '=', True)]}"/>
-                		<button string="Draft" name="action_to_draft" type="object" class="btn-primary" 
+                		<button string="Draft" name="action_to_draft" type="object" class="btn-primary" icon="fa-book"
                 			attrs="{'invisible': [('plm_state', 'not in', ['in_progress'])]}"/>
-                		<button string="Exception" name="action_to_exception" type="object" class="btn-primary" 
+                		<button string="Exception" name="action_to_exception" type="object" class="btn-primary" icon="fa-bullhorn"
                 			attrs="{'invisible': ['|', ('change_activity_type', 'not in', ['request', 'plm_activity']), ('plm_state', 'not in', ['eco', 'in_progress'])]}"/>
-                		<button string="Cancel" name="action_to_cancel" type="object" class="btn-primary" 
+                		<button string="Cancel" name="action_to_cancel" type="object" class="btn-primary" icon="fa-times-circle"
                 			attrs="{'invisible': ['|', ('change_activity_type', 'not in', ['request', 'plm_activity']), ('plm_state', 'not in', ['exception', 'draft', 'eco', 'in_progress'])]}"/>
-                		<button string="Done" name="action_to_done" type="object" class="btn-primary" 
+                		<button string="Done" name="action_to_done" type="object" class="btn-primary" icon="fa-check-circle"
                 			attrs="{'invisible': ['|', ('change_activity_type', 'not in', ['request', 'plm_activity']), ('plm_state', 'not in', ['exception', 'eco', 'in_progress'])]}"/>
                     </group>
             		<field name="plm_state" readonly="True" 
