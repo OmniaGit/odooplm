@@ -20,7 +20,7 @@
             <field name="arch" type="xml">
 
             	<xpath expr="//group[3]" position="before">
-                	<group col="9">
+                	<group col="9" name='plm_state_buttons'>
                 		<button string="Progress" name="action_in_progress" type="object" class="btn-primary" icon="fa-gears"
                 			attrs="{'invisible': ['|', ('change_activity_type', 'not in', ['request', 'plm_activity']), ('plm_state', 'not in', ['draft'])]}"/>
                 		<button string="Progress" name="action_in_progress" type="object" class="btn-primary"  icon="fa-gears"
