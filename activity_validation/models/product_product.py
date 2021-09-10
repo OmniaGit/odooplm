@@ -110,9 +110,9 @@ class ProductProduct(models.Model):
         buttons = {}
         elementObj = ElementTree.XML(activity_view_arch.encode('utf-8'))
         for sheet in elementObj.findall('sheet'):
-            for elem in sheet.getchildren():
+            for elem in list(sheet):
                 if elem.attrib.get('name', '') == 'plm_state_buttons':
-                    for button in elem.getchildren():
+                    for button in list(elem):
                         modifiers = button.attrib.get('modifiers', '')
                         butt_name = button.attrib.get('name', '')
                         try:
