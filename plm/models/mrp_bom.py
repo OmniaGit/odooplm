@@ -32,6 +32,7 @@ from odoo import models
 from odoo import fields
 from odoo import api
 from odoo import _
+import copy
 
 
 class MrpBomExtension(models.Model):
@@ -682,7 +683,7 @@ class MrpBomExtension(models.Model):
                                         'source_id': source_document_id,
                                         'type': bom_type,
                                         'cutted_type': cutted_type})
-            return self.env['mrp.bom.line'].create(relation_attributes)
+            return self.env['mrp.bom.line'].create(copy.deepcopy(relation_attributes))
 
     @api.multi  # Don't change me with @api.one or I don't work!!!
     def open_related_bom_lines(self):
