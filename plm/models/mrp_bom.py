@@ -32,6 +32,7 @@ from odoo import models
 from odoo import fields
 from odoo import api
 from odoo import _
+import copy
 
 
 class Production(models.Model):
@@ -703,7 +704,7 @@ class MrpBomExtension(models.Model):
                                     'product_id': child_id,
                                     'source_id': source_document_id,
                                     'type': bom_type})
-        self.bom_line_ids.ids.append(self.env['mrp.bom.line'].create(relation_attributes).id)
+        self.bom_line_ids.ids.append(self.env['mrp.bom.line'].create(copy.deepcopy(relation_attributes)).id)
 
     @api.multi  # Don't change me with @api.one or I don't work!!!
     def open_related_bom_lines(self):
@@ -801,27 +802,6 @@ class MrpBomExtension(models.Model):
                 orderDict[index].append(res)
         return orderDict
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
-
-    @api.one
-    def delete_child_row(self, document_id):
-        """
-        delete the bom child row
-        """
-        for bom_line in self.bom_line_ids:
-            if bom_line.source_id.id == document_id and bom_line.type == self.type:
-                bom_line.unlink()
-
-    @api.model
-    def add_child_row(self, child_id, source_document_id, relation_attributes, bom_type='normal'):
-        """
-            add children rows
-        """
-        if self.id and child_id and source_document_id:
-            relation_attributes.update({'bom_id': self.id,
-                                        'product_id': child_id,
-                                        'source_id': source_document_id,
-                                        'type': bom_type})
-            self.env['mrp.bom.line'].create(relation_attributes).id
 
     @api.model
     def saveRelationNew(self,
