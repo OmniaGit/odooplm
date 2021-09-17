@@ -1301,7 +1301,7 @@ class PlmDocument(models.Model):
             #for rfModel in rfTree:
             #    read_docs.extend(self.getRelatedLyTree(rfModel))
         read_docs = list(set(read_docs))
-        for document in self.browse(read_docs):
+        for document in self.browse(read_docs).sorted('document_type', reverse=True): # 3d before 2d
             related_documents.append([document.id,
                                       document.engineering_document_name,
                                       '' if document.preview is None else document.preview,
