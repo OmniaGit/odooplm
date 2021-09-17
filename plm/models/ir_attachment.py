@@ -1200,7 +1200,7 @@ class PlmDocument(models.Model):
             selection = selection * (-1)
         if docBrws.is2D():
             outIds.extend(self.getRelatedLyTree(doc_id))
-        outIds.extend(self.getRelatedHiTree(doc_id, recursion=True))
+        outIds.extend(self.getRelatedHiTree(doc_id, recursion=True, getRftree=True))
         outIds = list(set(outIds))
         if selection == 2:  # Case of latest
             outIds = self._getlastrev(outIds)
@@ -1295,8 +1295,11 @@ class PlmDocument(models.Model):
         related_documents = []
         read_docs = []
         for oid in self.ids:
-            read_docs.extend(self.getRelatedRfTree(oid, recursion=False))
+            rfTree = self.getRelatedRfTree(oid, recursion=False)
+            read_docs.extend(rfTree)
             read_docs.extend(self.getRelatedLyTree(oid))
+            #for rfModel in rfTree:
+            #    read_docs.extend(self.getRelatedLyTree(rfModel))
         read_docs = list(set(read_docs))
         for document in self.browse(read_docs):
             related_documents.append([document.id,
