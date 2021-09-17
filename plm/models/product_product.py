@@ -674,7 +674,15 @@ class PlmComponent(models.Model):
             for comp_obj in self:
                 comp_obj.sudo().message_post(body=_(body))
 
+    def canUnlink(self):
+        for product in self:
+            if product.linkeddocuments:
+                raise UserError('Cannot unlink a product containing related documents')
+            if product.bom_ids:
+                raise UserError('Cannot unlink a product containing BOMs')
+
     def unlink(self):
+        self.canUnlink()
         values = {'state': 'released'}
         checkState = ('undermodify', 'obsoleted')
         for checkObj in self:
