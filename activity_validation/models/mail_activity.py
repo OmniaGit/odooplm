@@ -282,6 +282,18 @@ class MailActivity(models.Model):
                         'res_id': res_id}
         return out_act_dict
 
+    def action_open_releted_ent(self):
+        for activity in self:
+            return {'name': activity.display_name,
+                    'view_type': 'form',
+                    'target': 'new',
+                    'res_model': activity.res_model,
+                    'type': 'ir.actions.act_window',
+                    'view_mode': 'form',
+                    'res_id': activity.res_id}
+        return {}
+            
+    
     def name_get(self):
         out = []
         for activity in self:

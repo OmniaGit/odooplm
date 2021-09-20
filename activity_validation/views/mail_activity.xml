@@ -43,6 +43,8 @@
             			attrs="{'invisible': [('change_activity_type', 'not in', ['request', 'plm_activity'])], 'readonly': [('change_activity_type', '=', 'plm_activity')]}"
             			/>
             		<group>
+	            		<button string="Open Releted Ent" name="action_open_releted_ent" type="object" class="btn-primary" icon="fa-check-circle"/>
+	            		
 	            		<field name="change_activity_type" groups="base.group_no_one"/>
 	            		<field name="has_parent" groups="base.group_no_one"/>
 	            		<field name="has_parent_eco" groups="base.group_no_one"/>
@@ -87,7 +89,7 @@
                 <xpath expr="//footer/button[@name='action_done_schedule_next']" position="attributes">
                 	<attribute name="attrs">{'invisible': [('change_activity_type', 'in', ['request', 'plm_activity'])]}</attribute>
                 </xpath>
-
+                
             </field>
         </record>
 
