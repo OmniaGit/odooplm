@@ -67,7 +67,7 @@ class ProductProduct(models.Model):
         headers_mapping = [
             {'name': 'Name', 'key': 'res_name', 'readonly':True, 'type': 'CHAR'},
             {'name': 'Title', 'key': 'summary', 'readonly':True, 'type': 'CHAR'},
-            {'name': 'Note', 'key': 'note', 'readonly':True, 'type': 'CHAR'},
+            {'name': 'Note', 'key': 'note', 'readonly':True, 'type': 'HTML'},
             {'name': 'Date', 'key': 'date_deadline', 'readonly':True, 'type': 'CHAR'},
             {'name': 'User', 'key': 'user_id', 'readonly':True, 'type': 'CHAR'},
             {'name': 'State', 'key': 'plm_state', 'readonly':True, 'type': 'CHAR'},
