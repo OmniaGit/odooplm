@@ -1,7 +1,7 @@
 ##############################################################################
 #
-#    OmniaSolutions, Open Source Management Solution
-#    Copyright (C) 2010-2019 OmniaSolutions (<https://www.omniasolutions.website>). All Rights Reserved
+#    OmniaSolutions, Open Source Management Solution    
+#    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -18,29 +18,5 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-{
-    'name': 'PLM Purchase Only Latest',
-    'version': '12.0.2',
-    'author': 'OmniaSolutions',
-    'website': 'https://www.omniasolutions.website',
-    'category': 'Product Lifecycle Management',
-    'sequence': 15,
-    'license': 'AGPL-3',
-    'summary': 'PLM Integration with main CAD editors',
-    'images': ['static/img/odoo_plm.png'],
-    'depends': ['plm', 'purchase'],
-    'description': """
-    Allow to select only components in the latest revision for purchase
-    """,
-    'data': [
-            'views/purchase_order_line.xml'
-            ],
-    'qweb': [],
-    'demo': [],
-    'test': [],
-    'installable': True,
-    'application': True,
-    'auto_install': False,
-}
-
+from . import models
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

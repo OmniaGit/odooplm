@@ -19,7 +19,7 @@
 #
 ##############################################################################
 {
-    'name': 'PLM Purchase Only Latest',
+    'name': 'PLM Sale Only Latest',
     'version': '12.0.2',
     'author': 'OmniaSolutions',
     'website': 'https://www.omniasolutions.website',
@@ -28,12 +28,12 @@
     'license': 'AGPL-3',
     'summary': 'PLM Integration with main CAD editors',
     'images': ['static/img/odoo_plm.png'],
-    'depends': ['plm', 'purchase'],
+    'depends': ['plm', 'sale'],
     'description': """
     Allow to select only components in the latest revision for purchase
     """,
     'data': [
-            'views/purchase_order_line.xml'
+            'views/sale_order_line.xml'
             ],
     'qweb': [],
     'demo': [],

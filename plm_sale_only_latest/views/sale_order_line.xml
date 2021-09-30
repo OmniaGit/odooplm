@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record model="ir.ui.view" id="view_view_order_form_latest_rev">
+        <field name="name">sale.order.form.latest.rev</field>
+        <field name="model">sale.order</field>
+        <field name="type">form</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet/notebook/page[1]/field[@name='order_line']/form/group/group[1]//field[@name='product_id']" position="attributes">
+                 <attribute name="context">{'partner_id':parent.partner_id, 'quantity':product_uom_qty, 'pricelist':parent.pricelist_id, 'uom':product_uom, 'company_id': parent.company_id, 'sale_latest': True}</attribute>
+            </xpath>
+            <xpath expr="//sheet/notebook/page[1]/field[@name='order_line']/tree//field[@name='product_id']" position="attributes">
+                 <attribute name="context">{'sale_latest': True, 'partner_id': parent.partner_id,'quantity':product_uom_qty,'pricelist':parent.pricelist_id,'uom':product_uom,'company_id':parent.company_id,'default_lst_price':price_unit,'default_description_sale': name}</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>
