@@ -31,6 +31,7 @@ from odoo import models
 from odoo import fields
 from odoo import api
 from odoo import _
+from odoo.osv.expression import AND
 import copy
 
 
@@ -71,7 +72,7 @@ class MrpBomExtension(models.Model):
                              string=_("Status"),
                              help=_("The status of the product in its LifeCycle."),
                              store=False)
-    description = fields.Text(related="product_tmpl_id.description",
+    description = fields.Char(related="product_tmpl_id.name",
                               string=_("Description"),
                               store=False)
     father_complete_ids = fields.Many2many('mrp.bom',
@@ -779,25 +780,9 @@ class MrpBomExtension(models.Model):
             return out
 
     @api.model
-    def _bom_find(self, product_tmpl=None, product=None, picking_type=None, company_id=False, bom_type='normal'):
-        """ Finds BoM for particular product and product uom.
-        @param product_tmpl: Selected product.
-        @param product: Unit of measure of a product.
-        @return: False or BoM id.
-        """
-        obj_bom = super(MrpBomExtension, self)._bom_find(
-            product_tmpl=product_tmpl,
-            product=product,
-            picking_type=picking_type,
-            company_id=company_id
-        )
-        if obj_bom:
-            available_types = ['normal', 'phantom']
-            if obj_bom.type not in available_types:
-                available_types = [obj_bom.type]
-            return self.search([
-                ('product_id', '=', obj_bom.product_id.id),
-                ('product_tmpl_id', '=', obj_bom.product_tmpl_id.id),
-                ('type', 'in', available_types)
-            ], order='sequence, product_id', limit=1)
-        return obj_bom
+    def _bom_find_domain(self, products, picking_type=None, company_id=False, bom_type=False):
+        domain = super(MrpBomExtension, self)._bom_find_domain(products, picking_type, company_id, bom_type)
+        available_types = ['normal', 'phantom']
+        domain = AND([domain, [('type', 'in', available_types)]])
+        return domain
+    
