@@ -1,7 +1,7 @@
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution
-#    Copyright (C) 2010-2019 OmniaSolutions (<https://www.omniasolutions.website>).
+#    Copyright (C) 2010-2021 OmniaSolutions (<https://www.omniasolutions.website>).
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -20,7 +20,7 @@
 ##############################################################################
 {
     "name": "Plm Box",
-    "version": "14.0.1.0.0",
+    "version": "15.0.1",
     "author": "OmniaSolutions",
     "website": "https://github.com/OmniaGit/odooplm",
     "category": "Custom",
@@ -44,7 +44,7 @@
     ],
     "demo": [],
     "test": [],
-    "installable": True,
+    "installable": False,
     "application": False,
     "auto_install": False,
 }

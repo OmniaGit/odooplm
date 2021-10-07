@@ -9,3 +9,5 @@ The old repository for the version before 11 remain at the following link:
 https://sourceforge.net/projects/openerpplm/
 at the same address you can also find more information regarding the solution
 
+documentation can be found at:
+https://odooplm.omniasolutions.website/

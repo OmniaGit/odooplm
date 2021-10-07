@@ -1,11 +1,11 @@
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution
-#    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>).
+#    Copyright (C) 2010-2021 OmniaSolutions (<http://www.omniasolutions.eu>).
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
-#    the Free Software Foundation, either version 3 of the License, or
+#    the Free Software Foundation, Trueeither version 3 of the License, or
 #    (at your option) any later version.
 #
 #    This program is distributed in the hope that it will be useful,
@@ -20,7 +20,7 @@
 ##############################################################################
 {
     "name": "PLM Project",
-    "version": "14.0.0.0.1",
+    "version": "15.0.0",
     "author": "OmniaSolutions",
     "website": "https://github.com/OmniaGit/odooplm",
     "category": "Product Lifecycle Management",
@@ -37,7 +37,7 @@
     ],
     "demo": [],
     "test": [],
-    "installable": True,
+    "installable": False,
     "application": False,
     "auto_install": False,
 }

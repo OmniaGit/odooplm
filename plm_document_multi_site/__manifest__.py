@@ -1,7 +1,7 @@
 ##############################################################################
 #
 #    OmniaSolutions, ERP-PLM-CAD Open Source Solution
-#    Copyright (C) 2011-2019 https://OmniaSolutions.website
+#    Copyright (C) 2011-2021 https://OmniaSolutions.website
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,7 +19,7 @@
 ##############################################################################
 {
     "name": "PLM Document Syncronization",
-    "version": "14.0.1.0.0",
+    "version": "15.0.1",
     "author": "OmniaSolutions",
     "website": "https://github.com/OmniaGit/odooplm",
     "category": "Product Lifecycle Management",
@@ -35,7 +35,7 @@
         "data/server_action.xml",
         "security/base_plm_web_rev_security.xml",
     ],
-    "installable": True,
+    "installable": False,
     "application": False,
     "auto_install": False,
 }

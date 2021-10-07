@@ -20,7 +20,7 @@
 ##############################################################################
 {
     "name": "PLM Auto Internal Reference",
-    "version": "14.0.1.0.0",
+    "version": "15.0.1",
     "author": "OmniaSolutions",
     "website": "https://github.com/OmniaGit/odooplm",
     "category": "Product Lifecycle Management",
@@ -32,7 +32,7 @@
     "data": ["views/product_product.xml"],
     "demo": [],
     "test": [],
-    "installable": True,
+    "installable": False,
     "application": False,
     "auto_install": False,
 }

@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    OmniaSolutions, ERP-PLM-CAD Open Source Solution
-#    Copyright (C) 2011-2019 https://OmniaSolutions.website
+#    Copyright (C) 2011-2021 https://OmniaSolutions.website
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -20,7 +20,7 @@
 ##############################################################################
 {
     'name': '[OMNIASOLUTIONS] Production Bom Update',
- 'version': '14.0.0.0.0',
+ 'version': '15.0.1',
  'sequence': 1,
  'category': 'Manufacturing',
  'description': """
@@ -34,7 +34,7 @@ This module allows you to update your working manufacture order based on the bom
  'depends': ['omnia_mrp_bom_update','plm','stock'],
  'data': ['views/mrp_bom_extension.xml'],
  'license': 'AGPL-3',
- 'installable': True,
+ 'installable': False,
  'application': False,
  'auto_install': False,
 }

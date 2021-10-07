@@ -20,7 +20,7 @@
 ##############################################################################
 {
     "name": "PLM Automatic Engineering Code",
-    "version": "14.0.1.0.0",
+    "version": "15.0.1",
     "author": "OmniaSolutions",
     "website": "https://github.com/OmniaGit/odooplm",
     "category": "Product Lifecycle Management",
@@ -34,7 +34,7 @@
     ],
     "demo": [],
     "test": [],
-    "installable": True,
+    "installable": False,
     "application": False,
     "auto_install": False,
 }

@@ -1,7 +1,7 @@
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution
-#    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>).
+#    Copyright (C) 2010-2021 OmniaSolutions (<http://www.omniasolutions.eu>).
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -30,7 +30,7 @@
     "license": "AGPL-3",
     "depends": ["plm"],
     "data": ["views/translation.xml", "views/plm_description_extension.xml"],
-    "installable": True,
+    "installable": False,
     "application": False,
     "auto_install": False,
 }
