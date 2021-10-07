@@ -631,8 +631,8 @@ class PlmComponent(models.Model):
             Create a new Normal Bom if doesn't exist (action callable from code)
         """
         for prodId in self.ids:
-            self.processedIds = []
-            self._create_normalBom(prodId)
+            processedIds = []
+            self._create_normalBom(prodId, processedIds)
         self.wf_message_post(body=_('Created Normal Bom.'))
         return False
 

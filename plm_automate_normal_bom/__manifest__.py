@@ -30,7 +30,7 @@
     "images": [],
     "depends": ["plm", "plm_engineering"],
     "data": [
-        "views/settings.xml",
+        "views/ir_cron.xml",
     ],
     "demo": [],
     "test": [],

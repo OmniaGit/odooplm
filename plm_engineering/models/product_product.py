@@ -54,6 +54,8 @@ class ProductProductExtension(models.Model):
         """
             create a new bom starting from ebom
         """
+        if not obj_product_product_brw.engineering_code:
+            return []
         if  obj_product_product_brw.id in evaluated.get('evaluated',[]):
             return []
         evaluated['evaluated'].append(obj_product_product_brw.id)
@@ -192,12 +194,12 @@ class ProductProductExtension(models.Model):
         return collect_list
 
     @api.model
-    def _create_normalBom(self, idd):
+    def _create_normalBom(self, idd, processedIds):
         """
             Create a new Normal Bom (recursive on all EBom children)
         """
         defaults = {}
-        if idd in self.processedIds:
+        if idd in processedIds:
             return False
         check_obj = self.browse(idd)
         if not check_obj:
@@ -212,7 +214,7 @@ class ProductProductExtension(models.Model):
                                              ('type', '=', 'ebom')])
             for bom_brws in bom_brws_list:
                 new_bom_brws = bom_brws.copy(defaults)
-                self.processedIds.append(idd)
+                processedIds.append(idd)
                 if new_bom_brws:
                     new_bom_brws.write(
                         {'name': check_obj.name,
@@ -229,11 +231,11 @@ class ProductProductExtension(models.Model):
                             'name': bom_line.product_id.name,
                             'product_qty': bom_line.product_qty
                         })
-                        self._create_normalBom(bom_line.product_id.id)
+                        self._create_normalBom(bom_line.product_id.id, processedIds)
         else:
             for objBom in obj_boms:
                 for bom_line in objBom.bom_line_ids:
-                    self._create_normalBom(bom_line.product_id.id)
+                    self._create_normalBom(bom_line.product_id.id, processedIds)
         return False
 
 
