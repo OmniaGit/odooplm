@@ -30,7 +30,7 @@
     "category": "Custom",
     "license": "AGPL-3",
     "summary": "PLM Breakages",
-    "depends": ["base", "product", "plm"],
+    "depends": ["base", "product", "mrp"],
     "data": [
         # Security
         "security/base_plm_security.xml",
@@ -39,5 +39,5 @@
         "views/product_view.xml",
         "views/bom_view.xml",
     ],
-    "installable": False,
+    "installable": True,
 }

@@ -37,7 +37,7 @@ class ProductProduct(models.Model):
                 'view_mode': 'tree,form',
                 'type': 'ir.actions.act_window',
                 'domain': [('product_id', '=', self.id)],
-                'context': {}}
+                'context': {'default_product_id': self.id}}
 
     breakages_count = fields.Integer('# Breakages',
         compute='_compute_breakages_count', compute_sudo=False)

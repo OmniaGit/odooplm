@@ -31,13 +31,17 @@ class MrpBom(models.Model):
     _inherit = 'mrp.bom'
     
     def open_breakages(self):
+        product_id = self.product_id
+        if not product_id:
+            for product_id in self.env['product.product'].search([('product_tmpl_id','=',self.product_tmpl_id.id)]):
+                break
         return {'name': _('Products'),
                 'res_model': 'plm.breakages',
                 'view_type': 'form',
                 'view_mode': 'tree,form,pivot',
                 'type': 'ir.actions.act_window',
-                'domain': [('parent_id', '=', self.product_tmpl_id.id)],
-                'context': {}}
+                'domain': [('parent_id', '=', product_id.id)],
+                'context': {'default_parent_id': product_id.id}}
 
     breakages_count = fields.Integer('# Breakages',
         compute='_compute_breakages_count', compute_sudo=False)
