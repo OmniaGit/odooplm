@@ -96,7 +96,7 @@
                                    attrs="{'readonly':[('std_umc3','=',False),('state','in',['released','obsoleted'])], 'invisible': [('show_std_field3','=', False)]}"/>
                         </group>
                         <field name="desc_modify" colspan="6" attrs="{'readonly':[('state','in',['released','obsoleted'])], 'invisible': [('engineering_revision', '=', 0)]}"/>
-	                    <field name="type" invisible="1"/>
+	                    <field name="detailed_type" invisible="1"/>
 	                    <field name="source_product" invisible="1"/>
 	                    <field name="is_engcode_editable" invisible="1"/>
                     </group>
