@@ -357,9 +357,7 @@ class plm_compare_bom(osv.osv.osv_memory):
         self.write({'anotinb': [(6, False, bom1NewItems)],
                     'bnotina': [(6, False, bom2NewItems)]})
         data_obj = self.env['ir.model.data']
-        id3 = data_obj._get_id(openerpModule, 'plm_visualize_diff_form')
-        if id3:
-            id3 = data_obj.browse(id3).res_id
+        _modelName, id3 = data_obj.check_object_reference(openerpModule, 'plm_visualize_diff_form')
         return {
             'domain': [],
             'name': _('Differences on BoMs'),
