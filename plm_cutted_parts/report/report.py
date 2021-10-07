@@ -74,8 +74,8 @@ class ReportDocumentPdf(models.AbstractModel):
         return _(result)
 
     @api.model
-    def get_report_values(self, doc_ids):
-        documents = self.env['mrp.bom'].browse(doc_ids)
+    def _get_report_values(self, docids, data=None):
+        documents = self.env['mrp.bom'].browse(docids)
         return {'docs': documents,
                 'get_children': self.get_children,
                 'bom_type': self.bom_type,
