@@ -40,7 +40,7 @@
         "views/mrp_extension.xml",
         "views/plm_backupdoc_view.xml",
         "views/plm_checkout_view.xml",
-        "views/plm_config_settings.xml",
+        "views/res_config_settings.xml",
         "views/plm_description_view.xml",
         "views/plm_finishing_view.xml",
         "views/plm_treatment_view.xml",
