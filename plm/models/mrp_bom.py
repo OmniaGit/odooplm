@@ -96,7 +96,7 @@ class MrpBomExtension(models.Model):
     engineering_revision = fields.Integer(related="product_tmpl_id.engineering_revision",
                                           string=_("Revision"),
                                           help=_("The revision of the product."),
-                                          store=False)
+                                          store=True)
 
     bom_revision_count = fields.Integer(related='product_tmpl_id.revision_count')
 
