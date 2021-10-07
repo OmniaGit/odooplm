@@ -31,12 +31,12 @@
     "license": "AGPL-3",
     "data": [
         "settings_and_data/datas.xml",
-        "views/component_extension.xml",
-        "views/bom_extension.xml",
+        "views/product_product.xml",
+        "views/mrp_bom.xml",
     ],
     "demo": [],
     "test": [],
-    "installable": False,
+    "installable": True,
     "application": False,
     "auto_install": False,
 }

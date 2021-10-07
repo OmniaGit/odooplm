@@ -24,5 +24,5 @@ Created on May 25, 2016
 
 @author: Daniel Smerghetto
 """
-from . import component_extension
-from . import bom_extension
+from . import product_product
+from . import mrp_bom
