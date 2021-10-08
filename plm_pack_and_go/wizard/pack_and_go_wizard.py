@@ -176,8 +176,11 @@ class PackAndGo(osv.osv.osv_memory):
                 export_other.append(newViewObj.id)
 
         def recursionDocuments(docBrwsList):
-            for docBrws in docBrwsList:
-                res = plmDocObject.CheckAllFiles([docBrws.id, [], False])   # Get all related documents to root documents
+            for docBrws in docBrwsList:          
+                res = plmDocObject.CheckAllFiles([docBrws.id, [],
+                                                  False,
+                                                  'localhost',
+                                                  'pack_go'])   # Get all related documents to root documents
                 for singleRes in res:
                     docId = singleRes[0]
                     if docId in checkedDocumentIds:
@@ -283,26 +286,21 @@ class PackAndGo(osv.osv.osv_memory):
         '''
             Get all components composing the Bill of Materials
         '''
+        compIds = []
         def recursion(bomBrwsList):
-            outCompIds = []
             for bomBrws in bomBrwsList:
                 for bomLineBrws in bomBrws.bom_line_ids:
                     prodId = bomLineBrws.product_id.id
-                    if prodId in outCompIds:
+                    if prodId in compIds:
                         continue
+                    compIds.append(prodId)
                     prodTmplBrws = bomLineBrws.product_id.product_tmpl_id
                     bomBrwsList = self.getBomFromTemplate(prodTmplBrws)
-                    lowLevelCompIds = recursion(bomBrwsList)
-                    outCompIds.extend(lowLevelCompIds)
-                    outCompIds.append(prodId)
-            return list(set(outCompIds))
-
-        compIds = []
-        startingBom = self.getBomFromTemplate(self.component_id.product_tmpl_id)
-        if not startingBom:
-            return [self.component_id.id]
+                    recursion(bomBrwsList)
         compIds.append(self.component_id.id)
-        compIds.extend(recursion(startingBom))
+        startingBom = self.getBomFromTemplate(self.component_id.product_tmpl_id)
+        if startingBom:
+            recursion(startingBom)    
         return compIds
 
     def checkPlmConvertionInstalled(self):

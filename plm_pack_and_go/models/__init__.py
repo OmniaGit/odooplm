@@ -25,4 +25,4 @@ Created on Nov 21, 2017
 
 @author: dsmerghetto
 '''
-from . import product_product_extension
+from . import product_product

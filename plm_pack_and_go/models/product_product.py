@@ -26,8 +26,6 @@ Created on Nov 21, 2017
 @author: dsmerghetto
 '''
 from odoo import models
-from odoo import api
-
 
 class PlmComponent(models.Model):
     _inherit = 'product.product'

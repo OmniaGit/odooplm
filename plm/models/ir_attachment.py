@@ -2104,19 +2104,21 @@ class PlmDocument(models.Model):
         return False
 
     def setupCadOpen(self, hostname='', pws_path='', operation_type=''):
-        for doc_id in self:
-            plm_cad_open = self.env['plm.cad.open'].sudo()
-            last_bck = doc_id.getLastBackupDoc()
-            plm_cad_open_brws = plm_cad_open.search([('document_id', '=', doc_id.id)])
-            plm_cad_open_brws = plm_cad_open.create({
-                'plm_backup_doc_id': last_bck.id,
-                'userid': self.env.user.id,
-                'document_id': doc_id.id,
-                'pws_path': pws_path,
-                'hostname': hostname,
-                'operation_type': operation_type
-                })
-        return plm_cad_open_brws
+        plm_cad_open = self.env['plm.cad.open'].sudo()
+        if hostname and pws_path:
+            for doc_id in self:
+                last_bck = doc_id.getLastBackupDoc()
+                plm_cad_open_brws = plm_cad_open.search([('document_id', '=', doc_id.id)])
+                plm_cad_open_brws = plm_cad_open.create({
+                    'plm_backup_doc_id': last_bck.id,
+                    'userid': self.env.user.id,
+                    'document_id': doc_id.id,
+                    'pws_path': pws_path,
+                    'hostname': hostname,
+                    'operation_type': operation_type
+                    })
+                return plm_cad_open_brws
+        return plm_cad_open
 
     @api.model
     def clientCanIUpload(self, clientArgs):

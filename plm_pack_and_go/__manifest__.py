@@ -31,12 +31,12 @@
     "depends": ["plm"],
     "data": [  # security
         "security/plm_security.xml",
-        # views'views/plm_component_action_extended.xml',
+        'views/plm_component.xml',
         "views/ir_parameters.xml",
     ],
     "demo": [],
     "test": [],
-    "installable": False,
+    "installable": True,
     "application": False,
     "auto_install": False,
 }
