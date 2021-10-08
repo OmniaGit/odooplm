@@ -57,3 +57,4 @@ class PlmConfigSettings(models.TransientModel):
     module_activity_validation = fields.Boolean("Enable Eco /Ecr")
     module_plm_web_3d = fields.Boolean("Enable 3D WebGl")
     module_plm_breakages = fields.Boolean("Enable Brakages managment")
+    module_plm_pdf_workorder = fields.Boolean("Enable Plm PDF document inside workorder")

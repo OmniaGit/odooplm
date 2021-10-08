@@ -25,7 +25,9 @@
     "website": "https://github.com/OmniaGit/odooplm",
     "category": "Product Lifecycle Management",
     "sequence": 15,
-    "summary": "",
+    "summary": """
+    This module allows you to get the plm pdf document available into the workorder workscheet
+    """,
     "images": [],
     "license": "AGPL-3",
     "depends": [
@@ -38,7 +40,7 @@
     ],
     "demo": [],
     "test": [],
-    "installable": False,  # FIXME: mrp_workorder has been moved to enterprise
+    "installable": True,
     "application": False,
     "auto_install": False,
 }
