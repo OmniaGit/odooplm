@@ -30,11 +30,11 @@
     "images": [],
     "depends": ["plm"],
     "data": [
-        "views/component_view_extension.xml",
-        "views/ir_attachment_extension.xml",
+        "views/component_view.xml",
+        "views/ir_attachment.xml",
         "security/base_plm_web_rev_security.xml",
     ],
-    "installable": False,
+    "installable": True,
     "application": False,
     "auto_install": False,
 }

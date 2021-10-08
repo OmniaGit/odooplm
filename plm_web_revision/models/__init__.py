@@ -19,6 +19,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from . import product_product_extended
-from . import ir_attachment_extended
+from . import product_product
+from . import ir_attachment
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
