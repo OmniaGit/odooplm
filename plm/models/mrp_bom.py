@@ -603,7 +603,7 @@ class MrpBomExtension(models.Model):
         fields = self.plm_sanitize(fields)
         return super(MrpBomExtension, self).read(fields=fields, load=load)
     
-    def write(self, vals, check=True):
+    def write(self, vals):
         vals = self.plm_sanitize(vals)
         ret = super(MrpBomExtension, self).write(vals)
         for bom_brws in self:

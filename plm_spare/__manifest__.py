@@ -31,17 +31,16 @@
     "depends": ["plm"],
     "data": [
         # views
-        "views/plm_description_extension.xml",
-        "views/sparebom_view.xml",
-        "views/ir_attachment_view.xml",
-        # 'views/product_product_kanban.xml',
+        "views/plm_description.xml",
+        "views/plm_temporary.xml",
+        "views/ir_attachment.xml",
         # reporting
-        "report/bom_structure_report.xml",
-        "report/product_product_report.xml",
+        "report/bom_structure.xml",
+        "report/product_product.xml",
     ],
     "demo": [],
     "test": [],
-    "installable": False,
+    "installable": True,
     "application": False,
     "auto_install": False,
 }

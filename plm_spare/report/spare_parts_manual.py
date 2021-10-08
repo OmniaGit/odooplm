@@ -131,7 +131,6 @@ class ReportSpareDocumentOne(models.AbstractModel):
         recursion = True
         if self._name == 'report.plm_spare.pdf_one':
             recursion = False
-        self.processed_objs = []
 
         component_type = self.env['product.product']
         bom_type = self.env['mrp.bom']
@@ -147,12 +146,19 @@ class ReportSpareDocumentOne(models.AbstractModel):
             'date_now': localDT.ctime(),
             'state': 'doc_obj.state',
                 }
-        main_book_collector = BookCollector(customText=(msg, msg_vals))
+        main_book_collector = BookCollector(customText=(msg, msg_vals),
+                                            bottomHeight=10,
+                                            poolObj=self.sudo().env)
         for component in components:
-            self.processed_objs = []
+            processed_objs = []
             buf = self.get_first_page([component.id])
             main_book_collector.addPage((buf, ''))
-            self.get_spare_parts_pdf_file(component, main_book_collector, component_type, bom_type, recursion)
+            self.get_spare_parts_pdf_file(component,
+                                          main_book_collector,
+                                          component_type,
+                                          bom_type,
+                                          recursion,
+                                          processed_objs)
         if main_book_collector is not None:
             pdf_string = BytesIO()
             main_book_collector.collector.write(pdf_string)
@@ -163,35 +169,47 @@ class ReportSpareDocumentOne(models.AbstractModel):
         logging.warning('Unable to create PDF')
         return False, ''
 
-    def get_spare_parts_pdf_file(self, product, output, component_template, bom_template, recursion):
-        packed_objs = []
-        packed_ids = []
-        if product in self.processed_objs:
-            return
+    def get_spare_parts_pdf_file(self,
+                                 product,
+                                 output,
+                                 component_template,
+                                 bom_template,
+                                 recursion,
+                                 processed_objs):
+        product_ids = []
+        bom_line_ids = []
+        if product.id in processed_objs:
+            return processed_objs
+        processed_objs.append(product.id)
         bom_brws_ids = bom_template.search([('product_id', '=', product.id), ('type', '=', 'spbom')])
         if len(bom_brws_ids) < 1:
             bom_brws_ids = bom_template.search([('product_tmpl_id', '=', product.product_tmpl_id.id), ('type', '=', 'spbom')])
         if len(bom_brws_ids) > 0:
             if bom_brws_ids:
-                self.processed_objs.append(product)
                 for bom_line in bom_brws_ids.bom_line_ids:
-                    packed_objs.append(bom_line.product_id)
-                    packed_ids.append(bom_line.id)
-                if len(packed_ids) > 0:
+                    product_ids.append(bom_line.product_id)
+                    bom_line_ids.append(bom_line.id)
+                if len(bom_line_ids) > 0:
                     for page_stream in self.get_pdf_component_layout(product):
                         try:
                             output.addPage((page_stream, ''))
                         except Exception as ex:
                             logging.error(ex)
                             raise ex
-                    pdf = self.env.ref('plm.report_plm_bom_structure_one').sudo().render_qweb_pdf(bom_brws_ids.ids)[0]
+                    pdf = self.env.ref('plm.report_plm_bom_structure_one').sudo().with_context(force_report_rendering=True)._render_qweb_pdf(bom_brws_ids.ids)[0]
                     page_stream = BytesIO()
                     page_stream.write(pdf)
                     output.addPage((page_stream, ''))
                     if recursion:
-                        for packed_obj in packed_objs:
-                            if packed_obj not in self.processed_objs:
-                                self.get_spare_parts_pdf_file(packed_obj, output, component_template, bom_template, recursion)
+                        for packed_obj in product_ids:
+                            if packed_obj.id not in processed_objs:
+                                processed_objs += self.get_spare_parts_pdf_file(packed_obj,
+                                                                                output,
+                                                                                component_template,
+                                                                                bom_template,
+                                                                                recursion,
+                                                                                processed_objs)
+        return processed_objs
 
     def get_pdf_component_layout(self, component):
         ret = []
@@ -208,7 +226,7 @@ class ReportSpareDocumentOne(models.AbstractModel):
 
     def get_first_page(self, ids):
         str_buffer = BytesIO()
-        pdf = self.env.ref('plm_spare.report_product_product_spare_header').sudo().render_qweb_pdf(ids)[0]
+        pdf = self.env.ref('plm_spare.report_product_product_spare_header').sudo().with_context(force_report_rendering=True)._render_qweb_pdf(ids)[0]
         str_buffer.write(pdf)
         return str_buffer
 

@@ -18,10 +18,9 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from . import mrp_bom_extension
-from . import mrp_bom_line_extension
-from . import ir_attachment_extension
+from . import mrp_bom
+from . import mrp_bom_line
+from . import ir_attachment
 from . import plm_temporary
-from . import product_product_kanban_extension
-from . import product_product_extension
-from . import plm_description_extension
+from . import product_product
+from . import plm_description

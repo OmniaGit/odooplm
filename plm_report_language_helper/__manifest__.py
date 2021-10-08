@@ -28,8 +28,10 @@
     "summary": "Manage multilanguage PLM reports",
     "license": "AGPL-3",
     "images": [],
-    "depends": ["plm", "plm_spare"],
-    "data": [  # security
+    "depends": ["plm",
+                "plm_spare"],
+    "data": [  
+        # security
         "security/plm_security.xml",
         # views
         "views/plm_component_action_extended.xml",

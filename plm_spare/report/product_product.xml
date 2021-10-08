@@ -3,6 +3,7 @@
      <record id="report_product_product_spare_parts_pdf" model="ir.actions.report">
         <field name="name">Print Spare Parts Manual</field>
         <field name="model">product.product</field>
+        <field name="binding_model_id" ref="model_product_product"/>
         <field name="report_type">qweb-html</field>
         <field name="report_name">plm_spare.pdf_all</field>
         <field name="binding_type">report</field>
@@ -11,6 +12,7 @@
      <record id="report_product_product_spare_parts_pdf_one" model="ir.actions.report">
         <field name="name">Print Spare Parts Manual One Level</field>
         <field name="model">product.product</field>
+        <field name="binding_model_id" ref="model_product_product"/>
         <field name="report_type">qweb-html</field>
         <field name="report_name">plm_spare.pdf_one</field>
         <field name="binding_type">report</field>
@@ -19,6 +21,7 @@
     <record id="report_product_product_spare_header" model="ir.actions.report">
         <field name="name">Print Spare Header</field>
         <field name="model">product.product</field>
+        <field name="binding_model_id" ref="model_product_product"/>
         <field name="report_type">qweb-html</field>
         <field name="report_name">plm_spare.bom_spare_header</field>
         <field name="report_file">plm_spare.bom_spare_header</field>

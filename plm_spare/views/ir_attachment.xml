@@ -10,7 +10,7 @@
             <field name="attachment_release_date" position="after">
                 <field string="Spare Part"
                        name="used_for_spare"
-                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                       widget="boolean_toggle"/>
             </field>
         </field>
     </record>
