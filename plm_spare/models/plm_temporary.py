@@ -20,13 +20,15 @@
 ##############################################################################
 from odoo import _
 from odoo import api
-from odoo import osv
+from odoo import models
+from odoo.exceptions import UserError
+
 import logging
 
 _logger = logging.getLogger(__name__)
 
 
-class PlmTemporary(osv.osv.osv_memory):
+class PlmTemporary(models.TransientModel):
     _inherit = "plm.temporary"
 
     def action_create_spare_bom(self):
@@ -47,7 +49,7 @@ class PlmTemporary(osv.osv.osv_memory):
             obj_boms = self.env['mrp.bom'].search([('product_tmpl_id', '=', prod_prod_obj.product_tmpl_id.id),
                                                    ('type', '=', 'spbom')])
             if obj_boms:
-                raise osv.osv.except_osv(_('Creating a new Spare Bom Error.'),
+                raise UserError(_('Creating a new Spare Bom Error.'),
                                          _("BoM for Part {} already exists.".format(prod_prod_obj.name))
                                          )
 

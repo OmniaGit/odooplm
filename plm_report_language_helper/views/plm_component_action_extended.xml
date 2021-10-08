@@ -37,16 +37,16 @@
         <field name="type">form</field>
         <field name="arch" type="xml">
         <form string="Creation of Spare Bom">
-        <group col="4" colspan="4">	
-	        <field string="Language" name="lang"/>	
-	        <field string="Print Bom Type" name="bom_type"/>	
-        </group>
-        	<field name="datas" filename="datas_name"/>
-        <field name="datas_name" invisible="1"/>
-            <group colspan="4" col="4">
-            	<button special="cancel" string="Cancel"/>
-            	<button string="Create Spare Report" name="print_report" type="object"/>
+            <group col="4" colspan="4">	
+    	        <field string="Language" name="lang"/>	
+    	        <field string="Print Bom Type" name="bom_type"/>	
             </group>
+            	<field name="datas" filename="datas_name"/>
+            <field name="datas_name" invisible="1"/>
+            <footer>
+                <button special="cancel" string="Cancel"/>
+                <button string="Create Spare Report" name="print_report" type="object"/>
+            </footer>
         </form>
         </field>
     </record>	

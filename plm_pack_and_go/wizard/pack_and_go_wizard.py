@@ -31,7 +31,6 @@ from odoo import models
 from odoo import fields
 from odoo import api
 from odoo import _
-from odoo import osv
 from odoo import tools
 from odoo.exceptions import UserError
 import os
@@ -41,7 +40,7 @@ import requests
 _logger = logging.getLogger(__name__)
 
 
-class AvailableTypes(osv.osv.osv_memory):
+class AvailableTypes(models.TransientModel):
     _name = 'pack_and_go_types'
     _description = "Description of pack and go"
 
@@ -49,7 +48,7 @@ class AvailableTypes(osv.osv.osv_memory):
     pack_and_go_view_id = fields.Many2one('pack_and_go_view')
 
 
-class AdvancedPackView(osv.osv.osv_memory):
+class AdvancedPackView(models.TransientModel):
     _name = 'pack_and_go_view'
     _description = "Manage pack view for exporting"
 
@@ -86,7 +85,7 @@ class AdvancedPackView(osv.osv.osv_memory):
     pack_and_go_id = fields.Many2one('pack.and_go', _('Pack and go id'))
 
 
-class PackAndGo(osv.osv.osv_memory):
+class PackAndGo(models.TransientModel):
     _name = 'pack.and_go'
     _description = "Main wizard collector for pack and go"
 

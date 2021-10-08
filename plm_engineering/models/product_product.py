@@ -28,7 +28,6 @@ import logging
 
 from odoo import models
 from odoo import api
-from odoo import osv
 from odoo import _
 from odoo.exceptions import UserError
 

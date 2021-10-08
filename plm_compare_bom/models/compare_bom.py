@@ -20,7 +20,7 @@
 ##############################################################################
 import os
 import logging
-from odoo import models, fields, api, _, osv
+from odoo import models, fields, api, _
 _logger = logging.getLogger(__name__)
 
 
@@ -56,7 +56,7 @@ BOM_SHOW_FIELDS = ['Position',
 ###############################################################################################################
 
 
-class plm_missing_bom(osv.osv.osv_memory):
+class plm_missing_bom(models.TransientModel):
     _name = "plm.missing.bom"
     _description = "BoM Missing Objects"
 
@@ -93,7 +93,7 @@ class plm_missing_bom(osv.osv.osv_memory):
             plm_missign_bom_id.delete_bom_line()
 
 
-class plm_adding_bom(osv.osv.osv_memory):
+class plm_adding_bom(models.TransientModel):
     _name = "plm.adding.bom"
     _description = "BoM Adding Objects"
 
@@ -130,7 +130,7 @@ class plm_adding_bom(osv.osv.osv_memory):
             plm_missign_bom_id.delete_bom_line()
 
 
-class plm_compare_bom(osv.osv.osv_memory):
+class plm_compare_bom(models.TransientModel):
     _name = "plm.compare.bom"
     _description = "BoM Comparison"
 

@@ -25,11 +25,11 @@ Created on 12 Dec 2016
 @author: Daniel Smerghetto
 """
 from odoo import fields
-from odoo import osv
+from odoo import models
 from odoo import _
 
 
-class ProductTemporary(osv.osv.osv_memory):
+class ProductTemporary(models.TransientModel):
     _name = "plm.temporary"
     _description = "Temporary Class"
     name = fields.Char(_('Temp'), size=128)

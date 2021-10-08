@@ -27,7 +27,6 @@ Created on 11 Aug 2016
 from odoo.exceptions import UserError
 from odoo import models
 from odoo import fields
-from odoo import osv
 from odoo import api
 from odoo import _
 import logging
@@ -102,7 +101,7 @@ class PlmBackupDocument(models.Model):
         return self
 
 
-class BackupDocWizard(osv.osv.osv_memory):
+class BackupDocWizard(models.TransientModel):
     """
         This class is called from an action in xml located in plm.backupdoc.
         Pay attention! You can restore also confirmed, released and obsoleted documents!!!

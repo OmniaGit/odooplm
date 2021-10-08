@@ -31,7 +31,6 @@ from odoo import _
 from odoo.exceptions import ValidationError
 from odoo.exceptions import AccessError
 from odoo.exceptions import UserError
-from odoo import osv
 import odoo.tools as tools
 
 _logger = logging.getLogger(__name__)
@@ -1791,7 +1790,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         return list(set(product_ids))
 
 
-class PlmTemporayMessage(osv.osv.osv_memory):
+class PlmTemporayMessage(models.TransientModel):
     _name = "plm.temporary.message"
     _description = "Temporary Class"
     name = fields.Text(_('Bom Result'), readonly=True)

@@ -33,7 +33,6 @@ from odoo import models
 from odoo import fields
 from odoo import api
 from odoo import _
-from odoo import osv
 
 _logger = logging.getLogger(__name__)
 
@@ -42,7 +41,7 @@ _logger = logging.getLogger(__name__)
 #
 
 
-class plm_spareChoseLanguage(osv.osv.osv_memory):
+class plm_spareChoseLanguage(models.TransientModel):
     _name = "plm.sparechoselanguage"
     _description = "Module for extending the functionality of printing spare_bom reports in a multi language environment"
 
@@ -70,6 +69,7 @@ class plm_spareChoseLanguage(osv.osv.osv_memory):
             productProductId = self.env.context.get('active_id')
             newContext = self.env.context.copy()
             newContext['lang'] = lang
+            newContext['force_report_rendering']=True
             stream, fileExtention = self.env.ref(reportName).sudo().with_context(newContext).render_qweb_pdf(productProductId)
             self.datas = base64.encodestring(stream)
             tProductProduct = self.env['product.product']
@@ -109,15 +109,15 @@ class plm_spareChoseLanguage(osv.osv.osv_memory):
 #
 
 
-AVAILABLE_REPORT = [("plm.bom_structure_all", "BOM All Levels"),
-                    ("plm.bom_structure_one", "BOM One Level"),
-                    ("plm.bom_structure_all_sum", "BOM All Levels Summarized"),
-                    ("plm.bom_structure_one_sum", "BOM One Level Summarized"),
-                    ("plm.bom_structure_leaves", "BOM Only Leaves Summarized"),
-                    ("plm.bom_structure_flat", "BOM All Flat Summarized")]
+AVAILABLE_REPORT = [("plm.report_plm_bom_structure_all", "BOM All Levels"),
+                    ("plm.report_plm_bom_structure_one", "BOM One Level"),
+                    ("plm.report_plm_bom_structure_all_sum", "BOM All Levels Summarized"),
+                    ("plm.report_plm_bom_structure_one_sum", "BOM One Level Summarized"),
+                    ("plm.report_plm_bom_structure_leaves", "BOM Only Leaves Summarized"),
+                    ("plm.report_plm_bom_structure_flat", "BOM All Flat Summarized")]
 
 
-class plm_bomChoseLanguage(osv.osv.osv_memory):
+class plm_bomChoseLanguage(models.TransientModel):
     _name = "plm.bomchoselanguage"
     _description = "Module for extending the functionality of printing bom reports in a multi language environment"
 
@@ -142,9 +142,10 @@ class plm_bomChoseLanguage(osv.osv.osv_memory):
             reportName = self.bom_type
             newContext = self.env.context.copy()    # Used to update and generate pdf
             newContext['lang'] = lang
-            stream, fileExtention = self.env.ref(reportName).sudo().with_context(newContext).render_qweb_pdf(self.ids)
+            newContext['force_report_rendering']=True
+            stream, fileExtention = self.env.ref(reportName).sudo().with_context(newContext)._render_qweb_pdf(self.ids)
             bomId = self.env.context.get('active_id')
-            self.datas = base64.encodestring(stream)
+            self.datas = base64.b64encode(stream)
             tMrpBom = self.env['mrp.bom']
             brwProduct = tMrpBom.browse(bomId)
             fileName = brwProduct.product_tmpl_id.name + "_" + lang + "_bom." + fileExtention

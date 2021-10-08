@@ -26,7 +26,6 @@ Created on Apr 14, 2016
 
 from odoo import api
 from odoo import models
-from odoo.osv import osv
 from operator import itemgetter
 from odoo import _
 import odoo

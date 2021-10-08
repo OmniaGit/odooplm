@@ -27,14 +27,14 @@ Created on 25/mag/2016
 import logging
 from odoo import models
 from odoo import fields
-from odoo import osv
 from odoo import api
 from odoo import _
+from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
 
-class PlmTemporaryCutted(osv.osv.osv_memory):
+class PlmTemporaryCutted(models.TransientModel):
     _inherit = 'plm.temporary'
     cutted_part_explosion = fields.Selection(
         [('none', 'None'),
@@ -119,9 +119,7 @@ class PlmTemporaryCutted(osv.osv.osv_memory):
                 for bom_brws in bom_brws_list:
                     cuttedLines = bom_brws.bom_line_ids.filtered(lambda line: line.cutted_type == 'server')
                     if len(cuttedLines) > 1:
-                        raise osv.osv.except_osv(_('Bom Generation Error'),
-                                                 'Bom "%s" has more than one line, please check better.' % (
-                                                     bom_brws.product_tmpl_id.engineering_code))
+                        raise UserError('Bom "%s" has more than one line, please check better.' % (bom_brws.product_tmpl_id.engineering_code))
                     for bom_line_brws in cuttedLines:
                         raw_mat = bom_line_brws.bom_id.product_id.row_material
                         if not bom_line_brws.bom_id.product_id.row_material:
