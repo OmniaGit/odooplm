@@ -20,7 +20,7 @@
 ##############################################################################
 {
     "name": "PLM Product Description Language Helper",
-    "version": "14.0.1.0.0",
+    "version": "15.0.1",
     "author": "OmniaSolutions",
     "website": "https://github.com/OmniaGit/odooplm",
     "category": "Product Lifecycle Management",
@@ -29,8 +29,9 @@
     "images": [],
     "license": "AGPL-3",
     "depends": ["plm"],
-    "data": ["views/translation.xml", "views/plm_description_extension.xml"],
-    "installable": False,
+    "data": ["views/translation.xml",
+             "views/plm_description_extension.xml"],
+    "installable": True,
     "application": False,
     "auto_install": False,
 }

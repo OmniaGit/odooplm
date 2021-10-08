@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution    
-#    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
+#    Copyright (C) 2010-2021 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -20,5 +20,5 @@
 #
 ##############################################################################
 from . import plm_description_extension
-from . import product_product_extension
+from . import product_product
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
