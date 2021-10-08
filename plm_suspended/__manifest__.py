@@ -28,7 +28,8 @@
     "license": "AGPL-3",
     "summary": "Add obsolete status to the work flow",
     "images": [],
-    "depends": ["mrp", "plm"],
+    "depends": ["mrp",
+                "plm"],
     "data": [
         # views
         "views/plm_product_view.xml",
@@ -36,7 +37,7 @@
     ],
     "demo": [],
     "test": [],
-    "installable": False,
+    "installable": True,
     "application": False,
     "auto_install": False,
 }
