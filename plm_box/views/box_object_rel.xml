@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 <data>
+        
 	<record id="act_product_boxis" model="ir.actions.act_window">
 	    <field name="name">View Reated Boxis</field>
-	    <field name="domain">[('product_id.id', '=', active_id)</field>
+	    <field name="domain">[('product_id.id', '=', active_id)]</field>
 	    <field name="res_model">plm.box</field>
 	    <field name="binding_model_id" ref="product.model_product_product"/>
-	    <field name="view_id" ref="plm_box_tree"/>
+	    <field name="view_id" ref="plm_box.plm_box_tree"/>
 	</record>
     
     <record id="act_project_boxis" model="ir.actions.act_window">
@@ -14,7 +15,7 @@
         <field name="domain">[('project_id.id', '=', active_id)]</field>
         <field name="res_model">plm.box</field>
         <field name="binding_model_id" ref="project.model_project_project"/>
-        <field name="view_id" ref="plm_box_tree"/>
+        <field name="view_id" ref="plm_box.plm_box_tree"/>
     </record>
         
     <record id="act_task_boxis" model="ir.actions.act_window">
@@ -22,7 +23,7 @@
         <field name="domain">[('task_id.id','=',active_id)]</field>
         <field name="res_model">plm.box</field>
         <field name="binding_model_id" ref="project.model_project_task"/>
-        <field name="view_id" ref="plm_box_tree"/>
+        <field name="view_id" ref="plm_box.plm_box_tree"/>
     </record>
     
     <record id="act_sale_order_boxis" model="ir.actions.act_window">
@@ -30,7 +31,7 @@
         <field name="domain">[('sale_ord_id.id','=',active_id)]</field>
         <field name="res_model">plm.box</field>
         <field name="binding_model_id" ref="sale.model_sale_order"/>
-        <field name="view_id" ref="plm_box_tree"/>
+        <field name="view_id" ref="plm_box.plm_box_tree"/>
     </record>
     	
     <record id="act_acc_an_acc_boxis" model="ir.actions.act_window">
@@ -38,7 +39,7 @@
         <field name="domain">[('acc_an_acc_id.id','=',active_id)]</field>
         <field name="res_model">plm.box</field>
         <field name="binding_model_id" ref="analytic.model_account_analytic_account"/>
-        <field name="view_id" ref="plm_box_tree"/>
+        <field name="view_id" ref="plm_box.plm_box_tree"/>
     </record>
     
     <record id="act_users_boxis" model="ir.actions.act_window">
@@ -46,7 +47,7 @@
         <field name="domain">[('user_rel_id.id','=',active_id)]</field>
         <field name="res_model">plm.box</field>
         <field name="binding_model_id" ref="base.model_res_users"/>
-        <field name="view_id" ref="plm_box_tree"/>
+        <field name="view_id" ref="plm_box.plm_box_tree"/>
     </record>
     	
     <record id="act_bom_boxis" model="ir.actions.act_window">

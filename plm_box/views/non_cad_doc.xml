@@ -23,33 +23,6 @@
 	                    <field name="description" widget="link"/>
 	                    <field name="version" />
 	                    <field name="document_rel" />
-	                    <!--
-	                    <field name="obj_rel" editable="bottom" widget="one2many_list">
-							<tree string="Relation" editable="bottom">
-			                    <field name="model_id" on_change="onchange_model_id(model_id)"
-			                    	domain="[('name', 'in', ['Project','Users','Analytic Account','Task','Sales Order','Product','Work Order','Work Center','Bill of Material'])]"/>
-								<field name="name"/>
-			                    <field name="obj_type"/>
-			                    <field name="obj_id" invisible="1"/>
-			                    <field name="product_id" attrs="{'invisible':[('obj_type','!=','product.product')]}"
-			                    	on_change="onchange_product_id(product_id)"/>
-			                    <field name="project_id" attrs="{'invisible':[('obj_type','!=','project.project')]}"
-			                    	on_change="onchange_project_id(project_id)"/>
-			                    <field name="task_id" attrs="{'invisible':[('obj_type','!=','project.task')]}"
-			                    	on_change="onchange_task_id(task_id)"/>
-			                    <field name="sale_ord_id" attrs="{'invisible':[('obj_type','!=','sale.order')]}"
-			                    	on_change="onchange_sale_ord_id(sale_ord_id)" />
-			                    <field name="acc_an_acc_id" attrs="{'invisible':[('obj_type','!=','account.analytic.account')]}"
-			                    	on_change="onchange_acc_an_acc_id(acc_an_acc_id)"/>
-			                    <field name="user_rel_id" attrs="{'invisible':[('obj_type','!=','res.users')]}"
-			                    	on_change="onchange_user_rel_id(user_rel_id)"/>
-			                    <field name="bom_id" attrs="{'invisible':[('obj_type','!=','mrp.bom')]}"
-			                    	on_change="onchange_bom_id(bom_id)"/>
-			                    <field name="wc_id" attrs="{'invisible':[('obj_type','!=','mrp.workcenter')]}"
-			                    	on_change="onchange_wc_id(wc_id)"/>
-							</tree>
-						</field>
-						-->
 	                    <field name="plm_box_rel" />
 	                    <field name="groups_rel" />
 
@@ -122,20 +95,5 @@
         id="menu_non_cad_doc_relations"
         parent="plm.ir_attachment_form"/>
         
-        <!--
-        <record id="view_stock_config_settings_custom" model="ir.ui.view">
-            <field name="name">stock.config.settings.custom</field>
-            <field name="model">stock.config.settings</field>
-            <field name="inherit_id" ref="stock.view_stock_config_settings"/>
-            <field name="type">form</field>
-        	<field name="priority" eval="10"/>
-            <field name="arch" type="xml">
-            <field name="module_quality" position="after">
-            	<label for="module_stock_plm_box"/>
-                <field name="module_stock_plm_box"/>
-            </field>
-            </field>
-        </record>
-        -->
 </data>
 </odoo>
