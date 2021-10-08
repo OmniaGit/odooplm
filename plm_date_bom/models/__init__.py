@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
-#    Copyright (C) 2010 OmniaSolutions (<http://omniasolutions.eu>). All Rights Reserved
+#    Copyright (C) 2010-2021 OmniaSolutions (<http://omniasolutions.eu>). All Rights Reserved
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -26,7 +26,9 @@ Created on 18 Jul 2016
 @author: Daniel Smerghetto
 '''
 
-from . import mrp_bom_extension
+from . import mrp_bom
 from . import product_product
+from . import mrp_bom_line
+from . import plm_temporary_date_compute
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -1,7 +1,8 @@
+# -*- encoding: utf-8 -*-
 ##############################################################################
 #
-#    OmniaSolutions, Open Source Management Solution
-#    Copyright (C) 2010-2021 OmniaSolutions (<https://www.omniasolutions.website>).
+#    OmniaSolutions, Open Source Management Solution    
+#    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -18,27 +19,5 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-{
-    "name": "PLM Date Bom",
-    "version": "15.0.1",
-    "author": "OmniaSolutions",
-    "license": "AGPL-3",
-    "website": "https://github.com/OmniaGit/odooplm",
-    "category": "Product Lifecycle Management",
-    "sequence": 15,
-    "summary": "Allow to compute boms due to date",
-    "images": [],
-    "depends": ["plm"],
-    "data": [  # security
-        "security/plm_security.xml",
-        # views
-        "views/mrp_bom.xml",
-        "views/data.xml",
-        # 'report/bom_structure_report_extension.xml',
-    ],
-    "demo": [],
-    "test": [],
-    "installable": True,
-    "application": False,
-    "auto_install": False,
-}
+from . import test_date_bom
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

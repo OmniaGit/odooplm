@@ -1256,6 +1256,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                 defaults['linkeddocuments'] = []                  # Clean attached documents for new revision object
                 ctx['new_revision'] = True
                 new_tmpl_id = product_product_id.product_tmpl_id.with_context(ctx).copy(defaults)
+                new_tmpl_id._create_variant_ids()
                 newCompBrws = new_tmpl_id.product_variant_id
                 defaults['revision_user'] = self.env.uid
                 defaults['revision_date'] = datetime.now()
@@ -1263,6 +1264,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                 defaults['release_date'] = False
                 defaults['workflow_user'] = False
                 defaults['workflow_date'] = False
+                defaults['product_tmpl_id']=new_tmpl_id.id
                 newCompBrws.write(defaults)
                 product_product_id.wf_message_post(body=_('Created : New Revision.'))
                 newComponentId = newCompBrws.id
