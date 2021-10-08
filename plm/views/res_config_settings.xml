@@ -171,6 +171,17 @@
                                 </div>
                             </div>
                         </div>
+                        <h2>Sales</h2>
+                        <div class="row mt16 o_settings_container">
+                            <div class="col-md-6 col-xs-12 o_setting_box">
+                                <div class="o_setting_left_pane"><field name="module_plm_sale_fix"/></div>
+                                <div class="o_setting_right_pane"><label for="module_plm_sale_fix"/>
+                                    <div class="text-muted">
+						                This module adds permissions to sale module allowing some PLM procedures to work better.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <h2>Client</h2>
                         <div class="row mt16 o_settings_container">
                             <div class="col-md-6 col-xs-12 o_setting_box">

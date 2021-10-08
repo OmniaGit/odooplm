@@ -28,14 +28,15 @@
     "license": "AGPL-3",
     "summary": "",
     "images": [],
-    "depends": ["plm", "sale"],
+    "depends": ["plm",
+                "sale_management"],
     "data": [
         # security
         "security/base_plm_security.xml",
     ],  # After component_report.xml
     "demo": [],
     "test": [],
-    "installable": False,
+    "installable": True,
     "application": False,
     "auto_install": False,
 }
