@@ -6,7 +6,7 @@
             <field name="name">Product Confirmed</field>
             <field name="icon">fa-gears</field>
             <field name="sequence">3</field>
-            <field name="res_model_id" ref="product.model_product_product"/>
+            <field name="res_model">product.product</field>
             <field name="sequence">200</field>
         </record>
 

@@ -7,12 +7,14 @@
         <field name="priority" eval="3"/>
         <field name="arch" type="xml">
             <field name="partner_id" position="after">
-                <field string="PLM" name="plm_use_plm" class="oe_inline"/>
+                    <field string="PLM" name="plm_use_plm"  />
             </field>
+            <field name="company_id" position="after">
+                <field name="plm_completed" widget="progressbar" attrs="{'invisible':[('plm_use_plm', '=', False)]}" />
+             </field>
             <xpath expr="//notebook" position="inside">
                 <page string="PLM" attrs="{'invisible':[('plm_use_plm', '=', False)]}">
                     <group>
-                        <field name="plm_completed" widget="progressbar"/>
                         <field name="plm_product_ids"/>
                     </group>
                 </page>
