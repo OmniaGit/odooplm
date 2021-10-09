@@ -37,7 +37,7 @@
     "qweb": [],
     "demo": [],
     "test": [],
-    "installable": False,
+    "installable": True,
     "application": False,
     "auto_install": False,
 }

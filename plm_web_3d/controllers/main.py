@@ -29,9 +29,14 @@ class Web3DView(Controller):
     @route('/plm/download_treejs_model', type='http', auth='public')
     @webservice
     def download_treejs_model(self, document_id):
-        for ir_attachment in request.sudo().env['ir.attachment'].browse(document_id):
-            Response(ir_attachment.datas,
-                     headers={'file_name': ir_attachment.name})
+        for ir_attachment in request.env['ir.attachment'].sudo().search([('id','=', int(document_id))]):
+            if ir_attachment.has_web3d:
+                headers = []
+                content_base64 = base64.b64decode(ir_attachment.datas)
+                headers.append(('Content-Length', len(content_base64)))
+                headers.append(('file_name', ir_attachment.name))
+                response = request.make_response(content_base64, headers)
+                return response
         return Response(response="Document Not Found %r " % document_id, status=500)
 
 

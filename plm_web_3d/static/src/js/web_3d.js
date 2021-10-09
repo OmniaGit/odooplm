@@ -133,7 +133,8 @@ function init() {
 function loadDocumentFromOdoo(){
 	const document_id = document.querySelector('#active_model').getAttribute('active_model');
 	const document_name = document.querySelector('#active_model').getAttribute('document_name');
-	var file_path =  '../web/content/ir.attachment/' + document_id + '/datas/' + document_name;
+	//var file_path =  '../web/content/ir.attachment/' + document_id + '/datas/' + document_name;
+	var file_path = '../plm/download_treejs_model?document_id='+ document_id
 	var exte = document_name.split('.').pop();
 	if (['glb','gltf'].includes(exte)){ 
 		loadGltx(document_name, file_path);
