@@ -40,8 +40,9 @@ class IrAttachment(models.Model):
     _inherit = ['ir.attachment']
     
     has_web3d = fields.Boolean(string="Has 3d Web link",
-                                compute="_compute_web_3d_link",
-                                help='Check if this document has releted 3d web document')
+                               compute="_compute_web_3d_link",
+                               store=True,
+                               help='Check if this document has releted 3d web document')
 
     def isWebGl(self):
         for ir_attachment in self:
@@ -49,7 +50,8 @@ class IrAttachment(models.Model):
                 _name, exte = os.path.splitext(ir_attachment.name)
                 return exte.lower() in SUPPORTED_WEBGL_EXTENTION
         return False
-
+    
+    @api.depends('name')
     def _compute_web_3d_link(self):
         attach_relations = self.env['ir.attachment.relation']
         for ir_attachment in self:
@@ -57,7 +59,7 @@ class IrAttachment(models.Model):
                 ir_attachment.has_web3d = True
                 continue
             ir_attachment.has_web3d = attach_relations.search_count([('parent_id', '=', ir_attachment.id),
-                                                                             ('link_kind','=','Web3DTree')])
+                                                                     ('link_kind','=','Web3DTree')])
         
     def get_url_for_3dWebModel(self):
         attach_relations = self.env['ir.attachment.relation']

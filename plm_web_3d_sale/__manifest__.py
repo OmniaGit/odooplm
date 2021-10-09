@@ -28,7 +28,8 @@
     "license": "AGPL-3",
     "summary": "",
     "images": [],
-    "depends": ["plm", "website_sale"],
+    "depends": ["plm",
+                "website_sale"],
     "data": [
         # views
         "views/product_image.xml",
@@ -36,7 +37,7 @@
     "qweb": [],
     "demo": [],
     "test": [],
-    "installable": False,
+    "installable": True,
     "application": False,
     "auto_install": False,
 }

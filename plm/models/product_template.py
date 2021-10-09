@@ -130,8 +130,7 @@ class ProductTemplateExtension(models.Model):
         for related_product_brws in related_product_brws_list:
             product_id = related_product_brws.id
         mod_obj = self.env['ir.model.data']
-        search_res = mod_obj.get_object_reference('plm', 'plm_component_base_form')
-        form_id = search_res and search_res[1] or False
+        form_id = self.env.ref("plm.plm_component_base_form")
         if product_id and form_id:
             return {
                 'type': 'ir.actions.act_window',
@@ -140,7 +139,7 @@ class ProductTemplateExtension(models.Model):
                 'view_mode': 'form',
                 'res_model': 'product.product',
                 'res_id': product_id,
-                'views': [(form_id, 'form')],
+                'views': [(form_id.id, 'form')],
             }
 
     @api.model

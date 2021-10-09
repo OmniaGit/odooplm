@@ -56,6 +56,7 @@ class PlmConfigSettings(models.TransientModel):
     module_plm_bom_summarize = fields.Boolean("Enable Bom sommarization during the client upload")
     module_activity_validation = fields.Boolean("Enable Eco /Ecr")
     module_plm_web_3d = fields.Boolean("Enable 3D WebGl")
+    module_plm_web_3d_sale = fields.Boolean("Enable 3D WebGl for e-commerce and sale")
     module_plm_breakages = fields.Boolean("Enable Brakages managment")
     module_plm_pdf_workorder = fields.Boolean("Enable Plm PDF document inside workorder")
     module_plm_sale_fix = fields.Boolean("Add plm groups permission to sale")
