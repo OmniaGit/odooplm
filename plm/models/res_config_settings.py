@@ -60,3 +60,5 @@ class PlmConfigSettings(models.TransientModel):
     module_plm_breakages = fields.Boolean("Enable Brakages managment")
     module_plm_pdf_workorder = fields.Boolean("Enable Plm PDF document inside workorder")
     module_plm_sale_fix = fields.Boolean("Add plm groups permission to sale")
+    module_plm_document_multi_site = fields.Boolean("Multi side storege system")
+    

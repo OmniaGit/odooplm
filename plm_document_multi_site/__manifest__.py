@@ -35,7 +35,7 @@
         "data/server_action.xml",
         "security/base_plm_web_rev_security.xml",
     ],
-    "installable": False,
+    "installable": True,
     "application": False,
     "auto_install": False,
 }
