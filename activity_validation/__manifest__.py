@@ -39,13 +39,16 @@
         "views/mail_activity_type.xml",
         "views/mail_activity.xml",
         "views/mail_activity_children_rel.xml",
-        # static
-        "static/src/xml/import_js.xml",
     ],
     "demo": [],
     "test": [],
     "qweb": ["static/src/xml/*.xml"],
-    "installable": False,
+    'assets': {
+        'web.assets_backend': [
+            "activity_validation/static/src/js/systray_activity_menu.js",
+            ]
+        },
+    "installable": True,
     "application": False,
     "auto_install": False,
 }
