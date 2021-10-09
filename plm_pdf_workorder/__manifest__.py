@@ -29,7 +29,7 @@
     This module allows you to get the plm pdf document available into the workorder workscheet
     """,
     "images": [],
-    "license": "AGPL-3",
+    "license": "LGPL-3",
     "depends": [
         "plm",
         "mrp_workorder",
