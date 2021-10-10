@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
-#    Copyright (C) 2010-2021 OmniaSolutions (<http://omniasolutions.eu>). All Rights Reserved
+#    Copyright (C) 2010-2021 OmniaSolutions (<https://www.omniasolutions.website>). All Rights Reserved
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
