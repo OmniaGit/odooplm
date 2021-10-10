@@ -26,7 +26,7 @@
     "name": "PLM Breakages",
     "version": "15.0.1",
     "author": "OmniaSolutions",
-    "website": "https://github.com/OmniaGit/odooplm",
+    "website": "https://www.omniasolutions.website",
     "category": "Custom",
     "license": "AGPL-3",
     "summary": "PLM Breakages",
