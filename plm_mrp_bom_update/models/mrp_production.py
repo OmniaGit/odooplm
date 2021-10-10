@@ -66,15 +66,12 @@ class MrpProduction(models.Model):
          
                     mrp_production_id.product_id = new_product_id.id 
                     mrp_production_id.message_post(body="Product and BOM Updated by procedure [%s, %s]" % (new_product_id.engineering_code, new_product_id.engineering_revision))
-                    mrp_production_id.onchange_product_id()
+                    mrp_production_id._onchange_product_id()
                     mrp_production_id._onchange_bom_id()
                     mrp_production_id._onchange_location()
                     mrp_production_id._onchange_location_dest()
                     mrp_production_id._onchange_move_finished()
                     mrp_production_id._onchange_move_raw()
-                    mrp_production_id._onchange_workorder_ids()
-                    
-                    #mrp_production_id._generate_moves()
                     for move_line_id in mrp_production_id.move_raw_ids + mrp_production_id.move_finished_ids:
                         if move_line_id.product_id.engineering_code in product_done_qty:
                             move_line_id.quantity_done = product_done_qty[move_line_id.product_id.engineering_code]

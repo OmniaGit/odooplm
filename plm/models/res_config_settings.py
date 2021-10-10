@@ -61,4 +61,5 @@ class PlmConfigSettings(models.TransientModel):
     module_plm_pdf_workorder = fields.Boolean("Enable Plm PDF document inside workorder")
     module_plm_sale_fix = fields.Boolean("Add plm groups permission to sale")
     module_plm_document_multi_site = fields.Boolean("Multi side storege system")
+    module_plm_mrp_bom_update = fields.Boolean("Multi side storege system")
     

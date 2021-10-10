@@ -181,8 +181,21 @@
                                 <div class="o_setting_left_pane"><field name="module_plm_pdf_workorder"/></div>
                                 <div class="o_setting_right_pane"><label for="module_plm_pdf_workorder"/>
                                     <div class="text-muted">
-                                        Add the capability to use the PDF PLM document inside workorder
+                                        Add the capability to use the PDF PLM document inside work order
                                         ATTENTION !! This module work only for enterprise version because the mrp_workorder is in the enterprise version
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt16 o_settings_container">
+                            <div class="col-md-6 col-xs-12 o_setting_box">
+                                <div class="o_setting_left_pane"><field name="module_plm_mrp_bom_update"/></div>
+                                <div class="o_setting_right_pane"><label for="module_plm_mrp_bom_update"/>
+                                    <div class="text-muted">
+                                        Add the capability to update the manufacturing order from a revised BOM
+                                        <b>
+                                        ATTENTION !! This module depends on plm_mrp_bom_update from:
+                                        git clone -b 15.0 https://github.com/OmniaSolutions/odooAddons.git</b>
                                     </div>
                                 </div>
                             </div>
