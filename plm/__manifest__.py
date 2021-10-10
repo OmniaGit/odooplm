@@ -25,7 +25,7 @@
     "website": "https://github.com/OmniaGit/odooplm",
     "category": "Manufacturing/Product Lifecycle Management",
     "sequence": 15,
-    "license": "AGPL-3",
+    "license": "LGPL-3",
     "summary": "PLM Integration with main CAD editors",
     "images": ["static/img/odoo_plm.png"],
     "depends": ["base", "board", "product", "mrp"],
