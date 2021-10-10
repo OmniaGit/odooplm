@@ -33,7 +33,7 @@ This module allows you to update your working manufacture order based on the bom
  'website': 'https://www.OmniaSolutions.website',
  'depends': ['omnia_mrp_bom_update','plm','stock'],
  'data': ['views/mrp_bom_extension.xml'],
- 'license': 'LGPL-3',
+ 'license': 'AGPL-3',
  'installable': True,
  'application': False,
  'auto_install': False,
