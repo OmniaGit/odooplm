@@ -1039,7 +1039,7 @@ class PlmDocument(models.Model):
                                                                                        ('parent_id', '=', ir_a_id),
                                                                                        ('child_id', '=', ir_a_id)])
 
-    engineering_document_name = fields.Char('Document Name',
+    engineering_document_name = fields.Char('Engineering Document Name',
                                             index=True)
     revisionid = fields.Integer(_('Revision Index'),
                                 default=0,
@@ -1690,13 +1690,19 @@ class PlmDocument(models.Model):
         """
         check out the current document
         """
-        self.canCheckOut(showError=showError)
-        values = {'userid': self.env.uid,
-                  'hostname': hostName,
-                  'hostpws': hostPws,
-                  'documentid': self.id}
-        res = self.env['plm.checkout'].create(values)
-        return res.id
+        for document in self:
+            checkout_id = document.isCheckedOutByMe()
+            if checkout_id:
+                return checkout_id
+            res, _msg = document.canCheckOut(showError=showError)
+            if res:
+                values = {'userid': self.env.uid,
+                          'hostname': hostName,
+                          'hostpws': hostPws,
+                          'documentid': document.id}
+                res = self.env['plm.checkout'].create(values)
+                return res.id
+        return False
 
     
     def canCheckOut(self, showError=False):
