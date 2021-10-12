@@ -162,7 +162,43 @@ class PlmComponent(models.Model):
     workflow_date = fields.Datetime(string=_('Datetime Last Wkf'))
     revision_user = fields.Many2one('res.users', string=_("User Revision"))
     revision_date = fields.Datetime(string=_('Datetime Revision'))
+    
+    show_std_field1 = fields.Boolean(_('Show std field 1'),
+                                 compute='_showStd')
+    show_std_field2 = fields.Boolean(_('Show std field 2'),
+                                 compute='_showStd')
+    show_std_field3 = fields.Boolean(_('Show std field 3'),
+                                 compute='_showStd')
 
+    
+    readonly_std_umc1 = fields.Boolean(_("put readOnly the field standard description 1"))
+    readonly_std_umc2 = fields.Boolean(_("put readOnly the field standard description 1 "))
+    readonly_std_umc3 = fields.Boolean(_("put readOnly the field standard description 1"))
+    
+    
+    @api.onchange("std_description")
+    def _showStd(self):
+        for product_product_id in self:
+            product_product_id.show_std_field1 = False
+            product_product_id.show_std_field2 = False
+            product_product_id.show_std_field3 = False
+            product_product_id.readonly_std_umc1 = False
+            product_product_id.readonly_std_umc2 = False
+            product_product_id.readonly_std_umc3 = False
+            if product_product_id.std_description:
+                if product_product_id.std_description.umc1:
+                    product_product_id.readonly_std_umc1=True
+                if product_product_id.std_description.umc2:
+                    product_product_id.readonly_std_umc2=True
+                if product_product_id.std_description.umc3:
+                    product_product_id.readonly_std_umc3=True
+                if product_product_id.std_description.umc1 or product_product_id.std_description.fmt1:
+                    product_product_id.show_std_field1 = True
+                if product_product_id.std_description.umc2 or product_product_id.std_description.fmt2:
+                    product_product_id.show_std_field2 = True
+                if product_product_id.std_description.umc3 or product_product_id.std_description.fmt3:
+                    product_product_id.show_std_field3 = True
+        
     def _revisions_count(self):
         """
         get All version product_tempate based on this one
@@ -180,14 +216,25 @@ class PlmComponent(models.Model):
                 self.name = self.std_description.description
                 if self.std_description.umc1:
                     self.std_umc1 = self.std_description.umc1
+                else:
+                    self.std_umc1=""
+                    self.std_value1=False
                 if self.std_description.umc2:
                     self.std_umc2 = self.std_description.umc2
+                else:
+                    self.std_umc2=""
+                    self.std_value2=False
                 if self.std_description.umc3:
                     self.std_umc3 = self.std_description.umc3
+                else:
+                    self.std_umc3=""
+                    self.std_value3=False
                 if self.std_description.unitab:
                     self.name = self.name + " " + self.std_description.unitab
 
-    @api.onchange('std_value1', 'std_value2', 'std_value3')
+                
+
+    @api.onchange('std_value1', 'std_value2', 'std_value3', 'std_umc1','std_umc2','std_umc3')
     def on_change_stdvalue(self):
         if self.std_description:
             if self.std_description.description:

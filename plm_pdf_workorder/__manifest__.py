@@ -27,7 +27,7 @@
     "sequence": 15,
     "summary": "",
     "images": [],
-    "license": "AGPL-3",
+    "license": "LGPL-3",
     "depends": [
         "plm",
         "mrp_workorder",

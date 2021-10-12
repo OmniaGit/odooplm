@@ -74,6 +74,27 @@
                         <field name="engineering_code" colspan="4" attrs="{'readonly':[('is_engcode_editable','=', False)]}" select="1"/>
                         <field name="engineering_revision" colspan="2" attrs="{'readonly':[('is_engcode_editable','=', False)]}"/>
                         <field name="std_description" colspan="6" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                        <field name="show_std_field1" groups='base.group_no_one'/>
+                        <field name="show_std_field2" groups='base.group_no_one'/>
+                        <field name="show_std_field3" groups='base.group_no_one'/>
+                        <field name="readonly_std_umc1" groups='base.group_no_one'/>
+                        <field name="readonly_std_umc2" groups='base.group_no_one'/>
+                        <field name="readonly_std_umc3" groups='base.group_no_one'/>
+                        <group name="std_desc_attrs" col="4" colspan="4" string="Standard Description Parameters" attrs="{'invisible': [('std_description','=', False)]}">
+                            <a target="new"  href="https://www.omniasolutions.website/blog/developer-and-it-here-you-will-find-post-regarding-very-technical-aspect-of-programming-and-it-those-thinks-are-daily-used-by-omniasolutions-and-we-hope-you-that-will-help-you-3/post/standard-description-39" title="Standard description parameters info" colspan="4"><i class="fa fa-info-circle"></i></a>
+                            <field name="std_umc1"
+                                   attrs="{'readonly':['|',('readonly_std_umc1','=',True),('state','in',['released','obsoleted'])], 'invisible': [('show_std_field1','=',False)]}"/>
+                            <field name="std_value1"
+                                   attrs="{'readonly':[('std_umc1','=',False),('state','in',['released','obsoleted'])], 'invisible': [('show_std_field1','=',False)]}"/>
+                            <field name="std_umc2"
+                                   attrs="{'readonly':['|',('readonly_std_umc2','=',True),('state','in',['released','obsoleted'])], 'invisible': [('show_std_field2','=',False)]}"/>
+                            <field name="std_value2"
+                                   attrs="{'readonly':[('std_umc2','=',False),('state','in',['released','obsoleted'])], 'invisible': [('show_std_field2','=',False)]}"/>
+                            <field name="std_umc3"
+                                   attrs="{'readonly':['|',('readonly_std_umc3','=',True),('state','in',['released','obsoleted'])], 'invisible': [('show_std_field3','=',False)]}"/>
+                            <field name="std_value3"
+                                   attrs="{'readonly':[('std_umc3','=',False),('state','in',['released','obsoleted'])], 'invisible': [('show_std_field3','=', False)]}"/>
+                        </group>
                         <field name="desc_modify" colspan="6" attrs="{'readonly':[('state','in',['released','obsoleted'])], 'invisible': [('engineering_revision', '=', 0)]}"/>
 	                    <field name="type" invisible="1"/>
 	                    <field name="source_product" invisible="1"/>
@@ -110,21 +131,7 @@
                                 <field name="engineering_treatment"
                                        attrs="{'readonly':[('state','in',['released','obsoleted'])]}" colspan="2" groups='base.group_no_one'/>
                             </group>
-                            <group name="std_desc_attrs" col="4" colspan="4" string="Standard Description Parameters">
-                            	<a target="new"  href="https://www.omniasolutions.website/blog/developer-and-it-here-you-will-find-post-regarding-very-technical-aspect-of-programming-and-it-those-thinks-are-daily-used-by-omniasolutions-and-we-hope-you-that-will-help-you-3/post/standard-description-39" title="Standard description parameters info" colspan="4"><i class="fa fa-info-circle"></i></a>
-                                <field name="std_umc1"
-                                       attrs="{'readonly':[('std_umc1','=',False),('state','in',['released','obsoleted'])]}"/>
-                                <field name="std_value1"
-                                       attrs="{'readonly':[('std_umc1','=',False),('state','in',['released','obsoleted'])]}"/>
-                                <field name="std_umc2"
-                                       attrs="{'readonly':[('std_umc2','=',False),('state','in',['released','obsoleted'])]}"/>
-                                <field name="std_value2"
-                                       attrs="{'readonly':[('std_umc2','=',False),('state','in',['released','obsoleted'])]}"/>
-                                <field name="std_umc3"
-                                       attrs="{'readonly':[('std_umc3','=',False),('state','in',['released','obsoleted'])]}"/>
-                                <field name="std_value3"
-                                       attrs="{'readonly':[('std_umc3','=',False),('state','in',['released','obsoleted'])]}"/>
-                            </group>
+
                             <group col="4" colspan="4" name="workflow_section" string="Workflow">
 				                 <field name="release_user"   readonly="1"/>
 				                 <field name="release_date"  readonly="1"/>
@@ -209,6 +216,28 @@
                <group>
 	                <field name="std_description" colspan="6"
 	                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+	                <field name="show_std_field1" groups='base.group_no_one'/>
+	                <field name="show_std_field2" groups='base.group_no_one'/>
+	                <field name="show_std_field3" groups='base.group_no_one'/>
+	                <field name="readonly_std_umc1" groups='base.group_no_one'/>
+	                <field name="readonly_std_umc2" groups='base.group_no_one'/>
+	                <field name="readonly_std_umc3" groups='base.group_no_one'/>
+	                
+                    <group name="std_desc_attrs" col="4" colspan="4" string="Standard Description Parameters" attrs="{'invisible': [('std_description','=', False)]}">
+                        <a target="new"  href="https://www.omniasolutions.website/blog/developer-and-it-here-you-will-find-post-regarding-very-technical-aspect-of-programming-and-it-those-thinks-are-daily-used-by-omniasolutions-and-we-hope-you-that-will-help-you-3/post/standard-description-39" title="Standard description parameters info" colspan="4"><i class="fa fa-info-circle"></i></a>
+                            <field name="std_umc1"
+                                   attrs="{'readonly':['|',('readonly_std_umc1','=',True),('state','in',['released','obsoleted'])], 'invisible': [('show_std_field1','=',False)]}"/>
+                            <field name="std_value1"
+                                   attrs="{'readonly':[('std_umc1','=',False),('state','in',['released','obsoleted'])], 'invisible': [('show_std_field1','=',False)]}"/>
+                            <field name="std_umc2"
+                                   attrs="{'readonly':['|',('readonly_std_umc2','=',True),('state','in',['released','obsoleted'])], 'invisible': [('show_std_field2','=',False)]}"/>
+                            <field name="std_value2"
+                                   attrs="{'readonly':[('std_umc2','=',False),('state','in',['released','obsoleted'])], 'invisible': [('show_std_field2','=',False)]}"/>
+                            <field name="std_umc3"
+                                   attrs="{'readonly':['|',('readonly_std_umc3','=',True),('state','in',['released','obsoleted'])], 'invisible': [('show_std_field3','=',False)]}"/>
+                            <field name="std_value3"
+                                   attrs="{'readonly':[('std_umc3','=',False),('state','in',['released','obsoleted'])], 'invisible': [('show_std_field3','=', False)]}"/>
+                    </group>
 	                <field name="source_product" invisible="1"/>
 	                <field name="desc_modify" colspan="6"
 	                       attrs="{'readonly':[('state','in',['released','obsoleted'])], 'invisible': [('engineering_revision', '=', 0)]}"/>
@@ -241,21 +270,6 @@
                                        attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
                                 <field name="engineering_treatment"
                                        attrs="{'readonly':[('state','in',['released','obsoleted'])]}" colspan="2" groups='base.group_no_one'/>
-                            </group>
-                            <group col="4" colspan="4" string="Standard Description Parameters">
-                                <a target="new"  href="https://www.omniasolutions.website/blog/developer-and-it-here-you-will-find-post-regarding-very-technical-aspect-of-programming-and-it-those-thinks-are-daily-used-by-omniasolutions-and-we-hope-you-that-will-help-you-3/post/standard-description-39" title="Standard description parameters info" colspan="4"><i class="fa fa-info-circle"></i></a>
-                                <field name="std_umc1"
-                                       attrs="{'readonly':[('std_umc1','=',False),('state','in',['released','obsoleted'])]}"/>
-                                <field name="std_value1"
-                                       attrs="{'readonly':[('std_umc1','=',False),('state','in',['released','obsoleted'])]}"/>
-                                <field name="std_umc2"
-                                       attrs="{'readonly':[('std_umc2','=',False),('state','in',['released','obsoleted'])]}"/>
-                                <field name="std_value2"
-                                       attrs="{'readonly':[('std_umc2','=',False),('state','in',['released','obsoleted'])]}"/>
-                                <field name="std_umc3"
-                                       attrs="{'readonly':[('std_umc3','=',False),('state','in',['released','obsoleted'])]}"/>
-                                <field name="std_value3"
-                                       attrs="{'readonly':[('std_umc3','=',False),('state','in',['released','obsoleted'])]}"/>
                             </group>
                             <group col="4" colspan="4" name="workflow_section" string="Workflow">
 				                 <field name="release_user"   readonly="1"/>
