@@ -1690,19 +1690,22 @@ class PlmDocument(models.Model):
         """
         check out the current document
         """
+        ret_checkout = False
+        msg = ''
         for document in self:
             checkout_id = document.isCheckedOutByMe()
             if checkout_id:
-                return checkout_id
-            res, _msg = document.canCheckOut(showError=showError)
-            if res:
-                values = {'userid': self.env.uid,
-                          'hostname': hostName,
-                          'hostpws': hostPws,
-                          'documentid': document.id}
-                res = self.env['plm.checkout'].create(values)
-                return res.id
-        return False
+                ret_checkout = checkout_id
+            else:
+                res, msg = document.canCheckOut(showError=showError)
+                if res:
+                    values = {'userid': self.env.uid,
+                              'hostname': hostName,
+                              'hostpws': hostPws,
+                              'documentid': document.id}
+                    ret_checkout = self.env['plm.checkout'].create(values).id
+                    break
+        return ret_checkout, msg
 
     
     def canCheckOut(self, showError=False):
@@ -2596,9 +2599,12 @@ class PlmDocument(models.Model):
                         doc_fields['checkout'] = True
                         continue
                     if not stop:
-                        doc_id.checkout(hostname, pws_path, showError=False)
-                        doc_id.setupCadOpen(hostname, pws_path, operation_type='check-out')
-                        doc_fields['checkout'] = True
+                        checkout_id, msg = doc_id.checkout(hostname, pws_path, showError=False)
+                        if not checkout_id or msg:
+                            doc_fields['err_msg'] += '\n%s' % (msg)
+                        else:
+                            doc_id.setupCadOpen(hostname, pws_path, operation_type='check-out')
+                            doc_fields['checkout'] = True
                     else:
                         doc_fields['err_msg'] += '\nCannot checkout document %s.' % (doc_fields['name'])
         return json.dumps(structure)
