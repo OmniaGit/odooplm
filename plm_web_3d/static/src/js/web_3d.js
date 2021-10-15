@@ -5,16 +5,17 @@ import { GLTFLoader } from './lib/three.js/examples/jsm/loaders/GLTFLoader.js';
 import { FBXLoader } from './lib/three.js/examples/jsm/loaders/FBXLoader.js';
 import { OBJLoader } from './lib/three.js/examples/jsm/loaders/OBJLoader.js';
 import { VRMLLoader } from './lib/three.js/examples/jsm/loaders/VRMLLoader.js';
+import { STLLoader } from './lib/three.js/examples/jsm/loaders/STLLoader.js';
 
 // controls
 import { OrbitControls } from './lib/three.js/examples/jsm/controls/OrbitControls.js';
-// to download an attachment from odoo use this template
-// http://localhost:8069/web/content/ir.attachment/383/datas/aa.e
 
 const gLTFLoader = new GLTFLoader();
 const fBXLoader = new FBXLoader();
 const oBJLoader = new OBJLoader();
 const vRMLLoader = new VRMLLoader();
+const stlLoader = new STLLoader();
+
 const loader = new THREE.ObjectLoader();
 let camera, scene, renderer, controls;
 let planeMeshFloar, planeGrid;
@@ -133,8 +134,7 @@ function init() {
 function loadDocumentFromOdoo(){
 	const document_id = document.querySelector('#active_model').getAttribute('active_model');
 	const document_name = document.querySelector('#active_model').getAttribute('document_name');
-	//var file_path =  '../web/content/ir.attachment/' + document_id + '/datas/' + document_name;
-	var file_path = '../plm/download_treejs_model?document_id='+ document_id
+	var file_path = '../plm/download_treejs_model?document_id=' + document_id
 	var exte = document_name.split('.').pop();
 	if (['glb','gltf'].includes(exte)){ 
 		loadGltx(document_name, file_path);
@@ -151,7 +151,9 @@ function loadDocumentFromOdoo(){
 	if (['json'].includes(exte)){
 		loadoloader(document_name, file_path);
 	}
-	
+	if (['stl'].includes(exte)){
+		loadStlLoader(document_name, file_path);
+	}	
 }
 
 function loadGltx(document_name, file_path){
@@ -219,6 +221,18 @@ function loadoloader(document_name, file_path){
 			});	
 }
 
+const material = new THREE.MeshPhysicalMaterial({
+    color: 0xb2ffc8,
+    //envMap: envTexture,
+    metalness: 0.25,
+    roughness: 0.1,
+    opacity: 1.0,
+    transparent: true,
+    transmission: 0.50,
+    clearcoat: 1.0,
+    clearcoatRoughness: 0.25
+})
+
 function loadvRMLLoader(document_name, file_path){
 	vRMLLoader.load( file_path, function ( gltf ) {
 		var children = gltf.children; 
@@ -232,6 +246,21 @@ function loadvRMLLoader(document_name, file_path){
 		console.error( error.toString() );
 	});	
 	
+}
+
+function loadStlLoader(document_name, file_path){
+	stlLoader.load(file_path, 
+	    function (geometry) {
+	        const mesh = new THREE.Mesh(geometry, material)
+	        addItemToSeen(mesh)
+	    },
+	    (xhr) => {
+	        console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
+	    },
+	    (error) => {
+	        console.log(error)
+	    }
+	)
 }
 function addItemToSeen(object){
 	object.receiveShadow=true;
