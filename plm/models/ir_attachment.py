@@ -270,22 +270,26 @@ class PlmDocument(models.Model):
         return list(set(out))
     
     @api.model
-    def getRelatedRfTree(self, doc_id, recursion=True):
+    def getRelatedRfTree(self, doc_id, recursion=True, evaluated=[]):
         out = []
         if not doc_id:
             logging.warning('Cannot get links from %r document' % (doc_id))
             return []
         to_search = [('link_kind', 'in', ['RfTree']),('parent_id', '=', doc_id)]
         doc_rel_ids = self.env['ir.attachment.relation'].search(to_search)
+        if doc_id in evaluated:
+            logging.warning('Document %r already found in RfTree evaluated %r' % (doc_id, evaluated))
+            return out
+        evaluated.append(doc_id)
         for doc_rel_id in doc_rel_ids:
             if doc_rel_id.child_id.id == doc_id:
                 out.append(doc_rel_id.parent_id.id)
                 if recursion:
-                    out.extend(self.getRelatedRfTree(doc_rel_id.parent_id.id, recursion))
+                    out.extend(self.getRelatedRfTree(doc_rel_id.parent_id.id, recursion, evaluated))
             else:
                 out.append(doc_rel_id.child_id.id)
                 if recursion:
-                    out.extend(self.getRelatedRfTree(doc_rel_id.child_id.id, recursion))
+                    out.extend(self.getRelatedRfTree(doc_rel_id.child_id.id, recursion, evaluated))
         return list(set(out))
 
     @api.model
