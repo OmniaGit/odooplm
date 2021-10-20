@@ -1,31 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 	<template id="plm.ir_attachment_pdf">
-        <html t-att-lang="lang and lang.replace('_', '-')"
-              t-att-data-report-margin-top="data_report_margin_top"
-              t-att-data-report-header-spacing="data_report_header_spacing"
-              t-att-data-report-dpi="data_report_dpi"
-              t-att-data-report-landscape="data_report_landscape"
-              t-att-web-base-url="web_base_url">
-            <head>
-                <meta charset="utf-8"/>
-                <meta name="viewport" content="initial-scale=1"/>
-                <title><t t-esc="title or 'Odoo Report'"/></title>
-                <t t-call-assets="web.report_assets_common" t-js="false"/>
-                <t t-call-assets="web.assets_common" t-css="false"/>
-                <t t-call-assets="web.report_assets_common" t-css="false"/>
-            </head>
-            <body t-att-class="'container' if not full_width else 'container-fluid'">
-                <div id="wrapwrap">
-                  <main>
-            	        <div class="page" style="height: 100%;">
-            			   <t t-foreach="docs" t-as="o">
-            			   	    <embed width="100%" height="100%" t-att-src="get_content(o)"/>
-            			   </t>
-            			</div>
-                    </main>
-                </div>
-            </body>
-        </html>
+	   <t t-foreach="docs" t-as="o">
+	   		<div class="o_composer_container">
+	   			<embed width="100%" height="100%" t-att-src="get_content(o)"/>
+	   		</div> 
+	   </t>
 	</template>
 </odoo>

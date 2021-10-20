@@ -8,6 +8,7 @@
             <field name="report_type">qweb-html</field>
             <field name="report_name">plm.ir_attachment_pdf</field>
             <field name="binding_type">report</field>
+            <field name="print_report_name">'%s_%s' % (object.name, object.revisionid)</field>
         </record>
 
     </data>

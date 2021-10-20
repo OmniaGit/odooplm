@@ -31,7 +31,6 @@ from odoo import models
 from odoo import fields
 from odoo import api
 from odoo import _
-from odoo import osv
 from odoo import tools
 from odoo.exceptions import UserError
 import os
@@ -41,7 +40,7 @@ import requests
 _logger = logging.getLogger(__name__)
 
 
-class AvailableTypes(osv.osv.osv_memory):
+class AvailableTypes(models.TransientModel):
     _name = 'pack_and_go_types'
     _description = "Description of pack and go"
 
@@ -49,7 +48,7 @@ class AvailableTypes(osv.osv.osv_memory):
     pack_and_go_view_id = fields.Many2one('pack_and_go_view')
 
 
-class AdvancedPackView(osv.osv.osv_memory):
+class AdvancedPackView(models.TransientModel):
     _name = 'pack_and_go_view'
     _description = "Manage pack view for exporting"
 
@@ -86,7 +85,7 @@ class AdvancedPackView(osv.osv.osv_memory):
     pack_and_go_id = fields.Many2one('pack.and_go', _('Pack and go id'))
 
 
-class PackAndGo(osv.osv.osv_memory):
+class PackAndGo(models.TransientModel):
     _name = 'pack.and_go'
     _description = "Main wizard collector for pack and go"
 
@@ -176,8 +175,11 @@ class PackAndGo(osv.osv.osv_memory):
                 export_other.append(newViewObj.id)
 
         def recursionDocuments(docBrwsList):
-            for docBrws in docBrwsList:
-                res = plmDocObject.CheckAllFiles([docBrws.id, [], False])   # Get all related documents to root documents
+            for docBrws in docBrwsList:          
+                res = plmDocObject.CheckAllFiles([docBrws.id, [],
+                                                  False,
+                                                  'localhost',
+                                                  'pack_go'])   # Get all related documents to root documents
                 for singleRes in res:
                     docId = singleRes[0]
                     if docId in checkedDocumentIds:
@@ -283,26 +285,21 @@ class PackAndGo(osv.osv.osv_memory):
         '''
             Get all components composing the Bill of Materials
         '''
+        compIds = []
         def recursion(bomBrwsList):
-            outCompIds = []
             for bomBrws in bomBrwsList:
                 for bomLineBrws in bomBrws.bom_line_ids:
                     prodId = bomLineBrws.product_id.id
-                    if prodId in outCompIds:
+                    if prodId in compIds:
                         continue
+                    compIds.append(prodId)
                     prodTmplBrws = bomLineBrws.product_id.product_tmpl_id
                     bomBrwsList = self.getBomFromTemplate(prodTmplBrws)
-                    lowLevelCompIds = recursion(bomBrwsList)
-                    outCompIds.extend(lowLevelCompIds)
-                    outCompIds.append(prodId)
-            return list(set(outCompIds))
-
-        compIds = []
-        startingBom = self.getBomFromTemplate(self.component_id.product_tmpl_id)
-        if not startingBom:
-            return [self.component_id.id]
+                    recursion(bomBrwsList)
         compIds.append(self.component_id.id)
-        compIds.extend(recursion(startingBom))
+        startingBom = self.getBomFromTemplate(self.component_id.product_tmpl_id)
+        if startingBom:
+            recursion(startingBom)    
         return compIds
 
     def checkPlmConvertionInstalled(self):
@@ -311,6 +308,32 @@ class PackAndGo(osv.osv.osv_memory):
         if apps:
             return True
         return False
+
+    def export2D(self, convertionModuleInstalled):
+        for lineBrws in self.export_2d:
+            if lineBrws.available_types and convertionModuleInstalled:
+                exportConverted(lineBrws.document_id, lineBrws.available_types)
+            else:
+                exportSingle(lineBrws.document_id)
+
+    def export3D(self, convertionModuleInstalled):
+        for lineBrws in self.export_3d:
+            if lineBrws.available_types and convertionModuleInstalled:
+                exportConverted(lineBrws.document_id, lineBrws.available_types)
+            else:
+                exportSingle(lineBrws.document_id)
+
+    def exportPdf(self, outZipFile):
+        for lineBrws in self.export_pdf:
+            docBws = lineBrws.document_id
+            outFilePath = os.path.join(outZipFile, docBws.name + '.' + 'pdf')
+            if docBws.printout:
+                with open(outFilePath, 'wb') as fileObj:
+                    fileObj.write(base64.b64decode(docBws.printout))
+
+    def exportOther(self):
+        for lineBrws in self.export_other:
+            exportSingle(lineBrws.document_id)
 
     def action_export_zip(self):
         """
@@ -321,46 +344,21 @@ class PackAndGo(osv.osv.osv_memory):
                 shutil.rmtree(path, ignore_errors=True)
             os.makedirs(path)
 
-        convetionModuleInstalled = self.checkPlmConvertionInstalled()
+        convertionModuleInstalled = self.checkPlmConvertionInstalled()
         tmpDir = tempfile.gettempdir()
         export_zip_folder = os.path.join(tmpDir, 'export_zip')
         checkCreateFolder(export_zip_folder)
         outZipFile = os.path.join(export_zip_folder, self.component_id.engineering_code)
         checkCreateFolder(outZipFile)
 
-        def export2D():
-            for lineBrws in self.export_2d:
-                if lineBrws.available_types and convetionModuleInstalled:
-                    exportConverted(lineBrws.document_id, lineBrws.available_types)
-                else:
-                    exportSingle(lineBrws.document_id)
-
-        def export3D():
-            for lineBrws in self.export_3d:
-                if lineBrws.available_types and convetionModuleInstalled:
-                    exportConverted(lineBrws.document_id, lineBrws.available_types)
-                else:
-                    exportSingle(lineBrws.document_id)
-
-        def exportPdf():
-            for lineBrws in self.export_pdf:
-                docBws = lineBrws.document_id
-                outFilePath = os.path.join(outZipFile, docBws.name + '.' + 'pdf')
-                with open(outFilePath, 'wb') as fileObj:
-                    fileObj.write(base64.b64decode(docBws.printout))
-
-        def exportOther():
-            for lineBrws in self.export_other:
-                exportSingle(lineBrws.document_id)
-
         def exportConverted(docBws, extentionBrws):
             relStr = self.env['ir.config_parameter']._get_param('extension_integration_rel')
             try:
-                rel = eval(unicode(relStr).lower())
+                rel = eval(str(relStr).lower())
             except Exception as ex:
                 logging.error('Unable to get extension_integration_rel parameter. EX: %r' % (ex))
                 rel = {}
-            integration = rel.get(unicode(self.getFileExtension(docBws)).lower(), '')
+            integration = rel.get(str(self.getFileExtension(docBws)).lower(), '')
             convertObj = self.env['plm.convert']
             filePath = convertObj.getFileConverted(docBws, integration, extentionBrws.name)
             if not os.path.exists(filePath):
@@ -377,10 +375,10 @@ class PackAndGo(osv.osv.osv_memory):
             else:
                 logging.error('Unable to export file from document ID %r. File %r does not exists.' % (docBws.id, fileName))
 
-        export2D()
-        export3D()
-        exportPdf()
-        exportOther()
+        self.export2D(convertionModuleInstalled)
+        self.export3D(convertionModuleInstalled)
+        self.exportPdf(outZipFile)
+        self.exportOther()
 
         # Make archive, upload it and clean
         outZipFile2 = shutil.make_archive(outZipFile, 'zip', outZipFile)

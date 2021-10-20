@@ -1,7 +1,8 @@
+# -*- encoding: utf-8 -*-
 ##############################################################################
 #
-#    OmniaSolutions, Open Source Management Solution
-#    Copyright (C) 2010-2021 OmniaSolutions (<http://www.omniasolutions.eu>).
+#    OmniaSolutions, Your own solutions
+#    Copyright (C) 2010 OmniaSolutions (<https://www.omniasolutions.website>). All Rights Reserved
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -18,25 +19,20 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-{
-    "name": "Plm Pack and Go",
-    "version": "14.0.1",
-    "author": "OmniaSolutions",
-    "website": "https://github.com/OmniaGit/odooplm",
-    "category": "Product Lifecycle Management",
-    "sequence": 15,
-    "summary": "Download BOM structure files from a component",
-    "license": "AGPL-3",
-    "images": [],
-    "depends": ["plm"],
-    "data": [  # security
-        "security/plm_security.xml",
-        'views/plm_component.xml',
-        "views/ir_parameters.xml",
-    ],
-    "demo": [],
-    "test": [],
-    "installable": True,
-    "application": False,
-    "auto_install": False,
-}
+
+'''
+Created on Nov 21, 2017
+
+@author: dsmerghetto
+'''
+from odoo import models
+
+class PlmComponent(models.Model):
+    _inherit = 'product.product'
+
+    def unlink(self):
+        for prodBrws in self:
+            packAndGoObj = self.env['pack.and_go']
+            presentPackAndGo = packAndGoObj.search([('component_id', '=', prodBrws.id)])
+            presentPackAndGo.unlink()
+        return super(PlmComponent, self).unlink()
