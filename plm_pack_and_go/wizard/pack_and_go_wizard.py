@@ -309,6 +309,32 @@ class PackAndGo(models.TransientModel):
             return True
         return False
 
+    def export2D(self, convertionModuleInstalled):
+        for lineBrws in self.export_2d:
+            if lineBrws.available_types and convertionModuleInstalled:
+                exportConverted(lineBrws.document_id, lineBrws.available_types)
+            else:
+                exportSingle(lineBrws.document_id)
+
+    def export3D(self, convertionModuleInstalled):
+        for lineBrws in self.export_3d:
+            if lineBrws.available_types and convertionModuleInstalled:
+                exportConverted(lineBrws.document_id, lineBrws.available_types)
+            else:
+                exportSingle(lineBrws.document_id)
+
+    def exportPdf(self, outZipFile):
+        for lineBrws in self.export_pdf:
+            docBws = lineBrws.document_id
+            outFilePath = os.path.join(outZipFile, docBws.name + '.' + 'pdf')
+            if docBws.printout:
+                with open(outFilePath, 'wb') as fileObj:
+                    fileObj.write(base64.b64decode(docBws.printout))
+
+    def exportOther(self):
+        for lineBrws in self.export_other:
+            exportSingle(lineBrws.document_id)
+
     def action_export_zip(self):
         """
             action to import the data
@@ -318,46 +344,21 @@ class PackAndGo(models.TransientModel):
                 shutil.rmtree(path, ignore_errors=True)
             os.makedirs(path)
 
-        convetionModuleInstalled = self.checkPlmConvertionInstalled()
+        convertionModuleInstalled = self.checkPlmConvertionInstalled()
         tmpDir = tempfile.gettempdir()
         export_zip_folder = os.path.join(tmpDir, 'export_zip')
         checkCreateFolder(export_zip_folder)
         outZipFile = os.path.join(export_zip_folder, self.component_id.engineering_code)
         checkCreateFolder(outZipFile)
 
-        def export2D():
-            for lineBrws in self.export_2d:
-                if lineBrws.available_types and convetionModuleInstalled:
-                    exportConverted(lineBrws.document_id, lineBrws.available_types)
-                else:
-                    exportSingle(lineBrws.document_id)
-
-        def export3D():
-            for lineBrws in self.export_3d:
-                if lineBrws.available_types and convetionModuleInstalled:
-                    exportConverted(lineBrws.document_id, lineBrws.available_types)
-                else:
-                    exportSingle(lineBrws.document_id)
-
-        def exportPdf():
-            for lineBrws in self.export_pdf:
-                docBws = lineBrws.document_id
-                outFilePath = os.path.join(outZipFile, docBws.name + '.' + 'pdf')
-                with open(outFilePath, 'wb') as fileObj:
-                    fileObj.write(base64.b64decode(docBws.printout))
-
-        def exportOther():
-            for lineBrws in self.export_other:
-                exportSingle(lineBrws.document_id)
-
         def exportConverted(docBws, extentionBrws):
             relStr = self.env['ir.config_parameter']._get_param('extension_integration_rel')
             try:
-                rel = eval(unicode(relStr).lower())
+                rel = eval(str(relStr).lower())
             except Exception as ex:
                 logging.error('Unable to get extension_integration_rel parameter. EX: %r' % (ex))
                 rel = {}
-            integration = rel.get(unicode(self.getFileExtension(docBws)).lower(), '')
+            integration = rel.get(str(self.getFileExtension(docBws)).lower(), '')
             convertObj = self.env['plm.convert']
             filePath = convertObj.getFileConverted(docBws, integration, extentionBrws.name)
             if not os.path.exists(filePath):
@@ -374,10 +375,10 @@ class PackAndGo(models.TransientModel):
             else:
                 logging.error('Unable to export file from document ID %r. File %r does not exists.' % (docBws.id, fileName))
 
-        export2D()
-        export3D()
-        exportPdf()
-        exportOther()
+        self.export2D(convertionModuleInstalled)
+        self.export3D(convertionModuleInstalled)
+        self.exportPdf(outZipFile)
+        self.exportOther()
 
         # Make archive, upload it and clean
         outZipFile2 = shutil.make_archive(outZipFile, 'zip', outZipFile)
