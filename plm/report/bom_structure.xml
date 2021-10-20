@@ -7,6 +7,7 @@
             <field name="report_type">qweb-html</field>
             <field name="report_name">plm.bom_structure_all</field>
             <field name="binding_type">report</field>
+            <field name="binding_model_id" ref="model_mrp_bom"/>
         </record>
         
         <record id="report_plm_bom_structure_one" model="ir.actions.report">
@@ -15,6 +16,7 @@
             <field name="report_type">qweb-html</field>
             <field name="report_name">plm.bom_structure_one</field>
             <field name="binding_type">report</field>
+            <field name="binding_model_id" ref="model_mrp_bom"/>
         </record>
 
         <record id="report_plm_bom_structure_all_sum" model="ir.actions.report">
@@ -23,6 +25,7 @@
             <field name="report_type">qweb-html</field>
             <field name="report_name">plm.bom_structure_all_sum</field>
             <field name="binding_type">report</field>
+            <field name="binding_model_id" ref="model_mrp_bom"/>
         </record>  
         
         <record id="report_plm_bom_structure_one_sum" model="ir.actions.report">
@@ -31,6 +34,7 @@
             <field name="report_type">qweb-html</field>
             <field name="report_name">plm.bom_structure_one_sum</field>
             <field name="binding_type">report</field>
+            <field name="binding_model_id" ref="model_mrp_bom"/>
         </record>                 	
 
         <record id="report_plm_bom_structure_leaves" model="ir.actions.report">
@@ -39,6 +43,7 @@
             <field name="report_type">qweb-html</field>
             <field name="report_name">plm.bom_structure_leaves</field>
             <field name="binding_type">report</field>
+            <field name="binding_model_id" ref="model_mrp_bom"/>
         </record>
                  
         <record id="report_plm_bom_structure_flat" model="ir.actions.report">
@@ -47,6 +52,7 @@
             <field name="report_type">qweb-html</field>
             <field name="report_name">plm.bom_structure_flat</field>
             <field name="binding_type">report</field>
+            <field name="binding_model_id" ref="model_mrp_bom"/>
         </record>
                 
     </data>

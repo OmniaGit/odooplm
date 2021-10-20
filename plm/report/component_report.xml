@@ -4,6 +4,7 @@
         <record id="report_all_product_product_pdf" model="ir.actions.report">
             <field name="name">Bom All Levels PDF Drawings</field>
             <field name="model">product.product</field>
+            <field name="binding_model_id" ref="model_product_product"/>
             <field name="report_type">qweb-html</field>
             <field name="report_name">plm.all_product_pdf</field>
             <field name="binding_type">report</field>
@@ -12,6 +13,7 @@
         <record id="report_one_product_product_pdf" model="ir.actions.report">
             <field name="name">Bom One Level PDF Drawings</field>
             <field name="model">product.product</field>
+            <field name="binding_model_id" ref="model_product_product"/>
             <field name="report_type">qweb-html</field>
             <field name="report_name">plm.one_product_pdf</field>
             <field name="binding_type">report</field>
@@ -20,6 +22,7 @@
         <record id="report_product_product_pdf" model="ir.actions.report">
             <field name="name">PDF Drawings</field>
             <field name="model">product.product</field>
+            <field name="binding_model_id" ref="model_product_product"/>
             <field name="report_type">qweb-html</field>
             <field name="report_name">plm.product_pdf</field>
             <field name="binding_type">report</field>
@@ -28,6 +31,7 @@
         <record id="report_product_product_pdf_latest" model="ir.actions.report">
             <field name="name">Production PDF Drawings</field>
             <field name="model">product.product</field>
+            <field name="binding_model_id" ref="model_product_product"/>
             <field name="report_type">qweb-html</field>
             <field name="report_name">plm.product_production_pdf_latest</field>
             <field name="binding_type">report</field>
@@ -36,6 +40,7 @@
         <record id="report_product_product_one_pdf_latest" model="ir.actions.report">
             <field name="name">Production First Level PDF Drawings</field>
             <field name="model">product.product</field>
+            <field name="binding_model_id" ref="model_product_product"/>
             <field name="report_type">qweb-html</field>
             <field name="report_name">plm.product_production_one_pdf_latest</field>
             <field name="binding_type">report</field>
@@ -44,6 +49,7 @@
         <record id="report_product_product_all_pdf_latest" model="ir.actions.report">
             <field name="name">Production All Level PDF Drawings</field>
             <field name="model">product.product</field>
+            <field name="binding_model_id" ref="model_product_product"/>
             <field name="report_type">qweb-html</field>
             <field name="report_name">plm.product_production_all_pdf_latest</field>
             <field name="binding_type">report</field>
