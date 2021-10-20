@@ -309,19 +309,19 @@ class PackAndGo(models.TransientModel):
             return True
         return False
 
-    def export2D(self, convertionModuleInstalled):
+    def export2D(self, convertionModuleInstalled, outZipFile):
         for lineBrws in self.export_2d:
             if lineBrws.available_types and convertionModuleInstalled:
                 exportConverted(lineBrws.document_id, lineBrws.available_types)
             else:
-                exportSingle(lineBrws.document_id)
+                self.exportSingle(lineBrws.document_id, outZipFile)
 
-    def export3D(self, convertionModuleInstalled):
+    def export3D(self, convertionModuleInstalled, outZipFile):
         for lineBrws in self.export_3d:
             if lineBrws.available_types and convertionModuleInstalled:
                 exportConverted(lineBrws.document_id, lineBrws.available_types)
             else:
-                exportSingle(lineBrws.document_id)
+                self.exportSingle(lineBrws.document_id, outZipFile)
 
     def exportPdf(self, outZipFile):
         for lineBrws in self.export_pdf:
@@ -331,9 +331,17 @@ class PackAndGo(models.TransientModel):
                 with open(outFilePath, 'wb') as fileObj:
                     fileObj.write(base64.b64decode(docBws.printout))
 
-    def exportOther(self):
+    def exportOther(self, outZipFile):
         for lineBrws in self.export_other:
-            exportSingle(lineBrws.document_id)
+            self.exportSingle(lineBrws.document_id, outZipFile)
+
+    def exportSingle(self, docBws, outZipFile):
+        fromFile = docBws._full_path(docBws.store_fname)
+        if os.path.exists(fromFile):
+            outFilePath = os.path.join(outZipFile, docBws.name)
+            shutil.copyfile(fromFile, outFilePath)
+        else:
+            logging.error('Unable to export file from document ID %r. File %r does not exists.' % (docBws.id, fromFile))
 
     def action_export_zip(self):
         """
@@ -367,18 +375,10 @@ class PackAndGo(models.TransientModel):
             outFilePath = os.path.join(outZipFile, os.path.basename(filePath))
             shutil.copyfile(filePath, outFilePath)
 
-        def exportSingle(docBws):
-            fromFile = docBws._full_path(docBws.store_fname)
-            if os.path.exists(fromFile):
-                outFilePath = os.path.join(outZipFile, docBws.name)
-                shutil.copyfile(fromFile, outFilePath)
-            else:
-                logging.error('Unable to export file from document ID %r. File %r does not exists.' % (docBws.id, fileName))
-
-        self.export2D(convertionModuleInstalled)
-        self.export3D(convertionModuleInstalled)
+        self.export2D(convertionModuleInstalled, outZipFile)
+        self.export3D(convertionModuleInstalled, outZipFile)
         self.exportPdf(outZipFile)
-        self.exportOther()
+        self.exportOther(outZipFile)
 
         # Make archive, upload it and clean
         outZipFile2 = shutil.make_archive(outZipFile, 'zip', outZipFile)
@@ -389,7 +389,7 @@ class PackAndGo(models.TransientModel):
         try:
             shutil.rmtree(outZipFile)
         except Exception as ex:
-            logging.error("Unable to delete file from export function %r %r" % (outZipFile, unicode(ex)))
+            logging.error("Unable to delete file from export function %r %r" % (outZipFile, str(ex)))
         fileName = os.path.basename(outZipFile2)
         self.datas_fname = fileName
         self.name = fileName
