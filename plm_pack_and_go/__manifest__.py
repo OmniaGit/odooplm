@@ -31,7 +31,8 @@
     "depends": ["plm"],
     "data": [  # security
         "security/plm_security.xml",
-        # views'views/plm_component_action_extended.xml',
+        # views
+        'views/plm_component_action_extended.xml',
         "views/ir_parameters.xml",
     ],
     "demo": [],
