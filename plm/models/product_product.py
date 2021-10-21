@@ -874,7 +874,19 @@ class PlmComponent(models.Model):
         toCall = actions.get(action)
         return toCall()
 
+    def canMoveWFByParam(self):
+        configParamObj = self.env['ir.config_parameter'].sudo()
+        WORKFLOW_ONLY_CLIENT_STR = configParamObj._get_param('WORKFLOW_ONLY_CLIENT')
+        WORKFLOW_ONLY_CLIENT = False
+        try:
+            WORKFLOW_ONLY_CLIENT = eval(WORKFLOW_ONLY_CLIENT_STR)
+        except Exception as ex:
+            logging.warning('Cannot read parameter WORKFLOW_ONLY_CLIENT due to error %r' % (ex))
+        if WORKFLOW_ONLY_CLIENT:
+            raise UserError('You can move workflow only by the client side')
+
     def commonWFAction(self, status, action, doc_action, defaults=[], exclude_statuses=[], include_statuses=[]):
+        self.canMoveWFByParam()
         product_product_ids = []
         product_template_ids = []
         userErrors, allIDs = self._get_recursive_parts(exclude_statuses, include_statuses)

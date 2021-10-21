@@ -691,6 +691,7 @@ class PlmDocument(models.Model):
             :state define new product state
             :check do state verification in component write
         """
+        self.env['product.product'].canMoveWFByParam()
         out = []
         for ir_attachment_id in self:
             ir_attachment_id.setCheckContextWrite(check)
