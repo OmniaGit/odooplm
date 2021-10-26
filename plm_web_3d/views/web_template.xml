@@ -6,14 +6,16 @@
         <meta charset="utf-8"></meta>
         <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"></meta>
         <title>OdooPLM WebGl View</title>
-        <link rel="stylesheet" type="text/css" href="../plm_web_3d/static/src/css/web_3d.css"></link>
+        <link rel="stylesheet" type="text/css" href="../plm_web_3d/static/src/css/OdooCADApplication.css"></link>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"></link>
       </head>
       <body style="margin: 0;">
       	<div id="main_3d_web">
-	        <script type="module" src="../plm_web_3d/static/src/js/web_3d.js"></script>
+	        <script type="module" src="../plm_web_3d/static/src/js/OdooCADApplication.js"></script>
 	        <span id="active_model" t-att-active_model="document_id" t-att-document_name="document_name"></span>
-	        <div id="odoo_plm_title"><p>OdooPLM WebGl 3d</p></div>
+	        <div id="odoo_plm_title"><p>OdooPLM WebGl 3d</p><div id="progress">
+                <div id="progress_bar"/>
+            </div></div>
             <div class='main_command_slide'>
                 <div class='activator'>
                     <div class="img">
@@ -22,8 +24,24 @@
                       <hr class="c"/>
                     </div>	        
         	        <div id="bottom_command">
-        	            <button id="fit_view" class="plm_web_button"><i class="fa fa-home"></i> Fit</button>
-        	            <button id="togle_background" class="plm_web_button"><i class="fa fa-home"></i> T.Bck</button>
+        	            <button id="fit_view" class="plm_web_button"><i class="fa fa-home"></i>Fit</button>
+        	            <button id="save_view" class="plm_web_button"><i class="fa fa-save"></i>Save</button>
+        	            <label for="webgl_background">BackGround:</label>
+                        <select name="webgl_background" id="webgl_background">
+                            <option value="tecnical">Tecnical</option>
+                            <option value="room1">Room 1</option>
+                            <option value="room2">Room 2</option>
+                            <option value="outdoor">Outdoor 1</option>
+                            <option value="workshop1">WorkShop 1</option>
+                            <option value="workshop2">WorkShop 2</option>
+                            <option value="workshop3">WorkShop 3</option>
+                        </select>
+                       <label for="transparency_slider">Transparency:</label>
+        	           <input name="transparency_slider" id="object_transparency" type="range" min="0" max="100" value="50"/>
+        	           <div id="color_object_grp">
+        	               <label for="object_color">Color:</label>
+                           <input type="color" id="object_color" name="object_color" value="#b2ffc8"/>
+                        </div>
         	        </div>
                 </div>
             </div>
@@ -33,3 +51,5 @@
     </html>
   </template>
 </odoo>
+
+
