@@ -467,7 +467,8 @@ function addOrbit(){
 
 function resetLight(bbox, size) {
 	var mult = size * 1000;
-	var center = bbox.getCenter();
+	var center = new THREE.Vector3(); 
+	bbox.getCenter(center);
 	var x = center.x + mult;
 	var y = center.y + mult;
 	var z = center.z + mult;
