@@ -153,9 +153,16 @@ function imageBckground(path_to_load){
 	const texture = loader.load(
 			path_to_load,
 	  () => {
+		texture.encoding = THREE.sRGBEncoding;
+		texture.mapping = THREE.EquirectangularReflectionMapping;
 	    const rt = new THREE.WebGLCubeRenderTarget(texture.image.height);
 	    rt.fromEquirectangularTexture(renderer, texture);
-	    scene.background = rt;
+	    
+	    scene.background = texture;
+	    
+	    const cubeCamera = new THREE.CubeCamera( 1, 100000, rt );
+	    scene.add( cubeCamera );
+	    
 	    render();
 	    controls.update();
 	  });
@@ -206,7 +213,8 @@ function init() {
 	renderer.gammaInput = true;
 	renderer.gammaOutput = true;
 	renderer.shadowMap.enabled = true;
-	renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
+	renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default
+														// THREE.PCFShadowMap
 /*
  * Label Renderer
  */
@@ -292,11 +300,12 @@ function saveAsImage() {
 var saveFile = function (strData, filename) {
     var link = document.createElement('a');
     if (typeof link.download === 'string') {
-        document.body.appendChild(link); //Firefox requires the link to be in the body
+        document.body.appendChild(link); // Firefox requires the link to be
+											// in the body
         link.download = filename;
         link.href = strData;
         link.click();
-        document.body.removeChild(link); //remove the link when done
+        document.body.removeChild(link); // remove the link when done
     } else {
         location.replace(uri);
     }
@@ -454,6 +463,8 @@ function addCamera(){
 			near,
 			far);
 	camera.position.z = 2;
+	var light = new THREE.PointLight(0xffffff, 1, Infinity);
+	camera.add(light);
 }
 
 function addOrbit(){
