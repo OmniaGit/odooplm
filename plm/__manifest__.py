@@ -24,6 +24,7 @@
     "author": "OmniaSolutions",
     "website": "https://github.com/OmniaGit/odooplm",
     "category": "Manufacturing/Product Lifecycle Management",
+    "live_test_url": "https://www.v15.odooplm.cloud/",
     "sequence": 15,
     "license": "LGPL-3",
     "summary": "PLM Integration with main CAD editors",
