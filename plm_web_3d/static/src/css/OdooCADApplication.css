@@ -14,8 +14,9 @@
 .plm_web_button{
 	background-color: wite;
     border: 2px solid #997992;
-    border-radius: 2px
-    cursor: pointer;
+    border-radius: 2px;
+    cursor:pointerl;
+    background-color:white;
     overflow: hidden;
     outline:none;
     height: 20px;
@@ -35,6 +36,8 @@
   height: 20px;
   width: 90%;
   border: 1px solid black;
+  opacity: .5;
+  background-color: white;
   overflow: hidden;
   position: absolute;
   transition: height 0.1s;
@@ -48,7 +51,9 @@
 }
 .main_command_slide:hover{
 	 height: 80px;
-	       
+	 background-color: transparent;
+	 opacity: 1; 
+	 
 }
 .main_command_slide .activator {
   height: 80px;
@@ -63,7 +68,16 @@
   width: 100%;
   float: top;
 }
-
+#hiper_treejs{
+	justify-self:center;
+}
+#hiper_odooplm{
+	justify-self:right;
+	
+}
+.header_image{
+	height: 40;
+}
 .content {
   display: none;
   margin: 1px;
@@ -111,7 +125,7 @@
 
 #object_transparency {
   margin: 10px;
-  opacity: 0.5;
+  
   background: #997992;
   -webkit-appearance: none;
   background-color: white;

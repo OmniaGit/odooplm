@@ -22,6 +22,7 @@ const startPoint={};
 const lines={};
 let camera, scene, canvas , renderer, labelRenderer, controls, mouse;
 let planeMeshFloar, planeGrid;
+let objectAxesHelper;
 let raycaster ;
 let light1, light2, light3;
 var srcRefresh = false;
@@ -101,6 +102,7 @@ function togleBackgound(){
 }
 
 function tecnicalBckground(){
+	objectAxesHelper.visible=true;
 	planeMeshFloar = new THREE.Mesh( new THREE.PlaneBufferGeometry( 2000, 2000 ),
 			new THREE.MeshPhongMaterial( { color: 0x999999, depthWrite: false } ) );
 	planeGrid = new THREE.GridHelper( 200, 40, 0x000000, 0x000000 );
@@ -147,6 +149,7 @@ var change_background = function (){
 }
 
 function imageBckground(path_to_load){
+	objectAxesHelper.visible=false;
 	const loader = new THREE.TextureLoader();
 	planeGrid.visible=false;
 	planeMeshFloar.visible=false;
@@ -236,7 +239,8 @@ function init() {
 // define scene and ambient
 //
 	scene = new THREE.Scene();
-	scene.add( new THREE.AxesHelper( 500 ));
+	objectAxesHelper = new THREE.AxesHelper( 500 )
+	scene.add(objectAxesHelper);
 	addAmbient();
 	createSphereHelper();
 //
