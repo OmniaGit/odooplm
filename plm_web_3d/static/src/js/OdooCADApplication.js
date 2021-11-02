@@ -12,7 +12,7 @@ import {
 } from './lib/three.js/examples/jsm/renderers/CSS2DRenderer.js'
 
 let OdooCad;
-
+let clicked = false;
 const ODOO_COLOR = '#714B67';
 var strDownloadMime = "image/octet-stream";
 
@@ -266,6 +266,10 @@ function initcommand(){
 		change_background();
 	} 
 	
+	let click_show = document.getElementById("click_show");
+	
+
+	click_show.addEventListener("click", on_data_card_button_click);
 	
 	// document.addEventListener('mousemove', onDocumentMousemove, false);
 	document.addEventListener('pointerdown', onClick, false);
@@ -283,7 +287,41 @@ function initcommand(){
 	 * Make screen shot
 	 */
 	document.getElementById("save_view").addEventListener('click', saveAsImage);
+	/*
+	 * Load datacard
+	 */
+	var document_id = document.querySelector('#active_model').getAttribute('active_model');
+	var xmlhttp = new XMLHttpRequest();
+	var url = "../plm/get_product_info/?document_id=" + document_id;
+
+	xmlhttp.onreadystatechange = function() {
+	    if (this.readyState == 4 && this.status == 200) {
+	        var result = JSON.parse(this.responseText);
+	        var product_info = document.getElementById("product_info");
+	        product_info.innerHTML = result['component'];
+	        var document_info = document.getElementById("document_info");
+	        document_info.innerHTML = result['document'];
+	    }
+	};
+	xmlhttp.open("GET", url, true);
+	xmlhttp.send();
 }
+
+function on_data_card_button_click(event) {
+	  // highlight the mouseover target
+	  let main_div = document.getElementById("main_div");
+	  if (clicked) {
+	    console.log("not clicked");  
+	    main_div.style.visibility = 'invisible';
+	    main_div.style.opacity=0;
+	  }
+	  else{
+	     console.log("clicked");  
+	    main_div.style.visibility= 'visible';
+	    main_div.style.opacity=0.8;
+	  }
+	  clicked=!clicked;
+	}
 
 function saveAsImage() {
     var imgData, imgNode;

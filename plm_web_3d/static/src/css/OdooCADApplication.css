@@ -20,21 +20,29 @@
     overflow: hidden;
     outline:none;
     height: 20px;
+    width: 100%;
 }
 #bottom_command{
 	color: #997992;
-	margin: 5px;
+	list-style-type: none;
+    margin: 0;
+    padding-left: 10px;
+    text-align: left;
+    
 }
+
 #main_3d_web{
 	margin: auto;
 	max-width: 90%;
 	padding: 5px;
+	position: relative;
 	text-align: center;
 	
 }
 .main_command_slide {
   height: 20px;
-  width: 90%;
+  box-shadow:2px 2px 5px 1px grey;
+  width: auto;
   border: 1px solid black;
   opacity: .5;
   background-color: white;
@@ -50,7 +58,7 @@
   transform-origin: bottom;  
 }
 .main_command_slide:hover{
-	 height: 80px;
+	 height: 20%;
 	 background-color: transparent;
 	 opacity: 1; 
 	 
@@ -65,7 +73,7 @@
   text-align: center;
   margin: 1px;
   height: 20px;
-  width: 100%;
+  width: 20%;
   float: top;
 }
 #hiper_treejs{
@@ -183,5 +191,65 @@ hr.e {
 }
 label{
 	background-color: white;
-	
+}
+
+#datasheet{
+	overflow: hidden;
+    position: absolute;;
+    /*z-index: 999;*/
+    top: 60px;
+    right: 7px;
+}
+
+#main_div {
+  box-shadow:2px 2px 5px 1px grey;
+  background-color: white;
+  border-radius: 10px;
+  border: 2px solid #714B67;
+  padding: 2px;
+  width: 300px;
+  visibility: hidden;
+  opacity:0;  
+}
+
+#main_div_hidden{
+   padding:5px;
+   transition:visibility 0.3s linear,opacity 0.3s linear;
+}
+
+hr.datacard_line{
+    color: #714B67; 
+    margin-top: 2px ;
+}
+
+hr.hover_line{
+    color: #714B67; 
+    margin-top: 4px ;
+    margin-bottom: 4px ;
+}
+
+div.info_header{
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  background-color: lightgray;
+  padding-top: 5px;
+  padding-left: 10px;
+}
+
+#click_show{
+  padding:2px;
+  box-shadow:2px 2px 5px 1px grey;
+  border-radius: 2px ;
+  text-align:right;
+  width:10%;
+  cursor:pointer;
+  margin-left:90%;
+}
+
+#click_show:hover{
+  background-color:gray;
+}
+
+li.attribute_info{
+    text-align: left;
 }

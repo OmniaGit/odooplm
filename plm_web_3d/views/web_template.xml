@@ -21,18 +21,20 @@
                     <img src="../plm_web_3d/static/src/img/threejs_logo.png" alt="ThreeJs" class="header_image"/>
                 </a>
                 <div id="progress">
-                <div id="progress_bar"/>
-            </div></div>
+                    <div id="progress_bar"/>
+                </div>
+            </div>
             <div class='main_command_slide'>
                 <div class='activator'>
                     <div class="img">
-                      <hr class="c"/>
-                      <hr class="c"/>
-                      <hr class="c"/>
+                      <hr class="hover_line"/>
+                      <hr class="hover_line"/>
+                      <hr class="hover_line"/>
                     </div>	        
-        	        <div id="bottom_command">
-        	            <button id="fit_view" class="plm_web_button"><i class="fa fa-home"></i>Fit</button>
-        	            <button id="save_view" class="plm_web_button"><i class="fa fa-save"></i>Save</button>
+        	        <lu id="bottom_command">
+        	            <li><button id="fit_view" class="plm_web_button"><i class="fa fa-home"></i>Fit</button></li>
+        	            <li><button id="save_view" class="plm_web_button"><i class="fa fa-save"></i>Save</button></li>
+        	            <li>
         	            <label for="webgl_background">BackGround:</label>
                         <select name="webgl_background" id="webgl_background">
                             <option value="tecnical">Tecnical</option>
@@ -43,16 +45,46 @@
                             <option value="workshop2">WorkShop 2</option>
                             <option value="workshop3">WorkShop 3</option>
                         </select>
-                       <label for="transparency_slider">Transparency:</label>
-        	           <input name="transparency_slider" id="object_transparency" type="range" min="0" max="100" value="50"/>
+                       </li>
+                       <li>
+                           <label for="transparency_slider">Transparency:</label>
+            	           <input name="transparency_slider" id="object_transparency" type="range" min="0" max="100" value="50"/>
+        	           </li>
+        	           <li>
         	           <div id="color_object_grp">
         	               <label for="object_color">Color:</label>
                            <input type="color" id="object_color" name="object_color" value="#b2ffc8"/>
                         </div>
-        	        </div>
+                        </li>
+        	        </lu>
                 </div>
             </div>
-            <canvas id="odoo_canvas"></canvas>
+                <div id="datasheet">
+                    <div id="click_show">
+                      <hr class="hover_line"/>
+                      <hr class="hover_line"/>
+                      <hr class="hover_line"/>
+                    </div>
+                    <div id="main_div">
+                        <div id="main_div_hidden">
+                            <div class="info_header">
+                                <b>Product Information</b>
+                            </div>  
+                            <hr class="datacard_line"/> 
+                            <lu id="product_info">
+                            </lu>
+                            <br/>
+                            <div class="info_header">
+                                <b>Document Information</b>
+                            </div>
+                            <hr class="datacard_line"/>
+                            <lu id="document_info">
+                            </lu>
+                        </div>
+                    </div>
+               </div>
+            <canvas id="odoo_canvas"/>
+           
 	    </div>
       </body>
     </html>
