@@ -13,14 +13,17 @@
 
 .plm_web_button{
 	background-color: wite;
-    border: 2px solid #997992;
+    border: 1px solid #997992;
     border-radius: 2px;
     cursor:pointerl;
     background-color:white;
     overflow: hidden;
     outline:none;
-    height: 20px;
+    height: 25px;
     width: 100%;
+}
+.plm_web_button:hover{
+	background-color: #E0E0E0;
 }
 #bottom_command{
 	color: #997992;
@@ -28,7 +31,11 @@
     margin: 0;
     padding-left: 10px;
     text-align: left;
-    
+    line-height: 20px;
+}
+
+#plm_web_button: hover{
+    background-color: red;
 }
 
 #main_3d_web{
@@ -43,12 +50,12 @@
   height: 20px;
   box-shadow:2px 2px 5px 1px grey;
   width: auto;
-  border: 1px solid black;
   opacity: .5;
   background-color: white;
   overflow: hidden;
   position: absolute;
   transition: height 0.1s;
+  border-radius:2px;
   -moz-transition: height 0.1s;
   /* Firefox 4 */
   -webkit-transition: height 0.1s;

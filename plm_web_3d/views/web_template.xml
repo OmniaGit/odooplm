@@ -32,30 +32,30 @@
                       <hr class="hover_line"/>
                     </div>	        
         	        <lu id="bottom_command">
-        	            <li><button id="fit_view" class="plm_web_button"><i class="fa fa-home"></i>Fit</button></li>
-        	            <li><button id="save_view" class="plm_web_button"><i class="fa fa-save"></i>Save</button></li>
-        	            <li>
-        	            <label for="webgl_background">BackGround:</label>
-                        <select name="webgl_background" id="webgl_background">
-                            <option value="tecnical">Tecnical</option>
-                            <option value="room1">Room 1</option>
-                            <option value="room2">Room 2</option>
-                            <option value="outdoor">Outdoor 1</option>
-                            <option value="workshop1">WorkShop 1</option>
-                            <option value="workshop2">WorkShop 2</option>
-                            <option value="workshop3">WorkShop 3</option>
-                        </select>
-                       </li>
-                       <li>
+        	            <li class="plm_web_button" id="fit_view"><i class="fa fa-home"></i>Fit</li>
+        	            <li class="plm_web_button" id="save_view"><i class="fa fa-save"></i>Save</li>
+        	            <li  class="plm_web_button">
+            	            <label for="webgl_background">BackGround:</label>
+                            <select name="webgl_background" id="webgl_background">
+                                <option value="tecnical">Tecnical</option>
+                                <option value="room1">Room 1</option>
+                                <option value="room2">Room 2</option>
+                                <option value="outdoor">Outdoor 1</option>
+                                <option value="workshop1">WorkShop 1</option>
+                                <option value="workshop2">WorkShop 2</option>
+                                <option value="workshop3">WorkShop 3</option>
+                            </select>
+                        </li>
+                        <li  class="plm_web_button">
                            <label for="transparency_slider">Transparency:</label>
             	           <input name="transparency_slider" id="object_transparency" type="range" min="0" max="100" value="50"/>
         	           </li>
-        	           <li>
-        	           <div id="color_object_grp">
-        	               <label for="object_color">Color:</label>
-                           <input type="color" id="object_color" name="object_color" value="#b2ffc8"/>
-                        </div>
-                        </li>
+        	           <li  class="plm_web_button">
+            	           <div id="color_object_grp">
+            	               <label for="object_color">Color:</label>
+                               <input type="color" id="object_color" name="object_color" value="#b2ffc8"/>
+                            </div>
+                       </li>
         	        </lu>
                 </div>
             </div>
