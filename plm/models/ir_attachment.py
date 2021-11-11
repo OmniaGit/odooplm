@@ -1295,7 +1295,7 @@ class PlmDocument(models.Model):
         related_documents = []
         read_docs = []
         for oid in self.ids:
-            rfTree = self.getRelatedRfTree(oid, recursion=False)
+            rfTree = self.getRelatedRfTree(oid, recursion=False, evaluated=[])
             read_docs.extend(rfTree)
             read_docs.extend(self.getRelatedLyTree(oid))
             #for rfModel in rfTree:
