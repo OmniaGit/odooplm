@@ -882,7 +882,9 @@ class PlmComponent(models.Model):
             WORKFLOW_ONLY_CLIENT = eval(WORKFLOW_ONLY_CLIENT_STR)
         except Exception as ex:
             logging.warning('Cannot read parameter WORKFLOW_ONLY_CLIENT due to error %r' % (ex))
-        if WORKFLOW_ONLY_CLIENT:
+        is_odooplm = self.env.context.get('odooPLM')
+        odoo_side_call = self.env.context.get('odoo_side_call')
+        if WORKFLOW_ONLY_CLIENT and is_odooplm and odoo_side_call:
             raise UserError('You can move workflow only by the client side')
 
     def commonWFAction(self, status, action, doc_action, defaults=[], exclude_statuses=[], include_statuses=[]):
