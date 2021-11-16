@@ -45,12 +45,18 @@ def json_serial(obj):
 class Base(models.AbstractModel):
     _inherit = 'base'
     
-    
+    @api.model
+    def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
+        if self.env.context.get('odooPLM'):
+            return self.koo_fields_view_get(view_id, view_type, toolbar, submenu)
+        else:
+            return super(Base, self).fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar, submenu=submenu)
+
     @api.model
     def koo_fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
         def sanitize(dict_from):
             return json.loads(json.dumps(dict_from, default=json_serial).replace("null", "false"))
-        f = self.fields_view_get(view_id, view_type, toolbar, submenu)
+        f = super(Base, self).fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar, submenu=submenu)
         for key in ['field_parent', 'name', 'type', 'view_id', 'base_model', 'fields', 'toolbar']:
             if key in f:
                 f[key] = sanitize(f.get(key))    
