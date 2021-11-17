@@ -370,6 +370,14 @@
                                                     <field name="description"/>
                                                 </td>
                                             </tr>
+                                            <tr>
+                                                <td>
+                                                    <strong>
+                                                        Checkout:
+                                                    </strong>
+                                                    <field name="checkout_user"/>
+                                                </td>
+                                            </tr>
                                         </table>
                                     </td>
                                 </tr>
