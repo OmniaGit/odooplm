@@ -150,11 +150,11 @@ class BackupDocWizard(osv.osv.osv_memory):
         if documentId:
             return {'name': _('Document'),
                     'view_type': 'form',
-                    "view_mode": 'form, tree',
+                    "view_mode": 'tree,form',
                     'res_model': 'ir.attachment',
                     'res_id': documentId,
                     'type': 'ir.actions.act_window',
-                    'domain': "[]"}
+                    'domain': [('id', 'in', [documentId])]}
         return True
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
