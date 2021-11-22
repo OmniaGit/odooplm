@@ -211,7 +211,7 @@ class PlmDocument(models.Model):
                                 self._full_path(random_name()))
                 if ir_attachment_id.is_plm and self.env.context.get("backup", True):
                     self.env['plm.backupdoc'].create({'userid': self.env.uid,
-                                                      'existingfile': ir_attachment_id.datas_fname,
+                                                      'existingfile': ir_attachment_id.store_fname,
                                                       'documentid': ir_attachment_id.id,
                                                       'printout': ir_attachment_id.printout,
                                                       'preview': ir_attachment_id.preview})
