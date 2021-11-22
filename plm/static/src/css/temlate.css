@@ -1,0 +1,42 @@
+#pop_up_img{
+	border: 1px solid #714B67 ;
+	box-shadow: 5px 5px;
+	text-align: center;
+}
+#main_div {
+  box-shadow:2px 2px 5px 1px grey;
+  background-color: white;
+  border-radius: 10px;
+  border: 2px solid #714B67;
+  padding: 2px;
+  width: 300px;
+  visibility: hidden;
+  opacity:0;  
+}
+div.info_header{
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  background-color: lightgray;
+  padding-top: 5px;
+  padding-left: 10px;
+}
+hr.datacard_line{
+    color: #714B67; 
+    margin-top: 2px ;
+}
+
+.top-right {
+	
+  border-radius: 3px 5px;
+  position: absolute;
+  top: 8px;
+  right: 16px;
+  color:  #714B67;
+}
+
+#text_document_info{
+   position: absolute;
+   bottom: 4px;left: 1px;
+   width:100px; /* or whatever width you want. */
+   max-width:100px; /* or whatever width you want. */
+}

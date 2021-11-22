@@ -1,0 +1,262 @@
+#odoo_plm_title {
+  line-height:10px;
+  border: 2px solid #997992;
+  font-weight: bold;
+  text-align: center;
+  margin: 5px;
+}
+
+#odoo_canvas{
+    width:100%;
+    display:inline-block;
+}
+
+.plm_web_button{
+	background-color: wite;
+    border: 1px solid #997992;
+    border-radius: 2px;
+    cursor:pointerl;
+    background-color:white;
+    overflow: hidden;
+    outline:none;
+    height: 25px;
+    width: 100%;
+}
+.plm_web_button:hover{
+	background-color: #E0E0E0;
+}
+#bottom_command{
+	color: #997992;
+	list-style-type: none;
+    margin: 0;
+    padding-left: 10px;
+    text-align: left;
+    line-height: 20px;
+}
+
+#plm_web_button: hover{
+    background-color: red;
+}
+
+#main_3d_web{
+	margin: auto;
+	max-width: 90%;
+	padding: 5px;
+	position: relative;
+	text-align: center;
+	
+}
+.main_command_slide {
+  height: 20px;
+  box-shadow:2px 2px 5px 1px grey;
+  width: auto;
+  opacity: .5;
+  background-color: white;
+  overflow: hidden;
+  position: absolute;
+  transition: height 0.1s;
+  border-radius:2px;
+  -moz-transition: height 0.1s;
+  /* Firefox 4 */
+  -webkit-transition: height 0.1s;
+  /* Safari and Chrome */
+  -o-transition: height 0.1s;
+  /* Opera */
+  transform-origin: bottom;  
+}
+.main_command_slide:hover{
+	 height: 20%;
+	 background-color: transparent;
+	 opacity: 1; 
+	 
+}
+.main_command_slide .activator {
+  height: 80px;
+  width: 100%;
+
+}
+
+.img {
+  text-align: center;
+  margin: 1px;
+  height: 20px;
+  width: 20%;
+  float: top;
+}
+#hiper_treejs{
+	justify-self:center;
+}
+#hiper_odooplm{
+	justify-self:right;
+	
+}
+.header_image{
+	height: 40;
+}
+.content {
+  display: none;
+  margin: 1px;
+}
+
+.activator:hover {}
+
+.activator:hover .content {
+  display: block;
+}
+
+.activator:hover .img {
+  float: bottom;
+}
+
+.measurement {
+	 pointer-events: auto;
+	 border-radius: 5px;
+     font-family: monospace;
+     background-color: #997992;
+     color: white;
+     margin: 5px;
+     cursor: row-resize;
+ }
+ 
+.measurementLabel {
+     display: inline-block;
+     font-family: monospace;
+     background-color: #997992;
+     color: white;
+     margin: 1px;
+ }
+.measurementButton{
+	 pointer-events: auto;
+	 border: 0;
+	 background: none;
+	 box-shadow: none;
+	 border-radius: 0px;
+	 margin: 1px;
+}
+.measurementButton:hover{
+     background: white;
+     cursor: row-resize;
+}
+
+#object_transparency {
+  margin: 10px;
+  
+  background: #997992;
+  -webkit-appearance: none;
+  background-color: white;
+  border-radius: 5px;  
+}
+#object_transparency::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 10px;
+  height: 10px;
+  background: #997992;
+  cursor: pointer;
+}
+
+#object_transparency::-moz-range-thumb {
+  width: 10px;
+  height: 10px;
+  background: #997992;
+  cursor: pointer;
+}
+#object_transparency:hover {
+  opacity: 1.0;
+}
+#color_object_grp{
+	display: inline-block;
+}
+div.snap_lable{
+	text-align: center;
+}
+#progress {
+  width: 100%;
+  height: 5px;
+  background: #000;
+}
+#progress_bar {
+  height: 5px;
+  background: #997992;
+  border: none;
+}
+
+hr {
+  background-color: lightblue;
+  border: 1px solid black;
+}
+hr.c {
+  margin-top: 2px;
+  margin-bottom: 2px;
+  margin-right: 45%;
+  margin-left: 45%;
+}
+
+hr.e {
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
+label{
+	background-color: white;
+}
+
+#datasheet{
+	overflow: hidden;
+    position: absolute;;
+    /*z-index: 999;*/
+    top: 60px;
+    right: 7px;
+}
+
+#main_div {
+  box-shadow:2px 2px 5px 1px grey;
+  background-color: white;
+  border-radius: 10px;
+  border: 2px solid #714B67;
+  padding: 2px;
+  width: 300px;
+  visibility: hidden;
+  opacity:0;  
+}
+
+#main_div_hidden{
+   padding:5px;
+   transition:visibility 0.3s linear,opacity 0.3s linear;
+}
+
+hr.datacard_line{
+    color: #714B67; 
+    margin-top: 2px ;
+}
+
+hr.hover_line{
+    color: #714B67; 
+    margin-top: 4px ;
+    margin-bottom: 4px ;
+}
+
+div.info_header{
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  background-color: lightgray;
+  padding-top: 5px;
+  padding-left: 10px;
+}
+
+#click_show{
+  padding:2px;
+  box-shadow:2px 2px 5px 1px grey;
+  border-radius: 2px ;
+  text-align:right;
+  width:10%;
+  cursor:pointer;
+  margin-left:90%;
+}
+
+#click_show:hover{
+  background-color:gray;
+}
+
+li.attribute_info{
+    text-align: left;
+}

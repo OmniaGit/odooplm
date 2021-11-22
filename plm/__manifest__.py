@@ -24,6 +24,7 @@
     "author": "OmniaSolutions",
     "website": "https://github.com/OmniaGit/odooplm",
     "category": "Manufacturing/Product Lifecycle Management",
+    "live_test_url": "https://www.v15.odooplm.cloud/",
     "sequence": 15,
     "license": "LGPL-3",
     "summary": "PLM Integration with main CAD editors",
@@ -54,6 +55,8 @@
         "views/mail_activity_type.xml",
         "views/sequence.xml",
         "views/menu.xml",
+        # QwebTemplates
+        'views/templates.xml',
         # Reports Template
         "report/bom_structure_report_template.xml",
         "report/document_report_templates.xml",
