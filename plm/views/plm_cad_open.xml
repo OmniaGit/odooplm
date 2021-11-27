@@ -10,7 +10,7 @@
         <field name="arch" type="xml">
             <search string="Checked-Out Document">
                 <filter icon="terp-go-month" string="  Last Month  " separator="1" name="cad_open_last_month"
-                         domain="[('create_date','&lt;=', (datetime.date.today() - datetime.timedelta(day=31,months=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today() - datetime.timedelta(day=1,months=1)).strftime('%%Y-%%m-%%d'))]"
+                         domain="[('create_date','&lt;=', (datetime.date.today() - datetime.timedelta(days=31)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today() - datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
                          help="Checked-Out in last month"/>
                 <filter icon="terp-go-month" string="  Last Week  " separator="1" name="cad_open_last_week"
                          domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"
