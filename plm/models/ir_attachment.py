@@ -364,6 +364,38 @@ class PlmDocument(models.Model):
         recursion(starting_doc_id.id)
         return list(set(outList))
     
+    def computeDownloadStatus(self,
+                              hostname,
+                              pws_path):
+        """
+            compute ir_attachment data suitable for client 
+            :hostname host name
+            :pws_path path to Private Work Space folder
+            :return: list of ir_attachment properties as dictionary [{<property>}]
+        """
+        out = []
+        computed = []
+        for ir_attachment_id in self:
+            active_attachment_id = ir_attachment_id.id 
+            if active_attachment_id in computed:
+                continue
+            computed.append(active_attachment_id)
+            #
+            isCheckedOutToMe, checkOutUser = ir_attachment_id.checkoutByMeWithUser()
+            isNewer = ir_attachment_id.checkNewer()
+            #   
+            out.append({'id:': active_attachment_id,
+                        'collectable': isNewer and not isCheckedOutToMe,
+                        'is_check_out_to_me': isCheckedOutToMe,
+                        'file_name': ir_attachment_id.name,
+                        'write_date': ir_attachment_id.write_date,
+                        'check_out_user': checkOutUser,
+                        'state': ir_attachment_id.state,
+                        'zip_ids': self.getRelatedPkgTree(ir_attachment_id)
+                        })
+        return out                     
+                               
+            
     def _data_check_files(self, targetIds, listedFiles=(), forceFlag=False, retDict=False, hostname='', hostpws=''):
         result = []
         listfiles = []

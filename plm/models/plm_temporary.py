@@ -85,7 +85,7 @@ class ProductTemporary(models.TransientModel):
                                              'revisionid',
                                              ir_attachment_props).id
         return ir_attachemnt_id, product_id 
-            
-            
+
+    
         
         
