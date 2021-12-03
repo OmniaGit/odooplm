@@ -384,14 +384,15 @@ class PlmDocument(models.Model):
             isCheckedOutToMe, checkOutUser = ir_attachment_id.checkoutByMeWithUser()
             isNewer = ir_attachment_id.checkNewer()
             #   
-            out.append({'id:': active_attachment_id,
+            out.append({'id': active_attachment_id,
                         'collectable': isNewer and not isCheckedOutToMe,
-                        'is_check_out_to_me': isCheckedOutToMe,
+                        'isCheckedOutToMe': isCheckedOutToMe,
+                        'writable': isCheckedOutToMe,
                         'file_name': ir_attachment_id.name,
                         'write_date': ir_attachment_id.write_date,
                         'check_out_user': checkOutUser,
                         'state': ir_attachment_id.state,
-                        'zip_ids': self.getRelatedPkgTree(ir_attachment_id)
+                        'zip_ids': self.getRelatedPkgTree(active_attachment_id)
                         })
         return out                     
                                

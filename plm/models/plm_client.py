@@ -46,13 +46,12 @@ class PlmClient(models.TransientModel):
         :return: list of [{<ir_attachment_attrivutes>}]
         """
         outIds = []
-        ids_to_compute = [] 
         ir_attachemnt = self.env['ir.attachment']
         for doc_id in ir_attachemnt.browse(ir_attachemnt_id):
-            ids_to_compute.append(doc_id.computeDownloadStatus(hostname, pws_path))
+            outIds.extend(doc_id.computeDownloadStatus(hostname, pws_path))
             if doc_id.is2D():
-                outIds.extend(ir_attachemnt.getRelatedLyTree(doc_id).computeDownloadStatus(hostname, pws_path))
-        outIds.extend(ir_attachemnt.getRelatedHiTree(doc_id, recursion=True, getRftree=True).computeDownloadStatus(hostname,pws_path))
+                outIds.extend(ir_attachemnt.browse(ir_attachemnt.getRelatedLyTree(doc_id.id)).computeDownloadStatus(hostname, pws_path))
+        outIds.extend(ir_attachemnt.browse(ir_attachemnt.getRelatedHiTree(doc_id.id, recursion=True, getRftree=True)).computeDownloadStatus(hostname,pws_path))
         return outIds
     
     
