@@ -29,8 +29,10 @@ from odoo import fields
 from odoo import _
 from odoo import api
 import logging
+import datetime
 import xmlrpc
 import pytz
+from odoo.exceptions import UserError
 
 DEFAULT_SERVER_DATE_FORMAT = "%Y-%m-%d"
 DEFAULT_SERVER_TIME_FORMAT = "%H:%M:%S"
@@ -74,7 +76,7 @@ class Plm_box_document(models.Model):
         return userBrws.name
 
     @api.model
-    def getNewSequencedName(self, vals):
+    def getNewSequencedName(self):
         return self.env.get('ir.sequence').get('ir.attachment')
 
     @api.model
@@ -133,43 +135,45 @@ class Plm_box_document(models.Model):
         return False
 
     @api.model
-    def saveBoxDocRel(self, docDict):
-        docName = docDict.get('docName', '')
-        boxName = docDict.get('boxName', '')
-        boxObj = self.env.get('plm.box')
-        boxBrwsList = boxObj.search([('name', '=', boxName)])
-        for boxBrws in boxBrwsList:
-            docId = self.search([('name', '=', docName)]).ids
-            if docId:
-                res = boxBrws.write({'document_rel': [(4, docId[0])]})
-                return res
-        return False
-
-    @api.model
-    def updateDocValues(self, valuesDict):
-        docBrwsList = self.search([('name', '=', valuesDict.get('docName', ''))])
-        for docBrws in docBrwsList:
-            del valuesDict['docName']
-            if docBrws.write(valuesDict):
-                return correctDate(docBrws.write_date, self.env.context)
-        return False
+    def saveBoxDocRel(self, box_id, doc_id):
+        if not box_id:
+            raise Exception('Cannot link an empty box')
+        if not doc_id:
+            raise Exception('Cannot link an empty document')
+        boxBrws = self.env['plm.box'].browse(box_id)
+        boxBrws.write({'document_rel': [(4, doc_id)]})
+        return True
 
     @api.model
     def returnDocsOfFilesChanged(self, valuesDict):
+        raise UserError('Not implemented')
         outDocs = []
-        for docName, (docContent, _writeDateClient) in valuesDict.items():
-            if self.getDocumentState({'docName': docName}) == 'check-out-by-me':
-                docBrowseList = self.search([('name', '=', docName)])
-                for docBrowse in docBrowseList:
-                    if docBrowse.datas != docContent:
-                        outDocs.append(docName)
+        cad_open = self.env['plm.cad.open'].sudo()
+        for doc_name, doc_rev, checksum in valuesDict.items():
+            documents = self.search([('engineering_document_name', '=', doc_name),
+                                     ('revisionid', '=', doc_rev)
+                                     ])
+            if not documents:
+                cad_open_ids = cad_open.search([
+                    ('checksum', '=', checksum)
+                    ])
+                outDocs.append(doc_name, doc_rev, checksum, 'toServer')
+            for document in documents:
+                flag, _user = document.checkoutByMeWithUser()
+                if flag:
+                    if document.checksum != checksum:
+                        outDocs.append(doc_name, doc_rev, checksum, 'fromServer')
         return outDocs
 
     @api.model
-    def getDocumentState(self, vals):
-        docName = vals.get('docName', '')
-        docBrwsList = self.search([('name', '=', docName)])
-        for docBrws in docBrwsList:
+    def getLastTime(self, oid, default=None):
+        document = self.browse(oid)
+        plm_cad_open = self.sudo().env['plm.cad.open'].getLastCadOpenByUser(document, self.env.user)
+        return plm_cad_open.create_date or document.write_date or document.create_date
+
+    @api.multi
+    def getDocumentState(self):
+        for docBrws in self:
             checkedOutByMe = docBrws._is_checkedout_for_me()
             checkedIn = docBrws.ischecked_in()
             if checkedOutByMe:
@@ -181,11 +185,35 @@ class Plm_box_document(models.Model):
         return 'check-out-by-me'
 
     @api.model
-    def getLastTime(self, oid, default=None):
-        document = self.browse(oid)
-        plm_cad_open = self.sudo().env['plm.cad.open'].getLastCadOpenByUser(document, self.env.user)
-        return plm_cad_open.create_date or document.write_date or document.create_date
-        
-Plm_box_document()
+    def checkDocumentPresent(self, doc_dict={}):
+        for str_box_id, vals in doc_dict.items():
+            box_id = int(str_box_id)
+            box_brws = self.env['plm.box'].browse(box_id)
+            evaluated = []
+            for str_doc_id, doc_vals in vals.items():
+                doc_id = int(str_doc_id)
+                doc_brws = self.browse(doc_id)
+                checksum = doc_vals.get('checksum', '')
+                if doc_id in box_brws.document_rel.ids:
+                    if doc_brws.checksum != checksum:
+                        doc_condition = doc_brws.getDocumentState()
+                        if doc_condition == 'check-out-by-me':
+                            doc_dict[str_box_id][str_doc_id]['update'] = 'upload'
+                        else:
+                            doc_dict[str_box_id][str_doc_id]['update'] = 'download'
+                    else:
+                        doc_dict[str_box_id][str_doc_id]['update'] = 'none'
+                else:
+                    cad_opens = self.env['plm.cad.open'].search([
+                        ('document_id', '=', doc_id)
+                        ])
+                    if len(cad_opens.ids) > 1:
+                        doc_dict[str_box_id][str_doc_id]['update'] = 'delete'
+                    elif doc_brws:
+                        doc_dict[str_box_id][str_doc_id]['update'] = 'delete'
+                    else:
+                        doc_dict[str_box_id][str_doc_id]['update'] = 'upload'
+        return doc_dict
+                
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

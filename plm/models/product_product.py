@@ -1712,6 +1712,11 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         ret += super(PlmComponent, self)._name_search(name, args, operator, limit, name_get_uid)
         return list(set(ret))
 
+    @api.model
+    def getUuid(self):
+        param = self.env['ir.config_parameter'].sudo()
+        return param.get_param('database.uuid')
+
 
 class PlmTemporayMessage(osv.osv.osv_memory):
     _name = "plm.temporary.message"

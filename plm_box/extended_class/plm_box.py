@@ -28,6 +28,7 @@ from odoo import api
 import datetime
 from dateutil import parser
 import pytz
+import json
 
 DEFAULT_SERVER_DATE_FORMAT = "%Y-%m-%d"
 DEFAULT_SERVER_TIME_FORMAT = "%H:%M:%S"
@@ -153,11 +154,28 @@ class Plm_box(models.Model):
         '''
             Write a new name if not provided
         '''
+        def check(docs_to_unlink):
+            for doc_to_unlink in docs_to_unlink:
+                doc_brws = self.env['ir.attachment'].browse(doc_to_unlink)
+                if doc_brws.is_checkout:
+                    raise UserError('You cannot unlink a document in check-out %r, file name %r' % (doc_brws.display_name, doc_brws.datas_fname))
+
         for brwsObj in self:
             name = brwsObj.name
             if name in [False, '']:
                 name = self.getNewSequencedName()
                 vals['name'] = name
+            documents = vals.get('document_rel', [])
+            for elem in documents:
+                if elem[0] in [2, 3]: # Unlink document or remove relation
+                    docs_to_unlink = elem[1]
+                    check(docs_to_unlink)
+                elif elem[0] == 5:
+                    check(brwsObj.document_rel.ids)
+                elif elem[0] == 6:
+                    docs_to_keep = elem[2]
+                    docs_to_unlink = [x for x in brwsObj.document_rel.ids if x not in docs_to_keep]
+                    check(docs_to_unlink)
         return super(Plm_box, self).write(vals)
 
     @api.model
@@ -185,30 +203,36 @@ class Plm_box(models.Model):
         self.box_doc_rel[parentBrws.name] = docRelList
 
     @api.model
-    def getRelatedEntities(self, parentBrws):
-        objRelList = []
-        for brws in parentBrws.product_id:
-            outName = brws.name
-            objRelList.append({'obj_name': 'Product', 'obj_type': 'product.product', 'obj_rel_name': outName})
-        for brws in parentBrws.project_id:
-            outName = brws.name
-            objRelList.append({'obj_name': 'Project', 'obj_type': 'project.project', 'obj_rel_name': outName})
-        for brws in parentBrws.task_id:
-            outName = brws.name
-            objRelList.append({'obj_name': 'Task', 'obj_type': 'project.task', 'obj_rel_name': outName})
-        for brws in parentBrws.sale_ord_id:
-            outName = brws.name
-            objRelList.append({'obj_name': 'Sale Order', 'obj_type': 'sale.order', 'obj_rel_name': outName})
-        for brws in parentBrws.user_rel_id:
-            outName = brws.name
-            objRelList.append({'obj_name': 'User', 'obj_type': 'res.users', 'obj_rel_name': outName})
-        for brws in parentBrws.bom_id:
-            outName = brws.name
-            objRelList.append({'obj_name': 'Bill of Material', 'obj_type': 'mrp.bom', 'obj_rel_name': outName})
-        for brws in parentBrws.wc_id:
-            outName = brws.name
-            objRelList.append({'obj_name': 'Work Center', 'obj_type': 'mrp.workcenter', 'obj_rel_name': outName})
-        return objRelList
+    def setRelatedEntities(self, parentBrws, outDict):
+        
+        def populationLoop(brws_record, outDict, field_name):
+            obj_name = self.env['ir.model'].search([('model', '=', brws_record._name)]).display_name
+            for brws in brws_record:
+                if field_name not in outDict['entities']:
+                    outDict['entities'][field_name] = {}
+                outDict['entities'][field_name][str(brws.id)] = {'obj_name': obj_name, 'obj_type': brws._name, 'obj_rel_name': brws.display_name, 'id': brws.id}
+        
+        outDict['document_rel'] = parentBrws.document_rel.ids
+        outDict['product_id'] = parentBrws.product_id.ids
+        outDict['project_id'] = parentBrws.project_id.ids
+        outDict['task_id'] = parentBrws.task_id.ids
+        outDict['sale_ord_id'] = parentBrws.sale_ord_id.ids
+        outDict['user_rel_id'] = parentBrws.user_rel_id.ids
+        outDict['bom_id'] = parentBrws.bom_id.ids
+        outDict['wc_id'] = parentBrws.wc_id.ids
+        outDict['entities'] = {}
+        
+        populationLoop(parentBrws.product_id, outDict, 'product_id')
+        populationLoop(parentBrws.project_id, outDict, 'project_id')
+        populationLoop(parentBrws.task_id, outDict, 'task_id')
+        populationLoop(parentBrws.sale_ord_id, outDict, 'sale_ord_id')
+        populationLoop(parentBrws.user_rel_id, outDict, 'user_rel_id')
+        populationLoop(parentBrws.bom_id, outDict, 'bom_id')
+        populationLoop(parentBrws.wc_id, outDict, 'wc_id')
+        for document in parentBrws.document_rel:
+            if 'document_rel' not in outDict['entities']:
+                outDict['entities']['document_rel'] = {}
+            outDict['entities']['document_rel'][str(document.id)] = self.getDocDictValues(document)
 
     @api.model
     def setRelatedBoxes(self, parentBrws):
@@ -275,45 +299,9 @@ class Plm_box(models.Model):
         return outList
 
     @api.model
-    def getBoxes(self, boxes={}):
-        '''
-            *** CLIENT ***
-        '''
-        outBoxDict = {}
-        avaibleBoxIds = []
-        if not boxes:
-            return {}
-        if boxes:
-            for boxName in boxes.keys():
-                boxBrwsList = self.search([('name', '=', boxName)])
-                avaibleBoxIds.extend(boxBrwsList.ids)
-        for boxId in avaibleBoxIds:
-            boxBrws = self.browse(boxId)
-            self.setRelatedDocs(boxBrws)
-            self.box_ent_rel[boxBrws.name] = self.getRelatedEntities(boxBrws)
-            childList = self.setRelatedBoxes(boxBrws)
-            for childBrws in childList:
-                if childBrws.id not in avaibleBoxIds:
-                    avaibleBoxIds.append(childBrws.id)
-            writeVal = datetime.datetime.strptime(boxBrws.write_date,
-                                                  DEFAULT_SERVER_DATETIME_FORMAT)
-            outBoxDict[boxBrws.name] = {'boxVersion': boxBrws.version,
-                                        'boxDesc': boxBrws.description,
-                                        'boxState': boxBrws.state,
-                                        'boxReadonly': boxBrws.boxReadonlyCompute(),
-                                        'boxWriteDate': correctDate(writeVal, self.env.context),
-                                        'boxPrimary': False,
-                                        }
-            if boxBrws.name in boxes.keys():
-                boxPrimary = boxes[boxBrws.name][1]
-                outBoxDict[boxBrws.name]['boxPrimary'] = boxPrimary
-        return outBoxDict
-
-    @api.model
     def getDocDictValues(self, docBrws):
         getCheckOutUser = ''
-        plmDocObj = self.env.get('ir.attachment')
-        docState = plmDocObj.getDocumentState({'docName': docBrws.name})
+        docState = docBrws.getDocumentState()
         if docState in ['check-out', 'check-out-by-me']:
             getCheckOutUser = docBrws.getCheckOutUser()
         return {'revisionid': docBrws.revisionid,
@@ -325,6 +313,8 @@ class Plm_box(models.Model):
                 'state': docBrws.state,
                 'readonly': self.docReadonlyCompute(docBrws.id),
                 'checkoutUser': getCheckOutUser,
+                'id': docBrws.id,
+                'name': docBrws.name,
                 }
 
     @api.model
@@ -446,30 +436,6 @@ class Plm_box(models.Model):
         return outList
 
     @api.model
-    def getDifferences(self, localDict):
-        outList = []
-        if not localDict:
-            return []
-        else:
-            boxIds = []
-            docIds = []
-            for values in localDict.values():
-                if values[1] == 'box':
-                    valsList, boxId = self.checkIfBoxChanged(values)
-                    if valsList:
-                        outList.append(valsList)
-                    if boxId:
-                        boxIds.append(boxId)
-                elif values[1] == 'document':
-                    valsList, docId = self.checkIfDocChanged(values)
-                    if valsList:
-                        outList.append(valsList)
-                    if docId:
-                        docIds.append(docId)
-            outList = self.checkForNewDocuments(docIds, boxIds, outList)
-        return outList
-
-    @api.model
     def checkForNewBoxes(self, boxIds, avaibleBoxes):
         outList = []
         avaibleNewBoxes = list(set(avaibleBoxes) - set(boxIds))
@@ -478,110 +444,30 @@ class Plm_box(models.Model):
         return outList
 
     @api.model
-    def checkForNewDocuments(self, docIds, avaibleBoxes, outList):
-        for boxId in avaibleBoxes:
-            boxBrws = self.browse(boxId)
-            if boxBrws:
-                docBrwsIds = boxBrws.document_rel
-                for docBrws in docBrwsIds:
-                    if docBrws.id not in docIds:
-                        docIds.append(docBrws.id)
-                        outList.append([docBrws.name, 'document'])
-        return outList
-
-    @api.model
-    def checkIfBoxChanged(self, values):
-        name, typee, datetimee = values
-        boxBrwsList = self.search([('name', '=', name)])
-        for boxBrws in boxBrwsList:
-            boxId = boxBrws.id
-            wr_date = boxBrws.write_date
-            if wr_date != 'n/a':
-                wr_date = wr_date.split('.')[0]
-                serverDatetime = datetime.datetime.strptime(wr_date, DEFAULT_SERVER_DATETIME_FORMAT)
-                serverDatetime = correctDate(serverDatetime, self.env.context)
-                clientDatetime = datetime.datetime.strptime(datetimee.value, "%Y%m%dT%H:%M:%S")
-                if serverDatetime > clientDatetime:
-                    deltaTime = serverDatetime - clientDatetime
-                    if deltaTime.total_seconds() > 2:
-                        return [name, typee], boxId
-                else:
-                    return [], boxId
-        return [], False
-
-    @api.model
-    def checkIfDocChanged(self, values):
-        name, typee, datetimee = values
-        docObj = self.env.get('ir.attachment')
-        docBrwsList = docObj.search([('name', '=', name)])
-        for docBrws in docBrwsList:
-            docId = docBrws.id
-            if docObj.getDocumentState({'docName': name}) != 'check-in':
-                return [], docId
-            wr_date = docBrws.write_date
-            if wr_date != 'n/a':
-                wr_date = wr_date.split('.')[0]
-                serverDatetime = datetime.datetime.strptime(wr_date, DEFAULT_SERVER_DATETIME_FORMAT)
-                serverDatetime = correctDate(serverDatetime, self.env.context)
-                clientDatetime = datetime.datetime.strptime(datetimee.value, "%Y%m%dT%H:%M:%S")
-                if serverDatetime > clientDatetime:
-                    deltaTime = serverDatetime - clientDatetime
-                    if deltaTime.total_seconds() > 2:
-                        return [name, typee, ''], docId
-                else:
-                    return [], docId
-        else:
-            return [name, typee, 'deleted'], False
-        return [], False
-
-    @api.model
-    def getBoxesStructureFromServer(self, primaryBoxes):
-        '''
-            *** CLIENT ***
-            Function called by "Add" button in the plm client
-        '''
+    def getBoxesStructureFromServer(self, box_ids):
         outDict = {}
         notFoundBoxes = []
-        if not primaryBoxes:
+        if not box_ids:
             return (outDict, notFoundBoxes)
-        for boxName in primaryBoxes:
-            boxBrwsList = self.search([('name', '=', boxName)])
-            if boxBrwsList:
-                outDict[boxName] = boxBrwsList[0].getBoxStructure(True)
-            else:
-                notFoundBoxes.append(boxName)
+        for box_obj in self.browse(box_ids):
+            outDict[box_obj.name] = box_obj.getBoxStructure0()
         return (outDict, notFoundBoxes)
 
     @api.multi
-    def getBoxStructure(self, primary=False):
+    def getBoxStructure0(self, primary=False):
         '''
             *** CLIENT ***
-            Used in the client in "Add" button procedure
         '''
-        outDict = {'children': {},
-                   'documents': {},
-                   'entities': [],
-                   'description': '',
-                   'state': 'draft',
-                   'readonly': True,
-                   'primary': primary,
-                   }
+        outDict = {'primary': primary}
         for boxBrws in self:
             for boxChildBrws in boxBrws.plm_box_rel:
-                outDict['children'][boxChildBrws.name] = boxChildBrws.getBoxStructure(primary)
-            for docBrws in boxBrws.document_rel:
-                outDict['documents'][docBrws.name] = self.getDocDictValues(docBrws)
-            outDict['entities'] = self.getRelatedEntities(boxBrws)
+                outDict['children'][boxChildBrws.name] = boxChildBrws.getBoxStructure0(primary)
+            self.setRelatedEntities(boxBrws, outDict)
             outDict['description'] = boxBrws.description
             outDict['state'] = boxBrws.state
             outDict['readonly'] = boxBrws.boxReadonlyCompute()
+            outDict['id'] = boxBrws.id
         return outDict
-
-
-    @api.model
-    def getUuid(self):
-        param = self.env['ir.config_parameter'].sudo()
-        return param.get_param('database.uuid')
 
 
     def checkRecursiveBoxPresent(self, targetBox):
@@ -614,6 +500,33 @@ class Plm_box(models.Model):
             if present:
                 return False
         return True
-            
+
+    @api.model
+    def getBoxStructure(self, box_ids=[]):
+        headers = {'name': 'Name',
+                   'description': 'Description',
+                   'document_rel': 'Documents',
+                   'state': 'State',
+                   }
+        
+        def recursion(box_ids):
+            out = []
+            for box in self.browse(box_ids):
+                vals = box.read(headers.keys())
+                children = recursion(box.plm_box_rel.ids)            
+                out.append([vals[0], children])
+            return out
+        
+        structure = recursion(box_ids)
+            #
+        # structure = [
+                # [
+                    # {'name': 'AAA'},
+                    # [
+                        # [{'name': 'BBB',
+                          # 'description': 'CCC'}, []]]
+                # ]
+            # ]
+        return json.dumps([headers, structure])
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

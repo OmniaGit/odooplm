@@ -42,6 +42,24 @@ class PlmCadOpen(models.Model):
     pws_path = fields.Char(_('PWS Path'))
     hostname = fields.Char(_('Hostname'))
     operation_type = fields.Char(_('Operation Type'), index=True)
+    checksum = fields.Char(string="Checksum/SHA1", size=40, index=True, readonly=True)
+
+    def setChecksum(self, vals):
+        doc_id = vals.get('document_id')
+        if doc_id:
+            doc = self.env['ir.attachment'].browse(doc_id)
+            return doc.checksum
+        return ''
+
+    @api.model
+    def create(self, vals):
+        vals['checksum'] = self.setChecksum(vals)
+        return super(PlmCadOpen, self).create(vals)
+
+    @api.multi
+    def write(self, vals):
+        vals['checksum'] = self.setChecksum(vals)
+        return models.Model.write(self, vals)
 
     @api.model
     def getLastCadOpenByUser(self, doc_id, user_id):

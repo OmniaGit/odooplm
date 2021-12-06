@@ -981,6 +981,7 @@ class PlmDocument(models.Model):
                     raise UserError("Unable to check out. The owner of this document is %s" % ir_attachment_id.checkout_user)
                 else:
                     ir_attachment_id.checkout("localhost", r"check/web")
+        return True
 
     @api.model
     def CheckIn(self, attrs):

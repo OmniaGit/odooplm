@@ -14,5 +14,38 @@
         </field>
     </record>
 
+    <record model="ir.ui.view" id="plm_box_attachment_tree">
+        <field name="name">plm.box.attachment.tree</field>
+        <field name="model">ir.attachment</field>
+        <field name="type">tree</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <tree string="Attachments">
+                <field name="name"/>
+                <field name="revisionid"/>
+                <field name="state"/>
+                <field name="datas_fname"/>
+                <field name="checkout_user"/>
+                <field name="create_uid"/>
+                <field name="create_date"/>
+                <field name="write_uid"/>
+                <field name="write_date"/>
+                <field name="is_checkout" invisible="True"/>
+                 
+                 <button name="toggle_check_out"
+                         icon="fa-lock" 
+                         type="object"
+                         attrs="{'invisible': [('is_checkout','=', True)]}"
+                         string="Check-Out">
+                  </button>
+                 <button name="toggle_check_out"
+                         icon="fa-unlock"
+                         attrs="{'invisible': [('is_checkout','=', False)]} "
+                         type="object"
+                         string="Check-In">
+                  </button>
+            </tree>
+        </field>
+    </record>
 
 </odoo>
