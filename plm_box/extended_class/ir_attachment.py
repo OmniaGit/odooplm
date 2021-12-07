@@ -194,8 +194,11 @@ class Plm_box_document(models.Model):
                 doc_id = int(str_doc_id)
                 doc_brws = self.browse(doc_id)
                 checksum = doc_vals.get('checksum', '')
+                doc_dict[str_box_id][str_doc_id]['check_mode'] = doc_brws.getDocumentState()
                 if doc_id in box_brws.document_rel.ids:
-                    if doc_brws.checksum != checksum:
+                    if not checksum:
+                        doc_dict[str_box_id][str_doc_id]['update'] = 'download'
+                    elif doc_brws.checksum != checksum:
                         doc_condition = doc_brws.getDocumentState()
                         if doc_condition == 'check-out-by-me':
                             doc_dict[str_box_id][str_doc_id]['update'] = 'upload'
@@ -213,6 +216,7 @@ class Plm_box_document(models.Model):
                         doc_dict[str_box_id][str_doc_id]['update'] = 'delete'
                     else:
                         doc_dict[str_box_id][str_doc_id]['update'] = 'upload'
+        logging.info('Box sincronize res %r' % (doc_dict))
         return doc_dict
                 
 
