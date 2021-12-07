@@ -193,6 +193,10 @@ class Plm_box(models.Model):
         return self.env.get('res.groups').search([('users.id', '=', self.env.uid)]).ids
 
     @api.model
+    def getBoxesByUser(self):
+        return self.search([('user_rel_id.id', '=', self.env.uid)]).ids
+
+    @api.model
     def setRelatedDocs(self, parentBrws):
         docRelList = []
         for docBrws in parentBrws.document_rel:
@@ -418,8 +422,9 @@ class Plm_box(models.Model):
     def getAvaiableBoxIds(self):
         avaibleBoxIds = []
         groupsIds = self.getAvaibleGroupsByUser()
-        avaibleBoxIds = avaibleBoxIds + self.search([('groups_rel.id', 'in', groupsIds)]).ids
-        avaibleBoxIds = avaibleBoxIds + self.getBoxesByAvaibleParent(avaibleBoxIds, [])
+        avaibleBoxIds += self.search([('groups_rel.id', 'in', groupsIds)]).ids
+        avaibleBoxIds += self.getBoxesByAvaibleParent(avaibleBoxIds, [])
+        avaibleBoxIds += self.getBoxesByUser()
         avaibleBoxIds = self.getBoxesByFollower(avaibleBoxIds)
         return avaibleBoxIds
 
@@ -458,10 +463,13 @@ class Plm_box(models.Model):
         '''
             *** CLIENT ***
         '''
-        outDict = {'primary': primary}
+        outDict = {'primary': primary,
+                   'children': {}
+                   }
         for boxBrws in self:
             for boxChildBrws in boxBrws.plm_box_rel:
-                outDict['children'][boxChildBrws.name] = boxChildBrws.getBoxStructure0(primary)
+                outDict['children'].setdefault(boxChildBrws.name, {})
+                outDict['children'][boxChildBrws.name] = boxChildBrws.getBoxStructure0()
             self.setRelatedEntities(boxBrws, outDict)
             outDict['description'] = boxBrws.description
             outDict['state'] = boxBrws.state
