@@ -42,7 +42,7 @@
 
     <menuitem
             id="menu_document_files"
-            name="Search on Documents"
+            name="Documents"
             action="plm_action_document_form"
             parent="plm.ir_attachment_form"
             sequence="10"
@@ -50,7 +50,7 @@
     
     <menuitem
             id="menu_backupdoc"
-            name="Search on Backup Data Set"
+            name="Backup Data Set"
             action="action_plm_backupdoc"
             parent="plm.ir_attachment_form"
             sequence="13"
@@ -58,7 +58,7 @@
 
     <menuitem
             id="menu_checkout"
-            name="Search on Checked-Out Documents"
+            name="Checked-Out Documents"
             action="plm.action_plm_checkout"
             parent="plm.ir_attachment_form"
             groups="plm.group_plm_integration_user"
@@ -66,7 +66,7 @@
     />
 
     <menuitem
-            name="Search on Document Relations"
+            name="Document Relations"
             action="plm_action_document_relations"
             id="menu_document_relations"
             parent="plm.ir_attachment_form"
@@ -140,13 +140,13 @@
     <!-- Parent menu "Configuration" -->
     <menuitem
             id="menu_base_component"
-            name="Search on Engineering Parts"
+            name="Engineering Parts"
             parent="plm.plm_component_menu_view"
             action="action_plm_component_base"/>
 
     <!-- Parent menu "Component Relations" -->
     <menuitem
-            name="Search on Normal Bill of Materials"
+            name="Normal Bill of Materials"
             id="menu_relation_normal"
             parent="plm.plm_menu_relation"
             action="plm_action_normal_form"

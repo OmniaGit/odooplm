@@ -52,6 +52,8 @@ class Plm_box_document(models.Model):
 
     @api.model
     def create(self, vals):
+        if self.env.context.get('default_is_plm_box', False):
+            vals['is_plm_box'] = True
         if not vals.get('name', False):
             name = self.getNewSequencedName(vals)
             vals['name'] = name
@@ -183,6 +185,13 @@ class Plm_box_document(models.Model):
             else:
                 return 'check-in'
         return 'check-out-by-me'
+
+    @api.multi
+    def getDocumentStateMulty(self):
+        ret = {}
+        for doc in self:
+            ret[str(doc.id)] = doc.getDocumentState()
+        return ret
 
     @api.model
     def checkDocumentPresent(self, doc_dict={}):

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
     <menuitem
-            name="Search on Engineering Bill of Materials"
+            name="Engineering Bill of Materials"
             action="plm_action_ebom_form"
             id="menu_relation_ebom"
             parent="plm.plm_menu_relation"/>

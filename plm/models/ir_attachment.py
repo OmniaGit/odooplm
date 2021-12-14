@@ -663,8 +663,6 @@ class PlmDocument(models.Model):
         checkoutType = self.env['plm.checkout']
         for document in self:
             if checkoutType.search([('documentid', '=', document.id)]):
-                logging.warning(
-                    _("The document %s - %s has not checked-in" % (str(document.name), str(document.revisionid))))
                 return False
         return True
 
@@ -989,6 +987,14 @@ class PlmDocument(models.Model):
         revisionId = attrs.get('revisionid', False)
         docBrwsList = self.search([('name', '=', documentName),
                                    ('revisionid', '=', revisionId)])
+        for docBrws in docBrwsList:
+            docBrws._check_in()
+            return docBrws.id
+        return False
+
+    @api.model
+    def CheckInById(self, doc_id):
+        docBrwsList = self.browse(doc_id)
         for docBrws in docBrwsList:
             docBrws._check_in()
             return docBrws.id
@@ -1710,20 +1716,24 @@ class PlmDocument(models.Model):
         """
         check out the current document
         """
-        check_out_id = False
-        check_res, msg = self.canCheckOut(showError=showError)
-        if check_res:
-            values = {'userid': self.env.uid,
-                      'hostname': hostName,
-                      'hostpws': hostPws,
-                      'documentid': self.id}
-            check_out_id = self.env['plm.checkout'].create(values)
-        return check_res, msg, check_out_id
+        for attachment in self:
+            check_out_id = False
+            check_res, msg = attachment.canCheckOut(showError=showError)
+            if check_res:
+                values = {'userid': self.env.uid,
+                          'hostname': hostName,
+                          'hostpws': hostPws,
+                          'documentid': self.id}
+                check_out_id = self.env['plm.checkout'].search([('documentid', '=', self.id)])
+                if not check_out_id:
+                    check_out_id = self.env['plm.checkout'].create(values)
+        return check_res, msg, check_out_id.id
 
     @api.multi
     def canCheckOut(self, showError=False):
         for docBrws in self:
-            if docBrws.is_checkout:
+            checkout_by_me, _user = docBrws.checkoutByMeWithUser()
+            if not checkout_by_me and not docBrws.ischecked_in():
                 msg = _("Unable to check-Out document %r that is already checked id by user %r" % (docBrws.datas_fname, docBrws.checkout_user))
                 if showError:
                     raise UserError(msg)

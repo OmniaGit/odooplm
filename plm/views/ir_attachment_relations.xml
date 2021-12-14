@@ -73,7 +73,7 @@
             <field name="type">search</field>
         	<field name="priority" eval="10"/>
             <field name="arch" type="xml">
-				<search string="Search on Document Relations">
+				<search string="Document Relations">
                    	<filter name="last_week"
                    	        string="Last Week"
                          	domain="[('create_date','&lt;=', (datetime.date.today()-relativedelta(weeks=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-relativedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"

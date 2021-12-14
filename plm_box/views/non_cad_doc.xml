@@ -22,7 +22,7 @@
 	                	<field name="create_date" readonly="1"/>
 	                    <field name="description" widget="link"/>
 	                    <field name="version" />
-	                    <field name="document_rel" domain="[('is_plm_box', '=', True)]"/>
+	                    <field name="document_rel" domain="[('is_plm_box', '=', True)]" context="{'default_is_plm_box': True}"/>
 	                    <!--
 	                    <field name="obj_rel" editable="bottom" widget="one2many_list">
 							<tree string="Relation" editable="bottom">
@@ -118,9 +118,11 @@
     </record>
 
     <menuitem
-        name="Search on Non CAD Document Relations"
+        name="BOX Non CAD Document Relations"
         action="action_non_cad_doc"
         id="menu_non_cad_doc_relations"
+        groups="plm_box.group_plm_box_user"
+        sequence="20"
         parent="plm.ir_attachment_form"/>
         
         <!--

@@ -38,7 +38,7 @@
     </record>
 
     <menuitem
-            name="Search on Spare Bill of Materials"
+            name="Spare Bill of Materials"
             action="plm_action_spare_form"
             id="menu_relation_spare"
             parent="plm.plm_menu_relation"/>

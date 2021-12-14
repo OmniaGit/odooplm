@@ -423,7 +423,7 @@ class Plm_box(models.Model):
         avaibleBoxIds = []
         groupsIds = self.getAvaibleGroupsByUser()
         avaibleBoxIds += self.search([('groups_rel.id', 'in', groupsIds)]).ids
-        avaibleBoxIds += self.getBoxesByAvaibleParent(avaibleBoxIds, [])
+        #avaibleBoxIds += self.getBoxesByAvaibleParent(avaibleBoxIds, [])
         avaibleBoxIds += self.getBoxesByUser()
         avaibleBoxIds = self.getBoxesByFollower(avaibleBoxIds)
         return avaibleBoxIds
@@ -451,15 +451,16 @@ class Plm_box(models.Model):
     @api.model
     def getBoxesStructureFromServer(self, box_ids):
         outDict = {}
+        available_boxes = self.getAvaiableBoxIds()
         notFoundBoxes = []
         if not box_ids:
             return (outDict, notFoundBoxes)
         for box_obj in self.browse(box_ids):
-            outDict[box_obj.name] = box_obj.getBoxStructure0()
+            outDict[box_obj.name] = box_obj.getBoxStructure0(available_boxes=available_boxes)
         return (outDict, notFoundBoxes)
 
     @api.multi
-    def getBoxStructure0(self, primary=False):
+    def getBoxStructure0(self, primary=False, available_boxes=[]):
         '''
             *** CLIENT ***
         '''
@@ -467,11 +468,13 @@ class Plm_box(models.Model):
                    'children': {}
                    }
         for boxBrws in self:
+            if boxBrws.id not in available_boxes:
+                return {}
             for boxChildBrws in boxBrws.plm_box_rel:
                 outDict['children'].setdefault(boxChildBrws.name, {})
-                outDict['children'][boxChildBrws.name] = boxChildBrws.getBoxStructure0()
+                outDict['children'][boxChildBrws.name] = boxChildBrws.getBoxStructure0(False, available_boxes)
             self.setRelatedEntities(boxBrws, outDict)
-            outDict['description'] = boxBrws.description
+            outDict['description'] = boxBrws.description or ''
             outDict['state'] = boxBrws.state
             outDict['readonly'] = boxBrws.boxReadonlyCompute()
             outDict['id'] = boxBrws.id
@@ -515,26 +518,55 @@ class Plm_box(models.Model):
                    'description': 'Description',
                    'document_rel': 'Documents',
                    'state': 'State',
+                   'entities': 'Entities'
                    }
         
-        def recursion(box_ids):
+        def recursion(box_ids, available_boxes=[]):
             out = []
             for box in self.browse(box_ids):
-                vals = box.read(headers.keys())
-                children = recursion(box.plm_box_rel.ids)            
-                out.append([vals[0], children])
+                if box.id in available_boxes:
+                    vals_list = box.read(headers.keys())
+                    for vals in vals_list:
+                        vals['entities'] = box.computeEntities()
+                        children = recursion(box.plm_box_rel.ids, available_boxes)            
+                        out.append([vals, children])
             return out
         
-        structure = recursion(box_ids)
-            #
-        # structure = [
-                # [
-                    # {'name': 'AAA'},
-                    # [
-                        # [{'name': 'BBB',
-                          # 'description': 'CCC'}, []]]
-                # ]
-            # ]
+        available_boxes = self.getAvaiableBoxIds()
+        structure = recursion(box_ids, available_boxes)
         return json.dumps([headers, structure])
+
+    def computeEntities(self):
+        
+        def compute_obj(out, model_str, brws_rec):
+            if brws_rec:
+                out += '%s: ' % (model_str)
+                for obj in brws_rec:
+                    out += ' %r /' % (obj.display_name)
+                out = out[:-2]
+                out += '\n'
+            return out
+        
+        out = ''
+        for box in self:
+            out = compute_obj(out, 'Product', box.product_id)
+            out = compute_obj(out, 'Project', box.project_id)
+            out = compute_obj(out, 'Task', box.task_id)
+            out = compute_obj(out, 'Sale Order', box.sale_ord_id)
+            out = compute_obj(out, 'Users', box.user_rel_id)
+            out = compute_obj(out, 'BOM', box.bom_id)
+            out = compute_obj(out, 'Work Centers', box.wc_id)
+            out = out[:-2]
+            break
+        return out
+
+    @api.model
+    def verifyBoxesPermissions(self, box_ids):
+        to_del = []
+        available_boxes = self.getAvaiableBoxIds()
+        for box_id in box_ids:
+            if box_id not in available_boxes:
+                to_del.append(box_id)
+        return to_del
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

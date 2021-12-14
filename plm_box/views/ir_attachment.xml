@@ -40,12 +40,30 @@
                   </button>
                  <button name="toggle_check_out"
                          icon="fa-unlock"
-                         attrs="{'invisible': [('is_checkout','=', False)]} "
+                         attrs="{'invisible': [('is_checkout','=', False)]}"
                          type="object"
                          string="Check-In">
                   </button>
             </tree>
         </field>
     </record>
+
+    <record model="ir.actions.act_window" id="action_box_docs">
+    	<field name="name">BOX Documents</field>
+    	<field name="res_model">ir.attachment</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="plm.ir_attachment_search"></field>
+        <field name="context">{"odooPLM":True}</field>
+        <field name="domain">[('is_plm_box', '=', True)]</field>
+    </record>
+
+    <menuitem
+        name="BOX Documents"
+        action="action_box_docs"
+        groups="plm_box.group_plm_box_admin"
+        id="menu_box_docs"
+        sequence="21"
+        parent="plm.ir_attachment_form"/>
 
 </odoo>
