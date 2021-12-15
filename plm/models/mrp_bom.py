@@ -728,7 +728,8 @@ class MrpBomExtension(models.Model):
             ir_attachment_relation.removeChildRelation(parent_ir_attachment_id)  # perform default unlink to HiTree, need to perform RfTree also
             ir_attachment_relation.removeChildRelation(parent_ir_attachment_id, linkType='RfTree')
             mrp_bom_found_id = self.env['mrp.bom']
-            for mrp_bom_id in self.search([('product_tmpl_id', '=', product_tmpl_id)]):
+            for mrp_bom_id in self.search([('product_tmpl_id', '=', product_tmpl_id),
+                                           ('type', '=', bomType)]):
                 mrp_bom_found_id = mrp_bom_id
             if not mrp_bom_found_id:
                 if product_tmpl_id:
