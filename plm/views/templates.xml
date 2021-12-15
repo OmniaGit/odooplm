@@ -1,6 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
   <template id="plm.document_search_button">
+  <t t-set="checkout_user" t-value="doc.checkoutByMeWithUser()"/>
+  <table height="120" width="100">
+      <tr>
+        <td align="center" colspan="2" rowspan="2" height="100"><img height="80" t-att-src="doc.basePreview64Img()"/></td>
+        <td align="right">
+            <t t-if="checkout_user[0]">
+                <img height="20" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEoAAABQCAYAAAC+neOMAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAABFtJREFUeJztm11oHFUYht/37G5s2t3ZXcX+WBBBEb3QIq0WzG5K4kWhTREr+Icg/lwIBRXFiyrUm9wL3lhEK1QQyU2pCtKgtG4SWiEhtEqpN1ZBbKK23dn8kWZ3Xi/UkrRJ5mSzs5mF89ztzDvn+/Zh5zB7DgM4HA6Ho+XhWjewWvwfMrcFVdNlhB2S7iN4hwCPQELULIC/AfxK8ByCYMgbmxjmU6ittE5LitIwUv6s9ySFVyR2kTDW1wp/AvjCmNqHXsfkBdvrWkqUBPpD3nMUekHetcqxRKAvCHAwv8u/GJZvGVFXBvJ3JlD7FGR3I8eVNEPwHa/gf0AiWCrXEqKulrKPGaIPxK1R1ZD05RxTz99euDyx2PnYiyqXvGdheJRAMvJi0igV7PY6J/+68VSsRZUHvachfr6SyXq1SPoR4K5c0b86/3jTGlgplaFcJ8TPmikJAEg+AOqYhpFacLyZTdgyeXL95moydZbExpVcJ6AG4GcCfwiYA+BBuIfEppX2IOn9XLHy5v+fYydKAv1B7xjJx+0vQj+Bw1PT6/q37B6fumm8097dqOEZkAcIbLYdNhC68kX/FBBDUX4p0wNjvrJL62IAvpwv+Cdt0pdObNrQvn7mEMC3yfDvLuB8ds7fxi5UYyVKAitD3ijAbRbpUxL33zjp2uCXMj0i+0i2h5fhC9li+WisJvPyQLbbRpKk0uS6DXvrkQQA2c6JryXukzAXGmbwlgTGSpQxeCk0JP3ONu3fuuPS9Gpq5Tv970C9Hp7kg+VS9qHYiNIwUpD2hQZpDmR3TlxuRM1sR+WwpFJYziTwRGxEVWYy20FmQmIjXkfZcqIPh4QEvheWk9AdG1ECt4dn9AkJNbJuruB/Dyhk9UDxufUA3hsaEU80vCohgP3LZ9geG1Fk2IOgprKF8HWjelCgc2GZ2IgSEDI/cbzRt9312objYZnYiKKW78XqmadOjHgtNBNV8ZZCtdBfqhNliRNliRNliRNliRNliRNlyfUtIP2Etokr6YcF5temFW1cfsFVab+U6VlwJMG55LXq2XTX9FjEzf0ryh/M7PHL5mMabIm6YL2Q3ApywcoBBVSTqcAfyH7kTfhvcA9mo6qfrJTSHQHM8aZsMEbAf9tZr/oZ7xagEr7wVydGxvS2qqT5kHyxcjp9f1TjG4mPRjV406km6vouojkvLf2HW0JgSLTV31m8CKDwXZVFyBX9XwAdWjqhd1v+lmsUuWKltzyQ/QbUIxASAACiJvJMvlAZdaLmkSv6IwBGFjvnHjgtcaIscaIscaIscaIscaIscaIscaIscaIscaIscaIscaIscaIscaIscaIscaIscaIscaIscaIscaIscaIscaIscaIsMQDqepUrlhA3vV3eKIyk41EN3lw0xZS+jWp0k6xWD0L6LaoCTUN8rVGvpy2GSXdNj5lkbaegIxIiKxQFEuYEnAGCvdmif2St+3E4HA6Hw+FwOBwOR2vxD//nc365ey4JAAAAAElFTkSuQmCC"/>
+            </t>
+            <t t-else="">    
+                <img height="20" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAABQCAYAAAC0wU3eAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAA/1JREFUeJztmk1oXFUYht/3ZJLQVqO1ouiiwU0xMySFJm0yiWYyaaBoXLRqRdSNgqAUtCAuigs3lepa3GituNT4QxGt1SaTtDUz/dk0nfxQcKGgxNQfUNOYZOa+LhSFcufecydjclvPszznO995n7lnLvcOAzgcjv8trGWz9/furbv122KHAXtk2AbhLgKbQDRCKgv4leB3AGYAnq1LcPTe0xd/qdX+NZE5uf3uLV7CPCvhMZK3WS+UyiC/hIe35jYnjz4yNFReSY4VyQynW5rrZA6JeJQr7CXgEj0cyJyZ/JiAqulRVQABHO1K7gPxGsH11fSo3FuflD3z9MCZ4g9R10aWOd7WtqFxfeldkA9FXRuBWZnynuxXM4UoiyLJjHclb1kkjxHYES1bFQh/eOTD/fnip7ZLrGVyma03Y6k0TGBbdemiI2iZ1O6+8enPbOqNTdH59vZ6LJY+XE0RACBYL/GDkc7Wdpt6K5nfGxZeIdFfRZ5ZAKcFHIMwLGgaUqTbL8F1pPfRqXtaN4bVJsIKxtItvQJftN1cwvcE3igbvLdzfPLrq+dzmeQNWsYuIzwDYMCmJ4nNpbL3OoAnAuuCJnOZTAJLP14gkAzbUIAH6NVGNR3sLhQWbELmuloGCHMYRLNNvSf29ReKY5XmA4+ZWbz8uI0IoHlIg9n81Eu2IgCQLUyfaIC2SThlU094hxRwASrKCKBHvBC6g7DoyQxmC1Of2wS6mu7C1M9LV+rukzQeVksyfTKdSlearygzlk51EGwN3QDYF3Tpbdg1MTHfwMQe/HXDCMSDnqo0V/mYCQ9a5DjRW5g8YlEXSk9+Yg7i82F1BHerQu6AY6ad4Y3xcrUPhX5kCsUhQRdDyjaN9KR8T4yvzPn29nqQWwNbSjO9+cm8XUw7CIjg22F1iTI6/MZ9ZX6rX2gm0BDUUMAXtbwq//bl8bAaj9riN+4rQ6M7whoacCI8WnT68sVLEBaDaijc6Z/JnxvDNhUwZ5EtMgQ8UJcD9yab/MZ9ZSQT+swmaNkuXnQkLAXNU6rzG7d60Fxtqv0uxlKmWpxMXHEyceW6kvnntbmYTDbMNXE7iY0UdoT9bkOgM5dOhb52V8mGkPnbc+nUAwKWWdKF7Lmp2b8zAaPdLffLM4dJhD7GxA0BHqE3r9y0tJ8jXakeA42C/K8+5dVBeCdhqIPANS4CAMSTRmD3WueoFSbsveVa4rq6NTuZuOJk4oqTiStOJq44mbjiZOKKk4krTiauOJm44mTiipOJK04mrhhJNfv7+lpjSB5d6xC1QfNGJR2A8M1aR1k55jmTPTc1WxI7JR0B8NNaR4qCoGUIBdAb7MsXa/K/N4fD4XA4HA5HbfgTgipEzYjBYa4AAAAASUVORK5CYII="/>
+            </t>
+        </td>
+      </tr>
+      <tr>
+        <td align="center"></td>
+      </tr>
+      <tr>
+        <td  colspan="3">
+            <b style="color:white">
+                <t t-if="doc.state in ['released', 'confirmed', 'obsoleted']">
+                    <div style="background-color:red"><t t-esc="doc.engineering_document_name"/> - <t t-esc="doc.revisionid"/></div>
+                    <div style="background-color:red"/>Status: <t t-esc="doc.state"/>
+                </t>
+                <t t-else="">
+                    <t t-set="checkout_user" t-value="doc.checkoutByMeWithUser()"/>
+                    <t t-if="checkout_user[0]">
+                        <div style="background-color:green"><t t-esc="doc.engineering_document_name"/> - <t t-esc="doc.revisionid"/></div>
+                        <div style="background-color:green"/>Status: <t t-esc="doc.state"/>
+                    </t>
+                    <t t-if="not checkout_user[0] and checkout_user[1] != ''">
+                        <div style="background-color:red"><t t-esc="doc.engineering_document_name"/> - <t t-esc="doc.revisionid"/></div>
+                        <div style="background-color:red"/>CheckOutUser: <t t-esc="checkout_user[1]"/>
+                    </t>
+                    <t t-if="checkout_user[1] == ''">
+                        <div style="background-color:#ffd800"><t t-esc="doc.engineering_document_name"/> - <t t-esc="doc.revisionid"/></div>
+                        <div style="background-color:#ffd800"/>Status: <t t-esc="doc.state"/>
+                    </t>
+                </t>
+            </b>
+        </td>
+      </tr>
+  </table>
+  <!--
     <div height="120" width="100" style="text-align:center;background-color: white;">
         <img height="100" t-att-src="doc.basePreview64Img()"/>
         <b style="color:white">
@@ -25,6 +68,7 @@
         </t>
         </b>
     </div>
+    -->
   </template>
   
   <template id="plm.document_search_tooltip">
@@ -32,6 +76,7 @@
     <div style="text-align:center">
 
         <img id="pop_up_img" height="400"  t-att-src="doc.basePreview64Img()" />
+        
         <div id="datasheet">
             <div id="main_div">
                 <div id="main_div_hidden">
@@ -50,21 +95,23 @@
                         <li><hr/></li>
                         <li><b>State:</b><t t-esc="doc.state"/></li>
                         <li><hr/></li>
-                        <t t-if="doc.state=='released'">
-                            <li><div style="background-color:red"/>Document released</li>
-                        </t>
-                        <t t-else="">
-                            <t t-set="checkout_user" t-value="doc.checkoutByMeWithUser()"/>
-                            <t t-if="checkout_user[0]">
-                                <li><div style="background-color:green"/>CheckOut by me</li>
+                        <b style="color:white">
+                            <t t-if="doc.state=='released'">
+                                <li><div style="background-color:red"/>Document released</li>
                             </t>
-                            <t t-if="not checkout_user[0] and checkout_user[1] != ''">
-                                <li><div style="background-color:red"/>CheckOutUser: <t t-esc="checkout_user[1]"/></li>
+                            <t t-else="">
+                                <t t-set="checkout_user" t-value="doc.checkoutByMeWithUser()"/>
+                                <t t-if="checkout_user[0]">
+                                    <li><div style="background-color:green"/>CheckOut by me</li>
+                                </t>
+                                <t t-if="not checkout_user[0] and checkout_user[1] != ''">
+                                    <li><div style="background-color:red"/>CheckOutUser: <t t-esc="checkout_user[1]"/></li>
+                                </t>
+                                <t t-if="checkout_user[1] == ''">
+                                    <li><div style="background-color:#ffd800"/>CheckIn</li>
+                                </t>
                             </t>
-                            <t t-if="checkout_user[1] == ''">
-                                <li><div style="background-color:#ffd800"/>CheckIn</li>
-                            </t>
-                        </t>
+                        </b>
                     </lu>
                 </div>
             </div>

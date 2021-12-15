@@ -78,8 +78,8 @@ class UploadDocument(Controller):
             logging.info('upload %r' % (doc_id))
             return Response('Upload succeeded', status=200)
         logging.info('no upload %r' % (doc_id))
-        return Response('Failed upload', status=400)
-
+        return Response('Failed upload', status=400)      
+        
     @route('/plm_document_upload/download', type='http', auth='user', methods=['GET'])
     @webservice
     def download(self, requestvals='[[],[],-1]', **kw):

@@ -1788,7 +1788,59 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         product_ids = list(self._search([('engineering_code', operator, name)] + args, limit=limit, access_rights_uid=name_get_uid))
         product_ids += list(super(PlmComponent, self)._name_search(name, args, operator, limit, name_get_uid))
         return list(set(product_ids))
-
+    
+    @api.model
+    def getExpodedBom(self, ids):
+        """
+        function used in the client to retrieve the exploded bom 
+        """
+        mrp_bom = self.env['mrp.bom']
+        out = []
+        #
+        header = {'engineering_code': _('Code'),
+                  'engineering_revision':_('Revision'),
+                  'name':_('Description'),
+                  'qty':_('Quantity'),
+                  'source_name':_('Rel.Source')
+                  }
+        #
+        def getProductData(product_tmpl_id):
+            return {
+                'id': product_tmpl_id.id,
+                'engineering_code': product_tmpl_id.engineering_code,
+                'engineering_revision': product_tmpl_id.engineering_revision,
+                'name': product_tmpl_id.name,
+                }
+        #               
+        def getBomLineData(mrpBomLine):
+            return {
+                'qty':  mrpBomLine.product_qty, 
+                'source_name': mrpBomLine.source_id.name
+                }
+        #    
+        def getDictData(mrpBomLine):
+            out = getProductData(mrpBomLine.product_id.product_tmpl_id)
+            out.update(getBomLineData(mrpBomLine))
+            return out
+        #
+        # ({},[({}, []),]
+        #
+        product_computed = []
+        def computeChildLevel(product_tmpl_id):
+            children = []
+            if product_tmpl_id.id not in product_computed:
+                product_computed.append(product_tmpl_id.id)
+                mrp_bom_id = mrp_bom._get_bom(product_tmpl_id.id)
+                for mrp_bom_line_id in mrp_bom_id.bom_line_ids:
+                    children.append((getDictData(mrp_bom_line_id),
+                                     computeChildLevel(mrp_bom_line_id.product_id.product_tmpl_id)))
+            return children 
+        #   
+        for product_id in self.browse(ids):
+            product_tmpl_id = product_id.product_tmpl_id
+            out.append((getProductData(product_tmpl_id), computeChildLevel(product_tmpl_id)))
+        #
+        return (header, out)
 
 class PlmTemporayMessage(models.TransientModel):
     _name = "plm.temporary.message"

@@ -11,7 +11,7 @@
                 <filter 
                          name="last_month"
                          string="Last Month"
-                         domain="[('create_date','&lt;=', (datetime.date.today() - datetime.timedelta(day=31,months=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today() - datetime.timedelta(day=1,months=1)).strftime('%%Y-%%m-%%d'))]"
+                         domain="[('create_date','&lt;=', (datetime.date.today() - datetime.timedelta(days=31)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today() - datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
                          help="Checked-Out in last month"/>
                 <filter 
                          name="last_week"
