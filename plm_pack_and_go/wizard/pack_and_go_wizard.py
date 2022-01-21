@@ -385,7 +385,7 @@ class PackAndGo(models.TransientModel):
         with open(outZipFile2, 'rb') as f:
             fileContent = f.read()
             if fileContent:
-                self.datas = base64.encodestring(fileContent)
+                self.datas = base64.encodebytes(fileContent)
         try:
             shutil.rmtree(outZipFile)
         except Exception as ex:
