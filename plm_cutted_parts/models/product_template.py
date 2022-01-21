@@ -58,7 +58,7 @@ class ProductCuttedParts(models.Model):
 
     @api.onchange('row_material_y_length')
     def onchange_row_material_y_length(self):
-        if not self.row_material_y_length or self.row_material_x_length == 0.0:
+        if not self.row_material_y_length or self.row_material_y_length == 0.0:
             raise UserError(_('"Raw Material y length" cannot have zero value.'))
 
     @api.model
