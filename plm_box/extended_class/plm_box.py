@@ -99,7 +99,7 @@ class Plm_box(models.Model):
             if not self.boxUnlinkPossible(childBox):
                 return False
         for docBrws in boxBrws.document_rel:
-            if not docBrws.ischecked_in():
+            if not docBrws.ischecked_in() and docBrws.datas_fname:
                 raise UserError(_('Document %r of box %r is in check-in state, so could not delete') % (docBrws.name, boxBrws.name))
         return True
 
@@ -157,7 +157,7 @@ class Plm_box(models.Model):
         def check(docs_to_unlink):
             for doc_to_unlink in docs_to_unlink:
                 doc_brws = self.env['ir.attachment'].browse(doc_to_unlink)
-                if doc_brws.is_checkout:
+                if doc_brws.is_checkout and doc_brws.datas_fname:
                     raise UserError('You cannot unlink a document in check-out %r, file name %r' % (doc_brws.display_name, doc_brws.datas_fname))
 
         for brwsObj in self:
@@ -516,7 +516,7 @@ class Plm_box(models.Model):
     def getBoxStructure(self, box_ids=[]):
         headers = {'name': 'Name',
                    'description': 'Description',
-                   'document_rel': 'Documents',
+                   #'document_rel': 'Documents',
                    'state': 'State',
                    'entities': 'Entities'
                    }
@@ -525,7 +525,9 @@ class Plm_box(models.Model):
             out = []
             for box in self.browse(box_ids):
                 if box.id in available_boxes:
-                    vals_list = box.read(headers.keys())
+                    to_read = list(headers.keys())
+                    to_read.append('document_rel')
+                    vals_list = box.read(to_read)
                     for vals in vals_list:
                         vals['entities'] = box.computeEntities()
                         children = recursion(box.plm_box_rel.ids, available_boxes)            
