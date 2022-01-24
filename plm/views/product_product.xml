@@ -286,7 +286,7 @@
                                         name="action_rev_docs" string="Revision Rel Docs"/>
                             </group>
                             <group>
-                                <field name="linkeddocuments" nolabel="1" context="{'odooPLM': True}"  mode="kanban" domain="[('is_plm', '=', True)]">
+                                <field name="linkeddocuments" nolabel="1" context="{'odooPLM': True, 'kanban_view_ref': 'plm.document_kanban_view'}" mode="kanban" domain="[('is_plm', '=', True)]">
                                 
                                 </field>
                             </group>
@@ -391,7 +391,7 @@
         <field name="res_model">product.product</field>
         <field name="view_mode">kanban,tree,form</field>
         <field name="view_id" ref="plm_component_base_tree"/>
-        <field name="context">{"search_default_latest": 1, 'odooPLM': True}</field>
+        <field name="context">{"search_default_latest": 1, 'odooPLM': True, 'odoo_side_call': True}</field>
         <field name="domain">[('engineering_code','not in', ('', False))]</field>
     </record>
 </odoo>

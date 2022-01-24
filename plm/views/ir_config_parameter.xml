@@ -36,4 +36,9 @@
             <field name="value">- </field>
         </record>
 
+        <record id="workflow_only_client" model="ir.config_parameter">
+            <field name="key">WORKFLOW_ONLY_CLIENT</field>
+            <field name="value">False</field>
+        </record>
+
 </odoo>

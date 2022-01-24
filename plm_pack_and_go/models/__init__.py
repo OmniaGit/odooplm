@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
-#    Copyright (C) 2010 OmniaSolutions (<http://omniasolutions.eu>). All Rights Reserved
+#    Copyright (C) 2010 OmniaSolutions (<https://www.omniasolutions.website>). All Rights Reserved
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -25,4 +25,4 @@ Created on Nov 21, 2017
 
 @author: dsmerghetto
 '''
-from . import product_product_extension
+from . import product_product

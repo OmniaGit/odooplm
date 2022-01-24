@@ -206,7 +206,7 @@ class PlmDocument(models.Model):
                                 self._full_path(random_name()))
                 if ir_attachment_id.is_plm and self.env.context.get("backup", True):
                     self.env['plm.backupdoc'].create({'userid': self.env.uid,
-                                                      'existingfile': ir_attachment_id.name,
+                                                      'existingfile': ir_attachment_id.store_fname,
                                                       'documentid': ir_attachment_id.id,
                                                       'printout': ir_attachment_id.printout,
                                                       'preview': ir_attachment_id.preview})
@@ -270,27 +270,26 @@ class PlmDocument(models.Model):
         return list(set(out))
     
     @api.model
-    def getRelatedRfTree(self, doc_id, recursion=True):
+    def getRelatedRfTree(self, doc_id, recursion=True, evaluated=[]):
         out = []
         if not doc_id:
             logging.warning('Cannot get links from %r document' % (doc_id))
             return []
-        to_search = [('link_kind', 'in', ['RfTree']),
-                     '|', 
-                        ('parent_id', '=', doc_id),
-                        ('child_id', '=', doc_id)]
-        if recursion:
-            to_search = [('link_kind', 'in', ['RfTree']),('parent_id', '=', doc_id)]
+        to_search = [('link_kind', 'in', ['RfTree']),('parent_id', '=', doc_id)]
         doc_rel_ids = self.env['ir.attachment.relation'].search(to_search)
+        if doc_id in evaluated:
+            logging.warning('Document %r already found in RfTree evaluated %r' % (doc_id, evaluated))
+            return out
+        evaluated.append(doc_id)
         for doc_rel_id in doc_rel_ids:
             if doc_rel_id.child_id.id == doc_id:
                 out.append(doc_rel_id.parent_id.id)
                 if recursion:
-                    out.extend(self.getRelatedRfTree(doc_rel_id.parent_id.id, recursion))
+                    out.extend(self.getRelatedRfTree(doc_rel_id.parent_id.id, recursion, evaluated))
             else:
                 out.append(doc_rel_id.child_id.id)
                 if recursion:
-                    out.extend(self.getRelatedRfTree(doc_rel_id.child_id.id, recursion))
+                    out.extend(self.getRelatedRfTree(doc_rel_id.child_id.id, recursion, evaluated))
         return list(set(out))
 
     @api.model
@@ -692,6 +691,7 @@ class PlmDocument(models.Model):
             :state define new product state
             :check do state verification in component write
         """
+        self.env['product.product'].canMoveWFByParam()
         out = []
         for ir_attachment_id in self:
             ir_attachment_id.setCheckContextWrite(check)
@@ -1039,7 +1039,7 @@ class PlmDocument(models.Model):
                                                                                        ('parent_id', '=', ir_a_id),
                                                                                        ('child_id', '=', ir_a_id)])
 
-    engineering_document_name = fields.Char('Document Name',
+    engineering_document_name = fields.Char('Engineering Document Name',
                                             index=True)
     revisionid = fields.Integer(_('Revision Index'),
                                 default=0,
@@ -1295,7 +1295,7 @@ class PlmDocument(models.Model):
         related_documents = []
         read_docs = []
         for oid in self.ids:
-            rfTree = self.getRelatedRfTree(oid, recursion=False)
+            rfTree = self.getRelatedRfTree(oid, recursion=False, evaluated=[])
             read_docs.extend(rfTree)
             read_docs.extend(self.getRelatedLyTree(oid))
             #for rfModel in rfTree:
@@ -1690,13 +1690,22 @@ class PlmDocument(models.Model):
         """
         check out the current document
         """
-        self.canCheckOut(showError=showError)
-        values = {'userid': self.env.uid,
-                  'hostname': hostName,
-                  'hostpws': hostPws,
-                  'documentid': self.id}
-        res = self.env['plm.checkout'].create(values)
-        return res.id
+        ret_checkout = False
+        msg = ''
+        for document in self:
+            checkout_id = document.isCheckedOutByMe()
+            if checkout_id:
+                ret_checkout = checkout_id
+            else:
+                res, msg = document.canCheckOut(showError=showError)
+                if res:
+                    values = {'userid': self.env.uid,
+                              'hostname': hostName,
+                              'hostpws': hostPws,
+                              'documentid': document.id}
+                    ret_checkout = self.env['plm.checkout'].create(values).id
+                    break
+        return ret_checkout, msg
 
     
     def canCheckOut(self, showError=False):
@@ -2590,9 +2599,12 @@ class PlmDocument(models.Model):
                         doc_fields['checkout'] = True
                         continue
                     if not stop:
-                        doc_id.checkout(hostname, pws_path, showError=False)
-                        doc_id.setupCadOpen(hostname, pws_path, operation_type='check-out')
-                        doc_fields['checkout'] = True
+                        checkout_id, msg = doc_id.checkout(hostname, pws_path, showError=False)
+                        if not checkout_id or msg:
+                            doc_fields['err_msg'] += '\n%s' % (msg)
+                        else:
+                            doc_id.setupCadOpen(hostname, pws_path, operation_type='check-out')
+                            doc_fields['checkout'] = True
                     else:
                         doc_fields['err_msg'] += '\nCannot checkout document %s.' % (doc_fields['name'])
         return json.dumps(structure)

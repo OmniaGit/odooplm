@@ -59,6 +59,7 @@
     <record id="report_bom_structure_all_cutted" model="ir.actions.report">
         <field name="name">Cutted Parts</field>
         <field name="model">mrp.bom</field>
+        <field name="binding_model_id" ref="mrp.model_mrp_bom"/>
         <field name="report_type">qweb-html</field>
         <field name="report_name">plm_cutted_parts.bom_structure_all_cutted</field>
         <field name="binding_type">report</field>

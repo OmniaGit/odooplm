@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -20,21 +19,30 @@
 #
 ##############################################################################
 
-'''
-Created on Nov 21, 2017
+"""
+Created on 25 Aug 2016
 
-@author: dsmerghetto
-'''
+@author: Daniel Smerghetto
+"""
+import logging
+from odoo.exceptions import UserError
 from odoo import models
+from odoo import fields
 from odoo import api
+from odoo import _
+import logging
 
 
-class PlmComponent(models.Model):
-    _inherit = 'product.product'
+class IrActionsReport(models.Model):
+    _inherit = 'ir.actions.report'
 
-    def unlink(self):
-        for prodBrws in self:
-            packAndGoObj = self.env['pack.and_go']
-            presentPackAndGo = packAndGoObj.search([('component_id', '=', prodBrws.id)])
-            presentPackAndGo.unlink()
-        return super(PlmComponent, self).unlink()
+    def _render_qweb_pdf(self, res_ids=None, data=None):
+        self_sudo = self.sudo()
+        if self_sudo.report_name in ['plm.product_pdf', 'plm.one_product_pdf', 'plm.all_product_pdf', 'plm.product_production_pdf_latest', 'plm.product_production_one_pdf_latest', 'plm.product_production_all_pdf_latest', 'plm.ir_attachment_pdf']:
+            report_name = 'report.' + self_sudo.report_name
+            report_obj = self.env[report_name]
+            prod_ids = self.env[self_sudo.model].browse(res_ids)
+            pdf_content = report_obj._render_qweb_pdf(prod_ids)
+            return pdf_content, 'pdf'
+        return super(IrActionsReport, self)._render_qweb_pdf(res_ids, data)
+
