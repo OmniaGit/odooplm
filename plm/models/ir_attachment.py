@@ -2425,6 +2425,8 @@ class PlmDocument(models.Model):
             doc_id = self.getDocId(doc_props)
             if not doc_id:
                 return out
+            else:
+                doc_id = doc_id.id
 
         def setupInfos(out,
                        docBrws,
