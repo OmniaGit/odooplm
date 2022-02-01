@@ -1,0 +1,458 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* plm_box
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 15.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-02-01 08:39+0000\n"
+"PO-Revision-Date: 2022-02-01 12:01+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: de\n"
+"X-Generator: Poedit 2.0.6\n"
+
+#. module: plm_box
+#: model:ir.model.fields,field_description:plm_box.field_plm_box__message_needaction
+msgid "Action Needed"
+msgstr "Aktion erforderlich"
+
+#. module: plm_box
+#: code:addons/plm_box/models/settings.py:0
+#: model:ir.model.fields,help:plm_box.field_res_config_settings__module_plm_box_widget
+#: model:ir.model.fields,help:plm_box.field_res_config_settings__module_stock_plm_box
+#, python-format
+msgid "Adds plm_box relation to Warehouse."
+msgstr "Fügt plm_box-Beziehung zu Warehouse hinzu."
+
+#. module: plm_box
+#: code:addons/plm_box/models/settings.py:0
+#: model:ir.model.fields,field_description:plm_box.field_res_config_settings__module_stock_plm_box
+#, python-format
+msgid "Allow plm_box relation"
+msgstr "Plm_box-Beziehung zulassen"
+
+#. module: plm_box
+#: model:ir.model,name:plm_box.model_ir_attachment
+msgid "Attachment"
+msgstr "Dateianhang"
+
+#. module: plm_box
+#: model:ir.model.fields,field_description:plm_box.field_plm_box__message_attachment_count
+msgid "Attachment Count"
+msgstr "Anhangsanzahl"
+
+#. module: plm_box
+#: code:addons/plm_box/models/ir_attachment.py:0
+#: model:ir.model.fields,field_description:plm_box.field_ir_attachment__name
+#: model:ir.model.fields,field_description:plm_box.field_mrp_document__name
+#, python-format
+msgid "Attachment Name"
+msgstr "Anhangsname"
+
+#. module: plm_box
+#: code:addons/plm_box/models/plm_box.py:0
+#: model:ir.model.fields,field_description:plm_box.field_plm_box__bom_id
+#, python-format
+msgid "Bill Of Material"
+msgstr "Stückliste"
+
+#. module: plm_box
+#: model_terms:ir.ui.view,arch_db:plm_box.plm_box_form_view
+msgid "Boms"
+msgstr "Stücklisten"
+
+#. module: plm_box
+#: code:addons/plm_box/models/plm_box.py:0
+#: model:ir.model.fields,field_description:plm_box.field_plm_box__box_id
+#, python-format
+msgid "Box ID"
+msgstr "Box ID"
+
+#. module: plm_box
+#: code:addons/plm_box/models/plm_box.py:0
+#: model:ir.model.fields,field_description:plm_box.field_plm_box__plm_box_rel
+#, python-format
+msgid "Children Box"
+msgstr "Kinderbox"
+
+#. module: plm_box
+#: code:addons/plm_box/models/plm_box.py:0
+#: model:ir.model.fields,field_description:plm_box.field_plm_box__name
+#, python-format
+msgid "Code"
+msgstr "Code"
+
+#. module: plm_box
+#: model:ir.model,name:plm_box.model_res_config_settings
+msgid "Config Settings"
+msgstr "Konfigurationseinstellungen"
+
+#. module: plm_box
+#: model_terms:ir.ui.view,arch_db:plm_box.plm_box_form_view
+msgid "Confirm Box"
+msgstr "Feld bestätigen"
+
+#. module: plm_box
+#: code:addons/plm_box/models/plm_box.py:0
+#: model:ir.model.fields.selection,name:plm_box.selection__plm_box__state__confirmed
+#, python-format
+msgid "Confirmed"
+msgstr "Bestätigt"
+
+#. module: plm_box
+#: model_terms:ir.ui.view,arch_db:plm_box.plm_box_form_view
+msgid "Correct Box"
+msgstr "Korrekte Kiste"
+
+#. module: plm_box
+#: model:ir.model.fields,field_description:plm_box.field_plm_box__create_uid
+msgid "Created by"
+msgstr "Erstellt von"
+
+#. module: plm_box
+#: code:addons/plm_box/models/plm_box.py:0
+#: model:ir.model.fields,field_description:plm_box.field_plm_box__create_date
+#, python-format
+msgid "Date Created"
+msgstr "Datum erstellt"
+
+#. module: plm_box
+#: code:addons/plm_box/models/plm_box.py:0
+#: model:ir.model.fields,field_description:plm_box.field_plm_box__write_date
+#, python-format
+msgid "Date Modified"
+msgstr "Datum geändert"
+
+#. module: plm_box
+#: code:addons/plm_box/models/plm_box.py:0
+#: model:ir.model.fields,field_description:plm_box.field_plm_box__description
+#, python-format
+msgid "Description"
+msgstr "Beschreibung"
+
+#. module: plm_box
+#: model:ir.model.fields,field_description:plm_box.field_plm_box__display_name
+msgid "Display Name"
+msgstr "Anzeigename"
+
+#. module: plm_box
+#: code:addons/plm_box/models/plm_box.py:0
+#, python-format
+msgid "Document %r of box %r is in check-in state, so could not delete"
+msgstr "Dokument %r von Postfach %r befindet sich im Check-in-Status und konnte daher nicht gelöscht werden"
+
+#. module: plm_box
+#: model:ir.model,name:plm_box.model_plm_checkout
+msgid "Document that are locked from someone"
+msgstr "Dokumente, die von jemandem gesperrt sind"
+
+#. module: plm_box
+#: code:addons/plm_box/models/plm_box.py:0
+#: model:ir.model.fields,field_description:plm_box.field_plm_box__document_rel
+#, python-format
+msgid "Documents"
+msgstr "Unterlagen"
+
+#. module: plm_box
+#: code:addons/plm_box/models/plm_box.py:0
+#: model:ir.model.fields.selection,name:plm_box.selection__plm_box__state__draft
+#, python-format
+msgid "Draft"
+msgstr "Entwurf"
+
+#. module: plm_box
+#: model:ir.model.fields,field_description:plm_box.field_plm_box__message_follower_ids
+msgid "Followers"
+msgstr "Followers"
+
+#. module: plm_box
+#: model:ir.model.fields,field_description:plm_box.field_plm_box__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Followers (Geschäftspartner)"
+
+#. module: plm_box
+#: code:addons/plm_box/models/plm_box.py:0
+#: model:ir.model.fields,field_description:plm_box.field_plm_box__groups_rel
+#, python-format
+msgid "Groups Allowed"
+msgstr "Gruppen erlaubt"
+
+#. module: plm_box
+#: model:ir.model.fields,field_description:plm_box.field_plm_box__has_message
+msgid "Has Message"
+msgstr "Hat Nachricht"
+
+#. module: plm_box
+#: model:ir.model.fields,field_description:plm_box.field_plm_box__id
+msgid "ID"
+msgstr "ID"
+
+#. module: plm_box
+#: model:ir.model.fields,help:plm_box.field_plm_box__message_needaction
+#: model:ir.model.fields,help:plm_box.field_plm_box__message_unread
+msgid "If checked, new messages require your attention."
+msgstr "Wenn diese Option aktiviert ist, erfordern neue Nachrichten Ihre Aufmerksamkeit."
+
+#. module: plm_box
+#: model:ir.model.fields,help:plm_box.field_plm_box__message_has_error
+#: model:ir.model.fields,help:plm_box.field_plm_box__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Wenn diese Option aktiviert ist, weisen einige Nachrichten einen Übermittlungsfehler auf."
+
+#. module: plm_box
+#: model:ir.model.fields,field_description:plm_box.field_plm_box__message_is_follower
+msgid "Is Follower"
+msgstr "Ist Follower"
+
+#. module: plm_box
+#: model:ir.model.fields,field_description:plm_box.field_plm_box____last_update
+msgid "Last Modified on"
+msgstr "Zuletzt geändert am"
+
+#. module: plm_box
+#: model:ir.model.fields,field_description:plm_box.field_plm_box__write_uid
+msgid "Last Updated by"
+msgstr "Zuletzt aktualisiert von"
+
+#. module: plm_box
+#: model:ir.model.fields,field_description:plm_box.field_plm_box__message_main_attachment_id
+msgid "Main Attachment"
+msgstr "Hauptanhang"
+
+#. module: plm_box
+#: model:ir.model.fields,field_description:plm_box.field_plm_box__message_has_error
+msgid "Message Delivery error"
+msgstr "Fehler bei der Nachrichtenübermittlung"
+
+#. module: plm_box
+#: model:ir.model.fields,field_description:plm_box.field_plm_box__message_ids
+msgid "Messages"
+msgstr "Mitteilungen"
+
+#. module: plm_box
+#: model:ir.model,name:plm_box.model_plm_box
+msgid "Model to manage a box inside the plm module"
+msgstr "Modell zur Verwaltung einer Box innerhalb des plm-Moduls"
+
+#. module: plm_box
+#: model:ir.actions.act_window,name:plm_box.action_non_cad_doc
+#: model_terms:ir.ui.view,arch_db:plm_box.plm_box_tree
+msgid "Non CAD Document Relations"
+msgstr "Nicht-CAD-Dokumentbeziehungen"
+
+#. module: plm_box
+#: model:ir.model.fields,field_description:plm_box.field_plm_box__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Anzahl der Aktionen"
+
+#. module: plm_box
+#: model:ir.model.fields,field_description:plm_box.field_plm_box__message_has_error_counter
+msgid "Number of errors"
+msgstr "Anzahl der Fehler"
+
+#. module: plm_box
+#: model:ir.model.fields,help:plm_box.field_plm_box__message_needaction_counter
+msgid "Number of messages which requires an action"
+msgstr "Anzahl der Nachrichten, die eine Aktion erfordern"
+
+#. module: plm_box
+#: model:ir.model.fields,help:plm_box.field_plm_box__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Anzahl der Nachrichten mit Zustellfehler"
+
+#. module: plm_box
+#: model:ir.model.fields,help:plm_box.field_plm_box__message_unread_counter
+msgid "Number of unread messages"
+msgstr "Anzahl der ungelesenen Nachrichten"
+
+#. module: plm_box
+#: code:addons/plm_box/models/plm_box.py:0
+#: model:ir.model.fields.selection,name:plm_box.selection__plm_box__state__obsoleted
+#, python-format
+msgid "Obsoleted"
+msgstr "Veraltet"
+
+#. module: plm_box
+#: code:addons/plm_box/models/settings.py:0
+#: model:ir.model.fields,field_description:plm_box.field_res_config_settings__module_plm_box_widget
+#, python-format
+msgid "Plm Widget"
+msgstr "Plm-Widget"
+
+#. module: plm_box
+#: code:addons/plm_box/models/plm_box.py:0
+#: model:ir.model.fields,field_description:plm_box.field_plm_box__product_id
+#, python-format
+msgid "Product"
+msgstr "Produkt"
+
+#. module: plm_box
+#: model_terms:ir.ui.view,arch_db:plm_box.plm_box_form_view
+msgid "Products"
+msgstr "Produkte"
+
+#. module: plm_box
+#: code:addons/plm_box/models/plm_box.py:0
+#: model:ir.model.fields,field_description:plm_box.field_plm_box__project_id
+#, python-format
+msgid "Project"
+msgstr "Projekt"
+
+#. module: plm_box
+#: model_terms:ir.ui.view,arch_db:plm_box.plm_box_form_view
+msgid "Projects"
+msgstr "Projekte"
+
+#. module: plm_box
+#: model_terms:ir.ui.view,arch_db:plm_box.plm_box_form_view
+msgid "Release Box"
+msgstr "Box freigeben"
+
+#. module: plm_box
+#: code:addons/plm_box/models/plm_box.py:0
+#: model:ir.model.fields.selection,name:plm_box.selection__plm_box__state__released
+#, python-format
+msgid "Released"
+msgstr "Freigegeben"
+
+#. module: plm_box
+#: model:ir.model.fields,field_description:plm_box.field_plm_box__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "SMS-Zustellungsfehler"
+
+#. module: plm_box
+#: code:addons/plm_box/models/plm_box.py:0
+#: model:ir.model.fields,field_description:plm_box.field_plm_box__sale_ord_id
+#, python-format
+msgid "Sale Order"
+msgstr "Verkaufsauftrag"
+
+#. module: plm_box
+#: model_terms:ir.ui.view,arch_db:plm_box.plm_box_form_view
+msgid "Sale Orders"
+msgstr "Verkaufsaufträge"
+
+#. module: plm_box
+#: model:ir.ui.menu,name:plm_box.menu_non_cad_doc_relations
+msgid "Search on Non CAD Document Relations"
+msgstr "Suche nach Nicht-CAD-Dokumentbeziehungen"
+
+#. module: plm_box
+#: model_terms:ir.ui.view,arch_db:plm_box.plm_box_form_view
+msgid "Show Non CAD Document Relation"
+msgstr "Nicht-CAD-Dokumentbeziehung anzeigen"
+
+#. module: plm_box
+#: code:addons/plm_box/models/plm_box.py:0
+#, python-format
+msgid "State"
+msgstr "Zustand"
+
+#. module: plm_box
+#: code:addons/plm_box/models/plm_box.py:0
+#: model:ir.model.fields,field_description:plm_box.field_plm_box__state
+#, python-format
+msgid "Status"
+msgstr "Status"
+
+#. module: plm_box
+#: code:addons/plm_box/models/plm_box.py:0
+#: model:ir.model.fields,field_description:plm_box.field_plm_box__task_id
+#, python-format
+msgid "Task"
+msgstr "Aufgabe"
+
+#. module: plm_box
+#: model_terms:ir.ui.view,arch_db:plm_box.plm_box_form_view
+msgid "Tasks"
+msgstr "Aufgaben"
+
+#. module: plm_box
+#: code:addons/plm_box/models/plm_box.py:0
+#: model:ir.model.fields,help:plm_box.field_plm_box__state
+#, python-format
+msgid "The status of the box."
+msgstr "Der Status der Box."
+
+#. module: plm_box
+#: code:addons/plm_box/models/plm_box.py:0
+#: model:ir.model.fields.selection,name:plm_box.selection__plm_box__state__undermodify
+#, python-format
+msgid "UnderModify"
+msgstr "UnterÄndern"
+
+#. module: plm_box
+#: model:ir.model.fields,field_description:plm_box.field_plm_box__message_unread
+msgid "Unread Messages"
+msgstr "Ungelesene Nachrichten"
+
+#. module: plm_box
+#: model:ir.model.fields,field_description:plm_box.field_plm_box__message_unread_counter
+msgid "Unread Messages Counter"
+msgstr "Zähler für ungelesene Nachrichten"
+
+#. module: plm_box
+#: code:addons/plm_box/models/plm_box.py:0
+#: model:ir.model.fields,field_description:plm_box.field_plm_box__user_rel_id
+#, python-format
+msgid "User"
+msgstr "Nutzer"
+
+#. module: plm_box
+#: model_terms:ir.ui.view,arch_db:plm_box.plm_box_form_view
+msgid "Users"
+msgstr "Benutzer"
+
+#. module: plm_box
+#: code:addons/plm_box/models/plm_box.py:0
+#: model:ir.model.fields,field_description:plm_box.field_plm_box__version
+#, python-format
+msgid "Version"
+msgstr "Fassung"
+
+#. module: plm_box
+#: model:ir.actions.act_window,name:plm_box.act_acc_an_acc_boxis
+#: model:ir.actions.act_window,name:plm_box.act_bom_boxis
+#: model:ir.actions.act_window,name:plm_box.act_product_boxis
+#: model:ir.actions.act_window,name:plm_box.act_project_boxis
+#: model:ir.actions.act_window,name:plm_box.act_sale_order_boxis
+#: model:ir.actions.act_window,name:plm_box.act_task_boxis
+#: model:ir.actions.act_window,name:plm_box.act_users_boxis
+#: model:ir.actions.act_window,name:plm_box.act_wc_boxis
+msgid "View Reated Boxis"
+msgstr "Sehen Sie sich Reated Boxis an"
+
+#. module: plm_box
+#: model:ir.model.fields,field_description:plm_box.field_plm_box__website_message_ids
+msgid "Website Messages"
+msgstr "Website-Nachrichten"
+
+#. module: plm_box
+#: model:ir.model.fields,help:plm_box.field_plm_box__website_message_ids
+msgid "Website communication history"
+msgstr "Kommunikationsgeschichte der Website"
+
+#. module: plm_box
+#: code:addons/plm_box/models/plm_box.py:0
+#: model:ir.model.fields,field_description:plm_box.field_plm_box__wc_id
+#, python-format
+msgid "Work Center"
+msgstr "Arbeitszentrum"
+
+#. module: plm_box
+#: model_terms:ir.ui.view,arch_db:plm_box.plm_box_form_view
+msgid "Workcenters"
+msgstr "Arbeitszentren"
+
+#. module: plm_box
+#: code:addons/plm_box/models/plm_checkout.py:0
+#: model:ir.model.fields,field_description:plm_box.field_plm_checkout__write_uid
+#, python-format
+msgid "Write User Id"
+msgstr "Benutzer-ID schreiben"
