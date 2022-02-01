@@ -998,10 +998,14 @@ class PlmDocument(models.Model):
 
     @api.model
     def CheckIn(self, attrs):
-        engineering_document_name = attrs.get('engineering_document_name', '')
-        revisionId = attrs.get('revisionid', False)
-        docBrwsList = self.search([('engineering_document_name', '=', engineering_document_name),
-                                   ('revisionid', '=', revisionId)])
+        id = attrs.get('id')
+        if id:
+            docBrwsList = self.browse(id)
+        else:
+            engineering_document_name = attrs.get('engineering_document_name', '')
+            revisionId = attrs.get('revisionid', False)
+            docBrwsList = self.search([('engineering_document_name', '=', engineering_document_name),
+                                       ('revisionid', '=', revisionId)])
         for docBrws in docBrwsList:
             docBrws._check_in()
             return docBrws.id
@@ -1156,7 +1160,7 @@ class PlmDocument(models.Model):
     def getAttachedHtmlDoucment(self, product_ids):
         """
         render the html search view linked document
-        :return: [(ir_attachment.id, product_id.id, html_rendered, html_tooltip),..]
+        :return: [(ir_attachment.id, <product.product>product_id.id, html_rendered, html_tooltip),..]
         """
         out = []
         
@@ -1165,7 +1169,16 @@ class PlmDocument(models.Model):
                 html_rendered, html_tooltip = ir_attachment._getHtmlDocument()
                 out.append((ir_attachment.id, product_id.id, html_rendered, html_tooltip))
         return out
-        
+
+    @api.model
+    def getAttachedHtmlDoucmentTemplate(self, product_ids):
+        """
+        render the html search view linked document
+        :return: [(ir_attachment.id, <product.template>product_id.id, html_rendered, html_tooltip),..]
+        """
+        product_product_id = self.env['product.product'].search([('product_tmpl_id','in', product_ids)])
+        return self.getAttachedHtmlDoucment(product_product_id.ids)
+    
     def _attachment_revision_count(self):
         """
         get All version product_tempate based on this one
@@ -1763,12 +1776,12 @@ class PlmDocument(models.Model):
         """
         check out the current document
         """
-        ret_checkout = False
+        ir_attachment_id = False
         msg = ''
         for document in self:
             checkout_id = document.isCheckedOutByMe()
             if checkout_id:
-                ret_checkout = checkout_id
+                ir_attachment_id = checkout_id
             else:
                 res, msg = document.canCheckOut(showError=showError)
                 if res:
@@ -1776,9 +1789,9 @@ class PlmDocument(models.Model):
                               'hostname': hostName,
                               'hostpws': hostPws,
                               'documentid': document.id}
-                    ret_checkout = self.env['plm.checkout'].create(values).id
+                    ir_attachment_id = self.env['plm.checkout'].create(values).id
                     break
-        return ret_checkout, msg
+        return ir_attachment_id, msg
 
     
     def canCheckOut(self, showError=False):

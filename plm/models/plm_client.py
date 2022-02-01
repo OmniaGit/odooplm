@@ -54,7 +54,49 @@ class PlmClient(models.TransientModel):
         outIds.extend(ir_attachemnt.browse(ir_attachemnt.getRelatedHiTree(doc_id.id, recursion=True, getRftree=True)).computeDownloadStatus(hostname,pws_path))
         return outIds
     
-    
-    
-    
+    def getAttachmentFromProp(self,
+                              document_attributes):
+        """
+        Get The attachment from a dictionary
+        check before from id and the from minimun property
+        """
+        attach_object = self.env['ir.attachment']
+        attach_id = document_attributes.get('id')
+        if attach_id:
+            ir_browse = attach_object.browse(attach_id)
+        else:
+            ir_browse = attach_object.search([('engineering_document_name', '=', document_attributes.get('engineering_document_name', '')),
+                                              ('revisionid', '=', document_attributes.get('revisionid', -1))]) 
+        return ir_browse
+
+    @api.model
+    def attachmentCanBeSaved(self,
+                             document_attributes,
+                             raiseError=False,
+                             returnCode=False,
+                             skipCheckOutControl=False):
+        
+        """
+        Check if the document can be saved !!
+        """
+        for brwItem in self.getAttachmentFromProp(document_attributes):
+            return brwItem.canBeSaved(raiseError=raiseError,
+                                      returnCode=returnCode,
+                                      skipCheckOutControl=skipCheckOutControl)
+        return True, ''
+
+    @api.model
+    def attachmentCheckOut(self,
+                           document_attributes,
+                           hostName,
+                           hostPws, 
+                           showError=True):
+        """
+        perform the check out operation from document attributes
+        """
+        for brwItem in self.getAttachmentFromProp(document_attributes):
+            return brwItem.checkout(hostName=hostName,
+                                    hostPws=hostPws,
+                                    showError=showError)
+        return True, ''    
     

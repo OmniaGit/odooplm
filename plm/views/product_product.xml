@@ -44,22 +44,6 @@
         <field name="arch" type="xml">
             <form string="Engineering Product" version="7.0">
                 <header>
-                    <button name="action_release"
-                            type="object"
-                            states="confirmed"
-                            string="Release Component"
-                            class="oe_highlight"
-                            groups="plm.group_plm_release_users"/>
-                    <button name="action_draft"
-                            type="object"
-                            states="confirmed"
-                            string="Correct Component"
-                    />
-                    <button name="action_confirm"
-                            type="object"
-                            states="draft"
-                            string="Confirm Component"
-                            class="oe_highlight"/>
                     <field name="state"
                            widget="statusbar"
                            statusbar_visible="draft,confirmed,released"
@@ -81,7 +65,6 @@
                         <field name="readonly_std_umc2" groups='base.group_no_one'/>
                         <field name="readonly_std_umc3" groups='base.group_no_one'/>
                         <group name="std_desc_attrs" col="4" colspan="4" string="Standard Description Parameters" attrs="{'invisible': [('std_description','=', False)]}">
-                            <a target="new"  href="https://www.omniasolutions.website/blog/developer-and-it-here-you-will-find-post-regarding-very-technical-aspect-of-programming-and-it-those-thinks-are-daily-used-by-omniasolutions-and-we-hope-you-that-will-help-you-3/post/standard-description-39" title="Standard description parameters info" colspan="4"><i class="fa fa-info-circle"></i></a>
                             <field name="std_umc1"
                                    attrs="{'readonly':['|',('readonly_std_umc1','=',True),('state','in',['released','obsoleted'])], 'invisible': [('show_std_field1','=',False)]}"/>
                             <field name="std_value1"
@@ -141,16 +124,6 @@
 				                 <field name="workflow_date"  readonly="1"/>
                             </group>
                         </page>
-                        <page string="Linked Documents" name="linkeddocuments">
-                            <group>
-                                <button class="oe_inline oe_stat_button" type="object" icon="fa-list-alt"
-                                        name="action_rev_docs" string="Revision Rel Docs"/>
-                            </group>
-                            <group>
-                                <field name="linkeddocuments" nolabel="1"/>
-                            </group>
-                        </page>
-
                     </notebook>
                 </sheet>
             </form>
