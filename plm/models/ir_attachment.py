@@ -2073,7 +2073,7 @@ class PlmDocument(models.Model):
         ids = super(models.Model, self)._search(args, offset=offset, limit=limit, order=order,
                                                 count=False, access_rights_uid=access_rights_uid)
 
-        if self.env.user._is_admin() or self.env.user._is_superuser():
+        if self.env.user and (self.env.user._is_admin() or self.env.user._is_superuser()):
             # rules do not apply for the superuser
             return len(ids) if count else ids
 
