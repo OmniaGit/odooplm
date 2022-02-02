@@ -39,11 +39,18 @@ div.more_containers{
 	-o-transition-delay: 0s;
 	transition-delay: 0s;
 	z-index: 1000;
-	transform: scale(8); 
+	transform: scale(6); 
+	transform-origin: 50% 50%;
     /*transform-origin: 0% 0%;*/
     position: sticky;
 }
 
+div.preview_container{
+	border: 1px solid #ccc!important;
+    box-shadow: rgb(223, 222, 222) 0px 0px 6px 1px inset;
+    background-color: rgba(233, 233, 233, 0.25);
+	text-align: center;
+}
 
 
 

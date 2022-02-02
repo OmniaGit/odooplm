@@ -352,7 +352,7 @@
         
         
             <xpath expr="//div[@name='tags']" position="after">
-                <div class="row">
+                <div class="preview_container">
                     <t t-call="previews"/>
                </div>
             </xpath>  
