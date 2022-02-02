@@ -66,6 +66,8 @@
         "report/component_report.xml",
         "report/document_report.xml",
     ],
+    "assets": {
+        "web.assets_backend": ["plm/static/src/css/component_kanban.css"]},
     "qweb": [],
     "demo": [],
     "test": [],
