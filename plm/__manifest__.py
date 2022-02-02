@@ -25,7 +25,7 @@
     'website': 'http://www.omniasolutions.eu',
     'category': 'Product Lifecycle Management',
     'sequence': 15,
-    'summary': 'PLM Integration with main CAD editors',
+    'summary': 'PLM-PDM Integration with main CAD editors (SolidWorks, SolidEdge, Inventor, Autocad, Thinkdesign, Freecad)',
     'images': ['static/img/odoo_plm.png'],
     'depends': ['base',
                 'board',
