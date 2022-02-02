@@ -28,6 +28,7 @@ from . import plm_treatment
 from . import plm_finishing
 from . import plm_material
 from . import product_template
+from . import plm_cad_open_bck             # Has to be before "ir_attachment" due to related field
 from . import plm_descriptions             # Has to be before "product_product_extension" due to related field
 from . import product_product              # Has to be before "ir_attachment" due to related field
 from . import ir_attachment                # Has to be before "ir_attachment_relations" due to related field
@@ -44,4 +45,6 @@ from . import plm_temporary
 from . import plm_dbthread
 from . import res_users
 from . import plm_cad_open
-from . import plm_cad_open_bck
+
+
+
