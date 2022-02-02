@@ -27,7 +27,7 @@
     'category': 'Product Lifecycle Management',
     'sequence': 15,
     'license': 'AGPL-3',
-    'summary': 'PLM Integration with main CAD editors batch conversion tool',
+    'summary': 'CAD editors batch conversion tool',
     'depends': ['plm'],
     'description': """
 Manage Product Lifecycle Management in OpenERP
