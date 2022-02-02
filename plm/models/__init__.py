@@ -28,7 +28,6 @@ from . import plm_treatment
 from . import plm_finishing
 from . import plm_material
 from . import product_template
-from . import plm_cad_open_bck             # Has to be before "ir_attachment" due to related field
 from . import plm_descriptions             # Has to be before "product_product_extension" due to related field
 from . import product_product              # Has to be before "ir_attachment" due to related field
 from . import ir_attachment                # Has to be before "ir_attachment_relations" due to related field
@@ -36,6 +35,7 @@ from . import ir_attachment_relations
 from . import product_product_document_rel
 from . import product_product_kanban
 from . import plm_backup_document
+from . import plm_cad_open_bck
 from . import plm_checkout
 from . import plm_config_settings
 from . import mrp_bom
