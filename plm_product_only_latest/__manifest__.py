@@ -26,7 +26,7 @@
     'category': 'Product Lifecycle Management',
     'sequence': 15,
     'license': 'AGPL-3',
-    'summary': 'PLM Integration with main CAD editors',
+    'summary': 'Show only latest product version in production',
     'images': ['static/img/odoo_plm.png'],
     'depends': ['plm', 'sale'],
     'description': """
