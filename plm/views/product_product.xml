@@ -44,6 +44,23 @@
         <field name="arch" type="xml">
             <form string="Engineering Product" version="7.0">
                 <header>
+                <!-- This button are also used for workflow action do not remove -->
+                    <button name="action_release"
+                            type="object"
+                            states="confirmed"
+                            string="Release Component"
+                            class="oe_highlight"
+                            groups="plm.group_plm_release_users"/>
+                    <button name="action_draft"
+                            type="object"
+                            states="confirmed"
+                            string="Correct Component"
+                    />
+                    <button name="action_confirm"
+                            type="object"
+                            states="draft"
+                            string="Confirm Component"
+                            class="oe_highlight"/>
                     <field name="state"
                            widget="statusbar"
                            statusbar_visible="draft,confirmed,released"
