@@ -214,15 +214,16 @@
                     <field name="engineering_revision" attrs="{'readonly':[('is_engcode_editable','=', False)]}" colspan="6"/>
                </group>       
                <group>
-	                <field name="std_description" colspan="6"
-	                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
-	                <field name="show_std_field1" groups='base.group_no_one'/>
-	                <field name="show_std_field2" groups='base.group_no_one'/>
-	                <field name="show_std_field3" groups='base.group_no_one'/>
-	                <field name="readonly_std_umc1" groups='base.group_no_one'/>
-	                <field name="readonly_std_umc2" groups='base.group_no_one'/>
-	                <field name="readonly_std_umc3" groups='base.group_no_one'/>
-	                
+               		<group>
+		                <field name="std_description" colspan="6"
+		                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+		                <field name="show_std_field1" groups='base.group_no_one'/>
+		                <field name="show_std_field2" groups='base.group_no_one'/>
+		                <field name="show_std_field3" groups='base.group_no_one'/>
+		                <field name="readonly_std_umc1" groups='base.group_no_one'/>
+		                <field name="readonly_std_umc2" groups='base.group_no_one'/>
+		                <field name="readonly_std_umc3" groups='base.group_no_one'/>
+	                </group>
                     <group name="std_desc_attrs" col="4" colspan="4" string="Standard Description Parameters" attrs="{'invisible': [('std_description','=', False)]}">
                         <a target="new"  href="https://www.omniasolutions.website/blog/developer-and-it-here-you-will-find-post-regarding-very-technical-aspect-of-programming-and-it-those-thinks-are-daily-used-by-omniasolutions-and-we-hope-you-that-will-help-you-3/post/standard-description-39" title="Standard description parameters info" colspan="4"><i class="fa fa-info-circle"></i></a>
                             <field name="std_umc1"
