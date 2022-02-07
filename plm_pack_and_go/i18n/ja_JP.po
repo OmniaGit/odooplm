@@ -6,15 +6,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 15.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-02-07 15:15+0000\n"
-"PO-Revision-Date: 2022-02-07 16:49+0100\n"
+"POT-Creation-Date: 2022-02-07 16:34+0000\n"
+"PO-Revision-Date: 2022-02-07 17:48+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: \n"
-"Language: it\n"
+"Language: ja_JP\n"
 "X-Generator: Poedit 2.0.6\n"
 
 #. module: plm_pack_and_go
@@ -66,22 +66,22 @@ msgstr "3D + PDF"
 #. module: plm_pack_and_go
 #: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go__name
 msgid "Attachment Name"
-msgstr "Nome allegato"
+msgstr "添付ファイル名"
 
 #. module: plm_pack_and_go
 #: model_terms:ir.ui.view,arch_db:plm_pack_and_go.act_plm_pack_and_go
 msgid "Cancel"
-msgstr "Annulla"
+msgstr "キャンセル"
 
 #. module: plm_pack_and_go
 #: model_terms:ir.ui.view,arch_db:plm_pack_and_go.act_plm_pack_and_go
 msgid "Clear"
-msgstr "Pulisci"
+msgstr "クリア"
 
 #. module: plm_pack_and_go
 #: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_view__comp_description
 msgid "Comp Description"
-msgstr "Descrizione componente"
+msgstr "コンプの説明"
 
 #. module: plm_pack_and_go
 #: code:addons/plm_pack_and_go/wizard/pack_and_go_wizard.py:0
@@ -89,134 +89,134 @@ msgstr "Descrizione componente"
 #: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_view__component_id
 #, python-format
 msgid "Component"
-msgstr "Componente"
+msgstr "成分"
 
 #. module: plm_pack_and_go
 #: code:addons/plm_pack_and_go/wizard/pack_and_go_wizard.py:0
 #: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_view__comp_rev
 #, python-format
 msgid "Component Revision"
-msgstr "Revisione dei componenti"
+msgstr "コンポーネントの改訂"
 
 #. module: plm_pack_and_go
 #: model_terms:ir.ui.view,arch_db:plm_pack_and_go.act_plm_pack_and_go
 msgid "Compute Bom"
-msgstr "Calcola la distinta base"
+msgstr "計算Bom"
 
 #. module: plm_pack_and_go
 #: code:addons/plm_pack_and_go/wizard/pack_and_go_wizard.py:0
 #: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go__convertion_server_available
 #, python-format
 msgid "Conversion server available"
-msgstr "Server di conversione disponibile"
+msgstr "利用可能な変換サーバー"
 
 #. module: plm_pack_and_go
 #: model_terms:ir.ui.view,arch_db:plm_pack_and_go.act_plm_pack_and_go
 msgid "Create zip archive"
-msgstr "Crea archivio zip"
+msgstr "Zipアーカイブを作成する"
 
 #. module: plm_pack_and_go
 #: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go__create_uid
 #: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_types__create_uid
 #: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_view__create_uid
 msgid "Created by"
-msgstr "Creato da"
+msgstr "によって作成された"
 
 #. module: plm_pack_and_go
 #: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go__create_date
 #: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_types__create_date
 #: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_view__create_date
 msgid "Created on"
-msgstr "Creato il"
+msgstr "で作成されました"
 
 #. module: plm_pack_and_go
 #: model:ir.model,name:plm_pack_and_go.model_pack_and_go_types
 msgid "Description of pack and go"
-msgstr "Descrizione di pack and go"
+msgstr "パックアンドゴーの説明"
 
 #. module: plm_pack_and_go
 #: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go__display_name
 #: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_types__display_name
 #: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_view__display_name
 msgid "Display Name"
-msgstr "Nome da visualizzare"
+msgstr "表示名"
 
 #. module: plm_pack_and_go
 #: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_view__doc_file_name
 msgid "Doc File Name"
-msgstr "Nome file documento"
+msgstr "ドキュメントファイル名"
 
 #. module: plm_pack_and_go
 #: code:addons/plm_pack_and_go/wizard/pack_and_go_wizard.py:0
 #: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_view__document_id
 #, python-format
 msgid "Document"
-msgstr "Documento"
+msgstr "資料"
 
 #. module: plm_pack_and_go
 #: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_view__document_description
 msgid "Document Description"
-msgstr "Descrizione del documento"
+msgstr "ドキュメントの説明"
 
 #. module: plm_pack_and_go
 #: code:addons/plm_pack_and_go/wizard/pack_and_go_wizard.py:0
 #: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_view__doc_rev
 #, python-format
 msgid "Document Revision"
-msgstr "Revisione del documento"
+msgstr "ドキュメントの改訂"
 
 #. module: plm_pack_and_go
 #: code:addons/plm_pack_and_go/wizard/pack_and_go_wizard.py:0
 #: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_view__doc_type
 #, python-format
 msgid "Document Type"
-msgstr "Tipo di documento"
+msgstr "ドキュメントタイプ"
 
 #. module: plm_pack_and_go
 #: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go__datas
 msgid "Download"
-msgstr "Scarica"
+msgstr "ダウンロード"
 
 #. module: plm_pack_and_go
 #: model_terms:ir.ui.view,arch_db:plm_pack_and_go.act_plm_pack_and_go
 msgid "Export Form"
-msgstr "Modulo di esportazione"
+msgstr "エクスポートフォーム"
 
 #. module: plm_pack_and_go
 #: code:addons/plm_pack_and_go/wizard/pack_and_go_wizard.py:0
 #: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go__export_type
 #, python-format
 msgid "Export Type"
-msgstr "Tipo di esportazione"
+msgstr "エクスポートタイプ"
 
 #. module: plm_pack_and_go
 #: model:ir.model.fields.selection,name:plm_pack_and_go.selection__pack_and_go__type__binary
 msgid "File"
-msgstr "File"
+msgstr "ファイル"
 
 #. module: plm_pack_and_go
 #: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go__datas_fname
 msgid "File Name"
-msgstr "Nome del file"
+msgstr "ファイル名"
 
 #. module: plm_pack_and_go
 #: code:addons/plm_pack_and_go/wizard/pack_and_go_wizard.py:0
 #: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go__force_types_2d
 #, python-format
 msgid "Force 2D Types"
-msgstr "Forza tipi 2D"
+msgstr "2Dタイプを強制する"
 
 #. module: plm_pack_and_go
 #: code:addons/plm_pack_and_go/wizard/pack_and_go_wizard.py:0
 #: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go__force_types_3d
 #, python-format
 msgid "Force 3D Types"
-msgstr "Forza tipi 3D"
+msgstr "3Dタイプを強制する"
 
 #. module: plm_pack_and_go
 #: model_terms:ir.ui.view,arch_db:plm_pack_and_go.act_plm_pack_and_go
 msgid "Force Types"
-msgstr "Forza Tipi"
+msgstr "フォースタイプ"
 
 #. module: plm_pack_and_go
 #: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go__id
@@ -230,38 +230,38 @@ msgstr "ID"
 #: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_types____last_update
 #: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_view____last_update
 msgid "Last Modified on"
-msgstr "Ultima modifica il"
+msgstr "最終変更時"
 
 #. module: plm_pack_and_go
 #: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go__write_uid
 #: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_types__write_uid
 #: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_view__write_uid
 msgid "Last Updated by"
-msgstr "Ultimo aggiornamento di"
+msgstr "最終更新者"
 
 #. module: plm_pack_and_go
 #: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go__write_date
 #: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_types__write_date
 #: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_view__write_date
 msgid "Last Updated on"
-msgstr "Ultimo aggiornamento il"
+msgstr "最終更新日"
 
 #. module: plm_pack_and_go
 #: model:ir.model,name:plm_pack_and_go.model_pack_and_go
 msgid "Main wizard collector for pack and go"
-msgstr "Collettore principale della procedura guidata per il pack and go"
+msgstr "パックアンドゴーのメインウィザードコレクター"
 
 #. module: plm_pack_and_go
 #: model:ir.model,name:plm_pack_and_go.model_pack_and_go_view
 msgid "Manage pack view for exporting"
-msgstr "Gestisci la vista del pacchetto per l'esportazione"
+msgstr "エクスポート用のパックビューを管理する"
 
 #. module: plm_pack_and_go
 #: code:addons/plm_pack_and_go/wizard/pack_and_go_wizard.py:0
 #: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_types__name
 #, python-format
 msgid "Name"
-msgstr "Nome"
+msgstr "名"
 
 #. module: plm_pack_and_go
 #: code:addons/plm_pack_and_go/wizard/pack_and_go_wizard.py:0
@@ -269,7 +269,7 @@ msgstr "Nome"
 #: model_terms:ir.ui.view,arch_db:plm_pack_and_go.act_plm_pack_and_go
 #, python-format
 msgid "Other"
-msgstr "Altro"
+msgstr "他の"
 
 #. module: plm_pack_and_go
 #: code:addons/plm_pack_and_go/wizard/pack_and_go_wizard.py:0
@@ -283,73 +283,73 @@ msgstr "PDF"
 #. module: plm_pack_and_go
 #: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_types__pack_and_go_view_id
 msgid "Pack And Go View"
-msgstr "Vista Pack And Go"
+msgstr "パックアンドゴービュー"
 
 #. module: plm_pack_and_go
 #: code:addons/plm_pack_and_go/wizard/pack_and_go_wizard.py:0
 #: model:ir.actions.act_window,name:plm_pack_and_go.act_pack_and_go_action
 #, python-format
 msgid "Pack and Go"
-msgstr "Pack and Go"
+msgstr "パックアンドゴー"
 
 #. module: plm_pack_and_go
 #: code:addons/plm_pack_and_go/wizard/pack_and_go_wizard.py:0
 #: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_view__pack_and_go_id
 #, python-format
 msgid "Pack and go id"
-msgstr "Id Pack and Go"
+msgstr "パックアンドゴーid"
 
 #. module: plm_pack_and_go
 #: code:addons/plm_pack_and_go/wizard/pack_and_go_wizard.py:0
 #: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_view__preview
 #, python-format
 msgid "Preview Content"
-msgstr "Anteprima contenuto"
+msgstr "プレビューコンテンツ"
 
 #. module: plm_pack_and_go
 #: model:ir.model,name:plm_pack_and_go.model_product_product
 msgid "Product"
-msgstr "Prodotto"
+msgstr "プロダクト"
 
 #. module: plm_pack_and_go
 #: code:addons/plm_pack_and_go/wizard/pack_and_go_wizard.py:0
 #: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go__export_2d
 #, python-format
 msgid "Select 2D Rows to export"
-msgstr "Seleziona Righe 2D da esportare"
+msgstr "エクスポートする2D行を選択してください"
 
 #. module: plm_pack_and_go
 #: code:addons/plm_pack_and_go/wizard/pack_and_go_wizard.py:0
 #: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go__export_3d
 #, python-format
 msgid "Select 3D Rows to export"
-msgstr "Seleziona Righe 3D da esportare"
+msgstr "エクスポートする3D行を選択してください"
 
 #. module: plm_pack_and_go
 #: code:addons/plm_pack_and_go/wizard/pack_and_go_wizard.py:0
 #: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go__export_pdf
 #, python-format
 msgid "Select PDF Rows to export"
-msgstr "Seleziona Righe PDF da esportare"
+msgstr "エクスポートするPDF行を選択"
 
 #. module: plm_pack_and_go
 #: code:addons/plm_pack_and_go/wizard/pack_and_go_wizard.py:0
 #: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go__export_other
 #, python-format
 msgid "Select Rows to export"
-msgstr "Seleziona Righe da esportare"
+msgstr "エクスポートする行を選択してください"
 
 #. module: plm_pack_and_go
 #: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go__type
 msgid "Type"
-msgstr "Tipo"
+msgstr "タイプ"
 
 #. module: plm_pack_and_go
 #: code:addons/plm_pack_and_go/wizard/pack_and_go_wizard.py:0
 #: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_view__available_types
 #, python-format
 msgid "Types"
-msgstr "Tipi"
+msgstr "種類"
 
 #. module: plm_pack_and_go
 #: model:ir.model.fields.selection,name:plm_pack_and_go.selection__pack_and_go__type__url
@@ -362,11 +362,11 @@ msgid ""
 "You can either upload a file from your computer or copy/paste an internet "
 "link to your file"
 msgstr ""
-"Puoi caricare un file dal tuo computer o copiare/incollare un "
-"collegamento Internet nel tuo file"
+"コンピューターからファイルをアップロードするか、インターネットリンクをコ"
+"ピーしてファイルに貼り付けることができます"
 
 #. module: plm_pack_and_go
 #: code:addons/plm_pack_and_go/wizard/pack_and_go_wizard.py:0
 #, python-format
 msgid "You have to select a force type before clicking."
-msgstr "Devi selezionare un tipo di forza prima di fare clic."
+msgstr "クリックする前に、力のタイプを選択する必要があります."
