@@ -1,0 +1,370 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* plm_compare_bom
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 15.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-02-07 08:43+0000\n"
+"PO-Revision-Date: 2022-02-07 09:55+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: de\n"
+"X-Generator: Poedit 2.0.6\n"
+
+#. module: plm_compare_bom
+#: model_terms:ir.ui.view,arch_db:plm_compare_bom.plm_visualize_diff_form
+msgid ""
+"<span title=\"Attentio_bom_equal\" class=\"fa fa-exclamation-triangle\" "
+"style=\"color:blu;width:100%;text-align:left;font-size:30px\">Attention: "
+"The two bom are equal  !!<br/></span>"
+msgstr ""
+"<span title=\"Attentio_bom_equal\" class=\"fa fa-exclamation-triangle\" "
+"style=\"color:blu;width:100%;text-align:left;font-size:30px\">Achtung: Die "
+"beiden Geburten sind gleich !!<br/></span>"
+
+#. module: plm_compare_bom
+#: model_terms:ir.ui.view,arch_db:plm_compare_bom.plm_visualize_diff_form
+msgid ""
+"<span title=\"Attention_some_change\" class=\"fa fa-exclamation-triangle\" "
+"style=\"color:red;width:100%;text-align:left;font-size:30px\">Attention: "
+"there are some change you need to save it !!<br/></span>"
+msgstr ""
+"<span title=\"Attention_some_change\" class=\"fa fa-exclamation-triangle\" "
+"style=\"color:red;width:100%;text-align:left;font-size:30px\">Achtung: Es "
+"gibt einige Änderungen, die Sie speichern müssen !!<br/></span>"
+
+#. module: plm_compare_bom
+#: code:addons/plm_compare_bom/models/compare_bom.py:0
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_adding_bom__bom_id
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_missing_bom__bom_id
+#, python-format
+msgid "BoM"
+msgstr "BoM"
+
+#. module: plm_compare_bom
+#: code:addons/plm_compare_bom/models/compare_bom.py:0
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_compare_bom__bom_id1
+#, python-format
+msgid "BoM 1"
+msgstr "BoM 1"
+
+#. module: plm_compare_bom
+#: code:addons/plm_compare_bom/models/compare_bom.py:0
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_compare_bom__bom_id2
+#, python-format
+msgid "BoM 2"
+msgstr "BoM 2"
+
+#. module: plm_compare_bom
+#: code:addons/plm_compare_bom/models/compare_bom.py:0
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_compare_bom__anotinb
+#, python-format
+msgid "BoM Adding"
+msgstr "Stückliste hinzufügen"
+
+#. module: plm_compare_bom
+#: model:ir.model,name:plm_compare_bom.model_plm_adding_bom
+msgid "BoM Adding Objects"
+msgstr "Stückliste Hinzufügen von Objekten"
+
+#. module: plm_compare_bom
+#: model:ir.model,name:plm_compare_bom.model_plm_compare_bom
+msgid "BoM Comparison"
+msgstr "BoM-Vergleich"
+
+#. module: plm_compare_bom
+#: code:addons/plm_compare_bom/models/compare_bom.py:0
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_adding_bom__bom_idrow
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_missing_bom__bom_idrow
+#, python-format
+msgid "BoM Line"
+msgstr "Stücklistenzeile"
+
+#. module: plm_compare_bom
+#: code:addons/plm_compare_bom/models/compare_bom.py:0
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_compare_bom__bom_line_id_to_delete
+#, python-format
+msgid "BoM Line to Delete"
+msgstr "Stücklistenzeile zum Löschen"
+
+#. module: plm_compare_bom
+#: code:addons/plm_compare_bom/models/compare_bom.py:0
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_compare_bom__bnotina
+#, python-format
+msgid "BoM Missing"
+msgstr "Stückliste fehlt"
+
+#. module: plm_compare_bom
+#: model:ir.model,name:plm_compare_bom.model_plm_missing_bom
+msgid "BoM Missing Objects"
+msgstr "Stückliste fehlende Objekte"
+
+#. module: plm_compare_bom
+#: code:addons/plm_compare_bom/models/compare_bom.py:0
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_compare_bom__type_id1
+#, python-format
+msgid "BoM Type 1"
+msgstr "Stücklistentyp 1"
+
+#. module: plm_compare_bom
+#: code:addons/plm_compare_bom/models/compare_bom.py:0
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_compare_bom__type_id2
+#, python-format
+msgid "BoM Type 2"
+msgstr "Stücklistentyp 2"
+
+#. module: plm_compare_bom
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_compare_bom__bom_are_equal
+msgid "Bom Are Equal"
+msgstr "Bom sind gleich"
+
+#. module: plm_compare_bom
+#: code:addons/plm_compare_bom/models/compare_bom.py:0
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_adding_bom__itemnum
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_missing_bom__itemnum
+#, python-format
+msgid "Cad Pos."
+msgstr "Cad-Pos."
+
+#. module: plm_compare_bom
+#: model_terms:ir.ui.view,arch_db:plm_compare_bom.view_plm_compare_bom
+msgid "Cancel"
+msgstr "Absagen"
+
+#. module: plm_compare_bom
+#: model:ir.actions.act_window,name:plm_compare_bom.act_plm_compare_bom
+#: model_terms:ir.ui.view,arch_db:plm_compare_bom.view_plm_compare_bom
+msgid "Compare BoMs"
+msgstr "Stücklisten vergleichen"
+
+#. module: plm_compare_bom
+#: code:addons/plm_compare_bom/models/compare_bom.py:0
+#: model:ir.model.fields.selection,name:plm_compare_bom.selection__plm_compare_bom__compute_type__num_qty
+#, python-format
+msgid "Compare By Item Number and Quantity"
+msgstr "Vergleichen Sie nach Artikelnummer und Menge"
+
+#. module: plm_compare_bom
+#: code:addons/plm_compare_bom/models/compare_bom.py:0
+#: model:ir.model.fields.selection,name:plm_compare_bom.selection__plm_compare_bom__compute_type__only_product
+#, python-format
+msgid "Compare Only Product Existence"
+msgstr "Vergleichen Sie nur die Produktexistenz"
+
+#. module: plm_compare_bom
+#: code:addons/plm_compare_bom/models/compare_bom.py:0
+#: model:ir.model.fields.selection,name:plm_compare_bom.selection__plm_compare_bom__compute_type__summarized
+#, python-format
+msgid "Compare Product Quantity"
+msgstr "Produktmenge vergleichen"
+
+#. module: plm_compare_bom
+#: model_terms:ir.ui.view,arch_db:plm_compare_bom.view_plm_compare_bom
+msgid "Compare selected BoMs"
+msgstr "Vergleichen Sie ausgewählte Stücklisten"
+
+#. module: plm_compare_bom
+#: code:addons/plm_compare_bom/models/compare_bom.py:0
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_compare_bom__compute_type
+#, python-format
+msgid "Compare type"
+msgstr "Typen vergleichen"
+
+#. module: plm_compare_bom
+#: model_terms:ir.ui.view,arch_db:plm_compare_bom.plm_visualize_diff_form
+msgid "Copy Left"
+msgstr "Kopieren Sie nach links"
+
+#. module: plm_compare_bom
+#: model_terms:ir.ui.view,arch_db:plm_compare_bom.plm_visualize_diff_form
+msgid "Copy Right"
+msgstr "Kopieren Sie nach richtig"
+
+#. module: plm_compare_bom
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_adding_bom__create_uid
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_compare_bom__create_uid
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_missing_bom__create_uid
+msgid "Created by"
+msgstr "Erstellt von"
+
+#. module: plm_compare_bom
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_adding_bom__create_date
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_compare_bom__create_date
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_missing_bom__create_date
+msgid "Created on"
+msgstr "Erstellt am"
+
+#. module: plm_compare_bom
+#: model_terms:ir.ui.view,arch_db:plm_compare_bom.plm_visualize_diff_form
+msgid "Delete Left"
+msgstr "Löschen Sie links"
+
+#. module: plm_compare_bom
+#: code:addons/plm_compare_bom/models/compare_bom.py:0
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_adding_bom__description
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_missing_bom__description
+#, python-format
+msgid "Description"
+msgstr "Beschreibung"
+
+#. module: plm_compare_bom
+#: code:addons/plm_compare_bom/models/compare_bom.py:0
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_compare_bom__description1
+#, python-format
+msgid "Description 1"
+msgstr "Beschreibung 1"
+
+#. module: plm_compare_bom
+#: code:addons/plm_compare_bom/models/compare_bom.py:0
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_compare_bom__description2
+#, python-format
+msgid "Description 2"
+msgstr "Beschreibung 2"
+
+#. module: plm_compare_bom
+#: code:addons/plm_compare_bom/models/compare_bom.py:0
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_adding_bom__reason
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_missing_bom__reason
+#, python-format
+msgid "Difference"
+msgstr "Unterschied"
+
+#. module: plm_compare_bom
+#: code:addons/plm_compare_bom/models/compare_bom.py:0
+#, python-format
+msgid "Differences on BoMs"
+msgstr "Unterschiede bei Stücklisten"
+
+#. module: plm_compare_bom
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_adding_bom__display_name
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_compare_bom__display_name
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_missing_bom__display_name
+msgid "Display Name"
+msgstr "Anzeigename"
+
+#. module: plm_compare_bom
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_adding_bom__id
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_compare_bom__id
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_missing_bom__id
+msgid "ID"
+msgstr "ID"
+
+#. module: plm_compare_bom
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_adding_bom____last_update
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_compare_bom____last_update
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_missing_bom____last_update
+msgid "Last Modified on"
+msgstr "Zuletzt geändert am"
+
+#. module: plm_compare_bom
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_adding_bom__write_uid
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_compare_bom__write_uid
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_missing_bom__write_uid
+msgid "Last Updated by"
+msgstr "Zuletzt aktualisiert von"
+
+#. module: plm_compare_bom
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_adding_bom__write_date
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_compare_bom__write_date
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_missing_bom__write_date
+msgid "Last Updated on"
+msgstr "Zuletzt aktualisiert am"
+
+#. module: plm_compare_bom
+#: model_terms:ir.ui.view,arch_db:plm_compare_bom.plm_visualize_diff_form
+msgid "Move Left"
+msgstr "Geh nach links"
+
+#. module: plm_compare_bom
+#: code:addons/plm_compare_bom/models/compare_bom.py:0
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_adding_bom__part_id
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_missing_bom__part_id
+#, python-format
+msgid "Part"
+msgstr "Teil"
+
+#. module: plm_compare_bom
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_compare_bom__part_id1
+msgid "Part 1"
+msgstr "Teil 1"
+
+#. module: plm_compare_bom
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_compare_bom__part_id2
+msgid "Part 2"
+msgstr "Teil 2"
+
+#. module: plm_compare_bom
+#: code:addons/plm_compare_bom/models/compare_bom.py:0
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_compare_bom__name
+#, python-format
+msgid "Part Number"
+msgstr "Teilenummer"
+
+#. module: plm_compare_bom
+#: code:addons/plm_compare_bom/models/compare_bom.py:0
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_adding_bom__itemqty
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_missing_bom__itemqty
+#, python-format
+msgid "Quantity"
+msgstr "Anzahl"
+
+#. module: plm_compare_bom
+#: code:addons/plm_compare_bom/models/compare_bom.py:0
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_adding_bom__revision
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_missing_bom__revision
+#, python-format
+msgid "Rev."
+msgstr "Rev."
+
+#. module: plm_compare_bom
+#: code:addons/plm_compare_bom/models/compare_bom.py:0
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_compare_bom__revision1
+#, python-format
+msgid "Revision 1"
+msgstr "Überarbeitung 1"
+
+#. module: plm_compare_bom
+#: code:addons/plm_compare_bom/models/compare_bom.py:0
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_compare_bom__revision2
+#, python-format
+msgid "Revision 2"
+msgstr "Überarbeitung 2"
+
+#. module: plm_compare_bom
+#: model:ir.model.fields,help:plm_compare_bom.field_plm_adding_bom__revision
+#: model:ir.model.fields,help:plm_compare_bom.field_plm_compare_bom__revision1
+#: model:ir.model.fields,help:plm_compare_bom.field_plm_compare_bom__revision2
+#: model:ir.model.fields,help:plm_compare_bom.field_plm_missing_bom__revision
+msgid "The revision of the product."
+msgstr "Die Überarbeitung des Produkts."
+
+#. module: plm_compare_bom
+#: model:ir.model.fields,help:plm_compare_bom.field_plm_adding_bom__itemnum
+#: model:ir.model.fields,help:plm_compare_bom.field_plm_missing_bom__itemnum
+msgid ""
+"This is the item reference position into the CAD document that declares "
+"this BoM."
+msgstr ""
+"Dies ist die Artikelreferenzposition im CAD-Dokument, das diese Stückliste "
+"deklariert."
+
+#. module: plm_compare_bom
+#: model_terms:ir.ui.view,arch_db:plm_compare_bom.view_plm_compare_bom
+msgid "This wizard will allow to compare two Bill of Materials.\""
+msgstr "Dieser Assistent ermöglicht es, zwei Stücklisten zu vergleichen.\""
+
+#. module: plm_compare_bom
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_compare_bom__to_update
+msgid "To Update"
+msgstr "Aktualisieren"
+
+#. module: plm_compare_bom
+#: model_terms:ir.ui.view,arch_db:plm_compare_bom.plm_visualize_diff_form
+msgid "Visualize BoM"
+msgstr "Stückliste visualisieren"
