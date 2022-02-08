@@ -1,0 +1,199 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* plm_spare
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 15.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-02-08 11:06+0000\n"
+"PO-Revision-Date: 2022-02-08 12:08+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: en_GB\n"
+"X-Generator: Poedit 2.0.6\n"
+
+#. module: plm_spare
+#: model_terms:ir.ui.view,arch_db:plm_spare.bom_spare_header
+msgid "<b>Spare Parts Report</b>"
+msgstr "<b>Spare Parts Report</b>"
+
+#. module: plm_spare
+#: model_terms:ir.ui.view,arch_db:plm_spare.plm_component_manage_spare_bom
+msgid "Are you sure you want to create a new Spare Bom?"
+msgstr "Are you sure you want to create a new Spare Bom?"
+
+#. module: plm_spare
+#: model:ir.model,name:plm_spare.model_ir_attachment
+msgid "Attachment"
+msgstr "Attachment"
+
+#. module: plm_spare
+#: model:ir.model,name:plm_spare.model_mrp_bom
+msgid "Bill of Material"
+msgstr "Bill of Material"
+
+#. module: plm_spare
+#: model:ir.model,name:plm_spare.model_mrp_bom_line
+msgid "Bill of Material Line"
+msgstr "Bill of Material Line"
+
+#. module: plm_spare
+#: code:addons/plm_spare/models/plm_temporary.py:0
+#, python-format
+msgid "Bill of Materials"
+msgstr "Bill of Materials"
+
+#. module: plm_spare
+#: code:addons/plm_spare/models/mrp_bom_line.py:0
+#: model:ir.model.fields,field_description:plm_spare.field_mrp_bom__type
+#: model:ir.model.fields,field_description:plm_spare.field_mrp_bom_line__type
+#, python-format
+msgid "BoM Type"
+msgstr "BoM Type"
+
+#. module: plm_spare
+#: code:addons/plm_spare/models/plm_temporary.py:0
+#, python-format
+msgid "BoM for Part {} already exists."
+msgstr "BoM for Part {} already exists."
+
+#. module: plm_spare
+#: model_terms:ir.ui.view,arch_db:plm_spare.plm_component_manage_spare_bom
+msgid "Cancel"
+msgstr "Cancel"
+
+#. module: plm_spare
+#: code:addons/plm_spare/models/plm_description.py:0
+#: model:ir.model.fields,field_description:plm_spare.field_plm_description__bom_tmpl
+#, python-format
+msgid "Choose a BoM"
+msgstr "Choose a BoM"
+
+#. module: plm_spare
+#: model:ir.actions.act_window,name:plm_spare.act_manage_spare_bom
+#: model_terms:ir.ui.view,arch_db:plm_spare.plm_component_manage_spare_bom
+msgid "Create Spare Bom"
+msgstr "Create Spare Bom"
+
+#. module: plm_spare
+#: code:addons/plm_spare/models/plm_temporary.py:0
+#, python-format
+msgid "Creating a new Spare Bom Error."
+msgstr "Creating a new Spare Bom Error."
+
+#. module: plm_spare
+#: model_terms:ir.ui.view,arch_db:plm_spare.plm_component_manage_spare_bom
+msgid "Creation of Spare Bom"
+msgstr "Creation of Spare Bom"
+
+#. module: plm_spare
+#: code:addons/plm_spare/models/ir_attachment.py:0
+#: model:ir.model.fields,help:plm_spare.field_ir_attachment__used_for_spare
+#: model:ir.model.fields,help:plm_spare.field_mrp_document__used_for_spare
+#, python-format
+msgid "Drawings marked here will be used printing Spare Part Manual report."
+msgstr "Drawings marked here will be used printing Spare Part Manual report."
+
+#. module: plm_spare
+#: model:ir.model,name:plm_spare.model_plm_description
+msgid "PLM Descriptions"
+msgstr "PLM Descriptions"
+
+#. module: plm_spare
+#: code:addons/plm_spare/models/mrp_bom_line.py:0
+#: model:ir.model.fields,help:plm_spare.field_mrp_bom_line__type
+#, python-format
+msgid ""
+"Phantom BOM: When processing a sales order for this product, the delivery "
+"order will contain the raw materials, instead of the finished product. Ship "
+"this product as a set of components (kit)."
+msgstr ""
+"Phantom BOM: When processing a sales order for this product, the delivery "
+"order will contain the raw materials, instead of the finished product. Ship "
+"this product as a set of components (kit)."
+
+#. module: plm_spare
+#: model:ir.actions.report,name:plm_spare.report_product_product_spare_header
+msgid "Print Spare Header"
+msgstr "Print Spare Header"
+
+#. module: plm_spare
+#: model:ir.actions.report,name:plm_spare.report_product_product_spare_parts_pdf
+msgid "Print Spare Parts Manual"
+msgstr "Print Spare Parts Manual"
+
+#. module: plm_spare
+#: model:ir.actions.report,name:plm_spare.report_product_product_spare_parts_pdf_one
+msgid "Print Spare Parts Manual One Level"
+msgstr "Print Spare Parts Manual One Level"
+
+#. module: plm_spare
+#: model:ir.model,name:plm_spare.model_product_product
+msgid "Product"
+msgstr "Product"
+
+#. module: plm_spare
+#: code:addons/plm_spare/models/product_product.py:0
+#, python-format
+msgid "Related Boms"
+msgstr "Related Boms"
+
+#. module: plm_spare
+#: model:ir.model,name:plm_spare.model_report_plm_spare_bom_spare_header
+msgid "Report Spare Parts Headers"
+msgstr "Report Spare Parts Headers"
+
+#. module: plm_spare
+#: model:ir.model,name:plm_spare.model_report_plm_spare_pdf_all
+msgid "Report Spare Pdf All"
+msgstr "Report Spare Pdf All"
+
+#. module: plm_spare
+#: model:ir.model,name:plm_spare.model_report_plm_spare_pdf_one
+msgid "Report Spare parts Document One"
+msgstr "Report Spare parts Document One"
+
+#. module: plm_spare
+#: model:ir.ui.menu,name:plm_spare.menu_relation_spare
+msgid "Search on Spare Bill of Materials"
+msgstr "Search on Spare Bill of Materials"
+
+#. module: plm_spare
+#: code:addons/plm_spare/models/plm_description.py:0
+#: model:ir.model.fields,help:plm_spare.field_plm_description__bom_tmpl
+#, python-format
+msgid "Select a  BoM as template to drive building Spare BoM."
+msgstr "Select a  BoM as template to drive building Spare BoM."
+
+#. module: plm_spare
+#: model:ir.model.fields.selection,name:plm_spare.selection__mrp_bom__type__spbom
+msgid "Spare BoM"
+msgstr "Spare BoM"
+
+#. module: plm_spare
+#: model:ir.actions.act_window,name:plm_spare.plm_action_spare_form
+msgid "Spare BoMs"
+msgstr "Spare BoMs"
+
+#. module: plm_spare
+#: model_terms:ir.ui.view,arch_db:plm_spare.ir_attachment_spare_extension
+msgid "Spare Part"
+msgstr "Spare Part"
+
+#. module: plm_spare
+#: model:ir.model,name:plm_spare.model_plm_temporary
+msgid "Temporary Class"
+msgstr "Temporary Class"
+
+#. module: plm_spare
+#: code:addons/plm_spare/models/ir_attachment.py:0
+#: model:ir.model.fields,field_description:plm_spare.field_ir_attachment__used_for_spare
+#: model:ir.model.fields,field_description:plm_spare.field_mrp_document__used_for_spare
+#, python-format
+msgid "Used for Spare"
+msgstr "Used for Spare"

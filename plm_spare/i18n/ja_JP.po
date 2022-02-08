@@ -1,0 +1,201 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* plm_spare
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 15.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-02-08 11:45+0000\n"
+"PO-Revision-Date: 2022-02-08 12:57+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: ja_JP\n"
+"X-Generator: Poedit 2.0.6\n"
+
+#. module: plm_spare
+#: model_terms:ir.ui.view,arch_db:plm_spare.bom_spare_header
+msgid "<b>Spare Parts Report</b>"
+msgstr "<b>スペアパーツレポート</ b>"
+
+#. module: plm_spare
+#: model_terms:ir.ui.view,arch_db:plm_spare.plm_component_manage_spare_bom
+msgid "Are you sure you want to create a new Spare Bom?"
+msgstr "新しいスペアのBomを作成してもよろしいですか？"
+
+#. module: plm_spare
+#: model:ir.model,name:plm_spare.model_ir_attachment
+msgid "Attachment"
+msgstr "添付"
+
+#. module: plm_spare
+#: model:ir.model,name:plm_spare.model_mrp_bom
+msgid "Bill of Material"
+msgstr "部品表"
+
+#. module: plm_spare
+#: model:ir.model,name:plm_spare.model_mrp_bom_line
+msgid "Bill of Material Line"
+msgstr "部品表ライン"
+
+#. module: plm_spare
+#: code:addons/plm_spare/models/plm_temporary.py:0
+#, python-format
+msgid "Bill of Materials"
+msgstr "部品表"
+
+#. module: plm_spare
+#: code:addons/plm_spare/models/mrp_bom_line.py:0
+#: model:ir.model.fields,field_description:plm_spare.field_mrp_bom__type
+#: model:ir.model.fields,field_description:plm_spare.field_mrp_bom_line__type
+#, python-format
+msgid "BoM Type"
+msgstr "部品表タイプ"
+
+#. module: plm_spare
+#: code:addons/plm_spare/models/plm_temporary.py:0
+#, python-format
+msgid "BoM for Part {} already exists."
+msgstr "パート{}の部品表はすでに存在します."
+
+#. module: plm_spare
+#: model_terms:ir.ui.view,arch_db:plm_spare.plm_component_manage_spare_bom
+msgid "Cancel"
+msgstr "キャンセル"
+
+#. module: plm_spare
+#: code:addons/plm_spare/models/plm_description.py:0
+#: model:ir.model.fields,field_description:plm_spare.field_plm_description__bom_tmpl
+#, python-format
+msgid "Choose a BoM"
+msgstr "部品表を選択"
+
+#. module: plm_spare
+#: model:ir.actions.act_window,name:plm_spare.act_manage_spare_bom
+#: model_terms:ir.ui.view,arch_db:plm_spare.plm_component_manage_spare_bom
+msgid "Create Spare Bom"
+msgstr "予備のBomを作成する"
+
+#. module: plm_spare
+#: code:addons/plm_spare/models/plm_temporary.py:0
+#, python-format
+msgid "Creating a new Spare Bom Error."
+msgstr "新しいスペアのBomエラーを作成しています."
+
+#. module: plm_spare
+#: model_terms:ir.ui.view,arch_db:plm_spare.plm_component_manage_spare_bom
+msgid "Creation of Spare Bom"
+msgstr "予備のBomの作成"
+
+#. module: plm_spare
+#: code:addons/plm_spare/models/ir_attachment.py:0
+#: model:ir.model.fields,help:plm_spare.field_ir_attachment__used_for_spare
+#: model:ir.model.fields,help:plm_spare.field_mrp_document__used_for_spare
+#, python-format
+msgid "Drawings marked here will be used printing Spare Part Manual report."
+msgstr ""
+"ここにマークされた図面は、スペアパーツマニュアルレポートの印刷に使用されま"
+"す."
+
+#. module: plm_spare
+#: model:ir.model,name:plm_spare.model_plm_description
+msgid "PLM Descriptions"
+msgstr "PLMの説明"
+
+#. module: plm_spare
+#: code:addons/plm_spare/models/mrp_bom_line.py:0
+#: model:ir.model.fields,help:plm_spare.field_mrp_bom_line__type
+#, python-format
+msgid ""
+"Phantom BOM: When processing a sales order for this product, the delivery "
+"order will contain the raw materials, instead of the finished product. Ship "
+"this product as a set of components (kit)."
+msgstr ""
+"ファントムBOM：この製品の販売注文を処理する場合、出荷注文には完成品ではなく"
+"原材料が含まれます. この製品をコンポーネントのセット（キット）として出荷しま"
+"す."
+
+#. module: plm_spare
+#: model:ir.actions.report,name:plm_spare.report_product_product_spare_header
+msgid "Print Spare Header"
+msgstr "スペアヘッダーを印刷"
+
+#. module: plm_spare
+#: model:ir.actions.report,name:plm_spare.report_product_product_spare_parts_pdf
+msgid "Print Spare Parts Manual"
+msgstr "スペアパーツマニュアルの印刷"
+
+#. module: plm_spare
+#: model:ir.actions.report,name:plm_spare.report_product_product_spare_parts_pdf_one
+msgid "Print Spare Parts Manual One Level"
+msgstr "スペアパーツマニュアルを1レベル印刷"
+
+#. module: plm_spare
+#: model:ir.model,name:plm_spare.model_product_product
+msgid "Product"
+msgstr "プロダクト"
+
+#. module: plm_spare
+#: code:addons/plm_spare/models/product_product.py:0
+#, python-format
+msgid "Related Boms"
+msgstr "関連するBoms"
+
+#. module: plm_spare
+#: model:ir.model,name:plm_spare.model_report_plm_spare_bom_spare_header
+msgid "Report Spare Parts Headers"
+msgstr "スペアパーツヘッダーを報告する"
+
+#. module: plm_spare
+#: model:ir.model,name:plm_spare.model_report_plm_spare_pdf_all
+msgid "Report Spare Pdf All"
+msgstr "スペアPDFをすべて報告する"
+
+#. module: plm_spare
+#: model:ir.model,name:plm_spare.model_report_plm_spare_pdf_one
+msgid "Report Spare parts Document One"
+msgstr "レポートスペアパーツドキュメント1"
+
+#. module: plm_spare
+#: model:ir.ui.menu,name:plm_spare.menu_relation_spare
+msgid "Search on Spare Bill of Materials"
+msgstr "スペアの部品表を検索"
+
+#. module: plm_spare
+#: code:addons/plm_spare/models/plm_description.py:0
+#: model:ir.model.fields,help:plm_spare.field_plm_description__bom_tmpl
+#, python-format
+msgid "Select a  BoM as template to drive building Spare BoM."
+msgstr "スペアBoMの構築を推進するためのテンプレートとしてBoMを選択します."
+
+#. module: plm_spare
+#: model:ir.model.fields.selection,name:plm_spare.selection__mrp_bom__type__spbom
+msgid "Spare BoM"
+msgstr "スペアBoM"
+
+#. module: plm_spare
+#: model:ir.actions.act_window,name:plm_spare.plm_action_spare_form
+msgid "Spare BoMs"
+msgstr "スペアのBoM"
+
+#. module: plm_spare
+#: model_terms:ir.ui.view,arch_db:plm_spare.ir_attachment_spare_extension
+msgid "Spare Part"
+msgstr "スペアパーツ"
+
+#. module: plm_spare
+#: model:ir.model,name:plm_spare.model_plm_temporary
+msgid "Temporary Class"
+msgstr "一時クラス"
+
+#. module: plm_spare
+#: code:addons/plm_spare/models/ir_attachment.py:0
+#: model:ir.model.fields,field_description:plm_spare.field_ir_attachment__used_for_spare
+#: model:ir.model.fields,field_description:plm_spare.field_mrp_document__used_for_spare
+#, python-format
+msgid "Used for Spare"
+msgstr "スペアに使用"
