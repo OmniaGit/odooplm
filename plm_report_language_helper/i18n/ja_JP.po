@@ -1,0 +1,200 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* plm_report_language_helper
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 15.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-02-08 10:12+0000\n"
+"PO-Revision-Date: 2022-02-08 11:23+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: ja_JP\n"
+"X-Generator: Poedit 2.0.6\n"
+
+#. module: plm_report_language_helper
+#: model:ir.model.fields.selection,name:plm_report_language_helper.selection__plm_bomchoselanguage__bom_type__plm_report_plm_bom_structure_flat
+msgid "BOM All Flat Summarized"
+msgstr "BOMオールフラット要約"
+
+#. module: plm_report_language_helper
+#: model:ir.model.fields.selection,name:plm_report_language_helper.selection__plm_bomchoselanguage__bom_type__plm_report_plm_bom_structure_all
+msgid "BOM All Levels"
+msgstr "BOMすべてのレベル"
+
+#. module: plm_report_language_helper
+#: model:ir.model.fields.selection,name:plm_report_language_helper.selection__plm_bomchoselanguage__bom_type__plm_report_plm_bom_structure_all_sum
+msgid "BOM All Levels Summarized"
+msgstr "要約されたBOMのすべてのレベル"
+
+#. module: plm_report_language_helper
+#: model:ir.model.fields.selection,name:plm_report_language_helper.selection__plm_bomchoselanguage__bom_type__plm_report_plm_bom_structure_one
+msgid "BOM One Level"
+msgstr "BOMワンレベル"
+
+#. module: plm_report_language_helper
+#: model:ir.model.fields.selection,name:plm_report_language_helper.selection__plm_bomchoselanguage__bom_type__plm_report_plm_bom_structure_one_sum
+msgid "BOM One Level Summarized"
+msgstr "BOMの1つのレベルの要約"
+
+#. module: plm_report_language_helper
+#: model:ir.model.fields.selection,name:plm_report_language_helper.selection__plm_bomchoselanguage__bom_type__plm_report_plm_bom_structure_leaves
+msgid "BOM Only Leaves Summarized"
+msgstr "BOMは要約されたままにするだけです"
+
+#. module: plm_report_language_helper
+#: code:addons/plm_report_language_helper/wizard/wizard.py:0
+#: model:ir.model.fields,field_description:plm_report_language_helper.field_plm_bomchoselanguage__bom_type
+#, python-format
+msgid "Bom Report Type"
+msgstr "部品表レポートタイプ"
+
+#. module: plm_report_language_helper
+#: model_terms:ir.ui.view,arch_db:plm_report_language_helper.plm_bomchoselanguage_form
+#: model_terms:ir.ui.view,arch_db:plm_report_language_helper.plm_sparechoselanguage_form
+msgid "Cancel"
+msgstr "キャンセル"
+
+#. module: plm_report_language_helper
+#: code:addons/plm_report_language_helper/wizard/wizard.py:0
+#: model:ir.model.fields,help:plm_report_language_helper.field_plm_bomchoselanguage__bom_type
+#, python-format
+msgid "Chose the Bom report you would like to print"
+msgstr "印刷したいBomレポートを選択します"
+
+#. module: plm_report_language_helper
+#: model:ir.actions.act_window,name:plm_report_language_helper.act_plm_print_boms
+msgid "Create Boms Report"
+msgstr "Bomsレポートを作成する"
+
+#. module: plm_report_language_helper
+#: model:ir.actions.act_window,name:plm_report_language_helper.act_plm_print_spare_bom
+msgid "Create Report Spare Bom"
+msgstr "レポートを作成する予備のBom"
+
+#. module: plm_report_language_helper
+#: model_terms:ir.ui.view,arch_db:plm_report_language_helper.plm_bomchoselanguage_form
+#: model_terms:ir.ui.view,arch_db:plm_report_language_helper.plm_sparechoselanguage_form
+msgid "Create Spare Report"
+msgstr "スペアレポートを作成する"
+
+#. module: plm_report_language_helper
+#: model:ir.model.fields,field_description:plm_report_language_helper.field_plm_bomchoselanguage__create_uid
+#: model:ir.model.fields,field_description:plm_report_language_helper.field_plm_sparechoselanguage__create_uid
+msgid "Created by"
+msgstr "によって作成された"
+
+#. module: plm_report_language_helper
+#: model:ir.model.fields,field_description:plm_report_language_helper.field_plm_bomchoselanguage__create_date
+#: model:ir.model.fields,field_description:plm_report_language_helper.field_plm_sparechoselanguage__create_date
+msgid "Created on"
+msgstr "で作成されました"
+
+#. module: plm_report_language_helper
+#: model_terms:ir.ui.view,arch_db:plm_report_language_helper.plm_bomchoselanguage_form
+#: model_terms:ir.ui.view,arch_db:plm_report_language_helper.plm_sparechoselanguage_form
+msgid "Creation of Spare Bom"
+msgstr "スペアの作成Bom"
+
+#. module: plm_report_language_helper
+#: model:ir.model.fields,field_description:plm_report_language_helper.field_plm_bomchoselanguage__display_name
+#: model:ir.model.fields,field_description:plm_report_language_helper.field_plm_sparechoselanguage__display_name
+msgid "Display Name"
+msgstr "表示名"
+
+#. module: plm_report_language_helper
+#: code:addons/plm_report_language_helper/wizard/wizard.py:0
+#: model:ir.model.fields,field_description:plm_report_language_helper.field_plm_bomchoselanguage__datas
+#: model:ir.model.fields,field_description:plm_report_language_helper.field_plm_sparechoselanguage__datas
+#, python-format
+msgid "Download"
+msgstr "ダウンロード"
+
+#. module: plm_report_language_helper
+#: code:addons/plm_report_language_helper/wizard/wizard.py:0
+#: model:ir.model.fields,field_description:plm_report_language_helper.field_plm_bomchoselanguage__datas_name
+#: model:ir.model.fields,field_description:plm_report_language_helper.field_plm_sparechoselanguage__datas_name
+#, python-format
+msgid "Download file name "
+msgstr "ファイル名をダウンロード "
+
+#. module: plm_report_language_helper
+#: model_terms:ir.ui.view,arch_db:plm_report_language_helper.plm_sparechoselanguage_form
+msgid "First Level"
+msgstr "ファーストレベル"
+
+#. module: plm_report_language_helper
+#: model:ir.model.fields,field_description:plm_report_language_helper.field_plm_bomchoselanguage__id
+#: model:ir.model.fields,field_description:plm_report_language_helper.field_plm_sparechoselanguage__id
+msgid "ID"
+msgstr "ID"
+
+#. module: plm_report_language_helper
+#: model:ir.model.fields,help:plm_report_language_helper.field_plm_sparechoselanguage__onelevel
+msgid "If you check this box, the report will be made in one level"
+msgstr ""
+"このチェックボックスをオンにすると、レポートは1つのレベルで作成されます"
+
+#. module: plm_report_language_helper
+#: code:addons/plm_report_language_helper/wizard/wizard.py:0
+#: model:ir.model.fields,field_description:plm_report_language_helper.field_plm_bomchoselanguage__lang
+#: model:ir.model.fields,field_description:plm_report_language_helper.field_plm_sparechoselanguage__lang
+#: model_terms:ir.ui.view,arch_db:plm_report_language_helper.plm_bomchoselanguage_form
+#: model_terms:ir.ui.view,arch_db:plm_report_language_helper.plm_sparechoselanguage_form
+#, python-format
+msgid "Language"
+msgstr "言語"
+
+#. module: plm_report_language_helper
+#: model:ir.model.fields,field_description:plm_report_language_helper.field_plm_bomchoselanguage____last_update
+#: model:ir.model.fields,field_description:plm_report_language_helper.field_plm_sparechoselanguage____last_update
+msgid "Last Modified on"
+msgstr "最終更新日オン"
+
+#. module: plm_report_language_helper
+#: model:ir.model.fields,field_description:plm_report_language_helper.field_plm_bomchoselanguage__write_uid
+#: model:ir.model.fields,field_description:plm_report_language_helper.field_plm_sparechoselanguage__write_uid
+msgid "Last Updated by"
+msgstr "最終更新バイ"
+
+#. module: plm_report_language_helper
+#: model:ir.model.fields,field_description:plm_report_language_helper.field_plm_bomchoselanguage__write_date
+#: model:ir.model.fields,field_description:plm_report_language_helper.field_plm_sparechoselanguage__write_date
+msgid "Last Updated on"
+msgstr "最終更新オン"
+
+#. module: plm_report_language_helper
+#: model:ir.model,name:plm_report_language_helper.model_plm_bomchoselanguage
+msgid ""
+"Module for extending the functionality of printing bom reports in a multi "
+"language environment"
+msgstr "多言語環境でbomレポートを印刷する機能を拡張するためのモジュール"
+
+#. module: plm_report_language_helper
+#: model:ir.model,name:plm_report_language_helper.model_plm_sparechoselanguage
+msgid ""
+"Module for extending the functionality of printing spare_bom reports in a "
+"multi language environment"
+msgstr ""
+"多言語環境で予備の_bomレポートを印刷する機能を拡張するためのモジュール"
+
+#. module: plm_report_language_helper
+#: model:ir.model.fields,field_description:plm_report_language_helper.field_plm_sparechoselanguage__onelevel
+msgid "One Level"
+msgstr "ワンレベル"
+
+#. module: plm_report_language_helper
+#: model_terms:ir.ui.view,arch_db:plm_report_language_helper.plm_bomchoselanguage_form
+msgid "Print Bom Type"
+msgstr "部品表タイプを印刷"
+
+#. module: plm_report_language_helper
+#: code:addons/plm_report_language_helper/wizard/wizard.py:0
+#, python-format
+msgid "Select a language"
+msgstr "言語を選択する"
