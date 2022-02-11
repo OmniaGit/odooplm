@@ -20,7 +20,7 @@
 ##############################################################################
 {
     "name": "PLM Project",
-    "version": "15.0.2",
+    "version": "15.0.3",
     "author": "OmniaSolutions",
     "website": "https://github.com/OmniaGit/odooplm",
     "category": "Product Lifecycle Management",
