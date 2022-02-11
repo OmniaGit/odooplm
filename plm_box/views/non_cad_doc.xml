@@ -125,20 +125,19 @@
         sequence="20"
         parent="plm.ir_attachment_form"/>
         
-        <!--
-        <record id="view_stock_config_settings_custom" model="ir.ui.view">
-            <field name="name">stock.config.settings.custom</field>
-            <field name="model">stock.config.settings</field>
-            <field name="inherit_id" ref="stock.view_stock_config_settings"/>
-            <field name="type">form</field>
-        	<field name="priority" eval="10"/>
-            <field name="arch" type="xml">
-            <field name="module_quality" position="after">
-            	<label for="module_stock_plm_box"/>
-                <field name="module_stock_plm_box"/>
-            </field>
-            </field>
-        </record>
-        -->
+    <record model="ir.ui.view" id="plm_box_search">
+        <field name="name">plm.box.search</field>
+        <field name="model">plm.box</field>
+        <field name="type">search</field>
+        <field name="priority" eval="15"/>
+        <field name="arch" type="xml">
+            <search string="Box">
+                <separator orientation="vertical"/>
+                	<field name="name" />
+                    <field name="description" />
+                    <field name="version" />
+            </search>
+        </field>
+    </record>
 </data>
 </openerp>
