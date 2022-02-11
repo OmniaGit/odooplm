@@ -20,13 +20,13 @@
 ##############################################################################
 {
     "name": "Product Lifecycle Management Batch conversion",
-    "version": "15.0.1",
+    "version": "15.0.2",
     "author": "OmniaSolutions",
     "website": "https://github.com/OmniaGit/odooplm",
     "category": "Product Lifecycle Management",
     "sequence": 15,
     "license": "AGPL-3",
-    "summary": "PLM Integration with main CAD editors batch conversion tool",
+    "summary": "CAD editors batch conversion tool",
     "depends": ["plm"],
     "data": [  # security
         "security/plm_security.xml",

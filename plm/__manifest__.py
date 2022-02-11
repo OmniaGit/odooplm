@@ -20,14 +20,14 @@
 ##############################################################################
 {
     "name": "Product Lifecycle Management",
-    "version": "15.0.1",
+    "version": "15.0.3",
     "author": "OmniaSolutions",
     "website": "https://github.com/OmniaGit/odooplm",
     "category": "Manufacturing/Product Lifecycle Management",
     "live_test_url": "https://www.v15.odooplm.cloud/",
     "sequence": 15,
     "license": "LGPL-3",
-    "summary": "PLM Integration with main CAD editors",
+    "summary": "PLM-PDM Integration with main CAD editors (SolidWorks, SolidEdge, Inventor, Autocad, Thinkdesign, Freecad)",
     "images": ["static/img/odoo_plm.png"],
     "depends": ["base", "board", "product", "mrp"],
     "data": [
@@ -66,6 +66,8 @@
         "report/component_report.xml",
         "report/document_report.xml",
     ],
+    "assets": {
+        "web.assets_backend": ["plm/static/src/css/component_kanban.css"]},
     "qweb": [],
     "demo": [],
     "test": [],
