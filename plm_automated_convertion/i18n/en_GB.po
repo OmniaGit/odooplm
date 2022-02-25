@@ -1,0 +1,140 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* plm_automated_convertion
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 15.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-02-02 09:32+0000\n"
+"PO-Revision-Date: 2022-02-02 10:34+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: en_GB\n"
+"X-Generator: Poedit 2.0.6\n"
+
+#. module: plm_automated_convertion
+#: model:ir.model,name:plm_automated_convertion.model_ir_attachment
+msgid "Attachment"
+msgstr "Attachment"
+
+#. module: plm_automated_convertion
+#: model_terms:ir.ui.view,arch_db:plm_automated_convertion.act_plm_convert_form
+msgid "Cancel"
+msgstr "Cancel"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert__targetFormat
+msgid "Conversion Format"
+msgstr "Conversion Format"
+
+#. module: plm_automated_convertion
+#: model_terms:ir.ui.view,arch_db:plm_automated_convertion.plm_batch_convertion_ir_attachment
+msgid "Convert"
+msgstr "Convert"
+
+#. module: plm_automated_convertion
+#: model:ir.actions.act_window,name:plm_automated_convertion.act_view_doc_convert
+msgid "Convert File"
+msgstr "Convert File"
+
+#. module: plm_automated_convertion
+#: model_terms:ir.ui.view,arch_db:plm_automated_convertion.act_plm_convert_form
+msgid "Convert Form"
+msgstr "Convert Form"
+
+#. module: plm_automated_convertion
+#: model_terms:ir.ui.view,arch_db:plm_automated_convertion.act_plm_convert_form
+msgid "Convert and Downlaod"
+msgstr "Convert and Downlaod"
+
+#. module: plm_automated_convertion
+#: model_terms:ir.ui.view,arch_db:plm_automated_convertion.act_plm_convert_form
+msgid "Convert to folder"
+msgstr "Convert to folder"
+
+#. module: plm_automated_convertion
+#: model_terms:ir.ui.view,arch_db:plm_automated_convertion.act_plm_convert_form
+msgid "Converted File"
+msgstr "Converted File"
+
+#. module: plm_automated_convertion
+#: model_terms:ir.ui.view,arch_db:plm_automated_convertion.act_plm_convert_form
+msgid "Convertion Format"
+msgstr "Convertion Format"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert__create_uid
+msgid "Created by"
+msgstr "Created by"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert__create_date
+msgid "Created on"
+msgstr "Created on"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert__display_name
+msgid "Display Name"
+msgstr "Display Name"
+
+#. module: plm_automated_convertion
+#: model_terms:ir.ui.view,arch_db:plm_automated_convertion.act_plm_convert_form
+msgid "Documento Origine"
+msgstr "Documento Origine"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert__downloadDatas
+msgid "Download"
+msgstr "Download"
+
+#. module: plm_automated_convertion
+#: code:addons/plm_automated_convertion/modules/plm_temporary.py:0
+#, python-format
+msgid "File Converted"
+msgstr "File Converted"
+
+#. module: plm_automated_convertion
+#: code:addons/plm_automated_convertion/modules/plm_temporary.py:0
+#, python-format
+msgid "File Converted check the shared folder"
+msgstr "File Converted check the shared folder"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert__id
+msgid "ID"
+msgstr "ID"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert____last_update
+msgid "Last Modified on"
+msgstr "Last Modified on"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert__write_uid
+msgid "Last Updated by"
+msgstr "Last Updated by"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert__write_date
+msgid "Last Updated on"
+msgstr "Last Updated on"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert__datas_fname
+msgid "New File name"
+msgstr "New File name"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert__document_id
+msgid "Related Document"
+msgstr "Related Document"
+
+#. module: plm_automated_convertion
+#: model:ir.model,name:plm_automated_convertion.model_plm_convert
+msgid "Temp Class for batch converter"
+msgstr "Temp Class for batch converter"

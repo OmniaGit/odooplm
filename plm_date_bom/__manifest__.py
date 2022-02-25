@@ -20,7 +20,7 @@
 ##############################################################################
 {
     "name": "PLM Date Bom",
-    "version": "15.0.2",
+    "version": "15.0.3",
     "author": "OmniaSolutions",
     "license": "AGPL-3",
     "website": "https://github.com/OmniaGit/odooplm",

@@ -1,0 +1,372 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* plm_pack_and_go
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 15.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-02-07 16:34+0000\n"
+"PO-Revision-Date: 2022-02-07 17:48+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: ja_JP\n"
+"X-Generator: Poedit 2.0.6\n"
+
+#. module: plm_pack_and_go
+#: code:addons/plm_pack_and_go/wizard/pack_and_go_wizard.py:0
+#: model:ir.model.fields.selection,name:plm_pack_and_go.selection__pack_and_go__export_type__2d
+#: model:ir.model.fields.selection,name:plm_pack_and_go.selection__pack_and_go_view__doc_type__2d
+#: model_terms:ir.ui.view,arch_db:plm_pack_and_go.act_plm_pack_and_go
+#, python-format
+msgid "2D"
+msgstr "2D"
+
+#. module: plm_pack_and_go
+#: code:addons/plm_pack_and_go/wizard/pack_and_go_wizard.py:0
+#: model:ir.model.fields.selection,name:plm_pack_and_go.selection__pack_and_go__export_type__all
+#, python-format
+msgid "2D + 3D + PDF"
+msgstr "2D + 3D + PDF"
+
+#. module: plm_pack_and_go
+#: code:addons/plm_pack_and_go/wizard/pack_and_go_wizard.py:0
+#: model:ir.model.fields.selection,name:plm_pack_and_go.selection__pack_and_go__export_type__2dpdf
+#, python-format
+msgid "2D + PDF"
+msgstr "2D + PDF"
+
+#. module: plm_pack_and_go
+#: code:addons/plm_pack_and_go/wizard/pack_and_go_wizard.py:0
+#: model:ir.model.fields.selection,name:plm_pack_and_go.selection__pack_and_go__export_type__3d
+#: model:ir.model.fields.selection,name:plm_pack_and_go.selection__pack_and_go_view__doc_type__3d
+#: model_terms:ir.ui.view,arch_db:plm_pack_and_go.act_plm_pack_and_go
+#, python-format
+msgid "3D"
+msgstr "3D"
+
+#. module: plm_pack_and_go
+#: code:addons/plm_pack_and_go/wizard/pack_and_go_wizard.py:0
+#: model:ir.model.fields.selection,name:plm_pack_and_go.selection__pack_and_go__export_type__3d2d
+#, python-format
+msgid "3D + 2D"
+msgstr "3D + 2D"
+
+#. module: plm_pack_and_go
+#: code:addons/plm_pack_and_go/wizard/pack_and_go_wizard.py:0
+#: model:ir.model.fields.selection,name:plm_pack_and_go.selection__pack_and_go__export_type__3dpdf
+#, python-format
+msgid "3D + PDF"
+msgstr "3D + PDF"
+
+#. module: plm_pack_and_go
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go__name
+msgid "Attachment Name"
+msgstr "添付ファイル名"
+
+#. module: plm_pack_and_go
+#: model_terms:ir.ui.view,arch_db:plm_pack_and_go.act_plm_pack_and_go
+msgid "Cancel"
+msgstr "キャンセル"
+
+#. module: plm_pack_and_go
+#: model_terms:ir.ui.view,arch_db:plm_pack_and_go.act_plm_pack_and_go
+msgid "Clear"
+msgstr "クリア"
+
+#. module: plm_pack_and_go
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_view__comp_description
+msgid "Comp Description"
+msgstr "コンプの説明"
+
+#. module: plm_pack_and_go
+#: code:addons/plm_pack_and_go/wizard/pack_and_go_wizard.py:0
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go__component_id
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_view__component_id
+#, python-format
+msgid "Component"
+msgstr "成分"
+
+#. module: plm_pack_and_go
+#: code:addons/plm_pack_and_go/wizard/pack_and_go_wizard.py:0
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_view__comp_rev
+#, python-format
+msgid "Component Revision"
+msgstr "コンポーネントの改訂"
+
+#. module: plm_pack_and_go
+#: model_terms:ir.ui.view,arch_db:plm_pack_and_go.act_plm_pack_and_go
+msgid "Compute Bom"
+msgstr "計算Bom"
+
+#. module: plm_pack_and_go
+#: code:addons/plm_pack_and_go/wizard/pack_and_go_wizard.py:0
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go__convertion_server_available
+#, python-format
+msgid "Conversion server available"
+msgstr "利用可能な変換サーバー"
+
+#. module: plm_pack_and_go
+#: model_terms:ir.ui.view,arch_db:plm_pack_and_go.act_plm_pack_and_go
+msgid "Create zip archive"
+msgstr "Zipアーカイブを作成する"
+
+#. module: plm_pack_and_go
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go__create_uid
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_types__create_uid
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_view__create_uid
+msgid "Created by"
+msgstr "によって作成された"
+
+#. module: plm_pack_and_go
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go__create_date
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_types__create_date
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_view__create_date
+msgid "Created on"
+msgstr "で作成されました"
+
+#. module: plm_pack_and_go
+#: model:ir.model,name:plm_pack_and_go.model_pack_and_go_types
+msgid "Description of pack and go"
+msgstr "パックアンドゴーの説明"
+
+#. module: plm_pack_and_go
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go__display_name
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_types__display_name
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_view__display_name
+msgid "Display Name"
+msgstr "表示名"
+
+#. module: plm_pack_and_go
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_view__doc_file_name
+msgid "Doc File Name"
+msgstr "ドキュメントファイル名"
+
+#. module: plm_pack_and_go
+#: code:addons/plm_pack_and_go/wizard/pack_and_go_wizard.py:0
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_view__document_id
+#, python-format
+msgid "Document"
+msgstr "資料"
+
+#. module: plm_pack_and_go
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_view__document_description
+msgid "Document Description"
+msgstr "ドキュメントの説明"
+
+#. module: plm_pack_and_go
+#: code:addons/plm_pack_and_go/wizard/pack_and_go_wizard.py:0
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_view__doc_rev
+#, python-format
+msgid "Document Revision"
+msgstr "ドキュメントの改訂"
+
+#. module: plm_pack_and_go
+#: code:addons/plm_pack_and_go/wizard/pack_and_go_wizard.py:0
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_view__doc_type
+#, python-format
+msgid "Document Type"
+msgstr "ドキュメントタイプ"
+
+#. module: plm_pack_and_go
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go__datas
+msgid "Download"
+msgstr "ダウンロード"
+
+#. module: plm_pack_and_go
+#: model_terms:ir.ui.view,arch_db:plm_pack_and_go.act_plm_pack_and_go
+msgid "Export Form"
+msgstr "エクスポートフォーム"
+
+#. module: plm_pack_and_go
+#: code:addons/plm_pack_and_go/wizard/pack_and_go_wizard.py:0
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go__export_type
+#, python-format
+msgid "Export Type"
+msgstr "エクスポートタイプ"
+
+#. module: plm_pack_and_go
+#: model:ir.model.fields.selection,name:plm_pack_and_go.selection__pack_and_go__type__binary
+msgid "File"
+msgstr "ファイル"
+
+#. module: plm_pack_and_go
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go__datas_fname
+msgid "File Name"
+msgstr "ファイル名"
+
+#. module: plm_pack_and_go
+#: code:addons/plm_pack_and_go/wizard/pack_and_go_wizard.py:0
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go__force_types_2d
+#, python-format
+msgid "Force 2D Types"
+msgstr "2Dタイプを強制する"
+
+#. module: plm_pack_and_go
+#: code:addons/plm_pack_and_go/wizard/pack_and_go_wizard.py:0
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go__force_types_3d
+#, python-format
+msgid "Force 3D Types"
+msgstr "3Dタイプを強制する"
+
+#. module: plm_pack_and_go
+#: model_terms:ir.ui.view,arch_db:plm_pack_and_go.act_plm_pack_and_go
+msgid "Force Types"
+msgstr "フォースタイプ"
+
+#. module: plm_pack_and_go
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go__id
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_types__id
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_view__id
+msgid "ID"
+msgstr "ID"
+
+#. module: plm_pack_and_go
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go____last_update
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_types____last_update
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_view____last_update
+msgid "Last Modified on"
+msgstr "最終変更時"
+
+#. module: plm_pack_and_go
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go__write_uid
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_types__write_uid
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_view__write_uid
+msgid "Last Updated by"
+msgstr "最終更新者"
+
+#. module: plm_pack_and_go
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go__write_date
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_types__write_date
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_view__write_date
+msgid "Last Updated on"
+msgstr "最終更新日"
+
+#. module: plm_pack_and_go
+#: model:ir.model,name:plm_pack_and_go.model_pack_and_go
+msgid "Main wizard collector for pack and go"
+msgstr "パックアンドゴーのメインウィザードコレクター"
+
+#. module: plm_pack_and_go
+#: model:ir.model,name:plm_pack_and_go.model_pack_and_go_view
+msgid "Manage pack view for exporting"
+msgstr "エクスポート用のパックビューを管理する"
+
+#. module: plm_pack_and_go
+#: code:addons/plm_pack_and_go/wizard/pack_and_go_wizard.py:0
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_types__name
+#, python-format
+msgid "Name"
+msgstr "名"
+
+#. module: plm_pack_and_go
+#: code:addons/plm_pack_and_go/wizard/pack_and_go_wizard.py:0
+#: model:ir.model.fields.selection,name:plm_pack_and_go.selection__pack_and_go_view__doc_type__other
+#: model_terms:ir.ui.view,arch_db:plm_pack_and_go.act_plm_pack_and_go
+#, python-format
+msgid "Other"
+msgstr "他の"
+
+#. module: plm_pack_and_go
+#: code:addons/plm_pack_and_go/wizard/pack_and_go_wizard.py:0
+#: model:ir.model.fields.selection,name:plm_pack_and_go.selection__pack_and_go__export_type__pdf
+#: model:ir.model.fields.selection,name:plm_pack_and_go.selection__pack_and_go_view__doc_type__pdf
+#: model_terms:ir.ui.view,arch_db:plm_pack_and_go.act_plm_pack_and_go
+#, python-format
+msgid "PDF"
+msgstr "PDF"
+
+#. module: plm_pack_and_go
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_types__pack_and_go_view_id
+msgid "Pack And Go View"
+msgstr "パックアンドゴービュー"
+
+#. module: plm_pack_and_go
+#: code:addons/plm_pack_and_go/wizard/pack_and_go_wizard.py:0
+#: model:ir.actions.act_window,name:plm_pack_and_go.act_pack_and_go_action
+#, python-format
+msgid "Pack and Go"
+msgstr "パックアンドゴー"
+
+#. module: plm_pack_and_go
+#: code:addons/plm_pack_and_go/wizard/pack_and_go_wizard.py:0
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_view__pack_and_go_id
+#, python-format
+msgid "Pack and go id"
+msgstr "パックアンドゴーid"
+
+#. module: plm_pack_and_go
+#: code:addons/plm_pack_and_go/wizard/pack_and_go_wizard.py:0
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_view__preview
+#, python-format
+msgid "Preview Content"
+msgstr "プレビューコンテンツ"
+
+#. module: plm_pack_and_go
+#: model:ir.model,name:plm_pack_and_go.model_product_product
+msgid "Product"
+msgstr "プロダクト"
+
+#. module: plm_pack_and_go
+#: code:addons/plm_pack_and_go/wizard/pack_and_go_wizard.py:0
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go__export_2d
+#, python-format
+msgid "Select 2D Rows to export"
+msgstr "エクスポートする2D行を選択してください"
+
+#. module: plm_pack_and_go
+#: code:addons/plm_pack_and_go/wizard/pack_and_go_wizard.py:0
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go__export_3d
+#, python-format
+msgid "Select 3D Rows to export"
+msgstr "エクスポートする3D行を選択してください"
+
+#. module: plm_pack_and_go
+#: code:addons/plm_pack_and_go/wizard/pack_and_go_wizard.py:0
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go__export_pdf
+#, python-format
+msgid "Select PDF Rows to export"
+msgstr "エクスポートするPDF行を選択"
+
+#. module: plm_pack_and_go
+#: code:addons/plm_pack_and_go/wizard/pack_and_go_wizard.py:0
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go__export_other
+#, python-format
+msgid "Select Rows to export"
+msgstr "エクスポートする行を選択してください"
+
+#. module: plm_pack_and_go
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go__type
+msgid "Type"
+msgstr "タイプ"
+
+#. module: plm_pack_and_go
+#: code:addons/plm_pack_and_go/wizard/pack_and_go_wizard.py:0
+#: model:ir.model.fields,field_description:plm_pack_and_go.field_pack_and_go_view__available_types
+#, python-format
+msgid "Types"
+msgstr "種類"
+
+#. module: plm_pack_and_go
+#: model:ir.model.fields.selection,name:plm_pack_and_go.selection__pack_and_go__type__url
+msgid "URL"
+msgstr "URL"
+
+#. module: plm_pack_and_go
+#: model:ir.model.fields,help:plm_pack_and_go.field_pack_and_go__type
+msgid ""
+"You can either upload a file from your computer or copy/paste an internet "
+"link to your file"
+msgstr ""
+"コンピューターからファイルをアップロードするか、インターネットリンクをコ"
+"ピーしてファイルに貼り付けることができます"
+
+#. module: plm_pack_and_go
+#: code:addons/plm_pack_and_go/wizard/pack_and_go_wizard.py:0
+#, python-format
+msgid "You have to select a force type before clicking."
+msgstr "クリックする前に、力のタイプを選択する必要があります."

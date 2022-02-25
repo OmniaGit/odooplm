@@ -888,6 +888,10 @@ class PlmDocument(models.Model):
             fields.extend(customFields)
             fields = list(set(fields))
             fields = self.plm_sanitize(fields)
+            ctx = self.env.context.copy()
+            plm_flag = ctx.get('odooPLM', False)
+            if plm_flag:
+                self = self.sudo()
             res = super(PlmDocument, self).read(fields=fields, load=load)
             res = self.readMany2oneFields(res, fields)
             return res

@@ -1,0 +1,150 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* plm_automatic_weight
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 15.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-02-02 10:38+0000\n"
+"PO-Revision-Date: 2022-02-02 11:43+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: en_GB\n"
+"X-Generator: Poedit 2.0.6\n"
+
+#. module: plm_automatic_weight
+#: code:addons/plm_automatic_weight/models/product_product.py:0
+#, python-format
+msgid "Additional Weight"
+msgstr "Additional Weight"
+
+#. module: plm_automatic_weight
+#: model:ir.model,name:plm_automatic_weight.model_mrp_bom
+msgid "Bill of Material"
+msgstr "Bill of Material"
+
+#. module: plm_automatic_weight
+#: code:addons/plm_automatic_weight/models/product_product.py:0
+#, python-format
+msgid "CAD Weight"
+msgstr "CAD Weight"
+
+#. module: plm_automatic_weight
+#: model:ir.actions.server,name:plm_automatic_weight.action_force_bom_weight_calculation
+msgid "Calculate Bom Weight"
+msgstr "Calculate Bom Weight"
+
+#. module: plm_automatic_weight
+#: model:ir.actions.server,name:plm_automatic_weight.action_bom_weight_computed
+msgid "Compute Bom Weight"
+msgstr "Compute Bom Weight"
+
+#. module: plm_automatic_weight
+#: model:ir.model.fields,help:plm_automatic_weight.field_product_product__automatic_compute_selection
+msgid ""
+"Imposta \"Usa Peso Netto\" per usare solo il peso netto. Imposta \"Usa Peso "
+"CAD\" per impostare il campo peso come somma dei campi \"Peso CAD\" e "
+"\"Peso Addizionale\". Imposta \"Usa Bom Normale\" per usare Peso NBOM "
+"Computato + Peso Addizionale come peso complessivo."
+msgstr ""
+"Set \"Use Net Weight\" to use only gross weight. Set \"Use CAD Weight\" to "
+"use CAD weight + Additional Weight as gross weight. Set \"Use Normal Bom\" "
+"to use NBOM Weight Computed + Additional weight as gross weight."
+
+#. module: plm_automatic_weight
+#: model:ir.model.fields,field_description:plm_automatic_weight.field_product_product__automatic_compute_selection
+msgid "Modalità Computazione Peso"
+msgstr "Weight Computing Mode"
+
+#. module: plm_automatic_weight
+#: code:addons/plm_automatic_weight/models/product_product.py:0
+#, python-format
+msgid "NBOM Weight Computed"
+msgstr "NBOM Weight Computed"
+
+#. module: plm_automatic_weight
+#: model:res.groups,name:plm_automatic_weight.group_plm_weight_admin
+msgid "PLM / Weight Admin"
+msgstr "PLM / Weight Admin"
+
+#. module: plm_automatic_weight
+#: model:ir.model.fields,field_description:plm_automatic_weight.field_product_product__weight_additional
+msgid "Peso Addizionale"
+msgstr "Additional Weight"
+
+#. module: plm_automatic_weight
+#: model:ir.model.fields,field_description:plm_automatic_weight.field_product_product__weight_cad
+msgid "Peso CAD"
+msgstr "CAD weight"
+
+#. module: plm_automatic_weight
+#: model:ir.model.fields,field_description:plm_automatic_weight.field_product_product__weight_n_bom_computed
+msgid "Peso NBOM Calcolato"
+msgstr "NBOM Weight Calculated"
+
+#. module: plm_automatic_weight
+#: model:ir.model,name:plm_automatic_weight.model_product_product
+msgid "Product"
+msgstr "Product"
+
+#. module: plm_automatic_weight
+#: code:addons/plm_automatic_weight/models/product_product.py:0
+#, python-format
+msgid ""
+"Set \"Use Net Weight\" to use only gross weight. Set \"Use CAD Weight\" to "
+"use CAD weight + Additional Weight as gross weight. Set \"Use Normal Bom\" "
+"to use NBOM Weight Computed + Additional weight as gross weight."
+msgstr ""
+"Set \"Use Net Weight\" to use only gross weight. Set \"Use CAD Weight\" to "
+"use CAD weight + Additional Weight as gross weight. Set \"Use Normal Bom\" "
+"to use NBOM Weight Computed + Additional weight as gross weight."
+
+#. module: plm_automatic_weight
+#: model:ir.model.fields.selection,name:plm_automatic_weight.selection__product_product__automatic_compute_selection__use_normal_bom
+msgid "Usa BOM Normale"
+msgstr "ProductUse Normal BOM"
+
+#. module: plm_automatic_weight
+#: model:ir.model.fields.selection,name:plm_automatic_weight.selection__product_product__automatic_compute_selection__use_cad
+msgid "Usa Peso CAD"
+msgstr "Use CAD Weight"
+
+#. module: plm_automatic_weight
+#: model:ir.model.fields.selection,name:plm_automatic_weight.selection__product_product__automatic_compute_selection__use_net
+msgid "Usa Peso Netto"
+msgstr "Use Net Weight"
+
+#. module: plm_automatic_weight
+#: code:addons/plm_automatic_weight/models/product_product.py:0
+#, python-format
+msgid "Use CAD Weight"
+msgstr "Use CAD Weight"
+
+#. module: plm_automatic_weight
+#: code:addons/plm_automatic_weight/models/product_product.py:0
+#, python-format
+msgid "Use Net Weight"
+msgstr "Use Net Weight"
+
+#. module: plm_automatic_weight
+#: code:addons/plm_automatic_weight/models/product_product.py:0
+#, python-format
+msgid "Use Normal Bom"
+msgstr "Use Normal Bom"
+
+#. module: plm_automatic_weight
+#: model_terms:ir.ui.view,arch_db:plm_automatic_weight.plm_component_base_form_extended_weight
+#: model_terms:ir.ui.view,arch_db:plm_automatic_weight.plm_product_product_normal_form_view_inherit_extended_weight
+msgid "Weight"
+msgstr "Weight"
+
+#. module: plm_automatic_weight
+#: code:addons/plm_automatic_weight/models/product_product.py:0
+#, python-format
+msgid "Weight compute mode"
+msgstr "Weight compute mode"

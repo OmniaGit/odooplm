@@ -1,0 +1,3544 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* plm
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 15.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-02-03 09:48+0000\n"
+"PO-Revision-Date: 2022-02-03 15:39+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: de\n"
+"X-Generator: Poedit 2.0.6\n"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid ""
+"\n"
+"\n"
+"Check-In All the document in order to proceed !!"
+msgstr ""
+"\n"
+"\n"
+"Checken Sie alle Dokumente ein, um fortzufahren !!"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid " (%r). It has tried to create with values : (%r)."
+msgstr " (%r). Es hat versucht, mit Werten zu schaffen : (%r)."
+
+#. module: plm
+#: code:addons/plm/models/report_on_document.py:0 model:ir.model.fields,field_description:plm.field_report_ir_attachment_file__nbr
+#, python-format
+msgid "# of Files"
+msgstr "# der Dateien"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0 model:ir.model.fields.selection,name:plm.selection__ir_attachment__document_type__2d
+#, python-format
+msgid "2D"
+msgstr "2D"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0 model:ir.model.fields.selection,name:plm.selection__ir_attachment__document_type__3d
+#, python-format
+msgid "3D"
+msgstr "3D"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_search_tooltip
+msgid "<b>Crate Date:</b>"
+msgstr "<b>Kistendatum:</b>"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_search_tooltip
+msgid "<b>Create User:</b>"
+msgstr "<b>Benutzer erstellen:</b>"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_search_tooltip
+msgid "<b>Document Information</b>"
+msgstr "<b>Dokumentinformationen</b>"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_search_tooltip
+msgid "<b>Last Write Date:</b>"
+msgstr "<b>Letztes Schreibdatum:</b>"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_search_tooltip
+msgid "<b>Last Write User:</b>"
+msgstr "<b>Letzter Schreibbenutzer:</b>"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_search_tooltip
+msgid "<b>State:</b>"
+msgstr "<b>Zustand:</b>"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "<span>Check-In</span>"
+msgstr "<span>Einchecken</span>"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "<span>Check-Out</span>"
+msgstr "<span>Auschecken</span>"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_kanban_view
+msgid ""
+"<strong>\n"
+"                                                        Description:\n"
+"                                                    </strong>"
+msgstr ""
+"<strong>\n"
+"                                                         Beschreibung:\n"
+"                                                    </strong>"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_kanban_view
+msgid ""
+"<strong>\n"
+"                                                        Revision:\n"
+"                                                    </strong>"
+msgstr ""
+"<strong>\n"
+"                                                        Überarbeitung:\n"
+"                                                    </strong>"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_kanban_view
+msgid ""
+"<strong>\n"
+"                                                        State:\n"
+"                                                    </strong>"
+msgstr ""
+"<strong>\n"
+"                                                        Zustand:\n"
+"                                                    </strong>"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_kanban_view
+msgid "<strong>Name:</strong>"
+msgstr "<strong>Name:</strong>"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__message_needaction
+msgid "Action Needed"
+msgstr "Handlungsbedarf"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_action_plm_dbthread_tree
+msgid "Actions"
+msgstr "Aktionen"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_client_customprocedure
+msgid "Activate the PLM Client mapping"
+msgstr "Aktivieren Sie die PLM-Client-Zuordnung"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_project
+msgid "Activate the PLM Project connection"
+msgstr "Aktivieren Sie die PLM-Projektverbindung"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_automated_convertion
+msgid "Activate the server convertion tool"
+msgstr "Activate the server convertion tool"
+
+#. module: plm
+#: model:ir.model,name:plm.model_mail_activity_type
+msgid "Activity Type"
+msgstr "Aktivitätstyp"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Add a progress bar to check the progress of the project based on the status of the products"
+msgstr "Fügen Sie einen Fortschrittsbalken hinzu, um den Fortschritt des Projekts basierend auf dem Status der Produkte zu überprüfen"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_sale_fix
+msgid "Add plm groups permission to sale"
+msgstr "Plm-Gruppen-Berechtigung zum Verkauf hinzufügen"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid ""
+"Add the capability to update the manufacturing order from a revised BOM\n"
+"                                        <b>\n"
+"                                        ATTENTION !! This module depends on plm_mrp_bom_update from:\n"
+"                                        git clone -b 15.0 https://github.com/OmniaSolutions/odooAddons.git</b>"
+msgstr ""
+"Fügen Sie die Möglichkeit hinzu, den Fertigungsauftrag aus einer überarbeiteten Stückliste zu aktualisieren\n"
+"                                        <b>\n"
+"                                        AUFMERKSAMKEIT !! Dieses Modul hängt von plm_mrp_bom_update ab:\n"
+"                                        git clone -b 15.0 https://github.com/OmniaSolutions/odooAddons.git</b>"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid ""
+"Add the capability to use the PDF PLM document inside work order\n"
+"                                        ATTENTION !! This module work only for enterprise version because the mrp_workorder is in the enterprise version"
+msgstr ""
+"Fügen Sie die Möglichkeit hinzu, das PDF-PLM-Dokument innerhalb des Arbeitsauftrags zu verwenden\n"
+"                                        AUFMERKSAMKEIT !! Dieses Modul funktioniert nur für die Enterprise-Version, da mrp_workorder in der Enterprise-"
+"Version enthalten ist"
+
+#. module: plm
+#: model:res.groups,name:plm.group_plm_admin
+msgid "Administrator"
+msgstr "Administrator"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Advanced linking and organise your document with virtual box"
+msgstr "Erweitertes Verknüpfen und Organisieren Ihres Dokuments mit Virtual Box"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid ""
+"Advanced way to save and synchronize PLM document to improve open and save operation for pour connection bandwidth\n"
+"                                    To make it work you need to install a file server application   \"mirror_document_server\""
+msgstr ""
+"Erweiterte Möglichkeit zum Speichern und Synchronisieren von PLM-Dokumenten, um den Öffnungs- und Speichervorgang für die Bandbreite der Verbindung zu "
+"verbessern\n"
+"\t\t\t\tDamit es funktioniert, müssen Sie eine Dateiserveranwendung \"mirror_document_server\" installieren\""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid ""
+"Allow converting files in different format. \n"
+"                                    In order to make it run you will need the convertion sarver provided by OmniaSolutions."
+msgstr ""
+"Ermöglicht das Konvertieren von Dateien in ein anderes Format. \n"
+"                                    Um es auszuführen, benötigen Sie den von Omnia Solutions bereitgestellten Konvertierungsserver."
+
+#. module: plm
+#: code:addons/plm/models/res_config_settings.py:0
+#, python-format
+msgid "Allow to create normal BOM if not exists and product are released."
+msgstr "Normale Stückliste erstellen, falls nicht vorhanden und Produkt freigegeben."
+
+#. module: plm
+#: code:addons/plm/models/plm_descriptions.py:0 model:ir.model.fields,help:plm.field_plm_description__fmtend
+#, python-format
+msgid "Allow to represent a normalized composition of technical features : %s%s allows to build chained values."
+msgstr "Ermöglicht die Darstellung einer normalisierten Zusammensetzung technischer Merkmale: %s%s ermöglicht die Erstellung verketteter Werte."
+
+#. module: plm
+#: code:addons/plm/models/plm_descriptions.py:0 model:ir.model.fields,help:plm.field_plm_description__fmt1
+#: model:ir.model.fields,help:plm.field_plm_description__fmt2 model:ir.model.fields,help:plm.field_plm_description__fmt3
+#, python-format
+msgid "Allow to represent the measure: %s%s allow to build um and value, %s builds only value, none builds only value."
+msgstr "Darstellen des Maßes zulassen: %s%s erlauben, um und Wert aufzubauen, %s baut nur Wert, keine baut nur Wert."
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Allow to select only product that have engineering_code and is in the latest revision for Manufacturing"
+msgstr "Nur Produkte auswählen, die engineering_code haben und sich in der neuesten Revision für die Fertigung befinden"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Allow to select only product that have engineering_code and is in the latest revision for Purchase"
+msgstr "Nur Produkte auswählen, die engineering_code haben und sich in der neuesten Version zum Kauf befinden"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Allow to select only product that have not engineering_code or is in the latest revision for Purchase"
+msgstr "Allow to select only product that have not engineering_code or is in the latest revision for Purchase"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Allow to specifiy a unit measure for the third feature."
+msgstr "Ermöglicht die Angabe einer Maßeinheit für das dritte Merkmal."
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Allow to specify a unit measure for the first feature."
+msgstr "Ermöglicht die Angabe einer Maßeinheit für das erste Merkmal."
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Allow to specify a unit measure for the second feature."
+msgstr "Ermöglicht die Angabe einer Maßeinheit für das zweite Merkmal."
+
+#. module: plm
+#: code:addons/plm/models/plm_descriptions.py:0 model:ir.model.fields,help:plm.field_plm_description__umc1
+#: model:ir.model.fields,help:plm.field_plm_description__umc2 model:ir.model.fields,help:plm.field_plm_description__umc3
+#, python-format
+msgid "Allow to specify a unit measure or a label for the feature."
+msgstr "Allow to specify a unit measure or a label for the feature."
+
+#. module: plm
+#: code:addons/plm/models/res_config_settings.py:0
+#, python-format
+msgid "Allow to use engineering BOM"
+msgstr "Verwendung der Konstruktionsstückliste zulassen"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Allows view and/or update obsoleted components in a Normal Bill Of Materials using released components."
+msgstr "Ermöglicht das Anzeigen und/oder Aktualisieren veralteter Komponenten in einer normalen Stückliste mit freigegebenen Komponenten."
+
+#. module: plm
+#: model:ir.model.fields.selection,name:plm.selection__ir_attachment__document_type__other
+msgid "Altro"
+msgstr "Andere"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__preview model:ir.model.fields,field_description:plm.field_mrp_document__preview
+#: model:ir.model.fields,field_description:plm.field_plm_checkout__preview
+msgid "Anteprima Contenuto"
+msgstr "Inhaltsvorschau"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_product_product__std_value1
+msgid "Assegna valore alla prima caratteristica."
+msgstr "Weisen Sie dem ersten Merkmal einen Wert zu."
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_product_product__std_value2 model:ir.model.fields,help:plm.field_product_product__std_value3
+msgid "Assegna valore alla seconda caratteristica."
+msgstr "Weisen Sie dem zweiten Merkmal einen Wert zu."
+
+#. module: plm
+#: code:addons/plm/models/plm_descriptions.py:0 model:ir.model.fields,help:plm.field_plm_description__sequence
+#, python-format
+msgid "Assign the sequence order when displaying a list of product categories."
+msgstr "Weisen Sie die Reihenfolge zu, wenn Sie eine Liste von Produktkategorien anzeigen."
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Assign value to the first characteristic."
+msgstr "Weisen Sie dem ersten Merkmal einen Wert zu."
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Assign value to the second characteristic."
+msgstr "Weisen Sie dem zweiten Merkmal einen Wert zu."
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "Attached To"
+msgstr "Angehängt an"
+
+#. module: plm
+#: model:ir.model,name:plm.model_ir_attachment model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "Attachment"
+msgstr "Dateianhang"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__message_attachment_count
+msgid "Attachment Count"
+msgstr "Anzahl der Anhänge"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__attachment_revision_count
+#: model:ir.model.fields,field_description:plm.field_mrp_document__attachment_revision_count
+msgid "Attachment Revision Count"
+msgstr "Revisionszähler für Anhänge"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0
+#, python-format
+msgid "Attachment Revs."
+msgstr "Anhang Rev."
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Automate the creation of normal bom with scheduled action"
+msgstr "Automatisieren Sie die Erstellung normaler Stücklisten mit geplanten Aktionen"
+
+#. module: plm
+#: code:addons/plm/models/res_config_settings.py:0
+#, python-format
+msgid "Automatic weight calculation"
+msgstr "Automatische Gewichtsberechnung"
+
+#. module: plm
+#: code:addons/plm/models/mrp_bom.py:0
+#, python-format
+msgid "B.O.M. Lines"
+msgstr "B.O.M. Linien"
+
+#. module: plm
+#: code:addons/plm/models/mrp_bom.py:0
+#, python-format
+msgid "B.O.M.S"
+msgstr "B.O.M.S"
+
+#. module: plm
+#: code:addons/plm/models/mrp_bom_line.py:0
+#, python-format
+msgid "B.o.M."
+msgstr "B.o.M."
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "BOM"
+msgstr "BOM"
+
+#. module: plm
+#: model:ir.actions.report,name:plm.report_plm_bom_structure_all
+msgid "BOM All Levels"
+msgstr "BOM Alle Ebenen"
+
+#. module: plm
+#: model:ir.actions.report,name:plm.report_plm_bom_structure_all_sum
+msgid "BOM All Levels Summarized"
+msgstr "BOM Alle Ebenen zusammengefasst"
+
+#. module: plm
+#: model:ir.actions.report,name:plm.report_plm_bom_structure_flat
+msgid "BOM Flat Summarized"
+msgstr "BOM Flach zusammengefasst"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.bom_structure_all
+msgid "BOM Name"
+msgstr "BOM Name"
+
+#. module: plm
+#: model:ir.actions.report,name:plm.report_plm_bom_structure_one
+msgid "BOM One Level"
+msgstr "BOM Ein Level"
+
+#. module: plm
+#: model:ir.actions.report,name:plm.report_plm_bom_structure_one_sum
+msgid "BOM One Level Summarized"
+msgstr "BOM Eine Ebene zusammengefasst"
+
+#. module: plm
+#: model:ir.actions.report,name:plm.report_plm_bom_structure_leaves
+msgid "BOM Only Leaves Summarize"
+msgstr "BOM Nur Blätter zusammenfassen"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_bom_form_view model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "BOM Rev."
+msgstr "BOM Rev."
+
+#. module: plm
+#: model:ir.model,name:plm.model_plm_backupdoc_wizard
+msgid "Back up document wizard"
+msgstr "Assistent zum Sichern von Dokumenten"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.action_plm_backupdoc
+msgid "Backup Data Set"
+msgstr "Backup-Datensatz"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open__plm_backup_doc_id
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open_bck__plm_backup_doc_id
+msgid "Backup Document Reference"
+msgstr "Sicherungsdokumentreferenz"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_backupdoc_search
+msgid "Backup Document Set"
+msgstr "Dokumentensatz sichern"
+
+#. module: plm
+#: model:ir.model,name:plm.model_base
+msgid "Base"
+msgstr "Basis"
+
+#. module: plm
+#: model:ir.model,name:plm.model_mrp_bom
+msgid "Bill of Material"
+msgstr "Stückliste"
+
+#. module: plm
+#: model:ir.model,name:plm.model_mrp_bom_line
+msgid "Bill of Material Line"
+msgstr "Stücklistenposition"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_bom_tree_structure
+msgid "Bill of Materials"
+msgstr "Stückliste"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.action2
+msgid "Bill of Materials Structure"
+msgstr "Struktur der Stückliste"
+
+#. module: plm
+#: code:addons/plm/models/mrp_bom.py:0 code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "BoM Hierarchy"
+msgstr "BoM-Hierarchie"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_mrp_bom__type model:ir.model.fields,field_description:plm.field_mrp_bom_line__type
+msgid "BoM Type"
+msgstr "Stücklisten Typ"
+
+#. module: plm
+#: model:ir.actions.report,name:plm.report_all_product_product_pdf
+msgid "Bom All Levels PDF Drawings"
+msgstr "Alle Ebenen PDF-Zeichnungen"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_mrp_bom_filter_inherit
+msgid "Bom Name"
+msgstr "Bom Name"
+
+#. module: plm
+#: model:ir.actions.report,name:plm.report_one_product_product_pdf
+msgid "Bom One Level PDF Drawings"
+msgstr "Bom PDF-Zeichnungen auf einer Ebene"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0 model:ir.model.fields,field_description:plm.field_plm_temporary_message__name
+#, python-format
+msgid "Bom Result"
+msgstr "Bom-Ergebnis"
+
+#. module: plm
+#: model:ir.model.fields.selection,name:plm.selection__ir_attachment__state__draft
+#: model:ir.model.fields.selection,name:plm.selection__product_template__state__draft
+msgid "Bozza"
+msgstr "Entwurf"
+
+#. module: plm
+#: code:addons/plm/models/mrp_bom_line.py:0
+#, python-format
+msgid "CAD Item Position"
+msgstr "Position des CAD-Elements"
+
+#. module: plm
+#: code:addons/plm/models/mrp_bom_line.py:0
+#, python-format
+msgid "CAD Item Position Label"
+msgstr "Positionsetikett für CAD-Artikel"
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.menu_cad_open
+msgid "CAD Opens"
+msgstr "CAD wird geöffnet"
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.menu_cad_open_bck
+msgid "CAD Opens Bck"
+msgstr "CAD öffnet Back"
+
+#. module: plm
+#: code:addons/plm/models/product_template.py:0
+#, python-format
+msgid "Cad Raw Material"
+msgstr "Cad-Rohstoff"
+
+#. module: plm
+#: code:addons/plm/models/product_template.py:0
+#, python-format
+msgid "Cad Surface Finishing"
+msgstr "Cad-Oberflächenveredelung"
+
+#. module: plm
+#: code:addons/plm/models/product_template.py:0
+#, python-format
+msgid "Cad Termic Treatment"
+msgstr "Cad Termic-Behandlung"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_automatic_weight
+msgid "Calcolo automatico del peso"
+msgstr "Automatische Gewichtsberechnung"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__sale_ok model:ir.model.fields,field_description:plm.field_product_template__sale_ok
+msgid "Can be Sold"
+msgstr "Kann verkauft werden"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.restore_document_button_view
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_checkout__hostpws
+msgid "Cartella PWS"
+msgstr "PWS-Ordner"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_component_base_form
+msgid "Category"
+msgstr "Kategorie"
+
+#. module: plm
+#: code:addons/plm/models/mail_activity_type.py:0 model:ir.model.fields,field_description:plm.field_mail_activity_type__change_activity_type
+#, python-format
+msgid "Change Activity Type"
+msgstr "Aktivitätstyp ändern"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search
+msgid "Changed By Me"
+msgstr "Von mir geändert"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search
+msgid "Changed by"
+msgstr "Geändert durch"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search
+msgid "Changed by Month"
+msgstr "Geändert nach Monat"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.action_plm_checkout
+msgid "Check-Out"
+msgstr "Auschecken"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_search_tooltip
+msgid "CheckIn"
+msgstr "Einchecken"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment_relations.py:0 model:ir.model.fields,field_description:plm.field_ir_attachment_relation__userid
+#, python-format
+msgid "CheckOut User"
+msgstr "Benutzer auschecken"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_search_tooltip
+msgid "CheckOut by me"
+msgstr "Auschecken von mir"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_search_button model_terms:ir.ui.view,arch_db:plm.document_search_tooltip
+msgid "CheckOutUser:"
+msgstr "AuscheckenBenutzer:"
+
+#. module: plm
+#: code:addons/plm/models/plm_checkout.py:0
+#, python-format
+msgid "Checked-In"
+msgstr "Eingecheckt"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search_bck
+#: model_terms:ir.ui.view,arch_db:plm.plm_checkout_search
+msgid "Checked-Out Document"
+msgstr "Ausgechecktes Dokument"
+
+#. module: plm
+#: code:addons/plm/models/plm_checkout.py:0
+#, python-format
+msgid "Checked-Out ID %r"
+msgstr "Ausgecheckte ID %r"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_backupdoc_search model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search_bck model_terms:ir.ui.view,arch_db:plm.plm_checkout_search
+msgid "Checked-Out Yesterday"
+msgstr "Gestern ausgecheckt"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_backupdoc_search model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search_bck model_terms:ir.ui.view,arch_db:plm.plm_checkout_search
+msgid "Checked-Out in last month"
+msgstr "Im letzten Monat ausgecheckt"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_backupdoc_search model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search_bck model_terms:ir.ui.view,arch_db:plm.plm_checkout_search
+msgid "Checked-Out in last week"
+msgstr "Letzte Woche ausgecheckt"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_backupdoc_search
+msgid "Checked-Out in latest 7 days"
+msgstr "In den letzten 7 Tagen ausgecheckt"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0
+#, python-format
+msgid "Checked-Out to"
+msgstr "Ausgecheckt nach"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_backupdoc_search model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search_bck model_terms:ir.ui.view,arch_db:plm.plm_checkout_search
+msgid "Checked-Out today"
+msgstr "Heute ausgecheckt"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_docbom_search
+msgid "Child"
+msgstr "Child"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment_relations.py:0 model:ir.model.fields,field_description:plm.field_ir_attachment_relation__child_preview
+#: model_terms:ir.ui.view,arch_db:plm.plm_docbom_form_view
+#, python-format
+msgid "Child Preview"
+msgstr "Untergeordnete Vorschau"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment_relations.py:0 model:ir.model.fields,field_description:plm.field_ir_attachment_relation__child_revision
+#, python-format
+msgid "Child Revision"
+msgstr "Untergeordnete Revision"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment_relations.py:0 model:ir.model.fields,field_description:plm.field_ir_attachment_relation__child_state
+#, python-format
+msgid "Child Status"
+msgstr "Kinderstatus"
+
+#. module: plm
+#: model:ir.model.fields.selection,name:plm.selection__mrp_bom_line__cutted_type__client model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Client"
+msgstr "Klient"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Code"
+msgstr "Code"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__is_engcode_editable
+#: model:ir.model.fields,field_description:plm.field_product_template__is_engcode_editable
+msgid "Codice Ingegneria Modificabile"
+msgstr "Modifizierbarer Engineering-Code"
+
+#. module: plm
+#: code:addons/plm/models/res_config_settings.py:0
+#, python-format
+msgid "Compare two BOM tool"
+msgstr "Vergleichen Sie zwei Stücklisten-Tools"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Compare two bom from the bom tree interface"
+msgstr "Vergleichen Sie zwei Boms aus der Bom Tree-Oberfläche"
+
+#. module: plm
+#: model:ir.model,name:plm.model_plm_component_document_rel
+msgid "Component Document Relations"
+msgstr "Beziehungen zwischen Komponentendokumenten"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.mrp_bom_tree_view_where model_terms:ir.ui.view,arch_db:plm.plm_bom_tree_structure
+msgid "Component Name"
+msgstr "Komponentenname"
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.plm_menu_relation
+msgid "Component Relations"
+msgstr "Komponentenbeziehungen"
+
+#. module: plm
+#: code:addons/plm/models/product_product_document_rel.py:0 model:ir.model.constraint,message:plm.constraint_plm_component_document_rel_relation_unique
+#, python-format
+msgid "Component and Document relation has to be unique !"
+msgstr "Komponenten- und Dokumentenbeziehung müssen eindeutig sein !"
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.plm_component_menu_view
+msgid "Components"
+msgstr "Komponenten"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Compute product weight due to Normal BOM calculation, using CAD weight or setting a custom weight."
+msgstr ""
+"Berechnen Sie das Produktgewicht aufgrund der normalen Stücklistenberechnung, indem Sie das CAD-Gewicht verwenden oder ein benutzerdefiniertes Gewicht "
+"festlegen."
+
+#. module: plm
+#: model:ir.model.fields.selection,name:plm.selection__ir_attachment__state__confirmed
+#: model:ir.model.fields.selection,name:plm.selection__product_template__state__confirmed
+msgid "Confermato"
+msgstr "Bestätigt"
+
+#. module: plm
+#: model:ir.model,name:plm.model_res_config_settings
+msgid "Config Settings"
+msgstr "Konfigurationseinstellungen"
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.plm_menu_dictionaries
+msgid "Configuration"
+msgstr "Konfiguration"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment_relations.py:0 model:ir.model.fields,field_description:plm.field_ir_attachment_relation__configuration
+#, python-format
+msgid "Configuration Name"
+msgstr "Konfigurationsname"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_product_product_normal_form_view_inherit
+msgid "Confirm Component"
+msgstr "Komponente bestätigen"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "Confirm Document"
+msgstr "Dokument bestätigen"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0 code:addons/plm/models/product_product.py:0 code:addons/plm/models/product_template.py:0
+#: model:ir.model.fields,field_description:plm.field_report_plmcomponent__count_component_confirmed
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search model_terms:ir.ui.view,arch_db:plm.plm_component_base_search
+#, python-format
+msgid "Confirmed"
+msgstr "Bestätigt"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_compare_bom
+msgid "Confronta due distinte"
+msgstr "Vergleichen Sie zwei Rechnungen"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_product_product__std_umc3
+msgid "Consente di specificare una unita' di misura per la terza caratteristica."
+msgstr "Ermöglicht die Angabe einer Maßeinheit für das dritte Merkmal."
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_product_product__std_umc1
+msgid "Consente di specificare una unità di misura per la prima caratteristica."
+msgstr "Ermöglicht die Angabe einer Mengeneinheit für das erste Merkmal."
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_product_product__std_umc2
+msgid "Consente di specificare una unità di misura per la seconda caratteristica."
+msgstr "Geben Sie für das zweite Merkmal eine Mengeneinheit an."
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_engineering
+msgid "Consente l'utilizzo della BOM di ingegneria"
+msgstr "Ermöglicht die Verwendung der Konstruktionsstückliste"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0 code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Copied starting from : %s."
+msgstr "Kopiert ab:% s."
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_product_product_normal_form_view_inherit
+msgid "Correct Component"
+msgstr "Korrekte Komponente"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "Correct Document"
+msgstr "Richtiges Dokument"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_template__standard_price
+msgid "Cost"
+msgstr "Kosten"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_product_template__standard_price
+msgid "Cost of the product, in the default unit of measure of the product."
+msgstr "Kosten des Produkts in der Standardmaßeinheit des Produkts."
+
+#. module: plm
+#: code:addons/plm/controllers/main.py:0
+#, python-format
+msgid "Could not select database '%s'"
+msgstr "Datenbank '%s' konnte nicht ausgewählt werden'"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_web_revision
+msgid "Crea nuova versione dall'interfaccia WEB"
+msgstr "Erstellen Sie eine neue Version über die WEB-Schnittstelle"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_backupdoc_search model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search_bck model_terms:ir.ui.view,arch_db:plm.plm_checkout_search
+msgid "Create by Month"
+msgstr "Nach Monat erstellen"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search
+msgid "Create by me"
+msgstr "Von mir erstellen"
+
+#. module: plm
+#: code:addons/plm/models/res_config_settings.py:0
+#, python-format
+msgid "Create new revision from WEB"
+msgstr "Neue Revision aus WEB erstellen"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0 code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Created : New Revision."
+msgstr "Erstellt: Neue Revision."
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Created Normal Bom."
+msgstr "Erstellen Sie normale BPM."
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment_relation__create_uid
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc__create_uid
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc_wizard__create_uid
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open__create_uid
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open_bck__create_uid
+#: model:ir.model.fields,field_description:plm.field_plm_checkout__create_uid model:ir.model.fields,field_description:plm.field_plm_client__create_uid
+#: model:ir.model.fields,field_description:plm.field_plm_component_document_rel__create_uid
+#: model:ir.model.fields,field_description:plm.field_plm_dbthread__create_uid
+#: model:ir.model.fields,field_description:plm.field_plm_description__create_uid
+#: model:ir.model.fields,field_description:plm.field_plm_finishing__create_uid model:ir.model.fields,field_description:plm.field_plm_material__create_uid
+#: model:ir.model.fields,field_description:plm.field_plm_temporary__create_uid
+#: model:ir.model.fields,field_description:plm.field_plm_temporary_message__create_uid
+#: model:ir.model.fields,field_description:plm.field_plm_treatment__create_uid model_terms:ir.ui.view,arch_db:plm.ir_attachment_search
+msgid "Created by"
+msgstr "Erstellt von"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search
+msgid "Created by Month"
+msgstr "Erstellt nach Monat"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_backupdoc_search model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search_bck model_terms:ir.ui.view,arch_db:plm.plm_checkout_search
+msgid "Created by me"
+msgstr "Von mir erstellt"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search
+msgid "Created last month"
+msgstr "Letzten Monat erstellt"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search model_terms:ir.ui.view,arch_db:plm.plm_docbom_search
+msgid "Created last week"
+msgstr "Letzte Woche erstellt"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_component_base_search model_terms:ir.ui.view,arch_db:plm.view_mrp_bom_filter_inherit
+msgid "Created latest 2 Weeks"
+msgstr "Erstellt in den letzten 2 Wochen"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search model_terms:ir.ui.view,arch_db:plm.plm_component_base_search
+#: model_terms:ir.ui.view,arch_db:plm.view_mrp_bom_filter_inherit
+msgid "Created latest 7 Days"
+msgstr "Erstellt in den letzten 7 Tagen"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc__create_date
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc_wizard__create_date
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open__create_date
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open_bck__create_date
+#: model:ir.model.fields,field_description:plm.field_plm_checkout__create_date model:ir.model.fields,field_description:plm.field_plm_client__create_date
+#: model:ir.model.fields,field_description:plm.field_plm_component_document_rel__create_date
+#: model:ir.model.fields,field_description:plm.field_plm_dbthread__create_date
+#: model:ir.model.fields,field_description:plm.field_plm_description__create_date
+#: model:ir.model.fields,field_description:plm.field_plm_finishing__create_date
+#: model:ir.model.fields,field_description:plm.field_plm_material__create_date
+#: model:ir.model.fields,field_description:plm.field_plm_temporary__create_date
+#: model:ir.model.fields,field_description:plm.field_plm_temporary_message__create_date
+#: model:ir.model.fields,field_description:plm.field_plm_treatment__create_date
+msgid "Created on"
+msgstr "Erstellt am"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search model_terms:ir.ui.view,arch_db:plm.plm_component_base_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_docbom_search model_terms:ir.ui.view,arch_db:plm.view_mrp_bom_filter_inherit
+msgid "Created today"
+msgstr "Heute erstellt"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search model_terms:ir.ui.view,arch_db:plm.plm_component_base_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_docbom_search model_terms:ir.ui.view,arch_db:plm.view_mrp_bom_filter_inherit
+msgid "Created yesterday"
+msgstr "Gestern erstellt"
+
+#. module: plm
+#: code:addons/plm/models/mrp_bom.py:0 code:addons/plm/models/mrp_bom_line.py:0
+#, python-format
+msgid "Creation Date"
+msgstr "Erstellungsdatum"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search
+msgid "Creation Month"
+msgstr "Schöpfungsmonat"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_backupdoc_search model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search_bck model_terms:ir.ui.view,arch_db:plm.plm_checkout_search
+msgid "Creator"
+msgstr "Schöpfer"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_automate_normal_bom
+msgid "Creazione della distinta normale se non esiste e il prodotto e' rilasciato"
+msgstr "Erstellung der normalen Rechnung, falls diese nicht vorhanden ist und das Produkt freigegeben wird"
+
+#. module: plm
+#: code:addons/plm/models/mrp_bom_line.py:0
+#, python-format
+msgid "Cutted Compute Type"
+msgstr "Cutted Compute Type"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.plm_action_plm_dbthread
+msgid "DB Thread Action"
+msgstr "DB-Thread-Aktion"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_mrp_bom__create_date model:ir.model.fields,field_description:plm.field_mrp_bom_line__create_date
+#: model:ir.model.fields,field_description:plm.field_product_product__create_date
+msgid "Data Creazione"
+msgstr "Datenerstellung"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__write_date
+msgid "Data Modifica"
+msgstr "Datum geändert"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__workflow_date
+#: model:ir.model.fields,field_description:plm.field_mrp_document__workflow_date
+#: model:ir.model.fields,field_description:plm.field_product_product__workflow_date
+msgid "Data e ora Ultimo WF"
+msgstr "Datum und Uhrzeit Letzte WF"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__revision_date
+#: model:ir.model.fields,field_description:plm.field_mrp_document__revision_date
+#: model:ir.model.fields,field_description:plm.field_product_product__revision_date
+msgid "Data e ora revisione"
+msgstr "Datum und Uhrzeit der Revision"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__attachment_release_date
+#: model:ir.model.fields,field_description:plm.field_mrp_document__attachment_release_date
+#: model:ir.model.fields,field_description:plm.field_product_product__release_date
+msgid "Data e ora rilascio"
+msgstr "Veröffentlichungsdatum und -uhrzeit"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment_relations.py:0 code:addons/plm/models/product_product.py:0
+#: model:ir.model.fields,field_description:plm.field_ir_attachment_relation__create_date
+#, python-format
+msgid "Date Created"
+msgstr "Datum erstellt"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Date Modified"
+msgstr "Date Modified"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0 code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Datetime Last Wkf"
+msgstr "DatumUhrzeit Letzte Wo"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0 code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Datetime Release"
+msgstr "Datetime-Veröffentlichung"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0 code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Datetime Revision"
+msgstr "Datetime-Überarbeitung"
+
+#. module: plm
+#: model:ir.model,name:plm.model_plm_dbthread
+msgid "Db Thread Saving Model"
+msgstr "Db-Thread-Speichermodell"
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.plm_dbthread_id
+msgid "DbThread"
+msgstr "Datenbankthread"
+
+#. module: plm
+#: code:addons/plm/models/mrp_bom.py:0 code:addons/plm/models/mrp_bom_line.py:0 code:addons/plm/models/plm_finishing.py:0
+#: code:addons/plm/models/plm_material.py:0 code:addons/plm/models/plm_treatment.py:0 code:addons/plm/models/product_product.py:0
+#: model:ir.model.fields,field_description:plm.field_plm_finishing__description
+#: model:ir.model.fields,field_description:plm.field_plm_material__description
+#: model:ir.model.fields,field_description:plm.field_plm_treatment__description model_terms:ir.ui.view,arch_db:plm.bom_structure_all
+#: model_terms:ir.ui.view,arch_db:plm.plm_component_base_form model_terms:ir.ui.view,arch_db:plm.view_plm_description
+#, python-format
+msgid "Description"
+msgstr "Beschreibung"
+
+#. module: plm
+#: code:addons/plm/models/plm_descriptions.py:0 model:ir.model.fields,field_description:plm.field_plm_description__description_en
+#, python-format
+msgid "Description English"
+msgstr "Beschreibung Englisch"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.plm_action_description_form model:ir.ui.menu,name:plm.menu_description
+#: model_terms:ir.ui.view,arch_db:plm.plm_view_description_tree
+msgid "Descriptions"
+msgstr "Beschreibungen"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_mrp_bom__description model:ir.model.fields,field_description:plm.field_mrp_bom_line__description
+msgid "Descrizione"
+msgstr "Beschreibung"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__desc_modify
+#: model:ir.model.fields,field_description:plm.field_mrp_document__desc_modify
+#: model:ir.model.fields,field_description:plm.field_product_product__desc_modify
+msgid "Descrizione Modifica"
+msgstr "Beschreibung Ändern"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__std_description
+msgid "Descrizione Standard"
+msgstr "Standardbeschreibung"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_product_description_language_helper
+msgid "Descrizione multilingua di prodotto"
+msgstr "Mehrsprachige Produktbeschreibung"
+
+#. module: plm
+#: code:addons/plm/models/plm_material.py:0 model:ir.model.fields,field_description:plm.field_plm_material__name
+#, python-format
+msgid "Designation"
+msgstr "Bezeichnung"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment_relation__display_name
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc__display_name
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc_wizard__display_name
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open__display_name
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open_bck__display_name
+#: model:ir.model.fields,field_description:plm.field_plm_checkout__display_name model:ir.model.fields,field_description:plm.field_plm_client__display_name
+#: model:ir.model.fields,field_description:plm.field_plm_component_document_rel__display_name
+#: model:ir.model.fields,field_description:plm.field_plm_dbthread__display_name
+#: model:ir.model.fields,field_description:plm.field_plm_description__display_name
+#: model:ir.model.fields,field_description:plm.field_plm_finishing__display_name
+#: model:ir.model.fields,field_description:plm.field_plm_material__display_name
+#: model:ir.model.fields,field_description:plm.field_plm_temporary__display_name
+#: model:ir.model.fields,field_description:plm.field_plm_temporary_message__display_name
+#: model:ir.model.fields,field_description:plm.field_plm_treatment__display_name
+#: model:ir.model.fields,field_description:plm.field_report_ir_attachment_file__display_name
+#: model:ir.model.fields,field_description:plm.field_report_plmcomponent__display_name
+msgid "Display Name"
+msgstr "Anzeigename"
+
+#. module: plm
+#: model:ir.model.fields.selection,name:plm.selection__mrp_bom__type__normal
+msgid "Distinta Normale"
+msgstr "Normale Rechnung"
+
+#. module: plm
+#: code:addons/plm/models/plm_backup_document.py:0 code:addons/plm/models/product_product.py:0 model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search_bck model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+#, python-format
+msgid "Document"
+msgstr "Dokumentieren"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Document %r : %r is checked out by user %r"
+msgstr "Dokument %r : %r wurde von Benutzer %r ausgecheckt"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Document %r with revision %r is in check-out, cannot create variant."
+msgstr "Dokument %r mit Revision %r ist ausgecheckt, Variante kann nicht erstellt werden."
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0
+#, python-format
+msgid "Document %r with revision %r not present in Odoo."
+msgstr "Document %r with revision %r not present in Odoo."
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0
+#, python-format
+msgid "Document Already in the system"
+msgstr "Dokument Bereits im System"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__engineering_document_name
+#: model:ir.model.fields,field_description:plm.field_mrp_document__engineering_document_name model_terms:ir.ui.view,arch_db:plm.plm_backupdoc_search
+msgid "Document Name"
+msgstr "Dokumentname"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__document_rel_count
+#: model:ir.model.fields,field_description:plm.field_mrp_document__document_rel_count
+msgid "Document Rel Count"
+msgstr "Dokumentrel.-Zähler"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_docbom_search
+msgid "Document Relation Kind"
+msgstr "Art der Dokumentenbeziehung"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.plm_action_document_relations model_terms:ir.ui.view,arch_db:plm.plm_docbom_tree_view
+msgid "Document Relations"
+msgstr "Dokumentenbeziehungen"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0
+#, python-format
+msgid "Document Type"
+msgstr "Dokumentenart"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0
+#, python-format
+msgid "Document in check-In unable to save!"
+msgstr "Dokument im Check-In kann nicht gespeichert werden!"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0
+#, python-format
+msgid "Document is Check-Out from User %r"
+msgstr "Dokument ist von Benutzer %r ausgecheckt"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0
+#, python-format
+msgid "Document is released and cannot be saved"
+msgstr "Dokument ist freigegeben und kann nicht gespeichert werden"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_dbthread__documement_name_version
+msgid "Document name and version"
+msgstr "Dokumentname und Version"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_search_tooltip
+msgid "Document released"
+msgstr "Dokument freigegeben"
+
+#. module: plm
+#: model:ir.model,name:plm.model_plm_checkout
+msgid "Document that are locked from someone"
+msgstr "Dokumente, die von jemandem gesperrt sind"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__linkeddocuments
+msgid "Documenti Collegati"
+msgstr "Verknüpfte Dokumente"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_mrp_bom_line__related_document_ids
+msgid "Documenti Relazionati"
+msgstr "Zugehörige Unterlagen"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_checkout__documentid
+msgid "Documento Relazionato"
+msgstr "Zugehöriges Dokument"
+
+#. module: plm
+#: code:addons/plm/models/mrp_bom_line.py:0 model:ir.actions.act_window,name:plm.plm_action_document_form model:ir.ui.menu,name:plm.ir_attachment_form
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search model_terms:ir.ui.view,arch_db:plm.ir_attachment_tree
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+#, python-format
+msgid "Documents"
+msgstr "Unterlagen"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_backupdoc_tree model_terms:ir.ui.view,arch_db:plm.plm_checkout_tree
+msgid "Documents in Check-Out"
+msgstr "Dokumente im Check-Out"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Download a zip file containing all documents/and printout attached to a product or BOM."
+msgstr "Laden Sie eine ZIP-Datei mit allen Dokumenten/und Ausdrucken herunter, die einem Produkt oder einer Stückliste beigefügt sind."
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0 code:addons/plm/models/product_product.py:0 code:addons/plm/models/product_template.py:0
+#: model:ir.model.fields,field_description:plm.field_report_plmcomponent__count_component_draft
+#, python-format
+msgid "Draft"
+msgstr "Entwurf"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__is_checkout
+#: model:ir.model.fields,field_description:plm.field_mrp_document__is_checkout
+msgid "E' in Check-Out"
+msgstr "Es befindet sich im Auschecken"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_web_3d
+msgid "Enable 3D WebGl"
+msgstr "Aktivieren Sie 3D-WebGl"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_web_3d_sale
+msgid "Enable 3D WebGl for e-commerce and sale"
+msgstr "Aktivieren Sie 3D WebGl für E-Commerce und Verkauf"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_auto_engcode
+msgid "Enable Automatic Engineering Code"
+msgstr "Automatischen Engineering-Code aktivieren"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_bom_summarize
+msgid "Enable Bom sommarization during the client upload"
+msgstr "Aktivieren Sie die Bom-Zusammenfassung während des Client-Uploads"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_breakages
+msgid "Enable Brakages managment"
+msgstr "Aktivieren Sie das Bremsmanagement"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_activity_validation
+msgid "Enable Eco /Ecr"
+msgstr "Eco /Ecr aktivieren"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_pdf_workorder
+msgid "Enable Plm PDF document inside workorder"
+msgstr "Aktivieren Sie das Plm-PDF-Dokument im Arbeitsauftrag"
+
+#. module: plm
+#: code:addons/plm/models/product_template.py:0
+#, python-format
+msgid "Engineering Editable"
+msgstr "Ingenieurwesen editierbar"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.product_template_form_view_plm_custom
+msgid "Engineering Information"
+msgstr "Technische Informationen"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.action_plm_component_base model_terms:ir.ui.view,arch_db:plm.plm_component_base_tree
+msgid "Engineering Parts"
+msgstr "Technische Teile"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_component_base_form
+msgid "Engineering Product"
+msgstr "Technisches Produkt"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "Engineering document name"
+msgstr "Name des Konstruktionsdokuments"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "Enineering revision"
+msgstr "Technische Überarbeitung"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Error during component creation with values:\n"
+msgstr "Fehler beim Erstellen der Komponente mit Werten:\\N\n"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_dbthread__error_message
+msgid "Error message"
+msgstr "Fehlermeldung"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Error on workflow operation"
+msgstr "Fehler beim Workflow-Vorgang"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_mrp_bom_line__itemlbl
+msgid "Etichetta Pos. Elem. CAD"
+msgstr "Bezeichnung Pos. Elem. CAD"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__datas model:ir.model.fields,field_description:plm.field_mrp_document__datas
+msgid "File Content (base64))"
+msgstr "Dateiinhalt (base64))"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "File Data"
+msgstr "Dateidaten"
+
+#. module: plm
+#: code:addons/plm/models/report_on_document.py:0 model:ir.model.fields,field_description:plm.field_report_ir_attachment_file__file_size
+#, python-format
+msgid "File Size"
+msgstr "Dateigröße"
+
+#. module: plm
+#: model:ir.model,name:plm.model_report_ir_attachment_file
+msgid "Files details by Directory"
+msgstr "Dateidetails nach Verzeichnis"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search
+msgid "Filter on documents changed by me"
+msgstr "Filtern Sie nach von mir geänderten Dokumenten"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search
+msgid "Filter on documents created by me"
+msgstr "Filtern Sie nach von mir erstellten Dokumenten"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_finishing
+msgid "Finishing"
+msgstr "Fertigstellung"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.plm_action_finishing_form model:ir.ui.menu,name:plm.menu_finishing
+#: model_terms:ir.ui.view,arch_db:plm.plm_view_finishing_tree model_terms:ir.ui.view,arch_db:plm.plm_view_treatment_tree
+msgid "Finishings"
+msgstr "Ausführungen"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__message_follower_ids
+msgid "Followers"
+msgstr "Anhänger"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Anhänger (Partner)"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_product_only_latest
+msgid "Force last version on Manufactoring"
+msgstr "Erzwingen Sie die neueste Version in der Fertigung"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_sale_only_latest
+msgid "Force last version on Sale"
+msgstr "Letzte Version im Angebot erzwingen"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_purchase_only_latest
+msgid "Force last version on purchase"
+msgstr "Letzte Version beim Kauf erzwingen"
+
+#. module: plm
+#: code:addons/plm/models/plm_descriptions.py:0 model:ir.model.fields,field_description:plm.field_plm_description__fmt1
+#, python-format
+msgid "Format Feature 1"
+msgstr "Formatfunktion 1"
+
+#. module: plm
+#: code:addons/plm/models/plm_descriptions.py:0 model:ir.model.fields,field_description:plm.field_plm_description__fmt2
+#, python-format
+msgid "Format Feature 2"
+msgstr "Formatfunktion 2"
+
+#. module: plm
+#: code:addons/plm/models/plm_descriptions.py:0 model:ir.model.fields,field_description:plm.field_plm_description__fmt3
+#, python-format
+msgid "Format Feature 3"
+msgstr "Formatfunktion 3"
+
+#. module: plm
+#: code:addons/plm/models/plm_descriptions.py:0 model:ir.model.fields,field_description:plm.field_plm_description__fmtend
+#, python-format
+msgid "Format Feature Composed"
+msgstr "Formatfunktion komponiert"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Generate Engineering Code by sequence"
+msgstr "Generieren Sie Engineering-Code nach Sequenz"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Generated From"
+msgstr "Erzeugt aus"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__source_product
+msgid "Generato Da"
+msgstr "Erzeugt aus"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_mrp_bom__father_complete_ids
+#: model:ir.model.fields,field_description:plm.field_product_product__father_part_ids
+msgid "Gerarchia BoM"
+msgstr "BoM-Hierarchie"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_spare
+msgid "Gestione delle distinte e dei manuali di ricambio"
+msgstr "Verwaltung von Ersatzteillisten und Handbüchern"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_date_bom
+msgid "Gestione delle distinte in base alla data"
+msgstr "Rechnungsverwaltung nach Datum"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_cutted_parts
+msgid "Gestione delle esplose per parti di taglio"
+msgstr "Verwaltung von Explosionsansichten zum Schneiden von Teilen"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_report_language_helper
+msgid "Gestione multi lingua della reportistica"
+msgstr "Mehrsprachige Verwaltung der Berichterstattung"
+
+#. module: plm
+#: code:addons/plm/models/plm_finishing.py:0 code:addons/plm/models/plm_material.py:0 code:addons/plm/models/plm_treatment.py:0
+#: model:ir.model.fields,help:plm.field_plm_finishing__sequence model:ir.model.fields,help:plm.field_plm_material__sequence
+#: model:ir.model.fields,help:plm.field_plm_treatment__sequence
+#, python-format
+msgid "Gives the sequence order when displaying a list of product categories."
+msgstr "Gibt die Reihenfolge an, wenn eine Liste von Produktkategorien angezeigt wird."
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search model_terms:ir.ui.view,arch_db:plm.plm_backupdoc_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search_bck
+#: model_terms:ir.ui.view,arch_db:plm.plm_checkout_search
+msgid "Group By..."
+msgstr "Gruppiere nach..."
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_docbom_search
+msgid "Group by..."
+msgstr "Gruppiere nach..."
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_mrp_bom_line__hasChildBoms
+msgid "Has Children Boms"
+msgstr "Has Children Boms"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__has_message
+msgid "Has Message"
+msgstr "Hat Nachricht"
+
+#. module: plm
+#: code:addons/plm/models/plm_cad_open.py:0 code:addons/plm/models/plm_cad_open_bck.py:0
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open__hostname model:ir.model.fields,field_description:plm.field_plm_cad_open_bck__hostname
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search_bck
+#: model_terms:ir.ui.view,arch_db:plm.plm_checkout_search
+#, python-format
+msgid "Hostname"
+msgstr "Hostname"
+
+#. module: plm
+#: model:ir.filters,name:plm.ir_filter_plm_dbthread_hystory_by_code
+msgid "Hystory By Code"
+msgstr "Geschichte nach Code"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment_relation__id model:ir.model.fields,field_description:plm.field_plm_backupdoc__id
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc_wizard__id model:ir.model.fields,field_description:plm.field_plm_cad_open__id
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open_bck__id model:ir.model.fields,field_description:plm.field_plm_checkout__id
+#: model:ir.model.fields,field_description:plm.field_plm_client__id model:ir.model.fields,field_description:plm.field_plm_component_document_rel__id
+#: model:ir.model.fields,field_description:plm.field_plm_dbthread__id model:ir.model.fields,field_description:plm.field_plm_description__id
+#: model:ir.model.fields,field_description:plm.field_plm_finishing__id model:ir.model.fields,field_description:plm.field_plm_material__id
+#: model:ir.model.fields,field_description:plm.field_plm_temporary__id model:ir.model.fields,field_description:plm.field_plm_temporary_message__id
+#: model:ir.model.fields,field_description:plm.field_plm_treatment__id model:ir.model.fields,field_description:plm.field_report_ir_attachment_file__id
+#: model:ir.model.fields,field_description:plm.field_report_plmcomponent__id
+msgid "ID"
+msgstr "ID"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_ir_attachment__message_needaction model:ir.model.fields,help:plm.field_ir_attachment__message_unread
+msgid "If checked, new messages require your attention."
+msgstr "Wenn diese Option aktiviert ist, erfordern neue Nachrichten Ihre Aufmerksamkeit."
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_ir_attachment__message_has_error model:ir.model.fields,help:plm.field_ir_attachment__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Wenn diese Option aktiviert ist, weisen einige Nachrichten einen Übermittlungsfehler auf."
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_plm_temporary__summarize
+msgid "If set as true, when a Bom line comes from EBOM was in the old normal BOM two lines where been summarized."
+msgstr "Wenn auf true gesetzt, wenn eine Stücklistenzeile von EBOM stammt, wurden in der alten normalen Stückliste zwei Zeilen zusammengefasst."
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0
+#, python-format
+msgid "If the flag is set, the document is managed by the plm module, and imply its backup at each save and the visibility on some views."
+msgstr ""
+"Wenn das Flag gesetzt ist, wird das Dokument vom plm-Modul verwaltet und impliziert seine Sicherung bei jedem Speichern und die Sichtbarkeit in einigen "
+"Ansichten."
+
+#. module: plm
+#: code:addons/plm/models/plm_temporary.py:0
+#, python-format
+msgid ""
+"If the user adds custom BOM lines in the revision 0 BOM, than makes the revision 1, creates it's engineering BOM and than create the new Normal BOM "
+"form EBOM your revision 0 custom BOM lines are created in the new BOM"
+msgstr ""
+"Wenn der Benutzer benutzerdefinierte Stücklistenpositionen in der Stückliste der Revision 0 hinzufügt, dann die Revision 1 erstellt, seine "
+"Konstruktionsstückliste erstellt und dann die neue normale Stückliste aus der EBOM erstellt, werden Ihre benutzerdefinierten Stücklistenpositionen der "
+"Revision 0 in der neuen Stückliste erstellt"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_product_product__engineering_material model:ir.model.fields,help:plm.field_product_template__engineering_material
+msgid "Il materiale grezzo per il prodotto corrente, solo descrizione per il cartiglio."
+msgstr "Das Rohmaterial für das aktuelle Produkt, Beschreibung nur für das Schriftfeld."
+
+#. module: plm
+#: model:ir.model.constraint,message:plm.constraint_product_template_partnumber_uniq
+msgid "Il numero della parte deve essere unico!"
+msgstr "Die Teilenummer muss eindeutig sein!"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__checkout_user
+#: model:ir.model.fields,field_description:plm.field_mrp_document__checkout_user
+msgid "In Check-Out a"
+msgstr "Beim Auschecken a"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "Indexed Content"
+msgstr "Indexierter Inhalt"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__revisionid model:ir.model.fields,field_description:plm.field_mrp_document__revisionid
+msgid "Indice Revisione"
+msgstr "Indexrevision"
+
+#. module: plm
+#: model:res.groups,name:plm.group_plm_integration_user
+msgid "Integration User"
+msgstr "Integrationsbenutzer"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0
+#, python-format
+msgid "Is Checked-Out"
+msgstr "Ausgecheckt ist"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__message_is_follower
+msgid "Is Follower"
+msgstr "Ist Follower"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__is_plm model:ir.model.fields,field_description:plm.field_mrp_document__is_plm
+msgid "Is a plm Document"
+msgstr "Ist ein plm-Dokument"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__kanban_dashboard
+msgid "Kanban Dashboard"
+msgstr "Kanban Dashboard"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_docbom_search
+msgid "Kind"
+msgstr "Art"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment_relations.py:0 model:ir.model.fields,field_description:plm.field_ir_attachment_relation__link_kind
+#, python-format
+msgid "Kind of Link"
+msgstr "Art Link"
+
+#. module: plm
+#: model:ir.model.constraint,message:plm.constraint_plm_checkout_documentid
+msgid "L'ID del documento deve essere unico!"
+msgstr "Die ID des Dokuments muss eindeutig sein!"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_mrp_bom__engineering_revision model:ir.model.fields,help:plm.field_mrp_bom_line__engineering_revision
+#: model:ir.model.fields,help:plm.field_product_product__engineering_revision model:ir.model.fields,help:plm.field_product_template__engineering_revision
+msgid "La revisione del prodotto."
+msgstr "Produktbewertung."
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment_relation____last_update
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc____last_update
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc_wizard____last_update
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open____last_update
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open_bck____last_update
+#: model:ir.model.fields,field_description:plm.field_plm_checkout____last_update
+#: model:ir.model.fields,field_description:plm.field_plm_client____last_update
+#: model:ir.model.fields,field_description:plm.field_plm_component_document_rel____last_update
+#: model:ir.model.fields,field_description:plm.field_plm_dbthread____last_update
+#: model:ir.model.fields,field_description:plm.field_plm_description____last_update
+#: model:ir.model.fields,field_description:plm.field_plm_finishing____last_update
+#: model:ir.model.fields,field_description:plm.field_plm_material____last_update
+#: model:ir.model.fields,field_description:plm.field_plm_temporary____last_update
+#: model:ir.model.fields,field_description:plm.field_plm_temporary_message____last_update
+#: model:ir.model.fields,field_description:plm.field_plm_treatment____last_update
+#: model:ir.model.fields,field_description:plm.field_report_ir_attachment_file____last_update
+#: model:ir.model.fields,field_description:plm.field_report_plmcomponent____last_update
+msgid "Last Modified on"
+msgstr "Zuletzt geändert am"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search model_terms:ir.ui.view,arch_db:plm.plm_backupdoc_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search_bck
+#: model_terms:ir.ui.view,arch_db:plm.plm_checkout_search
+msgid "Last Month"
+msgstr "Letzten Monat"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment_relation__write_uid
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc__write_uid
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc_wizard__write_uid
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open__write_uid model:ir.model.fields,field_description:plm.field_plm_cad_open_bck__write_uid
+#: model:ir.model.fields,field_description:plm.field_plm_client__write_uid
+#: model:ir.model.fields,field_description:plm.field_plm_component_document_rel__write_uid
+#: model:ir.model.fields,field_description:plm.field_plm_dbthread__write_uid model:ir.model.fields,field_description:plm.field_plm_description__write_uid
+#: model:ir.model.fields,field_description:plm.field_plm_finishing__write_uid model:ir.model.fields,field_description:plm.field_plm_material__write_uid
+#: model:ir.model.fields,field_description:plm.field_plm_temporary__write_uid
+#: model:ir.model.fields,field_description:plm.field_plm_temporary_message__write_uid
+#: model:ir.model.fields,field_description:plm.field_plm_treatment__write_uid
+msgid "Last Updated by"
+msgstr "Zuletzt aktualisiert von"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment_relation__write_date
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc__write_date
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc_wizard__write_date
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open__write_date
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open_bck__write_date
+#: model:ir.model.fields,field_description:plm.field_plm_checkout__write_date model:ir.model.fields,field_description:plm.field_plm_client__write_date
+#: model:ir.model.fields,field_description:plm.field_plm_component_document_rel__write_date
+#: model:ir.model.fields,field_description:plm.field_plm_dbthread__write_date
+#: model:ir.model.fields,field_description:plm.field_plm_description__write_date
+#: model:ir.model.fields,field_description:plm.field_plm_finishing__write_date model:ir.model.fields,field_description:plm.field_plm_material__write_date
+#: model:ir.model.fields,field_description:plm.field_plm_temporary__write_date
+#: model:ir.model.fields,field_description:plm.field_plm_temporary_message__write_date
+#: model:ir.model.fields,field_description:plm.field_plm_treatment__write_date
+msgid "Last Updated on"
+msgstr "Zuletzt aktualisiert am"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search model_terms:ir.ui.view,arch_db:plm.plm_backupdoc_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search_bck
+#: model_terms:ir.ui.view,arch_db:plm.plm_checkout_search model_terms:ir.ui.view,arch_db:plm.plm_docbom_search
+msgid "Last Week"
+msgstr "Letzte Woche"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search model_terms:ir.ui.view,arch_db:plm.plm_component_base_search
+msgid "Latest"
+msgstr "Neueste"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_component_base_search model_terms:ir.ui.view,arch_db:plm.view_mrp_bom_filter_inherit
+msgid "Latest 2 Weeks"
+msgstr "Letzte 2 Wochen"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search model_terms:ir.ui.view,arch_db:plm.plm_backupdoc_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search_bck
+#: model_terms:ir.ui.view,arch_db:plm.plm_checkout_search model_terms:ir.ui.view,arch_db:plm.plm_component_base_search
+#: model_terms:ir.ui.view,arch_db:plm.view_mrp_bom_filter_inherit
+msgid "Latest 7 Days"
+msgstr "Letzte 7 Tage"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.bom_structure_all
+msgid "Level"
+msgstr "Eben"
+
+#. module: plm
+#: code:addons/plm/models/product_product_document_rel.py:0 model:ir.model.fields,field_description:plm.field_plm_component_document_rel__component_id
+#, python-format
+msgid "Linked Component"
+msgstr "Verknüpfte Komponente"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Linked Docs"
+msgstr "Verknüpfte Dokumente"
+
+#. module: plm
+#: code:addons/plm/models/product_product_document_rel.py:0 model:ir.model.fields,field_description:plm.field_plm_component_document_rel__document_id
+#, python-format
+msgid "Linked Document"
+msgstr "Verknüpftes Dokument"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_product_product_normal_form_view_inherit
+msgid "Linked Documents"
+msgstr "Linked Documents"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0 model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+#, python-format
+msgid "Linked Parts"
+msgstr "Verknüpfte Teile"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_mrp_bom__state model:ir.model.fields,help:plm.field_mrp_bom_line__state
+#: model:ir.model.fields,help:plm.field_product_product__state model:ir.model.fields,help:plm.field_product_template__state
+msgid "Lo stato del prodotto nel suo ciclo di vita."
+msgstr "Der Status des Produkts über seinen Lebenszyklus."
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_ir_attachment__state model:ir.model.fields,help:plm.field_mrp_document__state
+msgid "Lo stato del prodotto."
+msgstr "Der Status des Produkts."
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__message_main_attachment_id
+msgid "Main Attachment"
+msgstr "Hauptanhang"
+
+#. module: plm
+#: code:addons/plm/models/res_config_settings.py:0
+#, python-format
+msgid "Manage BOM due to date"
+msgstr "Fälligkeitsdatum der Stückliste verwalten"
+
+#. module: plm
+#: code:addons/plm/models/res_config_settings.py:0
+#, python-format
+msgid "Manage BOM explosion for cutted parts"
+msgstr "Verwalten Sie die Stücklistenauflösung für geschnittene Teile"
+
+#. module: plm
+#: code:addons/plm/models/res_config_settings.py:0
+#, python-format
+msgid "Manage Multi Language PLM reports"
+msgstr "Verwalten Sie mehrsprachige PLM-Berichte"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_suspended
+msgid "Manage Product suspend code"
+msgstr "Verwalten Sie den Sperrcode für das Produkt"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Manage breakage on your products"
+msgstr "Verwalten Sie Bruchschäden an Ihren Produkten"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Manage product Suspension State on workFlow for document and product"
+msgstr "Verwalten Sie den Suspendierungsstatus des Produkts in WorkFlow für Dokumente und Produkte"
+
+#. module: plm
+#: code:addons/plm/models/res_config_settings.py:0
+#, python-format
+msgid "Manage spare BOM and Spare Parts Manual"
+msgstr "Verwalten Sie die Ersatzteilstückliste und das Ersatzteilhandbuch"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_temporary__migrate_custom_lines
+msgid "Mantieni le linee di distinta personalizzate dalla distinta normale"
+msgstr "Behalten Sie benutzerdefinierte Stücklistenpositionen von der normalen Stückliste bei"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Manufacturing"
+msgstr "Manufacturing"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_material
+msgid "Material"
+msgstr "Material"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_component_base_form model_terms:ir.ui.view,arch_db:plm.plm_product_product_normal_form_view_inherit
+msgid "Material / Surface / Treatment"
+msgstr "Material / Oberfläche / Behandlung"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__tmp_material
+msgid "Materiale Grezzo"
+msgstr "Rohmaterial"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__engineering_material
+#: model:ir.model.fields,field_description:plm.field_product_template__engineering_material
+msgid "Materiale Grezzo CAD"
+msgstr "CAD-Rohmaterial"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.plm_action_material_form model:ir.ui.menu,name:plm.menu_material
+#: model_terms:ir.ui.view,arch_db:plm.plm_view_material_tree
+msgid "Materials"
+msgstr "Materialien"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__message_has_error
+msgid "Message Delivery error"
+msgstr "Message Delivery error"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__message_ids
+msgid "Messages"
+msgstr "Mitteilungen"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0 code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Modification Description"
+msgstr "Modifikationsbeschreibung"
+
+#. module: plm
+#: code:addons/plm/models/report_on_document.py:0 model:ir.model.fields,field_description:plm.field_report_ir_attachment_file__month
+#, python-format
+msgid "Month"
+msgstr "Monat"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Mrp Bom"
+msgstr "Mrp Bom"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_document_multi_site
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_mrp_bom_update
+msgid "Multi side storege system"
+msgstr "Mehrseitiges Aufbewahrungssystem"
+
+#. module: plm
+#: code:addons/plm/models/product_product_kanban.py:0
+#, python-format
+msgid "New Component"
+msgstr "Neue Komponente"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_component_kanban_hinerit
+msgid "No Image"
+msgstr "Kein Bild"
+
+#. module: plm
+#: model:ir.model.fields.selection,name:plm.selection__mrp_bom_line__cutted_type__none
+msgid "None"
+msgstr "Keiner"
+
+#. module: plm
+#: code:addons/plm/models/mrp_bom.py:0
+#, python-format
+msgid "Normal BoM"
+msgstr "Normaler BPM"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.plm_action_normal_form
+msgid "Normal BoMs"
+msgstr "Normale Stücklisten"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_description
+msgid "Normalization Section"
+msgstr "Abschnitt Normalisierung"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_description
+msgid "Normalized features formatting"
+msgstr "Normalisierte Feature-Formatierung"
+
+#. module: plm
+#: code:addons/plm/models/plm_descriptions.py:0 model:ir.model.fields,field_description:plm.field_plm_description__unitab
+#, python-format
+msgid "Normative Rule"
+msgstr "Normative Regel"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_description
+msgid "Normative reference"
+msgstr "Normative Referenz"
+
+#. module: plm
+#: code:addons/plm/models/plm_descriptions.py:0 model:ir.model.fields,field_description:plm.field_plm_description__name
+#, python-format
+msgid "Note to Description"
+msgstr "Hinweis zur Beschreibung"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_description
+msgid "Note to help selection"
+msgstr "Hinweis zur Auswahlhilfe"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "Notes"
+msgstr "Notizen"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Anzahl der Aktionen"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__message_has_error_counter
+msgid "Number of errors"
+msgstr "Anzahl der Fehler"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_ir_attachment__message_needaction_counter
+msgid "Number of messages which requires an action"
+msgstr "Anzahl der Nachrichten, die eine Aktion erfordern"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_ir_attachment__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Anzahl der Nachrichten mit Zustellfehler"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_ir_attachment__message_unread_counter
+msgid "Number of unread messages"
+msgstr "Anzahl der ungelesenen Nachrichten"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__engineering_code
+#: model:ir.model.fields,field_description:plm.field_product_template__engineering_code
+msgid "Numero Parte"
+msgstr "Artikelnummer"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0 code:addons/plm/models/product_product.py:0 code:addons/plm/models/product_template.py:0
+#: model:ir.model.fields,field_description:plm.field_report_plmcomponent__count_component_obsoleted
+#: model_terms:ir.ui.view,arch_db:plm.plm_component_base_search
+#, python-format
+msgid "Obsoleted"
+msgstr "Veraltet"
+
+#. module: plm
+#: model:ir.model.fields.selection,name:plm.selection__ir_attachment__state__obsoleted
+#: model:ir.model.fields.selection,name:plm.selection__product_template__state__obsoleted
+msgid "Obsoleto"
+msgstr "Veraltet"
+
+#. module: plm
+#: model:ir.module.category,name:plm.odooplm_module_category
+msgid "OdooPLM"
+msgstr "OdooPLM"
+
+#. module: plm
+#: model:ir.model,name:plm.model_plm_cad_open model:ir.model,name:plm.model_plm_cad_open_bck
+msgid "Opens made by the client"
+msgstr "Opens made by the client"
+
+#. module: plm
+#: code:addons/plm/models/plm_cad_open.py:0 code:addons/plm/models/plm_cad_open_bck.py:0
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open__operation_type
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open_bck__operation_type
+#, python-format
+msgid "Operation Type"
+msgstr "Operationstyp"
+
+#. module: plm
+#: code:addons/plm/models/mail_activity_type.py:0
+#: model:ir.model.fields.selection,name:plm.selection__mail_activity_type__change_activity_type__plm_activity
+#, python-format
+msgid "Order"
+msgstr "Befehl"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0 model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+#, python-format
+msgid "Other"
+msgstr "Andere"
+
+#. module: plm
+#: model:ir.actions.report,name:plm.report_product_product_pdf
+msgid "PDF Drawings"
+msgstr "PDF-Zeichnungen"
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.plm_menu
+msgid "PLM"
+msgstr "PLM"
+
+#. module: plm
+#: model:res.groups,name:plm.group_plm_release_users
+msgid "PLM / Release Users"
+msgstr "PLM-/Release-Benutzer"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_box
+msgid "PLM Box"
+msgstr "PLM-Box"
+
+#. module: plm
+#: model:ir.model,name:plm.model_plm_description
+msgid "PLM Descriptions"
+msgstr "PLM-Beschreibungen"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "PLM Infos"
+msgstr "PLM-Infos"
+
+#. module: plm
+#: model:res.groups,name:plm.group_plm_readonly_released
+msgid "PLM Integration Readonly"
+msgstr "PLM-Integration schreibgeschützt"
+
+#. module: plm
+#: model:ir.model,name:plm.model_plm_material
+msgid "PLM Materials"
+msgstr "PLM-Materialien"
+
+#. module: plm
+#: code:addons/plm/models/plm_checkout.py:0
+#, python-format
+msgid "PWS Directory"
+msgstr "PWS-Verzeichnis"
+
+#. module: plm
+#: code:addons/plm/models/plm_cad_open.py:0 code:addons/plm/models/plm_cad_open_bck.py:0
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open__pws_path model:ir.model.fields,field_description:plm.field_plm_cad_open_bck__pws_path
+#, python-format
+msgid "PWS Path"
+msgstr "PWS-Pfad"
+
+#. module: plm
+#: code:addons/plm/models/res_config_settings.py:0 model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_pack_and_go
+#, python-format
+msgid "Pack and go"
+msgstr "Packen und los"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_docbom_search
+msgid "Parent"
+msgstr "Elternteil"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment_relations.py:0 model:ir.model.fields,field_description:plm.field_ir_attachment_relation__parent_preview
+#: model_terms:ir.ui.view,arch_db:plm.plm_docbom_form_view
+#, python-format
+msgid "Parent Preview"
+msgstr "Parent Preview"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment_relations.py:0 model:ir.model.fields,field_description:plm.field_ir_attachment_relation__parent_revision
+#, python-format
+msgid "Parent Revision"
+msgstr "Übergeordnete Revision"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment_relations.py:0 model:ir.model.fields,field_description:plm.field_ir_attachment_relation__parent_state
+#, python-format
+msgid "Parent Status"
+msgstr "Elternstatus"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Part %r cannot be updated"
+msgstr "Teil %r kann nicht aktualisiert werden"
+
+#. module: plm
+#: code:addons/plm/models/product_template.py:0
+#, python-format
+msgid "Part Number"
+msgstr "Artikelnummer"
+
+#. module: plm
+#: code:addons/plm/models/product_template.py:0
+#, python-format
+msgid "Part Number has to be unique!"
+msgstr "Teilenummer muss eindeutig sein!"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__linkedcomponents
+#: model:ir.model.fields,field_description:plm.field_mrp_document__linkedcomponents
+msgid "Parti Collegate"
+msgstr "Verwandte Teile"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_component_base_search
+msgid "Parts"
+msgstr "Teile"
+
+#. module: plm
+#: model:ir.filters,name:plm.ir_filter_plm_dbthread_pending_save
+msgid "Pending Save"
+msgstr "Speichern ausstehend"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0
+#, python-format
+msgid "Permission denied for folder %r."
+msgstr "Zugriff für Ordner %r verweigert."
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_mrp_bom_line__weight_net
+msgid "Peso Netto"
+msgstr "Reingewicht"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_mrp_bom__weight_net
+msgid "Peso netto della Bom in Kg."
+msgstr "Nettogewicht der Bom in Kg."
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_mrp_bom_line__type
+msgid ""
+"Phantom BOM: When processing a sales order for this product, the delivery order will contain the raw materials, instead of the finished product. Ship "
+"this product as a set of components (kit)."
+msgstr ""
+"Phantomstückliste: Bei der Bearbeitung eines Kundenauftrags für dieses Produkt enthält der Lieferauftrag die Rohstoffe anstelle des Endprodukts. "
+"Versenden Sie dieses Produkt als Satz von Komponenten (Kit)."
+
+#. module: plm
+#: code:addons/plm/models/plm_backup_document.py:0 model:ir.model.fields,field_description:plm.field_plm_backupdoc__existingfile
+#, python-format
+msgid "Physical Document Location"
+msgstr "Speicherort des physischen Dokuments"
+
+#. module: plm
+#: model:mail.activity.type,name:plm.mail_activity_plm_activity
+msgid "Plm Activity"
+msgstr "Plm-Aktivität"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.action_plm_cad_open model_terms:ir.ui.view,arch_db:plm.plm_cad_open_tree
+msgid "Plm Cad Open"
+msgstr "Plm Cad geöffnet"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.action_plm_cad_open_bck model:ir.actions.server,name:plm.ir_cron_scheduler_bck_cad_open_ir_actions_server
+#: model:ir.cron,cron_name:plm.ir_cron_scheduler_bck_cad_open model:ir.cron,name:plm.ir_cron_scheduler_bck_cad_open
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_form_bck model_terms:ir.ui.view,arch_db:plm.plm_cad_open_tree_bck
+msgid "Plm Cad Open Bck"
+msgstr "Plm Cad Open Bck"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_form model_terms:ir.ui.view,arch_db:plm.view_plm_checkout_form
+msgid "Plm checkout"
+msgstr "Plm-Kasse"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_auto_internalref
+msgid "Populate internal reference with engineering part number"
+msgstr "Füllen Sie die interne Referenz mit der technischen Teilenummer aus"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.bom_structure_all
+msgid "Pos."
+msgstr "Pos."
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_mrp_bom_line__itemnum
+msgid "Pos. Elemento CAD"
+msgstr "Pos. CAD-Element"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_bom_tree_structure
+msgid "Position"
+msgstr "Position"
+
+#. module: plm
+#: code:addons/plm/models/plm_temporary.py:0
+#, python-format
+msgid "Preserve custom BOM lines from previous Normal BOM revision"
+msgstr "Behalten Sie benutzerdefinierte Stücklistenpositionen aus früheren normalen Stücklistenrevisionen bei"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_kanban_view model_terms:ir.ui.view,arch_db:plm.view_plm_backupdoc
+msgid "Preview"
+msgstr "Vorschau"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0 code:addons/plm/models/plm_backup_document.py:0
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc__preview
+#, python-format
+msgid "Preview Content"
+msgstr "Inhaltsvorschau"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0
+#, python-format
+msgid "Print PDF content."
+msgstr "Print PDF content."
+
+#. module: plm
+#: model:ir.actions.report,name:plm.report_ir_attachment_pdf
+msgid "Print Pdf"
+msgstr "Pdf drucken"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0 code:addons/plm/models/plm_backup_document.py:0
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc__printout
+#, python-format
+msgid "Printout Content"
+msgstr "Inhalt des Ausdrucks"
+
+#. module: plm
+#: model:ir.model,name:plm.model_product_product model_terms:ir.ui.view,arch_db:plm.plm_component_kanban_hinerit
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Product"
+msgstr "Produkt"
+
+#. module: plm
+#: code:addons/plm/models/res_config_settings.py:0
+#, python-format
+msgid "Product Description Language Helper"
+msgstr "Produktbeschreibung Sprachhelfer"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0 code:addons/plm/models/product_template.py:0
+#, python-format
+msgid "Product Engineering"
+msgstr "Produktentwicklung"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.bom_structure_all
+msgid "Product Name"
+msgstr "Produktname"
+
+#. module: plm
+#: model:ir.model,name:plm.model_product_template
+msgid "Product Template"
+msgstr "Produktvorlage"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Product code: %r revision %r status %r"
+msgstr "Produktcode: %r Revision %r Status %r"
+
+#. module: plm
+#: model:ir.actions.report,name:plm.report_product_product_all_pdf_latest
+msgid "Production All Level PDF Drawings"
+msgstr "Production All Level PDF Drawings"
+
+#. module: plm
+#: model:ir.actions.report,name:plm.report_product_product_one_pdf_latest
+msgid "Production First Level PDF Drawings"
+msgstr "Produktion PDF-Zeichnungen der ersten Ebene"
+
+#. module: plm
+#: model:ir.actions.report,name:plm.report_product_product_pdf_latest
+msgid "Production PDF Drawings"
+msgstr "Produktions-PDF-Zeichnungen"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0 code:addons/plm/models/product_template.py:0
+#, python-format
+msgid "Products"
+msgstr "Produkte"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Project"
+msgstr "Projekt"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Purchase"
+msgstr "Kaufen"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.bom_structure_all
+msgid "Qty"
+msgstr "Anzahl"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Quantity"
+msgstr "Anzahl"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_mrp_bom_line__itemnum
+msgid "Questa e' la posizione della referenza dell'oggetto nel documento CAD che dichiara questa BoM."
+msgstr "Dies ist die Position der Objektreferenz im CAD-Dokument, das diese Stückliste deklariert."
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_product_product__engineering_code model:ir.model.fields,help:plm.field_product_template__engineering_code
+msgid "Questa e' la referenza ingegneristica per gestire un P/N diverso dal nome dell'oggetto."
+msgstr "Questa e' la referenza ingegneristica per gestire un P/N diverso dal nome dell'oggetto."
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_mrp_bom__source_id model:ir.model.fields,help:plm.field_mrp_bom_line__source_id
+msgid "Questo e' l'oggetto del documento che dichiara questa Bom."
+msgstr "Questo e' l'oggetto del documento che dichiara questa Bom."
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Raw Material"
+msgstr "Rohmaterial"
+
+#. module: plm
+#: code:addons/plm/models/plm_material.py:0 model:ir.model.constraint,message:plm.constraint_plm_material_name_uniq
+#, python-format
+msgid "Raw Material has to be unique !"
+msgstr "Rohmaterial muss einzigartig sein!"
+
+#. module: plm
+#: code:addons/plm/models/product_template.py:0
+#, python-format
+msgid "Raw material for current product, only description for titleblock."
+msgstr "Raw material for current product, only description for titleblock."
+
+#. module: plm
+#: model:ir.actions.server,name:plm.action_update_doc_type
+msgid "Recompute Doc Type"
+msgstr "Rohmaterial für aktuelles Produkt, nur Beschreibung für Schriftfeld"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Rel.Source"
+msgstr "Rel.Quelle"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_bom_form_view
+msgid "Related BOM Lines"
+msgstr "Zugehörige Stücklistenpositionen"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_mrp_bom_line__related_bom_ids
+msgid "Related BOMs"
+msgstr "Verwandte Stücklisten"
+
+#. module: plm
+#: code:addons/plm/models/product_product_kanban.py:0
+#, python-format
+msgid "Related Boms"
+msgstr "Verwandte Boms"
+
+#. module: plm
+#: code:addons/plm/models/plm_backup_document.py:0 code:addons/plm/models/plm_cad_open.py:0 code:addons/plm/models/plm_cad_open_bck.py:0
+#: code:addons/plm/models/plm_checkout.py:0 model:ir.model.fields,field_description:plm.field_plm_backupdoc__documentid
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open__document_id
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open_bck__document_id
+#, python-format
+msgid "Related Document"
+msgstr "Zugehöriges Dokument"
+
+#. module: plm
+#: code:addons/plm/models/mrp_bom_line.py:0 code:addons/plm/models/product_product_kanban.py:0
+#, python-format
+msgid "Related Documents"
+msgstr "Zugehörige Dokumente"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "Related To"
+msgstr "Bezüglich"
+
+#. module: plm
+#: code:addons/plm/models/plm_backup_document.py:0 code:addons/plm/models/plm_cad_open.py:0 code:addons/plm/models/plm_cad_open_bck.py:0
+#: code:addons/plm/models/plm_checkout.py:0 model:ir.model.fields,field_description:plm.field_plm_backupdoc__userid
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open__userid model:ir.model.fields,field_description:plm.field_plm_cad_open_bck__userid
+#, python-format
+msgid "Related User"
+msgstr "Zugehöriger Benutzer"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment_relations.py:0 model:ir.model.fields,field_description:plm.field_ir_attachment_relation__child_id
+#, python-format
+msgid "Related child document"
+msgstr "Zugehöriges untergeordnetes Dokument"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Related documents"
+msgstr "Zugehörige Unterlagen"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment_relations.py:0 model:ir.model.fields,field_description:plm.field_ir_attachment_relation__parent_id
+#, python-format
+msgid "Related parent document"
+msgstr "Zugehöriges übergeordnetes Dokument"
+
+#. module: plm
+#: model:ir.model,name:plm.model_ir_attachment_relation
+msgid "Relation between document used for cad file structure"
+msgstr "Beziehung zwischen Dokument, das für die CAD-Dateistruktur verwendet wird"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_product_product_normal_form_view_inherit
+msgid "Release Component"
+msgstr "Komponente freigeben"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "Release Document"
+msgstr "Dokument freigeben"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0 code:addons/plm/models/product_product.py:0 code:addons/plm/models/product_template.py:0
+#: model:ir.model.fields,field_description:plm.field_report_plmcomponent__count_component_released model_terms:ir.ui.view,arch_db:plm.ir_attachment_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_component_base_search
+#, python-format
+msgid "Released"
+msgstr "Freigegeben"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0 code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Removed : Latest Revision."
+msgstr "Entfernt: Neueste Revision."
+
+#. module: plm
+#: model:ir.model,name:plm.model_report_plm_bom_structure_all
+msgid "Report Bom All Structure"
+msgstr "Melden Sie alle Struktur"
+
+#. module: plm
+#: model:ir.model,name:plm.model_report_plm_bom_structure_all_sum
+msgid "Report Bom All Structure summarised"
+msgstr "Report Bom All Structure zusammengefasst"
+
+#. module: plm
+#: model:ir.model,name:plm.model_report_plm_bom_structure_leaves
+msgid "Report Bom Leavs"
+msgstr "Melde Bom-Blätter"
+
+#. module: plm
+#: model:ir.model,name:plm.model_report_plm_bom_structure_flat
+msgid "Report Bom Structure"
+msgstr "Stücklistenstruktur melden"
+
+#. module: plm
+#: model:ir.model,name:plm.model_report_plmcomponent
+msgid "Report Component"
+msgstr "Berichtskomponente"
+
+#. module: plm
+#: model:ir.model,name:plm.model_report_plm_ir_attachment_pdf
+msgid "Report Document PDF"
+msgstr "Berichtsdokument PDF"
+
+#. module: plm
+#: model:ir.model,name:plm.model_report_plm_bom_structure_one
+msgid "Report PLM Bom Structure"
+msgstr "PLM-Stücklistenstruktur melden"
+
+#. module: plm
+#: model:ir.model,name:plm.model_report_plm_bom_structure_one_sum
+msgid "Report PLM Bom Structure summaraized"
+msgstr "Bericht PLM-Stücklistenstruktur zusammengefasst"
+
+#. module: plm
+#: model:ir.model,name:plm.model_report_plm_product_pdf
+msgid "Report for producing pdf"
+msgstr "Bericht zum Erstellen von pdf"
+
+#. module: plm
+#: model:ir.model,name:plm.model_report_plm_all_product_pdf model:ir.model,name:plm.model_report_plm_one_product_pdf
+#: model:ir.model,name:plm.model_report_plm_product_production_all_pdf_latest model:ir.model,name:plm.model_report_plm_product_production_one_pdf_latest
+#: model:ir.model,name:plm.model_report_plm_product_production_pdf_latest
+msgid "Report pdf"
+msgstr "Bericht pdf"
+
+#. module: plm
+#: code:addons/plm/models/mail_activity_type.py:0 model:ir.model.fields.selection,name:plm.selection__mail_activity_type__change_activity_type__request
+#, python-format
+msgid "Request"
+msgstr "Anfrage"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.act_restore_document
+msgid "Restore Document"
+msgstr "Dokument wiederherstellen"
+
+#. module: plm
+#: code:addons/plm/models/plm_backup_document.py:0
+#, python-format
+msgid "Restore Document Error"
+msgstr "Fehler beim Wiederherstellen des Dokuments"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.restore_document_button_view
+msgid "Restore Entry"
+msgstr "Eintrag wiederherstellen"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.restore_document_button_view
+msgid "Restore Selected Document"
+msgstr "Ausgewähltes Dokument wiederherstellen"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.restore_document_button_view
+msgid "Restore this document"
+msgstr "Stellen Sie dieses Dokument wieder her"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.product_template_form_view_plm_custom
+msgid "Rev."
+msgstr "Rev."
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_product_product_normal_form_view_inherit
+msgid "Rev.s."
+msgstr "Rev.s."
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Revise a product / plm document from the web interface"
+msgstr "Überarbeiten Sie ein Produkt-/PLM-Dokument über die Weboberfläche"
+
+#. module: plm
+#: code:addons/plm/models/mrp_bom.py:0 code:addons/plm/models/mrp_bom_line.py:0 code:addons/plm/models/plm_backup_document.py:0
+#: code:addons/plm/models/product_product.py:0 code:addons/plm/models/product_template.py:0
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc__revisionid model:ir.model.fields,field_description:plm.field_plm_cad_open__rel_doc_rev
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open_bck__rel_doc_rev
+#: model:ir.model.fields,field_description:plm.field_plm_checkout__rel_doc_rev model_terms:ir.ui.view,arch_db:plm.mrp_bom_tree_view_where
+#: model_terms:ir.ui.view,arch_db:plm.plm_bom_tree_structure
+#, python-format
+msgid "Revision"
+msgstr "Revision"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_mrp_bom__bom_revision_count
+#: model:ir.model.fields,field_description:plm.field_product_product__revision_count
+#: model:ir.model.fields,field_description:plm.field_product_template__revision_count
+msgid "Revision Count"
+msgstr "Revisionszähler"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0
+#, python-format
+msgid "Revision Index"
+msgstr "Revisionsindex"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_product_product_normal_form_view_inherit
+msgid "Revision Rel Docs"
+msgstr "Revision Rel Docs"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_mrp_bom__engineering_revision
+#: model:ir.model.fields,field_description:plm.field_mrp_bom_line__engineering_revision
+#: model:ir.model.fields,field_description:plm.field_product_product__engineering_revision
+#: model:ir.model.fields,field_description:plm.field_product_template__engineering_revision
+msgid "Revisione"
+msgstr "Revision"
+
+#. module: plm
+#: model:ir.model.fields.selection,name:plm.selection__ir_attachment__state__released
+#: model:ir.model.fields.selection,name:plm.selection__product_template__state__released
+msgid "Rilasciato"
+msgstr "Ausgegeben"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "SMS-Zustellungsfehler"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Sales"
+msgstr "Verkauf"
+
+#. module: plm
+#: model:ir.filters,name:plm.ir_filter_plm_dbthread_saving_error
+msgid "Saving Errors"
+msgstr "Fehler speichern"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_checkout__write_uid
+msgid "Scrivi l'ID utente"
+msgstr "Schreiben Sie die Benutzer-ID"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__writable model:ir.model.fields,field_description:plm.field_mrp_document__writable
+#: model:ir.model.fields,field_description:plm.field_product_product__engineering_writable
+#: model:ir.model.fields,field_description:plm.field_product_template__engineering_writable
+msgid "Scrivibile"
+msgstr "Schreibbar"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_ir_attachment__is_plm model:ir.model.fields,help:plm.field_mrp_document__is_plm
+msgid "Se impostato, il documento è gestito dal modulo PLM, e implica il suo backup a ogni salvataggio e la visibilità in alcune viste."
+msgstr ""
+"Wenn festgelegt, wird das Dokument vom PLM-Modul verwaltet und impliziert seine Sicherung bei jedem Speichern und seine Sichtbarkeit in einigen "
+"Ansichten."
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_plm_temporary__migrate_custom_lines
+msgid ""
+"Se l'utente aggiunge alcune linee di distinta in revisione 0, allora crea la revisione 1, crea la sua distinta di ingegneria e crea la nuova BOM "
+"normale dalla EBOM le tue linee nella revisione 0 sono presenti nella nuova distinta."
+msgstr ""
+"Wenn der Benutzer einige Stücklistenpositionen in Revision 0 hinzufügt, erstellt er Revision 1, erstellt seine Konstruktionsstückliste und erstellt die "
+"neue normale Stückliste aus der Konstruktionsstückliste. Ihre Zeilen in Revision 0 sind in der neuen Stückliste vorhanden."
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.menu_backupdoc
+msgid "Search on Backup Data Set"
+msgstr "Suche nach Sicherungsdatensatz"
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.menu_checkout
+msgid "Search on Checked-Out Documents"
+msgstr "Suche nach ausgecheckten Dokumenten"
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.menu_document_relations model_terms:ir.ui.view,arch_db:plm.plm_docbom_search
+msgid "Search on Document Relations"
+msgstr "Suchen Sie nach Document Relations"
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.menu_document_files
+msgid "Search on Documents"
+msgstr "Suche nach Dokumenten"
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.menu_base_component
+msgid "Search on Engineering Parts"
+msgstr "Suchen Sie nach technischen Teilen"
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.menu_relation_normal
+msgid "Search on Normal Bill of Materials"
+msgstr "Suchen Sie in der normalen Stückliste"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Select raw material for current product"
+msgstr "Rohmaterial für aktuelles Produkt auswählen"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Select standard description for current product."
+msgstr "Standardbeschreibung für aktuelles Produkt auswählen."
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Select surface finishing for current product"
+msgstr "Wählen Sie die Oberflächenveredelung für das aktuelle Produkt aus"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Select termic treatment for current product"
+msgstr "Thermische Behandlung für aktuelles Produkt auswählen"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_product_product__tmp_material
+msgid "Seleziona il materiale grezzo oer il prodotto corrente"
+msgstr "Wählen Sie den Rohstoff für das aktuelle Produkt aus"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_product_product__tmp_treatment
+msgid "Seleziona il trattamento termico per il prodotto corrente"
+msgstr "Wählen Sie die Wärmebehandlung für das aktuelle Produkt aus"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_product_product__std_description
+msgid "Seleziona la descrizione standard per il prodotto corrente."
+msgstr "Wählen Sie die Standardbeschreibung für das aktuelle Produkt aus."
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_product_product__tmp_surface
+msgid "Seleziona la superficie di finitura per il prodotto corrente"
+msgstr "Wählen Sie die fertige Oberfläche für das aktuelle Produkt aus"
+
+#. module: plm
+#: code:addons/plm/models/plm_descriptions.py:0 code:addons/plm/models/plm_finishing.py:0 code:addons/plm/models/plm_material.py:0
+#: code:addons/plm/models/plm_treatment.py:0 model:ir.model.fields,field_description:plm.field_plm_description__sequence
+#: model:ir.model.fields,field_description:plm.field_plm_finishing__sequence model:ir.model.fields,field_description:plm.field_plm_material__sequence
+#: model:ir.model.fields,field_description:plm.field_plm_treatment__sequence
+#, python-format
+msgid "Sequence"
+msgstr "Reihenfolge"
+
+#. module: plm
+#: model:ir.model.fields.selection,name:plm.selection__mrp_bom_line__cutted_type__server
+msgid "Server"
+msgstr "Server"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.plm_action_settings_form model:ir.ui.menu,name:plm.plm_settings
+msgid "Settings"
+msgstr "Einstellungen"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_docbom_form_view
+msgid "Show Document Relation"
+msgstr "Dokumentenbeziehung anzeigen"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0 model:ir.model.fields,field_description:plm.field_product_product__show_std_field1
+#, python-format
+msgid "Show std field 1"
+msgstr "Standardfeld 1 anzeigen"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0 model:ir.model.fields,field_description:plm.field_product_product__show_std_field2
+#, python-format
+msgid "Show std field 2"
+msgstr "Standardfeld 2 anzeigen"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0 model:ir.model.fields,field_description:plm.field_product_product__show_std_field3
+#, python-format
+msgid "Show std field 3"
+msgstr "Standardfeld 3 anzeigen"
+
+#. module: plm
+#: model:ir.model.fields.selection,name:plm.selection__ir_attachment__state__undermodify
+#: model:ir.model.fields.selection,name:plm.selection__product_template__state__undermodify
+msgid "Sotto Modifica"
+msgstr "Unter Bearbeiten"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.mrp_bom_tree_view_where model_terms:ir.ui.view,arch_db:plm.plm_bom_form_view
+#: model_terms:ir.ui.view,arch_db:plm.plm_bom_tree_structure model_terms:ir.ui.view,arch_db:plm.plm_bom_tree_view
+#: model_terms:ir.ui.view,arch_db:plm.plm_mrp_bom_line_view_form
+msgid "Source Relation Document"
+msgstr "Quellbeziehungsdokument"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_mrp_bom_filter_inherit
+msgid "Source Relationship"
+msgstr "Quellenbeziehung"
+
+#. module: plm
+#: code:addons/plm/models/plm_finishing.py:0 code:addons/plm/models/plm_treatment.py:0
+#: model:ir.model.fields,field_description:plm.field_plm_finishing__name model:ir.model.fields,field_description:plm.field_plm_treatment__name
+#, python-format
+msgid "Specification"
+msgstr "Spezifikation"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_product_product__sale_ok model:ir.model.fields,help:plm.field_product_template__sale_ok
+msgid "Specify if the product can be selected in a sales order line."
+msgstr "Geben Sie an, ob das Produkt in einer Verkaufsauftragsposition ausgewählt werden kann."
+
+#. module: plm
+#: code:addons/plm/models/plm_descriptions.py:0 model:ir.model.fields,help:plm.field_plm_description__unitab
+#, python-format
+msgid "Specify normative rule (UNI, ISO, DIN...). It will be queued to build the product description."
+msgstr "Normative Regel angeben (UNI, ISO, DIN...). Es wird in die Warteschlange gestellt, um die Produktbeschreibung zu erstellen."
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_ir_attachment__printout model:ir.model.fields,help:plm.field_mrp_document__printout
+msgid "Stampa contenuto PDF."
+msgstr "PDF-Inhalt drucken."
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__printout model:ir.model.fields,field_description:plm.field_mrp_document__printout
+msgid "Stampare Contenuto"
+msgstr "Inhalt drucken"
+
+#. module: plm
+#: code:addons/plm/models/plm_descriptions.py:0 code:addons/plm/models/product_product.py:0
+#: model:ir.model.fields,field_description:plm.field_plm_description__description
+#, python-format
+msgid "Standard Description"
+msgstr "Standardbeschreibung"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_component_base_form model_terms:ir.ui.view,arch_db:plm.plm_product_product_normal_form_view_inherit
+msgid "Standard Description Parameters"
+msgstr "Standardbeschreibungsparameter"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_product_product_normal_form_view_inherit
+msgid "Standard description parameters info"
+msgstr "Standard Beschreibung Parameter Info"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__state model:ir.model.fields,field_description:plm.field_mrp_bom__state
+#: model:ir.model.fields,field_description:plm.field_mrp_bom_line__state model:ir.model.fields,field_description:plm.field_mrp_document__state
+#: model:ir.model.fields,field_description:plm.field_product_product__state model:ir.model.fields,field_description:plm.field_product_template__state
+msgid "Stato"
+msgstr "Zustand"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0 code:addons/plm/models/mrp_bom.py:0 code:addons/plm/models/mrp_bom_line.py:0
+#: code:addons/plm/models/plm_backup_document.py:0 code:addons/plm/models/product_template.py:0
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc__state model_terms:ir.ui.view,arch_db:plm.ir_attachment_search
+#, python-format
+msgid "Status"
+msgstr "Status"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0 code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Status moved to: %s by %s."
+msgstr "Status verschoben nach: %s von %s."
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0
+#, python-format
+msgid "Status moved to: %s."
+msgstr "Status verschoben nach: %s."
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_search_button
+msgid "Status:"
+msgstr "Status:"
+
+#. module: plm
+#: code:addons/plm/models/plm_backup_document.py:0 model:ir.model.fields,field_description:plm.field_plm_backupdoc__document_name
+#, python-format
+msgid "Stored Name"
+msgstr "Gespeicherter Name"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_temporary__summarize
+msgid "Summarise Bom Lines if needed."
+msgstr "Fassen Sie bei Bedarf Stücklisten zusammen."
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__engineering_surface
+#: model:ir.model.fields,field_description:plm.field_product_template__engineering_surface
+msgid "Superficie Finitura CAD"
+msgstr "Oberflächenbeschaffenheit CAD"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__tmp_surface
+msgid "Superficie di Finitura"
+msgstr "Oberflächenveredlung"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_product_product__engineering_surface model:ir.model.fields,help:plm.field_product_template__engineering_surface
+msgid "Superficie di Finitura per il prodotto corrente, solo descrizione per il cartiglio."
+msgstr "Finish-Oberfläche für das aktuelle Produkt, Beschreibung nur für das Schriftfeld."
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0 model:ir.model,name:plm.model_plm_finishing
+#, python-format
+msgid "Surface Finishing"
+msgstr "Oberflächenveredelung"
+
+#. module: plm
+#: code:addons/plm/models/plm_finishing.py:0 model:ir.model.constraint,message:plm.constraint_plm_finishing_name_uniq
+#, python-format
+msgid "Surface Finishing has to be unique !"
+msgstr "Oberflächenveredelung muss einzigartig sein!"
+
+#. module: plm
+#: code:addons/plm/models/product_template.py:0
+#, python-format
+msgid "Surface finishing for current product, only description for titleblock."
+msgstr "Oberflächenveredelung für aktuelles Produkt, nur Beschreibung für Schriftfeld."
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_description
+msgid "Technical Features"
+msgstr "Technische Eigenschaften"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_component_base_form model_terms:ir.ui.view,arch_db:plm.plm_product_product_normal_form_view_inherit
+msgid "Technical Information"
+msgstr "Technische Information"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_description
+msgid "Technical feature label and formatting"
+msgstr "Bezeichnung und Formatierung technischer Merkmale"
+
+#. module: plm
+#: code:addons/plm/models/plm_temporary.py:0
+#, python-format
+msgid "Temp"
+msgstr "Temp"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_product_product_normal_form_view_inherit
+msgid "Template"
+msgstr "Schablone"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_temporary__name
+msgid "Temporaneo"
+msgstr "Vorübergehend"
+
+#. module: plm
+#: model:ir.model,name:plm.model_plm_temporary model:ir.model,name:plm.model_plm_temporary_message
+msgid "Temporary Class"
+msgstr "Temporäre Klasse"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0 model:ir.model,name:plm.model_plm_treatment
+#, python-format
+msgid "Termic Treatment"
+msgstr "Thermische Behandlung"
+
+#. module: plm
+#: code:addons/plm/models/plm_treatment.py:0 model:ir.model.constraint,message:plm.constraint_plm_treatment_name_uniq
+#, python-format
+msgid "Termic Treatment has to be unique !"
+msgstr "Termic Treatment muss einzigartig sein!"
+
+#. module: plm
+#: code:addons/plm/models/product_template.py:0
+#, python-format
+msgid "Termic treatment for current product, only description for titleblock."
+msgstr "Begriffsbehandlung für aktuelles Produkt, nur Beschreibung für Schriftfeld."
+
+#. module: plm
+#: code:addons/plm/models/mrp_bom.py:0
+#, python-format
+msgid "The BoM net weight in Kg."
+msgstr "Das BoM-Nettogewicht in kg."
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment_relations.py:0 model:ir.model.constraint,message:plm.constraint_ir_attachment_relation_relation_uniq
+#, python-format
+msgid "The Document Relation must be unique !"
+msgstr "Die Document Relation muss eindeutig sein!"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0
+#, python-format
+msgid "The active state does not allow you to make save action"
+msgstr "Im aktiven Zustand können Sie keine Sicherungsaktion durchführen"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0
+#, python-format
+msgid "The document %s - %s has not checked-in"
+msgstr "Das Dokument %s - %s wurde nicht eingecheckt"
+
+#. module: plm
+#: code:addons/plm/models/plm_checkout.py:0
+#, python-format
+msgid "The documentid must be unique !"
+msgstr "Die documentid muss eindeutig sein!"
+
+#. module: plm
+#: code:addons/plm/models/mrp_bom.py:0 code:addons/plm/models/mrp_bom_line.py:0 code:addons/plm/models/product_template.py:0
+#, python-format
+msgid "The revision of the product."
+msgstr "Die Überarbeitung des Produkts."
+
+#. module: plm
+#: code:addons/plm/models/mrp_bom.py:0 code:addons/plm/models/mrp_bom_line.py:0 code:addons/plm/models/product_template.py:0
+#, python-format
+msgid "The status of the product in its LifeCycle."
+msgstr "The status of the product in its LifeCycle."
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0 model:ir.model.fields,help:plm.field_ir_attachment_relation__child_state
+#: model:ir.model.fields,help:plm.field_ir_attachment_relation__parent_state model:ir.model.fields,help:plm.field_plm_backupdoc__state
+#, python-format
+msgid "The status of the product."
+msgstr "Der Status des Produkts."
+
+#. module: plm
+#: code:addons/plm/models/mrp_bom_line.py:0
+#, python-format
+msgid "There aren't related boms to this line."
+msgstr "Zu dieser Linie gibt es keine verwandten Namen."
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "This Module extend the capability of the activity adding a workflow and validation process similar to the EC0/ECR"
+msgstr "Dieses Modul erweitert die Leistungsfähigkeit der Aktivität und fügt einen Arbeitsablauf und einen Validierungsprozess ähnlich dem EC0/ECR hinzu"
+
+#. module: plm
+#: code:addons/plm/models/product_template.py:0
+#, python-format
+msgid "This is engineering reference to manage a different P/N from item Name."
+msgstr "Dies ist eine technische Referenz, um eine andere P/N als den Artikelnamen zu verwalten."
+
+#. module: plm
+#: code:addons/plm/models/mrp_bom.py:0 code:addons/plm/models/mrp_bom_line.py:0
+#, python-format
+msgid "This is the document object that declares this BoM."
+msgstr "Dies ist das Dokumentobjekt, das diese Stückliste deklariert."
+
+#. module: plm
+#: code:addons/plm/models/mrp_bom_line.py:0
+#, python-format
+msgid "This is the item reference position into the CAD document that declares this BoM."
+msgstr "Dies ist die Artikelreferenzposition im CAD-Dokument, das diese Stückliste deklariert."
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "This module adds permissions to sale module allowing some PLM procedures to work better."
+msgstr "Dieses Modul fügt Berechtigungen zum Verkaufsmodul hinzu, wodurch einige PLM-Verfahren besser funktionieren."
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "This module adds the capability to use the 3D WebGL inside your product and E-Commerce"
+msgstr "Dieses Modul fügt die Möglichkeit hinzu, 3D WebGL in Ihrem Produkt und E-Commerce zu verwenden"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "This module allows you to improve the capability of your odoo plm for managing the cutted parts"
+msgstr "Mit diesem Modul können Sie die Fähigkeit Ihres Odoo-PLM zur Verwaltung der geschnittenen Teile verbessern"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_dbthread__done
+msgid "This thread is done ?"
+msgstr "Dieser Thread ist fertig?"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_dbthread__threadCode
+msgid "Thread Code assigned automatically"
+msgstr "Fadencode wird automatisch zugewiesen"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_mrp_bom_line__cutted_type
+msgid "Tipo Calcolo Taglio"
+msgstr "Berechnungstyp Schnitt"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__document_type
+#: model:ir.model.fields,field_description:plm.field_mrp_document__document_type
+msgid "Tipo Documento"
+msgstr "Dokumentenart"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search model_terms:ir.ui.view,arch_db:plm.plm_backupdoc_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search_bck
+#: model_terms:ir.ui.view,arch_db:plm.plm_checkout_search model_terms:ir.ui.view,arch_db:plm.plm_component_base_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_docbom_search model_terms:ir.ui.view,arch_db:plm.view_mrp_bom_filter_inherit
+msgid "Today"
+msgstr "Heute"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__tmp_treatment
+msgid "Trattamento Termico"
+msgstr "Wärmebehandlung"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__engineering_treatment
+#: model:ir.model.fields,field_description:plm.field_product_template__engineering_treatment
+msgid "Trattamento Termico CAD"
+msgstr "CAD-Wärmebehandlung"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_product_product__engineering_treatment
+#: model:ir.model.fields,help:plm.field_product_template__engineering_treatment
+msgid "Trattamento termico per il prodotto corrente, solo descrizione per il cartiglio."
+msgstr "Wärmebehandlung für das aktuelle Produkt, Beschreibung nur für das Schriftfeld."
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_treatment
+msgid "Treatment"
+msgstr "Behandlung"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.plm_action_treatment_form model:ir.ui.menu,name:plm.menu_treatment
+msgid "Treatments"
+msgstr "Behandlungen"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__std_umc1
+msgid "UM / Caratteristica 1"
+msgstr "UM / Merkmal 1"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__std_umc2
+msgid "UM / Caratteristica 2"
+msgstr "UM / Merkmal 2"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__std_umc3
+msgid "UM / Caratteristica 3"
+msgstr "UM / Merkmal 3"
+
+#. module: plm
+#: code:addons/plm/models/plm_descriptions.py:0 code:addons/plm/models/product_product.py:0
+#: model:ir.model.fields,field_description:plm.field_plm_description__umc1
+#, python-format
+msgid "UM / Feature 1"
+msgstr "UM / Merkmal 1"
+
+#. module: plm
+#: code:addons/plm/models/plm_descriptions.py:0 code:addons/plm/models/product_product.py:0
+#: model:ir.model.fields,field_description:plm.field_plm_description__umc2
+#, python-format
+msgid "UM / Feature 2"
+msgstr "UM / Merkmal 2"
+
+#. module: plm
+#: code:addons/plm/models/plm_descriptions.py:0 code:addons/plm/models/product_product.py:0
+#: model:ir.model.fields,field_description:plm.field_plm_description__umc3
+#, python-format
+msgid "UM / Feature 3"
+msgstr "UM / Merkmal 3"
+
+#. module: plm
+#: code:addons/plm/models/plm_checkout.py:0
+#, python-format
+msgid ""
+"Unable to Check-In the document (-).\n"
+" You can't change writable flag."
+msgstr ""
+"Das Dokument kann nicht eingecheckt werden (-).\n"
+"Sie können das beschreibbare Flag nicht ändern."
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0
+#, python-format
+msgid "Unable to check-Out a document that is already checked id by user %r"
+msgstr "Ein Dokument, das bereits von Benutzer %r überprüft wurde, kann nicht ausgecheckt werden"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0
+#, python-format
+msgid "Unable to check-Out a document that is in state %r"
+msgstr "Ein Dokument im Status %r kann nicht ausgecheckt werden"
+
+#. module: plm
+#: code:addons/plm/models/plm_checkout.py:0
+#, python-format
+msgid "Unable to check-out the required document (-)."
+msgstr "Das erforderliche Dokument kann nicht ausgecheckt werden (-)."
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0
+#, python-format
+msgid "Unable to find document to check-out. Please save it."
+msgstr "Dokument zum Auschecken kann nicht gefunden werden. Bitte speichern Sie es."
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Unable to perform workFlow action due"
+msgstr "Die fällige WorkFlow-Aktion kann nicht ausgeführt werden"
+
+#. module: plm
+#: code:addons/plm/models/plm_backup_document.py:0
+#, python-format
+msgid ""
+"Unable to remove the document (-) from backup set.\n"
+" It isn't a backup file, it's original current one."
+msgstr ""
+"Das Dokument (-) kann nicht aus dem Sicherungssatz entfernt werden.\n"
+"Es ist keine Sicherungsdatei, sondern eine aktuelle Originaldatei."
+
+#. module: plm
+#: code:addons/plm/models/plm_backup_document.py:0
+#, python-format
+msgid ""
+"Unable to remove the required document.\n"
+" You aren't authorized in this context."
+msgstr ""
+"Das erforderliche Dokument kann nicht entfernt werden.\n"
+"  Sie sind in diesem Zusammenhang nicht berechtigt."
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0 model:ir.model.fields,field_description:plm.field_report_plmcomponent__count_component_modified
+#, python-format
+msgid "Under Modify"
+msgstr "Unter Ändern"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0 code:addons/plm/models/product_product.py:0 code:addons/plm/models/product_template.py:0
+#, python-format
+msgid "UnderModify"
+msgstr "UnterÄndern"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__message_unread
+msgid "Unread Messages"
+msgstr "Ungelesene Nachrichten"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__message_unread_counter
+msgid "Unread Messages Counter"
+msgstr "Zähler für ungelesene Nachrichten"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.bom_structure_all
+msgid "UoM"
+msgstr "UoM"
+
+#. module: plm
+#: model:ir.actions.server,name:plm.ir_update_preview_cron_ir_actions_server model:ir.cron,cron_name:plm.ir_update_preview_cron
+#: model:ir.cron,name:plm.ir_update_preview_cron
+msgid "Update Preview"
+msgstr "Vorschau aktualisieren"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Upload summarized bom from client application"
+msgstr "Laden Sie die zusammengefasste Liste aus der Client-Anwendung hoch"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Use translations in product description providing also a view to manage plm description translations."
+msgstr "Verwenden Sie Übersetzungen in Produktbeschreibungen, die auch eine Ansicht zum Verwalten von Übersetzungen von Plm-Beschreibungen bieten."
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0 code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "User Last Wkf"
+msgstr "Benutzer Letzte Wkf"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0 code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "User Release"
+msgstr "Benutzerfreigabe"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0 code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "User Revision"
+msgstr "Benutzerrevision"
+
+#. module: plm
+#: model:ir.model,name:plm.model_res_users
+msgid "Users"
+msgstr "Benutzer"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Using a simple wizard interfaces for printing PLM report's in different languages"
+msgstr "Verwenden einer einfachen Assistentenschnittstelle zum Drucken von PLM-Berichten in verschiedenen Sprachen"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_checkout__userid
+msgid "Utente Relazionato"
+msgstr "Zugehöriger Benutzer"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__revision_user
+#: model:ir.model.fields,field_description:plm.field_mrp_document__revision_user
+#: model:ir.model.fields,field_description:plm.field_product_product__revision_user
+msgid "Utente Revisione"
+msgstr "Nutzerbewertung"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__attachment_release_user
+#: model:ir.model.fields,field_description:plm.field_mrp_document__attachment_release_user
+#: model:ir.model.fields,field_description:plm.field_product_product__release_user
+msgid "Utente Rilascio"
+msgstr "Benutzerfreigabe"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__workflow_user
+#: model:ir.model.fields,field_description:plm.field_mrp_document__workflow_user
+#: model:ir.model.fields,field_description:plm.field_product_product__workflow_user
+msgid "Utente ultimo WF"
+msgstr "WF letzter Benutzer"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__std_value1
+msgid "Valore 1"
+msgstr "Wert 1"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__std_value2
+msgid "Valore 2"
+msgstr "Wert 2"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__std_value3
+msgid "Valore 3"
+msgstr "Wert 3"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Value 1"
+msgstr "Wert 1"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Value 2"
+msgstr "Wert 2"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Value 3"
+msgstr "Wert 3"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_mrp_bom_filter_inherit
+msgid "Variant Name"
+msgstr "Variantenname"
+
+#. module: plm
+#: model:ir.model,name:plm.model_ir_ui_view
+msgid "View"
+msgstr "Ansicht"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.act_view_doc_related
+msgid "View Document Relations"
+msgstr "Dokumentbeziehungen anzeigen"
+
+#. module: plm
+#: model:res.groups,name:plm.group_plm_view_user
+msgid "View User"
+msgstr "Benutzer anzeigen"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__website_message_ids
+msgid "Website Messages"
+msgstr "Website-Nachrichten"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_ir_attachment__website_message_ids
+msgid "Website communication history"
+msgstr "Kommunikationsgeschichte der Website"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_mrp_bom__weight_net model_terms:ir.ui.view,arch_db:plm.bom_structure_all
+msgid "Weight"
+msgstr "Gewicht"
+
+#. module: plm
+#: code:addons/plm/models/mrp_bom_line.py:0
+#, python-format
+msgid "Weight Net"
+msgstr "Gewicht netto"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.mrp_bom_tree_view_where
+msgid "Where Used Bill of Materials"
+msgstr "Wo verwendet Stückliste"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_component_base_form model_terms:ir.ui.view,arch_db:plm.plm_product_product_normal_form_view_inherit
+msgid "Workflow"
+msgstr "Arbeitsablauf"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0 code:addons/plm/models/product_template.py:0
+#, python-format
+msgid "Writable"
+msgstr "Schreibbar"
+
+#. module: plm
+#: code:addons/plm/models/report_on_document.py:0 model:ir.model.fields,field_description:plm.field_report_ir_attachment_file__write_uid
+#, python-format
+msgid "Write User"
+msgstr "Benutzer schreiben"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search model_terms:ir.ui.view,arch_db:plm.plm_backupdoc_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search_bck
+#: model_terms:ir.ui.view,arch_db:plm.plm_checkout_search model_terms:ir.ui.view,arch_db:plm.plm_component_base_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_docbom_search model_terms:ir.ui.view,arch_db:plm.view_mrp_bom_filter_inherit
+msgid "Yesterday"
+msgstr "Gestern"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "You are trying to create a product without values"
+msgstr "Sie versuchen, ein Produkt ohne Werte zu erstellen"
+
+#. module: plm
+#: code:addons/plm/models/plm_backup_document.py:0
+#, python-format
+msgid "You can restore only a document at a time."
+msgstr "Sie können jeweils nur ein Dokument wiederherstellen."
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0
+#, python-format
+msgid "You cannot edit a file not in check-out by you! User ID %s"
+msgstr "Sie können eine Datei, die nicht von Ihnen ausgecheckt ist, nicht bearbeiten! Benutzer-ID %s"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_mrp_bom__source_id model:ir.model.fields,field_description:plm.field_mrp_bom_line__source_id
+msgid "engineering_document_name"
+msgstr "engineering_document_name"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "extend the plm module adding support for the WebGl 3d Environment"
+msgstr "Erweitern Sie das plm-Modul und fügen Sie Unterstützung für die WebGl 3d-Umgebung hinzu"
+
+#. module: plm
+#: code:addons/plm/models/plm_checkout.py:0
+#, python-format
+msgid "hostname"
+msgstr "Hostname"
+
+#. module: plm
+#: model:ir.model,name:plm.model_plm_backupdoc
+msgid "manage your document back up"
+msgstr "Verwalten Sie Ihre Dokumentsicherung"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_checkout__hostname
+msgid "nome host"
+msgstr "Hostname"
+
+#. module: plm
+#: model:ir.model,name:plm.model_plm_client
+msgid "plm.client"
+msgstr "plm.client"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0 model:ir.model.fields,field_description:plm.field_product_product__readonly_std_umc1
+#: model:ir.model.fields,field_description:plm.field_product_product__readonly_std_umc3
+#, python-format
+msgid "put readOnly the field standard description 1"
+msgstr "setze readOnly das Feld Standardbeschreibung 1"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0 model:ir.model.fields,field_description:plm.field_product_product__readonly_std_umc2
+#, python-format
+msgid "put readOnly the field standard description 1 "
+msgstr "setze readOnly das Feld Standardbeschreibung 1 "
+
+#. module: plm
+#: code:addons/plm/models/mrp_bom.py:0
+#, python-format
+msgid "saveChild.toCompute : Father \"%s\" refers to himself"
+msgstr "saveChild.toCompute: Vater „% s“ bezieht sich auf sich selbst"
+
+#. module: plm
+#: code:addons/plm/models/product_product_document_rel.py:0
+#, python-format
+msgid "saveChild: Unable to create a link."
+msgstr "saveChild: Link kann nicht erstellt werden."
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment_relations.py:0
+#, python-format
+msgid "saveChild: Unable to create a relation between documents. One of documents involved doesn't exist."
+msgstr "saveChild: Es konnte keine Beziehung zwischen Dokumenten erstellt werden. Eines der beteiligten Dokumente existiert nicht."
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment_relations.py:0
+#, python-format
+msgid "saveChild: Unable to create a relation."
+msgstr "saveChild: Es konnte keine Beziehung erstellt werden."
+
+#. module: plm
+#: code:addons/plm/models/mrp_bom.py:0
+#, python-format
+msgid "save_child :  unable to create a relation for part ({0}) with source ({1}) : {2}."
+msgstr "save_child: Es kann keine Beziehung für Teil ({0}) mit Quelle ({1}) erstellt werden: {2}."
+
+#. module: plm
+#: code:addons/plm/models/mrp_bom.py:0
+#, python-format
+msgid "save_parent :  unable to create a relation for part ({0}) with source ({1}) : {2}."
+msgstr "save_parent: Es konnte keine Beziehung für Teil ({0}) mit Quelle ({1}) erstellt werden: {2}."

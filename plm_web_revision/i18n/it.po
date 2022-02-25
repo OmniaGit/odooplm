@@ -1,0 +1,210 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* plm_web_revision
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 15.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-02-08 14:40+0000\n"
+"PO-Revision-Date: 2022-02-08 15:58+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: it\n"
+"X-Generator: Poedit 2.0.6\n"
+
+#. module: plm_web_revision
+#: model_terms:ir.ui.view,arch_db:plm_web_revision.ir_attachment_new_revision
+#: model_terms:ir.ui.view,arch_db:plm_web_revision.plm_component_new_revision
+msgid "\"Are you sure you want to create a new Revision?\""
+msgstr "\"Are you sure you want to create a new Revision?\""
+
+#. module: plm_web_revision
+#: code:addons/plm_web_revision/models/ir_attachment.py:0
+#: code:addons/plm_web_revision/models/product_product.py:0
+#, python-format
+msgid "%s cannot be revised because the state isn't released!"
+msgstr "%s non può essere rivisto perché lo stato non è stato rilasciato!"
+
+#. module: plm_web_revision
+#: model_terms:ir.ui.view,arch_db:plm_web_revision.ir_attachment_new_revision
+#: model_terms:ir.ui.view,arch_db:plm_web_revision.plm_component_new_revision
+msgid "Cancel"
+msgstr "Annulla"
+
+#. module: plm_web_revision
+#: model_terms:ir.ui.view,arch_db:plm_web_revision.ir_attachment_new_revision
+#: model_terms:ir.ui.view,arch_db:plm_web_revision.plm_component_new_revision
+msgid "Create New Revision"
+msgstr "Crea nuova revisione"
+
+#. module: plm_web_revision
+#: model:ir.model.fields,field_description:plm_web_revision.field_document_rev_wizard__create_uid
+#: model:ir.model.fields,field_description:plm_web_revision.field_product_rev_wizard__create_uid
+msgid "Created by"
+msgstr "Creato da"
+
+#. module: plm_web_revision
+#: model:ir.model.fields,field_description:plm_web_revision.field_document_rev_wizard__create_date
+#: model:ir.model.fields,field_description:plm_web_revision.field_product_rev_wizard__create_date
+msgid "Created on"
+msgstr "Creato il"
+
+#. module: plm_web_revision
+#: model_terms:ir.ui.view,arch_db:plm_web_revision.ir_attachment_new_revision
+#: model_terms:ir.ui.view,arch_db:plm_web_revision.plm_component_new_revision
+msgid "Creation of New Revision"
+msgstr "Creazione di una nuova revisione"
+
+#. module: plm_web_revision
+#: code:addons/plm_web_revision/models/product_product.py:0
+#, python-format
+msgid "Current component cannot be revised!"
+msgstr "Il componente attuale non può essere rivisto!"
+
+#. module: plm_web_revision
+#: code:addons/plm_web_revision/models/ir_attachment.py:0
+#, python-format
+msgid "Current document cannot be revised!"
+msgstr "Il documento attuale non può essere rivisto!"
+
+#. module: plm_web_revision
+#: model:ir.model.fields,field_description:plm_web_revision.field_document_rev_wizard__display_name
+#: model:ir.model.fields,field_description:plm_web_revision.field_product_rev_wizard__display_name
+msgid "Display Name"
+msgstr "Nome visualizzato"
+
+#. module: plm_web_revision
+#: code:addons/plm_web_revision/models/product_product.py:0
+#: model:ir.model.fields,field_description:plm_web_revision.field_product_rev_wizard__reviseDocument
+#, python-format
+msgid "Document Revision"
+msgstr "Revisione del documento"
+
+#. module: plm_web_revision
+#: model:ir.model,name:plm_web_revision.model_document_rev_wizard
+msgid "Document Revision Wizard"
+msgstr "Procedura guidata di revisione del documento"
+
+#. module: plm_web_revision
+#: code:addons/plm_web_revision/models/ir_attachment.py:0
+#, python-format
+msgid "Document cannot be revised because the document type is a CAD type document!"
+msgstr "Il documento non può essere rivisto perché il tipo di documento è un documento di tipo CAD!"
+
+#. module: plm_web_revision
+#: code:addons/plm_web_revision/models/product_product.py:0
+#: model:ir.model.fields,field_description:plm_web_revision.field_product_rev_wizard__reviseEbom
+#, python-format
+msgid "Engineering Bom Revision"
+msgstr "Revisione della Bom di ingegneria"
+
+#. module: plm_web_revision
+#: model:ir.model.fields,field_description:plm_web_revision.field_document_rev_wizard__id
+#: model:ir.model.fields,field_description:plm_web_revision.field_product_rev_wizard__id
+msgid "ID"
+msgstr "ID"
+
+#. module: plm_web_revision
+#: model:ir.model.fields,field_description:plm_web_revision.field_document_rev_wizard____last_update
+#: model:ir.model.fields,field_description:plm_web_revision.field_product_rev_wizard____last_update
+msgid "Last Modified on"
+msgstr "Ultima modifica il"
+
+#. module: plm_web_revision
+#: model:ir.model.fields,field_description:plm_web_revision.field_document_rev_wizard__write_uid
+#: model:ir.model.fields,field_description:plm_web_revision.field_product_rev_wizard__write_uid
+msgid "Last Updated by"
+msgstr "Ultimo aggiornamento di"
+
+#. module: plm_web_revision
+#: model:ir.model.fields,field_description:plm_web_revision.field_document_rev_wizard__write_date
+#: model:ir.model.fields,field_description:plm_web_revision.field_product_rev_wizard__write_date
+msgid "Last Updated on"
+msgstr "Ultimo aggiornamento il"
+
+#. module: plm_web_revision
+#: code:addons/plm_web_revision/models/product_product.py:0
+#: model:ir.model.fields,help:plm_web_revision.field_product_rev_wizard__reviseEbom
+#, python-format
+msgid "Make new revision of the linked Engineering BOM ?"
+msgstr "Fare una nuova revisione della distinta base tecnica collegata?"
+
+#. module: plm_web_revision
+#: code:addons/plm_web_revision/models/product_product.py:0
+#: model:ir.model.fields,help:plm_web_revision.field_product_rev_wizard__reviseNbom
+#, python-format
+msgid "Make new revision of the linked Normal BOM ?"
+msgstr "Fare una nuova revisione della distinta base normale collegata?"
+
+#. module: plm_web_revision
+#: code:addons/plm_web_revision/models/product_product.py:0
+#: model:ir.model.fields,help:plm_web_revision.field_product_rev_wizard__reviseSbom
+#, python-format
+msgid "Make new revision of the linked Spare BOM ?"
+msgstr "Effettuare una nuova revisione della distinta base di ricambio collegata?"
+
+#. module: plm_web_revision
+#: code:addons/plm_web_revision/models/product_product.py:0
+#: model:ir.model.fields,help:plm_web_revision.field_product_rev_wizard__reviseDocument
+#, python-format
+msgid "Make new revision of the linked document ?"
+msgstr "Fare una nuova revisione del documento collegato?"
+
+#. module: plm_web_revision
+#: model:ir.actions.act_window,name:plm_web_revision.action_document_new_revision
+msgid "New Document Revision"
+msgstr "Nuova revisione del documento"
+
+#. module: plm_web_revision
+#: model:ir.actions.act_window,name:plm_web_revision.action_product_new_revision
+msgid "New Revision"
+msgstr "Nuova revisione"
+
+#. module: plm_web_revision
+#: code:addons/plm_web_revision/models/product_product.py:0
+#: model:ir.model.fields,field_description:plm_web_revision.field_product_rev_wizard__reviseNbom
+#, python-format
+msgid "Normal Bom Revision"
+msgstr "Revisione distinta base normale"
+
+#. module: plm_web_revision
+#: model:ir.model,name:plm_web_revision.model_product_rev_wizard
+msgid "Product Revision wizard"
+msgstr "Procedura guidata di revisione del prodotto"
+
+#. module: plm_web_revision
+#: code:addons/plm_web_revision/models/ir_attachment.py:0
+#, python-format
+msgid "Revised Document"
+msgstr "Documento revisionato"
+
+#. module: plm_web_revision
+#: code:addons/plm_web_revision/models/product_product.py:0
+#, python-format
+msgid "Revised Product"
+msgstr "Prodotto rivisto"
+
+#. module: plm_web_revision
+#: code:addons/plm_web_revision/models/product_product.py:0
+#, python-format
+msgid "Something wrong happens during new component revision process."
+msgstr "Si è verificato qualcosa di sbagliato durante il processo di revisione di un nuovo componente."
+
+#. module: plm_web_revision
+#: code:addons/plm_web_revision/models/ir_attachment.py:0
+#: code:addons/plm_web_revision/models/product_product.py:0
+#, python-format
+msgid "Something wrong happens during new document revision process."
+msgstr "Si è verificato qualcosa di sbagliato durante il processo di revisione del nuovo documento."
+
+#. module: plm_web_revision
+#: code:addons/plm_web_revision/models/product_product.py:0
+#: model:ir.model.fields,field_description:plm_web_revision.field_product_rev_wizard__reviseSbom
+#, python-format
+msgid "Spare Bom Revision"
+msgstr "Revisione distinta base di ricambio"

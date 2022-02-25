@@ -1,0 +1,133 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* plm_suspended
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 15.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-02-08 13:26+0000\n"
+"PO-Revision-Date: 2022-02-08 14:31+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: zh_HK\n"
+"X-Generator: Poedit 2.0.6\n"
+
+#. module: plm_suspended
+#: model:ir.model,name:plm_suspended.model_ir_attachment
+msgid "Attachment"
+msgstr "依恋"
+
+#. module: plm_suspended
+#: model:ir.model.fields.selection,name:plm_suspended.selection__ir_attachment__state__draft
+msgid "Bozza"
+msgstr "草稿"
+
+#. module: plm_suspended
+#: model:ir.model.fields.selection,name:plm_suspended.selection__ir_attachment__state__confirmed
+msgid "Confermato"
+msgstr "确认的"
+
+#. module: plm_suspended
+#: model:ir.model.fields,help:plm_suspended.field_product_product__state
+#: model:ir.model.fields,help:plm_suspended.field_product_template__state
+msgid "Lo stato del prodotto nel suo ciclo di vita."
+msgstr "产品在其生命周期内的状态."
+
+#. module: plm_suspended
+#: model:ir.model.fields,help:plm_suspended.field_ir_attachment__state
+#: model:ir.model.fields,help:plm_suspended.field_mrp_document__state
+msgid "Lo stato del prodotto."
+msgstr "产品的状态."
+
+#. module: plm_suspended
+#: model:ir.model.fields.selection,name:plm_suspended.selection__ir_attachment__state__obsoleted
+msgid "Obsoleto"
+msgstr "过时的"
+
+#. module: plm_suspended
+#: model:ir.model.fields,field_description:plm_suspended.field_ir_attachment__old_state
+#: model:ir.model.fields,field_description:plm_suspended.field_mrp_document__old_state
+#: model:ir.model.fields,field_description:plm_suspended.field_product_product__old_state
+#: model:ir.model.fields,field_description:plm_suspended.field_product_template__old_state
+msgid "Old State"
+msgstr "旧州"
+
+#. module: plm_suspended
+#: code:addons/plm_suspended/models/ir_attachment.py:0
+#: code:addons/plm_suspended/models/product_template.py:0
+#, python-format
+msgid "Old Status"
+msgstr "地位老的"
+
+#. module: plm_suspended
+#: model:ir.model,name:plm_suspended.model_product_product
+msgid "Product"
+msgstr "产品"
+
+#. module: plm_suspended
+#: model:ir.model,name:plm_suspended.model_product_template
+msgid "Product Template"
+msgstr "产品模板"
+
+#. module: plm_suspended
+#: model:ir.model.fields.selection,name:plm_suspended.selection__ir_attachment__state__released
+msgid "Rilasciato"
+msgstr "发行"
+
+#. module: plm_suspended
+#: model:ir.model.fields.selection,name:plm_suspended.selection__ir_attachment__state__undermodify
+msgid "Sotto Modifica"
+msgstr "在编辑下"
+
+#. module: plm_suspended
+#: model:ir.model.fields,field_description:plm_suspended.field_ir_attachment__state
+#: model:ir.model.fields,field_description:plm_suspended.field_mrp_document__state
+#: model:ir.model.fields,field_description:plm_suspended.field_product_product__state
+#: model:ir.model.fields,field_description:plm_suspended.field_product_template__state
+msgid "Stato"
+msgstr "状态"
+
+#. module: plm_suspended
+#: code:addons/plm_suspended/models/ir_attachment.py:0
+#, python-format
+msgid "Status"
+msgstr "地位"
+
+#. module: plm_suspended
+#: code:addons/plm_suspended/models/ir_attachment.py:0
+#: code:addons/plm_suspended/models/product_product.py:0
+#, python-format
+msgid "Status moved to:{}."
+msgstr "状态移至：{}."
+
+#. module: plm_suspended
+#: model_terms:ir.ui.view,arch_db:plm_suspended.ir_attachment_spare_extension
+#: model_terms:ir.ui.view,arch_db:plm_suspended.view_ir_attachment_suspended
+msgid "Suspend"
+msgstr "暂停"
+
+#. module: plm_suspended
+#: code:addons/plm_suspended/models/ir_attachment.py:0
+#: code:addons/plm_suspended/models/product_template.py:0
+#: model:ir.model.fields.selection,name:plm_suspended.selection__ir_attachment__state__suspended
+#: model:ir.model.fields.selection,name:plm_suspended.selection__product_template__state__suspended
+#, python-format
+msgid "Suspended"
+msgstr "暂停的"
+
+#. module: plm_suspended
+#: code:addons/plm_suspended/models/ir_attachment.py:0
+#, python-format
+msgid "The status of the product."
+msgstr "产品的状态."
+
+#. module: plm_suspended
+#: model_terms:ir.ui.view,arch_db:plm_suspended.ir_attachment_spare_extension
+#: model_terms:ir.ui.view,arch_db:plm_suspended.view_ir_attachment_suspended
+msgid "Un-Suspend"
+msgstr "解除挂起"

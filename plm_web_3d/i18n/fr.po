@@ -1,0 +1,136 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* plm_web_3d
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 15.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-02-08 14:03+0000\n"
+"PO-Revision-Date: 2022-02-08 15:07+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: fr\n"
+"X-Generator: Poedit 2.0.6\n"
+
+#. module: plm_web_3d
+#: model_terms:ir.ui.view,arch_db:plm_web_3d.main_treejs_view
+msgid "<b>Document Information</b>"
+msgstr "<b>Informations sur le document</b>"
+
+#. module: plm_web_3d
+#: model_terms:ir.ui.view,arch_db:plm_web_3d.main_treejs_view
+msgid "<b>Product Information</b>"
+msgstr "<b>Informations sur le produit</b>"
+
+#. module: plm_web_3d
+#: model_terms:ir.ui.view,arch_db:plm_web_3d.main_treejs_view
+msgid "<i class=\"fa fa-home\"/>Fit"
+msgstr "<i class=\"fa fa-home\"/>Ajuster"
+
+#. module: plm_web_3d
+#: model_terms:ir.ui.view,arch_db:plm_web_3d.main_treejs_view
+msgid "<i class=\"fa fa-save\"/>Save"
+msgstr "<i class=\"fa fa-save\"/>Enregistrer"
+
+#. module: plm_web_3d
+#: model_terms:ir.ui.view,arch_db:plm_web_3d.plm_web_3d_plm_view_attachment_form_plm_hinerit
+msgid "<span>WebGl</span>"
+msgstr "<span>WebGL</span>"
+
+#. module: plm_web_3d
+#: model:ir.model,name:plm_web_3d.model_ir_attachment
+msgid "Attachment"
+msgstr "Pièce jointe"
+
+#. module: plm_web_3d
+#: model_terms:ir.ui.view,arch_db:plm_web_3d.main_treejs_view
+msgid "BackGround:"
+msgstr "Contexte:"
+
+#. module: plm_web_3d
+#: model:ir.model.fields,help:plm_web_3d.field_ir_attachment__has_web3d
+#: model:ir.model.fields,help:plm_web_3d.field_mrp_document__has_web3d
+#: model:ir.model.fields,help:plm_web_3d.field_plm_component_document_rel__has_web3d
+msgid "Check if this document has releted 3d web document"
+msgstr "Vérifiez si ce document a releted le document Web 3d"
+
+#. module: plm_web_3d
+#: model_terms:ir.ui.view,arch_db:plm_web_3d.main_treejs_view
+msgid "Color:"
+msgstr "Couleur:"
+
+#. module: plm_web_3d
+#: model:ir.model,name:plm_web_3d.model_plm_component_document_rel
+msgid "Component Document Relations"
+msgstr "Relations entre les documents des composants"
+
+#. module: plm_web_3d
+#: model:ir.model.fields,field_description:plm_web_3d.field_ir_attachment__has_web3d
+#: model:ir.model.fields,field_description:plm_web_3d.field_mrp_document__has_web3d
+msgid "Has 3d Web link"
+msgstr "A un lien Web 3d"
+
+#. module: plm_web_3d
+#: model:ir.model.fields,field_description:plm_web_3d.field_plm_component_document_rel__has_web3d
+msgid "Has Web3d"
+msgstr "A Web3d"
+
+#. module: plm_web_3d
+#: model_terms:ir.ui.view,arch_db:plm_web_3d.main_treejs_view
+msgid "OdooPLM"
+msgstr "OdooPLM"
+
+#. module: plm_web_3d
+#: model_terms:ir.ui.view,arch_db:plm_web_3d.main_treejs_view
+msgid "Outdoor 1"
+msgstr "Extérieur 1"
+
+#. module: plm_web_3d
+#: model_terms:ir.ui.view,arch_db:plm_web_3d.main_treejs_view
+msgid "Room 1"
+msgstr "Chambre 1"
+
+#. module: plm_web_3d
+#: model_terms:ir.ui.view,arch_db:plm_web_3d.main_treejs_view
+msgid "Room 2"
+msgstr "Chambre 2"
+
+#. module: plm_web_3d
+#: model_terms:ir.ui.view,arch_db:plm_web_3d.main_treejs_view
+msgid "Tecnical"
+msgstr "Technique"
+
+#. module: plm_web_3d
+#: model_terms:ir.ui.view,arch_db:plm_web_3d.main_treejs_view
+msgid "ThreeJs"
+msgstr "TroisJs"
+
+#. module: plm_web_3d
+#: model_terms:ir.ui.view,arch_db:plm_web_3d.main_treejs_view
+msgid "Transparency:"
+msgstr "Transparence:"
+
+#. module: plm_web_3d
+#: model_terms:ir.ui.view,arch_db:plm_web_3d.plm_web_3d_plm_document_kanban_view
+msgid "WebGl <i class=\"fa fa-cube\"/>"
+msgstr "WebGL <i class=\"fa fa-cube\"/>"
+
+#. module: plm_web_3d
+#: model_terms:ir.ui.view,arch_db:plm_web_3d.main_treejs_view
+msgid "WorkShop 1"
+msgstr "Atelier 1"
+
+#. module: plm_web_3d
+#: model_terms:ir.ui.view,arch_db:plm_web_3d.main_treejs_view
+msgid "WorkShop 2"
+msgstr "Atelier 2"
+
+#. module: plm_web_3d
+#: model_terms:ir.ui.view,arch_db:plm_web_3d.main_treejs_view
+msgid "WorkShop 3"
+msgstr "Atelier 3"

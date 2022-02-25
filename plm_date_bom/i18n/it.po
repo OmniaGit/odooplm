@@ -1,0 +1,196 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* plm_date_bom
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 15.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-02-07 10:31+0000\n"
+"PO-Revision-Date: 2022-02-07 11:47+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: it\n"
+"X-Generator: Poedit 2.0.6\n"
+
+#. module: plm_date_bom
+#: model_terms:ir.ui.view,arch_db:plm_date_bom.plm_mrp_bom_date_compute
+msgid "All Related Boms to Update"
+msgstr "Tutte le distinte base correlate da aggiornare"
+
+#. module: plm_date_bom
+#: model:ir.model,name:plm_date_bom.model_mrp_bom
+msgid "Bill of Material"
+msgstr "Distinta base"
+
+#. module: plm_date_bom
+#: model:ir.model,name:plm_date_bom.model_mrp_bom_line
+msgid "Bill of Material Line"
+msgstr "Riga distinta base"
+
+#. module: plm_date_bom
+#: code:addons/plm_date_bom/models/mrp_bom.py:0
+#, python-format
+msgid "Bom Computation Type"
+msgstr "Tipo di calcolo della distinta base"
+
+#. module: plm_date_bom
+#: model_terms:ir.ui.view,arch_db:plm_date_bom.plm_bom_filter_obsoleted
+msgid "Boms To Update"
+msgstr "Distinte base da aggiornare"
+
+#. module: plm_date_bom
+#: model_terms:ir.ui.view,arch_db:plm_date_bom.plm_bom_date_compute
+msgid "Cancel"
+msgstr "Annulla"
+
+#. module: plm_date_bom
+#: model_terms:ir.ui.view,arch_db:plm_date_bom.plm_bom_date_compute
+msgid "Compute Bom"
+msgstr "Calcola distinte base"
+
+#. module: plm_date_bom
+#: code:addons/plm_date_bom/models/plm_temporary_date_compute.py:0
+#: model:ir.model.fields,field_description:plm_date_bom.field_plm_temporary_date_compute__compute_type
+#, python-format
+msgid "Compute Type"
+msgstr "Tipo di calcolo"
+
+#. module: plm_date_bom
+#: code:addons/plm_date_bom/models/plm_temporary_date_compute.py:0
+#: model:ir.model.fields.selection,name:plm_date_bom.selection__plm_temporary_date_compute__compute_type__new_bom
+#, python-format
+msgid "Create new bom using last revision of all components."
+msgstr ""
+"Crea una nuova distinta base utilizzando l'ultima revisione di tutti i "
+"componenti."
+
+#. module: plm_date_bom
+#: model:ir.model.fields,field_description:plm_date_bom.field_plm_temporary_date_compute__create_uid
+msgid "Created by"
+msgstr "Creato da"
+
+#. module: plm_date_bom
+#: model:ir.model.fields,field_description:plm_date_bom.field_plm_temporary_date_compute__create_date
+msgid "Created on"
+msgstr "Creato il"
+
+#. module: plm_date_bom
+#: model:ir.model.fields,field_description:plm_date_bom.field_plm_temporary_date_compute__display_name
+msgid "Display Name"
+msgstr "Nome da visualizzare"
+
+#. module: plm_date_bom
+#: model:ir.model.fields,field_description:plm_date_bom.field_plm_temporary_date_compute__id
+msgid "ID"
+msgstr "ID"
+
+#. module: plm_date_bom
+#: model:ir.model.fields,field_description:plm_date_bom.field_plm_temporary_date_compute____last_update
+msgid "Last Modified on"
+msgstr "Ultima modifica il"
+
+#. module: plm_date_bom
+#: model:ir.model.fields,field_description:plm_date_bom.field_plm_temporary_date_compute__write_uid
+msgid "Last Updated by"
+msgstr "Ultimo aggiornamento di"
+
+#. module: plm_date_bom
+#: model:ir.model.fields,field_description:plm_date_bom.field_plm_temporary_date_compute__write_date
+msgid "Last Updated on"
+msgstr "Ultimo aggiornamento il"
+
+#. module: plm_date_bom
+#: code:addons/plm_date_bom/models/mrp_bom.py:0
+#: model:ir.model.fields,field_description:plm_date_bom.field_mrp_bom__obsolete_presents
+#, python-format
+msgid "Obsolete presents"
+msgstr "Presenti obsoleti"
+
+#. module: plm_date_bom
+#: code:addons/plm_date_bom/models/mrp_bom.py:0
+#: model:ir.model.fields,field_description:plm_date_bom.field_mrp_bom__obsolete_presents_recursive
+#, python-format
+msgid "Obsolete presents Recursive"
+msgstr "Presenta obsoleti ricorsivi"
+
+#. module: plm_date_bom
+#: code:addons/plm_date_bom/models/mrp_bom.py:0
+#: model:ir.model.fields,field_description:plm_date_bom.field_mrp_bom__obsolete_presents_computed
+#, python-format
+msgid "Obsolete presents computed"
+msgstr "Presenta obsoleti calcolati"
+
+#. module: plm_date_bom
+#: code:addons/plm_date_bom/models/mrp_bom.py:0
+#: code:addons/plm_date_bom/models/plm_temporary_date_compute.py:0
+#, python-format
+msgid "Product Engineering"
+msgstr "Ingegneria del prodotto"
+
+#. module: plm_date_bom
+#: model:ir.model,name:plm_date_bom.model_product_template
+msgid "Product Template"
+msgstr "Modello prodotto"
+
+#. module: plm_date_bom
+#: model:ir.model,name:plm_date_bom.model_report_plm_date_bom_plm_bom_obsoleted
+msgid "Report Bom All Structure"
+msgstr "Segnala tutta la struttura della distina base"
+
+#. module: plm_date_bom
+#: model_terms:ir.ui.view,arch_db:plm_date_bom.plm_bom_date_compute
+msgid "Select computation type and proceed."
+msgstr "Seleziona il tipo di calcolo e procedi."
+
+#. module: plm_date_bom
+#: model:ir.model,name:plm_date_bom.model_plm_temporary_date_compute
+msgid "Temporary model for computing dates"
+msgstr "Modello temporaneo per il calcolo delle date"
+
+#. module: plm_date_bom
+#: code:addons/plm_date_bom/models/plm_temporary_date_compute.py:0
+#, python-format
+msgid "This functionality is avaible only for normal bom."
+msgstr "Questa funzionalità è disponibile solo per distine normali."
+
+#. module: plm_date_bom
+#: model_terms:ir.ui.view,arch_db:plm_date_bom.plm_mrp_bom_date_compute
+msgid "Update Bom"
+msgstr "Aggiorna le distinte base"
+
+#. module: plm_date_bom
+#: code:addons/plm_date_bom/models/plm_temporary_date_compute.py:0
+#: model:ir.model.fields.selection,name:plm_date_bom.selection__plm_temporary_date_compute__compute_type__update
+#, python-format
+msgid ""
+"Update Bom replacing obsoleted bom lines with components at the latest "
+"revision."
+msgstr ""
+"Aggiorna la distinta base sostituendo le linee di distinta base "
+"obsolete con componenti all'ultima revisione."
+
+#. module: plm_date_bom
+#: model:ir.actions.server,name:plm_date_bom.ir_cron_replace_obsolete_bom_ir_actions_server
+#: model:ir.cron,cron_name:plm_date_bom.ir_cron_replace_obsolete_bom
+#: model:ir.cron,name:plm_date_bom.ir_cron_replace_obsolete_bom
+msgid "Update Obsolete BOMs replacing BOM"
+msgstr ""
+"Aggiorna le distinte base obsolete in sostituzione della distinta base"
+
+#. module: plm_date_bom
+#: model:ir.actions.server,name:plm_date_bom.ir_cron_update_obsolete_bom_ir_actions_server
+#: model:ir.cron,cron_name:plm_date_bom.ir_cron_update_obsolete_bom
+#: model:ir.cron,name:plm_date_bom.ir_cron_update_obsolete_bom
+msgid "Update Obsolete BOMs updating lines"
+msgstr "Aggiorna righe di aggiornamento distinte base obsolete"
+
+#. module: plm_date_bom
+#: code:addons/plm_date_bom/models/plm_temporary_date_compute.py:0
+#, python-format
+msgid "You must select at least one option!"
+msgstr "Devi selezionare almeno un'opzione!"

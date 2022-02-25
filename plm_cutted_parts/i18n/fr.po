@@ -1,0 +1,246 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* plm_cutted_parts
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 15.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-02-07 09:54+0000\n"
+"PO-Revision-Date: 2022-02-07 11:03+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: fr\n"
+"X-Generator: Poedit 2.0.6\n"
+
+#. module: plm_cutted_parts
+#: code:addons/plm_cutted_parts/models/product_product.py:0
+#, python-format
+msgid "\"Raw Material x length\" cannot have zero value."
+msgstr "\"Matière première x longueur\" ne peut pas avoir une valeur nulle."
+
+#. module: plm_cutted_parts
+#: code:addons/plm_cutted_parts/models/product_product.py:0
+#, python-format
+msgid "\"Raw Material y length\" cannot have zero value."
+msgstr "\"Longueur y de la matière première\" ne peut pas avoir de valeur nulle."
+
+#. module: plm_cutted_parts
+#: model_terms:ir.ui.view,arch_db:plm_cutted_parts.plm_product_product_normal_form_view_inherit_cutted
+#: model_terms:ir.ui.view,arch_db:plm_cutted_parts.product_product_cutted_parts
+msgid ""
+"BOM line quantity will be computed with this formula\n"
+" {\n"
+"  [(X Raw Material length * X Percent Wastage) + X Material Wastage] * \n"
+"     [(Y Raw Material length * Y Percent Wastage) + Y Material Wastage]\n"
+" } * Raw Material Conversion Factor"
+msgstr ""
+"La quantité de la ligne de nomenclature sera calculée avec cette formule\n"
+"  {\n"
+"   [(X longueur de matière première * X pourcentage de gaspillage) + X gaspillage de matériau] *\n"
+"      [(Longueur de la matière première Y * Perte en pourcentage Y) + Perte de matière Y]\n"
+"  } * Facteur de conversion des matières premières"
+
+#. module: plm_cutted_parts
+#: model:ir.model,name:plm_cutted_parts.model_mrp_bom_line
+msgid "Bill of Material Line"
+msgstr "Ligne de nomenclature"
+
+#. module: plm_cutted_parts
+#: code:addons/plm_cutted_parts/models/plm_temporary.py:0
+#: model:ir.model.fields,field_description:plm_cutted_parts.field_plm_temporary__cutted_part_explosion
+#, python-format
+msgid "Cutted Part Action"
+msgstr "Action de la partie coupée"
+
+#. module: plm_cutted_parts
+#: model:ir.actions.report,name:plm_cutted_parts.report_bom_structure_all_cutted
+msgid "Cutted Parts"
+msgstr "Pièces découpées"
+
+#. module: plm_cutted_parts
+#: model:ir.model.fields,field_description:plm_cutted_parts.field_mrp_bom_line__cutted_qty
+msgid "Cutted Qty"
+msgstr "Qté coupée"
+
+#. module: plm_cutted_parts
+#: model_terms:ir.ui.view,arch_db:plm_cutted_parts.bom_structure_all_cutted
+msgid "Description"
+msgstr "Description"
+
+#. module: plm_cutted_parts
+#: model:ir.model.fields.selection,name:plm_cutted_parts.selection__plm_temporary__cutted_part_explosion__explode
+msgid "Explode"
+msgstr "Exploser"
+
+#. module: plm_cutted_parts
+#: code:addons/plm_cutted_parts/models/product_template.py:0
+#: model:ir.model.fields,field_description:plm_cutted_parts.field_product_product__is_row_material
+#: model:ir.model.fields,field_description:plm_cutted_parts.field_product_template__is_row_material
+#, python-format
+msgid "Is Raw Material"
+msgstr "Est la matière première"
+
+#. module: plm_cutted_parts
+#: model_terms:ir.ui.view,arch_db:plm_cutted_parts.bom_structure_all_cutted
+msgid "Lenght"
+msgstr "Longueur"
+
+#. module: plm_cutted_parts
+#: model_terms:ir.ui.view,arch_db:plm_cutted_parts.bom_structure_all_cutted
+msgid "Name"
+msgstr "Nom"
+
+#. module: plm_cutted_parts
+#: model:ir.model.fields.selection,name:plm_cutted_parts.selection__plm_temporary__cutted_part_explosion__none
+msgid "None"
+msgstr "Rien"
+
+#. module: plm_cutted_parts
+#: model:ir.model,name:plm_cutted_parts.model_product_product
+msgid "Product"
+msgstr "Article"
+
+#. module: plm_cutted_parts
+#: code:addons/plm_cutted_parts/models/product_template.py:0
+#: model:ir.model.fields,field_description:plm_cutted_parts.field_product_product__bom_rounding
+#: model:ir.model.fields,field_description:plm_cutted_parts.field_product_template__bom_rounding
+#, python-format
+msgid "Product Rounding"
+msgstr "Arrondi du produit"
+
+#. module: plm_cutted_parts
+#: model:ir.model,name:plm_cutted_parts.model_product_template
+msgid "Product Template"
+msgstr "Modèle d'article"
+
+#. module: plm_cutted_parts
+#: model_terms:ir.ui.view,arch_db:plm_cutted_parts.bom_structure_all_cutted
+msgid "Quantity"
+msgstr "Quantité"
+
+#. module: plm_cutted_parts
+#: model_terms:ir.ui.view,arch_db:plm_cutted_parts.plm_product_product_normal_form_view_inherit_cutted
+#: model_terms:ir.ui.view,arch_db:plm_cutted_parts.product_product_cutted_parts
+msgid "Raw Material"
+msgstr "Matière première"
+
+#. module: plm_cutted_parts
+#: model:ir.model.fields,field_description:plm_cutted_parts.field_product_product__row_material_factor
+#: model:ir.model.fields,field_description:plm_cutted_parts.field_product_template__row_material_factor
+msgid "Raw Material Conversion Factor"
+msgstr "Facteur de conversion des matières premières"
+
+#. module: plm_cutted_parts
+#: code:addons/plm_cutted_parts/models/product_template.py:0
+#: model:ir.model.fields,field_description:plm_cutted_parts.field_product_product__row_material
+#: model:ir.model.fields,field_description:plm_cutted_parts.field_product_template__row_material
+#, python-format
+msgid "Raw Material Product"
+msgstr "Produit de matière première"
+
+#. module: plm_cutted_parts
+#: model:ir.model.fields.selection,name:plm_cutted_parts.selection__plm_temporary__cutted_part_explosion__replace
+msgid "Replace"
+msgstr "ReplaceRemplacer"
+
+#. module: plm_cutted_parts
+#: model:ir.model,name:plm_cutted_parts.model_report_plm_cutted_parts_bom_structure_all_cutted
+msgid "Report PLM cutted parts bom structure all cutted"
+msgstr "Rapport PLM pièces découpées structure de nomenclature toutes découpées"
+
+#. module: plm_cutted_parts
+#: model_terms:ir.ui.view,arch_db:plm_cutted_parts.bom_structure_all_cutted
+msgid "Revision"
+msgstr "Révision"
+
+#. module: plm_cutted_parts
+#: model:ir.model,name:plm_cutted_parts.model_plm_temporary
+msgid "Temporary Class"
+msgstr "Classe temporaire"
+
+#. module: plm_cutted_parts
+#: model_terms:ir.ui.view,arch_db:plm_cutted_parts.bom_structure_all_cutted
+msgid "U.M."
+msgstr "U.M."
+
+#. module: plm_cutted_parts
+#: model_terms:ir.ui.view,arch_db:plm_cutted_parts.bom_structure_all_cutted
+msgid "Width"
+msgstr "Largeur"
+
+#. module: plm_cutted_parts
+#: model:ir.model.fields,field_description:plm_cutted_parts.field_mrp_bom_line__client_x_length
+msgid "X Cutted Qty"
+msgstr "X Qté coupée"
+
+#. module: plm_cutted_parts
+#: code:addons/plm_cutted_parts/models/mrp_bom_line.py:0
+#: model:ir.model.fields,field_description:plm_cutted_parts.field_mrp_bom_line__x_length
+#, python-format
+msgid "X Length"
+msgstr "Longueur X"
+
+#. module: plm_cutted_parts
+#: code:addons/plm_cutted_parts/models/product_template.py:0
+#: model:ir.model.fields,field_description:plm_cutted_parts.field_product_product__material_added
+#: model:ir.model.fields,field_description:plm_cutted_parts.field_product_template__material_added
+#, python-format
+msgid "X Material Wastage"
+msgstr "X Gaspillage de matériaux"
+
+#. module: plm_cutted_parts
+#: code:addons/plm_cutted_parts/models/product_template.py:0
+#: model:ir.model.fields,field_description:plm_cutted_parts.field_product_product__wastage_percent
+#: model:ir.model.fields,field_description:plm_cutted_parts.field_product_template__wastage_percent
+#, python-format
+msgid "X Percent Wastage"
+msgstr "X Percent Wastage"
+
+#. module: plm_cutted_parts
+#: code:addons/plm_cutted_parts/models/product_template.py:0
+#: model:ir.model.fields,field_description:plm_cutted_parts.field_product_product__row_material_x_length
+#: model:ir.model.fields,field_description:plm_cutted_parts.field_product_template__row_material_x_length
+#, python-format
+msgid "X Raw Material length"
+msgstr "X Longueur de la matière première"
+
+#. module: plm_cutted_parts
+#: model:ir.model.fields,field_description:plm_cutted_parts.field_mrp_bom_line__client_y_length
+msgid "Y Cutted Qty"
+msgstr "Y Qté coupée"
+
+#. module: plm_cutted_parts
+#: code:addons/plm_cutted_parts/models/mrp_bom_line.py:0
+#: model:ir.model.fields,field_description:plm_cutted_parts.field_mrp_bom_line__y_length
+#, python-format
+msgid "Y Length"
+msgstr "Longueur Y"
+
+#. module: plm_cutted_parts
+#: code:addons/plm_cutted_parts/models/product_template.py:0
+#: model:ir.model.fields,field_description:plm_cutted_parts.field_product_product__material_added_y
+#: model:ir.model.fields,field_description:plm_cutted_parts.field_product_template__material_added_y
+#, python-format
+msgid "Y Material Wastage"
+msgstr "Y Gaspillage de matériaux"
+
+#. module: plm_cutted_parts
+#: code:addons/plm_cutted_parts/models/product_template.py:0
+#: model:ir.model.fields,field_description:plm_cutted_parts.field_product_product__wastage_percent_y
+#: model:ir.model.fields,field_description:plm_cutted_parts.field_product_template__wastage_percent_y
+#, python-format
+msgid "Y Percent Wastage"
+msgstr "Y Gaspillage de matériaux"
+
+#. module: plm_cutted_parts
+#: code:addons/plm_cutted_parts/models/product_template.py:0
+#: model:ir.model.fields,field_description:plm_cutted_parts.field_product_product__row_material_y_length
+#: model:ir.model.fields,field_description:plm_cutted_parts.field_product_template__row_material_y_length
+#, python-format
+msgid "Y Raw Material length"
+msgstr "Y Longueur de la matière première"

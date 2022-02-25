@@ -1,0 +1,368 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* plm_compare_bom
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 15.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-02-07 09:20+0000\n"
+"PO-Revision-Date: 2022-02-07 10:34+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: ja_JP\n"
+"X-Generator: Poedit 2.0.6\n"
+
+#. module: plm_compare_bom
+#: model_terms:ir.ui.view,arch_db:plm_compare_bom.plm_visualize_diff_form
+msgid ""
+"<span title=\"Attentio_bom_equal\" class=\"fa fa-exclamation-triangle\" "
+"style=\"color:blu;width:100%;text-align:left;font-size:30px\">Attention: "
+"The two bom are equal  !!<br/></span>"
+msgstr ""
+"<span title=\"Attentio_bom_equal\" class=\"fa fa-exclamation-triangle\" "
+"style=\"color:blu;width:100%;text-align:left;font-size:30px\">注意: 2つのBOM"
+"は同じです  !!<br/></span>"
+
+#. module: plm_compare_bom
+#: model_terms:ir.ui.view,arch_db:plm_compare_bom.plm_visualize_diff_form
+msgid ""
+"<span title=\"Attention_some_change\" class=\"fa fa-exclamation-triangle\" "
+"style=\"color:red;width:100%;text-align:left;font-size:30px\">Attention: "
+"there are some change you need to save it !!<br/></span>"
+msgstr ""
+"<span title=\"Attention_some_change\" class=\"fa fa-exclamation-triangle\" "
+"style=\"color:red;width:100%;text-align:left;font-size:30px\">注意: それを保"
+"存するために必要な変更がいくつかあります !!<br/></span>"
+
+#. module: plm_compare_bom
+#: code:addons/plm_compare_bom/models/compare_bom.py:0
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_adding_bom__bom_id
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_missing_bom__bom_id
+#, python-format
+msgid "BoM"
+msgstr "BoM"
+
+#. module: plm_compare_bom
+#: code:addons/plm_compare_bom/models/compare_bom.py:0
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_compare_bom__bom_id1
+#, python-format
+msgid "BoM 1"
+msgstr "BoM 1"
+
+#. module: plm_compare_bom
+#: code:addons/plm_compare_bom/models/compare_bom.py:0
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_compare_bom__bom_id2
+#, python-format
+msgid "BoM 2"
+msgstr "BoM 2"
+
+#. module: plm_compare_bom
+#: code:addons/plm_compare_bom/models/compare_bom.py:0
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_compare_bom__anotinb
+#, python-format
+msgid "BoM Adding"
+msgstr "BoM追加"
+
+#. module: plm_compare_bom
+#: model:ir.model,name:plm_compare_bom.model_plm_adding_bom
+msgid "BoM Adding Objects"
+msgstr "BoMオブジェクトの追加"
+
+#. module: plm_compare_bom
+#: model:ir.model,name:plm_compare_bom.model_plm_compare_bom
+msgid "BoM Comparison"
+msgstr "BoMの比較"
+
+#. module: plm_compare_bom
+#: code:addons/plm_compare_bom/models/compare_bom.py:0
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_adding_bom__bom_idrow
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_missing_bom__bom_idrow
+#, python-format
+msgid "BoM Line"
+msgstr "BoMライン"
+
+#. module: plm_compare_bom
+#: code:addons/plm_compare_bom/models/compare_bom.py:0
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_compare_bom__bom_line_id_to_delete
+#, python-format
+msgid "BoM Line to Delete"
+msgstr "削除するBoM行"
+
+#. module: plm_compare_bom
+#: code:addons/plm_compare_bom/models/compare_bom.py:0
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_compare_bom__bnotina
+#, python-format
+msgid "BoM Missing"
+msgstr "BoMがありません"
+
+#. module: plm_compare_bom
+#: model:ir.model,name:plm_compare_bom.model_plm_missing_bom
+msgid "BoM Missing Objects"
+msgstr "BoM欠落オブジェクト"
+
+#. module: plm_compare_bom
+#: code:addons/plm_compare_bom/models/compare_bom.py:0
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_compare_bom__type_id1
+#, python-format
+msgid "BoM Type 1"
+msgstr "BoMタイプ1"
+
+#. module: plm_compare_bom
+#: code:addons/plm_compare_bom/models/compare_bom.py:0
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_compare_bom__type_id2
+#, python-format
+msgid "BoM Type 2"
+msgstr "BoMタイプ2"
+
+#. module: plm_compare_bom
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_compare_bom__bom_are_equal
+msgid "Bom Are Equal"
+msgstr "部品表は等しい"
+
+#. module: plm_compare_bom
+#: code:addons/plm_compare_bom/models/compare_bom.py:0
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_adding_bom__itemnum
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_missing_bom__itemnum
+#, python-format
+msgid "Cad Pos."
+msgstr "CAD位置."
+
+#. module: plm_compare_bom
+#: model_terms:ir.ui.view,arch_db:plm_compare_bom.view_plm_compare_bom
+msgid "Cancel"
+msgstr "キャンセル"
+
+#. module: plm_compare_bom
+#: model:ir.actions.act_window,name:plm_compare_bom.act_plm_compare_bom
+#: model_terms:ir.ui.view,arch_db:plm_compare_bom.view_plm_compare_bom
+msgid "Compare BoMs"
+msgstr "BoMを比較する"
+
+#. module: plm_compare_bom
+#: code:addons/plm_compare_bom/models/compare_bom.py:0
+#: model:ir.model.fields.selection,name:plm_compare_bom.selection__plm_compare_bom__compute_type__num_qty
+#, python-format
+msgid "Compare By Item Number and Quantity"
+msgstr "アイテム番号と数量で比較"
+
+#. module: plm_compare_bom
+#: code:addons/plm_compare_bom/models/compare_bom.py:0
+#: model:ir.model.fields.selection,name:plm_compare_bom.selection__plm_compare_bom__compute_type__only_product
+#, python-format
+msgid "Compare Only Product Existence"
+msgstr "製品の存在のみを比較する"
+
+#. module: plm_compare_bom
+#: code:addons/plm_compare_bom/models/compare_bom.py:0
+#: model:ir.model.fields.selection,name:plm_compare_bom.selection__plm_compare_bom__compute_type__summarized
+#, python-format
+msgid "Compare Product Quantity"
+msgstr "製品の数量を比較する"
+
+#. module: plm_compare_bom
+#: model_terms:ir.ui.view,arch_db:plm_compare_bom.view_plm_compare_bom
+msgid "Compare selected BoMs"
+msgstr "選択したBoMを比較する"
+
+#. module: plm_compare_bom
+#: code:addons/plm_compare_bom/models/compare_bom.py:0
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_compare_bom__compute_type
+#, python-format
+msgid "Compare type"
+msgstr "タイプを比較する"
+
+#. module: plm_compare_bom
+#: model_terms:ir.ui.view,arch_db:plm_compare_bom.plm_visualize_diff_form
+msgid "Copy Left"
+msgstr "左コピー"
+
+#. module: plm_compare_bom
+#: model_terms:ir.ui.view,arch_db:plm_compare_bom.plm_visualize_diff_form
+msgid "Copy Right"
+msgstr "右にコピー"
+
+#. module: plm_compare_bom
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_adding_bom__create_uid
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_compare_bom__create_uid
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_missing_bom__create_uid
+msgid "Created by"
+msgstr "によって作成された"
+
+#. module: plm_compare_bom
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_adding_bom__create_date
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_compare_bom__create_date
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_missing_bom__create_date
+msgid "Created on"
+msgstr "で作成"
+
+#. module: plm_compare_bom
+#: model_terms:ir.ui.view,arch_db:plm_compare_bom.plm_visualize_diff_form
+msgid "Delete Left"
+msgstr "左を削除"
+
+#. module: plm_compare_bom
+#: code:addons/plm_compare_bom/models/compare_bom.py:0
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_adding_bom__description
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_missing_bom__description
+#, python-format
+msgid "Description"
+msgstr "説明"
+
+#. module: plm_compare_bom
+#: code:addons/plm_compare_bom/models/compare_bom.py:0
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_compare_bom__description1
+#, python-format
+msgid "Description 1"
+msgstr "説明1"
+
+#. module: plm_compare_bom
+#: code:addons/plm_compare_bom/models/compare_bom.py:0
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_compare_bom__description2
+#, python-format
+msgid "Description 2"
+msgstr "説明2"
+
+#. module: plm_compare_bom
+#: code:addons/plm_compare_bom/models/compare_bom.py:0
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_adding_bom__reason
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_missing_bom__reason
+#, python-format
+msgid "Difference"
+msgstr "違い"
+
+#. module: plm_compare_bom
+#: code:addons/plm_compare_bom/models/compare_bom.py:0
+#, python-format
+msgid "Differences on BoMs"
+msgstr "BoMの違い"
+
+#. module: plm_compare_bom
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_adding_bom__display_name
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_compare_bom__display_name
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_missing_bom__display_name
+msgid "Display Name"
+msgstr "表示名"
+
+#. module: plm_compare_bom
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_adding_bom__id
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_compare_bom__id
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_missing_bom__id
+msgid "ID"
+msgstr "ID"
+
+#. module: plm_compare_bom
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_adding_bom____last_update
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_compare_bom____last_update
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_missing_bom____last_update
+msgid "Last Modified on"
+msgstr "最終変更日"
+
+#. module: plm_compare_bom
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_adding_bom__write_uid
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_compare_bom__write_uid
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_missing_bom__write_uid
+msgid "Last Updated by"
+msgstr "最終更新者"
+
+#. module: plm_compare_bom
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_adding_bom__write_date
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_compare_bom__write_date
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_missing_bom__write_date
+msgid "Last Updated on"
+msgstr "最終更新日"
+
+#. module: plm_compare_bom
+#: model_terms:ir.ui.view,arch_db:plm_compare_bom.plm_visualize_diff_form
+msgid "Move Left"
+msgstr "左に移動"
+
+#. module: plm_compare_bom
+#: code:addons/plm_compare_bom/models/compare_bom.py:0
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_adding_bom__part_id
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_missing_bom__part_id
+#, python-format
+msgid "Part"
+msgstr "一部"
+
+#. module: plm_compare_bom
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_compare_bom__part_id1
+msgid "Part 1"
+msgstr "パート1"
+
+#. module: plm_compare_bom
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_compare_bom__part_id2
+msgid "Part 2"
+msgstr "パート2"
+
+#. module: plm_compare_bom
+#: code:addons/plm_compare_bom/models/compare_bom.py:0
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_compare_bom__name
+#, python-format
+msgid "Part Number"
+msgstr "部品番号"
+
+#. module: plm_compare_bom
+#: code:addons/plm_compare_bom/models/compare_bom.py:0
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_adding_bom__itemqty
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_missing_bom__itemqty
+#, python-format
+msgid "Quantity"
+msgstr "数量"
+
+#. module: plm_compare_bom
+#: code:addons/plm_compare_bom/models/compare_bom.py:0
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_adding_bom__revision
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_missing_bom__revision
+#, python-format
+msgid "Rev."
+msgstr "改訂."
+
+#. module: plm_compare_bom
+#: code:addons/plm_compare_bom/models/compare_bom.py:0
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_compare_bom__revision1
+#, python-format
+msgid "Revision 1"
+msgstr "リビジョン1"
+
+#. module: plm_compare_bom
+#: code:addons/plm_compare_bom/models/compare_bom.py:0
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_compare_bom__revision2
+#, python-format
+msgid "Revision 2"
+msgstr "リビジョン2"
+
+#. module: plm_compare_bom
+#: model:ir.model.fields,help:plm_compare_bom.field_plm_adding_bom__revision
+#: model:ir.model.fields,help:plm_compare_bom.field_plm_compare_bom__revision1
+#: model:ir.model.fields,help:plm_compare_bom.field_plm_compare_bom__revision2
+#: model:ir.model.fields,help:plm_compare_bom.field_plm_missing_bom__revision
+msgid "The revision of the product."
+msgstr "製品の改訂."
+
+#. module: plm_compare_bom
+#: model:ir.model.fields,help:plm_compare_bom.field_plm_adding_bom__itemnum
+#: model:ir.model.fields,help:plm_compare_bom.field_plm_missing_bom__itemnum
+msgid ""
+"This is the item reference position into the CAD document that declares "
+"this BoM."
+msgstr "これは、このBoMを宣言するCADドキュメントへのアイテム参照位置です."
+
+#. module: plm_compare_bom
+#: model_terms:ir.ui.view,arch_db:plm_compare_bom.view_plm_compare_bom
+msgid "This wizard will allow to compare two Bill of Materials.\""
+msgstr "このウィザードを使用すると、2つの部品表を比較できます.」"
+
+#. module: plm_compare_bom
+#: model:ir.model.fields,field_description:plm_compare_bom.field_plm_compare_bom__to_update
+msgid "To Update"
+msgstr "更新するには"
+
+#. module: plm_compare_bom
+#: model_terms:ir.ui.view,arch_db:plm_compare_bom.plm_visualize_diff_form
+msgid "Visualize BoM"
+msgstr "BoMを視覚化する"

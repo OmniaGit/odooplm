@@ -1,0 +1,82 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* plm_product_description_language_helper
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 15.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-02-08 08:28+0000\n"
+"PO-Revision-Date: 2022-02-08 09:30+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: ja_JP\n"
+"X-Generator: Poedit 2.0.6\n"
+
+#. module: plm_product_description_language_helper
+#: code:addons/plm_product_description_language_helper/models/plm_description_extension.py:0
+#: model:ir.model.fields,help:plm_product_description_language_helper.field_plm_description__umc1
+#: model:ir.model.fields,help:plm_product_description_language_helper.field_plm_description__umc2
+#: model:ir.model.fields,help:plm_product_description_language_helper.field_plm_description__umc3
+#, python-format
+msgid "Allow to specify a unit measure or a label for the feature."
+msgstr "フィーチャーの単位またはラベルを指定できます."
+
+#. module: plm_product_description_language_helper
+#: code:addons/plm_product_description_language_helper/models/plm_description_extension.py:0
+#: model:ir.model.fields,field_description:plm_product_description_language_helper.field_plm_description__name
+#, python-format
+msgid "Note to Description"
+msgstr "説明への注記"
+
+#. module: plm_product_description_language_helper
+#: model:ir.model,name:plm_product_description_language_helper.model_plm_description
+msgid "PLM Descriptions"
+msgstr "PLMの説明"
+
+#. module: plm_product_description_language_helper
+#: model:ir.model,name:plm_product_description_language_helper.model_product_product
+msgid "Product"
+msgstr "プロダクト"
+
+#. module: plm_product_description_language_helper
+#: code:addons/plm_product_description_language_helper/models/plm_description_extension.py:0
+#: model:ir.model.fields,field_description:plm_product_description_language_helper.field_plm_description__description
+#, python-format
+msgid "Standard Description"
+msgstr "標準の説明"
+
+#. module: plm_product_description_language_helper
+#: model:ir.ui.menu,name:plm_product_description_language_helper.plm_translations
+msgid "Translation"
+msgstr "翻訳"
+
+#. module: plm_product_description_language_helper
+#: model:ir.actions.act_window,name:plm_product_description_language_helper.plm_action_translation
+msgid "Translations"
+msgstr "翻訳"
+
+#. module: plm_product_description_language_helper
+#: code:addons/plm_product_description_language_helper/models/plm_description_extension.py:0
+#: model:ir.model.fields,field_description:plm_product_description_language_helper.field_plm_description__umc1
+#, python-format
+msgid "UM / Feature 1"
+msgstr "UM /機能1"
+
+#. module: plm_product_description_language_helper
+#: code:addons/plm_product_description_language_helper/models/plm_description_extension.py:0
+#: model:ir.model.fields,field_description:plm_product_description_language_helper.field_plm_description__umc2
+#, python-format
+msgid "UM / Feature 2"
+msgstr "UM /機能2"
+
+#. module: plm_product_description_language_helper
+#: code:addons/plm_product_description_language_helper/models/plm_description_extension.py:0
+#: model:ir.model.fields,field_description:plm_product_description_language_helper.field_plm_description__umc3
+#, python-format
+msgid "UM / Feature 3"
+msgstr "UM /機能3"

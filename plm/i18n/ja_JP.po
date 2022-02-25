@@ -1,0 +1,3537 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* plm
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 15.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-02-04 13:04+0000\n"
+"PO-Revision-Date: 2022-02-04 17:54+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: ja_JP\n"
+"X-Generator: Poedit 2.0.6\n"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid ""
+"\n"
+"\n"
+"Check-In All the document in order to proceed !!"
+msgstr ""
+"\n"
+"\n"
+"続行するには、すべてのドキュメントをチェックインしてください!!"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid " (%r). It has tried to create with values : (%r)."
+msgstr " （%r).値を使用して作成しようとしました:(%r)."
+
+#. module: plm
+#: code:addons/plm/models/report_on_document.py:0 model:ir.model.fields,field_description:plm.field_report_ir_attachment_file__nbr
+#, python-format
+msgid "# of Files"
+msgstr "# ファイルの"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0 model:ir.model.fields.selection,name:plm.selection__ir_attachment__document_type__2d
+#, python-format
+msgid "2D"
+msgstr "2D"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0 model:ir.model.fields.selection,name:plm.selection__ir_attachment__document_type__3d
+#, python-format
+msgid "3D"
+msgstr "3D"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_search_tooltip
+msgid "<b>Crate Date:</b>"
+msgstr "<b>クレートの日付：</ b>"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_search_tooltip
+msgid "<b>Create User:</b>"
+msgstr "<b>ユーザーの作成：</ b>"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_search_tooltip
+msgid "<b>Document Information</b>"
+msgstr "<b>ドキュメント情報</ b>"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_search_tooltip
+msgid "<b>Last Write Date:</b>"
+msgstr "<b>最終書き込み日：</ b>"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_search_tooltip
+msgid "<b>Last Write User:</b>"
+msgstr "<b>最終書き込みユーザー：</ b>"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_search_tooltip
+msgid "<b>State:</b>"
+msgstr "<b>状態：</ b>"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "<span>Check-In</span>"
+msgstr "<span>チェックイン</ span>"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "<span>Check-Out</span>"
+msgstr "<span>チェックアウト</ span>"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_kanban_view
+msgid ""
+"<strong>\n"
+"                                                        Description:\n"
+"                                                    </strong>"
+msgstr ""
+"<strong>\n"
+"                                                         説明：\n"
+"                                                     </ strong>"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_kanban_view
+msgid ""
+"<strong>\n"
+"                                                        Revision:\n"
+"                                                    </strong>"
+msgstr ""
+"<strong>\n"
+"                                                         リビジョン：\n"
+"                                                     </ strong>"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_kanban_view
+msgid ""
+"<strong>\n"
+"                                                        State:\n"
+"                                                    </strong>"
+msgstr ""
+"<strong>\n"
+"                                                         州：\n"
+"                                                     </ strong>"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_kanban_view
+msgid "<strong>Name:</strong>"
+msgstr "<strong>名前：</ strong>"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__message_needaction
+msgid "Action Needed"
+msgstr "必要なアクション"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_action_plm_dbthread_tree
+msgid "Actions"
+msgstr "行動"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_client_customprocedure
+msgid "Activate the PLM Client mapping"
+msgstr "PLMクライアントマッピングをアクティブ化する"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_project
+msgid "Activate the PLM Project connection"
+msgstr "PLMプロジェクト接続をアクティブ化する"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_automated_convertion
+msgid "Activate the server convertion tool"
+msgstr "サーバー変換ツールをアクティブ化する"
+
+#. module: plm
+#: model:ir.model,name:plm.model_mail_activity_type
+msgid "Activity Type"
+msgstr "活動タイプ"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Add a progress bar to check the progress of the project based on the status of the products"
+msgstr "進行状況バーを追加して、製品のステータスに基づいてプロジェクトの進行状況を確認します"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_sale_fix
+msgid "Add plm groups permission to sale"
+msgstr "Plmグループに販売許可を追加する"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid ""
+"Add the capability to update the manufacturing order from a revised BOM\n"
+"                                        <b>\n"
+"                                        ATTENTION !! This module depends on plm_mrp_bom_update from:\n"
+"                                        git clone -b 15.0 https://github.com/OmniaSolutions/odooAddons.git</b>"
+msgstr ""
+"改訂されたBOMから製造オーダーを更新する機能を追加します\n"
+"                                         <b>\n"
+"                                         注意 ！！ このモジュールは、plm_mrp_bom_updateに依存しています。\n"
+"                                         git clone -b 15.0 https://github.com/OmniaSolutions/odooAddons.git </ b>"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid ""
+"Add the capability to use the PDF PLM document inside work order\n"
+"                                        ATTENTION !! This module work only for enterprise version because the mrp_workorder is in the enterprise version"
+msgstr ""
+"改訂されたBOMから製造オーダーを更新する機能を追加します\n"
+"                                         <b>\n"
+"                                         注意 ！！ このモジュールは、plm_mrp_bom_updateに依存しています。\n"
+"                                         git clone -b 15.0 https://github.com/OmniaSolutions/odooAddons.git </ b>"
+
+#. module: plm
+#: model:res.groups,name:plm.group_plm_admin
+msgid "Administrator"
+msgstr "管理者"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Advanced linking and organise your document with virtual box"
+msgstr "高度なリンクと仮想ボックスを使用したドキュメントの整理"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid ""
+"Advanced way to save and synchronize PLM document to improve open and save operation for pour connection bandwidth\n"
+"                                    To make it work you need to install a file server application   \"mirror_document_server\""
+msgstr ""
+"PLMドキュメントを保存および同期して、接続帯域幅を注ぐためのオープンおよび保存操作を改善する高度な方法\n"
+"                                     それを機能させるには、ファイルサーバーアプリケーション「mirror_document_server」をインストールする必要があります\""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid ""
+"Allow converting files in different format. \n"
+"                                    In order to make it run you will need the convertion sarver provided by OmniaSolutions."
+msgstr ""
+"異なる形式のファイルの変換を許可します。\n"
+"                                     それを実行するには、OmniaSolutionsが提供する変換サーバーが必要です."
+
+#. module: plm
+#: code:addons/plm/models/res_config_settings.py:0
+#, python-format
+msgid "Allow to create normal BOM if not exists and product are released."
+msgstr "存在せず、製品がリリースされている場合は、通常のBOMを作成できます."
+
+#. module: plm
+#: code:addons/plm/models/plm_descriptions.py:0 model:ir.model.fields,help:plm.field_plm_description__fmtend
+#, python-format
+msgid "Allow to represent a normalized composition of technical features : %s%s allows to build chained values."
+msgstr "技術的特徴の正規化された構成を表すことを許可します：%s%sは連鎖値を構築することを許可します."
+
+#. module: plm
+#: code:addons/plm/models/plm_descriptions.py:0 model:ir.model.fields,help:plm.field_plm_description__fmt1
+#: model:ir.model.fields,help:plm.field_plm_description__fmt2 model:ir.model.fields,help:plm.field_plm_description__fmt3
+#, python-format
+msgid "Allow to represent the measure: %s%s allow to build um and value, %s builds only value, none builds only value."
+msgstr "メジャーを表すことを許可します.%s%sはumと値を作成でき、%sは値のみを作成し、noneは値のみを作成します."
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Allow to select only product that have engineering_code and is in the latest revision for Manufacturing"
+msgstr "Engineering_codeがあり、製造の最新リビジョンにある製品のみを選択できるようにする"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Allow to select only product that have engineering_code and is in the latest revision for Purchase"
+msgstr "Engineering_codeがあり、購入の最新リビジョンにある製品のみを選択できるようにします"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Allow to select only product that have not engineering_code or is in the latest revision for Purchase"
+msgstr "Engineering_codeがないか、購入の最新リビジョンにある製品のみを選択できるようにします"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Allow to specifiy a unit measure for the third feature."
+msgstr "3番目の機能の単位を指定できます."
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Allow to specify a unit measure for the first feature."
+msgstr "最初の機能の単位を指定できます."
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Allow to specify a unit measure for the second feature."
+msgstr "2番目の機能の単位を指定できます."
+
+#. module: plm
+#: code:addons/plm/models/plm_descriptions.py:0 model:ir.model.fields,help:plm.field_plm_description__umc1
+#: model:ir.model.fields,help:plm.field_plm_description__umc2 model:ir.model.fields,help:plm.field_plm_description__umc3
+#, python-format
+msgid "Allow to specify a unit measure or a label for the feature."
+msgstr "フィーチャーの単位またはラベルを指定できます."
+
+#. module: plm
+#: code:addons/plm/models/res_config_settings.py:0
+#, python-format
+msgid "Allow to use engineering BOM"
+msgstr "エンジニアリングBOMの使用を許可する"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Allows view and/or update obsoleted components in a Normal Bill Of Materials using released components."
+msgstr "リリースされたコンポーネントを使用して、通常の部品表の廃止されたコンポーネントを表示および/または更新できます."
+
+#. module: plm
+#: model:ir.model.fields.selection,name:plm.selection__ir_attachment__document_type__other
+msgid "Altro"
+msgstr "他の"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__preview model:ir.model.fields,field_description:plm.field_mrp_document__preview
+#: model:ir.model.fields,field_description:plm.field_plm_checkout__preview
+msgid "Anteprima Contenuto"
+msgstr "コンテンツプレビュー"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_product_product__std_value1
+msgid "Assegna valore alla prima caratteristica."
+msgstr "最初の特性に値を割り当てます."
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_product_product__std_value2 model:ir.model.fields,help:plm.field_product_product__std_value3
+msgid "Assegna valore alla seconda caratteristica."
+msgstr "2番目の特性に値を割り当てます."
+
+#. module: plm
+#: code:addons/plm/models/plm_descriptions.py:0 model:ir.model.fields,help:plm.field_plm_description__sequence
+#, python-format
+msgid "Assign the sequence order when displaying a list of product categories."
+msgstr "製品カテゴリのリストを表示するときに、順序を割り当てます."
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Assign value to the first characteristic."
+msgstr "最初の特性に値を割り当てます."
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Assign value to the second characteristic."
+msgstr "2番目の特性に値を割り当てます."
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "Attached To"
+msgstr "に添付"
+
+#. module: plm
+#: model:ir.model,name:plm.model_ir_attachment model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "Attachment"
+msgstr "添付"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__message_attachment_count
+msgid "Attachment Count"
+msgstr "アタッチメントカウント"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__attachment_revision_count
+#: model:ir.model.fields,field_description:plm.field_mrp_document__attachment_revision_count
+msgid "Attachment Revision Count"
+msgstr "添付ファイルの改訂数"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0
+#, python-format
+msgid "Attachment Revs."
+msgstr "アタッチメントリビジョン."
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Automate the creation of normal bom with scheduled action"
+msgstr "スケジュールされたアクションで通常のbomの作成を自動化します"
+
+#. module: plm
+#: code:addons/plm/models/res_config_settings.py:0
+#, python-format
+msgid "Automatic weight calculation"
+msgstr "添付ファイルの改訂数"
+
+#. module: plm
+#: code:addons/plm/models/mrp_bom.py:0
+#, python-format
+msgid "B.O.M. Lines"
+msgstr "B.O.M. 線"
+
+#. module: plm
+#: code:addons/plm/models/mrp_bom.py:0
+#, python-format
+msgid "B.O.M.S"
+msgstr "B.O.M.S"
+
+#. module: plm
+#: code:addons/plm/models/mrp_bom_line.py:0
+#, python-format
+msgid "B.o.M."
+msgstr "B.o.M."
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "BOM"
+msgstr "BOM"
+
+#. module: plm
+#: model:ir.actions.report,name:plm.report_plm_bom_structure_all
+msgid "BOM All Levels"
+msgstr "BOMすべてのレベル"
+
+#. module: plm
+#: model:ir.actions.report,name:plm.report_plm_bom_structure_all_sum
+msgid "BOM All Levels Summarized"
+msgstr "要約されたBOMのすべてのレベル"
+
+#. module: plm
+#: model:ir.actions.report,name:plm.report_plm_bom_structure_flat
+msgid "BOM Flat Summarized"
+msgstr "BOMフラット要約"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.bom_structure_all
+msgid "BOM Name"
+msgstr "BOM名"
+
+#. module: plm
+#: model:ir.actions.report,name:plm.report_plm_bom_structure_one
+msgid "BOM One Level"
+msgstr "BOMワンレベル"
+
+#. module: plm
+#: model:ir.actions.report,name:plm.report_plm_bom_structure_one_sum
+msgid "BOM One Level Summarized"
+msgstr "BOMの1つのレベルの要約"
+
+#. module: plm
+#: model:ir.actions.report,name:plm.report_plm_bom_structure_leaves
+msgid "BOM Only Leaves Summarize"
+msgstr "BOMは要約のみを残します"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_bom_form_view model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "BOM Rev."
+msgstr "BOM Rev."
+
+#. module: plm
+#: model:ir.model,name:plm.model_plm_backupdoc_wizard
+msgid "Back up document wizard"
+msgstr "ドキュメントウィザードのバックアップ"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.action_plm_backupdoc
+msgid "Backup Data Set"
+msgstr "バックアップデータセット"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open__plm_backup_doc_id
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open_bck__plm_backup_doc_id
+msgid "Backup Document Reference"
+msgstr "バックアップドキュメントリファレンス"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_backupdoc_search
+msgid "Backup Document Set"
+msgstr "バックアップドキュメントセット"
+
+#. module: plm
+#: model:ir.model,name:plm.model_base
+msgid "Base"
+msgstr "ベース"
+
+#. module: plm
+#: model:ir.model,name:plm.model_mrp_bom
+msgid "Bill of Material"
+msgstr "部品表"
+
+#. module: plm
+#: model:ir.model,name:plm.model_mrp_bom_line
+msgid "Bill of Material Line"
+msgstr "部品表ライン"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_bom_tree_structure
+msgid "Bill of Materials"
+msgstr "部品表"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.action2
+msgid "Bill of Materials Structure"
+msgstr "部品表の構造"
+
+#. module: plm
+#: code:addons/plm/models/mrp_bom.py:0 code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "BoM Hierarchy"
+msgstr "BoM階層"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_mrp_bom__type model:ir.model.fields,field_description:plm.field_mrp_bom_line__type
+msgid "BoM Type"
+msgstr "部品表タイプ"
+
+#. module: plm
+#: model:ir.actions.report,name:plm.report_all_product_product_pdf
+msgid "Bom All Levels PDF Drawings"
+msgstr "BomすべてのレベルのPDF図面"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_mrp_bom_filter_inherit
+msgid "Bom Name"
+msgstr "部品表名"
+
+#. module: plm
+#: model:ir.actions.report,name:plm.report_one_product_product_pdf
+msgid "Bom One Level PDF Drawings"
+msgstr "Bom1レベルのPDF図面"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0 model:ir.model.fields,field_description:plm.field_plm_temporary_message__name
+#, python-format
+msgid "Bom Result"
+msgstr "ボンの結果"
+
+#. module: plm
+#: model:ir.model.fields.selection,name:plm.selection__ir_attachment__state__draft
+#: model:ir.model.fields.selection,name:plm.selection__product_template__state__draft
+msgid "Bozza"
+msgstr "下書き"
+
+#. module: plm
+#: code:addons/plm/models/mrp_bom_line.py:0
+#, python-format
+msgid "CAD Item Position"
+msgstr "CADアイテムの位置"
+
+#. module: plm
+#: code:addons/plm/models/mrp_bom_line.py:0
+#, python-format
+msgid "CAD Item Position Label"
+msgstr "CADアイテム位置ラベル"
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.menu_cad_open
+msgid "CAD Opens"
+msgstr "CADが開きます"
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.menu_cad_open_bck
+msgid "CAD Opens Bck"
+msgstr "CADがBckを開く"
+
+#. module: plm
+#: code:addons/plm/models/product_template.py:0
+#, python-format
+msgid "Cad Raw Material"
+msgstr "CAD原材料"
+
+#. module: plm
+#: code:addons/plm/models/product_template.py:0
+#, python-format
+msgid "Cad Surface Finishing"
+msgstr "CAD表面仕上げ"
+
+#. module: plm
+#: code:addons/plm/models/product_template.py:0
+#, python-format
+msgid "Cad Termic Treatment"
+msgstr "CadのTermic治療"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_automatic_weight
+msgid "Calcolo automatico del peso"
+msgstr "自動重量計算"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__sale_ok model:ir.model.fields,field_description:plm.field_product_template__sale_ok
+msgid "Can be Sold"
+msgstr "販売可能"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.restore_document_button_view
+msgid "Cancel"
+msgstr "キャンセル"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_checkout__hostpws
+msgid "Cartella PWS"
+msgstr "PWSフォルダー"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_component_base_form
+msgid "Category"
+msgstr "カテゴリー"
+
+#. module: plm
+#: code:addons/plm/models/mail_activity_type.py:0 model:ir.model.fields,field_description:plm.field_mail_activity_type__change_activity_type
+#, python-format
+msgid "Change Activity Type"
+msgstr "アクティビティタイプの変更"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search
+msgid "Changed By Me"
+msgstr "私によって変更されました"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search
+msgid "Changed by"
+msgstr "によって変更されました"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search
+msgid "Changed by Month"
+msgstr "月ごとに変更"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.action_plm_checkout
+msgid "Check-Out"
+msgstr "チェックアウト"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_search_tooltip
+msgid "CheckIn"
+msgstr "チェックイン"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment_relations.py:0 model:ir.model.fields,field_description:plm.field_ir_attachment_relation__userid
+#, python-format
+msgid "CheckOut User"
+msgstr "チェックアウトユーザー"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_search_tooltip
+msgid "CheckOut by me"
+msgstr "私によるチェックアウト"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_search_button model_terms:ir.ui.view,arch_db:plm.document_search_tooltip
+msgid "CheckOutUser:"
+msgstr "チェックアウトユーザー："
+
+#. module: plm
+#: code:addons/plm/models/plm_checkout.py:0
+#, python-format
+msgid "Checked-In"
+msgstr "チェックインした"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search_bck
+#: model_terms:ir.ui.view,arch_db:plm.plm_checkout_search
+msgid "Checked-Out Document"
+msgstr "チェックアウトされたドキュメント"
+
+#. module: plm
+#: code:addons/plm/models/plm_checkout.py:0
+#, python-format
+msgid "Checked-Out ID %r"
+msgstr "チェックアウトされたID%r"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_backupdoc_search model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search_bck model_terms:ir.ui.view,arch_db:plm.plm_checkout_search
+msgid "Checked-Out Yesterday"
+msgstr "昨日チェックアウト"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_backupdoc_search model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search_bck model_terms:ir.ui.view,arch_db:plm.plm_checkout_search
+msgid "Checked-Out in last month"
+msgstr "先月チェックアウト"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_backupdoc_search model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search_bck model_terms:ir.ui.view,arch_db:plm.plm_checkout_search
+msgid "Checked-Out in last week"
+msgstr "先週チェックアウト"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_backupdoc_search
+msgid "Checked-Out in latest 7 days"
+msgstr "直近の7日間でチェックアウト"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0
+#, python-format
+msgid "Checked-Out to"
+msgstr "チェックアウト先"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_backupdoc_search model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search_bck model_terms:ir.ui.view,arch_db:plm.plm_checkout_search
+msgid "Checked-Out today"
+msgstr "今日チェックアウト"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_docbom_search
+msgid "Child"
+msgstr "子"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment_relations.py:0 model:ir.model.fields,field_description:plm.field_ir_attachment_relation__child_preview
+#: model_terms:ir.ui.view,arch_db:plm.plm_docbom_form_view
+#, python-format
+msgid "Child Preview"
+msgstr "子プレビュー"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment_relations.py:0 model:ir.model.fields,field_description:plm.field_ir_attachment_relation__child_revision
+#, python-format
+msgid "Child Revision"
+msgstr "子の改訂"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment_relations.py:0 model:ir.model.fields,field_description:plm.field_ir_attachment_relation__child_state
+#, python-format
+msgid "Child Status"
+msgstr "子供のステータス"
+
+#. module: plm
+#: model:ir.model.fields.selection,name:plm.selection__mrp_bom_line__cutted_type__client model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Client"
+msgstr "クライアント"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Code"
+msgstr "コード"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__is_engcode_editable
+#: model:ir.model.fields,field_description:plm.field_product_template__is_engcode_editable
+msgid "Codice Ingegneria Modificabile"
+msgstr "変更可能なエンジニアリングコード"
+
+#. module: plm
+#: code:addons/plm/models/res_config_settings.py:0
+#, python-format
+msgid "Compare two BOM tool"
+msgstr "2つのBOMツールを比較する"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Compare two bom from the bom tree interface"
+msgstr "部品表ツリーインターフェイスから2つの部品表を比較します"
+
+#. module: plm
+#: model:ir.model,name:plm.model_plm_component_document_rel
+msgid "Component Document Relations"
+msgstr "コンポーネントドキュメントの関係"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.mrp_bom_tree_view_where model_terms:ir.ui.view,arch_db:plm.plm_bom_tree_structure
+msgid "Component Name"
+msgstr "コンポーネント名"
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.plm_menu_relation
+msgid "Component Relations"
+msgstr "コンポーネントの関係"
+
+#. module: plm
+#: code:addons/plm/models/product_product_document_rel.py:0 model:ir.model.constraint,message:plm.constraint_plm_component_document_rel_relation_unique
+#, python-format
+msgid "Component and Document relation has to be unique !"
+msgstr "コンポーネントとドキュメントの関係は一意である必要があります！"
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.plm_component_menu_view
+msgid "Components"
+msgstr "コンポーネント"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Compute product weight due to Normal BOM calculation, using CAD weight or setting a custom weight."
+msgstr "CAD重量を使用するか、カスタム重量を設定して、通常のBOM計算による製品重量を計算します."
+
+#. module: plm
+#: model:ir.model.fields.selection,name:plm.selection__ir_attachment__state__confirmed
+#: model:ir.model.fields.selection,name:plm.selection__product_template__state__confirmed
+msgid "Confermato"
+msgstr "確認済み"
+
+#. module: plm
+#: model:ir.model,name:plm.model_res_config_settings
+msgid "Config Settings"
+msgstr "構成設定"
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.plm_menu_dictionaries
+msgid "Configuration"
+msgstr "構成"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment_relations.py:0 model:ir.model.fields,field_description:plm.field_ir_attachment_relation__configuration
+#, python-format
+msgid "Configuration Name"
+msgstr "構成名"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_product_product_normal_form_view_inherit
+msgid "Confirm Component"
+msgstr "コンポーネントの確認"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "Confirm Document"
+msgstr "確認書類"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0 code:addons/plm/models/product_product.py:0 code:addons/plm/models/product_template.py:0
+#: model:ir.model.fields,field_description:plm.field_report_plmcomponent__count_component_confirmed
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search model_terms:ir.ui.view,arch_db:plm.plm_component_base_search
+#, python-format
+msgid "Confirmed"
+msgstr "確認済み"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_compare_bom
+msgid "Confronta due distinte"
+msgstr "2つの請求書を比較する"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_product_product__std_umc3
+msgid "Consente di specificare una unita' di misura per la terza caratteristica."
+msgstr "3番目の特性の測定単位を指定できます."
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_product_product__std_umc1
+msgid "Consente di specificare una unità di misura per la prima caratteristica."
+msgstr "最初の特性の数量単位を指定できます."
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_product_product__std_umc2
+msgid "Consente di specificare una unità di misura per la seconda caratteristica."
+msgstr "2番目の特性の測定単位を指定します."
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_engineering
+msgid "Consente l'utilizzo della BOM di ingegneria"
+msgstr "エンジニアリングBOMの使用を許可します"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0 code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Copied starting from : %s."
+msgstr "コピー元：%s."
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_product_product_normal_form_view_inherit
+msgid "Correct Component"
+msgstr "正しいコンポーネント"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "Correct Document"
+msgstr "正しい文書"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_template__standard_price
+msgid "Cost"
+msgstr "原価"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_product_template__standard_price
+msgid "Cost of the product, in the default unit of measure of the product."
+msgstr "製品のデフォルトの測定単位での製品のコスト."
+
+#. module: plm
+#: code:addons/plm/controllers/main.py:0
+#, python-format
+msgid "Could not select database '%s'"
+msgstr "データベースを選択できませんでした '%s'"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_web_revision
+msgid "Crea nuova versione dall'interfaccia WEB"
+msgstr "WEBインターフェースから新しいバージョンを作成する"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_backupdoc_search model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search_bck model_terms:ir.ui.view,arch_db:plm.plm_checkout_search
+msgid "Create by Month"
+msgstr "月ごとに作成"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search
+msgid "Create by me"
+msgstr "私が作成"
+
+#. module: plm
+#: code:addons/plm/models/res_config_settings.py:0
+#, python-format
+msgid "Create new revision from WEB"
+msgstr "WEBから新しいリビジョンを作成する"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0 code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Created : New Revision."
+msgstr "作成：新しいリビジョン."
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Created Normal Bom."
+msgstr "通常のBpmを作成します."
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment_relation__create_uid
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc__create_uid
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc_wizard__create_uid
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open__create_uid
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open_bck__create_uid
+#: model:ir.model.fields,field_description:plm.field_plm_checkout__create_uid model:ir.model.fields,field_description:plm.field_plm_client__create_uid
+#: model:ir.model.fields,field_description:plm.field_plm_component_document_rel__create_uid
+#: model:ir.model.fields,field_description:plm.field_plm_dbthread__create_uid
+#: model:ir.model.fields,field_description:plm.field_plm_description__create_uid
+#: model:ir.model.fields,field_description:plm.field_plm_finishing__create_uid model:ir.model.fields,field_description:plm.field_plm_material__create_uid
+#: model:ir.model.fields,field_description:plm.field_plm_temporary__create_uid
+#: model:ir.model.fields,field_description:plm.field_plm_temporary_message__create_uid
+#: model:ir.model.fields,field_description:plm.field_plm_treatment__create_uid model_terms:ir.ui.view,arch_db:plm.ir_attachment_search
+msgid "Created by"
+msgstr "によって作成された"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search
+msgid "Created by Month"
+msgstr "月ごとに作成"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_backupdoc_search model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search_bck model_terms:ir.ui.view,arch_db:plm.plm_checkout_search
+msgid "Created by me"
+msgstr "私によって作成されました"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search
+msgid "Created last month"
+msgstr "先月作成"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search model_terms:ir.ui.view,arch_db:plm.plm_docbom_search
+msgid "Created last week"
+msgstr "先週作成"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_component_base_search model_terms:ir.ui.view,arch_db:plm.view_mrp_bom_filter_inherit
+msgid "Created latest 2 Weeks"
+msgstr "最新の2週間を作成"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search model_terms:ir.ui.view,arch_db:plm.plm_component_base_search
+#: model_terms:ir.ui.view,arch_db:plm.view_mrp_bom_filter_inherit
+msgid "Created latest 7 Days"
+msgstr "最新の7日間を作成"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc__create_date
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc_wizard__create_date
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open__create_date
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open_bck__create_date
+#: model:ir.model.fields,field_description:plm.field_plm_checkout__create_date model:ir.model.fields,field_description:plm.field_plm_client__create_date
+#: model:ir.model.fields,field_description:plm.field_plm_component_document_rel__create_date
+#: model:ir.model.fields,field_description:plm.field_plm_dbthread__create_date
+#: model:ir.model.fields,field_description:plm.field_plm_description__create_date
+#: model:ir.model.fields,field_description:plm.field_plm_finishing__create_date
+#: model:ir.model.fields,field_description:plm.field_plm_material__create_date
+#: model:ir.model.fields,field_description:plm.field_plm_temporary__create_date
+#: model:ir.model.fields,field_description:plm.field_plm_temporary_message__create_date
+#: model:ir.model.fields,field_description:plm.field_plm_treatment__create_date
+msgid "Created on"
+msgstr "で作成されました"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search model_terms:ir.ui.view,arch_db:plm.plm_component_base_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_docbom_search model_terms:ir.ui.view,arch_db:plm.view_mrp_bom_filter_inherit
+msgid "Created today"
+msgstr "今日作成"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search model_terms:ir.ui.view,arch_db:plm.plm_component_base_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_docbom_search model_terms:ir.ui.view,arch_db:plm.view_mrp_bom_filter_inherit
+msgid "Created yesterday"
+msgstr "昨日作成"
+
+#. module: plm
+#: code:addons/plm/models/mrp_bom.py:0 code:addons/plm/models/mrp_bom_line.py:0
+#, python-format
+msgid "Creation Date"
+msgstr "作成日"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search
+msgid "Creation Month"
+msgstr "作成月"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_backupdoc_search model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search_bck model_terms:ir.ui.view,arch_db:plm.plm_checkout_search
+msgid "Creator"
+msgstr "クリエイター"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_automate_normal_bom
+msgid "Creazione della distinta normale se non esiste e il prodotto e' rilasciato"
+msgstr "通常の請求書が存在せず、製品がリリースされた場合の作成"
+
+#. module: plm
+#: code:addons/plm/models/mrp_bom_line.py:0
+#, python-format
+msgid "Cutted Compute Type"
+msgstr "カットされた計算タイプ"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.plm_action_plm_dbthread
+msgid "DB Thread Action"
+msgstr "DBスレッドアクション"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_mrp_bom__create_date model:ir.model.fields,field_description:plm.field_mrp_bom_line__create_date
+#: model:ir.model.fields,field_description:plm.field_product_product__create_date
+msgid "Data Creazione"
+msgstr "作成日"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__write_date
+msgid "Data Modifica"
+msgstr "日付が変更されました"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__workflow_date
+#: model:ir.model.fields,field_description:plm.field_mrp_document__workflow_date
+#: model:ir.model.fields,field_description:plm.field_product_product__workflow_date
+msgid "Data e ora Ultimo WF"
+msgstr "日時最後のWF"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__revision_date
+#: model:ir.model.fields,field_description:plm.field_mrp_document__revision_date
+#: model:ir.model.fields,field_description:plm.field_product_product__revision_date
+msgid "Data e ora revisione"
+msgstr "改訂日時"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__attachment_release_date
+#: model:ir.model.fields,field_description:plm.field_mrp_document__attachment_release_date
+#: model:ir.model.fields,field_description:plm.field_product_product__release_date
+msgid "Data e ora rilascio"
+msgstr "リリース日時"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment_relations.py:0 code:addons/plm/models/product_product.py:0
+#: model:ir.model.fields,field_description:plm.field_ir_attachment_relation__create_date
+#, python-format
+msgid "Date Created"
+msgstr "作成日"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Date Modified"
+msgstr "日付が変更されました"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0 code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Datetime Last Wkf"
+msgstr "日時最終Wkf"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0 code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Datetime Release"
+msgstr "日時リリース"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0 code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Datetime Revision"
+msgstr "日時改訂"
+
+#. module: plm
+#: model:ir.model,name:plm.model_plm_dbthread
+msgid "Db Thread Saving Model"
+msgstr "Dbスレッド保存モデル"
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.plm_dbthread_id
+msgid "DbThread"
+msgstr "Dbスレッド"
+
+#. module: plm
+#: code:addons/plm/models/mrp_bom.py:0 code:addons/plm/models/mrp_bom_line.py:0 code:addons/plm/models/plm_finishing.py:0
+#: code:addons/plm/models/plm_material.py:0 code:addons/plm/models/plm_treatment.py:0 code:addons/plm/models/product_product.py:0
+#: model:ir.model.fields,field_description:plm.field_plm_finishing__description
+#: model:ir.model.fields,field_description:plm.field_plm_material__description
+#: model:ir.model.fields,field_description:plm.field_plm_treatment__description model_terms:ir.ui.view,arch_db:plm.bom_structure_all
+#: model_terms:ir.ui.view,arch_db:plm.plm_component_base_form model_terms:ir.ui.view,arch_db:plm.view_plm_description
+#, python-format
+msgid "Description"
+msgstr "説明"
+
+#. module: plm
+#: code:addons/plm/models/plm_descriptions.py:0 model:ir.model.fields,field_description:plm.field_plm_description__description_en
+#, python-format
+msgid "Description English"
+msgstr "説明英語"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.plm_action_description_form model:ir.ui.menu,name:plm.menu_description
+#: model_terms:ir.ui.view,arch_db:plm.plm_view_description_tree
+msgid "Descriptions"
+msgstr "説明"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_mrp_bom__description model:ir.model.fields,field_description:plm.field_mrp_bom_line__description
+msgid "Descrizione"
+msgstr "説明"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__desc_modify
+#: model:ir.model.fields,field_description:plm.field_mrp_document__desc_modify
+#: model:ir.model.fields,field_description:plm.field_product_product__desc_modify
+msgid "Descrizione Modifica"
+msgstr "説明変更"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__std_description
+msgid "Descrizione Standard"
+msgstr "標準の説明"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_product_description_language_helper
+msgid "Descrizione multilingua di prodotto"
+msgstr "多言語製品の説明"
+
+#. module: plm
+#: code:addons/plm/models/plm_material.py:0 model:ir.model.fields,field_description:plm.field_plm_material__name
+#, python-format
+msgid "Designation"
+msgstr "指定"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment_relation__display_name
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc__display_name
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc_wizard__display_name
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open__display_name
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open_bck__display_name
+#: model:ir.model.fields,field_description:plm.field_plm_checkout__display_name model:ir.model.fields,field_description:plm.field_plm_client__display_name
+#: model:ir.model.fields,field_description:plm.field_plm_component_document_rel__display_name
+#: model:ir.model.fields,field_description:plm.field_plm_dbthread__display_name
+#: model:ir.model.fields,field_description:plm.field_plm_description__display_name
+#: model:ir.model.fields,field_description:plm.field_plm_finishing__display_name
+#: model:ir.model.fields,field_description:plm.field_plm_material__display_name
+#: model:ir.model.fields,field_description:plm.field_plm_temporary__display_name
+#: model:ir.model.fields,field_description:plm.field_plm_temporary_message__display_name
+#: model:ir.model.fields,field_description:plm.field_plm_treatment__display_name
+#: model:ir.model.fields,field_description:plm.field_report_ir_attachment_file__display_name
+#: model:ir.model.fields,field_description:plm.field_report_plmcomponent__display_name
+msgid "Display Name"
+msgstr "表示名"
+
+#. module: plm
+#: model:ir.model.fields.selection,name:plm.selection__mrp_bom__type__normal
+msgid "Distinta Normale"
+msgstr "通常の請求書"
+
+#. module: plm
+#: code:addons/plm/models/plm_backup_document.py:0 code:addons/plm/models/product_product.py:0 model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search_bck model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+#, python-format
+msgid "Document"
+msgstr "書類"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Document %r : %r is checked out by user %r"
+msgstr "ドキュメント%r：%rがユーザー%rによってチェックアウトされました"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Document %r with revision %r is in check-out, cannot create variant."
+msgstr "リビジョン%rのドキュメント%rはチェックアウト中です.バリアントを作成できません."
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0
+#, python-format
+msgid "Document %r with revision %r not present in Odoo."
+msgstr "リビジョン%rのドキュメント%rがOdooに存在しません."
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0
+#, python-format
+msgid "Document Already in the system"
+msgstr "すでにシステムにあるドキュメント"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__engineering_document_name
+#: model:ir.model.fields,field_description:plm.field_mrp_document__engineering_document_name model_terms:ir.ui.view,arch_db:plm.plm_backupdoc_search
+msgid "Document Name"
+msgstr "ドキュメント名"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__document_rel_count
+#: model:ir.model.fields,field_description:plm.field_mrp_document__document_rel_count
+msgid "Document Rel Count"
+msgstr "ドキュメントリリースカウント"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_docbom_search
+msgid "Document Relation Kind"
+msgstr "ドキュメント関係の種類"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.plm_action_document_relations model_terms:ir.ui.view,arch_db:plm.plm_docbom_tree_view
+msgid "Document Relations"
+msgstr "ドキュメントの関係"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0
+#, python-format
+msgid "Document Type"
+msgstr "ドキュメントタイプ"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0
+#, python-format
+msgid "Document in check-In unable to save!"
+msgstr "チェックイン中のドキュメント-保存できません！"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0
+#, python-format
+msgid "Document is Check-Out from User %r"
+msgstr "ドキュメントはユーザー%rからチェックアウトされています"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0
+#, python-format
+msgid "Document is released and cannot be saved"
+msgstr "ドキュメントがリリースされ、保存できません"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_dbthread__documement_name_version
+msgid "Document name and version"
+msgstr "ドキュメント名とバージョン"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_search_tooltip
+msgid "Document released"
+msgstr "ドキュメントがリリースされました"
+
+#. module: plm
+#: model:ir.model,name:plm.model_plm_checkout
+msgid "Document that are locked from someone"
+msgstr "誰かからロックされているドキュメント"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__linkeddocuments
+msgid "Documenti Collegati"
+msgstr "リンクされたドキュメント"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_mrp_bom_line__related_document_ids
+msgid "Documenti Relazionati"
+msgstr "関連ドキュメント"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_checkout__documentid
+msgid "Documento Relazionato"
+msgstr "関連資料"
+
+#. module: plm
+#: code:addons/plm/models/mrp_bom_line.py:0 model:ir.actions.act_window,name:plm.plm_action_document_form model:ir.ui.menu,name:plm.ir_attachment_form
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search model_terms:ir.ui.view,arch_db:plm.ir_attachment_tree
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+#, python-format
+msgid "Documents"
+msgstr "文書"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_backupdoc_tree model_terms:ir.ui.view,arch_db:plm.plm_checkout_tree
+msgid "Documents in Check-Out"
+msgstr "チェックアウト時の書類"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Download a zip file containing all documents/and printout attached to a product or BOM."
+msgstr "製品またはBOMに添付されているすべてのドキュメント/および印刷物を含むzipファイルをダウンロードします."
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0 code:addons/plm/models/product_product.py:0 code:addons/plm/models/product_template.py:0
+#: model:ir.model.fields,field_description:plm.field_report_plmcomponent__count_component_draft
+#, python-format
+msgid "Draft"
+msgstr "下書き"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__is_checkout
+#: model:ir.model.fields,field_description:plm.field_mrp_document__is_checkout
+msgid "E' in Check-Out"
+msgstr "チェックアウトで"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_web_3d
+msgid "Enable 3D WebGl"
+msgstr "3DWebGlを有効にする"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_web_3d_sale
+msgid "Enable 3D WebGl for e-commerce and sale"
+msgstr "電子商取引と販売のために3DWebGlを有効にする"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_auto_engcode
+msgid "Enable Automatic Engineering Code"
+msgstr "自動エンジニアリングコードを有効にする"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_bom_summarize
+msgid "Enable Bom sommarization during the client upload"
+msgstr "クライアントのアップロード中にBOMのsommarizationを有効にする"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_breakages
+msgid "Enable Brakages managment"
+msgstr "ブレーキ管理を有効にする"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_activity_validation
+msgid "Enable Eco /Ecr"
+msgstr "エコ/エクリを有効にする"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_pdf_workorder
+msgid "Enable Plm PDF document inside workorder"
+msgstr "作業指示書内でPlmPDFドキュメントを有効にする"
+
+#. module: plm
+#: code:addons/plm/models/product_template.py:0
+#, python-format
+msgid "Engineering Editable"
+msgstr "エンジニアリング編集可能"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.product_template_form_view_plm_custom
+msgid "Engineering Information"
+msgstr "エンジニアリング情報"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.action_plm_component_base model_terms:ir.ui.view,arch_db:plm.plm_component_base_tree
+msgid "Engineering Parts"
+msgstr "エンジニアリングパーツ"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_component_base_form
+msgid "Engineering Product"
+msgstr "エンジニアリング製品"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "Engineering document name"
+msgstr "エンジニアリングドキュメント名"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "Enineering revision"
+msgstr "エンジニアリング改訂"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Error during component creation with values:\n"
+msgstr "値を使用したコンポーネント作成中のエラー:\n"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_dbthread__error_message
+msgid "Error message"
+msgstr "エラーメッセージ"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Error on workflow operation"
+msgstr "ワークフロー操作のエラー"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_mrp_bom_line__itemlbl
+msgid "Etichetta Pos. Elem. CAD"
+msgstr "ラベルアイテムアイテム CAD"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__datas model:ir.model.fields,field_description:plm.field_mrp_document__datas
+msgid "File Content (base64))"
+msgstr "ファイルコンテンツ（base64））"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "File Data"
+msgstr "ファイルデータ"
+
+#. module: plm
+#: code:addons/plm/models/report_on_document.py:0 model:ir.model.fields,field_description:plm.field_report_ir_attachment_file__file_size
+#, python-format
+msgid "File Size"
+msgstr "ファイルサイズ"
+
+#. module: plm
+#: model:ir.model,name:plm.model_report_ir_attachment_file
+msgid "Files details by Directory"
+msgstr "ディレクトリごとのファイルの詳細"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search
+msgid "Filter on documents changed by me"
+msgstr "私が変更したドキュメントをフィルタリングする"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search
+msgid "Filter on documents created by me"
+msgstr "私が作成したドキュメントをフィルタリングする"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_finishing
+msgid "Finishing"
+msgstr "仕上げ"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.plm_action_finishing_form model:ir.ui.menu,name:plm.menu_finishing
+#: model_terms:ir.ui.view,arch_db:plm.plm_view_finishing_tree model_terms:ir.ui.view,arch_db:plm.plm_view_treatment_tree
+msgid "Finishings"
+msgstr "仕上げ"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__message_follower_ids
+msgid "Followers"
+msgstr "フォロワー"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "フォロワー（パートナー）"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_product_only_latest
+msgid "Force last version on Manufactoring"
+msgstr "製造に最新バージョンを強制"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_sale_only_latest
+msgid "Force last version on Sale"
+msgstr "セール中の最後のバージョンを強制する"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_purchase_only_latest
+msgid "Force last version on purchase"
+msgstr "購入時に最後のバージョンを強制する"
+
+#. module: plm
+#: code:addons/plm/models/plm_descriptions.py:0 model:ir.model.fields,field_description:plm.field_plm_description__fmt1
+#, python-format
+msgid "Format Feature 1"
+msgstr "フォーマット機能1"
+
+#. module: plm
+#: code:addons/plm/models/plm_descriptions.py:0 model:ir.model.fields,field_description:plm.field_plm_description__fmt2
+#, python-format
+msgid "Format Feature 2"
+msgstr "フォーマット機能2"
+
+#. module: plm
+#: code:addons/plm/models/plm_descriptions.py:0 model:ir.model.fields,field_description:plm.field_plm_description__fmt3
+#, python-format
+msgid "Format Feature 3"
+msgstr "フォーマット機能3"
+
+#. module: plm
+#: code:addons/plm/models/plm_descriptions.py:0 model:ir.model.fields,field_description:plm.field_plm_description__fmtend
+#, python-format
+msgid "Format Feature Composed"
+msgstr "構成されたフォーマット機能"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Generate Engineering Code by sequence"
+msgstr "シーケンスによるエンジニアリングコードの生成"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Generated From"
+msgstr "から生成"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__source_product
+msgid "Generato Da"
+msgstr "によって生成されます"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_mrp_bom__father_complete_ids
+#: model:ir.model.fields,field_description:plm.field_product_product__father_part_ids
+msgid "Gerarchia BoM"
+msgstr "BoM階層"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_spare
+msgid "Gestione delle distinte e dei manuali di ricambio"
+msgstr "スペアパーツリストとマニュアルの管理"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_date_bom
+msgid "Gestione delle distinte in base alla data"
+msgstr "日付に基づく請求書管理"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_cutted_parts
+msgid "Gestione delle esplose per parti di taglio"
+msgstr "部品を切断するための分解図の管理"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_report_language_helper
+msgid "Gestione multi lingua della reportistica"
+msgstr "レポートの多言語管理"
+
+#. module: plm
+#: code:addons/plm/models/plm_finishing.py:0 code:addons/plm/models/plm_material.py:0 code:addons/plm/models/plm_treatment.py:0
+#: model:ir.model.fields,help:plm.field_plm_finishing__sequence model:ir.model.fields,help:plm.field_plm_material__sequence
+#: model:ir.model.fields,help:plm.field_plm_treatment__sequence
+#, python-format
+msgid "Gives the sequence order when displaying a list of product categories."
+msgstr "製品カテゴリのリストを表示するときの順序を示します."
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search model_terms:ir.ui.view,arch_db:plm.plm_backupdoc_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search_bck
+#: model_terms:ir.ui.view,arch_db:plm.plm_checkout_search
+msgid "Group By..."
+msgstr "グループ化..."
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_docbom_search
+msgid "Group by..."
+msgstr "グループ化..."
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_mrp_bom_line__hasChildBoms
+msgid "Has Children Boms"
+msgstr "子供がいるBoms"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__has_message
+msgid "Has Message"
+msgstr "メッセージがあります"
+
+#. module: plm
+#: code:addons/plm/models/plm_cad_open.py:0 code:addons/plm/models/plm_cad_open_bck.py:0
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open__hostname model:ir.model.fields,field_description:plm.field_plm_cad_open_bck__hostname
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search_bck
+#: model_terms:ir.ui.view,arch_db:plm.plm_checkout_search
+#, python-format
+msgid "Hostname"
+msgstr "ホスト名"
+
+#. module: plm
+#: model:ir.filters,name:plm.ir_filter_plm_dbthread_hystory_by_code
+msgid "Hystory By Code"
+msgstr "コード別の歴史"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment_relation__id model:ir.model.fields,field_description:plm.field_plm_backupdoc__id
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc_wizard__id model:ir.model.fields,field_description:plm.field_plm_cad_open__id
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open_bck__id model:ir.model.fields,field_description:plm.field_plm_checkout__id
+#: model:ir.model.fields,field_description:plm.field_plm_client__id model:ir.model.fields,field_description:plm.field_plm_component_document_rel__id
+#: model:ir.model.fields,field_description:plm.field_plm_dbthread__id model:ir.model.fields,field_description:plm.field_plm_description__id
+#: model:ir.model.fields,field_description:plm.field_plm_finishing__id model:ir.model.fields,field_description:plm.field_plm_material__id
+#: model:ir.model.fields,field_description:plm.field_plm_temporary__id model:ir.model.fields,field_description:plm.field_plm_temporary_message__id
+#: model:ir.model.fields,field_description:plm.field_plm_treatment__id model:ir.model.fields,field_description:plm.field_report_ir_attachment_file__id
+#: model:ir.model.fields,field_description:plm.field_report_plmcomponent__id
+msgid "ID"
+msgstr "ID"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_ir_attachment__message_needaction model:ir.model.fields,help:plm.field_ir_attachment__message_unread
+msgid "If checked, new messages require your attention."
+msgstr "チェックされている場合、新しいメッセージには注意が必要です。"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_ir_attachment__message_has_error model:ir.model.fields,help:plm.field_ir_attachment__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "チェックすると、一部のメッセージに配信エラーが発生します."
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_plm_temporary__summarize
+msgid "If set as true, when a Bom line comes from EBOM was in the old normal BOM two lines where been summarized."
+msgstr "Trueに設定すると、BOMラインがEBOMから来る場合、古い通常のBOMに2つのラインが要約されていました."
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0
+#, python-format
+msgid "If the flag is set, the document is managed by the plm module, and imply its backup at each save and the visibility on some views."
+msgstr "フラグが設定されている場合、ドキュメントはplmモジュールによって管理され、保存ごとのバックアップと一部のビューでの表示を意味します."
+
+#. module: plm
+#: code:addons/plm/models/plm_temporary.py:0
+#, python-format
+msgid ""
+"If the user adds custom BOM lines in the revision 0 BOM, than makes the revision 1, creates it's engineering BOM and than create the new Normal BOM "
+"form EBOM your revision 0 custom BOM lines are created in the new BOM"
+msgstr ""
+"ユーザーがリビジョン0のBOMにカスタムBOM行を追加する場合、リビジョン1を作成するよりも、エンジニアリングBOMを作成し、新しい通常のBOMフォームEBOMを作成する"
+"よりも、リビジョン0のカスタムBOM行を新しいBOMに作成します"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_product_product__engineering_material model:ir.model.fields,help:plm.field_product_template__engineering_material
+msgid "Il materiale grezzo per il prodotto corrente, solo descrizione per il cartiglio."
+msgstr "現在の製品の原材料、タイトルブロックのみの説明."
+
+#. module: plm
+#: model:ir.model.constraint,message:plm.constraint_product_template_partnumber_uniq
+msgid "Il numero della parte deve essere unico!"
+msgstr "部品番号は一意である必要があります!"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__checkout_user
+#: model:ir.model.fields,field_description:plm.field_mrp_document__checkout_user
+msgid "In Check-Out a"
+msgstr "チェックアウト時"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "Indexed Content"
+msgstr "インデックス付きコンテンツ"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__revisionid model:ir.model.fields,field_description:plm.field_mrp_document__revisionid
+msgid "Indice Revisione"
+msgstr "インデックスの改訂"
+
+#. module: plm
+#: model:res.groups,name:plm.group_plm_integration_user
+msgid "Integration User"
+msgstr "統合ユーザー"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0
+#, python-format
+msgid "Is Checked-Out"
+msgstr "チェックアウトされています"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__message_is_follower
+msgid "Is Follower"
+msgstr "フォロワーです"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__is_plm model:ir.model.fields,field_description:plm.field_mrp_document__is_plm
+msgid "Is a plm Document"
+msgstr "PLMドキュメントです"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__kanban_dashboard
+msgid "Kanban Dashboard"
+msgstr "Kanban Dashboard"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_docbom_search
+msgid "Kind"
+msgstr "種類"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment_relations.py:0 model:ir.model.fields,field_description:plm.field_ir_attachment_relation__link_kind
+#, python-format
+msgid "Kind of Link"
+msgstr "リンクの種類"
+
+#. module: plm
+#: model:ir.model.constraint,message:plm.constraint_plm_checkout_documentid
+msgid "L'ID del documento deve essere unico!"
+msgstr "ドキュメントのIDは一意である必要があります!"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_mrp_bom__engineering_revision model:ir.model.fields,help:plm.field_mrp_bom_line__engineering_revision
+#: model:ir.model.fields,help:plm.field_product_product__engineering_revision model:ir.model.fields,help:plm.field_product_template__engineering_revision
+msgid "La revisione del prodotto."
+msgstr "\\製品レビュー."
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment_relation____last_update
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc____last_update
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc_wizard____last_update
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open____last_update
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open_bck____last_update
+#: model:ir.model.fields,field_description:plm.field_plm_checkout____last_update
+#: model:ir.model.fields,field_description:plm.field_plm_client____last_update
+#: model:ir.model.fields,field_description:plm.field_plm_component_document_rel____last_update
+#: model:ir.model.fields,field_description:plm.field_plm_dbthread____last_update
+#: model:ir.model.fields,field_description:plm.field_plm_description____last_update
+#: model:ir.model.fields,field_description:plm.field_plm_finishing____last_update
+#: model:ir.model.fields,field_description:plm.field_plm_material____last_update
+#: model:ir.model.fields,field_description:plm.field_plm_temporary____last_update
+#: model:ir.model.fields,field_description:plm.field_plm_temporary_message____last_update
+#: model:ir.model.fields,field_description:plm.field_plm_treatment____last_update
+#: model:ir.model.fields,field_description:plm.field_report_ir_attachment_file____last_update
+#: model:ir.model.fields,field_description:plm.field_report_plmcomponent____last_update
+msgid "Last Modified on"
+msgstr "最終更新日"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search model_terms:ir.ui.view,arch_db:plm.plm_backupdoc_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search_bck
+#: model_terms:ir.ui.view,arch_db:plm.plm_checkout_search
+msgid "Last Month"
+msgstr "先月"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment_relation__write_uid
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc__write_uid
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc_wizard__write_uid
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open__write_uid model:ir.model.fields,field_description:plm.field_plm_cad_open_bck__write_uid
+#: model:ir.model.fields,field_description:plm.field_plm_client__write_uid
+#: model:ir.model.fields,field_description:plm.field_plm_component_document_rel__write_uid
+#: model:ir.model.fields,field_description:plm.field_plm_dbthread__write_uid model:ir.model.fields,field_description:plm.field_plm_description__write_uid
+#: model:ir.model.fields,field_description:plm.field_plm_finishing__write_uid model:ir.model.fields,field_description:plm.field_plm_material__write_uid
+#: model:ir.model.fields,field_description:plm.field_plm_temporary__write_uid
+#: model:ir.model.fields,field_description:plm.field_plm_temporary_message__write_uid
+#: model:ir.model.fields,field_description:plm.field_plm_treatment__write_uid
+msgid "Last Updated by"
+msgstr "最終更新者"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment_relation__write_date
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc__write_date
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc_wizard__write_date
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open__write_date
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open_bck__write_date
+#: model:ir.model.fields,field_description:plm.field_plm_checkout__write_date model:ir.model.fields,field_description:plm.field_plm_client__write_date
+#: model:ir.model.fields,field_description:plm.field_plm_component_document_rel__write_date
+#: model:ir.model.fields,field_description:plm.field_plm_dbthread__write_date
+#: model:ir.model.fields,field_description:plm.field_plm_description__write_date
+#: model:ir.model.fields,field_description:plm.field_plm_finishing__write_date model:ir.model.fields,field_description:plm.field_plm_material__write_date
+#: model:ir.model.fields,field_description:plm.field_plm_temporary__write_date
+#: model:ir.model.fields,field_description:plm.field_plm_temporary_message__write_date
+#: model:ir.model.fields,field_description:plm.field_plm_treatment__write_date
+msgid "Last Updated on"
+msgstr "最終更新日"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search model_terms:ir.ui.view,arch_db:plm.plm_backupdoc_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search_bck
+#: model_terms:ir.ui.view,arch_db:plm.plm_checkout_search model_terms:ir.ui.view,arch_db:plm.plm_docbom_search
+msgid "Last Week"
+msgstr "先週"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search model_terms:ir.ui.view,arch_db:plm.plm_component_base_search
+msgid "Latest"
+msgstr "最新"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_component_base_search model_terms:ir.ui.view,arch_db:plm.view_mrp_bom_filter_inherit
+msgid "Latest 2 Weeks"
+msgstr "最新の2週間"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search model_terms:ir.ui.view,arch_db:plm.plm_backupdoc_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search_bck
+#: model_terms:ir.ui.view,arch_db:plm.plm_checkout_search model_terms:ir.ui.view,arch_db:plm.plm_component_base_search
+#: model_terms:ir.ui.view,arch_db:plm.view_mrp_bom_filter_inherit
+msgid "Latest 7 Days"
+msgstr "最新の7日間"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.bom_structure_all
+msgid "Level"
+msgstr "レベル"
+
+#. module: plm
+#: code:addons/plm/models/product_product_document_rel.py:0 model:ir.model.fields,field_description:plm.field_plm_component_document_rel__component_id
+#, python-format
+msgid "Linked Component"
+msgstr "リンクされたコンポーネント"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Linked Docs"
+msgstr "リンクされたドキュメント"
+
+#. module: plm
+#: code:addons/plm/models/product_product_document_rel.py:0 model:ir.model.fields,field_description:plm.field_plm_component_document_rel__document_id
+#, python-format
+msgid "Linked Document"
+msgstr "リンクされたドキュメント"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_product_product_normal_form_view_inherit
+msgid "Linked Documents"
+msgstr "リンクされたドキュメント"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0 model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+#, python-format
+msgid "Linked Parts"
+msgstr "リンクされた部品"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_mrp_bom__state model:ir.model.fields,help:plm.field_mrp_bom_line__state
+#: model:ir.model.fields,help:plm.field_product_product__state model:ir.model.fields,help:plm.field_product_template__state
+msgid "Lo stato del prodotto nel suo ciclo di vita."
+msgstr "製品のライフサイクル全体にわたるステータス."
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_ir_attachment__state model:ir.model.fields,help:plm.field_mrp_document__state
+msgid "Lo stato del prodotto."
+msgstr "製品のステータス."
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__message_main_attachment_id
+msgid "Main Attachment"
+msgstr "メインアタッチメント"
+
+#. module: plm
+#: code:addons/plm/models/res_config_settings.py:0
+#, python-format
+msgid "Manage BOM due to date"
+msgstr "期日までにBOMを管理する"
+
+#. module: plm
+#: code:addons/plm/models/res_config_settings.py:0
+#, python-format
+msgid "Manage BOM explosion for cutted parts"
+msgstr "切断された部品のBOM爆発を管理する"
+
+#. module: plm
+#: code:addons/plm/models/res_config_settings.py:0
+#, python-format
+msgid "Manage Multi Language PLM reports"
+msgstr "多言語PLMレポートの管理"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_suspended
+msgid "Manage Product suspend code"
+msgstr "製品の一時停止コードを管理する"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Manage breakage on your products"
+msgstr "製品の破損を管理する"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Manage product Suspension State on workFlow for document and product"
+msgstr "ドキュメントと製品のワークフローで製品の一時停止状態を管理する"
+
+#. module: plm
+#: code:addons/plm/models/res_config_settings.py:0
+#, python-format
+msgid "Manage spare BOM and Spare Parts Manual"
+msgstr "スペアBOMとスペアパーツの管理マニュアル"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_temporary__migrate_custom_lines
+msgid "Mantieni le linee di distinta personalizzate dalla distinta normale"
+msgstr "通常のBOMからカスタムBOMラインを保持する"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Manufacturing"
+msgstr "製造"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_material
+msgid "Material"
+msgstr "材料"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_component_base_form model_terms:ir.ui.view,arch_db:plm.plm_product_product_normal_form_view_inherit
+msgid "Material / Surface / Treatment"
+msgstr "素材/表面/処理"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__tmp_material
+msgid "Materiale Grezzo"
+msgstr "原材料"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__engineering_material
+#: model:ir.model.fields,field_description:plm.field_product_template__engineering_material
+msgid "Materiale Grezzo CAD"
+msgstr "CAD原材料"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.plm_action_material_form model:ir.ui.menu,name:plm.menu_material
+#: model_terms:ir.ui.view,arch_db:plm.plm_view_material_tree
+msgid "Materials"
+msgstr "材料"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__message_has_error
+msgid "Message Delivery error"
+msgstr "メッセージ配信エラー"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__message_ids
+msgid "Messages"
+msgstr "メッセージ"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0 code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Modification Description"
+msgstr "変更の説明"
+
+#. module: plm
+#: code:addons/plm/models/report_on_document.py:0 model:ir.model.fields,field_description:plm.field_report_ir_attachment_file__month
+#, python-format
+msgid "Month"
+msgstr "月"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Mrp Bom"
+msgstr "Mrp Bom"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_document_multi_site
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_mrp_bom_update
+msgid "Multi side storege system"
+msgstr "マルチサイドストレージシステム"
+
+#. module: plm
+#: code:addons/plm/models/product_product_kanban.py:0
+#, python-format
+msgid "New Component"
+msgstr "新しいコンポーネント"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_component_kanban_hinerit
+msgid "No Image"
+msgstr "画像無し"
+
+#. module: plm
+#: model:ir.model.fields.selection,name:plm.selection__mrp_bom_line__cutted_type__none
+msgid "None"
+msgstr "なし"
+
+#. module: plm
+#: code:addons/plm/models/mrp_bom.py:0
+#, python-format
+msgid "Normal BoM"
+msgstr "通常のBpM"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.plm_action_normal_form
+msgid "Normal BoMs"
+msgstr "通常のBoM"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_description
+msgid "Normalization Section"
+msgstr "正規化セクション"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_description
+msgid "Normalized features formatting"
+msgstr "正規化された機能の書式設定"
+
+#. module: plm
+#: code:addons/plm/models/plm_descriptions.py:0 model:ir.model.fields,field_description:plm.field_plm_description__unitab
+#, python-format
+msgid "Normative Rule"
+msgstr "規範的ルール"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_description
+msgid "Normative reference"
+msgstr "規範的参照"
+
+#. module: plm
+#: code:addons/plm/models/plm_descriptions.py:0 model:ir.model.fields,field_description:plm.field_plm_description__name
+#, python-format
+msgid "Note to Description"
+msgstr "説明への注記"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_description
+msgid "Note to help selection"
+msgstr "選択に役立つメモ"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "Notes"
+msgstr "ノート"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__message_needaction_counter
+msgid "Number of Actions"
+msgstr "アクションの数"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__message_has_error_counter
+msgid "Number of errors"
+msgstr "エラーの数"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_ir_attachment__message_needaction_counter
+msgid "Number of messages which requires an action"
+msgstr "アクションが必要なメッセージの数"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_ir_attachment__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "配信エラーのあるメッセージの数"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_ir_attachment__message_unread_counter
+msgid "Number of unread messages"
+msgstr "未読メッセージの数"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__engineering_code
+#: model:ir.model.fields,field_description:plm.field_product_template__engineering_code
+msgid "Numero Parte"
+msgstr "部品番号"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0 code:addons/plm/models/product_product.py:0 code:addons/plm/models/product_template.py:0
+#: model:ir.model.fields,field_description:plm.field_report_plmcomponent__count_component_obsoleted
+#: model_terms:ir.ui.view,arch_db:plm.plm_component_base_search
+#, python-format
+msgid "Obsoleted"
+msgstr "廃止されました"
+
+#. module: plm
+#: model:ir.model.fields.selection,name:plm.selection__ir_attachment__state__obsoleted
+#: model:ir.model.fields.selection,name:plm.selection__product_template__state__obsoleted
+msgid "Obsoleto"
+msgstr "廃止されました"
+
+#. module: plm
+#: model:ir.module.category,name:plm.odooplm_module_category
+msgid "OdooPLM"
+msgstr "OdooPLM"
+
+#. module: plm
+#: model:ir.model,name:plm.model_plm_cad_open model:ir.model,name:plm.model_plm_cad_open_bck
+msgid "Opens made by the client"
+msgstr "クライアントによって作成されたオープン"
+
+#. module: plm
+#: code:addons/plm/models/plm_cad_open.py:0 code:addons/plm/models/plm_cad_open_bck.py:0
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open__operation_type
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open_bck__operation_type
+#, python-format
+msgid "Operation Type"
+msgstr "操作タイプ"
+
+#. module: plm
+#: code:addons/plm/models/mail_activity_type.py:0
+#: model:ir.model.fields.selection,name:plm.selection__mail_activity_type__change_activity_type__plm_activity
+#, python-format
+msgid "Order"
+msgstr "注文する"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0 model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+#, python-format
+msgid "Other"
+msgstr "他の"
+
+#. module: plm
+#: model:ir.actions.report,name:plm.report_product_product_pdf
+msgid "PDF Drawings"
+msgstr "PDF図面"
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.plm_menu
+msgid "PLM"
+msgstr "PLM"
+
+#. module: plm
+#: model:res.groups,name:plm.group_plm_release_users
+msgid "PLM / Release Users"
+msgstr "PLM /リリースユーザー"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_box
+msgid "PLM Box"
+msgstr "PLMボックス"
+
+#. module: plm
+#: model:ir.model,name:plm.model_plm_description
+msgid "PLM Descriptions"
+msgstr "PLMの説明"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "PLM Infos"
+msgstr "PLM Infos"
+
+#. module: plm
+#: model:res.groups,name:plm.group_plm_readonly_released
+msgid "PLM Integration Readonly"
+msgstr "PLM統合読み取り専用"
+
+#. module: plm
+#: model:ir.model,name:plm.model_plm_material
+msgid "PLM Materials"
+msgstr "PLMマテリアル"
+
+#. module: plm
+#: code:addons/plm/models/plm_checkout.py:0
+#, python-format
+msgid "PWS Directory"
+msgstr "PWSディレクトリ"
+
+#. module: plm
+#: code:addons/plm/models/plm_cad_open.py:0 code:addons/plm/models/plm_cad_open_bck.py:0
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open__pws_path model:ir.model.fields,field_description:plm.field_plm_cad_open_bck__pws_path
+#, python-format
+msgid "PWS Path"
+msgstr "PWSパス"
+
+#. module: plm
+#: code:addons/plm/models/res_config_settings.py:0 model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_pack_and_go
+#, python-format
+msgid "Pack and go"
+msgstr "パックして行く"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_docbom_search
+msgid "Parent"
+msgstr "親"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment_relations.py:0 model:ir.model.fields,field_description:plm.field_ir_attachment_relation__parent_preview
+#: model_terms:ir.ui.view,arch_db:plm.plm_docbom_form_view
+#, python-format
+msgid "Parent Preview"
+msgstr "親のプレビュー"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment_relations.py:0 model:ir.model.fields,field_description:plm.field_ir_attachment_relation__parent_revision
+#, python-format
+msgid "Parent Revision"
+msgstr "親の改訂"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment_relations.py:0 model:ir.model.fields,field_description:plm.field_ir_attachment_relation__parent_state
+#, python-format
+msgid "Parent Status"
+msgstr "親のステータス"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Part %r cannot be updated"
+msgstr "部品%rは更新できません"
+
+#. module: plm
+#: code:addons/plm/models/product_template.py:0
+#, python-format
+msgid "Part Number"
+msgstr "部品番号"
+
+#. module: plm
+#: code:addons/plm/models/product_template.py:0
+#, python-format
+msgid "Part Number has to be unique!"
+msgstr "部品番号は一意である必要があります！"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__linkedcomponents
+#: model:ir.model.fields,field_description:plm.field_mrp_document__linkedcomponents
+msgid "Parti Collegate"
+msgstr "関連部品"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_component_base_search
+msgid "Parts"
+msgstr "部品"
+
+#. module: plm
+#: model:ir.filters,name:plm.ir_filter_plm_dbthread_pending_save
+msgid "Pending Save"
+msgstr "保存保留中"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0
+#, python-format
+msgid "Permission denied for folder %r."
+msgstr "フォルダ%rの権限が拒否されました."
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_mrp_bom_line__weight_net
+msgid "Peso Netto"
+msgstr "正味重量"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_mrp_bom__weight_net
+msgid "Peso netto della Bom in Kg."
+msgstr "Bomの正味重量（Kg)."
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_mrp_bom_line__type
+msgid ""
+"Phantom BOM: When processing a sales order for this product, the delivery order will contain the raw materials, instead of the finished product. Ship "
+"this product as a set of components (kit)."
+msgstr ""
+"ファントムBOM：この製品の販売注文を処理する場合、出荷注文には完成品ではなく原材料が含まれます. この製品をコンポーネントのセット（キット）として出荷しま"
+"す."
+
+#. module: plm
+#: code:addons/plm/models/plm_backup_document.py:0 model:ir.model.fields,field_description:plm.field_plm_backupdoc__existingfile
+#, python-format
+msgid "Physical Document Location"
+msgstr "物理的なドキュメントの場所"
+
+#. module: plm
+#: model:mail.activity.type,name:plm.mail_activity_plm_activity
+msgid "Plm Activity"
+msgstr "Plmアクティビティ"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.action_plm_cad_open model_terms:ir.ui.view,arch_db:plm.plm_cad_open_tree
+msgid "Plm Cad Open"
+msgstr "PlmCADオープン"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.action_plm_cad_open_bck model:ir.actions.server,name:plm.ir_cron_scheduler_bck_cad_open_ir_actions_server
+#: model:ir.cron,cron_name:plm.ir_cron_scheduler_bck_cad_open model:ir.cron,name:plm.ir_cron_scheduler_bck_cad_open
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_form_bck model_terms:ir.ui.view,arch_db:plm.plm_cad_open_tree_bck
+msgid "Plm Cad Open Bck"
+msgstr "PlmCADオープンバック"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_form model_terms:ir.ui.view,arch_db:plm.view_plm_checkout_form
+msgid "Plm checkout"
+msgstr "Plmチェックアウト"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_auto_internalref
+msgid "Populate internal reference with engineering part number"
+msgstr "内部参照にエンジニアリング部品番号を入力します"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.bom_structure_all
+msgid "Pos."
+msgstr "位置."
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_mrp_bom_line__itemnum
+msgid "Pos. Elemento CAD"
+msgstr "位置 エレメントCAD"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_bom_tree_structure
+msgid "Position"
+msgstr "ポジション"
+
+#. module: plm
+#: code:addons/plm/models/plm_temporary.py:0
+#, python-format
+msgid "Preserve custom BOM lines from previous Normal BOM revision"
+msgstr "以前の通常のBOMリビジョンからのカスタムBOMラインを保持する"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_kanban_view model_terms:ir.ui.view,arch_db:plm.view_plm_backupdoc
+msgid "Preview"
+msgstr "プレビュー"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0 code:addons/plm/models/plm_backup_document.py:0
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc__preview
+#, python-format
+msgid "Preview Content"
+msgstr "コンテンツのプレビュー"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0
+#, python-format
+msgid "Print PDF content."
+msgstr "PDFコンテンツを印刷します。"
+
+#. module: plm
+#: model:ir.actions.report,name:plm.report_ir_attachment_pdf
+msgid "Print Pdf"
+msgstr "PDFを印刷"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0 code:addons/plm/models/plm_backup_document.py:0
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc__printout
+#, python-format
+msgid "Printout Content"
+msgstr "プリントアウトコンテンツ"
+
+#. module: plm
+#: model:ir.model,name:plm.model_product_product model_terms:ir.ui.view,arch_db:plm.plm_component_kanban_hinerit
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Product"
+msgstr "プロダクト"
+
+#. module: plm
+#: code:addons/plm/models/res_config_settings.py:0
+#, python-format
+msgid "Product Description Language Helper"
+msgstr "製品説明言語ヘルパー"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0 code:addons/plm/models/product_template.py:0
+#, python-format
+msgid "Product Engineering"
+msgstr "製品工学"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.bom_structure_all
+msgid "Product Name"
+msgstr "商品名"
+
+#. module: plm
+#: model:ir.model,name:plm.model_product_template
+msgid "Product Template"
+msgstr "プロダクトテンプレート"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Product code: %r revision %r status %r"
+msgstr "製品コード：%rリビジョン%rステータス%r"
+
+#. module: plm
+#: model:ir.actions.report,name:plm.report_product_product_all_pdf_latest
+msgid "Production All Level PDF Drawings"
+msgstr "プロダクションオールレベルPDF図面"
+
+#. module: plm
+#: model:ir.actions.report,name:plm.report_product_product_one_pdf_latest
+msgid "Production First Level PDF Drawings"
+msgstr "プロダクションファーストレベルPDF図面"
+
+#. module: plm
+#: model:ir.actions.report,name:plm.report_product_product_pdf_latest
+msgid "Production PDF Drawings"
+msgstr "プロダクションPDF図面"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0 code:addons/plm/models/product_template.py:0
+#, python-format
+msgid "Products"
+msgstr "製品"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Project"
+msgstr "プロジェクト"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Purchase"
+msgstr "購入"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.bom_structure_all
+msgid "Qty"
+msgstr "数量"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Quantity"
+msgstr "数量"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_mrp_bom_line__itemnum
+msgid "Questa e' la posizione della referenza dell'oggetto nel documento CAD che dichiara questa BoM."
+msgstr "これは、このBoMを宣言するCADドキュメント内のオブジェクト参照の位置です."
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_product_product__engineering_code model:ir.model.fields,help:plm.field_product_template__engineering_code
+msgid "Questa e' la referenza ingegneristica per gestire un P/N diverso dal nome dell'oggetto."
+msgstr "これは、オブジェクト名とは異なるP / Nを管理するためのエンジニアリングリファレンスです."
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_mrp_bom__source_id model:ir.model.fields,help:plm.field_mrp_bom_line__source_id
+msgid "Questo e' l'oggetto del documento che dichiara questa Bom."
+msgstr "これは、このBomを宣言する文書の主題です."
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Raw Material"
+msgstr "原材料"
+
+#. module: plm
+#: code:addons/plm/models/plm_material.py:0 model:ir.model.constraint,message:plm.constraint_plm_material_name_uniq
+#, python-format
+msgid "Raw Material has to be unique !"
+msgstr "原材料はユニークでなければなりません！"
+
+#. module: plm
+#: code:addons/plm/models/product_template.py:0
+#, python-format
+msgid "Raw material for current product, only description for titleblock."
+msgstr "現在の製品の原材料、タイトルブロックの説明のみ."
+
+#. module: plm
+#: model:ir.actions.server,name:plm.action_update_doc_type
+msgid "Recompute Doc Type"
+msgstr "文書型を再計算する"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Rel.Source"
+msgstr "関係元"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_bom_form_view
+msgid "Related BOM Lines"
+msgstr "関連するBOMライン"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_mrp_bom_line__related_bom_ids
+msgid "Related BOMs"
+msgstr "関連するBOM"
+
+#. module: plm
+#: code:addons/plm/models/product_product_kanban.py:0
+#, python-format
+msgid "Related Boms"
+msgstr "関連するBoms"
+
+#. module: plm
+#: code:addons/plm/models/plm_backup_document.py:0 code:addons/plm/models/plm_cad_open.py:0 code:addons/plm/models/plm_cad_open_bck.py:0
+#: code:addons/plm/models/plm_checkout.py:0 model:ir.model.fields,field_description:plm.field_plm_backupdoc__documentid
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open__document_id
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open_bck__document_id
+#, python-format
+msgid "Related Document"
+msgstr "関連資料"
+
+#. module: plm
+#: code:addons/plm/models/mrp_bom_line.py:0 code:addons/plm/models/product_product_kanban.py:0
+#, python-format
+msgid "Related Documents"
+msgstr "関連文書"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "Related To"
+msgstr "に関連する"
+
+#. module: plm
+#: code:addons/plm/models/plm_backup_document.py:0 code:addons/plm/models/plm_cad_open.py:0 code:addons/plm/models/plm_cad_open_bck.py:0
+#: code:addons/plm/models/plm_checkout.py:0 model:ir.model.fields,field_description:plm.field_plm_backupdoc__userid
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open__userid model:ir.model.fields,field_description:plm.field_plm_cad_open_bck__userid
+#, python-format
+msgid "Related User"
+msgstr "関連ユーザー"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment_relations.py:0 model:ir.model.fields,field_description:plm.field_ir_attachment_relation__child_id
+#, python-format
+msgid "Related child document"
+msgstr "関連する子ドキュメント"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Related documents"
+msgstr "関連資料"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment_relations.py:0 model:ir.model.fields,field_description:plm.field_ir_attachment_relation__parent_id
+#, python-format
+msgid "Related parent document"
+msgstr "関連する親ドキュメント"
+
+#. module: plm
+#: model:ir.model,name:plm.model_ir_attachment_relation
+msgid "Relation between document used for cad file structure"
+msgstr "CADファイル構造に使用されるドキュメント間の関係"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_product_product_normal_form_view_inherit
+msgid "Release Component"
+msgstr "コンポーネントをリリース"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "Release Document"
+msgstr "リリースドキュメント"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0 code:addons/plm/models/product_product.py:0 code:addons/plm/models/product_template.py:0
+#: model:ir.model.fields,field_description:plm.field_report_plmcomponent__count_component_released model_terms:ir.ui.view,arch_db:plm.ir_attachment_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_component_base_search
+#, python-format
+msgid "Released"
+msgstr "リリースされました"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0 code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Removed : Latest Revision."
+msgstr "削除：最新のリビジョン."
+
+#. module: plm
+#: model:ir.model,name:plm.model_report_plm_bom_structure_all
+msgid "Report Bom All Structure"
+msgstr "Bomのすべての構造を報告する"
+
+#. module: plm
+#: model:ir.model,name:plm.model_report_plm_bom_structure_all_sum
+msgid "Report Bom All Structure summarised"
+msgstr "レポートBomのすべての構造を要約"
+
+#. module: plm
+#: model:ir.model,name:plm.model_report_plm_bom_structure_leaves
+msgid "Report Bom Leavs"
+msgstr "ボンの葉を報告する"
+
+#. module: plm
+#: model:ir.model,name:plm.model_report_plm_bom_structure_flat
+msgid "Report Bom Structure"
+msgstr "部品表の構造を報告する"
+
+#. module: plm
+#: model:ir.model,name:plm.model_report_plmcomponent
+msgid "Report Component"
+msgstr "レポートコンポーネント"
+
+#. module: plm
+#: model:ir.model,name:plm.model_report_plm_ir_attachment_pdf
+msgid "Report Document PDF"
+msgstr "レポートドキュメントPDF"
+
+#. module: plm
+#: model:ir.model,name:plm.model_report_plm_bom_structure_one
+msgid "Report PLM Bom Structure"
+msgstr "PLM部品表構造を報告する"
+
+#. module: plm
+#: model:ir.model,name:plm.model_report_plm_bom_structure_one_sum
+msgid "Report PLM Bom Structure summaraized"
+msgstr "要約されたPLMBOM構造のレポート"
+
+#. module: plm
+#: model:ir.model,name:plm.model_report_plm_product_pdf
+msgid "Report for producing pdf"
+msgstr "PDFを作成するためのレポート"
+
+#. module: plm
+#: model:ir.model,name:plm.model_report_plm_all_product_pdf model:ir.model,name:plm.model_report_plm_one_product_pdf
+#: model:ir.model,name:plm.model_report_plm_product_production_all_pdf_latest model:ir.model,name:plm.model_report_plm_product_production_one_pdf_latest
+#: model:ir.model,name:plm.model_report_plm_product_production_pdf_latest
+msgid "Report pdf"
+msgstr "レポートpdf"
+
+#. module: plm
+#: code:addons/plm/models/mail_activity_type.py:0 model:ir.model.fields.selection,name:plm.selection__mail_activity_type__change_activity_type__request
+#, python-format
+msgid "Request"
+msgstr "リクエスト"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.act_restore_document
+msgid "Restore Document"
+msgstr "ドキュメントを復元"
+
+#. module: plm
+#: code:addons/plm/models/plm_backup_document.py:0
+#, python-format
+msgid "Restore Document Error"
+msgstr "ドキュメントの復元エラー"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.restore_document_button_view
+msgid "Restore Entry"
+msgstr "エントリを復元"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.restore_document_button_view
+msgid "Restore Selected Document"
+msgstr "選択したドキュメントを復元する"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.restore_document_button_view
+msgid "Restore this document"
+msgstr "このドキュメントを復元する"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.product_template_form_view_plm_custom
+msgid "Rev."
+msgstr "改訂."
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_product_product_normal_form_view_inherit
+msgid "Rev.s."
+msgstr "Rev.s."
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Revise a product / plm document from the web interface"
+msgstr "Webインターフェイスから製品/ plmドキュメントを改訂します"
+
+#. module: plm
+#: code:addons/plm/models/mrp_bom.py:0 code:addons/plm/models/mrp_bom_line.py:0 code:addons/plm/models/plm_backup_document.py:0
+#: code:addons/plm/models/product_product.py:0 code:addons/plm/models/product_template.py:0
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc__revisionid model:ir.model.fields,field_description:plm.field_plm_cad_open__rel_doc_rev
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open_bck__rel_doc_rev
+#: model:ir.model.fields,field_description:plm.field_plm_checkout__rel_doc_rev model_terms:ir.ui.view,arch_db:plm.mrp_bom_tree_view_where
+#: model_terms:ir.ui.view,arch_db:plm.plm_bom_tree_structure
+#, python-format
+msgid "Revision"
+msgstr "リビジョン"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_mrp_bom__bom_revision_count
+#: model:ir.model.fields,field_description:plm.field_product_product__revision_count
+#: model:ir.model.fields,field_description:plm.field_product_template__revision_count
+msgid "Revision Count"
+msgstr "リビジョン数"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0
+#, python-format
+msgid "Revision Index"
+msgstr "改訂インデックス"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_product_product_normal_form_view_inherit
+msgid "Revision Rel Docs"
+msgstr "リビジョンリリースドキュメント"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_mrp_bom__engineering_revision
+#: model:ir.model.fields,field_description:plm.field_mrp_bom_line__engineering_revision
+#: model:ir.model.fields,field_description:plm.field_product_product__engineering_revision
+#: model:ir.model.fields,field_description:plm.field_product_template__engineering_revision
+msgid "Revisione"
+msgstr "改訂"
+
+#. module: plm
+#: model:ir.model.fields.selection,name:plm.selection__ir_attachment__state__released
+#: model:ir.model.fields.selection,name:plm.selection__product_template__state__released
+msgid "Rilasciato"
+msgstr "発行済み"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "SMS配信エラー"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Sales"
+msgstr "セールス"
+
+#. module: plm
+#: model:ir.filters,name:plm.ir_filter_plm_dbthread_saving_error
+msgid "Saving Errors"
+msgstr "エラーの保存"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_checkout__write_uid
+msgid "Scrivi l'ID utente"
+msgstr "ユーザーIDを書き込む"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__writable model:ir.model.fields,field_description:plm.field_mrp_document__writable
+#: model:ir.model.fields,field_description:plm.field_product_product__engineering_writable
+#: model:ir.model.fields,field_description:plm.field_product_template__engineering_writable
+msgid "Scrivibile"
+msgstr "書き込み可能"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_ir_attachment__is_plm model:ir.model.fields,help:plm.field_mrp_document__is_plm
+msgid "Se impostato, il documento è gestito dal modulo PLM, e implica il suo backup a ogni salvataggio e la visibilità in alcune viste."
+msgstr "設定されている場合、ドキュメントはPLMモジュールによって管理され、保存ごとのバックアップと一部のビューでの可視性を意味します."
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_plm_temporary__migrate_custom_lines
+msgid ""
+"Se l'utente aggiunge alcune linee di distinta in revisione 0, allora crea la revisione 1, crea la sua distinta di ingegneria e crea la nuova BOM "
+"normale dalla EBOM le tue linee nella revisione 0 sono presenti nella nuova distinta."
+msgstr ""
+"ユーザーがリビジョン0にいくつかのBOM行を追加すると、リビジョン1が作成され、エンジニアリングBOMが作成され、EBOMから新しい通常のBOMが作成されます。リビ"
+"ジョン0の行は、新しいBOMに存在します."
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.menu_backupdoc
+msgid "Search on Backup Data Set"
+msgstr "バックアップデータセットで検索"
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.menu_checkout
+msgid "Search on Checked-Out Documents"
+msgstr "チェックアウトされたドキュメントを検索する"
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.menu_document_relations model_terms:ir.ui.view,arch_db:plm.plm_docbom_search
+msgid "Search on Document Relations"
+msgstr "ドキュメントリレーションを検索"
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.menu_document_files
+msgid "Search on Documents"
+msgstr "ドキュメントを検索する"
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.menu_base_component
+msgid "Search on Engineering Parts"
+msgstr "エンジニアリングパーツで検索"
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.menu_relation_normal
+msgid "Search on Normal Bill of Materials"
+msgstr "通常の部品表で検索"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Select raw material for current product"
+msgstr "現在の製品の原材料を選択してください"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Select standard description for current product."
+msgstr "現在の製品の標準的な説明を選択します."
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Select surface finishing for current product"
+msgstr "現在の製品の表面仕上げを選択してください"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Select termic treatment for current product"
+msgstr "現在の製品の長期治療を選択する"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_product_product__tmp_material
+msgid "Seleziona il materiale grezzo oer il prodotto corrente"
+msgstr "現在の製品の原材料を選択してください"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_product_product__tmp_treatment
+msgid "Seleziona il trattamento termico per il prodotto corrente"
+msgstr "現在の製品の熱処理を選択してください"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_product_product__std_description
+msgid "Seleziona la descrizione standard per il prodotto corrente."
+msgstr "現在の製品の標準的な説明を選択します."
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_product_product__tmp_surface
+msgid "Seleziona la superficie di finitura per il prodotto corrente"
+msgstr "現在の製品の仕上げ面を選択します"
+
+#. module: plm
+#: code:addons/plm/models/plm_descriptions.py:0 code:addons/plm/models/plm_finishing.py:0 code:addons/plm/models/plm_material.py:0
+#: code:addons/plm/models/plm_treatment.py:0 model:ir.model.fields,field_description:plm.field_plm_description__sequence
+#: model:ir.model.fields,field_description:plm.field_plm_finishing__sequence model:ir.model.fields,field_description:plm.field_plm_material__sequence
+#: model:ir.model.fields,field_description:plm.field_plm_treatment__sequence
+#, python-format
+msgid "Sequence"
+msgstr "シーケンス"
+
+#. module: plm
+#: model:ir.model.fields.selection,name:plm.selection__mrp_bom_line__cutted_type__server
+msgid "Server"
+msgstr "サーバ"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.plm_action_settings_form model:ir.ui.menu,name:plm.plm_settings
+msgid "Settings"
+msgstr "設定"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_docbom_form_view
+msgid "Show Document Relation"
+msgstr "ドキュメントリレーションを表示"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0 model:ir.model.fields,field_description:plm.field_product_product__show_std_field1
+#, python-format
+msgid "Show std field 1"
+msgstr "標準フィールド1を表示"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0 model:ir.model.fields,field_description:plm.field_product_product__show_std_field2
+#, python-format
+msgid "Show std field 2"
+msgstr "標準フィールド2を表示"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0 model:ir.model.fields,field_description:plm.field_product_product__show_std_field3
+#, python-format
+msgid "Show std field 3"
+msgstr "標準フィールド3を表示"
+
+#. module: plm
+#: model:ir.model.fields.selection,name:plm.selection__ir_attachment__state__undermodify
+#: model:ir.model.fields.selection,name:plm.selection__product_template__state__undermodify
+msgid "Sotto Modifica"
+msgstr "[編集]の下"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.mrp_bom_tree_view_where model_terms:ir.ui.view,arch_db:plm.plm_bom_form_view
+#: model_terms:ir.ui.view,arch_db:plm.plm_bom_tree_structure model_terms:ir.ui.view,arch_db:plm.plm_bom_tree_view
+#: model_terms:ir.ui.view,arch_db:plm.plm_mrp_bom_line_view_form
+msgid "Source Relation Document"
+msgstr "ソースリレーションドキュメント"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_mrp_bom_filter_inherit
+msgid "Source Relationship"
+msgstr "ソースの関係"
+
+#. module: plm
+#: code:addons/plm/models/plm_finishing.py:0 code:addons/plm/models/plm_treatment.py:0
+#: model:ir.model.fields,field_description:plm.field_plm_finishing__name model:ir.model.fields,field_description:plm.field_plm_treatment__name
+#, python-format
+msgid "Specification"
+msgstr "仕様"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_product_product__sale_ok model:ir.model.fields,help:plm.field_product_template__sale_ok
+msgid "Specify if the product can be selected in a sales order line."
+msgstr "受注明細で製品を選択できるかどうかを指定します."
+
+#. module: plm
+#: code:addons/plm/models/plm_descriptions.py:0 model:ir.model.fields,help:plm.field_plm_description__unitab
+#, python-format
+msgid "Specify normative rule (UNI, ISO, DIN...). It will be queued to build the product description."
+msgstr "規範的なルール（UNI、ISO、DIN ...）を指定します。 製品の説明を作成するためにキューに入れられます."
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_ir_attachment__printout model:ir.model.fields,help:plm.field_mrp_document__printout
+msgid "Stampa contenuto PDF."
+msgstr "PDFコンテンツを印刷します."
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__printout model:ir.model.fields,field_description:plm.field_mrp_document__printout
+msgid "Stampare Contenuto"
+msgstr "コンテンツを印刷する"
+
+#. module: plm
+#: code:addons/plm/models/plm_descriptions.py:0 code:addons/plm/models/product_product.py:0
+#: model:ir.model.fields,field_description:plm.field_plm_description__description
+#, python-format
+msgid "Standard Description"
+msgstr "標準の説明"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_component_base_form model_terms:ir.ui.view,arch_db:plm.plm_product_product_normal_form_view_inherit
+msgid "Standard Description Parameters"
+msgstr "標準の説明パラメータ"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_product_product_normal_form_view_inherit
+msgid "Standard description parameters info"
+msgstr "標準記述パラメータ情報"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__state model:ir.model.fields,field_description:plm.field_mrp_bom__state
+#: model:ir.model.fields,field_description:plm.field_mrp_bom_line__state model:ir.model.fields,field_description:plm.field_mrp_document__state
+#: model:ir.model.fields,field_description:plm.field_product_product__state model:ir.model.fields,field_description:plm.field_product_template__state
+msgid "Stato"
+msgstr "州"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0 code:addons/plm/models/mrp_bom.py:0 code:addons/plm/models/mrp_bom_line.py:0
+#: code:addons/plm/models/plm_backup_document.py:0 code:addons/plm/models/product_template.py:0
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc__state model_terms:ir.ui.view,arch_db:plm.ir_attachment_search
+#, python-format
+msgid "Status"
+msgstr "ステータス"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0 code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Status moved to: %s by %s."
+msgstr "ステータスは次の場所に移動しました：%s by%s."
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0
+#, python-format
+msgid "Status moved to: %s."
+msgstr "ステータスは次の場所に移動しました：%s."
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_search_button
+msgid "Status:"
+msgstr "状態："
+
+#. module: plm
+#: code:addons/plm/models/plm_backup_document.py:0 model:ir.model.fields,field_description:plm.field_plm_backupdoc__document_name
+#, python-format
+msgid "Stored Name"
+msgstr "保存名"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_temporary__summarize
+msgid "Summarise Bom Lines if needed."
+msgstr "必要に応じてBomLinesを要約します."
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__engineering_surface
+#: model:ir.model.fields,field_description:plm.field_product_template__engineering_surface
+msgid "Superficie Finitura CAD"
+msgstr "CAD仕上げサーフェス"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__tmp_surface
+msgid "Superficie di Finitura"
+msgstr "仕上げ面"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_product_product__engineering_surface model:ir.model.fields,help:plm.field_product_template__engineering_surface
+msgid "Superficie di Finitura per il prodotto corrente, solo descrizione per il cartiglio."
+msgstr "現在の製品の仕上げ面、タイトルブロックのみの説明."
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0 model:ir.model,name:plm.model_plm_finishing
+#, python-format
+msgid "Surface Finishing"
+msgstr "表面仕上げ"
+
+#. module: plm
+#: code:addons/plm/models/plm_finishing.py:0 model:ir.model.constraint,message:plm.constraint_plm_finishing_name_uniq
+#, python-format
+msgid "Surface Finishing has to be unique !"
+msgstr "表面仕上げはユニークでなければなりません！"
+
+#. module: plm
+#: code:addons/plm/models/product_template.py:0
+#, python-format
+msgid "Surface finishing for current product, only description for titleblock."
+msgstr "現在の製品の表面仕上げ、タイトルブロックの説明のみ."
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_description
+msgid "Technical Features"
+msgstr "技術的特徴"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_component_base_form model_terms:ir.ui.view,arch_db:plm.plm_product_product_normal_form_view_inherit
+msgid "Technical Information"
+msgstr "技術情報"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_description
+msgid "Technical feature label and formatting"
+msgstr "技術的な機能のラベルとフォーマット"
+
+#. module: plm
+#: code:addons/plm/models/plm_temporary.py:0
+#, python-format
+msgid "Temp"
+msgstr "Temp"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_product_product_normal_form_view_inherit
+msgid "Template"
+msgstr "テンプレート"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_temporary__name
+msgid "Temporaneo"
+msgstr "一時的"
+
+#. module: plm
+#: model:ir.model,name:plm.model_plm_temporary model:ir.model,name:plm.model_plm_temporary_message
+msgid "Temporary Class"
+msgstr "一時クラス"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0 model:ir.model,name:plm.model_plm_treatment
+#, python-format
+msgid "Termic Treatment"
+msgstr "ターミック治療"
+
+#. module: plm
+#: code:addons/plm/models/plm_treatment.py:0 model:ir.model.constraint,message:plm.constraint_plm_treatment_name_uniq
+#, python-format
+msgid "Termic Treatment has to be unique !"
+msgstr "ターミックトリートメントはユニークでなければなりません！"
+
+#. module: plm
+#: code:addons/plm/models/product_template.py:0
+#, python-format
+msgid "Termic treatment for current product, only description for titleblock."
+msgstr "ターミック治療 現在の製品の場合、titleblockの説明のみ."
+
+#. module: plm
+#: code:addons/plm/models/mrp_bom.py:0
+#, python-format
+msgid "The BoM net weight in Kg."
+msgstr "BoMの正味重量（Kg）."
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment_relations.py:0 model:ir.model.constraint,message:plm.constraint_ir_attachment_relation_relation_uniq
+#, python-format
+msgid "The Document Relation must be unique !"
+msgstr "ドキュメントリレーションは一意である必要があります！"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0
+#, python-format
+msgid "The active state does not allow you to make save action"
+msgstr "アクティブ状態では、保存アクションを実行できません"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0
+#, python-format
+msgid "The document %s - %s has not checked-in"
+msgstr "ドキュメント%s-%sがチェックインしていません"
+
+#. module: plm
+#: code:addons/plm/models/plm_checkout.py:0
+#, python-format
+msgid "The documentid must be unique !"
+msgstr "ドキュメントIDは一意である必要があります！"
+
+#. module: plm
+#: code:addons/plm/models/mrp_bom.py:0 code:addons/plm/models/mrp_bom_line.py:0 code:addons/plm/models/product_template.py:0
+#, python-format
+msgid "The revision of the product."
+msgstr "製品の改訂."
+
+#. module: plm
+#: code:addons/plm/models/mrp_bom.py:0 code:addons/plm/models/mrp_bom_line.py:0 code:addons/plm/models/product_template.py:0
+#, python-format
+msgid "The status of the product in its LifeCycle."
+msgstr "ライフサイクルにおける製品のステータス."
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0 model:ir.model.fields,help:plm.field_ir_attachment_relation__child_state
+#: model:ir.model.fields,help:plm.field_ir_attachment_relation__parent_state model:ir.model.fields,help:plm.field_plm_backupdoc__state
+#, python-format
+msgid "The status of the product."
+msgstr "製品のステータス."
+
+#. module: plm
+#: code:addons/plm/models/mrp_bom_line.py:0
+#, python-format
+msgid "There aren't related boms to this line."
+msgstr "この行に関連するbomsはありません."
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "This Module extend the capability of the activity adding a workflow and validation process similar to the EC0/ECR"
+msgstr "このモジュールは、EC0 / ECRと同様のワークフローと検証プロセスを追加するアクティビティの機能を拡張します"
+
+#. module: plm
+#: code:addons/plm/models/product_template.py:0
+#, python-format
+msgid "This is engineering reference to manage a different P/N from item Name."
+msgstr "これは、アイテム名とは異なるP / Nを管理するためのエンジニアリングリファレンスです."
+
+#. module: plm
+#: code:addons/plm/models/mrp_bom.py:0 code:addons/plm/models/mrp_bom_line.py:0
+#, python-format
+msgid "This is the document object that declares this BoM."
+msgstr "これは、このBoMを宣言するドキュメントオブジェクトです."
+
+#. module: plm
+#: code:addons/plm/models/mrp_bom_line.py:0
+#, python-format
+msgid "This is the item reference position into the CAD document that declares this BoM."
+msgstr "これは、このBoMを宣言するCADドキュメントへのアイテム参照位置です."
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "This module adds permissions to sale module allowing some PLM procedures to work better."
+msgstr "このモジュールは、販売モジュールに権限を追加して、一部のPLM手順をより適切に機能させることができます."
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "This module adds the capability to use the 3D WebGL inside your product and E-Commerce"
+msgstr "このモジュールは、製品およびEコマース内で3DWebGLを使用する機能を追加します"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "This module allows you to improve the capability of your odoo plm for managing the cutted parts"
+msgstr "このモジュールを使用すると、切断されたパーツを管理するためのodooplmの機能を向上させることができます"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_dbthread__done
+msgid "This thread is done ?"
+msgstr "このスレッドは完了しましたか？"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_dbthread__threadCode
+msgid "Thread Code assigned automatically"
+msgstr "自動的に割り当てられたスレッドコード"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_mrp_bom_line__cutted_type
+msgid "Tipo Calcolo Taglio"
+msgstr "計算タイプカット"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__document_type
+#: model:ir.model.fields,field_description:plm.field_mrp_document__document_type
+msgid "Tipo Documento"
+msgstr "ドキュメントタイプ"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search model_terms:ir.ui.view,arch_db:plm.plm_backupdoc_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search_bck
+#: model_terms:ir.ui.view,arch_db:plm.plm_checkout_search model_terms:ir.ui.view,arch_db:plm.plm_component_base_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_docbom_search model_terms:ir.ui.view,arch_db:plm.view_mrp_bom_filter_inherit
+msgid "Today"
+msgstr "今日"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__tmp_treatment
+msgid "Trattamento Termico"
+msgstr "熱処理"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__engineering_treatment
+#: model:ir.model.fields,field_description:plm.field_product_template__engineering_treatment
+msgid "Trattamento Termico CAD"
+msgstr "CAD熱処理"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_product_product__engineering_treatment
+#: model:ir.model.fields,help:plm.field_product_template__engineering_treatment
+msgid "Trattamento termico per il prodotto corrente, solo descrizione per il cartiglio."
+msgstr "現在の製品の熱処理、タイトルブロックのみの説明."
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_treatment
+msgid "Treatment"
+msgstr "治療"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.plm_action_treatment_form model:ir.ui.menu,name:plm.menu_treatment
+msgid "Treatments"
+msgstr "治療"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__std_umc1
+msgid "UM / Caratteristica 1"
+msgstr "UM /機能1"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__std_umc2
+msgid "UM / Caratteristica 2"
+msgstr "UM /機能2"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__std_umc3
+msgid "UM / Caratteristica 3"
+msgstr "UM /機能3"
+
+#. module: plm
+#: code:addons/plm/models/plm_descriptions.py:0 code:addons/plm/models/product_product.py:0
+#: model:ir.model.fields,field_description:plm.field_plm_description__umc1
+#, python-format
+msgid "UM / Feature 1"
+msgstr "UM /機能1"
+
+#. module: plm
+#: code:addons/plm/models/plm_descriptions.py:0 code:addons/plm/models/product_product.py:0
+#: model:ir.model.fields,field_description:plm.field_plm_description__umc2
+#, python-format
+msgid "UM / Feature 2"
+msgstr "UM /機能2"
+
+#. module: plm
+#: code:addons/plm/models/plm_descriptions.py:0 code:addons/plm/models/product_product.py:0
+#: model:ir.model.fields,field_description:plm.field_plm_description__umc3
+#, python-format
+msgid "UM / Feature 3"
+msgstr "UM /機能3"
+
+#. module: plm
+#: code:addons/plm/models/plm_checkout.py:0
+#, python-format
+msgid ""
+"Unable to Check-In the document (-).\n"
+" You can't change writable flag."
+msgstr ""
+"ドキュメントをチェックインできません（-）.\n"
+"  書き込み可能なフラグを変更することはできません."
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0
+#, python-format
+msgid "Unable to check-Out a document that is already checked id by user %r"
+msgstr "ユーザー%rによってすでにIDがチェックされているドキュメントをチェックアウトできません"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0
+#, python-format
+msgid "Unable to check-Out a document that is in state %r"
+msgstr "状態%rにあるドキュメントをチェックアウトできません"
+
+#. module: plm
+#: code:addons/plm/models/plm_checkout.py:0
+#, python-format
+msgid "Unable to check-out the required document (-)."
+msgstr "必要な書類をチェックアウトできません（-）."
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0
+#, python-format
+msgid "Unable to find document to check-out. Please save it."
+msgstr "チェックアウトするドキュメントが見つかりません. 保存してください."
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Unable to perform workFlow action due"
+msgstr "ワークフローアクションを実行できません"
+
+#. module: plm
+#: code:addons/plm/models/plm_backup_document.py:0
+#, python-format
+msgid ""
+"Unable to remove the document (-) from backup set.\n"
+" It isn't a backup file, it's original current one."
+msgstr ""
+"バックアップセットからドキュメント（-）を削除できません.\n"
+"  これはバックアップファイルではなく、元の現在のファイルです."
+
+#. module: plm
+#: code:addons/plm/models/plm_backup_document.py:0
+#, python-format
+msgid ""
+"Unable to remove the required document.\n"
+" You aren't authorized in this context."
+msgstr ""
+"必要なドキュメントを削除できません.\n"
+"  このコンテキストでは許可されていません."
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0 model:ir.model.fields,field_description:plm.field_report_plmcomponent__count_component_modified
+#, python-format
+msgid "Under Modify"
+msgstr "[変更]の下"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0 code:addons/plm/models/product_product.py:0 code:addons/plm/models/product_template.py:0
+#, python-format
+msgid "UnderModify"
+msgstr "[変更]の下"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__message_unread
+msgid "Unread Messages"
+msgstr "未読メッセージ"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__message_unread_counter
+msgid "Unread Messages Counter"
+msgstr "未読メッセージカウンター"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.bom_structure_all
+msgid "UoM"
+msgstr "UoM"
+
+#. module: plm
+#: model:ir.actions.server,name:plm.ir_update_preview_cron_ir_actions_server model:ir.cron,cron_name:plm.ir_update_preview_cron
+#: model:ir.cron,name:plm.ir_update_preview_cron
+msgid "Update Preview"
+msgstr "プレビューの更新"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Upload summarized bom from client application"
+msgstr "クライアントアプリケーションから要約されたBOMをアップロードします"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Use translations in product description providing also a view to manage plm description translations."
+msgstr "製品説明で翻訳を使用して、plm説明の翻訳を管理するためのビューも提供します."
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0 code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "User Last Wkf"
+msgstr "ユーザー最後Wkf"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0 code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "User Release"
+msgstr "ユーザーリリース"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0 code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "User Revision"
+msgstr "ユーザーリビジョン"
+
+#. module: plm
+#: model:ir.model,name:plm.model_res_users
+msgid "Users"
+msgstr "ユーザ"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Using a simple wizard interfaces for printing PLM report's in different languages"
+msgstr "さまざまな言語でPLMレポートを印刷するためのシンプルなウィザードインターフェイスの使用"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_checkout__userid
+msgid "Utente Relazionato"
+msgstr "関連ユーザー"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__revision_user
+#: model:ir.model.fields,field_description:plm.field_mrp_document__revision_user
+#: model:ir.model.fields,field_description:plm.field_product_product__revision_user
+msgid "Utente Revisione"
+msgstr "ユーザーレビュー"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__attachment_release_user
+#: model:ir.model.fields,field_description:plm.field_mrp_document__attachment_release_user
+#: model:ir.model.fields,field_description:plm.field_product_product__release_user
+msgid "Utente Rilascio"
+msgstr "ユーザーリリース"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__workflow_user
+#: model:ir.model.fields,field_description:plm.field_mrp_document__workflow_user
+#: model:ir.model.fields,field_description:plm.field_product_product__workflow_user
+msgid "Utente ultimo WF"
+msgstr "WF最後のユーザー"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__std_value1
+msgid "Valore 1"
+msgstr "値1"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__std_value2
+msgid "Valore 2"
+msgstr "値2"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__std_value3
+msgid "Valore 3"
+msgstr "値3"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Value 1"
+msgstr "値1"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Value 2"
+msgstr "値2"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "Value 3"
+msgstr "値3"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_mrp_bom_filter_inherit
+msgid "Variant Name"
+msgstr "バリアント名"
+
+#. module: plm
+#: model:ir.model,name:plm.model_ir_ui_view
+msgid "View"
+msgstr "ビュー"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.act_view_doc_related
+msgid "View Document Relations"
+msgstr "ドキュメントの関係を表示する"
+
+#. module: plm
+#: model:res.groups,name:plm.group_plm_view_user
+msgid "View User"
+msgstr "ユーザーを見る"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__website_message_ids
+msgid "Website Messages"
+msgstr "ウェブサイトメッセージ"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_ir_attachment__website_message_ids
+msgid "Website communication history"
+msgstr "ウェブサイトの通信履歴"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_mrp_bom__weight_net model_terms:ir.ui.view,arch_db:plm.bom_structure_all
+msgid "Weight"
+msgstr "重さ"
+
+#. module: plm
+#: code:addons/plm/models/mrp_bom_line.py:0
+#, python-format
+msgid "Weight Net"
+msgstr "ウェイトネット"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.mrp_bom_tree_view_where
+msgid "Where Used Bill of Materials"
+msgstr "使用場所部品表"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_component_base_form model_terms:ir.ui.view,arch_db:plm.plm_product_product_normal_form_view_inherit
+msgid "Workflow"
+msgstr "ワークフロー"
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0 code:addons/plm/models/product_template.py:0
+#, python-format
+msgid "Writable"
+msgstr "書き込み可能"
+
+#. module: plm
+#: code:addons/plm/models/report_on_document.py:0 model:ir.model.fields,field_description:plm.field_report_ir_attachment_file__write_uid
+#, python-format
+msgid "Write User"
+msgstr "ユーザーの書き込み"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search model_terms:ir.ui.view,arch_db:plm.plm_backupdoc_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search_bck
+#: model_terms:ir.ui.view,arch_db:plm.plm_checkout_search model_terms:ir.ui.view,arch_db:plm.plm_component_base_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_docbom_search model_terms:ir.ui.view,arch_db:plm.view_mrp_bom_filter_inherit
+msgid "Yesterday"
+msgstr "昨日"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0
+#, python-format
+msgid "You are trying to create a product without values"
+msgstr "あなたは価値のない製品を作ろうとしています"
+
+#. module: plm
+#: code:addons/plm/models/plm_backup_document.py:0
+#, python-format
+msgid "You can restore only a document at a time."
+msgstr "一度に復元できるのは文書のみです."
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment.py:0
+#, python-format
+msgid "You cannot edit a file not in check-out by you! User ID %s"
+msgstr "チェックアウトしていないファイルは編集できません！ ユーザーID%s"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_mrp_bom__source_id model:ir.model.fields,field_description:plm.field_mrp_bom_line__source_id
+msgid "engineering_document_name"
+msgstr "エンジニアリングドキュメント名"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "extend the plm module adding support for the WebGl 3d Environment"
+msgstr "plmモジュールを拡張して、WebGl3d環境のサポートを追加します"
+
+#. module: plm
+#: code:addons/plm/models/plm_checkout.py:0
+#, python-format
+msgid "hostname"
+msgstr "ホスト名"
+
+#. module: plm
+#: model:ir.model,name:plm.model_plm_backupdoc
+msgid "manage your document back up"
+msgstr "ドキュメントのバックアップを管理する"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_checkout__hostname
+msgid "nome host"
+msgstr "のめホスト"
+
+#. module: plm
+#: model:ir.model,name:plm.model_plm_client
+msgid "plm.client"
+msgstr "plm.client"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0 model:ir.model.fields,field_description:plm.field_product_product__readonly_std_umc1
+#: model:ir.model.fields,field_description:plm.field_product_product__readonly_std_umc3
+#, python-format
+msgid "put readOnly the field standard description 1"
+msgstr "readOnlyをフィールド標準の説明に入れます1"
+
+#. module: plm
+#: code:addons/plm/models/product_product.py:0 model:ir.model.fields,field_description:plm.field_product_product__readonly_std_umc2
+#, python-format
+msgid "put readOnly the field standard description 1 "
+msgstr "readOnlyをフィールド標準の説明に入れます1 "
+
+#. module: plm
+#: code:addons/plm/models/mrp_bom.py:0
+#, python-format
+msgid "saveChild.toCompute : Father \"%s\" refers to himself"
+msgstr "saveChild.toCompute：父親 \"%s\"は自分自身を指します"
+
+#. module: plm
+#: code:addons/plm/models/product_product_document_rel.py:0
+#, python-format
+msgid "saveChild: Unable to create a link."
+msgstr "saveChild：リンクを作成できません."
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment_relations.py:0
+#, python-format
+msgid "saveChild: Unable to create a relation between documents. One of documents involved doesn't exist."
+msgstr "saveChild：ドキュメント間の関係を作成できません. 関連するドキュメントの1つが存在しません."
+
+#. module: plm
+#: code:addons/plm/models/ir_attachment_relations.py:0
+#, python-format
+msgid "saveChild: Unable to create a relation."
+msgstr "saveChild：リレーションを作成できません."
+
+#. module: plm
+#: code:addons/plm/models/mrp_bom.py:0
+#, python-format
+msgid "save_child :  unable to create a relation for part ({0}) with source ({1}) : {2}."
+msgstr "save_child：ソース（{1}）とのパーツ（{0}）のリレーションを作成できません：{2}."
+
+#. module: plm
+#: code:addons/plm/models/mrp_bom.py:0
+#, python-format
+msgid "save_parent :  unable to create a relation for part ({0}) with source ({1}) : {2}."
+msgstr "save_parent：ソース（{1}）とのパーツ（{0}）のリレーションを作成できません：{2}."

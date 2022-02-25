@@ -1,0 +1,136 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* plm_project
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 15.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-02-08 08:49+0000\n"
+"PO-Revision-Date: 2022-02-08 09:53+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: fr\n"
+"X-Generator: Poedit 2.0.6\n"
+
+#. module: plm_project
+#: model:ir.model,name:plm_project.model_mail_activity
+msgid "Activity"
+msgstr "Activité"
+
+#. module: plm_project
+#: code:addons/plm_project/models/project.py:0
+#: model:ir.model.fields,help:plm_project.field_project_project__plm_use_plm
+#, python-format
+msgid "Check this box to manage plm data into project"
+msgstr "Cochez cette case pour gérer les données plm dans le projet"
+
+#. module: plm_project
+#: model:ir.model.fields,field_description:plm_project.field_product_product__activity_task_id
+msgid "Lavoro"
+msgstr "Travail"
+
+#. module: plm_project
+#: code:addons/plm_project/models/project.py:0
+#: model:ir.model.fields,field_description:plm_project.field_project_project__plm_product_count
+#, python-format
+msgid "Number of product related"
+msgstr "Nombre de produits liés"
+
+#. module: plm_project
+#: model_terms:ir.ui.view,arch_db:plm_project.plm_edit_project
+msgid "PLM"
+msgstr "PLM"
+
+#. module: plm_project
+#: code:addons/plm_project/models/project.py:0
+#: model:ir.model.fields,field_description:plm_project.field_project_project__plm_completed
+#, python-format
+msgid "Plm Complete"
+msgstr "PLM complet"
+
+#. module: plm_project
+#: model:ir.model,name:plm_project.model_product_product
+msgid "Product"
+msgstr "Article"
+
+#. module: plm_project
+#: model:mail.activity.type,name:plm_project.mail_activity_product_confirmed
+msgid "Product Confirmed"
+msgstr "Produit confirmé"
+
+#. module: plm_project
+#: code:addons/plm_project/models/project_task.py:0
+#: model:ir.model.fields,field_description:plm_project.field_project_task__activity_product_ids
+#, python-format
+msgid "Product Ids"
+msgstr "ID de produits"
+
+#. module: plm_project
+#: code:addons/plm_project/models/project.py:0
+#: model:ir.model.fields,field_description:plm_project.field_project_project__plm_product_ids
+#, python-format
+msgid "Products"
+msgstr "Produits"
+
+#. module: plm_project
+#: model:ir.model.fields,field_description:plm_project.field_product_product__project_ids
+msgid "Progetti"
+msgstr "Projects"
+
+#. module: plm_project
+#: model:ir.model,name:plm_project.model_project_project
+#: model_terms:ir.ui.view,arch_db:plm_project.plm_product_product_normal_form_view_inherit_plm_project
+#: model_terms:ir.ui.view,arch_db:plm_project.plm_project_product_extend
+msgid "Project"
+msgstr "Projet"
+
+#. module: plm_project
+#: code:addons/plm_project/models/product.py:0
+#, python-format
+msgid "Projects"
+msgstr "Projects"
+
+#. module: plm_project
+#: code:addons/plm_project/models/product.py:0
+#: model:ir.model,name:plm_project.model_project_task
+#, python-format
+msgid "Task"
+msgstr "Tâche"
+
+#. module: plm_project
+#: model:ir.model.fields,field_description:plm_project.field_project_project__plm_use_plm
+msgid "Use PLM"
+msgstr "Utiliser PLM"
+
+#. module: plm_project
+#: code:addons/plm_project/models/mail_activity.py:0
+#, python-format
+msgid ""
+"You cannot edit a \"Product Confirmed\" activity if is not assigned to you."
+msgstr ""
+"You cannot edit a \"Product Confirmed\" activity if is not assigned to you."
+
+#. module: plm_project
+#: code:addons/plm_project/models/mail_activity.py:0
+#, python-format
+msgid ""
+"You cannot mark as done a \"Product Confirmed\" activity if is not assigned "
+"to you."
+msgstr ""
+"Vous ne pouvez pas marquer comme terminée une activité \"Produit confirmé\" "
+"si elle ne vous est pas attribuée."
+
+#. module: plm_project
+#: code:addons/plm_project/models/mail_activity.py:0
+#, python-format
+msgid ""
+"You cannot unlink a \"Product Confirmed\" activity if is not assigned to "
+"you."
+msgstr ""
+"Vous ne pouvez pas dissocier une activité \"Produit confirmé\" si elle ne "
+"vous est pas attribuée."
