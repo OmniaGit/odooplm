@@ -513,43 +513,59 @@ class Plm_box(models.Model):
         return True
 
     @api.model
-    def getBoxStructure(self, box_ids=[]):
-        headers = {'name': 'Name',
-                   'description': 'Description',
-                   #'document_rel': 'Documents',
-                   'state': 'State',
-                   'entities': 'Entities'
-                   }
-        
-        def recursion(box_ids, available_boxes=[]):
-            out = []
-            for box in self.browse(box_ids):
-                if box.id in available_boxes:
-                    to_read = list(headers.keys())
-                    to_read.append('document_rel')
-                    vals_list = box.read(to_read)
-                    for vals in vals_list:
-                        vals['entities'] = box.computeEntities()
-                        children = recursion(box.plm_box_rel.ids, available_boxes)            
-                        out.append([vals, children])
-            return out
-        
+    def boxStructureRecursion(self, to_read, tooltip_fields, box_ids, available_boxes=[]):
+        out = []
+        for box in self.browse(box_ids):
+            if box.id in available_boxes:
+                vals_list = box.read(to_read)
+                for vals in vals_list:
+                    vals['entities'] = box.computeEntities()
+                    children = self.boxStructureRecursion(to_read, box.plm_box_rel.ids, available_boxes)
+                    vals = self.setupTooltipFields(vals, tooltip_fields)
+                    out.append([vals, children])
+        return out
+
+    @api.model
+    def setupTooltipFields(self, vals, tooltip_fields):
+        out = {}
+        for field_name, field_value in vals.items():
+            tooltip_field = tooltip_fields.get(field_name)
+            if tooltip_field:
+                out[tooltip_field] = field_value
+            else:
+                out[field_name] = field_value
+        return out
+
+    @api.model
+    def getBoxStructure(self, box_ids=[], headers={}, fields_to_read=[], tooltip_fields={}):
+        if not headers:
+            headers = {'name': 'Name',
+                       'description': 'Description',
+                       'state': 'State',
+                       'entities': 'Entities',
+                       }
+        if not fields_to_read:
+            fields_to_read = [
+                'name',
+                'description',
+                'state',
+                'document_rel',
+                ]
         available_boxes = self.getAvaiableBoxIds()
-        structure = recursion(box_ids, available_boxes)
+        structure = self.boxStructureRecursion(fields_to_read, tooltip_fields, box_ids, available_boxes)
         return json.dumps([headers, structure])
 
     def computeEntities(self):
         
         def compute_obj(out, model_str, brws_rec):
             if brws_rec:
-                out += '%s: ' % (model_str)
+                out += '<p><b>%s:</b><ul>' % (model_str)
                 for obj in brws_rec:
-                    out += ' %r /' % (obj.display_name)
-                out = out[:-2]
-                out += '\n'
+                    out += '<li>%s</li>' % (obj.display_name)
+                out += '</ul></p>'
             return out
         
-        out = ''
+        out = '<p><b>ENTITIES</b></p>'
         for box in self:
             out = compute_obj(out, 'Product', box.product_id)
             out = compute_obj(out, 'Project', box.project_id)
@@ -558,7 +574,6 @@ class Plm_box(models.Model):
             out = compute_obj(out, 'Users', box.user_rel_id)
             out = compute_obj(out, 'BOM', box.bom_id)
             out = compute_obj(out, 'Work Centers', box.wc_id)
-            out = out[:-2]
             break
         return out
 
