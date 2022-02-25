@@ -171,8 +171,8 @@ class PlmComponent(models.Model):
 
     
     readonly_std_umc1 = fields.Boolean(_("put readOnly the field standard description 1"))
-    readonly_std_umc2 = fields.Boolean(_("put readOnly the field standard description 1 "))
-    readonly_std_umc3 = fields.Boolean(_("put readOnly the field standard description 1"))
+    readonly_std_umc2 = fields.Boolean(_("put readOnly the field standard description 2"))
+    readonly_std_umc3 = fields.Boolean(_("put readOnly the field standard description 3"))
     
     
     @api.onchange("std_description")
@@ -1207,10 +1207,11 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             engineering_code = compBrws.engineering_code
             if not engineering_code:
                 logging.warning("Part %s doesn't have and engineering code!" % (compBrws.name))
-                continue
-            compBrwsList = self.search([('engineering_code', '=', engineering_code)])
-            for compBrws in compBrwsList:
                 docIds.extend(compBrws.linkeddocuments.ids)
+            else:
+                compBrwsList = self.search([('engineering_code', '=', engineering_code)])
+                for compBrws in compBrwsList:
+                    docIds.extend(compBrws.linkeddocuments.ids)
         return {'domain': [('id', 'in', docIds)],
                 'name': _('Related documents'),
                 'view_type': 'form',

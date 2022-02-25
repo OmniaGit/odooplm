@@ -9,42 +9,125 @@
         <field name="arch" type="xml">
              <form string="Description"  version="7.0"> 
              	<sheet>	
+  				<button 
+  					name="action_see_help"
+  					type="object"
+  					icon="fa-info fa-2x text-o-color-1"
+  					aria-label="Help"
+  					title="Help"
+  					class="float-right"
+  					style="background-color: aliceblue;"/>
                 <group colspan="4" col="4">
                 	<group colspan="4" col="4">
 	                    <separator colspan="4" string="Note to help selection"/>
-	                	<field name="name" select="1" colspan="1"/>
+	                	<field name="name" select="1" colspan="1" placeholder="Title Description"/>
 	                    <field name="sequence"/>
 	                    <newline/>
-	                    <field name="description" select="1" />
+	                    <field name="description" select="1" placeholder="Standard Description"/>
 	                    <field name="description_en" select="1" />
 	                    <separator/>
 	                </group>
   	               	<group colspan="4" col="4" string="Technical Features" name="tech_features">
-	 	                
+  	               				<field name="show_help" groups="base.group_no_one" invisible="True"></field>
+		                    	<div style="display: inline-flex; 
+		                    				width: 100%;
+		                    				text-align=right;" attrs="{'invisible': [('show_help', '=', False)]}">
+		                    		<div colspan="4" class="o_group_col_12" style="background-color: aliceblue;
+		                    													   border-left: 5px solid #35979c;
+		                    													   padding: 10px;
+		                    													   width: 50%;">
+		                    			Example Values:<br></br>
+		            					<ul>
+		            						<li>UM/Feature1 = A and	 Format_Feature1 = %s</li>
+		            						<li>UM/Feature2 = B and Format_Feature2 = %s</li>
+		            						<li>UM/Feature3 = C and Format Feature3 = %s</li>
+		            						<li>Standard Description = STD</li>
+		            						<li>Normative Rule = UNI</li>
+		            						<li>Format Feature Composed = %s Title n°%s-%s</li>
+		            					</ul>
+		            					Example Result:<br></br>
+		            					<ul>
+		            						<li>Feature.Value1 (in component form) = 1</li>
+		            						<li>Feature.Value1 (in component form) = 2</li>
+		            						<li>Feature.Value1 (in component form) = 3</li>
+		            						<li>Final Description:  Standard Description + Format Feature Composed + Normative Rule<br></br><b>    STD 1 Title n°2-3 UNI</b></li>
+		            					</ul>
+		                    		</div>
+		                    		<div style="background-color: aliceblue;
+		                    					border-left: 5px solid #35979c;
+		                    					padding: 10px;
+		                    					width: 50%">
+		                    			Example Values:<br></br>
+		            					<ul>
+		            						<li>UM/Feature1 = A and	 Format_Feature1 = %s %s</li>
+		            						<li>UM/Feature2 = B and Format_Feature2 = %s-%s</li>
+		            						<li>UM/Feature3 = C and Format Feature3 = %s/%s</li>
+		            						<li>Standard Description = STD</li>
+		            						<li>Normative Rule = UNI</li>
+		            						<li>Format Feature Composed = %s Title n°%s-%s</li>
+		            					</ul>
+		            					Example Result:<br></br>
+		            					<ul>
+		            						<li>Feature.Value1 (in component form) = 1</li>
+		            						<li>Feature.Value1 (in component form) = 2</li>
+		            						<li>Feature.Value1 (in component form) = 3</li>
+		            						<li>Final Description:  Standard Description + Format Feature Composed + Normative Rule<br></br><b>    STD A 1 Title n°B-2-C/3 UNI</b></li>
+		            					</ul>
+		                    		</div>
+		                    	</div>
+  	               	
 	 	                	<group colspan="4" col="4">
 		                    	<separator colspan="4" string="Technical feature label and formatting"/>
-		                    	<field name="umc1"/>
-		                    	<field name="fmt1"/>
+		                    	<field name="umc1" placeholder="Feature Example: A"/>
+		                    	<field name="fmt1" placeholder="Example: %s"/>
 		                    	<newline/>
 		                    	<separator colspan="4" string="Technical feature label and formatting"/>
-		                    	<field name="umc2"/>
-		                    	<field name="fmt2"/>
+		                    	<field name="umc2" placeholder="Feature Example: B"/>
+		                    	<field name="fmt2" placeholder="Example: %s"/>
 		                    	<newline/>
 		                    	<separator colspan="4" string="Technical feature label and formatting"/>
-		                    	<field name="umc3"/>
-		                    	<field name="fmt3"/>
+		                    	<field name="umc3" placeholder="Feature Example: C"/>
+		                    	<field name="fmt3" placeholder="Example: %s"/>
 		                    	<newline/>
-		                	</group>
-		               		<separator colspan="4" string="Normalization Section"/>
- 	 	                	<group colspan="4" col="4">
-			                    	<separator colspan="4" string="Normalized features formatting"/>
-			                    	<field name="fmtend"/>
-			                    	<newline/>
-			                    	<separator colspan="4" string="Normative reference"/>
-			                    	<field name="unitab"/>
-		                    	<newline/>
-   	               			</group>
-  	                </group>
+		                    	<separator colspan="2" string=""/>
+		                    	<separator colspan="2" string="Types of Feature Format: %s for Only Value / %s %s for Label Value / %s_%s for Label_Value / %s/%s for Label/Value"/>
+  	                		</group>
+		          	</group>		   
+  	                                 	
+
+		                	
+ 	                <group colspan="4" col="4" name="Normalized features formatting">
+	                    <separator colspan="4" string="Normalized features formatting"/>
+	                    <field name="fmtend" placeholder="Example: (%s, %s %s, %s_%s, %s/%s)"/>
+	                    <separator colspan="4" string="You can use Normalized features formatting, where the component description will be Standard Description + Format Feature Composed."/>
+	                    <newline/>
+	                    	<separator colspan="4" string="Normative reference"/>
+	                    	<field name="unitab" placeholder="Example: UNI"/>
+	                    	<separator colspan="4" string="If Normative Rule is defined, it will be added at the end of the description."/>
+                    	<newline/>	
+                    	
+ 	               	</group>
+		            <div style="background-color: aliceblue;
+		                    					border-left: 5px solid #35979c;
+		                    					padding: 10px;
+		                    					width: 100%" attrs="{'invisible': [('show_help', '=', False)]}">
+		            	Example Values:<br></br>
+		            	<ul>
+		            		<li>UM/Feature1 = A and	 Format_Feature1 = %s</li>
+		            		<li>UM/Feature2 = B and Format_Feature2 = %s-%s</li>
+		            		<li>UM/Feature3 = C and Format Feature3 = %s/%s</li>
+		            		<li>Standard Description = STD</li>
+		            		<li>Normative Rule = UNI</li>
+		            		<li>Format Feature Composed = %s Title n°%s-%s</li>
+		            	</ul>
+		            	Example Result:<br></br>
+		            	<ul>
+		            		<li>Feature.Value1 (in component form) = 1</li>
+		            		<li>Feature.Value1 (in component form) = 2</li>
+		            		<li>Feature.Value1 (in component form) = 3</li>
+		            		<li>Final Description:  Standard Description + Format Feature Composed + Normative Rule<br></br><b>    STD 1 Title n°B-2-C/3 UNI</b></li>
+		            	</ul>
+		            </div>
                </group> 
               </sheet> 
             </form>

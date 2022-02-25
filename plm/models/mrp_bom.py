@@ -99,6 +99,28 @@ class MrpBomExtension(models.Model):
                                           store=True)
 
     bom_revision_count = fields.Integer(related='product_tmpl_id.revision_count')
+    
+    def open_attachments(self):
+        domain = [
+            '|',
+            '&', ('res_model', '=', 'product.product'), ('res_id', '=', self.product_id.id),
+            '&', ('res_model', '=', 'product.template'), ('res_id', '=', self.product_id.product_tmpl_id.id)]
+        sudo_att = self.env['ir.attachment'].sudo()
+        out_att = sudo_att.search(domain)
+        out_att += self.product_id.linkeddocuments
+        return {
+            'name': _('Attachments'),
+            'domain': [('id', 'in', out_att.ids)],
+            'res_model': 'ir.attachment',
+            'type': 'ir.actions.act_window',
+            'view_mode': 'kanban,tree,form',
+            'help': _('''<p class="o_view_nocontent_smiling_face">
+                        Upload files to your product
+                    </p><p>
+                        Use this feature to store any files, like drawings or specifications.
+                    </p>'''),
+            'limit': 80,
+        }
 
     @api.model
     def _get_in_bom(self, pid, sid=False):

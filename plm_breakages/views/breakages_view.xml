@@ -50,22 +50,79 @@
             </field>
     </record>
     
+	<record model="ir.ui.view" id="breakages_graph_view">
+   		<field name="name">breakages.graph</field>
+   		<field name="model">plm.breakages</field>
+   		<field name="arch" type="xml">
+       		<graph string="Graph">
+        		<field name="product_id" type="row"/>
+                <field name="date" type="col"/>
+       		</graph>
+   		</field>
+	</record>
+    
     <record model="ir.ui.view" id="breakages_pivot_view">
             <field name="name">breakages.pivot</field>
             <field name="model">plm.breakages</field>
             <field name="arch" type="xml">
-                <pivot string="Breakages">
+                <pivot string="Pivot">
                     <field name="product_id" type="row"/>
+                    <field name="date" type="col"/>
                 </pivot>
             </field>
         </record>
+        
+    <record model="ir.ui.view" id="breakages_search">
+    	<field name="name">breakages.search</field>
+    	<field name="model">plm.breakages</field>
+    	<field name="arch" type="xml">
+        <search>
+        	<field name = "date"/>
+        	<field name = "product_id"/>
+            <filter 
+            	name="last_year" 
+            	string="Last Year" 
+            	domain="[('date','&gt;=',(datetime.date.today() - relativedelta(days=1,months=1,years=1)).strftime('%%Y-%%m-%%d'))]"/>
+            <filter 
+            	name="last_month" 
+            	string="Last Month" 
+            	domain="[('date','&gt;=',(datetime.date.today() - relativedelta(days=1,months=1)).strftime('%%Y-%%m-%%d'))]"/>
+            <filter 
+            	name="last_week" 
+            	string="Last Week" 
+            	domain="[('date','&gt;=',(datetime.date.today() - datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"/>
+            <group expand="0" string="Group By...">
+           		<filter
+                	name="for_date"
+                	string="For Date"          
+                	context="{'group_by':'date'}"/>
+                <separator orientation="vertical"/>
+            	<filter
+                	name="for_product"
+                	string="For Product"          
+                	context="{'group_by':'product_id'}"/>
+                <separator orientation="vertical"/>
+               	<filter 
+               		name="create_by_me"
+                    string="Created by"
+                   	domain="[]"
+                    context="{'group_by':'create_uid'}"/>
+              	<filter 
+              		name="changed_by_me"
+                    string="Changed by"
+                    domain="[]"
+                   	context="{'group_by':'write_uid'}"/>
+             	</group>
+       	</search>
+    	</field>
+	</record>
 
 	<record model="ir.actions.act_window" id="breakages_menu_action">
+		<field name="context">{"search_default_for_product": 1, "search_default_for_date": 1}</field>
 		<field name="name">Product Breakages</field>
 		<field name="res_model">plm.breakages</field>
-		<field name="view_mode">tree,form,pivot</field>
+		<field name="view_mode">graph,pivot,tree,form</field>
 	</record>
-	
     
     <menuitem 
     		id="breakages_menu"

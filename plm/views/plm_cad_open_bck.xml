@@ -75,7 +75,9 @@
         <field name="type">tree</field>
         <field name="priority" eval="1"/>
         <field name="arch" type="xml">
-            <tree string="Plm Cad Open Bck" create="false" edit="false" delete='false'>
+            <tree string="Plm Cad Open Bck" create="false" edit="false" delete='false' decoration-success="operation_type == 'save'"
+            																		   decoration-info="operation_type == 'open'"
+            																		   decoration-warning="operation_type == 'check-out'">
                 <field name="userid" select="1"/>
                 <field name="document_id" select="1"/>
                 <field name="rel_doc_rev"/>

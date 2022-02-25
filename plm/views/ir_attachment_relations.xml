@@ -8,9 +8,11 @@
         	<field name="priority" eval="10"/>
             <field name="arch" type="xml">
                 <form string="Show Document Relation">
-                <sheet>	
-                <field name="configuration" readonly="True"/>
-                <field name="link_kind" readonly="True"/>
+                <sheet>
+                <group>
+                	<field name="configuration" readonly="True"/>
+                	<field name="link_kind" readonly="True"/>
+                </group>
                 <group colspan="4" col="4">
 	               	<separator colspan="4" string="Parent Preview"/>
 	                <group colspan="2" col="2">
@@ -41,6 +43,9 @@
 	                        	img_height="400"
 	                        	img_width="400"/>
 	                </group>
+                </group>
+                <group>
+                	<field name="notes"/>
                 </group>
                	</sheet> 
                </form>
@@ -152,18 +157,99 @@
                 <templates>
                     <t t-name="kanban-box">
                         <div class="oe_kanban_global_click">
-                            <table>
+                            <table style="width: 100%;">
+                            	<tr>
+                                	<td>
+                        				<strong>Parent Component</strong>
+                        			</td>
+                        			<td style="text-align: right; width: 50%;">
+                            			<field name="parent_linked" invisible="True"/>
+	                            		<div
+	                            			class="fa fa-dropbox fa-2x"
+	                            			aria-label="Missing Component"
+	                            			style="color:#ff8300;"
+	                            			attrs="{'invisible': [('parent_linked', 'not in', [False, []])]}"
+	                            			/>
+                            		</td>
+                            		<td style="text-align: right; width: 50%;">
+                            			<div
+	                            			class="fa fa-dropbox fa-2x"
+	                            			aria-label="Founding Component"
+	                            			style="color: green;"
+	                            			attrs="{'invisible': [('parent_linked', 'in', [False, []])]}"
+	                            			/>
+                            		</td>
+                        		</tr>
                                 <tr>
-                                    <td>
-                                        <field name="parent_preview" nolabel="1" widget="image" class="oe_right oe_avatar"/>
-                                        <field name="parent_id"/>
-                                        <field name="parent_state"/>
-                                    </td>
-                                    <td>
-                                        <field name="child_preview" nolabel="1" widget="image" class="oe_right oe_avatar"/>
-                                        <field name="child_id"/>
-                                        <field name="child_state"/>
-                                    </td>
+                                	<td rowspan="2">
+                                		<field name="parent_preview" nolabel="1" widget="image" class="oe_right oe_avatar" height="100" width="100"/>
+                                	</td>
+                                </tr>
+                                <tr>
+                                	<td style="padding-left:10px; vertical-align: middle;">
+                                		<table>
+                                			<tr>
+                                                <td  rowapan="2">
+                                                    <t><strong>Name:</strong></t>
+                                                    <field name="parent_id"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td  rowapan="2">
+                                                    <t><strong>State:</strong></t>
+                                                    <field name="parent_state"/>
+                                                </td>
+                                            </tr>
+                                		</table>
+                                	</td>
+                                </tr>
+                                <tr>
+                                	<td colspan="2"><p style="text-align: left;"> __________________________________________</p></td>
+                                </tr>
+                                <tr>
+                                	<td>
+                        				<strong>Child Component</strong>
+                        			</td>
+                        			<td style="text-align: right; width: 50%;">
+                            			<field name="parent_linked" invisible="True"/>
+	                            		<div
+	                            			class="fa fa-dropbox fa-2x"
+	                            			aria-label="Missing Component"
+	                            			style="color:#ff8300;"
+	                            			attrs="{'invisible': [('parent_linked', 'not in', [False, []])]}"
+	                            			/>
+                            		</td>
+                            		<td style="text-align: right; width: 50%;">
+                            			<div
+	                            			class="fa fa-dropbox fa-2x"
+	                            			aria-label="Founding Component"
+	                            			style="color: green;"
+	                            			attrs="{'invisible': [('parent_linked', 'in', [False, []])]}"
+	                            			/>
+                            		</td>
+                        		</tr>
+                                <tr>
+                                	<td rowspan="2">
+                                		<field name="child_preview" nolabel="1" widget="image" class="oe_right oe_avatar" height="100" width="100"/>
+                                	</td>
+                                </tr>
+                                <tr>
+                                	<td style="padding-left:10px; vertical-align: middle;">
+                                		<table>
+                                			<tr>
+                                                <td  rowapan="2">
+                                                    <strong>Name:</strong>
+                                                    <field name="child_id"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td  rowapan="2">
+                                                    <strong>State:</strong>
+                                                     <field name="child_state"/>
+                                                </td>
+                                            </tr>
+                                		</table>
+                                	</td>
                                 </tr>
                              </table>
                         </div>

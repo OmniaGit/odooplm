@@ -20,8 +20,9 @@
         <field name="priority" eval="16"/>
         <field name="arch" type="xml">
             <data>
-                <group name="tech_features" position="after">
-                    <field name="bom_tmpl"/>
+                <group name="Normalized features formatting" position="after">
+                	<b><separator colspan="1" string="Choose the Reference Object:"/></b>
+                    <field name="bom_tmpl" placeholder="Object"/>
                 </group>
             </data>
         </field>

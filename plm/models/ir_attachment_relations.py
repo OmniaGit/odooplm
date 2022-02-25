@@ -28,7 +28,7 @@ import logging
 class PlmDocumentRelations(models.Model):
     _name = 'ir.attachment.relation'
     _description = "Relation between document used for cad file structure"
-
+    
     parent_preview = fields.Binary(related="parent_id.preview",
                                    string=_("Parent Preview"),
                                    store=False)
@@ -38,6 +38,9 @@ class PlmDocumentRelations(models.Model):
     parent_revision = fields.Integer(related="parent_id.revisionid",
                                      string=_("Parent Revision"),
                                      store=False)
+    parent_linked = fields.Boolean(related="parent_id.is_linkedcomponents",
+                                    string=_("Linked Components"),
+                                    store=False)
     child_preview = fields.Binary(related="child_id.preview",
                                   string=_("Child Preview"),
                                   store=False)
@@ -46,6 +49,9 @@ class PlmDocumentRelations(models.Model):
                                    store=False)
     child_revision = fields.Integer(related="child_id.revisionid",
                                     string=_("Child Revision"),
+                                    store=False)
+    child_linked = fields.Boolean(related="child_id.is_linkedcomponents",
+                                    string=_("Linked Components"),
                                     store=False)
     parent_id = fields.Many2one('ir.attachment',
                                 _('Related parent document'),
@@ -69,7 +75,8 @@ class PlmDocumentRelations(models.Model):
                              _('CheckOut User'),
                              default=False,
                              readonly="True")
-
+    notes = fields.Char(string="Notes: ")
+    
     _sql_constraints = [
         ('relation_uniq', 'unique (parent_id,child_id,link_kind)', _('The Document Relation must be unique !'))
     ]
@@ -77,13 +84,14 @@ class PlmDocumentRelations(models.Model):
     def name_get(self):
         result = []
         for r in self:
+            child_name = ''
             if r.parent_id.engineering_document_name:
                 parent_name = r.parent_id.engineering_document_name[:8]
             else:
                 parent_name = r.parent_id.name[:8]
             if r.child_id.engineering_document_name:
                 child_name = r.child_id.engineering_document_name[:8]
-            else:
+            elif r.child_id:
                 child_name = r.child_id.name[:8]
             name = "%s .. %s.." % (parent_name, child_name)
             result.append((r.id, name))
