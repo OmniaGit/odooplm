@@ -635,17 +635,25 @@ class MrpBomExtension(models.Model):
         new_bom_brws = super(MrpBomExtension, self).copy(default)
         if new_bom_brws:
             for bom_line in new_bom_brws.bom_line_ids:
-                late_rev_id_c = self.env['product.product'].GetLatestIds([
+                latest_products = self.env['product.product'].GetLatestIds([
                     (bom_line.product_id.product_tmpl_id.engineering_code,
                      False,
                      False)
                 ])  # Get Latest revision of each Part
                 bom_line.sudo().write({'state': 'draft'})
-                bom_line.write({
-                    'source_id': False,
-                    'name': bom_line.product_id.product_tmpl_id.name,
-                    'product_id': late_rev_id_c[0]
-                })
+                latest_product = False
+                for latest_product in latest_products:
+                    break
+                if not latest_product:
+                    logging.warning('Cannot find product with GetLatestIds and product_id %r' % (bom_line.product_id))
+                    if bom_line.product_id:
+                        latest_product = bom_line.product_id.id
+                if latest_product:
+                    bom_line.write({
+                        'source_id': False,
+                        'name': bom_line.product_id.product_tmpl_id.name,
+                        'product_id': latest_product
+                    })
             new_bom_brws.sudo().with_context({'check': False}).write({
                 'source_id': False,
                 'name': new_bom_brws.product_tmpl_id.name

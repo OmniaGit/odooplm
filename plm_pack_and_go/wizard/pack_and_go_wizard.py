@@ -177,7 +177,7 @@ class PackAndGo(osv.osv.osv_memory):
 
         def recursionDocuments(docBrwsList):
             for docBrws in docBrwsList:
-                res = plmDocObject.CheckAllFiles([docBrws.id, [], False, '', ''])   # Get all related documents to root documents
+                res = plmDocObject.sudo().CheckAllFiles([docBrws.id, [], False, '', ''])   # Get all related documents to root documents
                 for singleRes in res:
                     docId = singleRes[0]
                     if docId in checkedDocumentIds:
@@ -373,6 +373,9 @@ class PackAndGo(osv.osv.osv_memory):
             shutil.copyfile(filePath, outFilePath)
 
         def exportSingle(docBws):
+            if not docBws.store_fname:
+                logging.warning('Cannot export document %r due to missing store_fname' % (docBws))
+                return
             fromFile = docBws._full_path(docBws.store_fname)
             if os.path.exists(fromFile):
                 outFilePath = os.path.join(outZipFile, docBws.name)
