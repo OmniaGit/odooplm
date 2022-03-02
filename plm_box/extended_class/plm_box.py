@@ -449,18 +449,24 @@ class Plm_box(models.Model):
         return outList
 
     @api.model
-    def getBoxesStructureFromServer(self, box_ids):
+    def getBoxesStructureFromServer(self, box_ids, primary_box_ids=[], download_all=False):
         outDict = {}
-        available_boxes = self.getAvaiableBoxIds()
-        notFoundBoxes = []
+        available_box_ids = self.getAvaiableBoxIds()
         if not box_ids:
-            return (outDict, notFoundBoxes)
+            return outDict
+        all_boxes = {}
         for box_obj in self.browse(box_ids):
-            outDict[box_obj.name] = box_obj.getBoxStructure0(available_boxes=available_boxes)
-        return (outDict, notFoundBoxes)
+            outDict[str(box_obj.id)], all_boxes_children = box_obj.getBoxStructure0(available_box_ids=available_box_ids, all_boxes=all_boxes, primary_box_ids=primary_box_ids)
+            all_boxes.update(all_boxes_children)
+        if download_all:
+            for available_box_id in available_box_ids:
+                if available_box_id not in all_boxes.keys():
+                    box_obj = self.browse(available_box_id)
+                    outDict[str(box_obj.id)], _ = box_obj.getBoxStructure0(primary=True, available_box_ids=available_box_ids, all_boxes=all_boxes, primary_box_ids=primary_box_ids)
+        return outDict
 
     @api.multi
-    def getBoxStructure0(self, primary=False, available_boxes=[]):
+    def getBoxStructure0(self, primary=False, available_box_ids=[], all_boxes={}, primary_box_ids=[]):
         '''
             *** CLIENT ***
         '''
@@ -468,17 +474,21 @@ class Plm_box(models.Model):
                    'children': {}
                    }
         for boxBrws in self:
-            if boxBrws.id not in available_boxes:
-                return {}
+            if boxBrws.id not in available_box_ids:
+                return {}, all_boxes
             for boxChildBrws in boxBrws.plm_box_rel:
                 outDict['children'].setdefault(boxChildBrws.name, {})
-                outDict['children'][boxChildBrws.name] = boxChildBrws.getBoxStructure0(False, available_boxes)
+                outDict['children'][boxChildBrws.name], all_boxes = boxChildBrws.getBoxStructure0(False, available_box_ids, all_boxes)
             self.setRelatedEntities(boxBrws, outDict)
             outDict['description'] = boxBrws.description or ''
             outDict['state'] = boxBrws.state
+            outDict['name'] = boxBrws.name
             outDict['readonly'] = boxBrws.boxReadonlyCompute()
             outDict['id'] = boxBrws.id
-        return outDict
+            if boxBrws.id in primary_box_ids:
+                outDict['primary'] = True
+            all_boxes[boxBrws.id] = boxBrws
+        return outDict, all_boxes
 
 
     def checkRecursiveBoxPresent(self, targetBox):
@@ -520,7 +530,7 @@ class Plm_box(models.Model):
                 vals_list = box.read(to_read)
                 for vals in vals_list:
                     vals['entities'] = box.computeEntities()
-                    children = self.boxStructureRecursion(to_read, box.plm_box_rel.ids, available_boxes)
+                    children = self.boxStructureRecursion(to_read, tooltip_fields, box.plm_box_rel.ids, available_boxes)
                     vals = self.setupTooltipFields(vals, tooltip_fields)
                     out.append([vals, children])
         return out
