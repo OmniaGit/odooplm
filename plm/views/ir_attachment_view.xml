@@ -243,6 +243,10 @@
                             string="Status"
                             domain="[]"
                             context="{'group_by':'state'}"/>
+                    <filter name="type"
+                            string="Type Document"
+                            domain="[]"
+                            context="{'group_by':'document_type'}"/>
               	</group>
             </search>
         </field>
@@ -258,16 +262,19 @@
                 <field name="revisionid"/>
                 <field name="description"/>
                 <field name="state"/>
+                <field name="document_type"/>
                 <templates>
                     <t t-name="kanban-box">
                         <t t-value="record.state.raw_value" t-set="stateToUse"/>
                         <div class="oe_kanban_global_click">
                             <table style="width: 100%;">
                             	<tr>
-                                    <td rowspan="2">
-                                        <img t-att-src="kanban_image('ir.attachment', 'preview', record.id.raw_value)" alt="Preview" height="100" width="100"/>
-                                    </td>
-                            		<td style="text-align: right;">
+                                	<td>
+                        				<strong attrs="{'invisible': [('document_type', '!=', 'other')]}">Other</strong>
+                        				<strong attrs="{'invisible': [('document_type', '!=', '2d')]}">2D</strong>
+                        				<strong attrs="{'invisible': [('document_type', '!=', '3d')]}">3D</strong>
+                        			</td>
+                        			<td style="text-align: right; width: 100%;">
                             			<field name="is_linkedcomponents" invisible="True"/>
 	                            		<div
 	                            			class="fa fa-dropbox fa-2x"
@@ -275,27 +282,66 @@
 	                            			style="color:#ff8300;"
 	                            			attrs="{'invisible': [('is_linkedcomponents', 'not in', [False, []])]}"/>
                             		</td>
-                            		<td>
+                            		<td style="text-align: right; width: 100%;">
                             			<div
 	                            			class="fa fa-dropbox fa-2x"
 	                            			aria-label="Founding Component"
 	                            			style="color: green;"
 	                            			attrs="{'invisible': [('is_linkedcomponents', 'in', [False, []])]}"/>
                             		</td>
+                        		</tr>
+                            	<tr>
+                            		<td rowspan="2">
+                            			<field name="preview" nolabel="1" widget="image" class="oe_right oe_avatar" height="100" width="100"/>
+                            		</td>
                             	</tr>
-                                <tr>
-                                    <td style="padding-left:10px; vertical-align: middle;">
-                                        <table>
-                                            <tr>
+                            	<tr>
+                                	<td style="padding-left:10px; vertical-align: middle;">
+                                		<table>
+                                			<tr>
                                                 <td>
-                                                    <strong>Name:</strong>
-                                                    <field name="display_name"/>
-                                                    <!-- <field name="engineering_document_name"/>  -->
+                                                	<t t-if="stateToUse == 'draft'">
+                                                        <b><span style="color: rgb(110, 51, 197);">
+                                                         	<t><strong>______________________</strong></t>
+                                                       	</span></b>
+                                                    </t>
+                                                    <t t-elif="stateToUse == 'confirmed'">
+                                                        <b><span style="color: blue;">
+                                                        	<t><strong>______________________</strong></t>
+                                                        </span></b>
+                                                    </t>
+                                                    <t t-elif="stateToUse == 'released'">
+                                                        <b><span style="color: rgba(0, 170, 34, 0.66);">
+                                                        	<t><strong>______________________</strong></t>
+                                                       	</span></b>
+                                                    </t>
+                                                    <t t-elif="stateToUse == 'undermodify'">
+                                                        <b><span style="color: rgb(218, 159, 34);">
+                                                        	<t><strong>______________________</strong></t>
+                                                      	</span></b>
+                                                    </t>
+                                                    <t t-elif="stateToUse == 'obsoleted'">
+                                                        <b><span style="color: rgb(231, 43, 26);">
+                                                        	<t><strong>______________________</strong></t>
+                                                        </span></b>
+                                                    </t>
+													<t t-else="">
+                                                        <b><span style="color: black;">
+                                                        	<t><strong>______________________</strong></t>
+                                                      	</span></b>
+													</t>
+												</td>
+											</tr>
+											<tr>
+												<td>
+                                                    <t><strong>Name:</strong></t>
+                                                    <field name="engineering_document_name"/>
+                                                    <field name="display_name" attrs="{'invisible': [('engineering_document_name', 'not in', [False, []])]}"/>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>
-                                                    <strong>Revision:</strong>
+                                                    <t><strong>Revision:</strong></t>
                                                     <field name="revisionid"/>
                                                 </td>
                                             </tr>
@@ -304,44 +350,44 @@
                                                     <strong>State:</strong>
                                                     <t t-if="stateToUse == 'draft'">
                                                         <b><span style="color: rgb(110, 51, 197);padding-left: 5px;">
-                                                         	<field name="state"/>
+                                                         	<u><field name="state"/></u>
+                                                         	<t><strong>______________________</strong></t>
                                                        	</span></b>
                                                     </t>
                                                     <t t-elif="stateToUse == 'confirmed'">
                                                         <b><span style="color: blue;padding-left: 5px;">
-                                                        	<field name="state"/>
+                                                        	<u><field name="state"/></u>
+                                                        	<t><strong>______________________</strong></t>
                                                         </span></b>
                                                     </t>
                                                     <t t-elif="stateToUse == 'released'">
                                                         <b><span style="color: rgba(0, 170, 34, 0.66);padding-left: 5px;">
-                                                        	<field name="state"/>
+                                                        	<u><field name="state"/></u>
+                                                        	<t><strong>______________________</strong></t>
                                                        	</span></b>
                                                     </t>
                                                     <t t-elif="stateToUse == 'undermodify'">
                                                         <b><span style="color: rgb(218, 159, 34);padding-left: 5px;">
-                                                        	<field name="state"/>
+                                                        	<u><field name="state"/></u>
+                                                        	<t><strong>______________________</strong></t>
                                                       	</span></b>
                                                     </t>
                                                     <t t-elif="stateToUse == 'obsoleted'">
                                                         <b><span style="color: rgb(231, 43, 26);padding-left: 5px;">
-                                                        	<field name="state"/>
+                                                        	<u><field name="state"/></u>
+                                                        	<t><strong>______________________</strong></t>
                                                         </span></b>
                                                     </t>
 													<t t-else="">
                                                         <b><span style="color: black;padding-left: 5px;">
-                                                        	field name="state"/>
+                                                        	<u><field name="state"/></u>
+                                                        	<t><strong>______________________</strong></t>
                                                       	</span></b>
 													</t>
                                                 </td>
                                             </tr>
-                                            <tr>
-                                                <td>
-                                                    <strong>Description:</strong>
-                                                    <field name="description"/>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </td>
+                                		</table>
+                                	</td>
                                 </tr>
                             </table>
                         </div>
@@ -367,7 +413,7 @@
         <field name="res_model">ir.attachment</field>
         <field name="view_mode">kanban,graph,tree,form</field>
         <field name="search_view_id" ref="plm.ir_attachment_search"></field>
-        <field name="context">{"search_default_created_in":1, "search_default_create_by":1, "odooPLM":True}</field>
+        <field name="context">{"odooPLM":True}</field>
         <field name="domain">[('is_plm', '=', True)]</field>
         <field name="view_ids"
                eval="[(5, 0, 0),

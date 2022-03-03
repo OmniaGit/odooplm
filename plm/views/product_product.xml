@@ -7,31 +7,64 @@
         <field name="priority" eval="15"/>
         <field name="arch" type="xml">
             <search string="Parts">
-                <filter name="last_2_weeks"
-                        string="Latest 2 Weeks"
-                        domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"
-                        help="Created latest 2 Weeks"/>
-                <filter name="latest_7_days"
-                        string="Latest 7 Days"
-                        domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
-                        help="Created latest 7 Days"/>
-                <filter name="yestarday"
-                        string="Yesterday"
-                        domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
-                        help="Created yesterday"/>
-                <filter name="today"
-                        string="Today"
-                        domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
-                        help="Created today"/>
+                <filter 
+            		name="last_year" 
+            		string="Last Year" 
+            		domain="[('create_date','&gt;=',(datetime.date.today() - relativedelta(days=1,months=1,years=1)).strftime('%%Y-%%m-%%d'))]"/>
+           		<filter 
+            		name="last_month" 
+            		string="Last Month" 
+            		domain="[('create_date','&gt;=',(datetime.date.today() - relativedelta(days=1,months=1)).strftime('%%Y-%%m-%%d'))]"/>
+            	<filter 
+            		name="last_week" 
+            		string="Last Week" 
+            		domain="[('create_date','&gt;=',(datetime.date.today() - datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"/>
                 <separator orientation="vertical"/>
                 <field name="engineering_code"/>
                 <field name="description" invisible="1"/>
                 <field name="name"/>
                 <separator orientation="vertical"/>
-                <filter name="string" string="Confirmed" domain="[('state', '=', 'confirmed')]"/>
-                <filter name="released" string="Released" domain="[('state', 'in', ['released','undermodify'])]"/>
-                <filter name="obsolated" string="Obsoleted" domain="[('state', '=', 'obsoleted')]"/>
-                <filter name="latest" string="Latest" domain="[('state', 'not in', ['obsoleted','undermodify'])]"/>
+                <filter 
+                	name="string" 
+                	string="Confirmed" 
+                	domain="[('state', '=', 'confirmed')]"/>
+                <filter 
+                	name="released" 
+                	string="Released" 
+                	domain="[('state', 'in', ['released','undermodify'])]"/>
+                <filter 
+                	name="obsolated" 
+                	string="Obsoleted" 
+                	domain="[('state', '=', 'obsoleted')]"/>
+                <separator orientation="vertical"/>
+                <filter 
+                	name="latest" 
+                	string="Latest" 
+                	domain="[('state', 'not in', ['obsoleted','undermodify'])]"/>
+                <group expand="0" string="Group By...">
+                	<filter name="created_in"
+                            string="Created in"
+                            domain="[]"
+                            context="{'group_by':'create_date'}"/>
+                    <filter name="canged_in"
+                            string="Changed in"
+                            domain="[]"
+                            context="{'group_by':'write_date'}"/>
+                    <separator orientation="vertical"/>
+                    <filter name="create_by"
+                            string="Created by"
+                            domain="[]"
+                            context="{'group_by':'create_uid'}"/>
+                    <filter name="changed_by"
+                            string="Changed by"
+                            domain="[]"
+                            context="{'group_by':'write_uid'}"/>
+                    <separator orientation="vertical"/>
+                    <filter name="status"
+                            string="Status"
+                            domain="[]"
+                            context="{'group_by':'state'}"/>
+              	</group>
             </search>
         </field>
     </record>
@@ -350,37 +383,25 @@
                     </div>
                 </t>
             </xpath>
-            
             <xpath expr="//templates/t[1]" position="after">
                  <t t-name="previews">
                         <div style="display: -webkit-inline-box;  padding-left: 10px;">
                             <t t-foreach="record.linkeddocuments.raw_value" t-as="documentId">
                                 <t t-debug="plm"/>
-                               
                                 <div>
-                                    <a type="object"
-                                       role="button" 
-                                       class="a_preview "
-                                       name="action_show_reference"
-                                       href="#"
-                                       t-attf-data-context='{"ir_attachment_id": {{documentId}}}'>
-                                       <img class="image_component_kanban"
-                                                alt="No Image"
-                                                t-att-src="kanban_image('ir.attachment', 'preview', documentId)"/>
-
+                                    <a type="object" role="button" class="a_preview " name="action_show_reference" href="#" t-attf-data-context='{"ir_attachment_id": {{documentId}}}'>
+                                       <img class="image_component_kanban" alt="No Image" t-att-src="kanban_image('ir.attachment', 'preview', documentId)"/>
                                     </a>
                                 </div>
                             </t>
                         </div>
                     </t>
             </xpath>
-        
-        
             <xpath expr="//div[@name='tags']" position="after">
                 <div class="preview_container">
                     <t t-call="previews"/>
                </div>
-            </xpath>  
+            </xpath>
         </field>
    </record> 
     

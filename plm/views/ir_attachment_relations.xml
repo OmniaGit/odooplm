@@ -154,106 +154,251 @@
                 <field name="configuration"/>
                 <field name="link_kind"  select="True"/>
                 <field name="create_date" invisible="True"/>
+                <field name="parent_type" invisible="True"/>
+                <field name="child_type" invisible="True"/>
                 <templates>
                     <t t-name="kanban-box">
+                    	<t t-value="record.parent_state.raw_value" t-set="stateToUse1"/>
+                    	<t t-value="record.child_state.raw_value" t-set="stateToUse2"/>
                         <div class="oe_kanban_global_click">
                             <table style="width: 100%;">
                             	<tr>
                                 	<td>
-                        				<strong>Parent Component</strong>
+                        				<strong attrs="{'invisible': [('parent_type', '!=', 'other')]}">Other-Parent</strong>
+                        				<strong attrs="{'invisible': [('parent_type', '!=', '2d')]}">2D-Parent</strong>
+                        				<strong attrs="{'invisible': [('parent_type', '!=', '3d')]}">3D-Parent</strong>
                         			</td>
-                        			<td style="text-align: right; width: 50%;">
+                        			<td style="text-align: right; width: 100%;">
                             			<field name="parent_linked" invisible="True"/>
 	                            		<div
 	                            			class="fa fa-dropbox fa-2x"
 	                            			aria-label="Missing Component"
 	                            			style="color:#ff8300;"
-	                            			attrs="{'invisible': [('parent_linked', 'not in', [False, []])]}"
-	                            			/>
+	                            			attrs="{'invisible': [('parent_linked', 'not in', [False, []])]}"/>
                             		</td>
-                            		<td style="text-align: right; width: 50%;">
+                            		<td style="text-align: right; width: 100%;">
                             			<div
 	                            			class="fa fa-dropbox fa-2x"
 	                            			aria-label="Founding Component"
 	                            			style="color: green;"
-	                            			attrs="{'invisible': [('parent_linked', 'in', [False, []])]}"
-	                            			/>
+	                            			attrs="{'invisible': [('parent_linked', 'in', [False, []])]}"/>
                             		</td>
                         		</tr>
-                                <tr>
-                                	<td rowspan="2">
-                                		<field name="parent_preview" nolabel="1" widget="image" class="oe_right oe_avatar" height="100" width="100"/>
-                                	</td>
-                                </tr>
-                                <tr>
+                            	<tr>
+                            		<td rowspan="2">
+                            			<field name="parent_preview" nolabel="1" widget="image" class="oe_right oe_avatar" height="100" width="100"/>
+                            		</td>
+                            	</tr>
+                            	<tr>
                                 	<td style="padding-left:10px; vertical-align: middle;">
                                 		<table>
                                 			<tr>
-                                                <td  rowapan="2">
+                                                <td>
+                                                	<t t-if="stateToUse1 == 'draft'">
+                                                        <b><span style="color: rgb(110, 51, 197);">
+                                                         	<t><strong>______________________</strong></t>
+                                                       	</span></b>
+                                                    </t>
+                                                    <t t-elif="stateToUse1 == 'confirmed'">
+                                                        <b><span style="color: blue;">
+                                                        	<t><strong>______________________</strong></t>
+                                                        </span></b>
+                                                    </t>
+                                                    <t t-elif="stateToUse1 == 'released'">
+                                                        <b><span style="color: rgba(0, 170, 34, 0.66);">
+                                                        	<t><strong>______________________</strong></t>
+                                                       	</span></b>
+                                                    </t>
+                                                    <t t-elif="stateToUse1 == 'undermodify'">
+                                                        <b><span style="color: rgb(218, 159, 34);">
+                                                        	<t><strong>______________________</strong></t>
+                                                      	</span></b>
+                                                    </t>
+                                                    <t t-elif="stateToUse1 == 'obsoleted'">
+                                                        <b><span style="color: rgb(231, 43, 26);">
+                                                        	<t><strong>______________________</strong></t>
+                                                        </span></b>
+                                                    </t>
+													<t t-else="">
+                                                        <b><span style="color: black;">
+                                                        	<t><strong>______________________</strong></t>
+                                                      	</span></b>
+													</t>
                                                     <t><strong>Name:</strong></t>
                                                     <field name="parent_id"/>
+                                                    <field name="display_name" attrs="{'invisible': [('parent_id', 'not in', [False, []])]}"/>
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td  rowapan="2">
-                                                    <t><strong>State:</strong></t>
-                                                    <field name="parent_state"/>
+                                                <td>
+                                                    <t><strong>Revision:</strong></t>
+                                                    <field name="parent_revision"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <strong>State:</strong>
+                                                    <t t-if="stateToUse1 == 'draft'">
+                                                        <b><span style="color: rgb(110, 51, 197);padding-left: 5px;">
+                                                         	<u><field name="parent_state"/></u>
+                                                         	<t><strong>______________________</strong></t>
+                                                       	</span></b>
+                                                    </t>
+                                                    <t t-elif="stateToUse1 == 'confirmed'">
+                                                        <b><span style="color: blue;padding-left: 5px;">
+                                                        	<u><field name="parent_state"/></u>
+                                                        	<t><strong>______________________</strong></t>
+                                                        </span></b>
+                                                    </t>
+                                                    <t t-elif="stateToUse1 == 'released'">
+                                                        <b><span style="color: rgba(0, 170, 34, 0.66);padding-left: 5px;">
+                                                        	<u><field name="parent_state"/></u>
+                                                        	<t><strong>______________________</strong></t>
+                                                       	</span></b>
+                                                    </t>
+                                                    <t t-elif="stateToUse1 == 'undermodify'">
+                                                        <b><span style="color: rgb(218, 159, 34);padding-left: 5px;">
+                                                        	<u><field name="parent_state"/></u>
+                                                        	<t><strong>______________________</strong></t>
+                                                      	</span></b>
+                                                    </t>
+                                                    <t t-elif="stateToUse1 == 'obsoleted'">
+                                                        <b><span style="color: rgb(231, 43, 26);padding-left: 5px;">
+                                                        	<u><field name="parent_state"/></u>
+                                                        	<t><strong>______________________</strong></t>
+                                                        </span></b>
+                                                    </t>
+													<t t-else="">
+                                                        <b><span style="color: black;padding-left: 5px;">
+                                                        	<u><field name="parent_state"/></u>
+                                                        	<t><strong>______________________</strong></t>
+                                                      	</span></b>
+													</t>
                                                 </td>
                                             </tr>
                                 		</table>
                                 	</td>
-                                </tr>
-                                <tr>
-                                	<td colspan="2"><p style="text-align: left;"> __________________________________________</p></td>
                                 </tr>
                                 <tr>
                                 	<td>
-                        				<strong>Child Component</strong>
+                        				<strong attrs="{'invisible': [('child_type', '!=', 'other')]}">Other-Child</strong>
+                        				<strong attrs="{'invisible': [('child_type', '!=', '2d')]}">2D-Child</strong>
+                        				<strong attrs="{'invisible': [('child_type', '!=', '3d')]}">3D-Child</strong>
                         			</td>
-                        			<td style="text-align: right; width: 50%;">
-                            			<field name="parent_linked" invisible="True"/>
+                        			<td style="text-align: right; width: 100%;">
+                            			<field name="child_linked" invisible="True"/>
 	                            		<div
 	                            			class="fa fa-dropbox fa-2x"
 	                            			aria-label="Missing Component"
 	                            			style="color:#ff8300;"
-	                            			attrs="{'invisible': [('parent_linked', 'not in', [False, []])]}"
-	                            			/>
+	                            			attrs="{'invisible': [('child_linked', 'not in', [False, []])]}"/>
                             		</td>
-                            		<td style="text-align: right; width: 50%;">
+                            		<td style="text-align: right; width: 100%;">
                             			<div
 	                            			class="fa fa-dropbox fa-2x"
 	                            			aria-label="Founding Component"
 	                            			style="color: green;"
-	                            			attrs="{'invisible': [('parent_linked', 'in', [False, []])]}"
-	                            			/>
+	                            			attrs="{'invisible': [('child_linked', 'in', [False, []])]}"/>
                             		</td>
                         		</tr>
-                                <tr>
-                                	<td rowspan="2">
-                                		<field name="child_preview" nolabel="1" widget="image" class="oe_right oe_avatar" height="100" width="100"/>
-                                	</td>
-                                </tr>
-                                <tr>
+                            	<tr>
+                            		<td rowspan="2">
+                            			<field name="child_preview" nolabel="1" widget="image" class="oe_right oe_avatar" height="100" width="100"/>
+                            		</td>
+                            	</tr>
+                            	<tr>
                                 	<td style="padding-left:10px; vertical-align: middle;">
                                 		<table>
                                 			<tr>
-                                                <td  rowapan="2">
-                                                    <strong>Name:</strong>
+                                                <td>
+                                                	<t t-if="stateToUse2 == 'draft'">
+                                                        <b><span style="color: rgb(110, 51, 197);">
+                                                         	<t><strong>______________________</strong></t>
+                                                       	</span></b>
+                                                    </t>
+                                                    <t t-elif="stateToUse2 == 'confirmed'">
+                                                        <b><span style="color: blue;">
+                                                        	<t><strong>______________________</strong></t>
+                                                        </span></b>
+                                                    </t>
+                                                    <t t-elif="stateToUse2 == 'released'">
+                                                        <b><span style="color: rgba(0, 170, 34, 0.66);">
+                                                        	<t><strong>______________________</strong></t>
+                                                       	</span></b>
+                                                    </t>
+                                                    <t t-elif="stateToUse2 == 'undermodify'">
+                                                        <b><span style="color: rgb(218, 159, 34);">
+                                                        	<t><strong>______________________</strong></t>
+                                                      	</span></b>
+                                                    </t>
+                                                    <t t-elif="stateToUse2 == 'obsoleted'">
+                                                        <b><span style="color: rgb(231, 43, 26);">
+                                                        	<t><strong>______________________</strong></t>
+                                                        </span></b>
+                                                    </t>
+													<t t-else="">
+                                                        <b><span style="color: black;">
+                                                        	<t><strong>______________________</strong></t>
+                                                      	</span></b>
+													</t>
+                                                    <t><strong>Name:</strong></t>
                                                     <field name="child_id"/>
+                                                    <field name="display_name" attrs="{'invisible': [('child_id', 'not in', [False, []])]}"/>
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td  rowapan="2">
+                                                <td>
+                                                    <t><strong>Revision:</strong></t>
+                                                    <field name="child_revision"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
                                                     <strong>State:</strong>
-                                                     <field name="child_state"/>
+                                                    <t t-if="stateToUse2 == 'draft'">
+                                                        <b><span style="color: rgb(110, 51, 197);padding-left: 5px;">
+                                                         	<u><field name="child_state"/></u>
+                                                         	<t><strong>______________________</strong></t>
+                                                       	</span></b>
+                                                    </t>
+                                                    <t t-elif="stateToUse2 == 'confirmed'">
+                                                        <b><span style="color: blue;padding-left: 5px;">
+                                                        	<u><field name="child_state"/></u>
+                                                        	<t><strong>______________________</strong></t>
+                                                        </span></b>
+                                                    </t>
+                                                    <t t-elif="stateToUse2 == 'released'">
+                                                        <b><span style="color: rgba(0, 170, 34, 0.66);padding-left: 5px;">
+                                                        	<u><field name="child_state"/></u>
+                                                        	<t><strong>______________________</strong></t>
+                                                       	</span></b>
+                                                    </t>
+                                                    <t t-elif="stateToUse2 == 'undermodify'">
+                                                        <b><span style="color: rgb(218, 159, 34);padding-left: 5px;">
+                                                        	<u><field name="child_state"/></u>
+                                                        	<t><strong>______________________</strong></t>
+                                                      	</span></b>
+                                                    </t>
+                                                    <t t-elif="stateToUse2 == 'obsoleted'">
+                                                        <b><span style="color: rgb(231, 43, 26);padding-left: 5px;">
+                                                        	<u><field name="child_state"/></u>
+                                                        	<t><strong>______________________</strong></t>
+                                                        </span></b>
+                                                    </t>
+													<t t-else="">
+                                                        <b><span style="color: black;padding-left: 5px;">
+                                                        	<u><field name="child_state"/></u>
+                                                        	<t><strong>______________________</strong></t>
+                                                      	</span></b>
+													</t>
                                                 </td>
                                             </tr>
                                 		</table>
                                 	</td>
                                 </tr>
-                             </table>
+                           	</table>
                         </div>
-                    </t>
+             		</t>
                 </templates>
             </kanban>
         </field>

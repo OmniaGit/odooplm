@@ -7,7 +7,7 @@
         <field name="model">mrp.bom</field>
         <field name="inherit_id" ref="mrp.mrp_bom_form_view"/>
         <field name="arch" type="xml">
-        	<xpath expr="//button[@name='open_related_bom_lines']" position="after">
+        	<xpath expr="//div[@name='button_box']" position="inside">
         		<button name="open_breakages" type="object" class="oe_stat_button" icon="fa-chain-broken">
                        	<field string="Breakages" name="breakages_count" widget="statinfo"/>
                 </button>

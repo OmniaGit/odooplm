@@ -38,11 +38,12 @@ div.more_containers{
 	-ms-transition-delay: 0s;
 	-o-transition-delay: 0s;
 	transition-delay: 0s;
-	z-index: 1000;
-	transform: scale(6); 
+	transform: scale(4); 
 	transform-origin: 50% 50%;
-    /*transform-origin: 0% 0%;*/
-    position: sticky;
+	position: sticky;
+	z-index: 1000;
+    	/*transform-origin: 0% 0%;*/
+	
 }
 
 div.preview_container{

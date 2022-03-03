@@ -31,23 +31,26 @@
         <field name="inherit_id" ref="mrp.mrp_bom_tree_view"/>
         <field name="arch" type="xml">
             <field name="product_id" position="after">
-                <field name="source_id" string="Source Relation Document"/>
-                <field name="type"/>
+            	<field name="product_id"/>
+            	<field name="code"/>
                 <button 
-        				name="open_attachments"
-        				type="object"
-        				icon="fa-files-o"
-        				aria-label="Product Attachments"
-        				title="Product Attachments"
-        				class="btn btn-sm oe_stat_button"/>
-                <field name="weight_net"/>
-                <field name="engineering_revision"/>
+        			name="open_attachments"
+        			type="object"
+        			icon="fa-files-o text-o-color-#3"
+        			aria-label="Product Attachments"
+        			title="Product Attachments"
+        			class="float-right"/>
+        			<field name="source_id" string="Source Relation Document"/>
                 <field name="description" select="True"/>
+                <field name="company_id"/>
                 <field name="state" select="True"/>
+                <field name="weight_net"/>
+                <field name="product_qty"/>
+                <field name="engineering_revision"/>
             </field>
         </field>
     </record>
-
+    
     <record id="plm_bom_form_view" model="ir.ui.view">
         <field name="name">plm.bom.form</field>
         <field name="model">mrp.bom</field>
@@ -64,25 +67,28 @@
                         class="oe_stat_button"
                         icon="fa-tasks"
                         attrs="{'invisible':[('bom_revision_count','&lt;=','1')]}">
-                        <field name="bom_revision_count"
-                               string=" "
-                               widget="statinfo"/>
+                        <field name="bom_revision_count" string=" " widget="statinfo"/>
                 </button>
             </div>
             <field name="product_tmpl_id" position="replace">
-                <field name="product_tmpl_id" context="{'default_type': 'product'}"
-                       options="{'no_open':True,'no_create':True}"/>
-            </field>
+				<label for="product_tmpl_id"/>
+                <div class="o_row no-gutters d-flex">
+	            	<field name="product_tmpl_id" 
+	            		context="{'default_type': 'product'}"
+	            		options="{'no_open':True,'no_create':True}"
+	            		colspan="1"
+	            		class="oe_inline text-left"/>
+	            	<button
+						name="open_attachments"
+					    type="object"
+					    icon="fa-files-o"
+					    aria-label="Product Attachments"
+					    title="Product Attachments"
+					    class="oe_link oe_inline" style="margin: 0px; padding: 0px;color: #017e84;"/>
+				</div>
+		    </field> 
             <field name="product_id" position="after">
-            	<separator string="Product Attachments:"/>
-            	<button 
-        			name="open_attachments"
-        			type="object"
-        			icon="fa-files-o"
-        			aria-label="Product Attachments"
-        			title="Product Attachments"
-        			class="btn btn-sm oe_stat_button"/>
-        		<separator string="Info:"/>
+            	<separator string="Info:"/>
                 <field name="engineering_revision" readonly="True"/>
                 <field name="description" readonly="True"/>
                 <field name="state" readonly="True"/>
@@ -140,23 +146,19 @@
         <field name="type">search</field>
         <field name="arch" type="xml">
             <field name="code" position="before">
-                <filter name="filter_latest_2_weeks"
-                        string="Latest 2 Weeks"
-                        domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"
-                        help="Created latest 2 Weeks"/>
-                <filter name="filter_latest_7"
-                        string="Latest 7 Days"
-                        domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
-                        help="Created latest 7 Days"/>
-                <filter name="filter_yesterday"
-                        string="Yesterday"
-                        domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
-                        help="Created yesterday"/>
-                <filter name="filter_today"
-                        string="Today"
-                        domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
-                        help="Created today"/>
-                <separator orientation="vertical"/>
+                <filter 
+            		name="last_year" 
+            		string="Last Year" 
+            		domain="[('create_date','&gt;=',(datetime.date.today() - relativedelta(days=1,months=1,years=1)).strftime('%%Y-%%m-%%d'))]"/>
+           		<filter 
+            		name="last_month" 
+            		string="Last Month" 
+            		domain="[('create_date','&gt;=',(datetime.date.today() - relativedelta(days=1,months=1)).strftime('%%Y-%%m-%%d'))]"/>
+            	<filter 
+            		name="last_week" 
+            		string="Last Week" 
+            		domain="[('create_date','&gt;=',(datetime.date.today() - datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"/>
+                <separator name="separator" orientation="vertical"/>
             </field>
             <xpath expr="//group" position="after">
                 <filter name="bom_name"
