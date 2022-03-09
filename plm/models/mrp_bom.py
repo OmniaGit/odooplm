@@ -779,26 +779,5 @@ class MrpBomExtension(models.Model):
                     out.append(k)
             return out
 
-    @api.model
-    def _bom_find(self, product_tmpl=None, product=None, picking_type=None, company_id=False, bom_type='normal'):
-        """ Finds BoM for particular product and product uom.
-        @param product_tmpl: Selected product.
-        @param product: Unit of measure of a product.
-        @return: False or BoM id.
-        """
-        obj_bom = super(MrpBomExtension, self)._bom_find(
-            product_tmpl=product_tmpl,
-            product=product,
-            picking_type=picking_type,
-            company_id=company_id
-        )
-        if obj_bom:
-            available_types = ['normal', 'phantom']
-            if obj_bom.type not in available_types:
-                available_types = [obj_bom.type]
-            return self.search([
-                ('product_id', '=', obj_bom.product_id.id),
-                ('product_tmpl_id', '=', obj_bom.product_tmpl_id.id),
-                ('type', 'in', available_types)
-            ], order='sequence, product_id', limit=1)
-        return obj_bom
+
+    
