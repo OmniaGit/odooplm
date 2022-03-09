@@ -33,6 +33,7 @@
         "security/plm_security.xml",
         # views
         "views/mrp_bom_extension.xml",
+        "views/mrp_production.xml",
         "views/data.xml",
         # 'report/bom_structure_report_extension.xml',
     ],
