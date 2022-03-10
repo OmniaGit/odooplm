@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
-#    Copyright (C) 2010-2021 OmniaSolutions (<https://www.omniasolutions.website>). All Rights Reserved
+#    Copyright (C) 2010 OmniaSolutions (<http://omniasolutions.eu>). All Rights Reserved
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -26,9 +26,15 @@ Created on 18 Jul 2016
 @author: Daniel Smerghetto
 '''
 
-from . import mrp_bom
-from . import product_product
-from . import mrp_bom_line
-from . import plm_temporary_date_compute
-from . import mrp_production
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+import logging
+from odoo import models
+from odoo import fields
+from odoo import api
+from odoo import _
+from odoo.exceptions import UserError
+                    
+
+class MrpProduction(models.Model):
+    _inherit = 'mrp.production'
+
+    obsolete_presents = fields.Boolean(_("Obsolete presents"), related='bom_id.obsolete_presents')
