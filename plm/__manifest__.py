@@ -58,6 +58,7 @@
         # QwebTemplates
         'views/templates.xml',
         # Reports Template
+        "views/mrp_report_document.xml",
         "report/bom_structure_report_template.xml",
         "report/document_report_templates.xml",
         "report/product_report_templates.xml",
@@ -67,7 +68,14 @@
         "report/document_report.xml",
     ],
     "assets": {
-        "web.assets_backend": ["plm/static/src/css/component_kanban.css"]},
+        "web.assets_backend": [
+            "plm/static/src/css/component_kanban.css",
+            ],
+        'web.report_assets_common': [
+            "plm/static/src/scss/document_bom.scss",
+            "plm/static/src/css/component_kanban.css",
+        ],
+        },
     "qweb": [],
     "demo": [],
     "test": [],

@@ -2728,4 +2728,9 @@ class PlmDocument(models.Model):
                 out.append(doc_id)
         return json.dumps(out)
 
+    def print_Document_Doc_Structure(self):
+        #<record id="account_invoices" model="ir.actions.report"> 
+        action = self.env.ref('plm.action_report_doc_structure').report_action(self)
+        action.update({'close_on_report_download': True})
+        return action
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

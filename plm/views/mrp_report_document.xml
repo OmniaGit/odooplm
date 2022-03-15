@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<odoo>
+	<template id="report_doc_bom">
+		<div class="container document_report_page">
+				<div class="row">
+					<div class="col-lg-12" style="margin-bottom: 30px;">
+						<h2 style="display:inline;"><strong>Document Structure</strong></h2>
+						<h6>
+							<div href="#" t-att-data-res-id="data['id'].id" t-att-data-model="data['id']._name" class="o_mrp_bom_action" style="color: #008b8b;">
+								<strong><t t-esc="data['id'].display_name"/></strong>
+							</div>
+						</h6>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-lg-12">
+	                	<div class="mt16">
+							<table class="table_style">
+								<thead>
+									<tr>
+										<th class="text-center">Level</th>
+										<th>Doc Name</th>
+										<th>File Name</th>
+										<th class="text-center">N° Revision</th>
+										<th class="text-center">State</th>
+										<th>Product Name</th>
+										<th class="text-center" style="padding-right: 30px;">Preview</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td class="text-center">
+			                          		<t t-esc="data['level']"/>
+			                         	</td>
+										<td>
+						                	<div href="#" t-att-data-res-id="data['id'].id" t-att-data-model="data['id']._name" class="o_mrp_bom_action" style="color: #008b8b;">
+												<strong><t t-esc="data['id'].display_name"/></strong>
+											</div>
+			                           	</td>
+			                     		<td>
+			                            	<t t-esc="data['id'].engineering_document_name"/>
+			                        	</td>
+			                        	<td class="text-center">
+			                            	<t t-esc="data['id'].revisionid"/>
+			                        	</td>
+			                        	<td class="text-center">
+                                             <t t-if="data['id'].state == 'draft'">
+                                                 <b><span style="color: rgb(110, 51, 197);padding-left: 5px;">
+                                                  	<t t-esc="data['id'].state"/>
+                                                	</span></b>
+                                             </t>
+                                             <t t-elif="data['id'].state == 'confirmed'">
+                                                 <b><span style="color: blue;padding-left: 5px;">
+                                                 	<t t-esc="data['id'].state"/>
+                                                 </span></b>
+                                             </t>
+                                             <t t-elif="data['id'].state == 'released'">
+                                                 <b><span style="color: rgba(0, 170, 34, 0.66);padding-left: 5px;">
+                                                 	<t t-esc="data['id'].state"/>
+                                                	</span></b>
+                                             </t>
+                                             <t t-elif="data['id'].state == 'undermodify'">
+                                                 <b><span style="color: rgb(218, 159, 34);padding-left: 5px;">
+                                                 	<t t-esc="data['id'].state"/>
+                                               	</span></b>
+                                             </t>
+                                             <t t-elif="data['id'].state == 'obsoleted'">
+                                                 <b><span style="color: rgb(231, 43, 26);padding-left: 5px;">
+                                                 	<t t-esc="data['id'].state"/>
+                                                 </span></b>
+                                             </t>
+											<t t-else="">
+                                                 <b><span style="color: black;padding-left: 5px;">
+                                                 	<t t-esc="data['id'].state"/>
+                                               	</span></b>
+											</t>
+			                        	</td>
+			                        	<td>
+			                            	<t t-if="data['id'].linkedcomponents">
+			                                	<t t-esc="data['id'].linkedcomponents[0].display_name"/>
+			                          		</t>
+			                        	</td>
+			                         	<td class="text-center" style="padding-top: 5px; padding-bottom: 5px;">
+						                	<img t-attf-src="data:image/*;base64,{{data['id'].preview}}" t-att-alt="data['id'].display_name" class="image_document_report"/>
+			                         	</td>
+									</tr>
+									<t t-call="plm.report_doc_bom_line"/>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+		</div>
+	</template>
+	
+	<template id="report_doc_bom_line">
+		<t t-foreach="data['children']" t-as="child_dict">
+			<t t-set="space_td" t-value="'margin-left: '+ str(child_dict['level'] * 20) + 'px; display: flex; font-weight:bold; color: #008b8b;'"/>
+			<tr class="document_report_line" t-att-data-level="child_dict['level']">
+				<td class="text-center">
+                	<t t-esc="child_dict['level']"/>
+                </td>
+				<td>
+					<div t-att-style="space_td">
+						<label class="o_mrp_bom_unfoldable fa fa-fw fa-caret-right" style="color: black; padding-top: 4px;"/>
+                        <t t-esc="child_dict['id'].display_name"/>
+					</div>
+				</td>
+				<td>
+					<t t-esc="child_dict['id'].engineering_document_name"/>
+				</td>
+				<td class="text-center">
+					<t t-esc="child_dict['id'].revisionid"/>
+				</td>
+			                        	<td class="text-center">
+                                             <t t-if="child_dict['id'].state == 'draft'">
+                                                 <b><span style="color: rgb(110, 51, 197);padding-left: 5px;">
+                                                  	<t t-esc="child_dict['id'].state"/>
+                                                	</span></b>
+                                             </t>
+                                             <t t-elif="child_dict['id'].state == 'confirmed'">
+                                                 <b><span style="color: blue;padding-left: 5px;">
+                                                 	<t t-esc="child_dict['id'].state"/>
+                                                 </span></b>
+                                             </t>
+                                             <t t-elif="child_dict['id'].state == 'released'">
+                                                 <b><span style="color: rgba(0, 170, 34, 0.66);padding-left: 5px;">
+                                                 	<t t-esc="child_dict['id'].state"/>
+                                                	</span></b>
+                                             </t>
+                                             <t t-elif="child_dict['id'].state == 'undermodify'">
+                                                 <b><span style="color: rgb(218, 159, 34);padding-left: 5px;">
+                                                 	<t t-esc="child_dict['id'].state"/>
+                                               	</span></b>
+                                             </t>
+                                             <t t-elif="child_dict['id'].state == 'obsoleted'">
+                                                 <b><span style="color: rgb(231, 43, 26);padding-left: 5px;">
+                                                 	<t t-esc="child_dict['id'].state"/>
+                                                 </span></b>
+                                             </t>
+											<t t-else="">
+                                                 <b><span style="color: black;padding-left: 5px;">
+                                                 	<t t-esc="child_dict['id'].state"/>
+                                               	</span></b>
+											</t>
+			                        	</td>
+				<td>
+					<t t-if="child_dict['id'].linkedcomponents">
+                 			<t t-esc="child_dict['id'].linkedcomponents[0].display_name"/>
+                 	</t>
+				</td>
+               	<td class="text-center" style="padding-top: 5px; padding-bottom: 5px;">
+               		 <img t-attf-src="data:image/*;base64,{{child_dict['id'].preview}}" t-att-alt="child_dict['id'].display_name" class="image_document_report"/>	
+               	</td>
+			</tr>
+			<div t-esc="child_dict['report_obj'].get_doc_bom(child_dict['id'], child_dict['level'])"/>
+		</t>
+	</template>
+
+    <template id="report_doc_structure">
+	        <t t-set="data_report_landscape" t-value="True"/>
+	        <t t-call="web.basic_layout">
+	            <t t-call-assets="mrp.assets_common" t-js="False"/>
+	            <t t-foreach="docs" t-as="data">
+	            	<style>head, body, foot{ background-color: #f6f7fa;}</style>
+					<div class="head body foot"></div>
+           			<div class="page"><t t-call="plm.report_doc_bom"/></div>
+            		<p style="page-break-before:always;"></p>
+	            </t>
+			</t>
+    </template>
+
+	<record id="action_report_doc_structure" model="ir.actions.report">
+    	<field name="name">Document Structure</field>
+        <field name="model">ir.attachment</field>
+        <field name="paperformat_id" ref="plm.paperformat_doc_structure"/>
+        <field name="report_type">qweb-html</field>
+        <field name="report_name">plm.report_doc_structure</field>
+        <field name="report_file">plm.report_doc_structure</field>
+        <field name="print_report_name">'Bom Doc Structure - %s' % object.display_name</field>
+        <field name="binding_model_id" ref="model_ir_attachment"/>
+        <field name="binding_type">report</field>
+  	</record>
+  	
+<record id="paperformat_doc_structure" model="report.paperformat">
+	    <field name="name">Paperformat Doc Structure</field>
+	    <field name="default" eval="True"/>
+	    <field name="format">A4</field>
+	    <field name="page_height">0</field>
+	    <field name="page_width">0</field>
+	    <field name="orientation">Portrait</field>
+	    <field name="margin_top">0</field>
+	    <field name="margin_bottom">0</field>
+	    <field name="margin_left">0</field>
+	    <field name="margin_right">0</field>
+	    <field name="header_line" eval="False"/>
+	    <field name="header_spacing">0</field>
+	    <field name="dpi">90</field>
+	</record>
+</odoo>
