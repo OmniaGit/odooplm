@@ -8,7 +8,7 @@
              <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
              <field name="arch" type="xml">
               
-                <xpath expr="//form[1]/sheet[1]/div[@name='button_box'][1]" position="after">
+                <xpath expr="//div[hasclass('oe_title')]" position="before">
                     <field name="show_new_version" invisible="True"/>
                     <div attrs="{'invisible': [('show_new_version','=', False)]}" style="background-color:LightGoldenRodYellow">
                         <p>
