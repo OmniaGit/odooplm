@@ -36,7 +36,7 @@ class ProductTemplate(models.Model):
 
     def _getNewCode(self):
         if self.env.context.get('odooPLM', False):
-           return self.env['ir.sequence'].next_by_code('plm.eng.code')        
+            return self.env['ir.sequence'].next_by_code('plm.eng.code')        
         return False
     
     engineering_code = fields.Char(_('Part Number'),
