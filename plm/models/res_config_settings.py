@@ -61,7 +61,7 @@ class PlmConfigSettings(models.TransientModel):
     module_plm_pdf_workorder = fields.Boolean("Enable Plm PDF document inside workorder")
     module_plm_sale_fix = fields.Boolean("Add plm groups permission to sale")
     module_plm_document_multi_site = fields.Boolean("Multi side storege system")
-    module_plm_mrp_bom_update = fields.Boolean("Multi side storege system")
+    module_plm_mrp_bom_update = fields.Boolean("MRP B.O.M Update")
     module_plm_product_only_latest = fields.Boolean("Force last version on Manufactoring")
     module_plm_purchase_only_latest = fields.Boolean("Force last version on purchase")
     module_plm_sale_only_latest = fields.Boolean("Force last version on Sale")

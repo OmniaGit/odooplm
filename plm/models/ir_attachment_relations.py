@@ -39,7 +39,7 @@ class PlmDocumentRelations(models.Model):
                                      string=_("Parent Revision"),
                                      store=False)
     parent_linked = fields.Boolean(related="parent_id.is_linkedcomponents",
-                                    string=_("Linked Components"),
+                                    string=_("Parent Linked Components"),
                                     store=False)
     parent_type = fields.Selection(related="parent_id.document_type",
                                     string=_("Document Type"),
@@ -54,7 +54,7 @@ class PlmDocumentRelations(models.Model):
                                     string=_("Child Revision"),
                                     store=False)
     child_linked = fields.Boolean(related="child_id.is_linkedcomponents",
-                                    string=_("Linked Components"),
+                                    string=_("Child Linked Components"),
                                     store=False)
     child_type = fields.Selection(related="child_id.document_type",
                                     string=_("Document Type"),
