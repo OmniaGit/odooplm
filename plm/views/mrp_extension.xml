@@ -84,7 +84,8 @@
 					    icon="fa-files-o"
 					    aria-label="Product Attachments"
 					    title="Product Attachments"
-					    class="oe_link oe_inline" style="margin: 0px; padding: 0px;color: #017e84;"/>
+					    class="oe_link oe_inline"
+					    style="margin: 0px; padding: 0px;color: #017e84;"/>
 				</div>
 		    </field> 
             <field name="product_id" position="after">

@@ -102,7 +102,6 @@
                 </header>
 
                 <sheet>
-                
                     <group name="plm_fields_area" colspan="6" col="6">
 	                    <field name="name" string="Description" colspan="6"/>
                         <field name="engineering_code" colspan="4" attrs="{'readonly':[('is_engcode_editable','=', False)]}" select="1"/>
@@ -208,6 +207,9 @@
                            statusbar_colors='{"undermodify":"red","obsoleted":"red"}'
                            readonly="1"/>
             </xpath>
+            <xpath expr="//button[@name='action_view_bom']" position="after">
+            	<button	name="open_report_component" type="object" icon="fa-bars" string="Report" class="oe_stat_button"/>
+            </xpath>
             <!--  -->
             <xpath expr="//button[@name='action_view_mos']" position="after">
                 <button name="open_related_revisions"
@@ -225,11 +227,9 @@
                         type="object"
                         string="Template"
                         class="oe_stat_button"
-                        icon="fa-tag"
-                        >
-
+                        icon="fa-tag">
                 </button>
-            </xpath>      
+            </xpath>     
             <xpath expr="//notebook[last()]" position="before">
                <field name="is_engcode_editable" invisible="1"/>
                <group col="8">
@@ -317,9 +317,7 @@
                                         name="action_rev_docs" string="Revision Rel Docs"/>
                             </group>
                             <group>
-                                <field name="linkeddocuments" nolabel="1" context="{'odooPLM': True}"  mode="kanban" domain="[('is_plm', '=', True)]">
-                                
-                                </field>
+                                <field name="linkeddocuments" nolabel="1" context="{'odooPLM': True}"  mode="kanban" domain="[('is_plm', '=', True)]"></field>
                             </group>
                         </page>
             </xpath>
@@ -414,3 +412,4 @@
         <field name="domain">[('engineering_code','not in', ('', False))]</field>
     </record>
 </odoo>
+

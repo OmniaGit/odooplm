@@ -102,18 +102,38 @@
         	<field name="priority" eval="10"/>
             <field name="arch" type="xml">
 				<search string="Search on Document Relations">
-                   	<filter name="last_week"
-                   	        string="Last Week"
-                         	domain="[('create_date','&lt;=', (datetime.date.today()-relativedelta(weeks=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-relativedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"
-                          	help="Created last week"/>
-                 	<filter name="yestarday"
-                 	        string="Yesterday"
-                           	domain="[('create_date','&lt;', (datetime.date.today()).strftime('%%Y-%%m-%%d 00:00:00')),('create_date','&gt;=',(datetime.date.today()-relativedelta(days=1)).strftime('%%Y-%%m-%%d 00:00:00'))]"
-                    		help="Created yesterday"/>
-                	<filter name="today"
-                	        string="Today"
-                          	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d 23:59:59')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d 00:00:00'))]"
-                         	help="Created today"/>
+                   	<filter 
+            			name="last_year" 
+            			string="Last Year" 
+            			domain="[('create_date','&gt;=',(datetime.date.today() - relativedelta(days=1,months=1,years=1)).strftime('%%Y-%%m-%%d'))]"/>
+           			<filter 
+            			name="last_month" 
+            			string="Last Month" 
+            			domain="[('create_date','&gt;=',(datetime.date.today() - relativedelta(days=1,months=1)).strftime('%%Y-%%m-%%d'))]"/>
+            		<filter 
+            			name="last_week" 
+            			string="Last Week" 
+            			domain="[('create_date','&gt;=',(datetime.date.today() - datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"/>
+            		<group expand="0" string="Group By...">
+	                	<filter name="created_in"
+	                            string="Created in"
+	                            domain="[]"
+	                            context="{'group_by':'create_date'}"/>
+	                    <filter name="canged_in"
+	                            string="Changed in"
+	                            domain="[]"
+	                            context="{'group_by':'write_date'}"/>
+	                    <separator orientation="vertical"/>
+	                    <filter name="create_by"
+	                            string="Created by"
+	                            domain="[]"
+	                            context="{'group_by':'create_uid'}"/>
+	                    <filter name="changed_by"
+	                            string="Changed by"
+	                            domain="[]"
+	                            context="{'group_by':'write_uid'}"/>
+	                    <separator orientation="vertical"/>
+              		</group>
                    	<separator orientation="vertical"/>
                     <field name="parent_id"/>
                     <field name="child_id"/>
