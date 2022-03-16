@@ -103,7 +103,9 @@
                 </td>
 				<td>
 					<div t-att-style="space_td">
-						<label class="o_mrp_bom_unfoldable fa fa-fw fa-caret-right" style="color: black; padding-top: 4px;"/>
+						<t t-foreach="data['level']+1" t-as="level">
+							<label class="o_mrp_bom_unfoldable fa fa-fw fa-caret-right" style="color: black; padding-top: 4px;"/>
+						</t>
                         <t t-esc="child_dict['id'].display_name"/>
 					</div>
 				</td>
