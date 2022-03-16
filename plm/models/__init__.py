@@ -39,6 +39,7 @@ from . import plm_backup_document
 from . import plm_checkout
 from . import res_config_settings
 from . import mrp_report_document
+from . import product_report_document
 from . import mrp_bom
 from . import mrp_bom_line
 from . import report_on_document
