@@ -59,7 +59,7 @@
                     attrs="{'invisible': [('to_update','=', False)]}">
                     <table>
                         <tr>
-                        <td><button type="object" name="update_bom" icon="fa-save" class="fa-6x"/></td>
+                        <td><button type="object" name="update_bom" icon="fa-save"/></td>
                         <td><span title="Attention_some_change"
                           class="fa fa-exclamation-triangle"
                           style="color:red;width:100%;text-align:left;font-size:30px">Attention: there are some change you need to save it !!<br/></span></td>
