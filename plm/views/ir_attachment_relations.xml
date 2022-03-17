@@ -436,7 +436,7 @@
         <field name="binding_model_id" ref="model_ir_attachment"/> 
         <field name="view_mode">kanban,tree,form</field>
         <field name="view_id" ref="plm_docbom_tree_view"/>
-        <field name="domain">['|', ('child_id', 'in', context.get('active_ids', [])), ('parent_id', '=', context.get('active_ids', []))]</field>
+        <field name="domain">['|', ('child_id', 'in', context.get('active_ids', [])), ('parent_id', 'in', context.get('active_ids', []))]</field>
     </record>
     
 </data>

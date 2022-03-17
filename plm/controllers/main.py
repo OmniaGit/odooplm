@@ -233,3 +233,11 @@ class UploadDocument(Controller):
             return Response('Extra file Upload succeeded', status=200)
         logging.info('Extra file no upload %r' % (ir_attachment_id))
         return Response('Extra file Failed upload', status=400)
+
+    @route('/plm/ir_attachment_preview/<int:id>', type='http', auth='user', methods=['GET'], csrf=False)
+    @webservice
+    def get_preview(self, id):
+        ir_attachement = request.env['ir.attachment'].sudo()
+        for record in ir_attachement.search_read([('id','=', id)], ['preview']):
+            return base64.b64decode(record.get('preview'))
+        

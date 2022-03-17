@@ -3,6 +3,7 @@
      <record model="ir.ui.view" id="view_attachment_form_plm_hinerit">
         <field name="name">ir.attachment</field>
         <field name="model">ir.attachment</field>
+        <field name="inherit_id"></field>
         <field name="type">form</field>
         <field name="arch" type="xml">
             <form string="Attachments">

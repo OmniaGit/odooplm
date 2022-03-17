@@ -58,7 +58,7 @@
         # QwebTemplates
         'views/templates.xml',
         # Reports Template
-        "views/mrp_report_document.xml",
+        "report/report_document.xml",
         "report/bom_structure_report_template.xml",
         "report/document_report_templates.xml",
         "report/product_report_templates.xml",
