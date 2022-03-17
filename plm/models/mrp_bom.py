@@ -32,6 +32,7 @@ from odoo import fields
 from odoo import api
 from odoo import _
 import copy
+from odoo.osv.expression import AND
 
 
 class MrpBomExtension(models.Model):
@@ -779,5 +780,10 @@ class MrpBomExtension(models.Model):
                     out.append(k)
             return out
 
-
+    @api.model
+    def _bom_find_domain(self, products, picking_type=None, company_id=False, bom_type=False):
+        domain = super(MrpBomExtension, self)._bom_find_domain(products, picking_type, company_id, bom_type)
+        available_types = ['normal', 'phantom']
+        domain = AND([domain, [('type', 'in', available_types)]])
+        return domain
     
