@@ -96,7 +96,7 @@
 	
 	<template id="report_doc_bom_line">
 		<t t-foreach="data['children']" t-as="child_dict">
-			<t t-set="space_td" t-value="'margin-left: '+ str(child_dict['level'] * 20) + 'px; display: flex; font-weight:bold; color: #008b8b;'"/>
+			<t t-set="space_td" t-value="display: flex; font-weight:bold; color: #008b8b;'"/>
 			<tr class="document_report_line" t-att-data-level="child_dict['level']">
 				<td class="text-center">
                 	<t t-esc="child_dict['level']"/>
