@@ -96,14 +96,14 @@ class BookCollector(object):
 
     def addPage(self, pageRes):
         streamBuffer, docState = pageRes
-        mainPage = PdfFileReader(streamBuffer)
+        mainPage = PdfFileReader(streamBuffer,strict=False)
         for i in range(0, mainPage.getNumPages()):
             if self.jumpFirst:
                 self.collector.addPage(mainPage.getPage(i))
                 self.jumpFirst = False
             else:
                 numberPagerBuffer = self.getNextPageNumber(mainPage.getPage(i).mediaBox, docState)
-                numberPageReader = PdfFileReader(numberPagerBuffer)
+                numberPageReader = PdfFileReader(numberPagerBuffer,strict=False)
                 pdfPage = mainPage.getPage(i)
                 toMerge = numberPageReader.getPage(0)
                 pdfPage.mergePage(toMerge)
@@ -141,7 +141,7 @@ def packDocuments(docRepository, documents, bookCollector):
                         byteIoStream = BytesIO(value)
                         appendPage = True
                 if appendPage:
-                    page = PdfFileReader(byteIoStream)
+                    page = PdfFileReader(byteIoStream,strict=False)
                     _orientation, paper = paperFormat(page.getPage(0).mediaBox)
                     if(paper == 0):
                         output0.append((byteIoStream, document.state))
