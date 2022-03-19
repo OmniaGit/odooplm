@@ -18,23 +18,24 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-# Leonardo Cazziolati
-# leonardo.cazziolati@omniasolutions.eu
-# 23-06-2020
+# Matteo Boscolo
+# matteo.boscolo@omniasolutions.eu
+# 19-03-2022
 
 from odoo import models
 from odoo import fields
 from odoo import api
 from odoo import _
 
-class MrpBom(models.Model):
-    _inherit = 'mrp.bom'
+class MrpBomLine(models.Model):
+    _inherit = 'mrp.bom.line'
     
     def open_breakages(self):
         product_id = self.product_id
         if not product_id:
             for product_id in self.env['product.product'].search([('product_tmpl_id','=',self.product_tmpl_id.id)]):
                 break
+            
         return {'name': _('Products'),
                 'res_model': 'plm.breakages',
                 'view_type': 'form',
@@ -47,11 +48,11 @@ class MrpBom(models.Model):
         compute='_compute_breakages_count', compute_sudo=False)
     
     def _compute_breakages_count(self):
-        for mrp_bom in self:
-            product_id = mrp_bom.product_id
+        for mrp_bom_line in self:
+            product_id = mrp_bom_line.product_id
             if not product_id:
-                for product_id in self.env['product.product'].search([('product_tmpl_id','=', mrp_bom.product_tmpl_id.id)]):
+                for product_id in self.env['product.product'].search([('product_tmpl_id','=',self.product_tmpl_id.id)]):
                     break
-            mrp_bom.breakages_count = self.env['plm.breakages'].search_count([('product_id', '=', product_id.id)])
+            mrp_bom_line.breakages_count = self.env['plm.breakages'].search_count([('product_id', '=', product_id.id)])
 
             

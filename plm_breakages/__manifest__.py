@@ -24,7 +24,7 @@
 
 {
     "name": "PLM Breakages",
-    "version": "15.0.3",
+    "version": "15.0.4",
     "author": "OmniaSolutions",
     "website": "https://www.omniasolutions.website",
     "category": "Custom",
@@ -38,6 +38,7 @@
         "views/breakages_view.xml",
         "views/product_view.xml",
         "views/bom_view.xml",
+        'views/mrp_production.xml'
     ],
     "installable": True,
 }
