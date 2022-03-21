@@ -41,6 +41,19 @@
                 	name="latest" 
                 	string="Latest" 
                 	domain="[('state', 'not in', ['obsoleted','undermodify'])]"/>
+                <separator orientation="vertical"/>
+                <group>
+	                <field name="create_uid"/>
+	                <filter name="create_by_me"
+	                        string="Create By Me"
+	                        domain="[('create_uid','=',uid)]"
+	                        help="Filter on documents created by me"/>
+	              	<field name="write_uid"/>
+	            	<filter name="changed_by_me"
+	                       	string="Changed By Me"
+	                       	domain="[('write_uid','=',uid)]"
+	                       	help="Filter on documents changed by me"/>
+               	</group>
                 <group expand="0" string="Group By...">
                 	<filter name="created_in"
                             string="Created in"
@@ -207,10 +220,11 @@
                            statusbar_colors='{"undermodify":"red","obsoleted":"red"}'
                            readonly="1"/>
             </xpath>
+            <!-- 
             <xpath expr="//button[@name='action_view_bom']" position="after">
             	<button	name="open_report_component" type="object" icon="fa-bars" string="Report" class="oe_stat_button"/>
             </xpath>
-            <!--  -->
+             -->
             <xpath expr="//button[@name='action_view_mos']" position="after">
                 <button name="open_related_revisions"
                         type="object"

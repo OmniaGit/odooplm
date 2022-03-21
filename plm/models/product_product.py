@@ -391,10 +391,10 @@ class PlmComponent(models.Model):
                 'views': [(form_id, 'form')],
             }
     
-    def open_report_component(self):
-        action = self.env.ref('plm.action_report_prod_structure').report_action(self)
-        action.update({'close_on_report_download': True})
-        return action
+    #def open_report_component(self):
+    #    action = self.env.ref('plm.action_report_prod_structure').report_action(self)
+    #    action.update({'close_on_report_download': True})
+    #    return action
 
     def open_boms(self):
         product_tmpl_id = self.product_tmpl_id.id

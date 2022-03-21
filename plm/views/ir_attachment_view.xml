@@ -188,6 +188,9 @@
         <field name="priority" eval="1"/>
         <field name="arch" type="xml">
             <search string="Documents">
+             	<field name="engineering_document_name"/>
+             	<field name="name"/>
+             	<field name="document_type"/>
             	<filter 
             		name="last_year" 
             		string="Last Year" 
@@ -201,31 +204,30 @@
             		string="Last Week" 
             		domain="[('create_date','&gt;=',(datetime.date.today() - datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"/>
             	<separator orientation="vertical"/>
-                <field name="state">
-                    <filter name="confirmed"
-                            string="Confirmed"
-                            domain="[('state', '=', 'confirmed')]"/>
-                    <filter name="released"
-                            string="Released"
-                            domain="[('state', 'in', ['released','undermodify'])]"/>
-                    <filter name="latest"
-                            string="Latest"
-                            domain="[('state', 'not in', ['obsoleted','undermodify'])]"/>
-                </field>
-                <separator orientation="vertical"/>
-                <field name="create_uid">
-                    <filter name="create_by_me"
-                            string="Create by me"
-                            domain="[('create_uid','=',uid)]"
-                            help="Filter on documents created by me"/>
-                </field>
-                <field name="write_uid">
-                    <filter name="changed_by_me"
-                            string="Changed By Me"
-                            domain="[('write_uid','=',uid)]"
-                            help="Filter on documents changed by me"/>
-                </field>
-                <separator orientation="vertical"/>
+            	<field name="state"/>
+              	<filter name="confirmed"
+                      	string="Confirmed"
+                      	domain="[('state', '=', 'confirmed')]"/>
+              	<filter name="released"
+                      	string="Released"
+                      	domain="[('state', 'in', ['released','undermodify'])]"/>
+              	<filter name="latest"
+                      	string="Latest"
+                      	domain="[('state', 'not in', ['obsoleted','undermodify'])]"/>
+              	<separator orientation="vertical"/>
+          		<group>
+	                <field name="create_uid"/>
+	                <filter name="create_by_me"
+	                        string="Create By Me"
+	                        domain="[('create_uid','=',uid)]"
+	                        help="Filter on documents created by me"/>
+	              	<field name="write_uid"/>
+	            	<filter name="changed_by_me"
+	                       	string="Changed By Me"
+	                       	domain="[('write_uid','=',uid)]"
+	                       	help="Filter on documents changed by me"/>
+               	</group>
+               	<separator orientation="vertical"/>
                 <group expand="0" string="Group By...">
                 	<filter name="created_in"
                             string="Created in"

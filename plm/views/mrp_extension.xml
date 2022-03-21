@@ -76,8 +76,8 @@
 	            	<field name="product_tmpl_id" 
 	            		context="{'default_type': 'product'}"
 	            		options="{'no_open':True,'no_create':True}"
-	            		colspan="1"
-	            		class="oe_inline text-left"/>
+	            		class="oe_inline text-left"
+	            		colspan="2"/>
 	            	<button
 						name="open_attachments"
 					    type="object"
@@ -85,14 +85,25 @@
 					    aria-label="Product Attachments"
 					    title="Product Attachments"
 					    class="oe_link oe_inline"
-					    style="margin: 0px; padding: 0px;color: #017e84;"/>
+					    style="color: #017e84;"/>
 				</div>
-		    </field> 
+		    </field>
+		    <field name="code" position="replace">
+		    	<field name="code" colspan="2"/>
+		    	<separator string=""/>
+		    	<separator string=""/>
+		    	<separator string=""/>
+		    	
+		    </field>
             <field name="product_id" position="after">
-            	<separator string="Info:"/>
-                <field name="engineering_revision" readonly="True"/>
+            	<separator string="Info:" colspan="2"/>
                 <field name="description" readonly="True"/>
-                <field name="state" readonly="True"/>
+                <field name="engineering_revision" readonly="True"/>
+                <field name="state" readonly="True" style="color: rgb(110, 51, 197);" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                <field name="state" readonly="True" style="color: blue;" attrs="{'invisible': [('state', '!=', 'confirmed')]}"/>
+                <field name="state" readonly="True" style="color: rgba(0, 170, 34, 0.66);" attrs="{'invisible': [('state', '!=', 'released')]}"/>
+                <field name="state" readonly="True" style="color: rgb(218, 159, 34);" attrs="{'invisible': [('state', '!=', 'undermodify')]}"/>
+                <field name="state" readonly="True" style="color: rgb(231, 43, 26);" attrs="{'invisible': [('state', '!=', 'obsoleted')]}"/>
                 <field name="weight_net" readonly="True"/>
             </field>
             <xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_id']" position="before">
