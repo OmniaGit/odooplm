@@ -77,7 +77,7 @@
 	                	<t t-esc="child_dict['level']"/>
 	                </td>
 					<td>
-						<div t-att-style="">
+						<div t-att-style="None">
 					  		<t t-set="spaces" t-value="range(record_child_level)"/>
 							<t t-foreach="spaces" t-as="level">
 						  		<t t-if="level != spaces[-1]">
@@ -126,7 +126,7 @@
 	</template>
 	
 	<record id="paperformat_doc_structure" model="report.paperformat">
-	    <field name="name">Paperformat Doc Structure</field>
+	    <field name="name">Paper Format Doc Structure</field>
 	    <field name="default" eval="True"/>
 	    <field name="format">A4</field>
 	    <field name="page_height">0</field>
