@@ -20,7 +20,7 @@
 ##############################################################################
 {
     'name': 'PLM Sale Only Latest',
-    'version': '15.0.1',
+    'version': '15.0.2',
     'author': 'OmniaSolutions',
     'website': 'https://www.omniasolutions.website',
     'category': 'Product Lifecycle Management',
@@ -39,7 +39,7 @@
     'demo': [],
     'test': [],
     'installable': True,
-    'application': True,
+    'application': False,
     'auto_install': False,
 }
 
