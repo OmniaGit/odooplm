@@ -76,7 +76,7 @@
                 	<t t-esc="record_child_level"/>
                 </td>
 				<td>
-					<div t-att-style="">
+					<div t-att-style="None">
 						<t t-set="spaces" t-value="range(record_child_level)"/>
 						<t t-foreach="spaces" t-as="level">
 							<t t-if="level != spaces[-1]">
@@ -153,7 +153,7 @@
     </template>
     
 	<record id="action_report_doc_structure" model="ir.actions.report">
-    	<field name="name">Report Document Structure</field>
+    	<field name="name">Document structure</field>
         <field name="model">ir.attachment</field>
         <field name="paperformat_id" ref="plm.paperformat_doc_structure"/>
         <field name="report_type">qweb-html</field>

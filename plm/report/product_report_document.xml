@@ -6,7 +6,7 @@
 		<div class="container document_report_page">
 			<div class="row">
 				<div class="col-lg-12" style="margin-bottom: 30px;">
-					<h2 style="display:inline;"><strong>Document Structure</strong></h2>
+					<h2 style="display:inline;"><strong>Missing product structure</strong></h2>
 					<h6>
 						<div href="#" t-att-data-res-id="data['id'].id" t-att-data-model="data['id']._name" class="o_mrp_bom_action" style="color: #008b8b;">
 							<strong><t t-esc="data['id'].display_name"/></strong>
@@ -155,7 +155,7 @@
     </template>
 
 	<record id="action_report_prod_structure" model="ir.actions.report">
-    	<field name="name">Report Product Structure</field>
+    	<field name="name">Missing product structure</field>
         <field name="model">product.product</field>
         <field name="paperformat_id" ref="plm.paperformat_doc_structure"/>
         <field name="report_type">qweb-html</field>
