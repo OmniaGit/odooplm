@@ -62,7 +62,7 @@ class ResGroups(models.Model):
         ctx['erase_customprocedure'] = False
         for groupBrws in self:
             if groupBrws.custom_procedure:
-                fileReadableContent = base64.decodestring(groupBrws.custom_procedure)
+                fileReadableContent = base64.b64decode(groupBrws.custom_procedure)
                 if self.custom_read_content:
                     fileReadableContent = ''
                 self.with_context(ctx).custom_read_content = fileReadableContent
@@ -72,7 +72,7 @@ class ResGroups(models.Model):
         ctx['erase_multicad'] = False
         for groupBrws in self:
             if groupBrws.custom_multicad:
-                fileReadableContent = base64.decodestring(groupBrws.custom_multicad)
+                fileReadableContent = base64.b64decode(groupBrws.custom_multicad)
                 if self.custom_multicad_content:
                     fileReadableContent = ''
                 self.with_context(ctx).custom_multicad_content = fileReadableContent
@@ -103,7 +103,7 @@ class ResGroups(models.Model):
         if fname:
             customFilePath = os.path.join(tmpFolder, fname)
             with open(customFilePath, 'wb') as writeFile:
-                writeFile.write(base64.decodestring(custom_file))
+                writeFile.write(base64.b64decode(custom_file))
         vals[content_field] = ''
 
     def getCustomProcedure(self):
