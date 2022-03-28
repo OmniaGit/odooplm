@@ -62,7 +62,7 @@ class ResGroups(models.Model):
         ctx['erase_customprocedure'] = False
         for groupBrws in self:
             if groupBrws.custom_procedure:
-                fileReadableContent = base64.decodestring(groupBrws.custom_procedure)
+                fileReadableContent = base64.b64decode(groupBrws.custom_procedure)
                 if self.custom_read_content:
                     fileReadableContent = ''
                 self.with_context(ctx).custom_read_content = fileReadableContent
@@ -72,7 +72,7 @@ class ResGroups(models.Model):
         ctx['erase_multicad'] = False
         for groupBrws in self:
             if groupBrws.custom_multicad:
-                fileReadableContent = base64.decodestring(groupBrws.custom_multicad)
+                fileReadableContent = base64.b64decode(groupBrws.custom_multicad)
                 if self.custom_multicad_content:
                     fileReadableContent = ''
                 self.with_context(ctx).custom_multicad_content = fileReadableContent
@@ -98,12 +98,12 @@ class ResGroups(models.Model):
 
     @api.model
     def commonSave(self, vals, binary_field, content_field, fname, custom_file):
-        vals[binary_field] = base64.encodestring(vals.get(content_field, '').encode('utf-8'))
+        vals[binary_field] = base64.b64encode(vals.get(content_field, '').encode('utf-8'))
         tmpFolder = tempfile.gettempdir()
         if fname:
             customFilePath = os.path.join(tmpFolder, fname)
             with open(customFilePath, 'wb') as writeFile:
-                writeFile.write(base64.decodestring(custom_file))
+                writeFile.write(base64.b64decode(custom_file))
         vals[content_field] = ''
 
     def getCustomProcedure(self):

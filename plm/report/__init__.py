@@ -20,7 +20,7 @@
 ##############################################################################
 from . import component_report
 from . import document_report
-from . import mrp_report_document
+from . import bom_document
 from . import product_report_document
 from . import bom_structure
 
