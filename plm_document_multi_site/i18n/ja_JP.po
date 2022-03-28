@@ -1,0 +1,404 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* plm_document_multi_site
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 15.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-03-22 13:41+0000\n"
+"PO-Revision-Date: 2022-03-22 15:06+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: ja_JP\n"
+"X-Generator: Poedit 2.0.6\n"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__action
+msgid "Action"
+msgstr "アクション"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_needaction
+msgid "Action Needed"
+msgstr "必要なアクション"
+
+#. module: plm_document_multi_site
+#: model_terms:ir.ui.view,arch_db:plm_document_multi_site.plm_document_action_syncronize_tree
+msgid "Actions"
+msgstr "行動"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__activity_ids
+msgid "Activities"
+msgstr "活動"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr "アクティビティ例外装飾"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__activity_state
+msgid "Activity State"
+msgstr "アクティビティ ステート"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__activity_type_icon
+msgid "Activity Type Icon"
+msgstr "アクティビティタイプアイコン"
+
+#. module: plm_document_multi_site
+#: model:ir.model,name:plm_document_multi_site.model_ir_attachment
+msgid "Attachment"
+msgstr "添付"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_attachment_count
+msgid "Attachment Count"
+msgstr "添付ファイル数"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__ir_attachment_id
+msgid "Attachment to Syncronize"
+msgstr "同期するためのアタッチメント"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__create_uid
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_remote_server__create_uid
+msgid "Created by"
+msgstr "によって作成された"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__create_date
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_remote_server__create_date
+msgid "Created on"
+msgstr "で作成されました"
+
+#. module: plm_document_multi_site
+#: model_terms:ir.ui.view,arch_db:plm_document_multi_site.view_plm_document_multi_site_hinerit
+msgid "DO Sync."
+msgstr "同期してください."
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__display_name
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_remote_server__display_name
+msgid "Display Name"
+msgstr "ディスプレイ名"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_follower_ids
+msgid "Followers"
+msgstr "フォロワー"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "フォロワー（パートナー）"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,help:plm_document_multi_site.field_plm_document_action_syncronize__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr "フォント素晴らしいアイコン 例： fa-tasks"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__has_message
+msgid "Has Message"
+msgstr "メッセージがあります"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__id
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_remote_server__id
+msgid "ID"
+msgstr "ID"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__activity_exception_icon
+msgid "Icon"
+msgstr "アイコン"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,help:plm_document_multi_site.field_plm_document_action_syncronize__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr "例外アクティビティを示すアイコン."
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,help:plm_document_multi_site.field_plm_document_action_syncronize__message_needaction
+#: model:ir.model.fields,help:plm_document_multi_site.field_plm_document_action_syncronize__message_unread
+msgid "If checked, new messages require your attention."
+msgstr "チェックすると、新しいメッセージに注意が必要です."
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,help:plm_document_multi_site.field_plm_document_action_syncronize__message_has_error
+#: model:ir.model.fields,help:plm_document_multi_site.field_plm_document_action_syncronize__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "チェックした場合、一部のメッセージには配信エラーがあります."
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_is_follower
+msgid "Is Follower"
+msgstr "です フォロワー"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize____last_update
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_remote_server____last_update
+msgid "Last Modified on"
+msgstr "最終変更時"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__write_uid
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_remote_server__write_uid
+msgid "Last Updated by"
+msgstr "最終更新者"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__write_date
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_remote_server__write_date
+msgid "Last Updated on"
+msgstr "最終更新日"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_remote_server__login
+msgid "Login"
+msgstr "ログイン"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_main_attachment_id
+msgid "Main Attachment"
+msgstr "メインアタッチメント"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_has_error
+msgid "Message Delivery error"
+msgstr "メッセージ配信エラー"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_ids
+msgid "Messages"
+msgstr "メッセージ"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr "私の活動の締め切り"
+
+#. module: plm_document_multi_site
+#: model_terms:ir.ui.view,arch_db:plm_document_multi_site.view_plm_ir_attachment_tree_hinerit
+msgid "N.S"
+msgstr "N.S"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr "次のアクティビティの締め切り"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__activity_summary
+msgid "Next Activity Summary"
+msgstr "次の活動のまとめ"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__activity_type_id
+msgid "Next Activity Type"
+msgstr "次の活動タイプ"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_needaction_counter
+msgid "Number of Actions"
+msgstr "アクションの数"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_has_error_counter
+msgid "Number of errors"
+msgstr "エラーの数"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,help:plm_document_multi_site.field_plm_document_action_syncronize__message_needaction_counter
+msgid "Number of messages which requires an action"
+msgstr "アクションが必要なメッセージの数"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,help:plm_document_multi_site.field_plm_document_action_syncronize__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "配信エラーのあるメッセージの数"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,help:plm_document_multi_site.field_ir_attachment__count_plm_document_action_syncronize
+#: model:ir.model.fields,help:plm_document_multi_site.field_mrp_document__count_plm_document_action_syncronize
+msgid ""
+"Number of syncronization action to be performed in order to have the "
+"document aligned in all the servers"
+msgstr ""
+"すべてのサーバーでドキュメントを整列させるために実行する同期アクショ"
+"ンの数"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,help:plm_document_multi_site.field_plm_document_action_syncronize__message_unread_counter
+msgid "Number of unread messages"
+msgstr "未読メッセージの数"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_remote_server__password
+msgid "Password"
+msgstr "パスワード"
+
+#. module: plm_document_multi_site
+#: model:ir.model,name:plm_document_multi_site.model_plm_document_action_syncronize
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_ir_attachment__plm_document_action_syncronize_ids
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_mrp_document__plm_document_action_syncronize_ids
+msgid "Plm Document Action Syncronize"
+msgstr "Plmドキュメントアクション同期"
+
+#. module: plm_document_multi_site
+#: model:ir.model,name:plm_document_multi_site.model_plm_remote_server
+msgid "Plm Remote server"
+msgstr "Plmリモートサーバー"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields.selection,name:plm_document_multi_site.selection__plm_document_action_syncronize__action__pull
+msgid "Pull"
+msgstr "引く"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields.selection,name:plm_document_multi_site.selection__plm_document_action_syncronize__action__push
+msgid "Push"
+msgstr "押し"
+
+#. module: plm_document_multi_site
+#: model:ir.actions.act_window,name:plm_document_multi_site.plm_remote_server_action
+#: model:ir.ui.menu,name:plm_document_multi_site.menu_plm_action_remote_server_form
+msgid "Remote Server"
+msgstr "リモートサーバー"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__activity_user_id
+msgid "Responsible User"
+msgstr "責任あるユーザー"
+
+#. module: plm_document_multi_site
+#: model:ir.ui.menu,name:plm_document_multi_site.menu_syncronize_scheduler
+msgid "Run Document Syncronize "
+msgstr "ドキュメント同期を実行する "
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_ir_attachment__count_plm_document_action_syncronize
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_mrp_document__count_plm_document_action_syncronize
+msgid "S.N"
+msgstr "S.N"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "SMS配信エラー"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_remote_server__address
+msgid "Server Ip Address"
+msgstr "サーバのIPアドレス"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_remote_server__name
+msgid "Server Name"
+msgstr "サーバーの名前"
+
+#. module: plm_document_multi_site
+#: model:ir.model.constraint,message:plm_document_multi_site.constraint_plm_remote_server_name
+msgid "Server name must be unique !!!"
+msgstr "サーバー名は一意である必要があります!!!"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__plm_remote_server_id
+msgid "Server to perform the Update"
+msgstr "更新を実行するサーバー"
+
+#. module: plm_document_multi_site
+#: model_terms:ir.ui.view,arch_db:plm_document_multi_site.plm_remote_server_tree
+msgid "Servers"
+msgstr "サーバー"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,help:plm_document_multi_site.field_plm_document_action_syncronize__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+"活動に基づくステータス\n"
+"延滞：期日はすでに過ぎています\n"
+"今日：活動日は今日です\n"
+"計画：将来の活動."
+
+#. module: plm_document_multi_site
+#: code:addons/plm_document_multi_site/models/ir_attachment.py:0
+#, python-format
+msgid "Sync.Actions"
+msgstr "同期します. 行動"
+
+#. module: plm_document_multi_site
+#: model_terms:ir.ui.view,arch_db:plm_document_multi_site.view_plm_document_multi_site_hinerit
+msgid "Sync.Hist."
+msgstr "同期履歴."
+
+#. module: plm_document_multi_site
+#: model:ir.actions.server,name:plm_document_multi_site.action_syncronize
+msgid "Synconize document"
+msgstr "ドキュメントを同期する"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__done
+msgid "Syncronization is done ?"
+msgstr "同期は行われますか？"
+
+#. module: plm_document_multi_site
+#: model:ir.actions.server,name:plm_document_multi_site.ir_cron_syncronize_ir_actions_server
+#: model:ir.cron,cron_name:plm_document_multi_site.ir_cron_syncronize
+#: model:ir.cron,name:plm_document_multi_site.ir_cron_syncronize
+msgid "Syncronize"
+msgstr "同期する"
+
+#. module: plm_document_multi_site
+#: model:ir.actions.act_window,name:plm_document_multi_site.plm_document_action_syncronize_action
+#: model:ir.ui.menu,name:plm_document_multi_site.menu_plm_action_remote_server
+msgid "Syncronize Actions"
+msgstr "アクションを同期する"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,help:plm_document_multi_site.field_plm_document_action_syncronize__plm_remote_server_id
+msgid "This is the server in witch we will perform the syncronizations"
+msgstr "これは、同期を実行するサーバーです"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,help:plm_document_multi_site.field_plm_document_action_syncronize__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr "レコード上の例外アクティビティのタイプ."
+
+#. module: plm_document_multi_site
+#: code:addons/plm_document_multi_site/models/ir_attachment.py:0
+#, python-format
+msgid "Unable to check-Out a document that is not syncronized"
+msgstr "同期されていないドキュメントをチェックアウトできません"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_unread
+msgid "Unread Messages"
+msgstr "未読メッセージ"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_unread_counter
+msgid "Unread Messages Counter"
+msgstr "未読メッセージカウンター"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__website_message_ids
+msgid "Website Messages"
+msgstr "ウェブサイトメッセージ"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,help:plm_document_multi_site.field_plm_document_action_syncronize__website_message_ids
+msgid "Website communication history"
+msgstr "ウェブサイトの通信履歴"

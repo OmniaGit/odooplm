@@ -1,0 +1,402 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* plm_document_multi_site
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 15.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-03-22 13:24+0000\n"
+"PO-Revision-Date: 2022-03-22 14:40+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: zh_HK\n"
+"X-Generator: Poedit 2.0.6\n"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__action
+msgid "Action"
+msgstr "行动"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_needaction
+msgid "Action Needed"
+msgstr "需要采取的行动"
+
+#. module: plm_document_multi_site
+#: model_terms:ir.ui.view,arch_db:plm_document_multi_site.plm_document_action_syncronize_tree
+msgid "Actions"
+msgstr "行动"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__activity_ids
+msgid "Activities"
+msgstr "活动"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr "活动异常装饰"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__activity_state
+msgid "Activity State"
+msgstr "活动州"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__activity_type_icon
+msgid "Activity Type Icon"
+msgstr "活动类型图标"
+
+#. module: plm_document_multi_site
+#: model:ir.model,name:plm_document_multi_site.model_ir_attachment
+msgid "Attachment"
+msgstr "依恋"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_attachment_count
+msgid "Attachment Count"
+msgstr "附件计数"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__ir_attachment_id
+msgid "Attachment to Syncronize"
+msgstr "同步附件"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__create_uid
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_remote_server__create_uid
+msgid "Created by"
+msgstr "由创建"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__create_date
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_remote_server__create_date
+msgid "Created on"
+msgstr "创建于"
+
+#. module: plm_document_multi_site
+#: model_terms:ir.ui.view,arch_db:plm_document_multi_site.view_plm_document_multi_site_hinerit
+msgid "DO Sync."
+msgstr "做同步."
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__display_name
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_remote_server__display_name
+msgid "Display Name"
+msgstr "显示姓名"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_follower_ids
+msgid "Followers"
+msgstr "追随者"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "追随者（合作伙伴）"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,help:plm_document_multi_site.field_plm_document_action_syncronize__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr "字体真棒图标，例如 fa-tasks"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__has_message
+msgid "Has Message"
+msgstr "有留言"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__id
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_remote_server__id
+msgid "ID"
+msgstr "ID"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__activity_exception_icon
+msgid "Icon"
+msgstr "图标"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,help:plm_document_multi_site.field_plm_document_action_syncronize__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr "指示异常活动的图标."
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,help:plm_document_multi_site.field_plm_document_action_syncronize__message_needaction
+#: model:ir.model.fields,help:plm_document_multi_site.field_plm_document_action_syncronize__message_unread
+msgid "If checked, new messages require your attention."
+msgstr "如果选中，则需要您注意新消息."
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,help:plm_document_multi_site.field_plm_document_action_syncronize__message_has_error
+#: model:ir.model.fields,help:plm_document_multi_site.field_plm_document_action_syncronize__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "如果选中，则某些邮件会出现传递错误."
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_is_follower
+msgid "Is Follower"
+msgstr "是追随者"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize____last_update
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_remote_server____last_update
+msgid "Last Modified on"
+msgstr "最后修改于"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__write_uid
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_remote_server__write_uid
+msgid "Last Updated by"
+msgstr "上次更新者"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__write_date
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_remote_server__write_date
+msgid "Last Updated on"
+msgstr "最后更新于"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_remote_server__login
+msgid "Login"
+msgstr "登录"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_main_attachment_id
+msgid "Main Attachment"
+msgstr "主要的依恋"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_has_error
+msgid "Message Delivery error"
+msgstr "消息传递错误"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_ids
+msgid "Messages"
+msgstr "留言"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr "我的活动截止日期"
+
+#. module: plm_document_multi_site
+#: model_terms:ir.ui.view,arch_db:plm_document_multi_site.view_plm_ir_attachment_tree_hinerit
+msgid "N.S"
+msgstr "N.S"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr "下一个活动截止日期"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__activity_summary
+msgid "Next Activity Summary"
+msgstr "下一个活动总结"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__activity_type_id
+msgid "Next Activity Type"
+msgstr "下一个活动类型"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_needaction_counter
+msgid "Number of Actions"
+msgstr "动作数量"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_has_error_counter
+msgid "Number of errors"
+msgstr "错误数"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,help:plm_document_multi_site.field_plm_document_action_syncronize__message_needaction_counter
+msgid "Number of messages which requires an action"
+msgstr "需要操作的消息数"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,help:plm_document_multi_site.field_plm_document_action_syncronize__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "有传递错误的消息数"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,help:plm_document_multi_site.field_ir_attachment__count_plm_document_action_syncronize
+#: model:ir.model.fields,help:plm_document_multi_site.field_mrp_document__count_plm_document_action_syncronize
+msgid ""
+"Number of syncronization action to be performed in order to have the "
+"document aligned in all the servers"
+msgstr "为了使文档在所有服务器中对齐而要执行的同步操作的数量"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,help:plm_document_multi_site.field_plm_document_action_syncronize__message_unread_counter
+msgid "Number of unread messages"
+msgstr "未读消息数"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_remote_server__password
+msgid "Password"
+msgstr "密码"
+
+#. module: plm_document_multi_site
+#: model:ir.model,name:plm_document_multi_site.model_plm_document_action_syncronize
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_ir_attachment__plm_document_action_syncronize_ids
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_mrp_document__plm_document_action_syncronize_ids
+msgid "Plm Document Action Syncronize"
+msgstr "Plm 文档操作同步"
+
+#. module: plm_document_multi_site
+#: model:ir.model,name:plm_document_multi_site.model_plm_remote_server
+msgid "Plm Remote server"
+msgstr "Plm 远程服务器"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields.selection,name:plm_document_multi_site.selection__plm_document_action_syncronize__action__pull
+msgid "Pull"
+msgstr "拉"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields.selection,name:plm_document_multi_site.selection__plm_document_action_syncronize__action__push
+msgid "Push"
+msgstr "推"
+
+#. module: plm_document_multi_site
+#: model:ir.actions.act_window,name:plm_document_multi_site.plm_remote_server_action
+#: model:ir.ui.menu,name:plm_document_multi_site.menu_plm_action_remote_server_form
+msgid "Remote Server"
+msgstr "远程服务器"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__activity_user_id
+msgid "Responsible User"
+msgstr "责任用户"
+
+#. module: plm_document_multi_site
+#: model:ir.ui.menu,name:plm_document_multi_site.menu_syncronize_scheduler
+msgid "Run Document Syncronize "
+msgstr "运行文档同步"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_ir_attachment__count_plm_document_action_syncronize
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_mrp_document__count_plm_document_action_syncronize
+msgid "S.N"
+msgstr "S.N"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "短信传递错误"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_remote_server__address
+msgid "Server Ip Address"
+msgstr "服务器的IP地址"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_remote_server__name
+msgid "Server Name"
+msgstr "服务器名"
+
+#. module: plm_document_multi_site
+#: model:ir.model.constraint,message:plm_document_multi_site.constraint_plm_remote_server_name
+msgid "Server name must be unique !!!"
+msgstr "服务器名必须唯一 !!!"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__plm_remote_server_id
+msgid "Server to perform the Update"
+msgstr "执行更新的服务器"
+
+#. module: plm_document_multi_site
+#: model_terms:ir.ui.view,arch_db:plm_document_multi_site.plm_remote_server_tree
+msgid "Servers"
+msgstr "服务器"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,help:plm_document_multi_site.field_plm_document_action_syncronize__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+"状态基于活动\n"
+"逾期：到期日已过\n"
+"今天：活动日期是今天\n"
+"计划中：未来的活动."
+
+#. module: plm_document_multi_site
+#: code:addons/plm_document_multi_site/models/ir_attachment.py:0
+#, python-format
+msgid "Sync.Actions"
+msgstr "同步动作"
+
+#. module: plm_document_multi_site
+#: model_terms:ir.ui.view,arch_db:plm_document_multi_site.view_plm_document_multi_site_hinerit
+msgid "Sync.Hist."
+msgstr "同步历史."
+
+#. module: plm_document_multi_site
+#: model:ir.actions.server,name:plm_document_multi_site.action_syncronize
+msgid "Synconize document"
+msgstr "同步文档"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__done
+msgid "Syncronization is done ?"
+msgstr "同步完成了吗？"
+
+#. module: plm_document_multi_site
+#: model:ir.actions.server,name:plm_document_multi_site.ir_cron_syncronize_ir_actions_server
+#: model:ir.cron,cron_name:plm_document_multi_site.ir_cron_syncronize
+#: model:ir.cron,name:plm_document_multi_site.ir_cron_syncronize
+msgid "Syncronize"
+msgstr "同步"
+
+#. module: plm_document_multi_site
+#: model:ir.actions.act_window,name:plm_document_multi_site.plm_document_action_syncronize_action
+#: model:ir.ui.menu,name:plm_document_multi_site.menu_plm_action_remote_server
+msgid "Syncronize Actions"
+msgstr "同步行动"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,help:plm_document_multi_site.field_plm_document_action_syncronize__plm_remote_server_id
+msgid "This is the server in witch we will perform the syncronizations"
+msgstr "这是我们将在其中执行同步的服务器"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,help:plm_document_multi_site.field_plm_document_action_syncronize__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr "记录的异常活动的类型."
+
+#. module: plm_document_multi_site
+#: code:addons/plm_document_multi_site/models/ir_attachment.py:0
+#, python-format
+msgid "Unable to check-Out a document that is not syncronized"
+msgstr "无法签出未同步的文档"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_unread
+msgid "Unread Messages"
+msgstr "未读消息"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_unread_counter
+msgid "Unread Messages Counter"
+msgstr "未读消息计数器"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__website_message_ids
+msgid "Website Messages"
+msgstr "网站留言"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,help:plm_document_multi_site.field_plm_document_action_syncronize__website_message_ids
+msgid "Website communication history"
+msgstr "网站交流历史"

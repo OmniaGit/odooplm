@@ -1,0 +1,39 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* plm_auto_engcode
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 15.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-03-25 09:40+0000\n"
+"PO-Revision-Date: 2022-03-25 10:40+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: es\n"
+"X-Generator: Poedit 2.0.6\n"
+
+#. module: plm_auto_engcode
+#: code:addons/plm_auto_engcode/models/product_product.py:0
+#: model:ir.model.fields,field_description:plm_auto_engcode.field_product_product__engineering_code
+#: model:ir.model.fields,field_description:plm_auto_engcode.field_product_template__engineering_code
+#, python-format
+msgid "Part Number"
+msgstr "Número de parte"
+
+#. module: plm_auto_engcode
+#: model:ir.model,name:plm_auto_engcode.model_product_template
+msgid "Product Template"
+msgstr "Plantilla de producto"
+
+#. module: plm_auto_engcode
+#: code:addons/plm_auto_engcode/models/product_product.py:0
+#: model:ir.model.fields,help:plm_auto_engcode.field_product_product__engineering_code
+#: model:ir.model.fields,help:plm_auto_engcode.field_product_template__engineering_code
+#, python-format
+msgid "This is engineering reference to manage a different P/N from item Name."
+msgstr "Esta es una referencia de ingeniería para administrar un P/N diferente del Nombre del artículo."

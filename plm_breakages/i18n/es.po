@@ -1,0 +1,299 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* plm_breakages
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 15.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-03-25 11:13+0000\n"
+"PO-Revision-Date: 2022-03-25 12:31+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: es\n"
+"X-Generator: Poedit 2.0.6\n"
+
+#. module: plm_breakages
+#: model:ir.model.fields,field_description:plm_breakages.field_mrp_bom__breakages_count
+#: model:ir.model.fields,field_description:plm_breakages.field_product_product__breakages_count
+msgid "# Breakages"
+msgstr "# Roturas"
+
+#. module: plm_breakages
+#: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__message_needaction
+msgid "Action Needed"
+msgstr "Accion Necesaria"
+
+#. module: plm_breakages
+#: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__message_attachment_count
+msgid "Attachment Count"
+msgstr "Recuento de Archivos Adjuntos"
+
+#. module: plm_breakages
+#: model:ir.model,name:plm_breakages.model_mrp_bom
+msgid "Bill of Material"
+msgstr "Lista de materiales"
+
+#. module: plm_breakages
+#: model_terms:ir.ui.view,arch_db:plm_breakages.plm_mrp_bom_form_view_inherit
+#: model_terms:ir.ui.view,arch_db:plm_breakages.plm_product_product_normal_form_view_inherit
+msgid "Breakages"
+msgstr "Roturas"
+
+#. module: plm_breakages
+#: model_terms:ir.ui.view,arch_db:plm_breakages.breakages_form_view
+msgid "Breakages Form"
+msgstr "Formulario Roturas"
+
+#. module: plm_breakages
+#: model_terms:ir.ui.view,arch_db:plm_breakages.breakages_tree_view
+msgid "Breakages Tree"
+msgstr "Arbol de Roturas"
+
+#. module: plm_breakages
+#: model_terms:ir.ui.view,arch_db:plm_breakages.breakages_search
+msgid "Changed by"
+msgstr "Cambiado por"
+
+#. module: plm_breakages
+#: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__create_uid
+#: model_terms:ir.ui.view,arch_db:plm_breakages.breakages_search
+msgid "Created by"
+msgstr "Creado por"
+
+#. module: plm_breakages
+#: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__create_date
+msgid "Created on"
+msgstr "Creado en"
+
+#. module: plm_breakages
+#: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__partner_id
+msgid "Customer"
+msgstr "Cliente"
+
+#. module: plm_breakages
+#: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__date
+msgid "Date"
+msgstr "Fecha"
+
+#. module: plm_breakages
+#: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__display_name
+msgid "Display Name"
+msgstr "Nombre de Visualización"
+
+#. module: plm_breakages
+#: model:ir.model.fields,help:plm_breakages.field_plm_breakages__tracking
+msgid "Ensure the traceability of a storable product in your warehouse."
+msgstr "Asegure la trazabilidad de un producto almacenable en su almacén."
+
+#. module: plm_breakages
+#: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__message_follower_ids
+msgid "Followers"
+msgstr "Followers"
+
+#. module: plm_breakages
+#: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Followers (Socios)"
+
+#. module: plm_breakages
+#: model_terms:ir.ui.view,arch_db:plm_breakages.breakages_search
+msgid "For Date"
+msgstr "Por Fecha"
+
+#. module: plm_breakages
+#: model_terms:ir.ui.view,arch_db:plm_breakages.breakages_search
+msgid "For Product"
+msgstr "Por Producto"
+
+#. module: plm_breakages
+#: model_terms:ir.ui.view,arch_db:plm_breakages.breakages_graph_view
+msgid "Graph"
+msgstr "Gráfica"
+
+#. module: plm_breakages
+#: model_terms:ir.ui.view,arch_db:plm_breakages.breakages_search
+msgid "Group By..."
+msgstr "Agrupar Por..."
+
+#. module: plm_breakages
+#: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__has_message
+msgid "Has Message"
+msgstr "Tiene Mensaje"
+
+#. module: plm_breakages
+#: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__id
+msgid "ID"
+msgstr "ID"
+
+#. module: plm_breakages
+#: model:ir.model.fields,help:plm_breakages.field_plm_breakages__message_needaction
+#: model:ir.model.fields,help:plm_breakages.field_plm_breakages__message_unread
+msgid "If checked, new messages require your attention."
+msgstr "Si está marcado, los nuevos mensajes requieren su atención."
+
+#. module: plm_breakages
+#: model:ir.model.fields,help:plm_breakages.field_plm_breakages__message_has_error
+#: model:ir.model.fields,help:plm_breakages.field_plm_breakages__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Si está marcada, algunos mensajes tienen un error de entrega."
+
+#. module: plm_breakages
+#: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__message_is_follower
+msgid "Is Follower"
+msgstr "Es Follower"
+
+#. module: plm_breakages
+#: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages____last_update
+msgid "Last Modified on"
+msgstr "Última Modificación el"
+
+#. module: plm_breakages
+#: model_terms:ir.ui.view,arch_db:plm_breakages.breakages_search
+msgid "Last Month"
+msgstr "Mes Pasado"
+
+#. module: plm_breakages
+#: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__write_uid
+msgid "Last Updated by"
+msgstr "Última Actualización por"
+
+#. module: plm_breakages
+#: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__write_date
+msgid "Last Updated on"
+msgstr "Ultima Actualización en"
+
+#. module: plm_breakages
+#: model_terms:ir.ui.view,arch_db:plm_breakages.breakages_search
+msgid "Last Week"
+msgstr "Semana Pasada"
+
+#. module: plm_breakages
+#: model_terms:ir.ui.view,arch_db:plm_breakages.breakages_search
+msgid "Last Year"
+msgstr "Año Pasado"
+
+#. module: plm_breakages
+#: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__lot_number
+msgid "Lot/Serial Number"
+msgstr "Lote/Número de Serie"
+
+#. module: plm_breakages
+#: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__message_main_attachment_id
+msgid "Main Attachment"
+msgstr "Archivo Adjunto Principal"
+
+#. module: plm_breakages
+#: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__message_has_error
+msgid "Message Delivery error"
+msgstr "Error de Entrega de Mensajes"
+
+#. module: plm_breakages
+#: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__message_ids
+msgid "Messages"
+msgstr "Mensajes"
+
+#. module: plm_breakages
+#: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__name
+msgid "Name"
+msgstr "Nombre"
+
+#. module: plm_breakages
+#: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__notes
+msgid "Notes"
+msgstr "Notas"
+
+#. module: plm_breakages
+#: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Número de Acciones"
+
+#. module: plm_breakages
+#: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__message_has_error_counter
+msgid "Number of errors"
+msgstr "Número de errores"
+
+#. module: plm_breakages
+#: model:ir.model.fields,help:plm_breakages.field_plm_breakages__message_needaction_counter
+msgid "Number of messages which requires an action"
+msgstr "Número de mensajes que requieren una acción"
+
+#. module: plm_breakages
+#: model:ir.model.fields,help:plm_breakages.field_plm_breakages__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Número de mensajes con error de entrega"
+
+#. module: plm_breakages
+#: model:ir.model.fields,help:plm_breakages.field_plm_breakages__message_unread_counter
+msgid "Number of unread messages"
+msgstr "Número de mensajes no leídos"
+
+#. module: plm_breakages
+#: model:ir.model,name:plm_breakages.model_plm_breakages
+msgid "PLM Breakages"
+msgstr "Roturas PLM"
+
+#. module: plm_breakages
+#: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__parent_id
+msgid "Parent"
+msgstr "Padre"
+
+#. module: plm_breakages
+#: model_terms:ir.ui.view,arch_db:plm_breakages.breakages_pivot_view
+msgid "Pivot"
+msgstr "Pivote"
+
+#. module: plm_breakages
+#: model:ir.model,name:plm_breakages.model_product_product
+#: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__product_id
+msgid "Product"
+msgstr "Producto"
+
+#. module: plm_breakages
+#: model:ir.actions.act_window,name:plm_breakages.breakages_menu_action
+#: model:ir.ui.menu,name:plm_breakages.breakages_menu
+msgid "Product Breakages"
+msgstr "Roturas de Productos"
+
+#. module: plm_breakages
+#: code:addons/plm_breakages/models/mrp_bom.py:0
+#: code:addons/plm_breakages/models/mrp_bom_line.py:0
+#: code:addons/plm_breakages/models/mrp_production.py:0
+#: code:addons/plm_breakages/models/product_product.py:0
+#, python-format
+msgid "Products"
+msgstr "Productos"
+
+#. module: plm_breakages
+#: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "Error de Entrega de SMS"
+
+#. module: plm_breakages
+#: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__tracking
+msgid "Tracking"
+msgstr "Seguimiento"
+
+#. module: plm_breakages
+#: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__message_unread
+msgid "Unread Messages"
+msgstr "Mensajes no Leídos"
+
+#. module: plm_breakages
+#: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__message_unread_counter
+msgid "Unread Messages Counter"
+msgstr "Contador de Mensajes no Leídos"
+
+#. module: plm_breakages
+#: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__website_message_ids
+msgid "Website Messages"
+msgstr "Mensajes del Sitio Web"
+
+#. module: plm_breakages
+#: model:ir.model.fields,help:plm_breakages.field_plm_breakages__website_message_ids
+msgid "Website communication history"
+msgstr "Historial de comunicación del Sitio Web"
