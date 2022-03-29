@@ -1,3 +1,4 @@
+// treejs main import
 import * as THREE from '../three.js/build/three.module.js';
 // loaders
 import { GLTFLoader } from '../three.js/examples/jsm/loaders/GLTFLoader.js';
@@ -5,13 +6,16 @@ import { FBXLoader } from '../three.js/examples/jsm/loaders/FBXLoader.js';
 import { OBJLoader } from '../three.js/examples/jsm/loaders/OBJLoader.js';
 import { VRMLLoader } from '../three.js/examples/jsm/loaders/VRMLLoader.js';
 import { STLLoader } from '../three.js/examples/jsm/loaders/STLLoader.js';
+import {SVGLoader} from '../three.js/examples/jsm/loaders/SVGLoader.js';
 
 const gLTFLoader = new GLTFLoader();
 const fBXLoader = new FBXLoader();
 const oBJLoader = new OBJLoader();
 const vRMLLoader = new VRMLLoader();
 const stlLoader = new STLLoader();
+const svgloader = new SVGLoader();
 const loader = new THREE.ObjectLoader();
+
 
 const transparent_material = new THREE.MeshPhysicalMaterial({
     color: 0xb2ffc8,
@@ -63,6 +67,10 @@ class Loader {
 		if (['stl'].includes(exte)){
 			this.loadStlLoader(document_name, file_path);
 		}	
+        if (['svg'].includes(exte)){
+            this.loadSvgLoader(document_name, file_path);
+        }   
+
 	}
 	loadGltx(document_name, file_path){
 		var self=this;
@@ -169,5 +177,40 @@ class Loader {
 		    	alert("Unable to load the " + document_name + " err: " + err);
 		 });
 	}
+    loadSvgLoader(document_name, file_path){
+        var self=this;
+        stlLoader.load(file_path, 
+            function (data) {
+                const paths = data.paths;
+                const group = new THREE.Group();
+
+                for ( let i = 0; i < paths.length; i ++ ) {
+                    const path = paths[ i ];
+                    const material = new THREE.MeshBasicMaterial( {
+                        color: path.color,
+                        side: THREE.DoubleSide,
+                        depthWrite: false
+                    });
+                    const shapes = SVGLoader.createShapes( path );
+                    for ( let j = 0; j < shapes.length; j ++ ) {
+                        const shape = shapes[ j ];
+                        const geometry = new THREE.ShapeGeometry( shape );
+                        const mesh = new THREE.Mesh( geometry, material );
+                        group.add( mesh );                   
+                    }
+                }
+                scene.add( group );
+            },
+            (xhr) => {
+                var percentage = (xhr.loaded / xhr.total) * 100;
+                self.progress_bar.style.width = percentage + '%';
+                console.log(progress_bar.style.width + ' loaded')
+            },
+            (err) => {
+              
+                 alert("Unable to load the " + document_name + " err: " + err);
+            }
+            );
+    }
 }
 export {Loader}

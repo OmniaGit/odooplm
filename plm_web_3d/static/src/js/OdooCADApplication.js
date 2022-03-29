@@ -1,8 +1,5 @@
-
 import * as THREE from './lib/three.js/build/three.module.js';
-
 import * as ODOOCAD from './lib/odoocad/odoocad.js';
-
 // controls
 import { OrbitControls } from './lib/three.js/examples/jsm/controls/OrbitControls.js';
 import Stats from './lib/three.js/examples/jsm/libs/stats.module.js';
