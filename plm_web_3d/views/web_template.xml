@@ -5,13 +5,20 @@
       <head>
         <meta charset="utf-8"></meta>
         <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"></meta>
-        <title>OdooPLM WebGl View</title>
+        <title>OdooPLM WebGl View</title>       
+        <script type="importmap">
+            {"imports": {
+                "three": "../plm_web_3d/static/src/js/lib/three.js/build/three.module.js"
+                }
+             }
+        </script>
+        <script type="module" src="../plm_web_3d/static/src/js/OdooCADApplication.js"></script>
         <link rel="stylesheet" type="text/css" href="../plm_web_3d/static/src/css/OdooCADApplication.css"></link>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"></link>
       </head>
       <body style="margin: 0;">
       	<div id="main_3d_web">
-	        <script type="module" src="../plm_web_3d/static/src/js/OdooCADApplication.js"></script>
+	        
 	        <span id="active_model" t-att-active_model="document_id" t-att-document_name="document_name"></span>
 	        <div id="odoo_plm_title">
                 <a href="https://odooplm.omniasolutions.website/" id="hiper_odooplm">

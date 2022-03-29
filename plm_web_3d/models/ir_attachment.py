@@ -34,15 +34,15 @@ from odoo.exceptions import UserError
 from datetime import timedelta
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 import urllib.parse
-SUPPORTED_WEBGL_EXTENTION = ['.gltf','.glb','.fbx','.obj','.wrl','.json', '.stl']
+SUPPORTED_WEBGL_EXTENTION = ['.gltf','.glb','.fbx','.obj','.wrl','.json', '.stl','.svg']
 
 class IrAttachment(models.Model):
     _inherit = ['ir.attachment']
     
     has_web3d = fields.Boolean(string="Has 3d Web link",
                                compute="_compute_web_3d_link",
-                               store=True,
-                               help='Check if this document has releted 3d web document')
+                              # store=True,
+                               help='Check if this document has related 3d web document')
 
     def isWebGl(self):
         for ir_attachment in self:
