@@ -1,0 +1,407 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* plm_document_multi_site
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 15.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-03-22 14:06+0000\n"
+"PO-Revision-Date: 2022-03-22 15:39+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: ru\n"
+"X-Generator: Poedit 2.0.6\n"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__action
+msgid "Action"
+msgstr "Действие"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_needaction
+msgid "Action Needed"
+msgstr "Требуется действие"
+
+#. module: plm_document_multi_site
+#: model_terms:ir.ui.view,arch_db:plm_document_multi_site.plm_document_action_syncronize_tree
+msgid "Actions"
+msgstr "Действия"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__activity_ids
+msgid "Activities"
+msgstr "Виды деятельности"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr "Украшение исключения действия"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__activity_state
+msgid "Activity State"
+msgstr "Состояние активности"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__activity_type_icon
+msgid "Activity Type Icon"
+msgstr "Значок типа активности"
+
+#. module: plm_document_multi_site
+#: model:ir.model,name:plm_document_multi_site.model_ir_attachment
+msgid "Attachment"
+msgstr "Вложение"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_attachment_count
+msgid "Attachment Count"
+msgstr "Количество вложений"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__ir_attachment_id
+msgid "Attachment to Syncronize"
+msgstr "Прикрепление для синхронизации"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__create_uid
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_remote_server__create_uid
+msgid "Created by"
+msgstr "Создан"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__create_date
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_remote_server__create_date
+msgid "Created on"
+msgstr "Создано на"
+
+#. module: plm_document_multi_site
+#: model_terms:ir.ui.view,arch_db:plm_document_multi_site.view_plm_document_multi_site_hinerit
+msgid "DO Sync."
+msgstr "ВЫПОЛНЯЙТЕ синхронизацию."
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__display_name
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_remote_server__display_name
+msgid "Display Name"
+msgstr "Отображаемое имя"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_follower_ids
+msgid "Followers"
+msgstr "Последователи"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Последователи (Партнеры)"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,help:plm_document_multi_site.field_plm_document_action_syncronize__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr "Шикарный значок шрифта, например. fa-tasks"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__has_message
+msgid "Has Message"
+msgstr "Есть сообщение"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__id
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_remote_server__id
+msgid "ID"
+msgstr "ID"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__activity_exception_icon
+msgid "Icon"
+msgstr "Значок"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,help:plm_document_multi_site.field_plm_document_action_syncronize__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr "Значок, указывающий на действие исключения."
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,help:plm_document_multi_site.field_plm_document_action_syncronize__message_needaction
+#: model:ir.model.fields,help:plm_document_multi_site.field_plm_document_action_syncronize__message_unread
+msgid "If checked, new messages require your attention."
+msgstr ""
+"Если флажок установлен, новые сообщения требуют вашего внимания."
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,help:plm_document_multi_site.field_plm_document_action_syncronize__message_has_error
+#: model:ir.model.fields,help:plm_document_multi_site.field_plm_document_action_syncronize__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr ""
+"Если этот флажок установлен, некоторые сообщения имеют ошибку "
+"доставки."
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_is_follower
+msgid "Is Follower"
+msgstr "Rвляется Последователь"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize____last_update
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_remote_server____last_update
+msgid "Last Modified on"
+msgstr "Последнее изменение на"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__write_uid
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_remote_server__write_uid
+msgid "Last Updated by"
+msgstr "Последнее обновление от"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__write_date
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_remote_server__write_date
+msgid "Last Updated on"
+msgstr "Последнее обновление на"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_remote_server__login
+msgid "Login"
+msgstr "Авторизоваться"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_main_attachment_id
+msgid "Main Attachment"
+msgstr "Главный Прикрепление"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_has_error
+msgid "Message Delivery error"
+msgstr "Ошибка доставки сообщения"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_ids
+msgid "Messages"
+msgstr "Сообщения"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr "Крайний срок моей активности"
+
+#. module: plm_document_multi_site
+#: model_terms:ir.ui.view,arch_db:plm_document_multi_site.view_plm_ir_attachment_tree_hinerit
+msgid "N.S"
+msgstr "N.S"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr "Следующая деятельность Крайний срок"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__activity_summary
+msgid "Next Activity Summary"
+msgstr "Сводка следующей активности"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__activity_type_id
+msgid "Next Activity Type"
+msgstr "Следующий тип активности"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Количество действий"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_has_error_counter
+msgid "Number of errors"
+msgstr "Число ошибок"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,help:plm_document_multi_site.field_plm_document_action_syncronize__message_needaction_counter
+msgid "Number of messages which requires an action"
+msgstr "Количество сообщений, требующих действия"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,help:plm_document_multi_site.field_plm_document_action_syncronize__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Количество сообщений с ошибкой доставки"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,help:plm_document_multi_site.field_ir_attachment__count_plm_document_action_syncronize
+#: model:ir.model.fields,help:plm_document_multi_site.field_mrp_document__count_plm_document_action_syncronize
+msgid ""
+"Number of syncronization action to be performed in order to have the "
+"document aligned in all the servers"
+msgstr ""
+"Количество действий по синхронизации, которые необходимо выполнить "
+"для выравнивания документа на всех серверах"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,help:plm_document_multi_site.field_plm_document_action_syncronize__message_unread_counter
+msgid "Number of unread messages"
+msgstr "Количество непрочитанных сообщений"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_remote_server__password
+msgid "Password"
+msgstr "Пароль"
+
+#. module: plm_document_multi_site
+#: model:ir.model,name:plm_document_multi_site.model_plm_document_action_syncronize
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_ir_attachment__plm_document_action_syncronize_ids
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_mrp_document__plm_document_action_syncronize_ids
+msgid "Plm Document Action Syncronize"
+msgstr "PLM Документ Действие Синхронизировать"
+
+#. module: plm_document_multi_site
+#: model:ir.model,name:plm_document_multi_site.model_plm_remote_server
+msgid "Plm Remote server"
+msgstr "Плм удаленный сервер"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields.selection,name:plm_document_multi_site.selection__plm_document_action_syncronize__action__pull
+msgid "Pull"
+msgstr "Потяните"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields.selection,name:plm_document_multi_site.selection__plm_document_action_syncronize__action__push
+msgid "Push"
+msgstr "Толкать"
+
+#. module: plm_document_multi_site
+#: model:ir.actions.act_window,name:plm_document_multi_site.plm_remote_server_action
+#: model:ir.ui.menu,name:plm_document_multi_site.menu_plm_action_remote_server_form
+msgid "Remote Server"
+msgstr "Удаленный сервер"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__activity_user_id
+msgid "Responsible User"
+msgstr "Ответственный пользователь"
+
+#. module: plm_document_multi_site
+#: model:ir.ui.menu,name:plm_document_multi_site.menu_syncronize_scheduler
+msgid "Run Document Syncronize "
+msgstr "Запустить синхронизацию документов "
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_ir_attachment__count_plm_document_action_syncronize
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_mrp_document__count_plm_document_action_syncronize
+msgid "S.N"
+msgstr "S.N"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "Ошибка доставки SMS"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_remote_server__address
+msgid "Server Ip Address"
+msgstr "IP адрес сервера"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_remote_server__name
+msgid "Server Name"
+msgstr "Имя сервера"
+
+#. module: plm_document_multi_site
+#: model:ir.model.constraint,message:plm_document_multi_site.constraint_plm_remote_server_name
+msgid "Server name must be unique !!!"
+msgstr "Имя сервера должно быть уникальным!!!"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__plm_remote_server_id
+msgid "Server to perform the Update"
+msgstr "Сервер для выполнения обновления"
+
+#. module: plm_document_multi_site
+#: model_terms:ir.ui.view,arch_db:plm_document_multi_site.plm_remote_server_tree
+msgid "Servers"
+msgstr "Серверы"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,help:plm_document_multi_site.field_plm_document_action_syncronize__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+"Статус на основе действий\n"
+"Просрочено: Срок выполнения уже прошел\n"
+"Сегодня: Дата активности сегодня.\n"
+"Запланировано: Будущая деятельность."
+
+#. module: plm_document_multi_site
+#: code:addons/plm_document_multi_site/models/ir_attachment.py:0
+#, python-format
+msgid "Sync.Actions"
+msgstr "Синхронизировать.Действия"
+
+#. module: plm_document_multi_site
+#: model_terms:ir.ui.view,arch_db:plm_document_multi_site.view_plm_document_multi_site_hinerit
+msgid "Sync.Hist."
+msgstr "Синхр.История."
+
+#. module: plm_document_multi_site
+#: model:ir.actions.server,name:plm_document_multi_site.action_syncronize
+msgid "Synconize document"
+msgstr "Синхронизировать документ"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__done
+msgid "Syncronization is done ?"
+msgstr "Синхронизация сделана?"
+
+#. module: plm_document_multi_site
+#: model:ir.actions.server,name:plm_document_multi_site.ir_cron_syncronize_ir_actions_server
+#: model:ir.cron,cron_name:plm_document_multi_site.ir_cron_syncronize
+#: model:ir.cron,name:plm_document_multi_site.ir_cron_syncronize
+msgid "Syncronize"
+msgstr "Синхронизировать"
+
+#. module: plm_document_multi_site
+#: model:ir.actions.act_window,name:plm_document_multi_site.plm_document_action_syncronize_action
+#: model:ir.ui.menu,name:plm_document_multi_site.menu_plm_action_remote_server
+msgid "Syncronize Actions"
+msgstr "Синхронизировать действия"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,help:plm_document_multi_site.field_plm_document_action_syncronize__plm_remote_server_id
+msgid "This is the server in witch we will perform the syncronizations"
+msgstr "Это сервер, на котором мы будем выполнять синхронизацию"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,help:plm_document_multi_site.field_plm_document_action_syncronize__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr "Тип действия исключения в записи."
+
+#. module: plm_document_multi_site
+#: code:addons/plm_document_multi_site/models/ir_attachment.py:0
+#, python-format
+msgid "Unable to check-Out a document that is not syncronized"
+msgstr "Невозможно извлечь документ, который не синхронизирован"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_unread
+msgid "Unread Messages"
+msgstr "Непрочитанные сообщения"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_unread_counter
+msgid "Unread Messages Counter"
+msgstr "Счетчик непрочтенных сообщений"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__website_message_ids
+msgid "Website Messages"
+msgstr "Сообщения веб-сайта"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,help:plm_document_multi_site.field_plm_document_action_syncronize__website_message_ids
+msgid "Website communication history"
+msgstr "История общения с веб-сайтом"

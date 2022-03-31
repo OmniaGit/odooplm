@@ -1,0 +1,112 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* plm_client_customprocedure
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 15.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-03-22 09:54+0000\n"
+"PO-Revision-Date: 2022-03-22 10:59+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: ru\n"
+"X-Generator: Poedit 2.0.6\n"
+
+#. module: plm_client_customprocedure
+#: model:ir.model,name:plm_client_customprocedure.model_res_groups
+msgid "Access Groups"
+msgstr "Группы доступа"
+
+#. module: plm_client_customprocedure
+#: code:addons/plm_client_customprocedure/models/res_groups.py:0
+#: code:addons/plm_client_customprocedure/models/res_users.py:0
+#: model:ir.model.fields,field_description:plm_client_customprocedure.field_res_groups__custom_procedure
+#: model:ir.model.fields,field_description:plm_client_customprocedure.field_res_users__custom_procedure
+#, python-format
+msgid "Client CustomProcedure"
+msgstr "Пользовательская процедура клиента"
+
+#. module: plm_client_customprocedure
+#: code:addons/plm_client_customprocedure/models/res_groups.py:0
+#: code:addons/plm_client_customprocedure/models/res_users.py:0
+#: model:ir.model.fields,field_description:plm_client_customprocedure.field_res_groups__custom_multicad
+#: model:ir.model.fields,field_description:plm_client_customprocedure.field_res_users__custom_multicad
+#, python-format
+msgid "Client Multicad"
+msgstr "Клиент Мультикад"
+
+#. module: plm_client_customprocedure
+#: model:ir.model.fields,field_description:plm_client_customprocedure.field_res_groups__custom_multicad_content
+#: model:ir.model.fields,field_description:plm_client_customprocedure.field_res_users__custom_multicad_content
+msgid "Custom Multicad Content"
+msgstr "Пользовательский мультикад-контент"
+
+#. module: plm_client_customprocedure
+#: code:addons/plm_client_customprocedure/models/res_groups.py:0
+#: model:ir.model.fields,field_description:plm_client_customprocedure.field_res_groups__custom_procedure_fname
+#, python-format
+msgid "Custom Procedure File name"
+msgstr "Пользовательское имя файла процедуры"
+
+#. module: plm_client_customprocedure
+#: code:addons/plm_client_customprocedure/models/res_users.py:0
+#: model:ir.model.fields,field_description:plm_client_customprocedure.field_res_groups__custom_read_content
+#: model:ir.model.fields,field_description:plm_client_customprocedure.field_res_users__custom_read_content
+#, python-format
+msgid "Custom Read Content"
+msgstr "Обычай Читать содержимое"
+
+#. module: plm_client_customprocedure
+#: model_terms:ir.ui.view,arch_db:plm_client_customprocedure.res_groups_plm_extension
+#: model_terms:ir.ui.view,arch_db:plm_client_customprocedure.res_users_plm_extension
+msgid "CustomProcedure"
+msgstr "Пользовательскаяпроцедура"
+
+#. module: plm_client_customprocedure
+#: code:addons/plm_client_customprocedure/models/res_users.py:0
+#: model:ir.model.fields,field_description:plm_client_customprocedure.field_res_users__custom_procedure_fname
+#, python-format
+msgid "CustomProcedure File name"
+msgstr "Пользовательскаяпроцедура Имя файла"
+
+#. module: plm_client_customprocedure
+#: code:addons/plm_client_customprocedure/models/res_groups.py:0
+#: model:ir.model.fields,field_description:plm_client_customprocedure.field_res_groups__custom_multicad_fname
+#, python-format
+msgid "MultiCad File name"
+msgstr "Мультикад Имя файла"
+
+#. module: plm_client_customprocedure
+#: model_terms:ir.ui.view,arch_db:plm_client_customprocedure.res_groups_plm_extension
+#: model_terms:ir.ui.view,arch_db:plm_client_customprocedure.res_users_plm_extension
+msgid "Multicad"
+msgstr "Мультикад"
+
+#. module: plm_client_customprocedure
+#: code:addons/plm_client_customprocedure/models/res_users.py:0
+#: model:ir.model.fields,field_description:plm_client_customprocedure.field_res_users__custom_multicad_fname
+#, python-format
+msgid "Multicad File name"
+msgstr "Мультикад Имя файла"
+
+#. module: plm_client_customprocedure
+#: model_terms:ir.ui.view,arch_db:plm_client_customprocedure.res_groups_plm_extension
+#: model_terms:ir.ui.view,arch_db:plm_client_customprocedure.res_users_plm_extension
+msgid "Omnia Custom Module"
+msgstr "Пользовательский модуль Omnia"
+
+#. module: plm_client_customprocedure
+#: model_terms:ir.ui.view,arch_db:plm_client_customprocedure.res_groups_plm_extension
+#: model_terms:ir.ui.view,arch_db:plm_client_customprocedure.res_users_plm_extension
+msgid "Show"
+msgstr "Показывать"
+
+#. module: plm_client_customprocedure
+#: model:ir.model,name:plm_client_customprocedure.model_res_users
+msgid "Users"
+msgstr "Пользователи"

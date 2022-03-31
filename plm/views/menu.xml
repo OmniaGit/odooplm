@@ -124,6 +124,12 @@
             action="plm_action_plm_dbthread"/>
             
     <menuitem
+            id="plm_groups"
+            name="Groups"
+            parent="plm.plm_menu_dictionaries"
+            action="plm_action_res_groups"/>
+            
+    <menuitem
             id="plm_settings"
             name="Settings"
             parent="plm.plm_menu_dictionaries"

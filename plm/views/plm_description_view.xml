@@ -48,8 +48,8 @@
 		            					Example Result:<br></br>
 		            					<ul>
 		            						<li>Feature.Value1 (in component form) = 1</li>
-		            						<li>Feature.Value1 (in component form) = 2</li>
-		            						<li>Feature.Value1 (in component form) = 3</li>
+		            						<li>Feature.Value2 (in component form) = 2</li>
+		            						<li>Feature.Value3 (in component form) = 3</li>
 		            						<li>Final Description:  Standard Description + Format Feature Composed + Normative Rule<br></br><b>    STD 1 Title n°2-3 UNI</b></li>
 		            					</ul>
 		                    		</div>
@@ -69,8 +69,8 @@
 		            					Example Result:<br></br>
 		            					<ul>
 		            						<li>Feature.Value1 (in component form) = 1</li>
-		            						<li>Feature.Value1 (in component form) = 2</li>
-		            						<li>Feature.Value1 (in component form) = 3</li>
+		            						<li>Feature.Value2 (in component form) = 2</li>
+		            						<li>Feature.Value3 (in component form) = 3</li>
 		            						<li>Final Description:  Standard Description + Format Feature Composed + Normative Rule<br></br><b>    STD A 1 Title n°B-2-C/3 UNI</b></li>
 		            					</ul>
 		                    		</div>
