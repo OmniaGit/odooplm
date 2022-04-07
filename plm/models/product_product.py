@@ -739,12 +739,21 @@ class PlmComponent(models.Model):
             prodBrwsList = self.search([('engineering_code', '=', checkObj.engineering_code),
                                         ('engineering_revision', '=', checkObj.engineering_revision - 1)])
             if len(prodBrwsList) > 0:
-                oldObject = prodBrwsList[0]
+                oldObject = prodBrwsList[0] 
                 if oldObject.state in checkState:
                     oldObject.wf_message_post(body=_('Removed : Latest Revision.'))
                     if not self.browse([oldObject.id]).write(values):
                         logging.warning("unlink : Unable to update state to old component (%r - %d)." % (oldObject.engineering_code, oldObject.engineering_revision))
                         return False
+            bom_obj = self.env['mrp.bom']
+            field_type_def = bom_obj.fields_get('type').get('type', {})
+            bom_types = []
+            for option in field_type_def.get('selection', []):
+                bom_types.append(option[0])
+            bom_line = bom_obj._get_in_bom(checkObj.id, False, bom_types)
+            where_struct = bom_obj._implode_bom(bom_line, False, )
+        if where_struct:
+            raise UserError(_('You cannot unlink a component that is present in a BOM'))
         return super(PlmComponent, self).unlink()
 
     def action_draft(self):
