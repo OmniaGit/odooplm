@@ -65,7 +65,9 @@ class ProductProductExtension(models.Model):
                     userLang = self.env.context.get('lang', 'en_US')
                     translationObjs = ir_translation_obj.search([('name', '=', 'product.template,name'),
                                                                  ('value', '=', prodName),
-                                                                 ('lang', '=', userLang)],
+                                                                 ('lang', '=', userLang),
+                                                                 ('res_id', 'not in', [templateId])
+                                                                 ],
                                                                 limit=1)
                     for ranslationObj in translationObjs:
                         oldDescObjs = ir_translation_obj.search([('res_id', '=', ranslationObj.res_id),
