@@ -14,26 +14,26 @@
                 	<field name="link_kind" readonly="True"/>
                 </group>
                 <group colspan="4" col="4">
-                   	<span style="color: rgb(110, 51, 197);" attrs="{'invisible': [('parent_state', '!=', 'draft')]}">
-                		<t><strong>______________________________________________________________________________________________________________________________________________________________________________________</strong></t>
+                   	<span colspan="4" style="color: rgb(110, 51, 197);" attrs="{'invisible': [('parent_state', '!=', 'draft')]}">
+                		<hr style="background-color: rgb(110, 51, 197);height: 1px;"></hr>
                		</span>
-               		<span style="color: rgb(0, 0, 255);" attrs="{'invisible': [('parent_state', '!=', 'confirmed')]}">
-                		<t><strong>______________________________________________________________________________________________________________________________________________________________________________________</strong></t>
+               		<span colspan="4" style="color: rgb(0, 0, 255);" attrs="{'invisible': [('parent_state', '!=', 'confirmed')]}">
+                		<hr style="background-color: blue;height: 1px;"></hr>
                		</span>
-               		<span style="color: rgba(0, 170, 34, 0.66);" attrs="{'invisible': [('parent_state', '!=', 'released')]}">
-                		<t><strong>______________________________________________________________________________________________________________________________________________________________________________________</strong></t>
+               		<span colspan="4" style="color: rgba(0, 170, 34, 0.66);" attrs="{'invisible': [('parent_state', '!=', 'released')]}">
+                		<hr style="background-color: rgba(0, 170, 34, 0.66);height: 1px;"></hr>
                		</span>
-               		<span style="color: rgb(218, 159, 34);" attrs="{'invisible': [('parent_state', '!=', 'undermodify')]}">
-                		<t><strong>______________________________________________________________________________________________________________________________________________________________________________________</strong></t>
+               		<span colspan="4" style="color: rgb(218, 159, 34);" attrs="{'invisible': [('parent_state', '!=', 'undermodify')]}">
+                		<hr style="background-color: rgb(218, 159, 34);height: 1px;"></hr>
                		</span>
-               		<span style="color: rgb(231, 43, 26);" attrs="{'invisible': [('parent_state', '!=', 'obsoleted')]}">
-                		<t><strong>______________________________________________________________________________________________________________________________________________________________________________________</strong></t>
+               		<span colspan="4" style="color: rgb(231, 43, 26);" attrs="{'invisible': [('parent_state', '!=', 'obsoleted')]}">
+                		<hr style="background-color: rgb(231, 43, 26);height: 1px;"></hr>
                		</span>
-                   	<separator colspan="4" string="Parent Preview" style="color: rgb(110, 51, 197);" attrs="{'invisible': [('parent_state', '!=', 'draft')]}"/>
-                    <separator colspan="4" string="Parent Preview" style="color: blue;" attrs="{'invisible': [('parent_state', '!=', 'confirmed')]}"/>
-                    <separator colspan="4" string="Parent Preview" style="color: rgba(0, 170, 34, 0.66);" attrs="{'invisible': [('parent_state', '!=', 'released')]}"/>
-                    <separator colspan="4" string="Parent Preview" style="color: rgb(218, 159, 34);" attrs="{'invisible': [('parent_state', '!=', 'undermodify')]}"/>
-                    <separator colspan="4" string="Parent Preview" style="color: rgb(231, 43, 26);" attrs="{'invisible': [('parent_state', '!=', 'obsoleted')]}"/>
+	               	<separator colspan="4" string="Parent Preview" style="color: rgb(110, 51, 197);" attrs="{'invisible': [('parent_state', '!=', 'draft')]}"/>
+	                <separator colspan="4" string="Parent Preview" style="color: blue;" attrs="{'invisible': [('parent_state', '!=', 'confirmed')]}"/>
+	                <separator colspan="4" string="Parent Preview" style="color: rgba(0, 170, 34, 0.66);" attrs="{'invisible': [('parent_state', '!=', 'released')]}"/>
+	                <separator colspan="4" string="Parent Preview" style="color: rgb(218, 159, 34);" attrs="{'invisible': [('parent_state', '!=', 'undermodify')]}"/>
+	                <separator colspan="4" string="Parent Preview" style="color: rgb(231, 43, 26);" attrs="{'invisible': [('parent_state', '!=', 'obsoleted')]}"/>
 	                <group colspan="2" col="2">
 	                    <field name="parent_id" readonly="True" domain="[('is_plm', '=', True)]"/>
 	                    <field name="parent_revision" readonly="True"/>
@@ -44,7 +44,7 @@
                         <field name="parent_state" readonly="True" style="color: rgb(218, 159, 34);" attrs="{'invisible': [('parent_state', '!=', 'undermodify')]}"/>
                         <field name="parent_state" readonly="True" style="color: rgb(231, 43, 26);" attrs="{'invisible': [('parent_state', '!=', 'obsoleted')]}"/>
 	                </group>
-	                <group colspan="1" col="1">
+	                 <group colspan="1" col="1">
 	                 	<field name="parent_preview" colspan="2" widget="image" readonly="1" nolabel="1" img_height="400" img_width="400"/>
 	                </group>
 	                <group colspan="1" col="1">
@@ -60,36 +60,36 @@
                 			style="text-align: right; width: 150%; color: green;"
                 			attrs="{'invisible': [('parent_linked', 'in', [False, []])]}"/>
 	                </group>
-	                <span style="color: rgb(110, 51, 197);" attrs="{'invisible': [('parent_state', '!=', 'draft')]}">
-                		<t><strong>______________________________________________________________________________________________________________________________________________________________________________________</strong></t>
+	                <span colspan="4" style="color: rgb(110, 51, 197);" attrs="{'invisible': [('parent_state', '!=', 'draft')]}">
+                		<hr style="background-color: rgb(110, 51, 197);height: 1px;"></hr>
                		</span>
-               		<span style="color: rgb(0, 0, 255);" attrs="{'invisible': [('parent_state', '!=', 'confirmed')]}">
-                		<t><strong>______________________________________________________________________________________________________________________________________________________________________________________</strong></t>
+               		<span colspan="4" style="color: rgb(0, 0, 255);" attrs="{'invisible': [('parent_state', '!=', 'confirmed')]}">
+                		<hr style="background-color: blue;height: 1px;"></hr>
                		</span>
-               		<span style="color: rgba(0, 170, 34, 0.66);" attrs="{'invisible': [('parent_state', '!=', 'released')]}">
-                		<t><strong>______________________________________________________________________________________________________________________________________________________________________________________</strong></t>
+               		<span colspan="4" style="color: rgba(0, 170, 34, 0.66);" attrs="{'invisible': [('parent_state', '!=', 'released')]}">
+                		<hr style="background-color: rgba(0, 170, 34, 0.66);height: 1px;"></hr>
                		</span>
-               		<span style="color: rgb(218, 159, 34);" attrs="{'invisible': [('parent_state', '!=', 'undermodify')]}">
-                		<t><strong>______________________________________________________________________________________________________________________________________________________________________________________</strong></t>
+               		<span colspan="4" style="color: rgb(218, 159, 34);" attrs="{'invisible': [('parent_state', '!=', 'undermodify')]}">
+                		<hr style="background-color: rgb(218, 159, 34);height: 1px;"></hr>
                		</span>
-               		<span style="color: rgb(231, 43, 26);" attrs="{'invisible': [('parent_state', '!=', 'obsoleted')]}">
-                		<t><strong>______________________________________________________________________________________________________________________________________________________________________________________</strong></t>
+               		<span colspan="4" style="color: rgb(231, 43, 26);" attrs="{'invisible': [('parent_state', '!=', 'obsoleted')]}">
+                		<hr style="background-color: rgb(231, 43, 26);height: 1px;"></hr>
                		</span>
   					<newline/>
-  					<span style="color: rgb(110, 51, 197);" attrs="{'invisible': [('child_state', '!=', 'draft')]}">
-                		<t><strong>______________________________________________________________________________________________________________________________________________________________________________________</strong></t>
+  					<span colspan="4" style="color: rgb(110, 51, 197);" attrs="{'invisible': [('child_state', '!=', 'draft')]}">
+                		<hr style="background-color: rgb(110, 51, 197);height: 1px;"></hr>
                		</span>
-               		<span style="color: rgb(0, 0, 255);" attrs="{'invisible': [('child_state', '!=', 'confirmed')]}">
-                		<t><strong>______________________________________________________________________________________________________________________________________________________________________________________</strong></t>
+               		<span colspan="4" style="color: rgb(0, 0, 255);" attrs="{'invisible': [('child_state', '!=', 'confirmed')]}">
+                		<hr style="background-color: blue;height: 1px;"></hr>
                		</span>
-               		<span style="color: rgba(0, 170, 34, 0.66);" attrs="{'invisible': [('child_state', '!=', 'released')]}">
-                		<t><strong>______________________________________________________________________________________________________________________________________________________________________________________</strong></t>
+               		<span colspan="4" style="color: rgba(0, 170, 34, 0.66);" attrs="{'invisible': [('child_state', '!=', 'released')]}">
+                		<hr style="background-color: rgba(0, 170, 34, 0.66);height: 1px;"></hr>
                		</span>
-               		<span style="color: rgb(218, 159, 34);" attrs="{'invisible': [('child_state', '!=', 'undermodify')]}">
-                		<t><strong>______________________________________________________________________________________________________________________________________________________________________________________</strong></t>
+               		<span colspan="4" style="color: rgb(218, 159, 34);" attrs="{'invisible': [('child_state', '!=', 'undermodify')]}">
+                		<hr style="background-color: rgb(218, 159, 34);height: 1px;"></hr>
                		</span>
-               		<span style="color: rgb(231, 43, 26);" attrs="{'invisible': [('child_state', '!=', 'obsoleted')]}">
-                		<t><strong>______________________________________________________________________________________________________________________________________________________________________________________</strong></t>
+               		<span colspan="4" style="color: rgb(231, 43, 26);" attrs="{'invisible': [('child_state', '!=', 'obsoleted')]}">
+                		<hr style="background-color: rgb(231, 43, 26);height: 1px;"></hr>
                		</span>
 	            	<separator colspan="4" string="Child Preview" style="color: rgb(110, 51, 197);" attrs="{'invisible': [('child_state', '!=', 'draft')]}"/>
                     <separator colspan="4" string="Child Preview" style="color: blue;" attrs="{'invisible': [('child_state', '!=', 'confirmed')]}"/>
@@ -122,20 +122,20 @@
                 			style="text-align: right; width: 150%; color: green;"
                 			attrs="{'invisible': [('child_linked', 'in', [False, []])]}"/>
 	                </group>
-	            <span style="color: rgb(110, 51, 197);" attrs="{'invisible': [('child_state', '!=', 'draft')]}">
-            		<t><strong>______________________________________________________________________________________________________________________________________________________________________________________</strong></t>
+	            <span colspan="4" style="color: rgb(110, 51, 197);" attrs="{'invisible': [('child_state', '!=', 'draft')]}">
+            		<hr style="background-color: rgb(110, 51, 197);height: 1px;"></hr>
            		</span>
-           		<span style="color: rgb(0, 0, 255);" attrs="{'invisible': [('child_state', '!=', 'confirmed')]}">
-            		<t><strong>______________________________________________________________________________________________________________________________________________________________________________________</strong></t>
+           		<span colspan="4" style="color: rgb(0, 0, 255);" attrs="{'invisible': [('child_state', '!=', 'confirmed')]}">
+            		<hr style="background-color: blue;height: 1px;"></hr>
            		</span>
-           		<span style="color: rgba(0, 170, 34, 0.66);" attrs="{'invisible': [('child_state', '!=', 'released')]}">
-            		<t><strong>______________________________________________________________________________________________________________________________________________________________________________________</strong></t>
+           		<span colspan="4" style="color: rgba(0, 170, 34, 0.66);" attrs="{'invisible': [('child_state', '!=', 'released')]}">
+            		<hr style="background-color: rgba(0, 170, 34, 0.66);height: 1px;"></hr>
            		</span>
-           		<span style="color: rgb(218, 159, 34);" attrs="{'invisible': [('child_state', '!=', 'undermodify')]}">
-            		<t><strong>______________________________________________________________________________________________________________________________________________________________________________________</strong></t>
+           		<span colspan="4" style="color: rgb(218, 159, 34);" attrs="{'invisible': [('child_state', '!=', 'undermodify')]}">
+            		<hr style="background-color: rgb(218, 159, 34);height: 1px;"></hr>
            		</span>
-           		<span style="color: rgb(231, 43, 26);" attrs="{'invisible': [('child_state', '!=', 'obsoleted')]}">
-            		<t><strong>______________________________________________________________________________________________________________________________________________________________________________________</strong></t>
+           		<span colspan="4" style="color: rgb(231, 43, 26);" attrs="{'invisible': [('child_state', '!=', 'obsoleted')]}">
+            		<hr style="background-color: rgb(231, 43, 26);height: 1px;"></hr>
            		</span>
                 </group>
                 <group>
@@ -311,70 +311,54 @@
                     <t t-name="kanban-box">
                     	<t t-value="record.parent_state.raw_value" t-set="stateToUse1"/>
                     	<t t-value="record.child_state.raw_value" t-set="stateToUse2"/>
+						<field name="parent_linked" invisible="True"/>
+						<field name="child_linked" invisible="True"/>
                         <div class="oe_kanban_global_click">
-                            <table style="width: 100%;">
-                            	<tr>
-                                	<td>
-                        				<strong attrs="{'invisible': [('parent_type', '!=', 'other')]}">Other-Parent</strong>
-                        				<strong attrs="{'invisible': [('parent_type', '!=', '2d')]}">2D-Parent</strong>
-                        				<strong attrs="{'invisible': [('parent_type', '!=', '3d')]}">3D-Parent</strong>
+                            <table style="width: 100%; line-height: 1;">
+                            	<tr style="text-align: right; width: 100%; padding:1px;">
+                        			<td style="text-align: left;">
+                        				<strong>Parent</strong>
                         			</td>
-                        			<td style="text-align: right; width: 100%;">
-                            			<field name="parent_linked" invisible="True"/>
-	                            		<div
-	                            			class="fa fa-dropbox fa-2x"
-	                            			aria-label="Missing Component"
-	                            			style="color:#ff8300;"
-	                            			attrs="{'invisible': [('parent_linked', 'not in', [False, []])]}"/>
-                            		</td>
-                            		<td style="text-align: right; width: 100%;">
-                            			<div
-	                            			class="fa fa-dropbox fa-2x"
-	                            			aria-label="Founding Component"
-	                            			style="color: green;"
-	                            			attrs="{'invisible': [('parent_linked', 'in', [False, []])]}"/>
+                        			<td>
+                        				<strong attrs="{'invisible': [('parent_type', '!=', 'other')]}">Other</strong>
+                        				<strong attrs="{'invisible': [('parent_type', '!=', '2d')]}">2D</strong>
+                        				<strong attrs="{'invisible': [('parent_type', '!=', '3d')]}">3D</strong>
+                        			</td>
+                        			<td>
+	                            		<div class="fa fa-dropbox fa-2x" aria-label="Missing Component" style="color:#ff8300;" attrs="{'invisible': [('parent_linked', 'not in', [False, []])]}"/>
+                            			<div class="fa fa-dropbox fa-2x" aria-label="Founding Component" style="color: green;" attrs="{'invisible': [('parent_linked', 'in', [False, []])]}"/>
                             		</td>
                         		</tr>
                             	<tr>
-                            		<td rowspan="2">
+                            		<td>
                             			<field name="parent_preview" nolabel="1" widget="image" class="oe_right oe_avatar" height="100" width="100"/>
                             		</td>
-                            	</tr>
-                            	<tr>
-                                	<td style="padding-left:10px; vertical-align: middle;">
-                                		<table>
+                                	<td style="padding-left:10px; vertical-align: middle;" colspan="2">
+                                		<table style="width:100%">
                                 			<tr>
                                                 <td>
                                                 	<t t-if="stateToUse1 == 'draft'">
-                                                        <b><span style="color: rgb(110, 51, 197);">
-                                                         	<t><strong>______________________</strong></t>
-                                                       	</span></b>
+                                                		<hr style="background-color: rgb(110, 51, 197);height: 1px; margin: 0,5;"></hr>
                                                     </t>
                                                     <t t-elif="stateToUse1 == 'confirmed'">
-                                                        <b><span style="color: blue;">
-                                                        	<t><strong>______________________</strong></t>
-                                                        </span></b>
+                                                    	<hr style="background-color: blue;height: 1px; margin: 0,5;"></hr>
                                                     </t>
                                                     <t t-elif="stateToUse1 == 'released'">
-                                                        <b><span style="color: rgba(0, 170, 34, 0.66);">
-                                                        	<t><strong>______________________</strong></t>
-                                                       	</span></b>
+                                                    	<hr style="background-color: rgba(0, 170, 34, 0.66);height: 1px; margin: 0,5;"></hr>
                                                     </t>
                                                     <t t-elif="stateToUse1 == 'undermodify'">
-                                                        <b><span style="color: rgb(218, 159, 34);">
-                                                        	<t><strong>______________________</strong></t>
-                                                      	</span></b>
+                                                    	<hr style="background-color: rgb(218, 159, 34);height: 1px; margin: 0,5;"></hr>
                                                     </t>
                                                     <t t-elif="stateToUse1 == 'obsoleted'">
-                                                        <b><span style="color: rgb(231, 43, 26);">
-                                                        	<t><strong>______________________</strong></t>
-                                                        </span></b>
+                                                    	<hr style="background-color: rgb(231, 43, 26);height: 1px; margin: 0,5;"></hr>
                                                     </t>
 													<t t-else="">
-                                                        <b><span style="color: black;">
-                                                        	<t><strong>______________________</strong></t>
-                                                      	</span></b>
+														<hr style="background-color: black;height: 1px; margin: 0,5;"></hr>
 													</t>
+												</td>
+											</tr>
+											<tr>
+												<td>
                                                     <t><strong>Name:</strong></t>
                                                     <field name="parent_id"/>
                                                     <field name="display_name" attrs="{'invisible': [('parent_id', 'not in', [False, []])]}"/>
@@ -392,106 +376,104 @@
                                                     <t t-if="stateToUse1 == 'draft'">
                                                         <b><span style="color: rgb(110, 51, 197);padding-left: 5px;">
                                                          	<u><field name="parent_state"/></u>
-                                                         	<t><strong>______________________</strong></t>
                                                        	</span></b>
                                                     </t>
                                                     <t t-elif="stateToUse1 == 'confirmed'">
                                                         <b><span style="color: blue;padding-left: 5px;">
                                                         	<u><field name="parent_state"/></u>
-                                                        	<t><strong>______________________</strong></t>
                                                         </span></b>
                                                     </t>
                                                     <t t-elif="stateToUse1 == 'released'">
                                                         <b><span style="color: rgba(0, 170, 34, 0.66);padding-left: 5px;">
                                                         	<u><field name="parent_state"/></u>
-                                                        	<t><strong>______________________</strong></t>
                                                        	</span></b>
                                                     </t>
                                                     <t t-elif="stateToUse1 == 'undermodify'">
                                                         <b><span style="color: rgb(218, 159, 34);padding-left: 5px;">
                                                         	<u><field name="parent_state"/></u>
-                                                        	<t><strong>______________________</strong></t>
                                                       	</span></b>
                                                     </t>
                                                     <t t-elif="stateToUse1 == 'obsoleted'">
                                                         <b><span style="color: rgb(231, 43, 26);padding-left: 5px;">
                                                         	<u><field name="parent_state"/></u>
-                                                        	<t><strong>______________________</strong></t>
                                                         </span></b>
                                                     </t>
 													<t t-else="">
                                                         <b><span style="color: black;padding-left: 5px;">
                                                         	<u><field name="parent_state"/></u>
-                                                        	<t><strong>______________________</strong></t>
                                                       	</span></b>
 													</t>
                                                 </td>
                                             </tr>
+                                			<tr>
+                                                <td>
+                                                	<t t-if="stateToUse1 == 'draft'">
+                                                		<hr style="background-color: rgb(110, 51, 197);height: 1px; margin: 0,5;"></hr>
+                                                    </t>
+                                                    <t t-elif="stateToUse1 == 'confirmed'">
+                                                    	<hr style="background-color: blue;height: 1px; margin: 0,5;"></hr>
+                                                    </t>
+                                                    <t t-elif="stateToUse1 == 'released'">
+                                                    	<hr style="background-color: rgba(0, 170, 34, 0.66);height: 1px; margin: 0,5;"></hr>
+                                                    </t>
+                                                    <t t-elif="stateToUse1 == 'undermodify'">
+                                                    	<hr style="background-color: rgb(218, 159, 34);height: 1px; margin: 0,5;"></hr>
+                                                    </t>
+                                                    <t t-elif="stateToUse1 == 'obsoleted'">
+                                                    	<hr style="background-color: rgb(231, 43, 26);height: 1px; margin: 0,5;"></hr>
+                                                    </t>
+													<t t-else="">
+														<hr style="background-color: black;height: 1px; margin: 0,5;"></hr>
+													</t>
+												</td>
+											</tr>
                                 		</table>
                                 	</td>
                                 </tr>
-                                <tr>
-                                	<td>
-                        				<strong attrs="{'invisible': [('child_type', '!=', 'other')]}">Other-Child</strong>
-                        				<strong attrs="{'invisible': [('child_type', '!=', '2d')]}">2D-Child</strong>
-                        				<strong attrs="{'invisible': [('child_type', '!=', '3d')]}">3D-Child</strong>
+                                <tr style="text-align: right; width: 100%; padding:1px;">
+                        			<td style="text-align: left;">
+                        				<strong>Child</strong>
                         			</td>
-                        			<td style="text-align: right; width: 100%;">
-                            			<field name="child_linked" invisible="True"/>
-	                            		<div
-	                            			class="fa fa-dropbox fa-2x"
-	                            			aria-label="Missing Component"
-	                            			style="color:#ff8300;"
-	                            			attrs="{'invisible': [('child_linked', 'not in', [False, []])]}"/>
-                            		</td>
-                            		<td style="text-align: right; width: 100%;">
-                            			<div
-	                            			class="fa fa-dropbox fa-2x"
-	                            			aria-label="Founding Component"
-	                            			style="color: green;"
-	                            			attrs="{'invisible': [('child_linked', 'in', [False, []])]}"/>
+                        			<td style="text-align: right; width: 100%;padding:1px;">
+                        				<strong attrs="{'invisible': [('child_type', '!=', 'other')]}">Other</strong>
+                        				<strong attrs="{'invisible': [('child_type', '!=', '2d')]}">2D</strong>
+                        				<strong attrs="{'invisible': [('child_type', '!=', '3d')]}">3D</strong>
+                        			</td>
+                        			<td>
+	                            		<div class="fa fa-dropbox fa-2x" aria-label="Missing Component" style="color:#ff8300;" attrs="{'invisible': [('child_linked', 'not in', [False, []])]}"/>
+                            			<div class="fa fa-dropbox fa-2x" aria-label="Founding Component" style="color: green;" attrs="{'invisible': [('child_linked', 'in', [False, []])]}"/>
                             		</td>
                         		</tr>
                             	<tr>
-                            		<td rowspan="2">
+                            		<td>
                             			<field name="child_preview" nolabel="1" widget="image" class="oe_right oe_avatar" height="100" width="100"/>
                             		</td>
-                            	</tr>
-                            	<tr>
-                                	<td style="padding-left:10px; vertical-align: middle;">
-                                		<table>
+                                	<td style="padding-left:10px; vertical-align: middle;" colspan="2">
+                                		<table style="width:100%">
                                 			<tr>
                                                 <td>
                                                 	<t t-if="stateToUse2 == 'draft'">
-                                                        <b><span style="color: rgb(110, 51, 197);">
-                                                         	<t><strong>______________________</strong></t>
-                                                       	</span></b>
+                                                		<hr style="background-color: rgb(110, 51, 197);height: 1px; margin: 0,5;"></hr>
                                                     </t>
                                                     <t t-elif="stateToUse2 == 'confirmed'">
-                                                        <b><span style="color: blue;">
-                                                        	<t><strong>______________________</strong></t>
-                                                        </span></b>
+                                                    	<hr style="background-color: blue;height: 1px; margin: 0,5;"></hr>
                                                     </t>
                                                     <t t-elif="stateToUse2 == 'released'">
-                                                        <b><span style="color: rgba(0, 170, 34, 0.66);">
-                                                        	<t><strong>______________________</strong></t>
-                                                       	</span></b>
+                                                    	<hr style="background-color: rgba(0, 170, 34, 0.66);height: 1px; margin: 0,5;"></hr>
                                                     </t>
                                                     <t t-elif="stateToUse2 == 'undermodify'">
-                                                        <b><span style="color: rgb(218, 159, 34);">
-                                                        	<t><strong>______________________</strong></t>
-                                                      	</span></b>
+                                                    	<hr style="background-color: rgb(218, 159, 34);height: 1px; margin: 0,5;"></hr>
                                                     </t>
                                                     <t t-elif="stateToUse2 == 'obsoleted'">
-                                                        <b><span style="color: rgb(231, 43, 26);">
-                                                        	<t><strong>______________________</strong></t>
-                                                        </span></b>
+                                                    	<hr style="background-color: rgb(231, 43, 26);height: 1px; margin: 0,5;"></hr>
                                                     </t>
 													<t t-else="">
-                                                        <b><span style="color: black;">
-                                                        	<t><strong>______________________</strong></t>
-                                                      	</span></b>
+														<hr style="background-color: black;height: 1px; margin: 0,5;"></hr>
 													</t>
+												</td>
+											</tr>
+											<tr>
+												<td>
                                                     <t><strong>Name:</strong></t>
                                                     <field name="child_id"/>
                                                     <field name="display_name" attrs="{'invisible': [('child_id', 'not in', [False, []])]}"/>
@@ -509,41 +491,57 @@
                                                     <t t-if="stateToUse2 == 'draft'">
                                                         <b><span style="color: rgb(110, 51, 197);padding-left: 5px;">
                                                          	<u><field name="child_state"/></u>
-                                                         	<t><strong>______________________</strong></t>
                                                        	</span></b>
                                                     </t>
                                                     <t t-elif="stateToUse2 == 'confirmed'">
                                                         <b><span style="color: blue;padding-left: 5px;">
                                                         	<u><field name="child_state"/></u>
-                                                        	<t><strong>______________________</strong></t>
                                                         </span></b>
                                                     </t>
                                                     <t t-elif="stateToUse2 == 'released'">
                                                         <b><span style="color: rgba(0, 170, 34, 0.66);padding-left: 5px;">
                                                         	<u><field name="child_state"/></u>
-                                                        	<t><strong>______________________</strong></t>
                                                        	</span></b>
                                                     </t>
                                                     <t t-elif="stateToUse2 == 'undermodify'">
                                                         <b><span style="color: rgb(218, 159, 34);padding-left: 5px;">
                                                         	<u><field name="child_state"/></u>
-                                                        	<t><strong>______________________</strong></t>
                                                       	</span></b>
                                                     </t>
                                                     <t t-elif="stateToUse2 == 'obsoleted'">
                                                         <b><span style="color: rgb(231, 43, 26);padding-left: 5px;">
                                                         	<u><field name="child_state"/></u>
-                                                        	<t><strong>______________________</strong></t>
                                                         </span></b>
                                                     </t>
 													<t t-else="">
                                                         <b><span style="color: black;padding-left: 5px;">
                                                         	<u><field name="child_state"/></u>
-                                                        	<t><strong>______________________</strong></t>
                                                       	</span></b>
 													</t>
                                                 </td>
                                             </tr>
+                                			<tr>
+                                                <td>
+                                                	<t t-if="stateToUse2 == 'draft'">
+                                                		<hr style="background-color: rgb(110, 51, 197);height: 1px; margin: 0,5;"></hr>
+                                                    </t>
+                                                    <t t-elif="stateToUse2 == 'confirmed'">
+                                                    	<hr style="background-color: blue;height: 1px; margin: 0,5;"></hr>
+                                                    </t>
+                                                    <t t-elif="stateToUse2 == 'released'">
+                                                    	<hr style="background-color: rgba(0, 170, 34, 0.66);height: 1px; margin: 0,5;"></hr>
+                                                    </t>
+                                                    <t t-elif="stateToUse2 == 'undermodify'">
+                                                    	<hr style="background-color: rgb(218, 159, 34);height: 1px; margin: 0,5;"></hr>
+                                                    </t>
+                                                    <t t-elif="stateToUse2 == 'obsoleted'">
+                                                    	<hr style="background-color: rgb(231, 43, 26);height: 1px; margin: 0,5;"></hr>
+                                                    </t>
+													<t t-else="">
+														<hr style="background-color: black;height: 1px; margin: 0,5;"></hr>
+													</t>
+												</td>
+											</tr>
                                 		</table>
                                 	</td>
                                 </tr>

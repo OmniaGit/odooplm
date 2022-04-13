@@ -919,23 +919,43 @@ class PlmDocument(models.Model):
                         if not (self.env.user._is_admin() or self.env.user._is_superuser()):
                             raise UserError(_("You cannot edit a file not in check-out by you! User ID %s" % (self.env.uid)))
 
-    
-    def unlink(self):
-        ctx = self.env.context.copy()
-        values = {'state': 'released', }
-        checkState = ('undermodify', 'obsoleted')
+    def getParentDocuments(self):
+        parent_dict = {}
+        for doc in self:
+            parent_dict.setdefault(doc, [])
+            att_rel_obj = self.env['ir.attachment.relation'].search([('child_id', '=', doc.id)])
+            for record in att_rel_obj:
+                parent_dict[doc].append((record.parent_id))
+        return parent_dict
+
+    def unlinkRestorePreviousDocument(self):
         for checkObj in self:
-            docBrwsList = self.search([('engineering_document_name', '=', checkObj.engineering_document_name), ('revisionid', '=', checkObj.revisionid - 1)])
-            if len(docBrwsList) > 0:
-                oldObject = docBrwsList[0]
-                if oldObject.state in checkState:
-                    oldObject.wf_message_post(body=_('Removed : Latest Revision.'))
-                    ctx['check'] = False
-                    if not oldObject.with_context(ctx).write(values):
-                        logging.warning(
-                            "unlink : Unable to update state to old document (" + str(oldObject.engineering_document_name) + "-" + str(
-                                oldObject.revisionid) + ").")
-                        return False
+            docBrwsList = self.search([('engineering_document_name', '=', checkObj.engineering_document_name), ('revisionid', '=', checkObj.revisionid - 1)], limit=1)
+            for oldObject in docBrwsList:
+                oldObject.wf_message_post(body=_('Removed : Latest Revision.'))
+                ctx['check'] = False
+                values = {'state': 'released'}
+                if not oldObject.with_context(ctx).write(values):
+                    msg = 'Unlink : Unable to update state in old document Eng Name %r Eng Rev %r Doc Id %r' % (oldObject.engineering_document_name, oldObject.revisionid, oldObject.id)
+                    logging.warning(msg)
+                    raise UserError(_('Cannot restore previous document Eng Name %r Eng Rev %r Doc Id %r' % (oldObject.engineering_document_name, oldObject.revisionid, oldObject.id)))
+        return True
+
+    def unlinkCheckDocumentRelations(self):
+        for checkObj in self:
+            id_parents = checkObj.getParentDocuments()
+            for child_doc, parent_docs in id_parents.items():
+                msg = _('You cannot unlink a component child that is present in a related documents\n')
+                for parent_doc in parent_docs:
+                    msg += _('Eng. Name %r Eng Rev %r ID %r\n') % (parent_doc.engineering_document_name, parent_doc.revisionid, parent_doc.id)
+                raise UserError(msg)
+
+    def unlink(self):    
+        ctx = self.env.context.copy()
+        for checkObj in self:
+            checkObj.unlinkCheckDocumentRelations()
+            checkObj.linkedcomponents.unlinkCheckBomRelations()
+            checkObj.unlinkRestorePreviousDocument()
         return super(PlmDocument, self).unlink()
 
     #   Overridden methods for this entity
@@ -2727,6 +2747,12 @@ class PlmDocument(models.Model):
             if self.getRelatedPkgTreeCount(doc_id)>0:
                 out.append(doc_id)
         return json.dumps(out)
+    
+    def print_Parent_Structure(self):
+        #<record id="account_invoices" model="ir.actions.report"> 
+        action = self.env.ref('plm.action_report_parents_structure').report_action(self)
+        action.update({'close_on_report_download': True})
+        return action
 
     def print_Document_Doc_Structure(self):
         #<record id="account_invoices" model="ir.actions.report"> 

@@ -87,18 +87,28 @@ class PlmDocumentRelations(models.Model):
         ('relation_uniq', 'unique (parent_id,child_id,link_kind)', _('The Document Relation must be unique !'))
     ]
 
+    def copy(self, default=None):
+        if not default:
+            default = {}
+        default['parent_id'] = False
+        default['child_id'] = False
+        return super(PlmDocumentRelations, self).copy(default)
+
     def name_get(self):
         result = []
         for r in self:
             child_name = ''
-            if r.parent_id.engineering_document_name:
-                parent_name = r.parent_id.engineering_document_name[:8]
-            else:
-                parent_name = r.parent_id.name[:8]
-            if r.child_id.engineering_document_name:
-                child_name = r.child_id.engineering_document_name[:8]
-            elif r.child_id:
-                child_name = r.child_id.name[:8]
+            parent_name = ''
+            if r.parent_id:
+                if r.parent_id.engineering_document_name:
+                    parent_name = r.parent_id.engineering_document_name[:8]
+                else:
+                    parent_name = r.parent_id.name[:8]
+            if r.child_id:
+                if r.child_id.engineering_document_name:
+                    child_name = r.child_id.engineering_document_name[:8]
+                elif r.child_id:
+                    child_name = r.child_id.name[:8]
             name = "%s .. %s.." % (parent_name, child_name)
             result.append((r.id, name))
         return result

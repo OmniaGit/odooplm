@@ -724,36 +724,51 @@ class PlmComponent(models.Model):
             for comp_obj in self:
                 comp_obj.sudo().message_post(body=_(body))
 
-    def canUnlink(self):
+    def unlinkCheckFirstLevel(self):
         for product in self:
             if product.linkeddocuments:
                 raise UserError('Cannot unlink a product containing related documents')
             if product.bom_ids:
                 raise UserError('Cannot unlink a product containing BOMs')
 
-    def unlink(self):
-        self.canUnlink()
-        values = {'state': 'released'}
-        checkState = ('undermodify', 'obsoleted')
-        for checkObj in self:
-            prodBrwsList = self.search([('engineering_code', '=', checkObj.engineering_code),
-                                        ('engineering_revision', '=', checkObj.engineering_revision - 1)])
-            if len(prodBrwsList) > 0:
-                oldObject = prodBrwsList[0] 
-                if oldObject.state in checkState:
-                    oldObject.wf_message_post(body=_('Removed : Latest Revision.'))
-                    if not self.browse([oldObject.id]).write(values):
-                        logging.warning("unlink : Unable to update state to old component (%r - %d)." % (oldObject.engineering_code, oldObject.engineering_revision))
-                        return False
+    def unlinkCheckBomRelations(self):
+
+        def print_where_struct(where_struct):
+            print_struct = []
+            for id1, id2 in where_struct:
+                    if id1 not in print_struct or id1 != False:
+                        print_struct.append(id1)
+            return print_struct
+
+        for product_id in self:
             bom_obj = self.env['mrp.bom']
             field_type_def = bom_obj.fields_get('type').get('type', {})
             bom_types = []
             for option in field_type_def.get('selection', []):
                 bom_types.append(option[0])
-            bom_line = bom_obj._get_in_bom(checkObj.id, False, bom_types)
-            where_struct = bom_obj._implode_bom(bom_line, False, )
-        if where_struct:
-            raise UserError(_('You cannot unlink a component that is present in a BOM'))
+            bom_line = bom_obj._get_in_bom(product_id.id, False, bom_types)
+            where_struct = bom_obj._implode_bom(bom_line, False, bom_types)
+            print_struct = print_where_struct(where_struct)
+            if where_struct:
+                raise UserError(_('You cannot unlink a component that is present in a BOM (N° Id: %r)' %(print_struct)))
+
+    def unlinkRestorePreviousComponent(self):
+        for checkObj in self:
+            prod_ids = self.search([('engineering_code', '=', checkObj.engineering_code), ('engineering_revision', '=', checkObj.engineering_revision - 1)], limit=1)
+            for oldObject in prod_ids:
+                oldObject.wf_message_post(body=_('Removed : Latest Revision.'))
+                ctx['check'] = False
+                values = {'state': 'released'}
+                if not oldObject.with_context(ctx).write(values):
+                    raise UserError(_('Cannot restore previous product Eng Code %r Eng Rev %r Doc Id %r' % (oldObject.engineering_code, oldObject.engineering_revision, oldObject.id)))
+        return True
+
+    def unlink(self):
+        for checkObj in self:
+            checkObj.unlinkCheckFirstLevel()
+            checkObj.linkeddocuments.unlinkCheckDocumentRelations()
+            checkObj.unlinkCheckBomRelations()
+            checkObj.unlinkRestorePreviousComponent()
         return super(PlmComponent, self).unlink()
 
     def action_draft(self):
