@@ -33,4 +33,44 @@
         <field name="perm_unlink" eval="1"/>
     </record>
 
+    <record id="access_res_groups_plm_box_user" model="ir.model.access">
+        <field name="name">Res Groups Box User</field>
+        <field name="model_id" ref="base.model_res_groups"/>
+        <field name="group_id" ref="plm_box.group_plm_box_user"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="0"/>
+        <field name="perm_create" eval="0"/>
+        <field name="perm_unlink" eval="0"/>
+    </record>
+
+    <record id="access_res_users_plm_box_user" model="ir.model.access">
+        <field name="name">Res Users Box User</field>
+        <field name="model_id" ref="base.model_res_users"/>
+        <field name="group_id" ref="plm_box.group_plm_box_user"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="0"/>
+        <field name="perm_create" eval="0"/>
+        <field name="perm_unlink" eval="0"/>
+    </record>
+
+    <record id="access_res_groups_plm_box_admin" model="ir.model.access">
+        <field name="name">Res Groups Box Admin</field>
+        <field name="model_id" ref="base.model_res_groups"/>
+        <field name="group_id" ref="plm_box.group_plm_box_admin"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="1"/>
+        <field name="perm_create" eval="1"/>
+        <field name="perm_unlink" eval="0"/>
+    </record>
+
+    <record id="access_res_users_plm_box_admin" model="ir.model.access">
+        <field name="name">Res Users Box Admin</field>
+        <field name="model_id" ref="base.model_res_users"/>
+        <field name="group_id" ref="plm_box.group_plm_box_admin"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="1"/>
+        <field name="perm_create" eval="1"/>
+        <field name="perm_unlink" eval="0"/>
+    </record>
+
 </odoo>
