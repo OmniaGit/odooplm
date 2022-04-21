@@ -238,7 +238,7 @@ class PackAndGo(models.TransientModel):
         objBrwsList = packAndGoViewObj.search([])
         objBrwsList.unlink()
         packList = self.search([('id', '!=', self.id)])
-        packList.unlink()
+        packList.sudo().unlink()
 
     def getAllAvailableTypes(self):
         '''
@@ -323,13 +323,18 @@ class PackAndGo(models.TransientModel):
             else:
                 self.exportSingle(lineBrws.document_id, outZipFile)
 
+    def getPDF(self, docBws):
+        report_model = self.env['report.plm.ir_attachment_pdf']
+        content, _type = report_model._render_qweb_pdf(docBws)
+        return content
+
     def exportPdf(self, outZipFile):
         for lineBrws in self.export_pdf:
             docBws = lineBrws.document_id
             outFilePath = os.path.join(outZipFile, docBws.name + '.' + 'pdf')
             if docBws.printout:
                 with open(outFilePath, 'wb') as fileObj:
-                    fileObj.write(base64.b64decode(docBws.printout))
+                    fileObj.write(self.getPDF(docBws))
 
     def exportOther(self, outZipFile):
         for lineBrws in self.export_other:

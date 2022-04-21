@@ -156,10 +156,14 @@ class MrpBomLineExtension(models.Model):
     def openRelatedDocuments(self):
         domain = [('id', 'in', self.related_document_ids.ids)]
         out_act_dict = {'name': _('Documents'),
-                        'view_type': 'form',
                         'res_model': 'ir.attachment',
                         'type': 'ir.actions.act_window',
                         'view_mode': 'kanban,tree,form',
+                        'views': [
+                            (self.env.ref('plm.document_kanban_view').id, 'kanban'),
+                            (self.env.ref('plm.view_attachment_form_plm_hinerit').id, 'form'),
+                            (self.env.ref('plm.ir_attachment_tree').id, 'tree'),
+                            ],
                         'domain': domain}
         return out_act_dict
 

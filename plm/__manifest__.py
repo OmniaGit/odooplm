@@ -71,10 +71,12 @@
     "assets": {
         "web.assets_backend": [
             "plm/static/src/css/component_kanban.css",
+            "plm/static/src/css/color_fields_tree.css",
             ],
         'web.report_assets_common': [
             "plm/static/src/scss/document_bom.scss",
             "plm/static/src/css/component_kanban.css",
+            "plm/static/src/css/color_fields_tree.css",
         ],
         },
     "qweb": [],

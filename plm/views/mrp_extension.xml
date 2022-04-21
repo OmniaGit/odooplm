@@ -13,9 +13,12 @@
             </field>
             <field name="product_id" position="after">
                 <field name="engineering_revision" readonly="True"/>
-                <field name="state" readonly="True"/>
+                <field name="state"/>
                 <field name="description" select="True"/>
-                <field name="source_id" string="Source Relation Document"/>
+                <field name="source_id" string="Source Relation" widget="many2one"
+                	   context="{'kanban_view_ref':'plm.document_kanban_view',
+        						 'tree_view_ref':'plm.ir_attachment_tree',
+								 'form_view_ref':'plm.view_attachment_form_plm_hinerit'}"/>
             </field>
             <field name="product_qty" position="after">
                 <field name="weight_net" readonly="True"/>
@@ -30,17 +33,20 @@
         <field name="type">tree</field>
         <field name="inherit_id" ref="mrp.mrp_bom_tree_view"/>
         <field name="arch" type="xml">
-            <field name="product_id" position="after">
-            	<field name="product_id"/>
-            	<field name="code"/>
+        	<field name="product_tmpl_id" position="before">
+        		<field name="att_count" invisible="True"/>
                 <button 
         			name="open_attachments"
         			type="object"
-        			icon="fa-files-o text-o-color-#3"
+        			icon="plm/static/description/odoo_icon_small.png"
         			aria-label="Product Attachments"
         			title="Product Attachments"
-        			class="float-right"/>
-        			<field name="source_id" string="Source Relation Document"/>
+        			class="float-right"
+        			attrs="{'invisible': ['|',('att_count', '=', False), ('att_count', '=', 0)]}"/>
+        	</field>
+            <field name="product_id" position="after">
+            	<field name="product_id" widget="many2one"/>
+            	<field name="code"/>
                 <field name="description" select="True"/>
                 <field name="company_id"/>
                 <field name="state" select="True"/>
@@ -48,6 +54,12 @@
                 <field name="product_qty"/>
                 <field name="engineering_revision"/>
             </field>
+            <xpath expr="//tree" position="attributes">
+            	<attribute name="decoration-info">state == 'confirmed'</attribute>
+            	<attribute name="decoration-success">state == 'released'</attribute>
+            	<attribute name="decoration-warning">state == 'undermodify'</attribute>
+            	<attribute name="decoration-muted">state == 'obsoleted'</attribute>
+            </xpath>
         </field>
     </record>
     
@@ -67,7 +79,7 @@
                         class="oe_stat_button"
                         icon="fa-tasks"
                         attrs="{'invisible':[('bom_revision_count','&lt;=','1')]}">
-                        <field name="bom_revision_count" string=" " widget="statinfo"/>
+                <field name="bom_revision_count" string=" " widget="statinfo"/>
                 </button>
             </div>
             <field name="product_tmpl_id" position="replace">
@@ -78,14 +90,15 @@
 	            		options="{'no_open':True,'no_create':True}"
 	            		class="oe_inline text-left"
 	            		colspan="2"/>
-	            	<button
-						name="open_attachments"
-					    type="object"
-					    icon="fa-files-o"
-					    aria-label="Product Attachments"
-					    title="Product Attachments"
-					    class="oe_link oe_inline"
-					    style="color: #017e84;"/>
+	            	<field name="att_count" invisible="True"/>
+	                <button 
+	        			name="open_attachments"
+	        			type="object"
+	        			icon="plm/static/description/odoo_icon_small.png"
+	        			aria-label="Product Attachments"
+	        			title="Product Attachments"
+	        			class="float-right"
+	        			attrs="{'invisible': ['|',('att_count', '=', False), ('att_count', '=', 0)]}"/>
 				</div>
 		    </field>
 		    <field name="code" position="replace">
@@ -99,13 +112,15 @@
             	<separator string="Info:" colspan="2"/>
                 <field name="description" readonly="True"/>
                 <field name="engineering_revision" readonly="True"/>
-                <field name="state" readonly="True" style="color: rgb(110, 51, 197);" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
-                <field name="state" readonly="True" style="color: blue;" attrs="{'invisible': [('state', '!=', 'confirmed')]}"/>
-                <field name="state" readonly="True" style="color: rgba(0, 170, 34, 0.66);" attrs="{'invisible': [('state', '!=', 'released')]}"/>
-                <field name="state" readonly="True" style="color: rgb(218, 159, 34);" attrs="{'invisible': [('state', '!=', 'undermodify')]}"/>
-                <field name="state" readonly="True" style="color: rgb(231, 43, 26);" attrs="{'invisible': [('state', '!=', 'obsoleted')]}"/>
+                <field name="state" readonly="True"/>
                 <field name="weight_net" readonly="True"/>
             </field>
+            <xpath expr="//field[@name='bom_line_ids']/tree" position="attributes">
+            	<attribute name="decoration-info">state == 'confirmed'</attribute>
+            	<attribute name="decoration-success">state == 'released'</attribute>
+            	<attribute name="decoration-warning">state == 'undermodify'</attribute>
+            	<attribute name="decoration-muted">state == 'obsoleted'</attribute>
+            </xpath>
             <xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_id']" position="before">
                 <field name="related_bom_ids" invisible="True"/>
                 <field name="hasChildBoms" invisible="True"/>
@@ -114,22 +129,32 @@
                         icon="fa-level-down" 
                         class="btn btn-sm oe_stat_button"
                         attrs="{'invisible':[('hasChildBoms', '=', False)]}"/>
-                <field name="related_document_ids" invisible="True"/>
-                <button name="openRelatedDocuments"
-                        type="object"
-                        icon="fa-folder-open"
-                        class="btn btn-sm oe_stat_button"
-                        attrs="{'invisible':[('related_document_ids', '=', [])]}"/>
-                <field name="itemnum"/>
-                <field name="itemlbl"/>
+            	<field name="related_document_ids" invisible="True"/>
+            	<button 
+  					name="openRelatedDocuments"
+  					type="object"
+  					icon="plm/static/description/odoo_icon_small.png"
+  					class="float-right"
+  					attrs="{'invisible':[('related_document_ids', '=', [])]}"/>
             </xpath>
             <xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_id']" position="after">
-                <field name="engineering_revision" readonly="True"/>
-                <field name="state" readonly="True"/>
                 <field name="description" readonly="True"/>
-                <field name="source_id" string="Source Relation Document"/>
+                <field name="engineering_revision" readonly="True"/>
+                <field name="state" />
             </xpath>
-
+            <xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_qty']" position="before">
+                <field name="source_id" string="Source Relation" widget="many2one"
+                	   context="{'kanban_view_ref':'plm.document_kanban_view',
+        						 'tree_view_ref':'plm.ir_attachment_tree',
+								 'form_view_ref':'plm.view_attachment_form_plm_hinerit'}"/>
+            </xpath>
+            <xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_id']" position="attributes">
+            	<attribute name="widget">many2one</attribute>
+            </xpath>
+            <xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_uom_id']" position="after">
+            	<field name="itemnum"/>
+            	<field name="itemlbl"/>
+            </xpath>
             <xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_qty']" position="after">
                 <field name="hasChildBoms" invisible="True"/>
             </xpath>
@@ -200,7 +225,10 @@
                 <!-- <field name="code" string="BoM Name"/> -->
                 <field name="engineering_revision" string="Revision"/>
                 <field name="description"/>
-                <field name="source_id" string="Source Relation Document"/>
+                <field name="source_id" string="Source Relation" widget="many2one"
+                	   context="{'kanban_view_ref':'plm.document_kanban_view',
+        						 'tree_view_ref':'plm.ir_attachment_tree',
+								 'form_view_ref':'plm.view_attachment_form_plm_hinerit'}"/>
                 <field name="product_qty"/>
                 <field name="product_uom_id"/>
                 <field name="weight_net"/>
@@ -220,7 +248,10 @@
                 <field name="product_id" string="Component Name"/>
                 <field name="engineering_revision" string="Revision"/>
                 <field name="description"/>
-                <field name="source_id" string="Source Relation Document"/>
+                <field name="source_id" string="Source Relation" widget="many2one"
+                	   context="{'kanban_view_ref':'plm.document_kanban_view',
+        						 'tree_view_ref':'plm.ir_attachment_tree',
+								 'form_view_ref':'plm.view_attachment_form_plm_hinerit'}"/>
                 <field name="product_qty"/>
                 <field name="product_uom_id"/>
                 <field name="weight_net"/>

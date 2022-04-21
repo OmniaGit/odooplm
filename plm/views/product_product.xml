@@ -243,7 +243,11 @@
                         class="oe_stat_button"
                         icon="fa-tag">
                 </button>
-            </xpath>     
+            </xpath>
+            <xpath expr="//div[@name='options']" position="attributes">
+                <attribute name="margin-left">0</attribute>
+                <attribute name="padding-left">0</attribute>
+            </xpath>   
             <xpath expr="//notebook[last()]" position="before">
                <field name="is_engcode_editable" invisible="1"/>
                <group col="8">
@@ -331,7 +335,11 @@
                                         name="action_rev_docs" string="Revision Rel Docs"/>
                             </group>
                             <group>
-                                <field name="linkeddocuments" nolabel="1" context="{'odooPLM': True}"  mode="kanban" domain="[('is_plm', '=', True)]"></field>
+                                <field name="linkeddocuments" nolabel="1" mode="kanban" domain="[('is_plm', '=', True)]"
+                                	   context="{	'odooPLM': True,
+                                	   				'kanban_view_ref':'plm.document_kanban_view',
+        						 					'tree_view_ref':'plm.ir_attachment_tree',
+								 					'form_view_ref':'plm.view_attachment_form_plm_hinerit'}"/>
                             </group>
                         </page>
             </xpath>

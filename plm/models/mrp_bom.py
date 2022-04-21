@@ -100,20 +100,38 @@ class MrpBomExtension(models.Model):
 
     bom_revision_count = fields.Integer(related='product_tmpl_id.revision_count')
     
+    att_count = fields.Integer(compute='attch_count')
+    
+    def attch_count(self):
+        for bom in self:
+            doc_ids = bom.get_related_attachments()
+            bom.att_count = len(doc_ids)
+
+    def get_related_attachments(self):
+        for bom in self:
+            domain = [
+                '|',
+                '&', ('res_model', '=', 'product.product'), ('res_id', '=', bom.product_id.id),
+                '&', ('res_model', '=', 'product.template'), ('res_id', '=', bom.product_id.product_tmpl_id.id)]
+            sudo_att = self.env['ir.attachment'].sudo()
+            out_att = sudo_att.search(domain)
+            out_att += bom.product_id.linkeddocuments
+            return out_att
+        return self.env['ir.attachment']
+
     def open_attachments(self):
-        domain = [
-            '|',
-            '&', ('res_model', '=', 'product.product'), ('res_id', '=', self.product_id.id),
-            '&', ('res_model', '=', 'product.template'), ('res_id', '=', self.product_id.product_tmpl_id.id)]
-        sudo_att = self.env['ir.attachment'].sudo()
-        out_att = sudo_att.search(domain)
-        out_att += self.product_id.linkeddocuments
+        out_att  = self.get_related_attachments()
         return {
             'name': _('Attachments'),
             'domain': [('id', 'in', out_att.ids)],
             'res_model': 'ir.attachment',
             'type': 'ir.actions.act_window',
             'view_mode': 'kanban,tree,form',
+            'views': [
+                (self.env.ref('plm.document_kanban_view').id, 'kanban'),
+                (self.env.ref('plm.view_attachment_form_plm_hinerit').id, 'form'),
+                (self.env.ref('plm.ir_attachment_tree').id, 'tree'),
+                ],
             'help': _('''<p class="o_view_nocontent_smiling_face">
                         Upload files to your product
                     </p><p>

@@ -928,6 +928,17 @@ class PlmDocument(models.Model):
                 parent_dict[doc].append((record.parent_id))
         return parent_dict
 
+    def unlinkCheckDocumentRelations(self):
+        ctx = self.env.context.copy()
+        for checkObj in self:
+            id_parents = checkObj.getParentDocuments()
+            for child_doc, parent_docs in id_parents.items():
+                if parent_docs:
+                    msg = _('You cannot unlink a component child that is present in a related documents:\n')
+                    for parent_doc in parent_docs:
+                        msg += _('\t Engineering Name = %r   Engineering Revision = %r   Id = %r\n') % (parent_doc.engineering_document_name, parent_doc.revisionid, parent_doc.id)
+                    raise UserError(msg)
+
     def unlinkRestorePreviousDocument(self):
         for checkObj in self:
             docBrwsList = self.search([('engineering_document_name', '=', checkObj.engineering_document_name), ('revisionid', '=', checkObj.revisionid - 1)], limit=1)
@@ -936,22 +947,12 @@ class PlmDocument(models.Model):
                 ctx['check'] = False
                 values = {'state': 'released'}
                 if not oldObject.with_context(ctx).write(values):
-                    msg = 'Unlink : Unable to update state in old document Eng Name %r Eng Rev %r Doc Id %r' % (oldObject.engineering_document_name, oldObject.revisionid, oldObject.id)
+                    msg = 'Unlink : Unable to update state in old document Engineering Name = %r   Engineering Revision = %r   Id = %r' % (oldObject.engineering_document_name, oldObject.revisionid, oldObject.id)
                     logging.warning(msg)
-                    raise UserError(_('Cannot restore previous document Eng Name %r Eng Rev %r Doc Id %r' % (oldObject.engineering_document_name, oldObject.revisionid, oldObject.id)))
+                    raise UserError(_('Cannot restore previous document Engineering Name = %r   Engineering Revision = %r   Id = %r' % (oldObject.engineering_document_name, oldObject.revisionid, oldObject.id)))
         return True
 
-    def unlinkCheckDocumentRelations(self):
-        for checkObj in self:
-            id_parents = checkObj.getParentDocuments()
-            for child_doc, parent_docs in id_parents.items():
-                msg = _('You cannot unlink a component child that is present in a related documents\n')
-                for parent_doc in parent_docs:
-                    msg += _('Eng. Name %r Eng Rev %r ID %r\n') % (parent_doc.engineering_document_name, parent_doc.revisionid, parent_doc.id)
-                raise UserError(msg)
-
-    def unlink(self):    
-        ctx = self.env.context.copy()
+    def unlink(self):
         for checkObj in self:
             checkObj.unlinkCheckDocumentRelations()
             checkObj.linkedcomponents.unlinkCheckBomRelations()

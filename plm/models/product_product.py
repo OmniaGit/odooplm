@@ -733,12 +733,16 @@ class PlmComponent(models.Model):
 
     def unlinkCheckBomRelations(self):
 
-        def print_where_struct(where_struct):
+        def print_where_struct(self, where_struct):
             print_struct = []
+            prod_struct = []
             for id1, id2 in where_struct:
                     if id1 not in print_struct or id1 != False:
                         print_struct.append(id1)
-            return print_struct
+            for ids in print_struct:
+                prod_obj = self.env['product.product'].search([('id', '=', ids)])
+                prod_struct.append((prod_obj.engineering_code, prod_obj.engineering_revision, ids))
+            return prod_struct
 
         for product_id in self:
             bom_obj = self.env['mrp.bom']
@@ -748,11 +752,15 @@ class PlmComponent(models.Model):
                 bom_types.append(option[0])
             bom_line = bom_obj._get_in_bom(product_id.id, False, bom_types)
             where_struct = bom_obj._implode_bom(bom_line, False, bom_types)
-            print_struct = print_where_struct(where_struct)
+            prod_struct = print_where_struct(self, where_struct)
             if where_struct:
-                raise UserError(_('You cannot unlink a component that is present in a BOM (N° Id: %r)' %(print_struct)))
+                msg = _('You cannot unlink a component that is present in a BOM:\n')
+                for prod in prod_struct:
+                    msg += (_('\t Engineering Code = %r   Engineering Revision = %r   Product Id = %r\n' % (prod[0], prod[1], prod[2])))
+                raise UserError(msg)
 
     def unlinkRestorePreviousComponent(self):
+        ctx = self.env.context.copy()
         for checkObj in self:
             prod_ids = self.search([('engineering_code', '=', checkObj.engineering_code), ('engineering_revision', '=', checkObj.engineering_revision - 1)], limit=1)
             for oldObject in prod_ids:
@@ -760,7 +768,9 @@ class PlmComponent(models.Model):
                 ctx['check'] = False
                 values = {'state': 'released'}
                 if not oldObject.with_context(ctx).write(values):
-                    raise UserError(_('Cannot restore previous product Eng Code %r Eng Rev %r Doc Id %r' % (oldObject.engineering_code, oldObject.engineering_revision, oldObject.id)))
+                    msg = 'Unlink : Unable to update state in product Engineering Code = %r   Engineering Revision = %r   Document Id = %r' % (oldObject.engineering_code, oldObject.engineering_revision, oldObject.id)
+                    logging.warning(msg)
+                    raise UserError(_('Cannot restore previous product Engineering Code = %r   Engineering Revision = %r   Document Id = %r' % (oldObject.engineering_code, oldObject.engineering_revision, oldObject.id)))
         return True
 
     def unlink(self):
