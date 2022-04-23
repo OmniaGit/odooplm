@@ -2,3 +2,6 @@
 	path = plm_web_3d/static/src/js/lib/three.js
 	url = https://github.com/mrdoob/three.js.git
 	branch = dev
+[submodule "plm_web_3d/static/src/js/lib/dxf-viewer"]
+	path = plm_web_3d/static/src/js/lib/dxf-viewer
+	url = https://github.com/vagran/dxf-viewer.git

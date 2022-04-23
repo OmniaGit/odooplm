@@ -6,7 +6,9 @@ import { FBXLoader } from '../three.js/examples/jsm/loaders/FBXLoader.js';
 import { OBJLoader } from '../three.js/examples/jsm/loaders/OBJLoader.js';
 import { VRMLLoader } from '../three.js/examples/jsm/loaders/VRMLLoader.js';
 import { STLLoader } from '../three.js/examples/jsm/loaders/STLLoader.js';
-import {SVGLoader} from '../three.js/examples/jsm/loaders/SVGLoader.js';
+import { SVGLoader } from '../three.js/examples/jsm/loaders/SVGLoader.js';
+import { DXFLoader } from "./DXFLoader.js"
+
 
 const gLTFLoader = new GLTFLoader();
 const fBXLoader = new FBXLoader();
@@ -14,7 +16,9 @@ const oBJLoader = new OBJLoader();
 const vRMLLoader = new VRMLLoader();
 const stlLoader = new STLLoader();
 const svgloader = new SVGLoader();
+const dxfLoader = new DXFLoader();
 const loader = new THREE.ObjectLoader();
+
 
 
 const transparent_material = new THREE.MeshPhysicalMaterial({
@@ -46,35 +50,54 @@ class Loader {
 	load_document(document_id, document_name){
 		this.progress_bar.style.width = '0%';
 		this.progress.display = 'block';
-		var file_path = '../plm/download_treejs_model?document_id=' + document_id
+		var url = '../plm/download_treejs_model?document_id=' + document_id
 		var exte = document_name.split('.').pop();
 		exte = exte.toLowerCase()
 		if (['glb','gltf'].includes(exte)){ 
-			this.loadGltx(document_name, file_path);
+			this.loadGltx(document_name, url);
 		}
 		if (['fbx'].includes(exte)){
-			this.loadfBXLoader(document_name, file_path);
+			this.loadfBXLoader(document_name, url);
 		}
 		if (['obj'].includes(exte)){
-			this.loadoBJLoader(document_name, file_path);
+			this.loadoBJLoader(document_name, url);
 		}
 		if (['wrl'].includes(exte)){
-			this.loadvRMLLoader(document_name, file_path);
+			this.loadvRMLLoader(document_name, url);
 		}
 		if (['json'].includes(exte)){
-			this.loadoloader(document_name, file_path);
+			this.loadoloader(document_name, url);
 		}
 		if (['stl'].includes(exte)){
-			this.loadStlLoader(document_name, file_path);
+			this.loadStlLoader(document_name, url);
 		}	
         if (['svg'].includes(exte)){
-            this.loadSvgLoader(document_name, file_path);
+            this.loadSvgLoader(document_name, url);
         }   
-
+        if (['dxf'].includes(exte)){
+            this.loadDxf(document_name, url);
+        }   
 	}
-	loadGltx(document_name, file_path){
+	loadDxf(document_name, url){
+        var self=this;
+        dxfLoader.load(url,
+            function (objects) {
+                for (const obj of objects) {
+                   self.odooCad.addItemToScene(obj)
+                }
+            },
+            (xhr) => {
+                var percentage = (xhr.loaded / xhr.total) * 100;
+                self.progress_bar.style.width = percentage + '%';
+                console.log(progress_bar.style.width + ' loaded')
+            },
+            (err) => {
+                alert("Unable to load the " + document_name + " err: " + err);
+         });
+	}
+	loadGltx(document_name, url){
 		var self=this;
-		gLTFLoader.load( file_path, function ( gltf ) {
+		gLTFLoader.load( url, function ( gltf ) {
 			var children = gltf.scene.children; 
 			var i;
 			for (i = 0; i < children.length; i++) {
@@ -91,8 +114,8 @@ class Loader {
 			alert("Unable to load the " + document_name + " err: " + err);
 		});		
 	}
-	loadfBXLoader(document_name, file_path){
-		fBXLoader.load( file_path, function ( gltf ) {
+	loadfBXLoader(document_name, url){
+		fBXLoader.load( url, function ( gltf ) {
 			var children = gltf.children; 
 			var i;
 			for (i = 0; i < children.length; i++) {
@@ -127,9 +150,9 @@ class Loader {
 		});	
 		
 	}
-	loadoloader(document_name, file_path){
+	loadoloader(document_name, url){
 		loader.load(
-				document_name,
+				url,
 				function ( obj ) {
 					this.addItemToScene( obj );
 				},
@@ -144,8 +167,8 @@ class Loader {
 					alert("Unable to load the " + document_name + " err: " + err);
 				});	
 	}
-	loadvRMLLoader(document_name, file_path){
-		vRMLLoader.load( file_path, function ( gltf ) {
+	loadvRMLLoader(document_name, url){
+		vRMLLoader.load( url, function ( gltf ) {
 			var children = gltf.children; 
 			var i;
 			for (i = 0; i < children.length; i++) {
@@ -161,9 +184,9 @@ class Loader {
 	    	alert("Unable to load the " + document_name + " err: " + err);
 	    });	
 	}
-	loadStlLoader(document_name, file_path){
+	loadStlLoader(document_name, url){
 		var self=this;
-		stlLoader.load(file_path, 
+		stlLoader.load(url, 
 		    function (geometry) {
 		        const mesh = new THREE.Mesh(geometry, transparent_material)
 		        self.odooCad.addItemToScene(mesh);
@@ -177,9 +200,9 @@ class Loader {
 		    	alert("Unable to load the " + document_name + " err: " + err);
 		 });
 	}
-    loadSvgLoader(document_name, file_path){
+    loadSvgLoader(document_name, url){
         var self=this;
-        stlLoader.load(file_path, 
+        stlLoader.load(url, 
             function (data) {
                 const paths = data.paths;
                 const group = new THREE.Group();
