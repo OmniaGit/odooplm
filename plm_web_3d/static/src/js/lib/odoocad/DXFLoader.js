@@ -132,11 +132,24 @@ class Batch {
         default:
             throw new Error("Unexpected geometry type:" + this.key.geometryType)
         }
+        function pairs(arr) {
+            var res = new Float32Array(arr.length/2*3);
+            var l = arr.length;
+            var ind=0;
+            for(var i=0; i<l; i=i+2){
+                res[ind] = arr[i];
+                res[ind+1] = arr[i+1];
+                res[ind+2] = 0.0;
+                ind=ind+3;                
+            }
+            return res;
+        }
 
         function CreateObject(vertices, indices) {
             const geometry = instanceBatch ?
                 new THREE.InstancedBufferGeometry() : new THREE.BufferGeometry()
-            geometry.setAttribute("position", vertices)
+            const array=pairs(vertices.array);
+            geometry.setAttribute("position", new THREE.BufferAttribute(array,3))
             instanceBatch?._SetInstanceTransformAttribute(geometry)
             if (indices) {
                 geometry.setIndex(indices)

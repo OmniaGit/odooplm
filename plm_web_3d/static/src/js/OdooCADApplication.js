@@ -231,7 +231,8 @@ function init() {
 //
 	mouse = new THREE.Vector2();
 	raycaster = new THREE.Raycaster();
-	raycaster.params.Points.threshold = 20;
+	raycaster.params.Line.threshold = 3;
+	raycaster.params.Points.threshold = 3;
 //
 // define scene and ambient
 //
@@ -563,7 +564,7 @@ function addLight(){
 function showSnapPoint(){
 	if (sphereHelper){
 		raycaster.setFromCamera( pointer, camera );
-		const intersections = raycaster.intersectObjects(OdooCad.items, false );
+		const intersections = raycaster.intersectObjects(OdooCad.items, true );
 		var intersection = ( intersections.length ) > 0 ? intersections[ 0 ] : null;
 		if (intersection !== null ) {
 			var first = true;
