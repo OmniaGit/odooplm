@@ -56,14 +56,6 @@ def random_name():
     d = [random.choice(string.ascii_letters) for _x in range(20)]
     return "".join(d)
 
-
-def create_directory(path):
-    dir_name = random_name()
-    path = os.path.join(path, dir_name)
-    os.makedirs(path)
-    return dir_name
-
-
 class PlmDocument(models.Model):
     _name = 'ir.attachment'
     _inherit = ['ir.attachment', 'mail.thread']
