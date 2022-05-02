@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+
+    <record model="ir.ui.view" id="plm_convert_rule_search">
+        <field name="name">plm.convert.rule.search</field>
+        <field name="model">plm.convert.rule</field>
+        <field name="type">search</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <search string="Plm Convert Rule">
+            	<field name="product_category"/>
+            	<field name="output_name_rule"/>
+	            <field name="start_format"/>
+	            <field name="end_format"/>
+                <group expand="0" string="Group By...">
+                    <filter string="Category" icon="terp-personal" domain="[]" context="{'group_by':'product_category'}" name="convert_rule_category"/>
+                </group>
+            </search>
+     	</field>
+    </record>
+
+    <record model="ir.ui.view" id="plm_convert_rule_form">
+        <field name="name">plm.convert.rule.form</field>
+        <field name="model">plm.convert.rule</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Plm Convert Rule">
+            	<sheet>	
+	                <group >
+		                <field name="start_format" placeholder=".ipt" required="True"/>
+		                <field name="end_format" placeholder=".step" required="True"/>
+		                <field name="product_category" required="True"/>
+		                <field name="server_id" required="True"/>
+		                <field name="convert_alone_documents"/>
+		                <field name="output_name_rule"/>
+	                    <i class="fa fa-info fa-3x text-info float-left" role="img" aria-label="Info" title="Info"/>
+	                    <p>
+	                    	<h3>Output Filename Rule</h3>
+	                   	</p>
+	                    <div>
+	                      <p>
+	                         Available accessors to compute the rule are:
+	                         	<ol>
+		                         	<li> document	: Document that needs to be converted</li>
+		                         	<li> component : Starting from the document to be converted we get the related component</li>
+		                         	<li> env		: Odoo environment</li>
+	                         	</ol>
+	                      </p>
+	                      <p>
+	                        Default rule is '%s_%s' % (document.name, document.revisionid)
+	                      </p>
+	                      <p>
+	                         Example:
+	                      </p>
+	                      <p>
+	                         We have a document with
+	                         	<ol>
+		                         	<li> name	: Abc</li>
+		                         	<li> revisionid : 3</li>
+	                         	</ol>
+	                         We have a component with
+	                         	<ol>
+		                         	<li> name	: Abc_prod</li>
+		                         	<li> engineering_revision : 2</li>
+	                         	</ol>
+	                         Starting from the rule
+	                      </p>
+	                      <p>
+	                         '%s_%s___%s_%s' % (document.name, document.revisionid, component.name, component.engineering_revision)
+	                      </p>
+	                      <p>
+	                         We will have
+	                      </p>
+	                      <p>
+	                         Abc_3___Abc_prod_2
+	                      </p>
+	                    </div>
+	                </group>
+               	</sheet> 
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="plm_convert_rule_tree">
+        <field name="name">plm.convert.rule.tree</field>
+        <field name="model">plm.convert.rule</field>
+        <field name="type">tree</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <tree string="Plm Convert Rule">
+                <field name="start_format"/>
+                <field name="end_format"/>
+                <field name="product_category"/>
+                <field name="output_name_rule"/>
+                <field name="server_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="plm_convert_rule_action">
+        <field name="name">Plm Convert Rule</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">plm.convert.rule</field>
+        <field name="view_id" ref="plm_convert_rule_tree"/>
+        <field name="search_view_id" ref="plm_convert_rule_search"/>
+    </record>
+
+    <menuitem
+            id="plm_convert_rule_menu"
+            name="Plm Convert Rule"
+            parent="plm.plm_menu_dictionaries"
+            groups="plm_automated_convertion.group_plm_convert_view"
+            action="plm_convert_rule_action"/>
+
+</data>
+</odoo>
+
