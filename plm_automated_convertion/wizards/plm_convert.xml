@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 	<data>
+
 		<record id="act_plm_convert_form" model="ir.ui.view">
         	<field name="name">plm.convert.form</field>
         	<field name="model">plm.convert</field>
@@ -8,32 +9,28 @@
         	<field name="arch" type="xml">
 	        	<form string="Convert Form">
 	        		<group colspan="4" col="4">
+		        		<field string = "only dxf" name="batch_preview_printout" colspan="4"/>
 		        		<field string = "Documento Origine" name="document_id" />
 						<field string = "Convertion Format" name="targetFormat" />
 		        		<field string = "Converted File" name="downloadDatas" readonly="1" filename="datas_fname"/>
-	            	</group>	
+		        		
+	            	</group>
+	            	
+	            	<group attrs="{'invisible': [('error_message','in',[False,''])]}">
+	            	  <div style="background-color: red;">
+	            	      <field name="error_message"/>
+	            	  </div>
+	            	</group>
 	        		<separator string=""/>
-            		<footer>
+                    <footer>
                         <button special="cancel" string="Cancel"/>
                         <button string="Convert to folder" name="action_create_coversion" type="object"/>
                         <button string="Convert and Downlaod" name="action_create_convert_download" type="object"/>
-                    </footer>        		
+                    </footer>    	        		
 				</form>
 			</field>
 		</record>
-		
-		<record id="plm_batch_convertion_ir_attachment" model="ir.ui.view">
-			<field name="name">plm.batch.convertion.ir.attachment</field>
-			<field name="model">ir.attachment</field>
-			<field name="inherit_id" ref="plm.ir_attachment_tree"/>
-			<field name="priority" eval="3"/>
-			<field name="arch" type="xml">
-				<field name="engineering_document_name" position="before">
-					<button icon="fa-openid" string="Convert" name="show_convert_wizard" type="object"/>	
-				</field>
-			</field>
-		</record>
-		
+
 		<record model="ir.actions.act_window" id="act_view_doc_convert">
             <field name="name">Convert File</field>
             <field name="res_model">plm.convert</field>
@@ -42,6 +39,8 @@
             <field name="target">new</field>
             <field name="view_mode">form</field>
         </record>
+
+
 	</data>
 </odoo>
           

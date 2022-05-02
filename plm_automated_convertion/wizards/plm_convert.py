@@ -42,15 +42,21 @@ class plm_temporary_batch_converter(models.TransientModel):
 
     @api.model
     def getCadAndConvertionAvailabe(self, fromExtention):
-        serverName = self.env['ir.config_parameter'].get_param('plm_convetion_server')
-        if not serverName:
-            raise Exception("Configure plm_convetion_server to use this functionality")
-        url = 'http://%s/odooplm/api/v1.0/getAvailableExtention' % serverName
-        response = requests.get(url)
-        if response.status_code != 200:
-            raise UserError("Conversion of cad server failed, check the cad server log")
-        return response.json().get(str(fromExtention).lower(), ('', []))
-
+        ret = ('.dxf', ['png_pdf_update'])
+        try:
+            serverName = self.env['ir.config_parameter'].get_param('plm_convetion_server')
+            if not serverName:
+                raise Exception("Configure plm_convetion_server to use this functionality")
+            url = 'http://%s/odooplm/api/v1.0/getAvailableExtention' % serverName
+            response = requests.get(url)
+            if response.status_code != 200:
+                raise UserError("Conversion of cad server failed, check the cad server log")
+            ret = response.json().get(str(fromExtention).lower(), ('', []))
+        except Exception as ex:
+            self.error_message = "%s" % ex
+        finally:
+            return ret
+            
     @api.model
     def getAllFiles(self, document):
         out = {}
@@ -116,25 +122,38 @@ class plm_temporary_batch_converter(models.TransientModel):
     downloadDatas = fields.Binary('Download',
                                   attachment=True)
     datas_fname = fields.Char("New File name")
+    
+    batch_preview_printout = fields.Boolean('Batch convert preview and printout',
+                                                   default=False)
+    error_message = fields.Text("Error")
 
     def convert(self):
         """
-        convert the file in a new one
+            convert the file in a new one
         """
         out = []
         for brwWizard in self:
-            _, fileExtension = os.path.splitext(self.document_id.name)
-            cadName, _ = self.getCadAndConvertionAvailabe(fileExtension)
-            newFileName = ''
-            for component in brwWizard.document_id.linkedcomponents:
-                newFileName = component.engineering_code + brwWizard.targetFormat
-            if newFileName == '':
-                newFileName = self.document_id.name + '.' + brwWizard.targetFormat
-            newFilePath = self.getFileConverted(brwWizard.document_id,
-                                                cadName,
-                                                brwWizard.targetFormat,
-                                                newFileName)
-            out.append(newFilePath)
+            if brwWizard.batch_preview_printout:
+                #
+                # use internal convert tool
+                #
+                brwWizard.document_id.createPreview()
+            else:
+                #
+                # call external convert tool for cad
+                #
+                _, fileExtension = os.path.splitext(self.document_id.name)
+                cadName, _ = self.getCadAndConvertionAvailabe(fileExtension)
+                newFileName = ''
+                for component in brwWizard.document_id.linkedcomponents:
+                    newFileName = component.engineering_code + brwWizard.targetFormat
+                if newFileName == '':
+                    newFileName = self.document_id.name + '.' + brwWizard.targetFormat
+                newFilePath = self.getFileConverted(brwWizard.document_id,
+                                                    cadName,
+                                                    brwWizard.targetFormat,
+                                                    newFileName)
+                out.append(newFilePath)
         return out
 
     def action_create_coversion(self):
@@ -150,7 +169,7 @@ class plm_temporary_batch_converter(models.TransientModel):
                 newFileName = os.path.join(convertionFolder, os.path.basename(newFilePath))
                 os.remove(newFileName)
                 shutil.move(newFilePath, convertionFolder)
-        UserError(_("File Converted check the shared folder"))
+        raise UserError(_("File Converted check the shared folder"))
 
     def action_create_convert_download(self):
         """

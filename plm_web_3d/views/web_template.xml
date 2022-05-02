@@ -12,7 +12,11 @@
                 }
              }
         </script>
-        <script type="module" src="../plm_web_3d/static/src/js/OdooCADApplication.js"></script>
+        <script type="module" >
+            import { tweenCamera,camera } from "../plm_web_3d/static/src/js/OdooCADApplication.js";
+            window.tweenCamera = tweenCamera;
+            window.camera = camera;
+        </script>
         <link rel="stylesheet" type="text/css" href="../plm_web_3d/static/src/css/OdooCADApplication.css"></link>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"></link>
       </head>
@@ -90,7 +94,48 @@
                         </div>
                     </div>
                </div>
-            <canvas id="odoo_canvas"/>
+        <ViewCubeContainer>
+          <div class='cube'>
+            <div
+              class='cube__face cube__face--front'
+              onClick="window.tweenCamera('FRONT')"
+            >
+              front
+            </div>
+            <div
+              class='cube__face cube__face--back'
+              onClick="window.tweenCamera('BACK')"
+            >
+              back
+            </div>
+            <div
+              class='cube__face cube__face--right'
+              onClick="window.tweenCamera('RIGHT')"
+            >
+              right
+            </div>
+            <div
+              class='cube__face cube__face--left'
+              onClick="window.tweenCamera('LEFT')"
+            >
+              left
+            </div>
+            <div
+              class='cube__face cube__face--top'
+              onClick="window.tweenCamera('TOP')"
+            >
+              top
+            </div>
+            <div
+              class='cube__face cube__face--bottom'
+              onClick="window.tweenCamera('BOTTOM')"
+            >
+              bottom
+            </div>
+          </div>
+        </ViewCubeContainer>
+        
+        <canvas id="odoo_canvas"/>
            
 	    </div>
       </body>

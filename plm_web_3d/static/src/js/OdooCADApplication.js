@@ -1,3 +1,7 @@
+// some of the code here is taken from
+// https://github.com/leemun1/three-viewcube
+// thanks https://github.com/leemun1 
+
 import * as THREE from './lib/three.js/build/three.module.js';
 import * as ODOOCAD from './lib/odoocad/odoocad.js';
 // controls
@@ -8,7 +12,9 @@ import {
     CSS2DObject,
 } from './lib/three.js/examples/jsm/renderers/CSS2DRenderer.js'
 
+var debug_3d = false;
 let OdooCad;
+let cube;
 let clicked = false;
 const ODOO_COLOR = '#714B67';
 var strDownloadMime = "image/octet-stream";
@@ -201,6 +207,7 @@ function createMarker(){
 	return new_point
 }
 
+
 function init() {
 /*
  * init function with basic definition
@@ -231,7 +238,8 @@ function init() {
 //
 	mouse = new THREE.Vector2();
 	raycaster = new THREE.Raycaster();
-	raycaster.params.Points.threshold = 20;
+	raycaster.params.Line.threshold = 3;
+	raycaster.params.Points.threshold = 3;
 //
 // define scene and ambient
 //
@@ -240,6 +248,10 @@ function init() {
 	scene.add(objectAxesHelper);
 	addAmbient();
 	createSphereHelper();
+//
+// load cube from html
+//
+    cube = document.querySelector('.cube')
 //
 // Load document
 //
@@ -250,6 +262,37 @@ function init() {
  */
 	OdooCad = new ODOOCAD.OdooCAD(scene);
 	OdooCad.load_document(document_id, document_name);
+}
+
+function getCameraCSSMatrix(matrix) {
+
+  var elements = matrix.elements;
+
+  return 'matrix3d(' +
+    epsilon(elements[0]) + ',' +
+    epsilon(-elements[1]) + ',' +
+    epsilon(elements[2]) + ',' +
+    epsilon(elements[3]) + ',' +
+    epsilon(elements[4]) + ',' +
+    epsilon(-elements[5]) + ',' +
+    epsilon(elements[6]) + ',' +
+    epsilon(elements[7]) + ',' +
+    epsilon(elements[8]) + ',' +
+    epsilon(-elements[9]) + ',' +
+    epsilon(elements[10]) + ',' +
+    epsilon(elements[11]) + ',' +
+    epsilon(elements[12]) + ',' +
+    epsilon(-elements[13]) + ',' +
+    epsilon(elements[14]) + ',' +
+    epsilon(elements[15]) +
+    ')';
+
+}
+
+function epsilon( value ) {
+
+  return Math.abs( value ) < 1e-10 ? 0 : value;
+
 }
 
 function initcommand(){
@@ -563,7 +606,7 @@ function addLight(){
 function showSnapPoint(){
 	if (sphereHelper){
 		raycaster.setFromCamera( pointer, camera );
-		const intersections = raycaster.intersectObjects(OdooCad.items, false );
+		const intersections = raycaster.intersectObjects(OdooCad.items, true );
 		var intersection = ( intersections.length ) > 0 ? intersections[ 0 ] : null;
 		if (intersection !== null ) {
 			var first = true;
@@ -602,11 +645,51 @@ function showSnapPoint(){
 	
 }
 
+function updateOrientationCube(camera){
+    if(cube){
+        const mat = new THREE.Matrix4();
+        mat.extractRotation( camera.matrixWorldInverse );
+        cube.style.transform = `translateZ(-100px) ${getCameraCSSMatrix( mat )}`;
+        }
+}
+
 function render() {
+    if(debug_3d){
+        console.log("position");
+        console.log(camera.position);
+        console.log("rotation");
+        console.log(camera.rotation);
+    }
 	resizeCanvasToDisplaySize();
 	showSnapPoint();
+	updateOrientationCube(camera);
 	labelRenderer.render(scene, camera);
 	renderer.render( scene, camera );
+}
+
+function tweenCamera(position){
+    controls.target = new THREE.Vector3(0,0,0);
+    console.log(position);
+    const { offsetFactor, axisAngle } = defined_orientation[position];
+    console.log(offsetFactor);
+    const offsetUnit = camera.position.length();
+    const offset = new THREE.Vector3(
+        offsetUnit * offsetFactor.x,
+        offsetUnit * offsetFactor.y,
+        offsetUnit * offsetFactor.z
+      );
+    
+    const center = new THREE.Vector3();
+    const finishPosition = center.add(offset);
+    console.log("-> new camera position: ");
+    console.log(finishPosition);
+    camera.position.set(offset.x,
+                        offset.y,
+                        offset.z);
+    //controls.update();
+    fitCameraToSelection(OdooCad.items,
+                        1.1);
+    //render();
 }
 
 function resizeCanvasToDisplaySize() {
@@ -621,6 +704,10 @@ function resizeCanvasToDisplaySize() {
 	    camera.updateProjectionMatrix();
 	    renderer.setSize(clientWidth, clientHeight);
 	    labelRenderer.setSize(clientWidth, clientHeight);
+	  }
+	  if(cube){
+	   cube.style.left=clientWidth-100 + 'px';
+	   cube.style.top=clientHeight-50 + 'px';
 	  }
 	}
 
@@ -671,4 +758,85 @@ if (inIframe()){
 }
 // commandEffects();
 
+const defined_orientation = {
+    TOP: {
+        offsetFactor: {
+            x: 0,
+            y: 0,
+            z: 1,
+        },
+        axisAngle: {
+            x: 0,
+            y: 0,
+            z: 0,
+        },
+    },
 
+    BOTTOM: {
+      offsetFactor: {
+        x: 0,
+        y: 0,
+        z: -1,
+      },
+      axisAngle: {
+        x: Math.PI,
+        y: 0,
+        z: 0,
+      },
+    },
+
+    FRONT: {
+      offsetFactor: {
+        x: 0,
+        y: -1,
+        z: 0,
+      },
+      axisAngle: {
+        x: Math.PI / 2,
+        y: 0,
+        z: 0,
+      },
+    },
+
+    BACK: {
+      offsetFactor: {
+        x: 0,
+        y: 1,
+        z: 0,
+      },
+      axisAngle: {
+        x: -(Math.PI / 2),
+        y: 0,
+        z: Math.PI,
+      },
+    },
+
+    LEFT: {
+      offsetFactor: {
+        x: -1,
+        y: 0,
+        z: 0,
+      },
+      axisAngle: {
+        x: Math.PI / 2,
+        y: -(Math.PI / 2),
+        z: 0,
+      },
+    },
+
+    RIGHT: {
+      offsetFactor: {
+        x: 1,
+        y: 0,
+        z: 0,
+      },
+      axisAngle: {
+        x: Math.PI / 2,
+        y: Math.PI / 2,
+        z: 0,
+      },
+    }
+    };
+
+export {camera}
+export {tweenCamera}

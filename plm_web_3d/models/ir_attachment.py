@@ -34,8 +34,9 @@ from odoo.exceptions import UserError
 from datetime import timedelta
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 import urllib.parse
-SUPPORTED_WEBGL_EXTENTION = ['.gltf','.glb','.fbx','.obj','.wrl','.json', '.stl','.svg']
-
+SUPPORTED_WEBGL_EXTENTION = ['.gltf','.glb','.fbx','.obj','.wrl','.json', '.stl','.svg', '.dxf']
+#
+#
 class IrAttachment(models.Model):
     _inherit = ['ir.attachment']
     
@@ -87,5 +88,5 @@ class IrAttachment(models.Model):
                         'type': 'ir.actions.act_url',
                         'target': self,
                         'url': url
-                        }
-    
+                        }                   
+                    

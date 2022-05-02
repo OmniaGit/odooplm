@@ -31,6 +31,7 @@ class OdooCAD{
 			this.scene.add(object);
 			this.items.push(object);
 			// Center the object
+/*
 			var bbox = new THREE.Box3().setFromObject(object);
 			var center = new THREE.Vector3();
 			bbox.getCenter(center);
@@ -43,6 +44,7 @@ class OdooCAD{
 			object.position.set(xpos,
 								ypos,
 								zpos);
+*/
 			progress.display = 'none';
 			var fitItem = new CustomEvent("OdooCAD_fit_items");
 			html_canvas.dispatchEvent(fitItem);

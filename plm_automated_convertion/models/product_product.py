@@ -32,19 +32,24 @@ from odoo import _
 import logging
 
 
-class ir_attachment(models.Model):
-    _inherit = 'ir.attachment'
+class ProductProduct(models.Model):
+    _inherit = 'product.product'
 
-    def show_convert_wizard(self):
-        context = dict(self.env.context or {})
-        context['default_document_id'] = self.id
-        context['name'] = self.name
-        out = {'view_type': 'form',
-               'view_mode': 'form',
-               'res_model': 'plm.convert',
-               'view_id': self.env.ref('plm_automated_convertion.act_plm_convert_form').id,
-               'type': 'ir.actions.act_window',
-               'context': context,
-               'target': 'new'
-               }
-        return out
+    def forceRecursiveConvert(self, recursive=True):
+        convert_stacks = self.env['plm.convert.stack']
+        for product in self:
+            document_ids = []
+            for document in product.linkeddocuments:
+                if recursive:
+                    document_ids.extend(document.getRelatedAllLevelDocumentsTree(document))
+                else:
+                    document_ids.append(document.id)
+            convert_stacks = self.env['ir.attachment'].browse(list(set(document_ids))).generateConvertedFiles()
+        return {'name': _('Convert Stack'),
+                'res_model': "plm.convert.stack",
+                'view_type': 'form',
+                'view_mode': 'tree,form',
+                'type': 'ir.actions.act_window',
+                'domain': [('id', 'in', convert_stacks.ids)],
+                'context': {}}
+            
