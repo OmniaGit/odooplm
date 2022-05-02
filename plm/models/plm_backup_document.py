@@ -24,6 +24,8 @@ Created on 11 Aug 2016
 
 @author: Daniel Smerghetto
 """
+from odoo.tools.safe_eval import safe_eval
+from odoo.osv import expression
 from odoo.exceptions import UserError
 from odoo import models
 from odoo import fields
@@ -69,6 +71,8 @@ class PlmBackupDocument(models.Model):
             result.append((r.id, name))
         return result
 
+    def remaining_unlink(self):
+        super(PlmBackupDocument, self).unlink()
     
     def unlink(self):
         documentType = self.env['ir.attachment']
@@ -146,14 +150,11 @@ class BackupDocWizard(models.TransientModel):
                     logging.info('[action_restore_document] Created document %r' % (documentId))
                 else:
                     logging.warning('[action_restore_document] Create document failed for %r' % (documentId))
-        if documentId:
-            return {'name': _('Document'),
-                    'view_type': 'form',
-                    "view_mode": 'form, tree',
-                    'res_model': 'ir.attachment',
-                    'res_id': documentId,
-                    'type': 'ir.actions.act_window',
-                    'domain': "[]"}
-        return True
+        
+        action_vals = self.env['ir.actions.act_window']._for_xml_id('plm.plm_action_document_form')
+        domain = safe_eval(action_vals.get('domain', "[]"))
+        domain = expression.AND([domain, [('id', 'in', [documentId])]])
+        action_vals['domain'] = domain
+        return action_vals
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

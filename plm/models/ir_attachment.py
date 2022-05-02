@@ -952,11 +952,18 @@ class PlmDocument(models.Model):
                     raise UserError(_('Cannot restore previous document Engineering Name = %r   Engineering Revision = %r   Id = %r' % (oldObject.engineering_document_name, oldObject.revisionid, oldObject.id)))
         return True
 
+    def unlinkBackUp(self):
+        for checkObj in self:
+            docBrwsList = self.env['plm.backupdoc'].search([('documentid', '=', checkObj.id)])
+            for oldObject in docBrwsList:
+                oldObject.remaining_unlink()
+
     def unlink(self):
         for checkObj in self:
             checkObj.unlinkCheckDocumentRelations()
             checkObj.linkedcomponents.unlinkCheckBomRelations()
             checkObj.unlinkRestorePreviousDocument()
+            checkObj.unlinkBackUp()
         return super(PlmDocument, self).unlink()
 
     #   Overridden methods for this entity

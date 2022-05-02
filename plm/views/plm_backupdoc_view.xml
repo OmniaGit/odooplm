@@ -5,6 +5,7 @@
     <record model="ir.ui.view" id="view_plm_backupdoc">
         <field name="name">plm.backupdoc</field>
         <field name="model">plm.backupdoc</field>
+        <field name="type">form</field>
         <field name="priority" eval="1"/>
         <field name="arch" type="xml">
         <form>
@@ -84,6 +85,7 @@
     <record model="ir.ui.view" id="plm_backupdoc_tree">
         <field name="name">plm.backupdoc</field>
         <field name="model">plm.backupdoc</field>
+        <field name="type">tree</field>
         <field name="priority" eval="1"/>
         <field name="arch" type="xml">
             <tree string="Documents in Check-Out">
