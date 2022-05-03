@@ -17,8 +17,7 @@
                          domain="[('error_string','not in', [False, ''])]"/>
             	<field name="product_category"/>
             	<field name="start_document_id"/>
-	            <field name="start_format"/>
-	            <field name="end_format"/>
+	            <field name="convrsion_rule"/>
                 <group expand="0" string="Group By...">
                     <filter string="Category" icon="terp-personal" domain="[]" context="{'group_by':'product_category'}" name="convert_stack_category"/>
                 </group>
@@ -35,8 +34,7 @@
             	<sheet>	
 	                <group >
 		                <field name="sequence"/>
-		                <field name="start_format"/>
-		                <field name="end_format"/>
+		                <field name="convrsion_rule"/>
 		                <field name="product_category"/>
 		                <field name="start_document_id" readonly="True"/>
 		                <field name="end_document_id" readonly="True"/>
@@ -61,14 +59,13 @@
             <tree string="Plm Convert Stack">
                 <field name="sequence" widget="handle"/>
                 <field name="operation_type"/>
-                <field name="start_format"/>
-                <field name="end_format"/>
+                <field name="convrsion_rule"/>
                 <field name="product_category"/>
                 <field name="start_document_id"/>
                 <field name="end_document_id"/>
                 <field name="server_id"/>
                 <field name="conversion_done"/>
-                <button name="setToConvert" type="object" attrs="{'invisible': [('conversion_done', '=', False)]}" icon="fa-arrow-circle-right"></button>
+                <button name="setToConverted" type="object" attrs="{'invisible': [('conversion_done', '=', False)]}" icon="fa-arrow-circle-right"></button>
                 <field name="error_string"/>
                 <field name="write_date"/>
             </tree>

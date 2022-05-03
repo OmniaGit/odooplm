@@ -146,10 +146,10 @@ class ir_attachment(models.Model):
     @api.model
     def create(self, vals):
         ret = super(ir_attachment, self).create(vals)
-        ret.createPreview()
+        #ret.createPreview()
         return ret
 
     def write(self, vals):
         ret = super(ir_attachment, self).write(vals)
-        self.createPreview()
+        #self.createPreview()
         return ret
