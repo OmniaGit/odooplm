@@ -23,42 +23,50 @@ Created on Sep 7, 2019
 
 @author: mboscolo
 '''
+import os
+import json
+import shutil
+import base64
+import logging
+#    
 from odoo import models
 from odoo import fields
 from odoo import api
 from odoo import _
-import os
-import logging
-import base64
-import json
-
+#
+#
 class PlmConvertStack(models.Model):
     _name = "plm.convert.stack"
     _description = "Stack of conversions"
     _order = 'sequence ASC'
 
-    sequence = fields.Integer('Sequence')
-    start_format = fields.Char('Start Format')
-    end_format = fields.Char('End Format')
-    product_category = fields.Many2one('product.category', 'Category')
-    conversion_done = fields.Boolean('Conversion Done')
-    start_document_id = fields.Many2one('ir.attachment', 'Starting Document')
-    end_document_id = fields.Many2one('ir.attachment', 'Converted Document')
+    sequence = fields.Integer(string='Sequence')
+    convrsion_rule = fields.Many2one('plm.convert.format',
+                                     string="Conversion rule",
+                                     required=True)
+    product_category = fields.Many2one('product.category',
+                                       string='Category')
+    conversion_done = fields.Boolean(string='Conversion Done')
+    start_document_id = fields.Many2one('ir.attachment', 
+                                        string='Starting Document')
+    end_document_id = fields.Many2one('ir.attachment',
+                                      string='Converted Document')
     output_name_rule = fields.Char('Output Name Rule')
     error_string = fields.Text('Error')
-    server_id = fields.Many2one('plm.convert.servers', 'Conversion Server', )
+    server_id = fields.Many2one(related='convrsion_rule.server_id',
+                                string='Conversion Server')
     operation_type = fields.Selection([('UPDATE', 'Update'),
-                                      ('DOWNLOAD', 'Download'),
+                                      ('TOSHARED', 'Shared Folder'),
                                       ('CONVERT', 'Convert')],
                                      string='Operation Type',
                                      help="""
                                      Type of conversion operation
                                      Update: Perform an update to the given document (pdf, Bitmap)
-                                     Download: Perform a conversion on the given format and download the file
+                                     Download: Perform a conversion on the given format and download the file in the given server path
                                      Convert: Convert the file in place on the stack object
                                      """)
     
-    def setToConvert(self):
+    def setToConverted(self):
         for convertStack in self:
             convertStack.conversion_done = False
 
@@ -69,50 +77,93 @@ class PlmConvertStack(models.Model):
             ret.sequence = ret.id
         return ret
 
-    def generateConvertedDocuments(self):
-        logging.info('generateConvertedDocuments started')
-        toConvert =  self.search([('conversion_done', '=', False)], order='sequence ASC')
-        for convertion in toConvert:
+    def convert(self):
+        for stack_id in self:
             try:
-                if convertion.server_id.is_internal:
-                    end_format = json.loads(convertion.end_format)
-                    if 'png_pdf_update' in end_format:
-                        convertion.start_document_id._updatePreview()
+                if stack_id.operation_type == 'UPDATE':
+                    stack_id.start_document_id._updatePreview()
+                elif stack_id.operation_type in 'TOSHARED':
+                    file_converted = stack_id._generateFile()
+                    if stack_id.server_id.folder_to:
+                        dest_path = os.path.join(stack_id.server_id.folder_to, os.path.basename(file_converted))
+                        shutil.copyfile(file_converted, dest_path)
                     else:
-                        convertion.error_string = _("unable to perform update format %s not available for conversion") % end_format
+                        raise Exception(_("No server path defined for server %s" % server_id.name))
+                elif stack_id.operation_type == 'CONVERT':
+                    file_converted = stack_id._generateFile()
+                    stack_id._attach_to_stack(file_converted)
                 else:
-                    self._generateConvertedDocuments(conversion)
+                    continue
+                stack_id.setToConverted()
+                self.env.cr.commit()
             except Exception as ex:
                 logging.error(ex)
                 convertion.error_string = _("Internal Error %s") % ex
-            
-    def _generateConvertedDocuments(self, convertion):
-        plm_convert = self.env['plm.convert']
-        try:
-            cadName, _ = plm_convert.getCadAndConvertionAvailabe(convertion.start_format, convertion.server_id, raiseErr=True)
-        except Exception as ex:
-            convertion.error_string = ex
-            return
-        if not cadName:
-            convertion.error_string = _('Cannot get CAD name')
-            return
-        if not convertion.start_document_id:
-            convertion.error_string = _('Starting document not set')
-            return
-        document = convertion.start_document_id
+                
+    def generateConvertedDocuments(self):
+        logging.info('generateConvertedDocuments started')
+        toConvert =  self.search([('conversion_done', '=', False)], order='sequence ASC')
+        toConvert.convert()
+              
+    def getAllFiles(self):
+        out = {}
+        document = self.start_document_id
+        ir_attachment = self.env['ir.attachment']
+        fileStoreLocation = ir_attachment._get_filestore()
+
+        def templateFile(docId):
+            document = ir_attachment.browse(docId)
+            return {document.name: (document.name,
+                                    file(os.path.join(fileStoreLocation, document.store_fname), 'rb'))}
+        out['root_file'] = (document.name,
+                            file(os.path.join(fileStoreLocation, document.store_fname), 'rb'))
+        request = (document.id, [], -1)
+        for outId, _, _, _, _, _ in ir_attachment.CheckAllFiles(request): # todo: verificare se carica il datas
+            if outId == document.id:
+                continue
+            out.update(templateFile(outId))
+        return out
+      
+    def getFileConverted(self,
+                         document,
+                         targetIntegration,
+                         targetExtention,
+                         newFileName=False):
+        serverName = self.env['ir.config_parameter'].get_param('plm_convetion_server')
+        if not serverName:
+            raise Exception("Configure plm_convetion_server to use this functionality")
+        url = 'http://%s/odooplm/api/v1.0/saveas' % serverName
+        params = {}
+        params['targetExtention'] = targetExtention
+        params['integrationName'] = targetIntegration
+        response = requests.post(url,
+                                 params=params,
+                                 files=self.getAllFiles(self.start_document_id))
+        if response.status_code != 200:
+            raise UserError("Conversion of cad server failed, check the cad server log")
+        if not newFileName:
+            newFileName = document.name + targetExtention
+        newTarget = os.path.join(tempfile.gettempdir(), newFileName)
+        with open(newTarget, 'wb') as f:
+            f.write(response.content)
+        return newTarget
+    
+    def _generateFile(self):
+        """
+        
+        """
+        document = self.start_document_id
         components = document.linkedcomponents.sorted(lambda line: line.engineering_revision)
         component = self.env['product.product']
         if components:
             component = components[0]
-        rule = _("'%s_%s' % (document.name, document.revisionid)")
-        if convertion.output_name_rule:
-            rule = convertion.output_name_rule
+        file_name = '%s_%s' % (document.name, document.revisionid)
         try:
-            clean_name = eval(rule, {'component': component, 'document': document, 'env': self.env})
+            file_name = eval(convertion.output_name_rule, {'component': component, 'document': document, 'env': self.env})
         except Exception as ex:
-            convertion.error_string = _('Cannot evaluate rule %s due to error %r') % (rule, ex)
-            return
-        newFileName = clean_name + convertion.end_format
+            raise  Exception(_('Cannot evaluate rule %s due to error %r') % (file_name, ex))
+
+        newFileName = file_name + self.convrsion_rule.end_format
         newFilePath, error = plm_convert.getFileConverted(document,
                                                           cadName,
                                                           convertion.end_format,
@@ -120,25 +171,23 @@ class PlmConvertStack(models.Model):
                                                           False,
                                                           main_server=convertion.server_id)
         if error:
-            convertion.error_string = error
-            return
+            raise Exception(error)
         if not os.path.exists(newFilePath):
-            convertion.error_string = 'File not converted'
-            return
+            raise Exception(_('File not converted'))
+        return newFilePath
+        
+    def _attach_to_stack(self, file_name):
         attachment = self.env['ir.attachment']
         target_attachment = self.env['ir.attachment']
-        attachment_ids = attachment.search([('name', '=', newFileName)])
+        attachment_ids = attachment.search([('name', '=', file_name)])
         content = ''
-        logging.info('Reading converted file %r' % (newFilePath))
-        if not os.path.exists(newFilePath):
-            msg = _('Cannot find file %r') % (newFilePath)
-            logging.error(msg)
-            convertion.error_string = msg
-            return
-        with open(newFilePath, 'rb') as fileObj:
+        logging.info('Reading converted file %r' % (file_name))
+        if not os.path.exists(file_name):
+            raise Exception(_('Cannot find file %r') % (file_name))
+        with open(file_name, 'rb') as fileObj:
             content = fileObj.read()
         if content:
-            logging.info('File size %r, content len %r' % (os.path.getsize(newFilePath), len(content)))
+            logging.info('File size %r, content len %r' % (os.path.getsize(file_name), len(content)))
             encoded_content = base64.b64encode(content)
             if attachment_ids:
                 attachment_ids.write({'datas': encoded_content,
@@ -147,26 +196,21 @@ class PlmConvertStack(models.Model):
                 target_attachment = attachment_ids[0]
             else:
                 target_attachment = attachment.create({
-                    'linkedcomponents': [(6, False, document.linkedcomponents.ids)],
-                    'name': newFileName,
+                    'linkedcomponents': [(6, False, self.start_document_id.linkedcomponents.ids)],
+                    'name': os.path.basename(file_name),
                     'datas': encoded_content,
-                    'state': convertion.start_document_id.state,
+                    'state': self.start_document_id.state,
                     'is_plm': True,
                     'engineering_document_name': newFileName,
                     'is_converted_document': True,
                     'source_convert_document': document.id
                     })
             try:
-                os.remove(newFilePath)
-                logging.info('Removed file %r' % (newFilePath))
+                os.remove(file_name)
+                logging.info('Removed file %r' % (file_name))
             except Exception as ex:
                 logging.warning(ex)
         else:
-            msg = _('Cannot convert document %r because no content is provided. Convert stack %r') % (document.id, convertion.id)
-            logging.error(msg)
-            convertion.error_string = msg
-        convertion.end_document_id = target_attachment.id
-        convertion.conversion_done = True
-        convertion.error_string = ''
-        self.env.cr.commit()
+            raise Exception(_('Cannot convert document %r because no content is provided. Convert stack %r') % (document.id, convertion.id))
+        self.end_document_id = target_attachment.id
     logging.debug('generateConvertedDocuments ended')

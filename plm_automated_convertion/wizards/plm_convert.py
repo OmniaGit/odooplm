@@ -40,67 +40,67 @@ class plm_temporary_batch_converter(models.TransientModel):
     _name = 'plm.convert'
     _description = "Temp Class for batch converter"
 
-    @api.model
-    def getCadAndConvertionAvailabe(self, fromExtention):
-        ret = ('.dxf', ['png_pdf_update'])
-        try:
-            serverName = self.env['ir.config_parameter'].get_param('plm_convetion_server')
-            if not serverName:
-                raise Exception("Configure plm_convetion_server to use this functionality")
-            url = 'http://%s/odooplm/api/v1.0/getAvailableExtention' % serverName
-            response = requests.get(url)
-            if response.status_code != 200:
-                raise UserError("Conversion of cad server failed, check the cad server log")
-            ret = response.json().get(str(fromExtention).lower(), ('', []))
-        except Exception as ex:
-            self.error_message = "%s" % ex
-        finally:
-            return ret
+    # @api.model
+    # def getCadAndConvertionAvailabe(self, fromExtention):
+    #     ret = ('.dxf', ['png_pdf_update'])
+    #     try:
+    #         serverName = self.env['ir.config_parameter'].get_param('plm_convetion_server')
+    #         if not serverName:
+    #             raise Exception("Configure plm_convetion_server to use this functionality")
+    #         url = 'http://%s/odooplm/api/v1.0/getAvailableExtention' % serverName
+    #         response = requests.get(url)
+    #         if response.status_code != 200:
+    #             raise UserError("Conversion of cad server failed, check the cad server log")
+    #         ret = response.json().get(str(fromExtention).lower(), ('', []))
+    #     except Exception as ex:
+    #         self.error_message = "%s" % ex
+    #     finally:
+    #         return ret
             
-    @api.model
-    def getAllFiles(self, document):
-        out = {}
-        ir_attachment = self.env['ir.attachment']
-        fileStoreLocation = ir_attachment._get_filestore()
+    # @api.model
+    # def getAllFiles(self, document):
+    #     out = {}
+    #     ir_attachment = self.env['ir.attachment']
+    #     fileStoreLocation = ir_attachment._get_filestore()
+    #
+    #     def templateFile(docId):
+    #         document = ir_attachment.browse(docId)
+    #         return {document.name: (document.name,
+    #                                 file(os.path.join(fileStoreLocation, document.store_fname), 'rb'))}
+    #     out['root_file'] = (document.name,
+    #                         file(os.path.join(fileStoreLocation, document.store_fname), 'rb'))
+    #     objDocu = self.env['ir.attachment']
+    #     request = (document.id, [], -1)
+    #     for outId, _, _, _, _, _ in objDocu.CheckAllFiles(request):
+    #         if outId == document.id:
+    #             continue
+    #         out.update(templateFile(outId))
+    #     return out
 
-        def templateFile(docId):
-            document = ir_attachment.browse(docId)
-            return {document.name: (document.name,
-                                    file(os.path.join(fileStoreLocation, document.store_fname), 'rb'))}
-        out['root_file'] = (document.name,
-                            file(os.path.join(fileStoreLocation, document.store_fname), 'rb'))
-        objDocu = self.env['ir.attachment']
-        request = (document.id, [], -1)
-        for outId, _, _, _, _, _ in objDocu.CheckAllFiles(request):
-            if outId == document.id:
-                continue
-            out.update(templateFile(outId))
-        return out
-
-    @api.model
-    def getFileConverted(self,
-                         document,
-                         targetIntegration,
-                         targetExtention,
-                         newFileName=False):
-        serverName = self.env['ir.config_parameter'].get_param('plm_convetion_server')
-        if not serverName:
-            raise Exception("Configure plm_convetion_server to use this functionality")
-        url = 'http://%s/odooplm/api/v1.0/saveas' % serverName
-        params = {}
-        params['targetExtention'] = targetExtention
-        params['integrationName'] = targetIntegration
-        response = requests.post(url,
-                                 params=params,
-                                 files=self.getAllFiles(document))
-        if response.status_code != 200:
-            raise UserError("Conversion of cad server failed, check the cad server log")
-        if not newFileName:
-            newFileName = document.name + targetExtention
-        newTarget = os.path.join(tempfile.gettempdir(), newFileName)
-        with open(newTarget, 'wb') as f:
-            f.write(response.content)
-        return newTarget
+    # @api.model
+    # def getFileConverted(self,
+    #                      document,
+    #                      targetIntegration,
+    #                      targetExtention,
+    #                      newFileName=False):
+    #     serverName = self.env['ir.config_parameter'].get_param('plm_convetion_server')
+    #     if not serverName:
+    #         raise Exception("Configure plm_convetion_server to use this functionality")
+    #     url = 'http://%s/odooplm/api/v1.0/saveas' % serverName
+    #     params = {}
+    #     params['targetExtention'] = targetExtention
+    #     params['integrationName'] = targetIntegration
+    #     response = requests.post(url,
+    #                              params=params,
+    #                              files=self.getAllFiles(document))
+    #     if response.status_code != 200:
+    #         raise UserError("Conversion of cad server failed, check the cad server log")
+    #     if not newFileName:
+    #         newFileName = document.name + targetExtention
+    #     newTarget = os.path.join(tempfile.gettempdir(), newFileName)
+    #     with open(newTarget, 'wb') as f:
+    #         f.write(response.content)
+    #     return newTarget
 
     @api.model
     def calculate_available_extention(self):
