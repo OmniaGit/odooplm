@@ -12,6 +12,21 @@
         	<field name="available">True</field>
             <field name="cad_name">zedxf</field>
             <field name="start_format">.dxf</field>
+            <field name="end_format">.pdf</field>
+        </record>
+       <record id="update_dxf_preview_png" model="plm.convert.format">
+        	<field name="server_id" ref="odoo_local_server"/>
+        	<field name="available">True</field>
+            <field name="cad_name">zedxf</field>
+            <field name="start_format">.dxf</field>
+            <field name="end_format">.png</field>
+        </record>
+       <record id="update_dxf_preview_svg" model="plm.convert.format">
+        	<field name="server_id" ref="odoo_local_server"/>
+        	<field name="available">True</field>
+            <field name="cad_name">zedxf</field>
+            <field name="start_format">.dxf</field>
+            <field name="end_format">.svg</field>
         </record>
     </data>
 </odoo>

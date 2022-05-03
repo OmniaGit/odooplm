@@ -116,16 +116,25 @@ class plm_temporary_batch_converter(models.TransientModel):
 
     document_id = fields.Many2one('ir.attachment',
                                   'Related Document')
-    targetFormat = fields.Selection(selection='calculate_available_extention',
-                                    string='Conversion Format',
-                                    required=True)
-    downloadDatas = fields.Binary('Download',
-                                  attachment=True)
+    
+    #targetFormat = fields.Selection(selection='calculate_available_extention',
+    #                                string='Conversion Format',
+    #                                required=True)
+    
+    targetFormat = fields.Many2one('plm.convert.format', 'Conversion Format')
+    
+    extention = fields.Char('Extention', compute='get_ext')
+    
+    downloadDatas = fields.Binary('Download', attachment=True)
+    
     datas_fname = fields.Char("New File name")
     
-    batch_preview_printout = fields.Boolean('Batch convert preview and printout',
-                                                   default=False)
+    batch_preview_printout = fields.Boolean('Batch convert preview and printout', default=False)
+    
     error_message = fields.Text("Error")
+    
+    def get_ext(self):
+        return os.path.splitext(self.document_id)
 
     def convert(self):
         """
@@ -184,7 +193,7 @@ class plm_temporary_batch_converter(models.TransientModel):
                 'start_document_id': ir_attachment.id,
                 'server_id': self.env.ref('plm_automated_convertion.odoo_local_server').id,
                 })
-        plm_stack._generateConvertedDocuments(plm_stack)
+        plm_stack._generateConvertedDocuments()
         # aprire la finestra su plm stack form  
         return {'name': _('File Converted'),
                 'view_type': 'form',

@@ -11,7 +11,7 @@
 	        		<group colspan="4" col="4">
 		        		<field string = "only dxf" name="batch_preview_printout" colspan="4" invisible="True"/>
 		        		<field string = "Document Of Origin" name="document_id" />
-						<field string = "Convertion Format" name="targetFormat" />
+						<field string = "Convertion Format" name="targetFormat" domain="[('extention', '=', 'start_format')]"/>
 		        		<field string = "Converted File" name="downloadDatas" readonly="1" filename="datas_fname" invisible="True"/>
 		        		
 	            	</group>
