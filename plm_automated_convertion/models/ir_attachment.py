@@ -113,6 +113,33 @@ class ir_attachment(models.Model):
                         convert_stacks += stacks
         return convert_stacks
 
+    def convert_from_dxf_to(self, toFormat):
+        """
+            convert using the exdxf library
+        """
+        if toFormat.replace(".", "") not in ['png','pdf','svg','jpg']:
+            raise UserError("Format %s not supported" % toFormat)
+            
+        store_fname = self._full_path(self.store_fname)
+        doc, auditor = recover.readfile(store_fname)
+        if not auditor.has_errors:
+            tmpdirname = tempfile.gettempdir()
+            name, exte = os.path.splitext(self.name)   
+            newFileName=os.path.join(tmpdirname, '%s%s' % (name, toFormat))
+            matplotlib.qsave(doc.modelspace(), newFileName)
+            return newFileName
+        raise Exception("Unable to perform the conversion Error: %s" % auditor.has_errors)
+                            
+    def convert_to_format(self, toFormat):
+        """
+            convert the attachment to the given format
+        """
+        for ir_attachment in self:
+            for extention in ALLOW_CONVERSION_FORMAT:
+                if extention in ir_attachment.name.lower():
+                    return ir_attachment.convert_from_dxf_to(toFormat)
+
+
     def _updatePreview(self):
         for ir_attachment in self:
             store_fname = ir_attachment._full_path(ir_attachment.store_fname)

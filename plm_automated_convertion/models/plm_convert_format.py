@@ -51,9 +51,9 @@ class PlmConvertFormat(models.Model):
     def _compute_name(self):
         for plm_convert_format in self:
             plm_convert_format.name = "%s %s %s %s" % (plm_convert_format.server_id.name or "",
-                                                    plm_convert_format.cad_name,
-                                                    plm_convert_format.name,
-                                                    plm_convert_format.end_format) 
+                                                       plm_convert_format.cad_name,
+                                                       plm_convert_format.name,
+                                                       plm_convert_format.end_format) 
         
         
         

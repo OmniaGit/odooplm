@@ -98,7 +98,7 @@ class PlmConvertStack(models.Model):
                 self.env.cr.commit()
             except Exception as ex:
                 logging.error(ex)
-                convertion.error_string = _("Internal Error %s") % ex
+                stack_id.error_string = _("Internal Error %s") % ex
                 
     def generateConvertedDocuments(self):
         logging.info('generateConvertedDocuments started')
@@ -125,29 +125,30 @@ class PlmConvertStack(models.Model):
         return out
       
     def getFileConverted(self,
-                         document,
-                         targetIntegration,
-                         targetExtention,
                          newFileName=False):
-        serverName = self.env['ir.config_parameter'].get_param('plm_convetion_server')
-        if not serverName:
-            raise Exception("Configure plm_convetion_server to use this functionality")
-        url = 'http://%s/odooplm/api/v1.0/saveas' % serverName
-        params = {}
-        params['targetExtention'] = targetExtention
-        params['integrationName'] = targetIntegration
-        response = requests.post(url,
-                                 params=params,
-                                 files=self.getAllFiles(self.start_document_id))
-        if response.status_code != 200:
-            raise UserError("Conversion of cad server failed, check the cad server log")
-        if not newFileName:
-            newFileName = document.name + targetExtention
-        newTarget = os.path.join(tempfile.gettempdir(), newFileName)
-        with open(newTarget, 'wb') as f:
-            f.write(response.content)
-        return newTarget
-    
+        targetExtention = self.convrsion_rule.end_format
+        if self.server_id.is_internal:
+            return self.start_document_id.convert_to_format(targetExtention)
+        else:
+            serverName = self.env['ir.config_parameter'].get_param('plm_convetion_server')
+            if not serverName:
+                raise Exception("Configure plm_convetion_server to use this functionality")
+            url = 'http://%s/odooplm/api/v1.0/saveas' % serverName
+            params = {}
+            params['targetExtention'] = targetExtention
+            params['integrationName'] = self.convrsion_rule.cad_name
+            response = requests.post(url,
+                                     params=params,
+                                     files=self.getAllFiles(self.start_document_id))
+            if response.status_code != 200:
+                raise UserError("Conversion of cad server failed, check the cad server log")
+            if not newFileName:
+                newFileName = self.start_document_id.name + targetExtention
+            newTarget = os.path.join(tempfile.gettempdir(), newFileName)
+            with open(newTarget, 'wb') as f:
+                f.write(response.content)
+            return newTarget
+     
     def _generateFile(self):
         """
         
@@ -158,20 +159,15 @@ class PlmConvertStack(models.Model):
         if components:
             component = components[0]
         file_name = '%s_%s' % (document.name, document.revisionid)
-        try:
-            file_name = eval(convertion.output_name_rule, {'component': component, 'document': document, 'env': self.env})
-        except Exception as ex:
-            raise  Exception(_('Cannot evaluate rule %s due to error %r') % (file_name, ex))
-
+        if self.output_name_rule:
+            try:
+                file_name = eval(self.output_name_rule, {'component': component,
+                                                         'document': document,
+                                                         'env': self.env})
+            except Exception as ex:
+                raise  Exception(_('Cannot evaluate rule %s due to error %r') % (file_name, ex))
         newFileName = file_name + self.convrsion_rule.end_format
-        newFilePath, error = plm_convert.getFileConverted(document,
-                                                          cadName,
-                                                          convertion.end_format,
-                                                          newFileName,
-                                                          False,
-                                                          main_server=convertion.server_id)
-        if error:
-            raise Exception(error)
+        newFilePath = self.getFileConverted(newFileName)
         if not os.path.exists(newFilePath):
             raise Exception(_('File not converted'))
         return newFilePath
@@ -201,9 +197,9 @@ class PlmConvertStack(models.Model):
                     'datas': encoded_content,
                     'state': self.start_document_id.state,
                     'is_plm': True,
-                    'engineering_document_name': newFileName,
+                    'engineering_document_name': file_name,
                     'is_converted_document': True,
-                    'source_convert_document': document.id
+                    'source_convert_document': self.start_document_id.id
                     })
             try:
                 os.remove(file_name)
@@ -211,6 +207,6 @@ class PlmConvertStack(models.Model):
             except Exception as ex:
                 logging.warning(ex)
         else:
-            raise Exception(_('Cannot convert document %r because no content is provided. Convert stack %r') % (document.id, convertion.id))
+            raise Exception(_('Cannot convert document %r because no content is provided. Convert stack %r') % (self.start_document_id.id, self.id))
         self.end_document_id = target_attachment.id
     logging.debug('generateConvertedDocuments ended')

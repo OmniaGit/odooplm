@@ -40,23 +40,6 @@ class plm_temporary_batch_converter(models.TransientModel):
     _name = 'plm.convert'
     _description = "Temp Class for batch converter"
 
-    # @api.model
-    # def getCadAndConvertionAvailabe(self, fromExtention):
-    #     ret = ('.dxf', ['png_pdf_update'])
-    #     try:
-    #         serverName = self.env['ir.config_parameter'].get_param('plm_convetion_server')
-    #         if not serverName:
-    #             raise Exception("Configure plm_convetion_server to use this functionality")
-    #         url = 'http://%s/odooplm/api/v1.0/getAvailableExtention' % serverName
-    #         response = requests.get(url)
-    #         if response.status_code != 200:
-    #             raise UserError("Conversion of cad server failed, check the cad server log")
-    #         ret = response.json().get(str(fromExtention).lower(), ('', []))
-    #     except Exception as ex:
-    #         self.error_message = "%s" % ex
-    #     finally:
-    #         return ret
-            
     @api.model
     def getAllFiles(self, document):
         out = {}
@@ -78,31 +61,6 @@ class plm_temporary_batch_converter(models.TransientModel):
         return out
 
     @api.model
-    def getFileConverted(self,
-                         document,
-                         targetIntegration,
-                         targetExtention,
-                         newFileName=False):
-        serverName = self.env['ir.config_parameter'].get_param('plm_convetion_server')
-        if not serverName:
-            raise Exception("Configure plm_convetion_server to use this functionality")
-        url = 'http://%s/odooplm/api/v1.0/saveas' % serverName
-        params = {}
-        params['targetExtention'] = targetExtention
-        params['integrationName'] = targetIntegration
-        response = requests.post(url,
-                                 params=params,
-                                 files=self.getAllFiles(document))
-        if response.status_code != 200:
-            raise UserError("Conversion of cad server failed, check the cad server log")
-        if not newFileName:
-            newFileName = document.name + targetExtention
-        newTarget = os.path.join(tempfile.gettempdir(), newFileName)
-        with open(newTarget, 'wb') as f:
-            f.write(response.content)
-        return newTarget
-
-    @api.model
     def calculate_available_extention(self):
         """
         calculate the conversion extension
@@ -116,10 +74,6 @@ class plm_temporary_batch_converter(models.TransientModel):
 
     document_id = fields.Many2one('ir.attachment',
                                   'Related Document')
-    
-    #targetFormat = fields.Selection(selection='calculate_available_extention',
-    #                                string='Conversion Format',
-    #                                required=True)
     
     targetFormat = fields.Many2one('plm.convert.format', 'Conversion Format')
     
@@ -187,21 +141,24 @@ class plm_temporary_batch_converter(models.TransientModel):
         Convert file in the given format and return it to the web page
         """
         obj_stack = self.env['plm.convert.stack']
-        plm_stack =obj_stack.search_count([('start_document_id','=',ir_attachment.id),('end_format','=', end_format), ('convertion_done','=',False)])
+        plm_stack = obj_stack.search([('start_document_id','=', self.document_id.id),
+                                            ('convrsion_rule','=', self.targetFormat.id), 
+                                            ('conversion_done','=',False)])
         if not plm_stack:
             plm_stack = obj_stack.create({
-                'start_format': extention,
-                'end_format': end_format,
-                'start_document_id': ir_attachment.id,
-                'server_id': self.env.ref('plm_automated_convertion.odoo_local_server').id,
+                'convrsion_rule': self.targetFormat.id,
+                'start_document_id': self.document_id.id,
+                'operation_type': 'CONVERT' 
                 })
-        plm_stack._generateConvertedDocuments()
+        plm_stack.convert()
+        #
         # aprire la finestra su plm stack form  
+        #
         return {'name': _('File Converted'),
                 'view_type': 'form',
                 "view_mode": 'form',
-                'res_model': self._name,
+                'res_model': plm_stack._name,
                 'target': 'new',
-                'res_id': self.id[0],
+                'res_id': plm_stack.id,
                 'type': 'ir.actions.act_window',
                 'domain': "[]"}
