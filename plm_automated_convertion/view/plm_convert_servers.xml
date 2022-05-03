@@ -25,14 +25,18 @@
             <form string="Plm Convert Servers">
             	<sheet>	
 	                <group>
+	                	<field name="sequence"/>
+	                	<field name="available" widget="boolean_toggle"/>
 	                	<field name="name" required="True"/>
-	                	<field name="address" attrs="{'required':[('is_internal','=', False)],'invisible':[('is_internal','=', True)]}"/>
-		                <field name="protocol" attrs="{'required':[('is_internal','=', False)],'invisible':[('is_internal','=', True)]}"/>
-		                <field name="is_internal"/>
-		                <field name="port" attrs="{'required':[('is_internal','=', False)],'invisible':[('is_internal','=', True)]}" placeholder="5000"/>
-		                <field name="sequence"/>
+	                	<field name="is_internal"/>
+                    </group>
+                    <group name="server_spec" attrs="{'invisible':[('is_internal','=', True)]}">
+                        <field name="folder_to" placeholder="my_shared_folder_path" />	                	
+	                	<field name="address" placeholder="127.0.0.1" attrs="{'required':[('is_internal','=', False)]}"/>
+		                <field name="protocol" placeholder="http" attrs="{'required':[('is_internal','=', False)]}"/>
+		                <field name="port" placeholder="5000" attrs="{'required':[('is_internal','=', False)]}"/>
 		                <field name="timeout"/>
-		                <button name='testConnection' type="object" string="Test" attrs="{'invisible':[('is_internal','=', True)]}"></button>
+		                <button name="testConnection" type="object" string="Test"/>
 	                </group>
 	                <group attrs="{'invisible': ['|', ('is_internal','=', True), ('client_processes', 'in', [False, ''])]}">
 	                	<field name="proc_to_kill" colspan="1" />
@@ -42,6 +46,16 @@
 		                <button name='getClientProcesses' type="object" string="Get Client Processes" colspan="4"></button>
 		                <field name="client_processes" readonly="True" colspan="4" nolabel="1"/>
 		            </group>
+		            <field name="available_format">
+		              <tree>
+		                  <field name="available" widget="boolean_toggle"/>
+		                  <field name="name"/>
+		                  <field name="sequence"/>
+		                  <field name="start_format"/>
+		                  <field name="end_format"/>
+		                  <field name="cad_name"/>
+		              </tree>
+		            </field>
                	</sheet> 
             </form>
         </field>

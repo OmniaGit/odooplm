@@ -44,7 +44,12 @@ class PlmConvertServers(models.Model):
     client_processes = fields.Text('Client Processes')
     timeout = fields.Float('Connection timeout', default=2)
     is_internal = fields.Boolean('The server is odoo itself', default=False)
-
+    available_format = fields.One2many(comodel_name="plm.convert.format",
+                                       inverse_name="server_id",
+                                       string="Available Formats")
+    folder_to = fields.Text("Folder To")
+    available =  fields.Boolean("Is Available",
+                                default=True)
     def getBaseUrl(self):
         for server in self:
             return '%s://%s:%s' % (server.protocol, server.address, server.port)
@@ -133,3 +138,32 @@ class PlmConvertServers(models.Model):
             else:
                 outMsg = "Internal odoo server no process needed"
             server.client_processes = outMsg
+    
+    def updateAvailableFormat(self):
+        """
+        call the cad server in order to retreive the available formats
+        """
+        try:
+            obj_format= self.env['plm.convert.format']
+            url = '%s//%s:%s/odooplm/api/v1.0/getAvailableExtention' % (self.address, 
+                                                                        self.protocol,
+                                                                        self.port ) 
+            response = requests.get(url)
+            if response.status_code != 200:
+                raise UserError("Conversion of cad server failed, check the cad server log")
+            ret = response.json()
+            #'.e2': ('thinkdesign', ['.dxf', '.dwg', '.igs', '.d', '.pdf']),
+            for from_format, values in ret.items():
+                cad_name, convertion_to_formats = values
+                for format_to in convertion_to_formats:
+                    if not self.available_format.filtered(lambda x: x.start_format==from_format and x.end_format==format_to and x.cad_name==cad_name):
+                        obj_format.sudo().create({'start_format':from_format,
+                                                  'end_format':format_to,
+                                                  'cad_name':cad_name,
+                                                  'server_id': self.id,
+                                                  'available': True})
+                
+        except Exception as ex:
+            self.error_message = "%s" % ex
+
+        

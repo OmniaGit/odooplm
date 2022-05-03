@@ -45,6 +45,7 @@
 		                <field name="output_name_rule"/>
 		                <field name="error_string" readonly="True"/>
 		                <field name="write_date"/>
+		                <field name="operation_type"/>
 	                </group>
                	</sheet> 
             </form>
@@ -59,6 +60,7 @@
         <field name="arch" type="xml">
             <tree string="Plm Convert Stack">
                 <field name="sequence" widget="handle"/>
+                <field name="operation_type"/>
                 <field name="start_format"/>
                 <field name="end_format"/>
                 <field name="product_category"/>
