@@ -66,9 +66,9 @@ class plm_temporary_batch_converter(models.TransientModel):
         def templateFile(docId):
             document = ir_attachment.browse(docId)
             return {document.name: (document.name,
-                                    file(os.path.join(fileStoreLocation, document.store_fname), 'rb'))}
+                                    open(os.path.join(fileStoreLocation, document.store_fname), 'rb'))}
         out['root_file'] = (document.name,
-                            file(os.path.join(fileStoreLocation, document.store_fname), 'rb'))
+                            open(os.path.join(fileStoreLocation, document.store_fname), 'rb'))
         objDocu = self.env['ir.attachment']
         request = (document.id, [], -1)
         for outId, _, _, _, _, _ in objDocu.CheckAllFiles(request):
@@ -175,14 +175,17 @@ class plm_temporary_batch_converter(models.TransientModel):
         """
         Convert file in the given format and return it to the web page
         """
-        for convertedFile in self.convert():
-            with open(convertedFile, 'rb') as f:
-                fileContent = f.read()
-                if fileContent:
-                    self.write({'downloadDatas': base64.b64encode(fileContent),
-                                'name': os.path.basename(convertedFile)})
-                    break
-            break
+        obj_stack = self.env['plm.convert.stack']
+        plm_stack =obj_stack.search_count([('start_document_id','=',ir_attachment.id),('end_format','=', end_format), ('convertion_done','=',False)])
+        if not plm_stack:
+            plm_stack = obj_stack.create({
+                'start_format': extention,
+                'end_format': end_format,
+                'start_document_id': ir_attachment.id,
+                'server_id': self.env.ref('plm_automated_convertion.odoo_local_server').id,
+                })
+        plm_stack.convert() # da sistemare   
+        # aprire la finestra su plm stack form  
         return {'name': _('File Converted'),
                 'view_type': 'form',
                 "view_mode": 'form',

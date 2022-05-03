@@ -28,4 +28,20 @@
 		</field>
 	</record>
 
+	<record id="document_kanban_view_hinerit" model="ir.ui.view">
+        <field name="name">ir.attachment.convert</field>
+        <field name="model">ir.attachment</field>
+        <field name="priority" eval="1"/>
+        <field name="type">kanban</field>
+        <field name="inherit_id" ref="plm.document_kanban_view"/>
+        <field name="arch" type="xml">
+			<xpath expr="//tr[@name='state']" position="after">
+				<tr>
+					<td style="padding-top:5px;">
+						<button name="show_convert_wizard" type="object" class="btn" style="color:white; background-color:#017e84;">Convert</button>
+					</td>
+				</tr>
+			</xpath>
+        </field>
+    </record>
 </odoo>

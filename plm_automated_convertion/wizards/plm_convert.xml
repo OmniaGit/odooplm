@@ -9,10 +9,10 @@
         	<field name="arch" type="xml">
 	        	<form string="Convert Form">
 	        		<group colspan="4" col="4">
-		        		<field string = "only dxf" name="batch_preview_printout" colspan="4"/>
-		        		<field string = "Documento Origine" name="document_id" />
+		        		<field string = "only dxf" name="batch_preview_printout" colspan="4" invisible="True"/>
+		        		<field string = "Document Of Origin" name="document_id" />
 						<field string = "Convertion Format" name="targetFormat" />
-		        		<field string = "Converted File" name="downloadDatas" readonly="1" filename="datas_fname"/>
+		        		<field string = "Converted File" name="downloadDatas" readonly="1" filename="datas_fname" invisible="True"/>
 		        		
 	            	</group>
 	            	
@@ -24,8 +24,8 @@
 	        		<separator string=""/>
                     <footer>
                         <button special="cancel" string="Cancel"/>
+                        <button string="Convert" name="action_create_convert_download" type="object"/>
                         <button string="Convert to folder" name="action_create_coversion" type="object"/>
-                        <button string="Convert and Downlaod" name="action_create_convert_download" type="object"/>
                     </footer>    	        		
 				</form>
 			</field>

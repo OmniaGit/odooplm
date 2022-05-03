@@ -285,7 +285,7 @@
                         				<strong attrs="{'invisible': [('document_type', '!=', '2d')]}">2D</strong>
                         				<strong attrs="{'invisible': [('document_type', '!=', '3d')]}">3D</strong>
                         			</td>
-                        			<td style="text-align: right; width: 100%; padding:1px;">
+                        			<td name="Component" style="text-align: right; width: 100%; padding:1px;">
 	                            		<div class="fa fa-dropbox fa-2x" aria-label="Missing Component" style="color:#ff8300;" attrs="{'invisible': [('is_linkedcomponents', 'not in', [False, []])]}"/>
                             			<div class="fa fa-dropbox fa-2x" aria-label="Founding Component" style="color: green;" attrs="{'invisible': [('is_linkedcomponents', 'in', [False, []])]}"/>
                             		</td>
@@ -331,7 +331,7 @@
                                                     <field name="revisionid"/>
                                                 </td>
                                             </tr>
-                                            <tr>
+                                            <tr name="state">
                                                 <td>
                                                     <strong>State:</strong>
                                                     <t t-if="stateToUse == 'draft'">
