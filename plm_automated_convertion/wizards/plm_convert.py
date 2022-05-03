@@ -184,7 +184,7 @@ class plm_temporary_batch_converter(models.TransientModel):
                 'start_document_id': ir_attachment.id,
                 'server_id': self.env.ref('plm_automated_convertion.odoo_local_server').id,
                 })
-        plm_stack.convert() # da sistemare   
+        plm_stack._generateConvertedDocuments(plm_stack)
         # aprire la finestra su plm stack form  
         return {'name': _('File Converted'),
                 'view_type': 'form',
