@@ -47,7 +47,16 @@ class PlmConvertStack(models.Model):
     output_name_rule = fields.Char('Output Name Rule')
     error_string = fields.Text('Error')
     server_id = fields.Many2one('plm.convert.servers', 'Conversion Server', )
-    
+    operation_type = fields.Selection([('UPDATE', 'Update'),
+                                      ('DOWNLOAD', 'Download'),
+                                      ('CONVERT', 'Convert')],
+                                     string='Operation Type',
+                                     help="""
+                                     Type of conversion operation
+                                     Update: Perform an update to the given document (pdf, Bitmap)
+                                     Download: Perform a conversion on the given format and download the file
+                                     Convert: Convert the file in place on the stack object
+                                     """)
     
     def setToConvert(self):
         for convertStack in self:

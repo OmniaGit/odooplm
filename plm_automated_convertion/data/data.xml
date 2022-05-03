@@ -1,21 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data noupdate="1">
-        <record id="plm_convetion_server" model="ir.config_parameter" >
-            <field name="key">plm_convetion_server</field>
-            <field name="value">my.servrer.com:5000</field>
-        </record>
-        <record id="plm_convertion_folder" model="ir.config_parameter" >
-            <field name="key">plm_convertion_folder</field>
-            <field name="value">/tmp/converted_data</field>
-        </record>
-
-    </data>
     <data>
         <record id="odoo_local_server" model="plm.convert.servers">
             <field name="sequence">1</field>
             <field name="name">Odoo Internal Convertion Server</field>
             <field name="is_internal">True</field>
+            <field name="available">True</field>
+        </record>
+        <record id="update_dxf_preview_pdf" model="plm.convert.format">
+        	<field name="server_id" ref="odoo_local_server"/>
+        	<field name="available">True</field>
+            <field name="cad_name">zedxf</field>
+            <field name="start_format">.dxf</field>
         </record>
     </data>
 </odoo>
