@@ -39,7 +39,7 @@ class PlmConvertFormat(models.Model):
     _order = 'sequence ASC'
 
     sequence = fields.Integer('Sequence', default="1")
-    name=fields.Char("Format Name", compute="_compute_name")
+    name = fields.Char("Format Name", compute="_compute_name")
     available = fields.Boolean('Available for conversion')
     start_format = fields.Char('Start Format', require=True)
     end_format = fields.Char('End Format', require=True)

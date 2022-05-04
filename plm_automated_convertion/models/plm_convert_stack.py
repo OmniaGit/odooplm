@@ -98,7 +98,7 @@ class PlmConvertStack(models.Model):
                 self.env.cr.commit()
             except Exception as ex:
                 logging.error(ex)
-                convertion.error_string = _("Internal Error %s") % ex
+                stack_id.error_string = _("Internal Error %s") % ex
                 
     def generateConvertedDocuments(self):
         logging.info('generateConvertedDocuments started')

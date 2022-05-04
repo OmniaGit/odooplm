@@ -187,21 +187,37 @@ class plm_temporary_batch_converter(models.TransientModel):
         Convert file in the given format and return it to the web page
         """
         obj_stack = self.env['plm.convert.stack']
-        plm_stack =obj_stack.search_count([('start_document_id','=',ir_attachment.id),('end_format','=', end_format), ('convertion_done','=',False)])
+        doc_id = self.env.context.get('active_id', False)
+        doc_brws = self.env['ir.attachment'].browse(doc_id)
+        server_id = self.targetFormat.server_id
+        if not server_id:
+            server_id = self.env.ref('plm_automated_convertion.odoo_local_server')
+        plm_stack = obj_stack.search_count([('start_document_id', '=', doc_id),
+                                            ('convrsion_rule', '=', self.targetFormat.id),
+                                            ('conversion_done', '=', False)])
         if not plm_stack:
+            prod_categ = self.env['product.category']
+            for comp in doc_brws.linkedcomponents:
+                prod_categ = comp.categ_id
             plm_stack = obj_stack.create({
-                'start_format': extention,
-                'end_format': end_format,
-                'start_document_id': ir_attachment.id,
-                'server_id': self.env.ref('plm_automated_convertion.odoo_local_server').id,
+                'convrsion_rule': self.targetFormat.id,
+                'start_document_id': doc_id,
+                'server_id': server_id.id,
+                'product_category': prod_categ.id,
+                'operation_type': 'CONVERT',
                 })
-        plm_stack._generateConvertedDocuments()
-        # aprire la finestra su plm stack form  
+        plm_stack.generateConvertedDocuments()
         return {'name': _('File Converted'),
+                'res_model': obj_stack._name,
                 'view_type': 'form',
-                "view_mode": 'form',
-                'res_model': self._name,
-                'target': 'new',
-                'res_id': self.id[0],
+                'view_mode': 'tree, form',
                 'type': 'ir.actions.act_window',
-                'domain': "[]"}
+                'domain': [('id', 'in', [obj_stack.id])],
+                'context': {}}
+        # aprire la finestra su plm stack form  
+        #return {'name': _('File Converted'),
+        #        'view_type': 'form',
+        #        "view_mode": 'form',
+        #        'res_model': obj_stack._name,
+        #        'type': 'ir.actions.act_window',
+        #        'domain': [('id', 'in', [obj_stack.id])]}
