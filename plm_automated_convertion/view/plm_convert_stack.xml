@@ -32,19 +32,31 @@
         <field name="arch" type="xml">
             <form string="Plm Convert Stack">
             	<sheet>	
-	                <group >
-		                <field name="sequence"/>
+                    <group>
+                        <field name="sequence" groups="base.group_no_one"/>
+                        <field name="write_date" groups="base.group_no_one"/>
+                        <field name="operation_type"/>
+                        <field name="start_document_id" readonly="True"/>
+                        
+                        <field name="server_id"/>
+                        <div>
+                            <span>Converted ? </span>
+                            <field name="conversion_done"/>
+                            <button name="setToConver" type="object" help="Re-Active Convertion" 
+                                    attrs="{'invisible': [('conversion_done', '=', False)]}"
+                                    icon="fa-arrow-circle-right"
+                                    groups="base.group_no_one"/>
+                        </div>
+                    </group>
+	                <group name="Convert" attrs="{'invisible':[('operation_type','=','UPDATE')]}">
 		                <field name="convrsion_rule"/>
 		                <field name="product_category"/>
-		                <field name="start_document_id" readonly="True"/>
 		                <field name="end_document_id" readonly="True"/>
-		                <field name="conversion_done"/>
-		                <field name="server_id"/>
 		                <field name="output_name_rule"/>
-		                <field name="error_string" readonly="True"/>
-		                <field name="write_date"/>
-		                <field name="operation_type"/>
 	                </group>
+	                <div style="background-color: #f49390;color: white;font-weight: bold;" attrs="{'invisible':[('error_string','in',['',False])]}">
+	                   <field name="error_string" readonly="True"/>
+	                </div>
                	</sheet> 
             </form>
         </field>
@@ -65,7 +77,7 @@
                 <field name="end_document_id"/>
                 <field name="server_id"/>
                 <field name="conversion_done"/>
-                <button name="setToConverted" type="object" attrs="{'invisible': [('conversion_done', '=', False)]}" icon="fa-arrow-circle-right"></button>
+                <button name="setToConver" type="object" attrs="{'invisible': [('conversion_done', '=', False)]}" icon="fa-arrow-circle-right"></button>
                 <field name="error_string"/>
                 <field name="write_date"/>
             </tree>
