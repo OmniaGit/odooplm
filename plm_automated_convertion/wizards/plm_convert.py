@@ -23,42 +23,23 @@ Created on 25/mag/2016
 
 @author: mboscolo
 '''
-
+import os
 import logging
+import base64
+import shutil
 import tempfile
+import requests
+#
 from odoo import models, fields, api, _
 from odoo import tools
 from odoo.exceptions import UserError
-import base64
-import os
-import shutil
-import requests
+#
 _logger = logging.getLogger(__name__)
-
-
+#
+#
 class plm_temporary_batch_converter(models.TransientModel):
     _name = 'plm.convert'
-    _description = "Temp Class for batch converter"
-
-    @api.model
-    def getAllFiles(self, document):
-        out = {}
-        ir_attachment = self.env['ir.attachment']
-        fileStoreLocation = ir_attachment._get_filestore()
-
-        def templateFile(docId):
-            document = ir_attachment.browse(docId)
-            return {document.name: (document.name,
-                                    open(os.path.join(fileStoreLocation, document.store_fname), 'rb'))}
-        out['root_file'] = (document.name,
-                            open(os.path.join(fileStoreLocation, document.store_fname), 'rb'))
-        objDocu = self.env['ir.attachment']
-        request = (document.id, [], -1)
-        for outId, _, _, _, _, _ in objDocu.CheckAllFiles(request):
-            if outId == document.id:
-                continue
-            out.update(templateFile(outId))
-        return out
+    _description = "Temporary Class for batch converter"
 
     @api.model
     def calculate_available_extention(self):
@@ -77,7 +58,7 @@ class plm_temporary_batch_converter(models.TransientModel):
     
     targetFormat = fields.Many2one('plm.convert.format', 'Conversion Format')
     
-    extention = fields.Char('Extention', compute='get_ext')
+    extention = fields.Char('Extension', compute='get_ext')
     
     downloadDatas = fields.Binary('Download', attachment=True)
     
@@ -143,7 +124,7 @@ class plm_temporary_batch_converter(models.TransientModel):
         obj_stack = self.env['plm.convert.stack']
         plm_stack = obj_stack.search([('start_document_id','=', self.document_id.id),
                                             ('convrsion_rule','=', self.targetFormat.id), 
-                                            ('conversion_done','=',False)])
+                                            ('conversion_done','=', False)])
         if not plm_stack:
             plm_stack = obj_stack.create({
                 'convrsion_rule': self.targetFormat.id,
@@ -151,9 +132,6 @@ class plm_temporary_batch_converter(models.TransientModel):
                 'operation_type': 'CONVERT' 
                 })
         plm_stack.convert()
-        #
-        # aprire la finestra su plm stack form  
-        #
         return {'name': _('File Converted'),
                 'view_type': 'form',
                 "view_mode": 'form',

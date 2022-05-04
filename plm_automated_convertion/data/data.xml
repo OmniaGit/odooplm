@@ -7,16 +7,17 @@
             <field name="is_internal">True</field>
             <field name="available">True</field>
         </record>
+        <!-- FROM DXF-->
         <record id="update_dxf_preview_pdf" model="plm.convert.format">
         	<field name="server_id" ref="odoo_local_server"/>
         	<field name="available">True</field>
-            <field name="cad_name">zedxf</field>
+            <field name="cad_name">Odoo</field>
             <field name="start_format">.dxf</field>
             <field name="end_format">.pdf</field>
         </record>
        <record id="update_dxf_preview_png" model="plm.convert.format">
         	<field name="server_id" ref="odoo_local_server"/>
-        	<field name="available">True</field>
+        	<field name="available">Odoo</field>
             <field name="cad_name">zedxf</field>
             <field name="start_format">.dxf</field>
             <field name="end_format">.png</field>
@@ -24,18 +25,146 @@
        <record id="update_dxf_preview_jpg" model="plm.convert.format">
             <field name="server_id" ref="odoo_local_server"/>
             <field name="available">True</field>
-            <field name="cad_name">zedxf</field>
+            <field name="cad_name">Odoo</field>
             <field name="start_format">.dxf</field>
             <field name="end_format">.jpg</field>
         </record>
        <record id="update_dxf_preview_svg" model="plm.convert.format">
         	<field name="server_id" ref="odoo_local_server"/>
         	<field name="available">True</field>
-            <field name="cad_name">zedxf</field>
+            <field name="cad_name">Odoo</field>
             <field name="start_format">.dxf</field>
             <field name="end_format">.svg</field>
         </record>
-        
-        
+        <!-- FROM OBJ-->
+        <record id="update_obj_preview_pdf" model="plm.convert.format">
+            <field name="server_id" ref="odoo_local_server"/>
+            <field name="available">True</field>
+            <field name="cad_name">Odoo</field>
+            <field name="start_format">.obj</field>
+            <field name="end_format">.pdf</field>
+        </record>
+       <record id="update_obj_preview_png" model="plm.convert.format">
+            <field name="server_id" ref="odoo_local_server"/>
+            <field name="available">True</field>
+            <field name="cad_name">Odoo</field>
+            <field name="start_format">.obj</field>
+            <field name="end_format">.png</field>
+        </record>
+       <record id="update_onj_preview_jpg" model="plm.convert.format">
+            <field name="server_id" ref="odoo_local_server"/>
+            <field name="available">True</field>
+            <field name="cad_name">obj2png</field>
+            <field name="start_format">.obj</field>
+            <field name="end_format">.jpg</field>
+        </record>
+       <record id="update_obj_preview_svg" model="plm.convert.format">
+            <field name="server_id" ref="odoo_local_server"/>
+            <field name="available">True</field>
+            <field name="cad_name">Odoo</field>
+            <field name="start_format">.obj</field>
+            <field name="end_format">.svg</field>
+        </record>        
+        <!-- FROM STP-->
+        <record id="update_stp_preview_pdf" model="plm.convert.format">
+            <field name="server_id" ref="odoo_local_server"/>
+            <field name="available">True</field>
+            <field name="cad_name">Odoo</field>
+            <field name="start_format">.stp</field>
+            <field name="end_format">.pdf</field>
+        </record>
+       <record id="update_stp_preview_png" model="plm.convert.format">
+            <field name="server_id" ref="odoo_local_server"/>
+            <field name="available">True</field>
+            <field name="cad_name">matplotlib</field>
+            <field name="start_format">.stp</field>
+            <field name="end_format">.png</field>
+        </record>
+       <record id="update_stp_preview_jpg" model="plm.convert.format">
+            <field name="server_id" ref="odoo_local_server"/>
+            <field name="available">True</field>
+            <field name="cad_name">Odoo</field>
+            <field name="start_format">.obj</field>
+            <field name="end_format">.jpg</field>
+        </record>
+       <record id="update_stp_preview_svg" model="plm.convert.format">
+            <field name="server_id" ref="odoo_local_server"/>
+            <field name="available">True</field>
+            <field name="cad_name">Odoo</field>
+            <field name="start_format">.stp</field>
+            <field name="end_format">.svg</field>
+        </record>
+        <record id="update_stp_preview_svg" model="plm.convert.format">
+            <field name="server_id" ref="odoo_local_server"/>
+            <field name="available">True</field>
+            <field name="cad_name">Odoo</field>
+            <field name="start_format">.stp</field>
+            <field name="end_format">.stl</field>
+        </record>
+        <!-- FROM STEP-->
+        <record id="update_step_preview_pdf" model="plm.convert.format">
+            <field name="server_id" ref="odoo_local_server"/>
+            <field name="available">True</field>
+            <field name="cad_name">Odoo</field>
+            <field name="start_format">.step</field>
+            <field name="end_format">.pdf</field>
+        </record>
+       <record id="update_step_preview_png" model="plm.convert.format">
+            <field name="server_id" ref="odoo_local_server"/>
+            <field name="available">True</field>
+            <field name="cad_name">matplotlib</field>
+            <field name="start_format">.step</field>
+            <field name="end_format">.png</field>
+        </record>
+       <record id="update_step_preview_jpg" model="plm.convert.format">
+            <field name="server_id" ref="odoo_local_server"/>
+            <field name="available">True</field>
+            <field name="cad_name">Odoo</field>
+            <field name="start_format">.step</field>
+            <field name="end_format">.jpg</field>
+        </record>
+       <record id="update_step_preview_svg" model="plm.convert.format">
+            <field name="server_id" ref="odoo_local_server"/>
+            <field name="available">True</field>
+            <field name="cad_name">Odoo</field>
+            <field name="start_format">.step</field>
+            <field name="end_format">.svg</field>
+        </record>
+        <record id="update_step_preview_stl" model="plm.convert.format">
+            <field name="server_id" ref="odoo_local_server"/>
+            <field name="available">True</field>
+            <field name="cad_name">Odoo</field>
+            <field name="start_format">.step</field>
+            <field name="end_format">.stl</field>
+        </record>
+        <!-- FROM STL-->
+        <record id="update_stl_preview_pdf" model="plm.convert.format">
+            <field name="server_id" ref="odoo_local_server"/>
+            <field name="available">True</field>
+            <field name="cad_name">Odoo</field>
+            <field name="start_format">.stl</field>
+            <field name="end_format">.pdf</field>
+        </record>
+       <record id="update_stl_preview_png" model="plm.convert.format">
+            <field name="server_id" ref="odoo_local_server"/>
+            <field name="available">True</field>
+            <field name="cad_name">matplotlib</field>
+            <field name="start_format">.stl</field>
+            <field name="end_format">.png</field>
+        </record>
+       <record id="update_stl_preview_jpg" model="plm.convert.format">
+            <field name="server_id" ref="odoo_local_server"/>
+            <field name="available">True</field>
+            <field name="cad_name">Odoo</field>
+            <field name="start_format">.stl</field>
+            <field name="end_format">.jpg</field>
+        </record>
+       <record id="update_stl_preview_svg" model="plm.convert.format">
+            <field name="server_id" ref="odoo_local_server"/>
+            <field name="available">True</field>
+            <field name="cad_name">Odoo</field>
+            <field name="start_format">.stl</field>
+            <field name="end_format">.svg</field>
+        </record>
     </data>
 </odoo>

@@ -35,12 +35,8 @@
         <field name="type">kanban</field>
         <field name="inherit_id" ref="plm.document_kanban_view"/>
         <field name="arch" type="xml">
-			<xpath expr="//tr[@name='state']" position="after">
-				<tr>
-					<td style="padding-top:5px;">
-						<button name="show_convert_wizard" type="object" class="btn" style="color:white; background-color:#017e84;">Convert</button>
-					</td>
-				</tr>
+			<xpath expr="//td[@name='attachment_button_box']" position="inside">
+			 <button name="show_convert_wizard" type="object" class="btn btn-primary btn-sm"><i class="fa fa-openid"></i> Convert</button>
 			</xpath>
         </field>
     </record>

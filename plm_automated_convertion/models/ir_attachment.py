@@ -23,24 +23,33 @@ Created on 03/nov/2016
 
 @author: mboscolo
 '''
-
+#
+import os
+import sys
+import json
+import shutil
+import base64
+import logging
+import tempfile
+#
 from odoo.exceptions import UserError
 from odoo import models
 from odoo import fields
 from odoo import api
 from odoo import _
-import logging
 #
-# preview pdf conversion
+# conversion
 #
-import os
-import sys
-import json
-import base64
-import tempfile
 from ezdxf import recover
 from ezdxf.addons.drawing import matplotlib
-ALLOW_CONVERSION_FORMAT = ['.dxf']
+ALLOW_CONVERSION_FORMAT = ['.dxf','.obj','.stp','.step','.stl']
+#
+from .obj2png import ObjFile 
+#
+from stl import mesh
+import cadquery2 as cq
+import matplotlib.pyplot as plt
+from mpl_toolkits import mplot3d
 #
 #
 class ir_attachment(models.Model):
@@ -121,6 +130,7 @@ class ir_attachment(models.Model):
             raise UserError("Format %s not supported" % toFormat)
             
         store_fname = self._full_path(self.store_fname)
+        
         doc, auditor = recover.readfile(store_fname)
         if not auditor.has_errors:
             tmpdirname = tempfile.gettempdir()
@@ -129,7 +139,90 @@ class ir_attachment(models.Model):
             matplotlib.qsave(doc.modelspace(), newFileName)
             return newFileName
         raise Exception("Unable to perform the conversion Error: %s" % auditor.has_errors)
-                            
+
+    def convert_from_obj_to(self, toFormat):
+        """
+            convert using the exdxf library
+        """
+        if toFormat.replace(".", "") not in ['png','pdf','svg','jpg']:
+            raise UserError("Format %s not supported" % toFormat)
+            
+        store_fname = self._full_path(self.store_fname)
+        o=ObjFile(store_fname)
+        tmpdirname = tempfile.gettempdir()
+        name, exte = os.path.splitext(self.name)   
+        newFileName=os.path.join(tmpdirname, '%s%s' % (name, toFormat))
+        o.Plot(newFileName, dpi=100)
+        return newFileName
+    
+    def convert_from_step_to(self, toFormat):
+        newFileName = ''
+        if toFormat.replace(".", "") not in ['png','pdf','svg','jpg','stl']:
+            raise UserError("Format %s not supported" % toFormat)
+        store_fname = self._full_path(self.store_fname)
+        result = cq.importers.importStep(store_fname)
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            name, exte = os.path.splitext(self.name)
+            stlName=os.path.join(tmpdirname, '%s.stl' % name)
+            cq.exporters.export(result, stlName)
+            newFileName=os.path.join(tempfile.gettempdir(), '%s%s' % (name, toFormat))   
+            if  '.stl'.lower() in toFormat:
+                shutil.copy(stlName, newFileName)
+                return newFileName
+            #
+            # Create a new plot
+            #
+            figure = plt.figure()
+            axes = mplot3d.Axes3D(figure)
+            #
+            # Load the STL files and add the vectors to the plot
+            #
+            your_mesh = mesh.Mesh.from_file(stlName)
+            axes.add_collection3d(mplot3d.art3d.Poly3DCollection(your_mesh.vectors))
+            #
+            # Auto scale to the mesh size
+            #
+            scale = your_mesh.points.flatten()
+            axes.auto_scale_xyz(scale, scale, scale)
+            #
+         
+            plt.savefig(newFileName,
+                        dpi=100,
+                        transparent=True)
+            plt.close()
+        return newFileName
+
+    def convert_from_stl_to(self, toFormat):
+        newFileName = ''
+        if toFormat.replace(".", "") not in ['png','pdf','svg','jpg']:
+            raise UserError("Format %s not supported" % toFormat)
+        store_fname = self._full_path(self.store_fname)
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            name, exte = os.path.splitext(self.name)
+            newFileName=os.path.join(tempfile.gettempdir(), '%s%s' % (name, toFormat))   
+            #
+            # Create a new plot
+            #
+            figure = plt.figure()
+            axes = mplot3d.Axes3D(figure)
+            #
+            # Load the STL files and add the vectors to the plot
+            #
+            your_mesh = mesh.Mesh.from_file(store_fname)
+            axes.add_collection3d(mplot3d.art3d.Poly3DCollection(your_mesh.vectors))
+            #
+            # Auto scale to the mesh size
+            #
+            scale = your_mesh.points.flatten()
+            axes.auto_scale_xyz(scale, scale, scale)
+            #
+         
+            plt.savefig(newFileName,
+                        dpi=100,
+                        transparent=True)
+            plt.close()
+        return newFileName
+
     def convert_to_format(self, toFormat):
         """
             convert the attachment to the given format
@@ -137,12 +230,56 @@ class ir_attachment(models.Model):
         for ir_attachment in self:
             for extention in ALLOW_CONVERSION_FORMAT:
                 if extention in ir_attachment.name.lower():
-                    return ir_attachment.convert_from_dxf_to(toFormat)
-
-
+                    if extention.lower()=='.dxf':
+                        return ir_attachment.convert_from_dxf_to(toFormat)
+                    elif extention.lower()=='.obj':
+                        return ir_attachment.convert_from_obj_to(toFormat)
+                    elif extention.lower() in ['.stp', '.step']:
+                        return ir_attachment.convert_from_step_to(toFormat)
+                    elif extention.lower()=='.stl':
+                        return ir_attachment.convert_from_stl_to(toFormat)
+                    else:
+                        raise UserError(_("Format %s not supported") % toFormat)
+            raise UserError(_("Format %s not supported") % toFormat)
+                        
     def _updatePreview(self):
         for ir_attachment in self:
             store_fname = ir_attachment._full_path(ir_attachment.store_fname)
+            if '.dxf' in ir_attachment.name.lower():
+                ir_attachment._updatePreviewFromDxf(store_fname)
+            if '.obj' in ir_attachment.name.lower():
+                 ir_attachment._updatePreviewFromObj(store_fname)
+            if '.stp' in ir_attachment.name.lower() or 'step' in ir_attachment.name.lower():
+                ir_attachment._updatePreviewFromStp(store_fname)
+            if '.stl' in ir_attachment.name.lower():
+                ir_attachment._updatePreviewFromStl(store_fname)
+
+    def _updatePreviewFromStl(self, fromFile):
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            name, exte = os.path.splitext(self.name) 
+            pngName=os.path.join(tmpdirname, '%s.png' % name)
+            converted_file = self.convert_from_stl_to('.png')
+            with open(converted_file,'rb') as pngStream:
+                self.preview =  base64.b64encode(pngStream.read())
+
+    
+    def _updatePreviewFromStp(self, fromFile):
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            name, exte = os.path.splitext(self.name) 
+            pngName=os.path.join(tmpdirname, '%s.png' % name)
+            converted_file = self.convert_from_step_to('.png')
+            with open(converted_file,'rb') as pngStream:
+                self.preview =  base64.b64encode(pngStream.read())
+
+    def _updatePreviewFromObj(self, fromFile):
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            name, exte = os.path.splitext(self.name) 
+            pngName=os.path.join(tmpdirname, '%s.png' % name)
+            converted_file = self.convert_from_obj_to('.png')
+            with open(converted_file,'rb') as pngStream:
+                self.preview =  base64.b64encode(pngStream.read())
+                    
+    def _updatePreviewFromDxf(self, fromFile):
             doc, auditor = recover.readfile(store_fname)
             if not auditor.has_errors:
                 with tempfile.TemporaryDirectory() as tmpdirname:
@@ -152,9 +289,9 @@ class ir_attachment(models.Model):
                     pdfName=os.path.join(tmpdirname, '%s.pdf' % name)
                     matplotlib.qsave(doc.modelspace(), pdfName)
                     with open(pngName,'rb') as pngStream:
-                        ir_attachment.preview =  base64.b64encode(pngStream.read())
+                        self.preview =  base64.b64encode(pngStream.read())
                     with open(pdfName,'rb') as pdfStream:
-                        ir_attachment.printout =  base64.b64encode(pdfStream.read())
+                        self.printout =  base64.b64encode(pdfStream.read())
             
             
     def createPreviewStack(self):

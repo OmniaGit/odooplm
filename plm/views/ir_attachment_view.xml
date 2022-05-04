@@ -366,6 +366,10 @@
 													</t>
                                                 </td>
                                             </tr>
+                                            <tr name="attachment_button_box">
+                                                <td name="attachment_button_box">
+                                                </td>
+                                            </tr>
                                 			<tr>
                                                 <td>
                                                 	<t t-if="stateToUse == 'draft'">

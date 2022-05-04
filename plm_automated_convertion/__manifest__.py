@@ -29,7 +29,9 @@
     "license": "AGPL-3",
     "summary": "CAD editors batch conversion tool",
     "depends": ["plm"],
-    'external_dependencies': {'python': ['ezdxf','matplotlib', 'ezdxf[draw]']},
+    'external_dependencies': {'python': ['ezdxf',
+                                         'matplotlib',
+                                         'cadquery2']},
     "data": [  
         #
         # security
