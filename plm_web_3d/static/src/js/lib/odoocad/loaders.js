@@ -89,7 +89,7 @@ class Loader {
             (xhr) => {
                 var percentage = (xhr.loaded / xhr.total) * 100;
                 self.progress_bar.style.width = percentage + '%';
-                console.log(progress_bar.style.width + ' loaded')
+                console.log(self.progress_bar.style.width + ' loaded')
             },
             (err) => {
                 alert("Unable to load the " + document_name + " err: " + err);
@@ -101,13 +101,13 @@ class Loader {
 			var children = gltf.scene.children; 
 			var i;
 			for (i = 0; i < children.length; i++) {
-				self.addItemToScene(children[i]);
+				self.odooCad.addItemToScene(children[i]);
 			}
 		},
 		function ( xhr ) {
 	    	var percentage = (xhr.loaded / xhr.total) * 100;
-	    	progress_bar.style.width = percentage + '%';
-	        console.log(progress_bar.style.width + ' loaded')
+	    	self.progress_bar.style.width = percentage + '%';
+	        console.log(self.progress_bar.style.width + ' loaded')
 		},
 
 		function ( err ) {
@@ -115,35 +115,38 @@ class Loader {
 		});		
 	}
 	loadfBXLoader(document_name, url){
+	   var self=this;
 		fBXLoader.load( url, function ( gltf ) {
 			var children = gltf.children; 
 			var i;
 			for (i = 0; i < children.length; i++) {
-				this.addItemToScene(children[i]);
+				self.odooCad.addItemToScene(children[i]);
 			}
 		},
 		function ( xhr ) {
 	    	var percentage = (xhr.loaded / xhr.total) * 100;
-	    	this.progress_bar.style.width = percentage + '%';
-	        console.log(progress_bar.style.width + ' loaded')
+	    	self.progress_bar.style.width = percentage + '%';
+	        console.log(self.progress_bar.style.width + ' loaded')
 		},
 
 		function ( err ) {
 			alert("Unable to load the " + document_name + " err: " + err);
 		});	
 	}
+	
 	loadoBJLoader(document_name, file_path){
+	   var self=this;
 		oBJLoader.load( file_path, function ( gltf ) {
 			var children = gltf.children; 
 			var i;
 			for (i = 0; i < children.length; i++) {
-				this.addItemToScene(children[i]);
+				self.odooCad.addItemToScene(children[i]);
 			}
 		}, 
 		function ( xhr ) {
 	    	var percentage = (xhr.loaded / xhr.total) * 100;
-	    	this.progress_bar.style.width = percentage + '%';
-	        console.log(progress_bar.style.width + ' loaded')
+	    	self.progress_bar.style.width = percentage + '%';
+	        console.log(self.progress_bar.style.width + ' loaded')
 		},
 		function ( err ) {
 			alert("Unable to load the " + document_name + " err: " + err);
@@ -151,16 +154,17 @@ class Loader {
 		
 	}
 	loadoloader(document_name, url){
+	   var self=this;
 		loader.load(
 				url,
 				function ( obj ) {
-					this.addItemToScene( obj );
+					self.odooCad.addItemToScene( obj );
 				},
 
 				function ( xhr ) {
 			    	var percentage = (xhr.loaded / xhr.total) * 100;
-			    	this.progress_bar.style.width = percentage + '%';
-			        console.log(progress_bar.style.width + ' loaded')
+			         self.progress_bar.style.width = percentage + '%';
+			        console.log(self.progress_bar.style.width + ' loaded')
 				},
 
 				function ( err ) {
@@ -168,17 +172,18 @@ class Loader {
 				});	
 	}
 	loadvRMLLoader(document_name, url){
+	   var self=this;
 		vRMLLoader.load( url, function ( gltf ) {
 			var children = gltf.children; 
 			var i;
 			for (i = 0; i < children.length; i++) {
-				this.addItemToScene(children[i])
+				self.odooCad.addItemToScene(children[i])
 			}
 		},
 	    (xhr) => {
 	    	var percentage = (xhr.loaded / xhr.total) * 100;
-	    	this.progress_bar.style.width = percentage + '%';
-	        console.log(progress_bar.style.width + ' loaded')
+	    	self.progress_bar.style.width = percentage + '%';
+	        console.log(self.progress_bar.style.width + ' loaded')
 	    },
 	    (err) => {
 	    	alert("Unable to load the " + document_name + " err: " + err);
@@ -194,7 +199,7 @@ class Loader {
 		    (xhr) => {
 		    	var percentage = (xhr.loaded / xhr.total) * 100;
 		    	self.progress_bar.style.width = percentage + '%';
-		        console.log(progress_bar.style.width + ' loaded')
+		        console.log(self.progress_bar.style.width + ' loaded')
 		    },
 		    (err) => {
 		    	alert("Unable to load the " + document_name + " err: " + err);
@@ -227,7 +232,7 @@ class Loader {
             (xhr) => {
                 var percentage = (xhr.loaded / xhr.total) * 100;
                 self.progress_bar.style.width = percentage + '%';
-                console.log(progress_bar.style.width + ' loaded')
+                console.log(self.progress_bar.style.width + ' loaded')
             },
             (err) => {
               
