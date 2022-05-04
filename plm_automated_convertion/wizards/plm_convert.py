@@ -71,7 +71,7 @@ class plm_temporary_batch_converter(models.TransientModel):
     @api.onchange("document_id")
     def get_ext(self):
         for plm_convert_id in self:
-            plm_convert_id.extention = os.path.splitext(plm_convert_id.document_id.name)[1]
+            plm_convert_id.extention = os.path.splitext(plm_convert_id.document_id.name)[1].lower()
 
     def convert(self):
         """

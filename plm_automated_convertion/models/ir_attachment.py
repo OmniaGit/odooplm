@@ -32,11 +32,11 @@ import base64
 import logging
 import tempfile
 #
-from odoo.exceptions import UserError
 from odoo import models
 from odoo import fields
 from odoo import api
 from odoo import _
+from odoo.exceptions import UserError
 #
 # conversion
 #

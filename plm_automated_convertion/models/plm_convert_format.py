@@ -41,12 +41,12 @@ class PlmConvertFormat(models.Model):
     sequence = fields.Integer('Sequence', default="1")
     name = fields.Char("Format Name", compute="_compute_name")
     available = fields.Boolean('Available for conversion')
-    start_format = fields.Char('Start Format', require=True)
-    end_format = fields.Char('End Format', require=True)
-    cad_name = fields.Char('Cad Name', require=True)
+    start_format = fields.Char('Start Format', required=True)
+    end_format = fields.Char('End Format', required=True)
+    cad_name = fields.Char('Cad Name', required=True)
     server_id = fields.Many2one('plm.convert.servers',
                                 string='Server',
-                                require=True)
+                                required=True)
 
     def _compute_name(self):
         for plm_convert_format in self:

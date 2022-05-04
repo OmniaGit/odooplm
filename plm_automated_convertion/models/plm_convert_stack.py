@@ -28,6 +28,7 @@ import json
 import shutil
 import base64
 import logging
+import traceback
 #    
 from odoo import models
 from odoo import fields
@@ -108,6 +109,7 @@ class PlmConvertStack(models.Model):
                 self.env.cr.commit()
             except Exception as ex:
                 logging.error(ex)
+                traceback.print_exc()
                 stack_id.error_string = _("Internal Error %s") % ex
                 
     def generateConvertedDocuments(self):
