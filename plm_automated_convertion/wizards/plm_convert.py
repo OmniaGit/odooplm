@@ -125,18 +125,28 @@ class plm_temporary_batch_converter(models.TransientModel):
         plm_stack = obj_stack.search([('start_document_id','=', self.document_id.id),
                                             ('convrsion_rule','=', self.targetFormat.id), 
                                             ('conversion_done','=', False)])
+
         if not plm_stack:
+            prod_categ = self.env['product.category']
+            for comp in doc_brws.linkedcomponents:
+                prod_categ = comp.categ_id
             plm_stack = obj_stack.create({
                 'convrsion_rule': self.targetFormat.id,
-                'start_document_id': self.document_id.id,
-                'operation_type': 'CONVERT' 
+                'start_document_id': doc_id,
+                'server_id': server_id.id,
+                'product_category': prod_categ.id,
+                'operation_type': 'CONVERT',
                 })
+
         plm_stack.convert()
+
         return {'name': _('File Converted'),
+                'res_model': obj_stack._name,
                 'view_type': 'form',
                 "view_mode": 'form',
                 'res_model': plm_stack._name,
-                'target': 'new',
+                #'target': 'new',
                 'res_id': plm_stack.id,
                 'type': 'ir.actions.act_window',
-                'domain': "[]"}
+                'domain': [('id', 'in', [obj_stack.id])],
+                'context': {}}
