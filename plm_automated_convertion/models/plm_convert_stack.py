@@ -39,7 +39,8 @@ class PlmConvertStack(models.Model):
     _name = "plm.convert.stack"
     _description = "Stack of conversions"
     _order = 'sequence ASC'
-
+    
+    name = fields.Char("Name", compute='_compute_name')
     sequence = fields.Integer(string='Sequence')
     convrsion_rule = fields.Many2one('plm.convert.format',
                                      string="Conversion rule",
@@ -66,9 +67,17 @@ class PlmConvertStack(models.Model):
                                      Convert: Convert the file in place on the stack object
                                      """)
     
-    def setToConverted(self):
+    def _compute_name(self):
+        for stack_id in self:
+            stack_id.name = "%s: %s" % (stack_id.operation_type,stack_id.start_document_id.name)
+            
+    def setToConver(self):
         for convertStack in self:
             convertStack.conversion_done = False
+    
+    def setToConverted(self):
+        for convertStack in self:
+            convertStack.conversion_done = True
 
     @api.model
     def create(self, vals):
@@ -95,6 +104,7 @@ class PlmConvertStack(models.Model):
                 else:
                     continue
                 stack_id.setToConverted()
+                stack_id.error_string = ''
                 self.env.cr.commit()
             except Exception as ex:
                 logging.error(ex)

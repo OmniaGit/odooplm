@@ -157,26 +157,23 @@ class ir_attachment(models.Model):
                         ir_attachment.printout =  base64.b64encode(pdfStream.read())
             
             
-    def createPreview(self):
+    def createPreviewStack(self):
         obj_stack = self.env['plm.convert.stack']
         for ir_attachment in self:
             for extention in ALLOW_CONVERSION_FORMAT:
                 if extention in ir_attachment.name.lower():
-                    end_format = json.dumps(['png_pdf_update']) 
-                    if not obj_stack.search_count([('start_document_id','=',ir_attachment.id),('end_format','=', end_format)]):
+                    if not obj_stack.search_count([('start_document_id','=',ir_attachment.id),('operation_type','=', 'UPDATE')]):
                         obj_stack.create({
-                            'start_format': extention,
-                            'end_format': end_format,
+                            'operation_type': 'UPDATE',
                             'start_document_id': ir_attachment.id,
-                            'server_id': self.env.ref('plm_automated_convertion.odoo_local_server').id,
                             })
     @api.model
     def create(self, vals):
         ret = super(ir_attachment, self).create(vals)
-        #ret.createPreview()
+        ret.createPreviewStack()
         return ret
 
     def write(self, vals):
         ret = super(ir_attachment, self).write(vals)
-        #self.createPreview()
+        self.createPreviewStack()
         return ret
