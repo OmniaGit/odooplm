@@ -47,9 +47,12 @@ ALLOW_CONVERSION_FORMAT = ['.dxf','.obj','.stp','.step','.stl']
 from .obj2png import ObjFile 
 #
 from stl import mesh
-import cadquery2 as cq
 import matplotlib.pyplot as plt
 from mpl_toolkits import mplot3d
+try:
+    import cadquery2 as cq
+except Exception as ex:
+    logging.error(ex)
 #
 #
 class ir_attachment(models.Model):
@@ -157,39 +160,42 @@ class ir_attachment(models.Model):
     
     def convert_from_step_to(self, toFormat):
         newFileName = ''
-        if toFormat.replace(".", "") not in ['png','pdf','svg','jpg','stl']:
-            raise UserError("Format %s not supported" % toFormat)
-        store_fname = self._full_path(self.store_fname)
-        result = cq.importers.importStep(store_fname)
-        with tempfile.TemporaryDirectory() as tmpdirname:
-            name, exte = os.path.splitext(self.name)
-            stlName=os.path.join(tmpdirname, '%s.stl' % name)
-            cq.exporters.export(result, stlName)
-            newFileName=os.path.join(tempfile.gettempdir(), '%s%s' % (name, toFormat))   
-            if  '.stl'.lower() in toFormat:
-                shutil.copy(stlName, newFileName)
-                return newFileName
-            #
-            # Create a new plot
-            #
-            figure = plt.figure()
-            axes = mplot3d.Axes3D(figure)
-            #
-            # Load the STL files and add the vectors to the plot
-            #
-            your_mesh = mesh.Mesh.from_file(stlName)
-            axes.add_collection3d(mplot3d.art3d.Poly3DCollection(your_mesh.vectors))
-            #
-            # Auto scale to the mesh size
-            #
-            scale = your_mesh.points.flatten()
-            axes.auto_scale_xyz(scale, scale, scale)
-            #
-         
-            plt.savefig(newFileName,
-                        dpi=100,
-                        transparent=True)
-            plt.close()
+        try:
+            if toFormat.replace(".", "") not in ['png','pdf','svg','jpg','stl']:
+                raise UserError("Format %s not supported" % toFormat)
+            store_fname = self._full_path(self.store_fname)
+            result = cq.importers.importStep(store_fname)
+            with tempfile.TemporaryDirectory() as tmpdirname:
+                name, exte = os.path.splitext(self.name)
+                stlName=os.path.join(tmpdirname, '%s.stl' % name)
+                cq.exporters.export(result, stlName)
+                newFileName=os.path.join(tempfile.gettempdir(), '%s%s' % (name, toFormat))   
+                if  '.stl'.lower() in toFormat:
+                    shutil.copy(stlName, newFileName)
+                    return newFileName
+                #
+                # Create a new plot
+                #
+                figure = plt.figure()
+                axes = mplot3d.Axes3D(figure)
+                #
+                # Load the STL files and add the vectors to the plot
+                #
+                your_mesh = mesh.Mesh.from_file(stlName)
+                axes.add_collection3d(mplot3d.art3d.Poly3DCollection(your_mesh.vectors))
+                #
+                # Auto scale to the mesh size
+                #
+                scale = your_mesh.points.flatten()
+                axes.auto_scale_xyz(scale, scale, scale)
+                #
+             
+                plt.savefig(newFileName,
+                            dpi=100,
+                            transparent=True)
+                plt.close()
+        except Exception as ex:
+            raise UserError('Cannot convert due to error %r' % (ex))
         return newFileName
 
     def convert_from_stl_to(self, toFormat):
@@ -299,11 +305,39 @@ class ir_attachment(models.Model):
         for ir_attachment in self:
             for extention in ALLOW_CONVERSION_FORMAT:
                 if extention in ir_attachment.name.lower():
-                    if not obj_stack.search_count([('start_document_id','=',ir_attachment.id),('operation_type','=', 'UPDATE')]):
+                    if not obj_stack.search_count([('start_document_id','=',ir_attachment.id),
+                                                   ('operation_type','=', 'UPDATE')]):
+                        conv_format = self.checkCreateDefaultPreviewFormat(extention)
                         obj_stack.create({
                             'operation_type': 'UPDATE',
                             'start_document_id': ir_attachment.id,
+                            'convrsion_rule': conv_format.id
                             })
+
+    def checkCreateDefaultPreviewFormat(self, start_format):
+        format_model = self.env['plm.convert.format']
+        if start_format.upper() in ['.STP']:
+            format_model =  self.env.ref('plm_automated_convertion.update_stp_preview_png')
+        elif start_format.upper() in ['.STEP']:
+            format_model =  self.env.ref('plm_automated_convertion.update_step_preview_png')
+        elif start_format.upper() in ['.DXF']:
+            format_model =  self.env.ref('plm_automated_convertion.update_dxf_preview_png')
+        elif start_format.upper() in ['.OBJ']:
+            format_model =  self.env.ref('plm_automated_convertion.update_obj_preview_png')
+        elif start_format.upper() in ['.STL']:
+            format_model =  self.env.ref('plm_automated_convertion.update_stl_preview_png')
+        else:
+            if not format_ids:
+                format_ids = format_model.search([
+                    ('end_format', '=', '.png'),
+                    ('start_format', '=', start_format),
+                    ('available', '=', True)
+                    ])
+                for format in format_ids:
+                    format_model = format
+                    break
+        return format_model
+
     @api.model
     def create(self, vals):
         ret = super(ir_attachment, self).create(vals)

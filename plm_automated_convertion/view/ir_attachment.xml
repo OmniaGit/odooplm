@@ -36,7 +36,7 @@
         <field name="inherit_id" ref="plm.document_kanban_view"/>
         <field name="arch" type="xml">
 			<xpath expr="//td[@name='attachment_button_box']" position="inside">
-			 <button name="show_convert_wizard" type="object" class="btn btn-primary btn-sm"><i class="fa fa-openid"></i> Convert</button>
+			 	<button name="show_convert_wizard" type="object" class="btn btn-primary btn-sm"><i class="fa fa-openid"></i> Convert</button>
 			</xpath>
         </field>
     </record>
