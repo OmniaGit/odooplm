@@ -161,14 +161,17 @@ class ir_attachment(models.Model):
     def convert_from_step_to(self, toFormat):
         newFileName = ''
         try:
-            if toFormat.replace(".", "") not in ['png','pdf','svg','jpg','stl']:
+            if toFormat.replace(".", "").lower() not in ['png','pdf','svg','jpg','stl']:
                 raise UserError("Format %s not supported" % toFormat)
             store_fname = self._full_path(self.store_fname)
             result = cq.importers.importStep(store_fname)
             with tempfile.TemporaryDirectory() as tmpdirname:
                 name, exte = os.path.splitext(self.name)
                 stlName=os.path.join(tmpdirname, '%s.stl' % name)
-                cq.exporters.export(result, stlName)
+                cq.exporters.export(result,
+                                    stlName,
+                                    tolerance=1.0,
+                                    angularTolerance=1.0)
                 newFileName=os.path.join(tempfile.gettempdir(), '%s%s' % (name, toFormat))   
                 if  '.stl'.lower() in toFormat:
                     shutil.copy(stlName, newFileName)
@@ -200,7 +203,7 @@ class ir_attachment(models.Model):
 
     def convert_from_stl_to(self, toFormat):
         newFileName = ''
-        if toFormat.replace(".", "") not in ['png','pdf','svg','jpg']:
+        if toFormat.replace(".", "").lower() not in ['png','pdf','svg','jpg']:
             raise UserError("Format %s not supported" % toFormat)
         store_fname = self._full_path(self.store_fname)
         with tempfile.TemporaryDirectory() as tmpdirname:
