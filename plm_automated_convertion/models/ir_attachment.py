@@ -280,10 +280,10 @@ class ir_attachment(models.Model):
                 self.preview =  base64.b64encode(pngStream.read())
                     
     def _updatePreviewFromDxf(self, fromFile):
-            doc, auditor = recover.readfile(store_fname)
+            doc, auditor = recover.readfile(fromFile)
             if not auditor.has_errors:
                 with tempfile.TemporaryDirectory() as tmpdirname:
-                    name, exte = os.path.splitext(ir_attachment.name)   
+                    name, exte = os.path.splitext(self.name)   
                     pngName=os.path.join(tmpdirname, '%s.png' % name)
                     matplotlib.qsave(doc.modelspace(), pngName)
                     pdfName=os.path.join(tmpdirname, '%s.pdf' % name)

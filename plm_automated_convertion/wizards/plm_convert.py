@@ -128,12 +128,11 @@ class plm_temporary_batch_converter(models.TransientModel):
 
         if not plm_stack:
             prod_categ = self.env['product.category']
-            for comp in doc_brws.linkedcomponents:
+            for comp in self.document_id.linkedcomponents:
                 prod_categ = comp.categ_id
             plm_stack = obj_stack.create({
                 'convrsion_rule': self.targetFormat.id,
-                'start_document_id': doc_id,
-                'server_id': server_id.id,
+                'start_document_id': self.document_id.id,
                 'product_category': prod_categ.id,
                 'operation_type': 'CONVERT',
                 })
