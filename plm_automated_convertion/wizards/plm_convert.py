@@ -41,91 +41,42 @@ class plm_temporary_batch_converter(models.TransientModel):
     _name = 'plm.convert'
     _description = "Temporary Class for batch converter"
 
-    @api.model
-    def calculate_available_extention(self):
-        """
-        calculate the conversion extension
-        """
-        name = self.env.context.get('name', False)
-        if name:
-            _, file_extension = os.path.splitext(name)
-            _, avilableFormat = self.getCadAndConvertionAvailabe(file_extension)
-            return [(a, a) for a in avilableFormat]
-        return []
-
     document_id = fields.Many2one('ir.attachment',
-                                  'Related Document')
+                                  'Related Document',
+                                  requite=True)
     
-    targetFormat = fields.Many2one('plm.convert.format', 'Conversion Format')
+    targetFormat = fields.Many2one('plm.convert.format',
+                                   'Conversion Format',
+                                   requite=True)
     
-    extention = fields.Char('Extension', compute='get_ext')
+    extention = fields.Char('Extension',
+                            compute='get_ext')
     
-    downloadDatas = fields.Binary('Download', attachment=True)
-    
-    datas_fname = fields.Char("New File name")
-    
-    batch_preview_printout = fields.Boolean('Batch convert preview and printout', default=False)
-    
-    error_message = fields.Text("Error")
     
     @api.onchange("document_id")
     def get_ext(self):
         for plm_convert_id in self:
             plm_convert_id.extention = os.path.splitext(plm_convert_id.document_id.name)[1].lower()
 
-    def convert(self):
-        """
-            convert the file in a new one
-        """
-        out = []
-        for brwWizard in self:
-            if brwWizard.batch_preview_printout:
-                #
-                # use internal convert tool
-                #
-                brwWizard.document_id.createPreview()
-            else:
-                #
-                # call external convert tool for cad
-                #
-                _, fileExtension = os.path.splitext(self.document_id.name)
-                cadName, _ = self.getCadAndConvertionAvailabe(fileExtension)
-                newFileName = ''
-                for component in brwWizard.document_id.linkedcomponents:
-                    newFileName = component.engineering_code + brwWizard.targetFormat
-                if newFileName == '':
-                    newFileName = self.document_id.name + '.' + brwWizard.targetFormat
-                newFilePath = self.getFileConverted(brwWizard.document_id,
-                                                    cadName,
-                                                    brwWizard.targetFormat,
-                                                    newFileName)
-                out.append(newFilePath)
-        return out
-
     def action_create_coversion(self):
         """
-        convert the file to the give format
+            convert the file to the give format
         """
-        convertionFolder = self.env['ir.config_parameter'].get_param('plm_convertion_folder')
-        converted = self.convert()
-        for newFilePath in converted:
-            try:
-                shutil.move(newFilePath, convertionFolder)
-            except Exception:
-                newFileName = os.path.join(convertionFolder, os.path.basename(newFilePath))
-                os.remove(newFileName)
-                shutil.move(newFilePath, convertionFolder)
+        plm_stack = self._convert('TOSHARED')
         raise UserError(_("File Converted check the shared folder"))
 
-    def action_create_convert_download(self):
+    def _convert(self, mode):
         """
-        Convert file in the given format and return it to the web page
+            create the conversion stack and perform the conversion
+            :mode plm_stack.operation_type ['UPDATE','CONVERT','TOSHARED']
+            :return: plm_stack object
         """
+        if not self.targetFormat:
+            raise UserError(_("Select a target format !!"))
         obj_stack = self.env['plm.convert.stack']
         plm_stack = obj_stack.search([('start_document_id','=', self.document_id.id),
                                             ('convrsion_rule','=', self.targetFormat.id), 
                                             ('conversion_done','=', False)])
-
         if not plm_stack:
             prod_categ = self.env['product.category']
             for comp in self.document_id.linkedcomponents:
@@ -134,18 +85,21 @@ class plm_temporary_batch_converter(models.TransientModel):
                 'convrsion_rule': self.targetFormat.id,
                 'start_document_id': self.document_id.id,
                 'product_category': prod_categ.id,
-                'operation_type': 'CONVERT',
+                'operation_type': mode,
                 })
-
         plm_stack.convert()
+        return plm_stack   
 
+    def action_create_convert_download(self):
+        """
+        Convert file in the given format and return it to the web page
+        """
+        plm_stack = self._convert('CONVERT')
         return {'name': _('File Converted'),
-                'res_model': obj_stack._name,
+                'res_model': 'plm.convert.stack',
                 'view_type': 'form',
                 "view_mode": 'form',
-                'res_model': plm_stack._name,
-                #'target': 'new',
+                'res_model': 'plm.convert.stack',
                 'res_id': plm_stack.id,
                 'type': 'ir.actions.act_window',
-                'domain': [('id', 'in', [obj_stack.id])],
                 'context': {}}

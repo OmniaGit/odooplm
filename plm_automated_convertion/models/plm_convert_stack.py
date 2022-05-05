@@ -89,6 +89,8 @@ class PlmConvertStack(models.Model):
 
     def convert(self):
         for stack_id in self:
+            if stack_id.conversion_done:
+                continue
             try:
                 if stack_id.operation_type == 'UPDATE':
                     stack_id.start_document_id._updatePreview()
@@ -110,7 +112,7 @@ class PlmConvertStack(models.Model):
             except Exception as ex:
                 logging.error(ex)
                 traceback.print_exc()
-                stack_id.error_string = _("Internal Error %s") % ex
+                stack_id.error_string = _("Internal Error %s check odoo log for the full error stack") % ex
                 
     def generateConvertedDocuments(self):
         logging.info('generateConvertedDocuments started')
@@ -139,9 +141,11 @@ class PlmConvertStack(models.Model):
     def getFileConverted(self,
                          newFileName=False):
         targetExtention = self.convrsion_rule.end_format
+        cadExange_path = self.env.ref('plm_automated_convertion.odoo_cadexcange')
         if self.server_id.is_internal:
-            return self.start_document_id.convert_to_format(targetExtention)
+            return self.start_document_id.convert_to_format(targetExtention, cadExange_path.value)
         else:
+            # questa e sbagliata deve prendere il server che e' configurato 
             serverName = self.env['ir.config_parameter'].get_param('plm_convetion_server')
             if not serverName:
                 raise Exception("Configure plm_convetion_server to use this functionality")

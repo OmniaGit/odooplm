@@ -55,6 +55,11 @@ except Exception as ex:
     logging.error(ex)
 #
 #
+from .cad_excenge import convert as exConvert
+from .cad_excenge import FORMAT_FROM as ex_from_format
+from .cad_excenge import FORMAT_TO as ex_from_to
+#
+#
 class ir_attachment(models.Model):
     _inherit = 'ir.attachment'
 
@@ -232,23 +237,42 @@ class ir_attachment(models.Model):
             plt.close()
         return newFileName
 
-    def convert_to_format(self, toFormat):
+    def convert_to_format(self, toFormat, excangePath=None):
         """
             convert the attachment to the given format
         """
+        obj_attachment = self.env['ir.attachment']
         for ir_attachment in self:
-            for extention in ALLOW_CONVERSION_FORMAT:
-                if extention in ir_attachment.name.lower():
-                    if extention.lower()=='.dxf':
-                        return ir_attachment.convert_from_dxf_to(toFormat)
-                    elif extention.lower()=='.obj':
-                        return ir_attachment.convert_from_obj_to(toFormat)
-                    elif extention.lower() in ['.stp', '.step']:
-                        return ir_attachment.convert_from_step_to(toFormat)
-                    elif extention.lower()=='.stl':
-                        return ir_attachment.convert_from_stl_to(toFormat)
-                    else:
-                        raise UserError(_("Format %s not supported") % toFormat)
+            #
+            # check before cad excange
+            #
+            name, exte = os.path.splitext(os.path.basename(ir_attachment.name))
+            if excangePath and os.path.exists(excangePath) and exte.lower() in ex_from_format and toFormat.lower() in ex_from_to:
+                with tempfile.TemporaryDirectory() as tmpdirname:
+                    full_path_parent_target = os.path.join(tmpdirname, ir_attachment.name)
+                    shutil.copy(ir_attachment._full_path(ir_attachment.store_fname),
+                                full_path_parent_target)
+                    for docu_id_child_id in ir_attachment.getRelatedHiTree(ir_attachment.id, True, True):
+                        ir_attachment_child = obj_attachment.browse(docu_id_child_id)
+                        full_path_child = obj_attachment._full_path(ir_attachment_child.store_fname)
+                        shutil.copy(full_path_child,
+                                    os.path.join(tmpdirname, ir_attachment_child.name))
+                    return exConvert(excangePath,
+                                     full_path_parent_target,
+                                     toFormat)
+            else:
+                for extention in ALLOW_CONVERSION_FORMAT:
+                    if extention in ir_attachment.name.lower():
+                        if extention.lower()=='.dxf':
+                            return ir_attachment.convert_from_dxf_to(toFormat)
+                        elif extention.lower()=='.obj':
+                            return ir_attachment.convert_from_obj_to(toFormat)
+                        elif extention.lower() in ['.stp', '.step']:
+                            return ir_attachment.convert_from_step_to(toFormat)
+                        elif extention.lower()=='.stl':
+                            return ir_attachment.convert_from_stl_to(toFormat)
+                        else:
+                            raise UserError(_("Format %s not supported") % toFormat)
             raise UserError(_("Format %s not supported") % toFormat)
                         
     def _updatePreview(self):
