@@ -69,6 +69,7 @@ function fitCameraToSelection(selection, fitOffset = 1.2 ) {
 	    .sub( camera.position )
 	    .normalize()
 	    .multiplyScalar( distance );
+	  controls.minDistance = 0.01;
 	  controls.maxDistance = distance * 10;
 	  controls.target.copy( center );
 	  camera.near = distance / 100;
@@ -554,6 +555,7 @@ function addOrbit(){
 	controls.addEventListener('change', render ); 
 	controls.minDistance = 2;
 	controls.maxDistance = 10;
+	controls.rotateSpeed = 0.5
 	controls.target.set( 0, 0, - 0.2 );
 	controls.update();
 }
