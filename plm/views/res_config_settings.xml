@@ -74,7 +74,7 @@
                                 <div class="o_setting_right_pane"><label for="module_plm_automated_convertion"/>
                                 <div class="text-muted">
                                     Allow converting files in different format. 
-                                    In order to make it run you will need the convertion sarver provided by OmniaSolutions.
+                                    In order to make it run you will need the conversion server provided by OmniaSolutions.
                                 </div>
                                 	<form>
 										<input type="submit"
@@ -103,7 +103,7 @@
                                 <div class="o_setting_left_pane"><field name="module_plm_document_multi_site"/></div>
                                 <div class="o_setting_right_pane"><label for="module_plm_document_multi_site"/>
                                 <div class="text-muted">
-                                    Advanced way to save and synchronize PLM document to improve open and save operation for pour connection bandwidth
+                                    Advanced way to save and synchronise PLM document to improve open and save operation for pour connection bandwidth
                                     To make it work you need to install a file server application   "mirror_document_server"
                                 </div>
                                     <form>
@@ -122,14 +122,14 @@
                                 <div class="o_setting_left_pane"><field name="module_plm_automate_normal_bom"/></div>
                                 <div class="o_setting_right_pane"><label for="module_plm_automate_normal_bom"/></div>
                                     <div class="text-muted">
-                                    Automate the creation of normal bom with scheduled action
+                                    Automate the creation of normal B.O.M. with scheduled action
                                     </div>
                             </div>
                             <div class="col-md-6 col-xs-12 o_setting_box">
                                 <div class="o_setting_left_pane"><field name="module_plm_compare_bom"/></div>
                                 <div class="o_setting_right_pane"><label for="module_plm_compare_bom"/>
                                		<div class="text-muted">
-                                    Compare two bom from the bom tree interface
+                                    Compare two B.O.M from the B.O.M tree interface
                                 	</div>
                                 </div>
                             </div>
@@ -137,7 +137,7 @@
                                 <div class="o_setting_left_pane"><field name="module_plm_bom_summarize"/></div>
                                 <div class="o_setting_right_pane"><label for="module_plm_bom_summarize"/>
                                     <div class="text-muted">
-                                    Upload summarized bom from client application
+                                    Upload summarised B.O.M. from client application
                                     </div>
                                 </div>
                             </div>
@@ -153,7 +153,7 @@
                                 <div class="o_setting_left_pane"><field name="module_plm_cutted_parts"/></div>
                                 <div class="o_setting_right_pane"><label for="module_plm_cutted_parts"/>
                                 	<div class="text-muted">
-                                	This module allows you to improve the capability of your odoo plm for managing the cutted parts 
+                                	This module allows you to improve the capability of your OdooPLM for managing the cut parts 
                                 	</div>
                                 </div>
                             </div>
