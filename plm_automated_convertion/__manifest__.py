@@ -26,7 +26,7 @@
     'website': 'http://www.omniasolutions.eu',
     'category': 'Product Lifecycle Management',
     'sequence': 15,
-    'summary': 'PLM Integration with main CAD editors batch conversion tool',
+    'summary': 'CAD batch conversion tool',
     'depends': ['plm'],
     'description': """
 Manage Product Lifecycle Management in OpenERP
