@@ -1127,10 +1127,16 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         if customFields:
             fieldsGet = obj.fields_get(customFields)
             for fieldName, fieldDefinition in fieldsGet.items():
-                refId = self.customFieldConvert(fieldDefinition, vals, fieldName, force_create=force_create)
-                out[fieldName] = False
-                if refId:
-                    out[fieldName] = refId.id
+                field_id = False
+                try:
+                    field_id = vals.get(fieldName, False)
+                except Exception as ex:
+                    logging.warning('Cannot get m2o field value due to error %r' % (ex))
+                if not field_id:
+                    refId = self.customFieldConvert(fieldDefinition, vals, fieldName, force_create=force_create)
+                    out[fieldName] = False
+                    if refId:
+                        out[fieldName] = refId.id
         return out
 
     def customFieldConvert(self, fieldDefinition, vals, fieldName, force_create=False):
