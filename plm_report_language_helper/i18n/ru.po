@@ -1,0 +1,202 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* plm_report_language_helper
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 15.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-03-24 08:35+0000\n"
+"PO-Revision-Date: 2022-03-24 09:54+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: ru\n"
+"X-Generator: Poedit 2.0.6\n"
+
+#. module: plm_report_language_helper
+#: model:ir.model.fields.selection,name:plm_report_language_helper.selection__plm_bomchoselanguage__bom_type__plm_report_plm_bom_structure_flat
+msgid "BOM All Flat Summarized"
+msgstr "Спецификация всех плоских суммированных"
+
+#. module: plm_report_language_helper
+#: model:ir.model.fields.selection,name:plm_report_language_helper.selection__plm_bomchoselanguage__bom_type__plm_report_plm_bom_structure_all
+msgid "BOM All Levels"
+msgstr "Спецификация всех уровней"
+
+#. module: plm_report_language_helper
+#: model:ir.model.fields.selection,name:plm_report_language_helper.selection__plm_bomchoselanguage__bom_type__plm_report_plm_bom_structure_all_sum
+msgid "BOM All Levels Summarized"
+msgstr "Сводка всех уровней спецификации"
+
+#. module: plm_report_language_helper
+#: model:ir.model.fields.selection,name:plm_report_language_helper.selection__plm_bomchoselanguage__bom_type__plm_report_plm_bom_structure_one
+msgid "BOM One Level"
+msgstr "Спецификация один уровень"
+
+#. module: plm_report_language_helper
+#: model:ir.model.fields.selection,name:plm_report_language_helper.selection__plm_bomchoselanguage__bom_type__plm_report_plm_bom_structure_one_sum
+msgid "BOM One Level Summarized"
+msgstr "Сводка по одному уровню спецификации"
+
+#. module: plm_report_language_helper
+#: model:ir.model.fields.selection,name:plm_report_language_helper.selection__plm_bomchoselanguage__bom_type__plm_report_plm_bom_structure_leaves
+msgid "BOM Only Leaves Summarized"
+msgstr "Сводка только листьев BOM"
+
+#. module: plm_report_language_helper
+#: code:addons/plm_report_language_helper/wizard/wizard.py:0
+#: model:ir.model.fields,field_description:plm_report_language_helper.field_plm_bomchoselanguage__bom_type
+#, python-format
+msgid "Bom Report Type"
+msgstr "Тип отчета спецификации"
+
+#. module: plm_report_language_helper
+#: model_terms:ir.ui.view,arch_db:plm_report_language_helper.plm_bomchoselanguage_form
+#: model_terms:ir.ui.view,arch_db:plm_report_language_helper.plm_sparechoselanguage_form
+msgid "Cancel"
+msgstr "Отмена"
+
+#. module: plm_report_language_helper
+#: code:addons/plm_report_language_helper/wizard/wizard.py:0
+#: model:ir.model.fields,help:plm_report_language_helper.field_plm_bomchoselanguage__bom_type
+#, python-format
+msgid "Chose the Bom report you would like to print"
+msgstr "Выберите отчет Bom, который вы хотите распечатать"
+
+#. module: plm_report_language_helper
+#: model:ir.actions.act_window,name:plm_report_language_helper.act_plm_print_boms
+msgid "Create Boms Report"
+msgstr "Создать отчеты о спецификациях"
+
+#. module: plm_report_language_helper
+#: model:ir.actions.act_window,name:plm_report_language_helper.act_plm_print_spare_bom
+msgid "Create Report Spare Bom"
+msgstr "Создать отчет о запасной спецификации"
+
+#. module: plm_report_language_helper
+#: model_terms:ir.ui.view,arch_db:plm_report_language_helper.plm_bomchoselanguage_form
+#: model_terms:ir.ui.view,arch_db:plm_report_language_helper.plm_sparechoselanguage_form
+msgid "Create Spare Report"
+msgstr "Создать запасной отчет"
+
+#. module: plm_report_language_helper
+#: model:ir.model.fields,field_description:plm_report_language_helper.field_plm_bomchoselanguage__create_uid
+#: model:ir.model.fields,field_description:plm_report_language_helper.field_plm_sparechoselanguage__create_uid
+msgid "Created by"
+msgstr "Создан"
+
+#. module: plm_report_language_helper
+#: model:ir.model.fields,field_description:plm_report_language_helper.field_plm_bomchoselanguage__create_date
+#: model:ir.model.fields,field_description:plm_report_language_helper.field_plm_sparechoselanguage__create_date
+msgid "Created on"
+msgstr "Создано на"
+
+#. module: plm_report_language_helper
+#: model_terms:ir.ui.view,arch_db:plm_report_language_helper.plm_bomchoselanguage_form
+#: model_terms:ir.ui.view,arch_db:plm_report_language_helper.plm_sparechoselanguage_form
+msgid "Creation of Spare Bom"
+msgstr "Создание запасного бома"
+
+#. module: plm_report_language_helper
+#: model:ir.model.fields,field_description:plm_report_language_helper.field_plm_bomchoselanguage__display_name
+#: model:ir.model.fields,field_description:plm_report_language_helper.field_plm_sparechoselanguage__display_name
+msgid "Display Name"
+msgstr "Отображаемое имя"
+
+#. module: plm_report_language_helper
+#: code:addons/plm_report_language_helper/wizard/wizard.py:0
+#: model:ir.model.fields,field_description:plm_report_language_helper.field_plm_bomchoselanguage__datas
+#: model:ir.model.fields,field_description:plm_report_language_helper.field_plm_sparechoselanguage__datas
+#, python-format
+msgid "Download"
+msgstr "Скачать"
+
+#. module: plm_report_language_helper
+#: code:addons/plm_report_language_helper/wizard/wizard.py:0
+#: model:ir.model.fields,field_description:plm_report_language_helper.field_plm_bomchoselanguage__datas_name
+#: model:ir.model.fields,field_description:plm_report_language_helper.field_plm_sparechoselanguage__datas_name
+#, python-format
+msgid "Download file name "
+msgstr "Скачать имя файла "
+
+#. module: plm_report_language_helper
+#: model_terms:ir.ui.view,arch_db:plm_report_language_helper.plm_sparechoselanguage_form
+msgid "First Level"
+msgstr "Первый уровень"
+
+#. module: plm_report_language_helper
+#: model:ir.model.fields,field_description:plm_report_language_helper.field_plm_bomchoselanguage__id
+#: model:ir.model.fields,field_description:plm_report_language_helper.field_plm_sparechoselanguage__id
+msgid "ID"
+msgstr "ID"
+
+#. module: plm_report_language_helper
+#: model:ir.model.fields,help:plm_report_language_helper.field_plm_sparechoselanguage__onelevel
+msgid "If you check this box, the report will be made in one level"
+msgstr ""
+"Если вы установите этот флажок, отчет будет выполнен на одном уровне"
+
+#. module: plm_report_language_helper
+#: code:addons/plm_report_language_helper/wizard/wizard.py:0
+#: model:ir.model.fields,field_description:plm_report_language_helper.field_plm_bomchoselanguage__lang
+#: model:ir.model.fields,field_description:plm_report_language_helper.field_plm_sparechoselanguage__lang
+#: model_terms:ir.ui.view,arch_db:plm_report_language_helper.plm_bomchoselanguage_form
+#: model_terms:ir.ui.view,arch_db:plm_report_language_helper.plm_sparechoselanguage_form
+#, python-format
+msgid "Language"
+msgstr "Язык"
+
+#. module: plm_report_language_helper
+#: model:ir.model.fields,field_description:plm_report_language_helper.field_plm_bomchoselanguage____last_update
+#: model:ir.model.fields,field_description:plm_report_language_helper.field_plm_sparechoselanguage____last_update
+msgid "Last Modified on"
+msgstr "Последнее изменение на"
+
+#. module: plm_report_language_helper
+#: model:ir.model.fields,field_description:plm_report_language_helper.field_plm_bomchoselanguage__write_uid
+#: model:ir.model.fields,field_description:plm_report_language_helper.field_plm_sparechoselanguage__write_uid
+msgid "Last Updated by"
+msgstr "Последнее обновление от"
+
+#. module: plm_report_language_helper
+#: model:ir.model.fields,field_description:plm_report_language_helper.field_plm_bomchoselanguage__write_date
+#: model:ir.model.fields,field_description:plm_report_language_helper.field_plm_sparechoselanguage__write_date
+msgid "Last Updated on"
+msgstr "Последнее обновление на"
+
+#. module: plm_report_language_helper
+#: model:ir.model,name:plm_report_language_helper.model_plm_bomchoselanguage
+msgid ""
+"Module for extending the functionality of printing bom reports in a multi "
+"language environment"
+msgstr ""
+"Модуль для расширения функционала печати отчетов БОМ в многоязычной среде"
+
+#. module: plm_report_language_helper
+#: model:ir.model,name:plm_report_language_helper.model_plm_sparechoselanguage
+msgid ""
+"Module for extending the functionality of printing spare_bom reports in a "
+"multi language environment"
+msgstr ""
+"Модуль для расширения функциональности печати запасных отчетов BOM в "
+"многоязычной среде"
+
+#. module: plm_report_language_helper
+#: model:ir.model.fields,field_description:plm_report_language_helper.field_plm_sparechoselanguage__onelevel
+msgid "One Level"
+msgstr "Один уровень"
+
+#. module: plm_report_language_helper
+#: model_terms:ir.ui.view,arch_db:plm_report_language_helper.plm_bomchoselanguage_form
+msgid "Print Bom Type"
+msgstr "Тип спецификации для печати"
+
+#. module: plm_report_language_helper
+#: code:addons/plm_report_language_helper/wizard/wizard.py:0
+#, python-format
+msgid "Select a language"
+msgstr "Выберите язык"

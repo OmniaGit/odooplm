@@ -7,14 +7,27 @@
         <field name="model">mrp.bom</field>
         <field name="inherit_id" ref="mrp.mrp_bom_form_view"/>
         <field name="arch" type="xml">
-        	<xpath expr="//button[@name='open_related_bom_lines']" position="after">
+        	<xpath expr="//div[@name='button_box']" position="inside">
         		<button name="open_breakages" type="object" class="oe_stat_button" icon="fa-chain-broken">
                        	<field string="Breakages" name="breakages_count" widget="statinfo"/>
                 </button>
-            </xpath>
-            
+            </xpath>       
         </field>
     </record>
-
+    <record id="plm_breackage_plm_bom_form_view_inherit" model="ir.ui.view">
+        <field name="name">plm.breackage.plm.bom.form.view.inherit</field>
+        <field name="model">mrp.bom</field>
+        <field name="inherit_id" ref="plm.plm_bom_form_view"/>
+        <field name="arch" type="xml">
+            <field name="hasChildBoms"  position="after">
+                <field name="breakages_count" invisible="True"/>
+                <button name="open_breakages"
+                        type="object"
+                        icon="fa-chain-broken" 
+                        class="btn btn-sm oe_stat_button text-danger"
+                        attrs="{'invisible':[('breakages_count', '=', 0)]}"/>
+            </field>          
+        </field>
+    </record>
 </data>
 </odoo>

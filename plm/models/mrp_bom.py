@@ -99,19 +99,65 @@ class MrpBomExtension(models.Model):
                                           store=True)
 
     bom_revision_count = fields.Integer(related='product_tmpl_id.revision_count')
+    
+    att_count = fields.Integer(compute='attch_count')
+    
+    def attch_count(self):
+        for bom in self:
+            doc_ids = bom.get_related_attachments()
+            bom.att_count = len(doc_ids)
+
+    def get_related_attachments(self):
+        for bom in self:
+            domain = [
+                '|',
+                '&', ('res_model', '=', 'product.product'), ('res_id', '=', bom.product_id.id),
+                '&', ('res_model', '=', 'product.template'), ('res_id', '=', bom.product_id.product_tmpl_id.id)]
+            sudo_att = self.env['ir.attachment'].sudo()
+            out_att = sudo_att.search(domain)
+            out_att += bom.product_id.linkeddocuments
+            return out_att
+        return self.env['ir.attachment']
+
+    def open_attachments(self):
+        out_att  = self.get_related_attachments()
+        return {
+            'name': _('Attachments'),
+            'domain': [('id', 'in', out_att.ids)],
+            'res_model': 'ir.attachment',
+            'type': 'ir.actions.act_window',
+            'view_mode': 'kanban,tree,form',
+            'views': [
+                (self.env.ref('plm.document_kanban_view').id, 'kanban'),
+                (self.env.ref('plm.view_attachment_form_plm_hinerit').id, 'form'),
+                (self.env.ref('plm.ir_attachment_tree').id, 'tree'),
+                ],
+            'help': _('''<p class="o_view_nocontent_smiling_face">
+                        Upload files to your product
+                    </p><p>
+                        Use this feature to store any files, like drawings or specifications.
+                    </p>'''),
+            'limit': 80,
+        }
 
     @api.model
-    def _get_in_bom(self, pid, sid=False):
+    def _get_in_bom(self, pid, sid=False, bom_types=[]):
         bom_l_type = self.env['mrp.bom.line']
-        bom_line_brws_list = bom_l_type.search([
-            ('product_id', '=', pid), ('source_id', '=', sid), ('type', '=', 'normal')
-        ])
-        if not bom_line_brws_list:
+        if not bom_types:
             bom_line_brws_list = bom_l_type.search([
-                ('product_id', '=', pid), ('source_id', '=', False), ('type', '=', 'normal')
+                ('product_id', '=', pid), ('source_id', '=', sid), ('type', '=', 'normal')
             ])
             if not bom_line_brws_list:
-                bom_line_brws_list = bom_l_type.search([('product_id', '=', pid), ('type', '=', 'normal')])
+                bom_line_brws_list = bom_l_type.search([
+                    ('product_id', '=', pid), ('source_id', '=', False), ('type', '=', 'normal')
+                ])
+                if not bom_line_brws_list:
+                    bom_line_brws_list = bom_l_type.search([('product_id', '=', pid), ('type', '=', 'normal')])
+        else:
+            bl_filter = [('product_id', '=', pid), ('type', 'in', bom_types)]
+            if sid:
+                bl_filter.append(('source_id', '=', sid))
+            bom_line_brws_list = bom_l_type.search(bl_filter)
         return bom_line_brws_list
 
     @api.model
@@ -312,19 +358,22 @@ class MrpBomExtension(models.Model):
         return rel_datas, prt_datas, self._get_pack_rel_datas(rel_datas, prt_datas)
 
     @api.model
-    def _implode_bom(self, bom_line_objs):
+    def _implode_bom(self, bom_line_objs, source_id=False, bom_types=[]):
         """
             Execute implosion for a a bom object
         """
         _packed=[]
         def get_product_id(bom_local_obj):
+            out_prod = False
             prod_id = bom_local_obj.product_id.id
             if not prod_id:
                 trmpl_brws = bom_local_obj.product_tmpl_id
                 if trmpl_brws:
                     for variant_brws in trmpl_brws.product_variant_ids:
-                        return variant_brws.id
-            return False
+                        out_prod = variant_brws.id
+            else:
+                out_prod = prod_id
+            return out_prod
 
         pids = []
         for bom_line_obj in bom_line_objs:
@@ -336,7 +385,9 @@ class MrpBomExtension(models.Model):
                 continue
             _packed.append(parent_bom_id)
             bom_fth_obj = bom_obj.with_context({})
-            inner_ids = self._implode_bom(self._get_in_bom(get_product_id(bom_fth_obj)))
+            prod_from_bom = get_product_id(bom_fth_obj)
+            bom_line_from_prod = self._get_in_bom(prod_from_bom, source_id, bom_types)
+            inner_ids = self._implode_bom(bom_line_from_prod)
             prod_id = bom_fth_obj.product_id.id
             if not prod_id:
                 prod_brws_ids = bom_fth_obj.product_tmpl_id.product_variant_ids

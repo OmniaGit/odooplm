@@ -1,0 +1,6 @@
+.draft {color: rgb(110, 51, 197);}
+.confirmed {color: blue;}
+.released {color: rgba(0, 170, 34, 0.66);}
+.undermodify {color: rgb(218, 159, 34);}
+.obsoleted {color: rgb(231, 43, 26);}
+

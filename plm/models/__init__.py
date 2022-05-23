@@ -49,3 +49,4 @@ from . import ir_ui_view
 from . import plm_cad_open_bck
 from . import mail_activity_type
 from . import plm_client
+from . import res_groups

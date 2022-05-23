@@ -76,3 +76,13 @@ class PlmCadOpen(models.Model):
                     })
                 cad_open_id.unlink()
         logging.info('End Cad open Clean Scheduler')
+        
+    def name_get(self):
+        result = []
+        for r in self:
+            if r.document_id and r.userid:
+                name = "%s - R:%s - [%s]" % (r.document_id.engineering_document_name, r.document_id.revisionid, r.userid.display_name)
+            else:
+                name = "Error"
+            result.append((r.id, name))
+        return result

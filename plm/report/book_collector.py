@@ -109,7 +109,7 @@ class BookCollector(object):
 
     def addPage(self, pageRes):
         streamBuffer, docObject = pageRes
-        mainPage = PdfFileReader(streamBuffer)
+        mainPage = PdfFileReader(streamBuffer,strict=False)
         for i in range(0, mainPage.getNumPages()):
             try:
                 if self.jumpFirst:
@@ -130,7 +130,7 @@ class BookCollector(object):
                         logging.warning('advancedPlmReportEngine function not implemented in plm.document object')
                     canvas.showPage()
                     canvas.save()
-                    numberPageReader=PdfFileReader(numberPagerBuffer)  
+                    numberPageReader=PdfFileReader(numberPagerBuffer,strict=False)  
                     mainPage.getPage(i).mergePage(numberPageReader.getPage(0))
                     self.collector.addPage(mainPage.getPage(i))
             except Exception as ex:
@@ -167,7 +167,7 @@ def packDocuments(docRepository, documents, bookCollector):
                     byteIoStream = BytesIO(value)
                     appendPage = True
             if appendPage:
-                page = PdfFileReader(byteIoStream)
+                page = PdfFileReader(byteIoStream,strict=False)
                 _orientation, paper = paperFormat(page.getPage(0).mediaBox)
                 if(paper == 0):
                     output0.append((byteIoStream, document))

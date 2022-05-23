@@ -89,7 +89,7 @@
         <field name="model">mrp.bom</field>
         <field name="inherit_id" ref="plm.view_mrp_bom_filter_inherit"/>
         <field name="arch" type="xml">
-        	<xpath expr="//filter[@name='filter_today']" position="after"> 
+        	<xpath expr="//separator[@name='separator']" position="after"> 
                    	<filter name="bom_to_update"
                    	        string="Boms To Update"
                            	domain="[('obsolete_presents','=', True)]" />

@@ -71,4 +71,8 @@ class PlmDescription(models.Model):
                          help=_("Specify normative rule (UNI, ISO, DIN...). It will be queued to build the product description."))
     sequence = fields.Integer(_('Sequence'),
                               help=_("Assign the sequence order when displaying a list of product categories."))
+    show_help = fields.Boolean('Visible', default=False)
 
+    def action_see_help(self):
+        for record in self:
+            record.show_help = not record.show_help

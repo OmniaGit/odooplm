@@ -8,12 +8,11 @@
 	        <xpath expr="//kanban/field[@name='state']" position="after">
 	            <field name="has_web3d"></field>
 	        </xpath>
-	        <xpath expr="//div[hasclass('oe_kanban_global_click')]" position="inside">
+	        <xpath expr="//td[@name='attachment_button_box']" position="inside">
 	           <button type="object"
 	                   name="show_releted_3d"
 	                   class="btn btn-primary btn-sm"
-	                   attrs="{'invisible': [('has_web3d', '=', False)]}"
-	                   style="padding-left: 85%;">WebGl <i class="fa fa-cube"></i></button>
+	                   attrs="{'invisible': [('has_web3d', '=', False)]}"><i class="fa fa-cube"></i> WebGl</button>
 	        </xpath>
         </field>
     </record>

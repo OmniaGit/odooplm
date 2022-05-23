@@ -13,9 +13,12 @@
             </field>
             <field name="product_id" position="after">
                 <field name="engineering_revision" readonly="True"/>
-                <field name="state" readonly="True"/>
+                <field name="state"/>
                 <field name="description" select="True"/>
-                <field name="source_id" string="Source Relation Document"/>
+                <field name="source_id" string="Source Relation" widget="many2one"
+                	   context="{'kanban_view_ref':'plm.document_kanban_view',
+        						 'tree_view_ref':'plm.ir_attachment_tree',
+								 'form_view_ref':'plm.view_attachment_form_plm_hinerit'}"/>
             </field>
             <field name="product_qty" position="after">
                 <field name="weight_net" readonly="True"/>
@@ -30,17 +33,37 @@
         <field name="type">tree</field>
         <field name="inherit_id" ref="mrp.mrp_bom_tree_view"/>
         <field name="arch" type="xml">
+        	<field name="product_tmpl_id" position="before">
+        		<field name="att_count" invisible="True"/>
+                <button 
+        			name="open_attachments"
+        			type="object"
+        			icon="plm/static/description/odoo_icon_small.png"
+        			aria-label="Product Attachments"
+        			title="Product Attachments"
+        			class="float-right"
+        			attrs="{'invisible': ['|',('att_count', '=', False), ('att_count', '=', 0)]}"/>
+        	</field>
             <field name="product_id" position="after">
-                <field name="source_id" string="Source Relation Document"/>
-                <field name="type"/>
-                <field name="weight_net"/>
-                <field name="engineering_revision"/>
+            	<field name="product_id" widget="many2one"/>
+            	<field name="code"/>
+            	<field name="source_id" string="Source Relation"/>
                 <field name="description" select="True"/>
+                <field name="company_id"/>
                 <field name="state" select="True"/>
+                <field name="weight_net"/>
+                <field name="product_qty"/>
+                <field name="engineering_revision"/>
             </field>
+            <xpath expr="//tree" position="attributes">
+            	<attribute name="decoration-info">state == 'confirmed'</attribute>
+            	<attribute name="decoration-success">state == 'released'</attribute>
+            	<attribute name="decoration-warning">state == 'undermodify'</attribute>
+            	<attribute name="decoration-muted">state == 'obsoleted'</attribute>
+            </xpath>
         </field>
     </record>
-
+    
     <record id="plm_bom_form_view" model="ir.ui.view">
         <field name="name">plm.bom.form</field>
         <field name="model">mrp.bom</field>
@@ -57,21 +80,48 @@
                         class="oe_stat_button"
                         icon="fa-tasks"
                         attrs="{'invisible':[('bom_revision_count','&lt;=','1')]}">
-                        <field name="bom_revision_count"
-                               string=" "
-                               widget="statinfo"/>
+                <field name="bom_revision_count" string=" " widget="statinfo"/>
                 </button>
             </div>
             <field name="product_tmpl_id" position="replace">
-                <field name="product_tmpl_id" context="{'default_type': 'product'}"
-                       options="{'no_open':True,'no_create':True}"/>
-            </field>
+				<label for="product_tmpl_id"/>
+                <div class="o_row no-gutters d-flex">
+	            	<field name="product_tmpl_id" 
+	            		context="{'default_type': 'product'}"
+	            		options="{'no_open':True,'no_create':True}"
+	            		class="oe_inline text-left"
+	            		colspan="2"/>
+	            	<field name="att_count" invisible="True"/>
+	                <button 
+	        			name="open_attachments"
+	        			type="object"
+	        			icon="plm/static/description/odoo_icon_small.png"
+	        			aria-label="Product Attachments"
+	        			title="Product Attachments"
+	        			class="float-right"
+	        			attrs="{'invisible': ['|',('att_count', '=', False), ('att_count', '=', 0)]}"/>
+				</div>
+		    </field>
+		    <field name="code" position="replace">
+		    	<field name="code" colspan="2"/>
+		    	<separator string=""/>
+		    	<separator string=""/>
+		    	<separator string=""/>
+		    	
+		    </field>
             <field name="product_id" position="after">
-                <field name="engineering_revision" readonly="True"/>
+            	<separator string="Info:" colspan="2"/>
                 <field name="description" readonly="True"/>
+                <field name="engineering_revision" readonly="True"/>
                 <field name="state" readonly="True"/>
                 <field name="weight_net" readonly="True"/>
             </field>
+            <xpath expr="//field[@name='bom_line_ids']/tree" position="attributes">
+            	<attribute name="decoration-info">state == 'confirmed'</attribute>
+            	<attribute name="decoration-success">state == 'released'</attribute>
+            	<attribute name="decoration-warning">state == 'undermodify'</attribute>
+            	<attribute name="decoration-muted">state == 'obsoleted'</attribute>
+            </xpath>
             <xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_id']" position="before">
                 <field name="related_bom_ids" invisible="True"/>
                 <field name="hasChildBoms" invisible="True"/>
@@ -80,22 +130,32 @@
                         icon="fa-level-down" 
                         class="btn btn-sm oe_stat_button"
                         attrs="{'invisible':[('hasChildBoms', '=', False)]}"/>
-                <field name="related_document_ids" invisible="True"/>
-                <button name="openRelatedDocuments"
-                        type="object"
-                        icon="fa-folder-open"
-                        class="btn btn-sm oe_stat_button"
-                        attrs="{'invisible':[('related_document_ids', '=', [])]}"/>
-                <field name="itemnum"/>
-                <field name="itemlbl"/>
+            	<field name="related_document_ids" invisible="True"/>
+            	<button 
+  					name="openRelatedDocuments"
+  					type="object"
+  					icon="plm/static/description/odoo_icon_small.png"
+  					class="float-right"
+  					attrs="{'invisible':[('related_document_ids', '=', [])]}"/>
             </xpath>
             <xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_id']" position="after">
-                <field name="engineering_revision" readonly="True"/>
-                <field name="state" readonly="True"/>
                 <field name="description" readonly="True"/>
-                <field name="source_id" string="Source Relation Document"/>
+                <field name="engineering_revision" readonly="True"/>
+                <field name="state"/>
             </xpath>
-
+            <xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_qty']" position="before">
+                <field name="source_id" string="Source Relation" widget="many2one"
+                	   context="{'kanban_view_ref':'plm.document_kanban_view',
+        						 'tree_view_ref':'plm.ir_attachment_tree',
+								 'form_view_ref':'plm.view_attachment_form_plm_hinerit'}"/>
+            </xpath>
+            <xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_id']" position="attributes">
+            	<attribute name="widget">many2one</attribute>
+            </xpath>
+            <xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_uom_id']" position="after">
+            	<field name="itemnum"/>
+            	<field name="itemlbl"/>
+            </xpath>
             <xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_qty']" position="after">
                 <field name="hasChildBoms" invisible="True"/>
             </xpath>
@@ -124,23 +184,19 @@
         <field name="type">search</field>
         <field name="arch" type="xml">
             <field name="code" position="before">
-                <filter name="filter_latest_2_weeks"
-                        string="Latest 2 Weeks"
-                        domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"
-                        help="Created latest 2 Weeks"/>
-                <filter name="filter_latest_7"
-                        string="Latest 7 Days"
-                        domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
-                        help="Created latest 7 Days"/>
-                <filter name="filter_yesterday"
-                        string="Yesterday"
-                        domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
-                        help="Created yesterday"/>
-                <filter name="filter_today"
-                        string="Today"
-                        domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
-                        help="Created today"/>
-                <separator orientation="vertical"/>
+                <filter 
+            		name="last_year" 
+            		string="Last Year" 
+            		domain="[('create_date','&gt;=',(datetime.date.today() - relativedelta(days=1,months=1,years=1)).strftime('%%Y-%%m-%%d'))]"/>
+           		<filter 
+            		name="last_month" 
+            		string="Last Month" 
+            		domain="[('create_date','&gt;=',(datetime.date.today() - relativedelta(days=1,months=1)).strftime('%%Y-%%m-%%d'))]"/>
+            	<filter 
+            		name="last_week" 
+            		string="Last Week" 
+            		domain="[('create_date','&gt;=',(datetime.date.today() - datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"/>
+                <separator name="separator" orientation="vertical"/>
             </field>
             <xpath expr="//group" position="after">
                 <filter name="bom_name"
@@ -170,7 +226,10 @@
                 <!-- <field name="code" string="BoM Name"/> -->
                 <field name="engineering_revision" string="Revision"/>
                 <field name="description"/>
-                <field name="source_id" string="Source Relation Document"/>
+                <field name="source_id" string="Source Relation" widget="many2one"
+                	   context="{'kanban_view_ref':'plm.document_kanban_view',
+        						 'tree_view_ref':'plm.ir_attachment_tree',
+								 'form_view_ref':'plm.view_attachment_form_plm_hinerit'}"/>
                 <field name="product_qty"/>
                 <field name="product_uom_id"/>
                 <field name="weight_net"/>
@@ -190,7 +249,10 @@
                 <field name="product_id" string="Component Name"/>
                 <field name="engineering_revision" string="Revision"/>
                 <field name="description"/>
-                <field name="source_id" string="Source Relation Document"/>
+                <field name="source_id" string="Source Relation" widget="many2one"
+                	   context="{'kanban_view_ref':'plm.document_kanban_view',
+        						 'tree_view_ref':'plm.ir_attachment_tree',
+								 'form_view_ref':'plm.view_attachment_form_plm_hinerit'}"/>
                 <field name="product_qty"/>
                 <field name="product_uom_id"/>
                 <field name="weight_net"/>

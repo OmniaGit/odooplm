@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="plm_mrp_production_form_view_inherit" model="ir.ui.view">
+            <field name="name">plm.mrp.production.normal.form.view.inherit</field>
+            <field name="model">mrp.production</field>
+            <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+            <field name="arch" type="xml">
+            	<field name="priority" position="before">
+                    <field name="breakages_count" invisible="True"/>
+                    <button name="open_breakages"
+                            type="object"
+                            icon="fa-chain-broken" 
+                            style="font-size: 20px;"
+                            class="btn oe_stat_button text-danger"
+                            title="There are some brakages on your manufactory order click in order to see it"
+                            attrs="{'invisible':[('breakages_count', '=', 0)]}"/>
+                </field>
+            </field>
+        </record>
+    </data>
+</odoo>

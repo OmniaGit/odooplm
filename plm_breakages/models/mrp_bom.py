@@ -40,14 +40,18 @@ class MrpBom(models.Model):
                 'view_type': 'form',
                 'view_mode': 'tree,form,pivot',
                 'type': 'ir.actions.act_window',
-                'domain': [('parent_id', '=', product_id.id)],
+                'domain': [('product_id', '=', product_id.id)],
                 'context': {'default_parent_id': product_id.id}}
 
     breakages_count = fields.Integer('# Breakages',
         compute='_compute_breakages_count', compute_sudo=False)
     
     def _compute_breakages_count(self):
-        for product in self:
-            product.breakages_count = self.env['plm.breakages'].search_count([('parent_id', '=', self.product_tmpl_id.id)])
+        for mrp_bom in self:
+            product_id = mrp_bom.product_id
+            if not product_id:
+                for product_id in self.env['product.product'].search([('product_tmpl_id','=', mrp_bom.product_tmpl_id.id)]):
+                    break
+            mrp_bom.breakages_count = self.env['plm.breakages'].search_count([('product_id', '=', product_id.id)])
 
             

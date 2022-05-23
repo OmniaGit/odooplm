@@ -7,31 +7,77 @@
         <field name="priority" eval="15"/>
         <field name="arch" type="xml">
             <search string="Parts">
-                <filter name="last_2_weeks"
-                        string="Latest 2 Weeks"
-                        domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"
-                        help="Created latest 2 Weeks"/>
-                <filter name="latest_7_days"
-                        string="Latest 7 Days"
-                        domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
-                        help="Created latest 7 Days"/>
-                <filter name="yestarday"
-                        string="Yesterday"
-                        domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
-                        help="Created yesterday"/>
-                <filter name="today"
-                        string="Today"
-                        domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
-                        help="Created today"/>
+                <filter 
+            		name="last_year" 
+            		string="Last Year" 
+            		domain="[('create_date','&gt;=',(datetime.date.today() - relativedelta(days=1,months=1,years=1)).strftime('%%Y-%%m-%%d'))]"/>
+           		<filter 
+            		name="last_month" 
+            		string="Last Month" 
+            		domain="[('create_date','&gt;=',(datetime.date.today() - relativedelta(days=1,months=1)).strftime('%%Y-%%m-%%d'))]"/>
+            	<filter 
+            		name="last_week" 
+            		string="Last Week" 
+            		domain="[('create_date','&gt;=',(datetime.date.today() - datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"/>
                 <separator orientation="vertical"/>
                 <field name="engineering_code"/>
                 <field name="description" invisible="1"/>
                 <field name="name"/>
                 <separator orientation="vertical"/>
-                <filter name="string" string="Confirmed" domain="[('state', '=', 'confirmed')]"/>
-                <filter name="released" string="Released" domain="[('state', 'in', ['released','undermodify'])]"/>
-                <filter name="obsolated" string="Obsoleted" domain="[('state', '=', 'obsoleted')]"/>
-                <filter name="latest" string="Latest" domain="[('state', 'not in', ['obsoleted','undermodify'])]"/>
+                <filter 
+                	name="string" 
+                	string="Confirmed" 
+                	domain="[('state', '=', 'confirmed')]"/>
+                <filter 
+                	name="released" 
+                	string="Released" 
+                	domain="[('state', 'in', ['released','undermodify'])]"/>
+                <filter 
+                	name="obsolated" 
+                	string="Obsoleted" 
+                	domain="[('state', '=', 'obsoleted')]"/>
+                <separator orientation="vertical"/>
+                <filter 
+                	name="latest" 
+                	string="Latest" 
+                	domain="[('state', 'not in', ['obsoleted','undermodify'])]"/>
+                <separator orientation="vertical"/>
+                <group>
+	                <field name="create_uid"/>
+	                <filter name="create_by_me"
+	                        string="Create By Me"
+	                        domain="[('create_uid','=',uid)]"
+	                        help="Filter on documents created by me"/>
+	              	<field name="write_uid"/>
+	            	<filter name="changed_by_me"
+	                       	string="Changed By Me"
+	                       	domain="[('write_uid','=',uid)]"
+	                       	help="Filter on documents changed by me"/>
+               	</group>
+                <group expand="0" string="Group By...">
+                	<filter name="created_in"
+                            string="Created in"
+                            domain="[]"
+                            context="{'group_by':'create_date'}"/>
+                    <filter name="canged_in"
+                            string="Changed in"
+                            domain="[]"
+                            context="{'group_by':'write_date'}"/>
+                    <separator orientation="vertical"/>
+                    <filter name="create_by"
+                            string="Created by"
+                            domain="[]"
+                            context="{'group_by':'create_uid'}"/>
+                    <filter name="changed_by"
+                            string="Changed by"
+                            domain="[]"
+                            context="{'group_by':'write_uid'}"/>
+                    <separator orientation="vertical"/>
+                    <filter name="status"
+                            string="Status"
+                            domain="[]"
+                            context="{'group_by':'state'}"/>
+              	</group>
             </search>
         </field>
     </record>
@@ -69,7 +115,6 @@
                 </header>
 
                 <sheet>
-                
                     <group name="plm_fields_area" colspan="6" col="6">
 	                    <field name="name" string="Description" colspan="6"/>
                         <field name="engineering_code" colspan="4" attrs="{'readonly':[('is_engcode_editable','=', False)]}" select="1"/>
@@ -175,7 +220,11 @@
                            statusbar_colors='{"undermodify":"red","obsoleted":"red"}'
                            readonly="1"/>
             </xpath>
-            <!--  -->
+            <!-- 
+            <xpath expr="//button[@name='action_view_bom']" position="after">
+            	<button	name="open_report_component" type="object" icon="fa-bars" string="Report" class="oe_stat_button"/>
+            </xpath>
+             -->
             <xpath expr="//button[@name='action_view_mos']" position="after">
                 <button name="open_related_revisions"
                         type="object"
@@ -192,11 +241,13 @@
                         type="object"
                         string="Template"
                         class="oe_stat_button"
-                        icon="fa-tag"
-                        >
-
+                        icon="fa-tag">
                 </button>
-            </xpath>      
+            </xpath>
+            <xpath expr="//div[@name='options']" position="attributes">
+                <attribute name="margin-left">0</attribute>
+                <attribute name="padding-left">0</attribute>
+            </xpath>   
             <xpath expr="//notebook[last()]" position="before">
                <field name="is_engcode_editable" invisible="1"/>
                <group col="8">
@@ -204,17 +255,24 @@
                     <field name="engineering_revision" attrs="{'readonly':[('is_engcode_editable','=', False)]}" colspan="6"/>
                </group>       
                <group>
-	                <field name="std_description" colspan="6"
-	                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
-	                <field name="show_std_field1" groups='base.group_no_one'/>
-	                <field name="show_std_field2" groups='base.group_no_one'/>
-	                <field name="show_std_field3" groups='base.group_no_one'/>
-	                <field name="readonly_std_umc1" groups='base.group_no_one'/>
-	                <field name="readonly_std_umc2" groups='base.group_no_one'/>
-	                <field name="readonly_std_umc3" groups='base.group_no_one'/>
+               		<group>
+               			<group colpsan="3" col="3">
+	                		<field name="std_description" colspan="4" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+	                		<separator colspan="3" string="" groups='base.group_no_one'/>
+	               			<field name="show_std_field1" groups='base.group_no_one' colspan="1"/>
+	               			<field name="show_std_field2" groups='base.group_no_one' colspan="1"/>
+	               			<field name="show_std_field3" groups='base.group_no_one' colspan="1"/>
+	               			<field name="readonly_std_umc1" groups='base.group_no_one' colspan="1"/>
+	                		<field name="readonly_std_umc2" groups='base.group_no_one' colspan="1"/>
+	                		<field name="readonly_std_umc3" groups='base.group_no_one' colspan="1"/>
+	                		<separator colspan="3" string="" groups='base.group_no_one'/>
+	                	</group>
+	                </group>
 	                
-                    <group name="std_desc_attrs" col="4" colspan="4" string="Standard Description Parameters" attrs="{'invisible': [('std_description','=', False)]}">
-                        <a target="new"  href="https://www.omniasolutions.website/blog/developer-and-it-here-you-will-find-post-regarding-very-technical-aspect-of-programming-and-it-those-thinks-are-daily-used-by-omniasolutions-and-we-hope-you-that-will-help-you-3/post/standard-description-39" title="Standard description parameters info" colspan="4"><i class="fa fa-info-circle"></i></a>
+                    <group name="std_desc_attrs" col="4" colspan="4" string="" attrs="{'invisible': [('std_description','=', False)]}">
+                        <p><b colpspan="4" size="32">Standard Description Parameters:  </b><a target="new"  href="https://www.omniasolutions.website/blog/developer-and-it-here-you-will-find-post-regarding-very-technical-aspect-of-programming-and-it-those-thinks-are-daily-used-by-omniasolutions-and-we-hope-you-that-will-help-you-3/post/standard-description-39" title="Standard description parameters info" colspan="4"><i class="fa fa-info-circle"></i></a></p>   
+                            <separator colspan="1"/>
+                            <group col="4" colspan="4">
                             <field name="std_umc1"
                                    attrs="{'readonly':['|',('readonly_std_umc1','=',True),('state','in',['released','obsoleted'])], 'invisible': [('show_std_field1','=',False)]}"/>
                             <field name="std_value1"
@@ -227,6 +285,7 @@
                                    attrs="{'readonly':['|',('readonly_std_umc3','=',True),('state','in',['released','obsoleted'])], 'invisible': [('show_std_field3','=',False)]}"/>
                             <field name="std_value3"
                                    attrs="{'readonly':[('std_umc3','=',False),('state','in',['released','obsoleted'])], 'invisible': [('show_std_field3','=', False)]}"/>
+                            </group>
                     </group>
 	                <field name="source_product" invisible="1"/>
 	                <field name="desc_modify" colspan="6"
@@ -276,9 +335,11 @@
                                         name="action_rev_docs" string="Revision Rel Docs"/>
                             </group>
                             <group>
-                                <field name="linkeddocuments" nolabel="1" context="{'odooPLM': True}"  mode="kanban" domain="[('is_plm', '=', True)]">
-                                
-                                </field>
+                                <field name="linkeddocuments" nolabel="1" mode="kanban" domain="[('is_plm', '=', True)]"
+                                	   context="{	'odooPLM': True,
+                                	   				'kanban_view_ref':'plm.document_kanban_view',
+        						 					'tree_view_ref':'plm.ir_attachment_tree',
+								 					'form_view_ref':'plm.view_attachment_form_plm_hinerit'}"/>
                             </group>
                         </page>
             </xpath>
@@ -342,37 +403,25 @@
                     </div>
                 </t>
             </xpath>
-            
             <xpath expr="//templates/t[1]" position="after">
                  <t t-name="previews">
                         <div style="display: -webkit-inline-box;  padding-left: 10px;">
                             <t t-foreach="record.linkeddocuments.raw_value" t-as="documentId">
                                 <t t-debug="plm"/>
-                               
                                 <div>
-                                    <a type="object"
-                                       role="button" 
-                                       class="a_preview "
-                                       name="action_show_reference"
-                                       href="#"
-                                       t-attf-data-context='{"ir_attachment_id": {{documentId}}}'>
-                                       <img class="image_component_kanban"
-                                                alt="No Image"
-                                                t-att-src="kanban_image('ir.attachment', 'preview', documentId)"/>
-
+                                    <a type="object" role="button" class="a_preview " name="action_show_reference" href="#" t-attf-data-context='{"ir_attachment_id": {{documentId}}}'>
+                                       <img class="image_component_kanban" alt="No Image" t-att-src="kanban_image('ir.attachment', 'preview', documentId)"/>
                                     </a>
                                 </div>
                             </t>
                         </div>
                     </t>
             </xpath>
-        
-        
             <xpath expr="//div[@name='tags']" position="after">
                 <div class="preview_container">
                     <t t-call="previews"/>
                </div>
-            </xpath>  
+            </xpath>
         </field>
    </record> 
     
@@ -385,3 +434,4 @@
         <field name="domain">[('engineering_code','not in', ('', False))]</field>
     </record>
 </odoo>
+

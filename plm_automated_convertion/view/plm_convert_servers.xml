@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+
+    <record model="ir.ui.view" id="plm_convert_servers_search">
+        <field name="name">plm.convert.servers.search</field>
+        <field name="model">plm.convert.servers</field>
+        <field name="type">search</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <search string="Plm Convert Servers">
+            	<field name="name"/>
+            	<field name="address"/>
+            	<field name="protocol"/>
+	            <field name="port"/>
+            </search>
+     	</field>
+    </record>
+
+    <record model="ir.ui.view" id="plm_convert_servers_form">
+        <field name="name">plm.convert.servers.form</field>
+        <field name="model">plm.convert.servers</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Plm Convert Servers">
+            	<sheet>	
+	                <group>
+	                	<field name="sequence"/>
+	                	<field name="available" widget="boolean_toggle"/>
+	                	<field name="name" required="True"/>
+	                	<field name="is_internal"/>
+                    </group>
+                    <group name="server_spec" attrs="{'invisible':[('is_internal','=', True)]}">
+                        <field name="folder_to" placeholder="my_shared_folder_path" />	                	
+	                	<field name="address" placeholder="127.0.0.1" attrs="{'required':[('is_internal','=', False)]}"/>
+		                <field name="protocol" placeholder="http" attrs="{'required':[('is_internal','=', False)]}"/>
+		                <field name="port" placeholder="5000" attrs="{'required':[('is_internal','=', False)]}"/>
+		                <field name="timeout"/>
+		                <button name="testConnection" type="object" string="Test"/>
+	                </group>
+	                <group attrs="{'invisible': ['|', ('is_internal','=', True), ('client_processes', 'in', [False, ''])]}">
+	                	<field name="proc_to_kill" colspan="1" />
+	                	<button name='killProcess' type="object" string="Kill"></button>
+	                </group>
+	                <group attrs="{'invisible':[('is_internal','=', True)]}">
+		                <button name='getClientProcesses' type="object" string="Get Client Processes" colspan="4"></button>
+		                <field name="client_processes" readonly="True" colspan="4" nolabel="1"/>
+		            </group>
+		            <field name="available_format">
+		              <tree>
+		                  <field name="available" widget="boolean_toggle"/>
+		                  <field name="name"/>
+		                  <field name="sequence"/>
+		                  <field name="start_format"/>
+		                  <field name="end_format"/>
+		                  <field name="cad_name"/>
+		              </tree>
+		            </field>
+               	</sheet> 
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="plm_convert_servers_tree">
+        <field name="name">plm.convert.servers.tree</field>
+        <field name="model">plm.convert.servers</field>
+        <field name="type">tree</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <tree string="Plm Convert Servers">
+            	<field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="address"/>
+                <field name="protocol"/>
+                <field name="port"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="plm_convert_servers_action">
+        <field name="name">Plm Convert Servers</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">plm.convert.servers</field>
+        <field name="view_id" ref="plm_convert_servers_tree"/>
+        <field name="search_view_id" ref="plm_convert_servers_search"/>
+    </record>
+
+    <menuitem
+            id="plm_convert_servers_menu"
+            name="Plm Convert Servers"
+            parent="plm.plm_menu_dictionaries"
+            groups="plm_automated_convertion.group_plm_convert_view"
+            action="plm_convert_servers_action"/>
+
+</data>
+</odoo>
+

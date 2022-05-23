@@ -44,7 +44,6 @@ USED_STATES = [
 ]
 USE_DIC_STATES = dict(USED_STATES)
 
-
 def emptyStringIfFalse(value):
     """
         return an empty string if the value is False
@@ -171,8 +170,8 @@ class PlmComponent(models.Model):
 
     
     readonly_std_umc1 = fields.Boolean(_("put readOnly the field standard description 1"))
-    readonly_std_umc2 = fields.Boolean(_("put readOnly the field standard description 1 "))
-    readonly_std_umc3 = fields.Boolean(_("put readOnly the field standard description 1"))
+    readonly_std_umc2 = fields.Boolean(_("put readOnly the field standard description 2"))
+    readonly_std_umc3 = fields.Boolean(_("put readOnly the field standard description 3"))
     
     
     @api.onchange("std_description")
@@ -391,6 +390,11 @@ class PlmComponent(models.Model):
                 'res_id': product_id,
                 'views': [(form_id, 'form')],
             }
+    
+    #def open_report_component(self):
+    #    action = self.env.ref('plm.action_report_prod_structure').report_action(self)
+    #    action.update({'close_on_report_download': True})
+    #    return action
 
     def open_boms(self):
         product_tmpl_id = self.product_tmpl_id.id
@@ -720,27 +724,61 @@ class PlmComponent(models.Model):
             for comp_obj in self:
                 comp_obj.sudo().message_post(body=_(body))
 
-    def canUnlink(self):
+    def unlinkCheckFirstLevel(self):
         for product in self:
             if product.linkeddocuments:
                 raise UserError('Cannot unlink a product containing related documents')
             if product.bom_ids:
                 raise UserError('Cannot unlink a product containing BOMs')
 
-    def unlink(self):
-        self.canUnlink()
-        values = {'state': 'released'}
-        checkState = ('undermodify', 'obsoleted')
+    def unlinkCheckBomRelations(self):
+
+        def print_where_struct(self, where_struct):
+            print_struct = []
+            prod_struct = []
+            for id1, id2 in where_struct:
+                    if id1 not in print_struct or id1 != False:
+                        print_struct.append(id1)
+            for ids in print_struct:
+                prod_obj = self.env['product.product'].search([('id', '=', ids)])
+                prod_struct.append((prod_obj.engineering_code, prod_obj.engineering_revision, ids))
+            return prod_struct
+
+        for product_id in self:
+            bom_obj = self.env['mrp.bom']
+            field_type_def = bom_obj.fields_get('type').get('type', {})
+            bom_types = []
+            for option in field_type_def.get('selection', []):
+                bom_types.append(option[0])
+            bom_line = bom_obj._get_in_bom(product_id.id, False, bom_types)
+            where_struct = bom_obj._implode_bom(bom_line, False, bom_types)
+            prod_struct = print_where_struct(self, where_struct)
+            if where_struct:
+                msg = _('You cannot unlink a component that is present in a BOM:\n')
+                for prod in prod_struct:
+                    msg += (_('\t Engineering Code = %r   Engineering Revision = %r   Product Id = %r\n' % (prod[0], prod[1], prod[2])))
+                raise UserError(msg)
+
+    def unlinkRestorePreviousComponent(self):
+        ctx = self.env.context.copy()
         for checkObj in self:
-            prodBrwsList = self.search([('engineering_code', '=', checkObj.engineering_code),
-                                        ('engineering_revision', '=', checkObj.engineering_revision - 1)])
-            if len(prodBrwsList) > 0:
-                oldObject = prodBrwsList[0]
-                if oldObject.state in checkState:
-                    oldObject.wf_message_post(body=_('Removed : Latest Revision.'))
-                    if not self.browse([oldObject.id]).write(values):
-                        logging.warning("unlink : Unable to update state to old component (%r - %d)." % (oldObject.engineering_code, oldObject.engineering_revision))
-                        return False
+            prod_ids = self.search([('engineering_code', '=', checkObj.engineering_code), ('engineering_revision', '=', checkObj.engineering_revision - 1)], limit=1)
+            for oldObject in prod_ids:
+                oldObject.wf_message_post(body=_('Removed : Latest Revision.'))
+                ctx['check'] = False
+                values = {'state': 'released'}
+                if not oldObject.with_context(ctx).write(values):
+                    msg = 'Unlink : Unable to update state in product Engineering Code = %r   Engineering Revision = %r   Document Id = %r' % (oldObject.engineering_code, oldObject.engineering_revision, oldObject.id)
+                    logging.warning(msg)
+                    raise UserError(_('Cannot restore previous product Engineering Code = %r   Engineering Revision = %r   Document Id = %r' % (oldObject.engineering_code, oldObject.engineering_revision, oldObject.id)))
+        return True
+
+    def unlink(self):
+        for checkObj in self:
+            checkObj.unlinkCheckFirstLevel()
+            checkObj.linkeddocuments.unlinkCheckDocumentRelations()
+            checkObj.unlinkCheckBomRelations()
+            checkObj.unlinkRestorePreviousComponent()
         return super(PlmComponent, self).unlink()
 
     def action_draft(self):
@@ -1214,10 +1252,11 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             engineering_code = compBrws.engineering_code
             if not engineering_code:
                 logging.warning("Part %s doesn't have and engineering code!" % (compBrws.name))
-                continue
-            compBrwsList = self.search([('engineering_code', '=', engineering_code)])
-            for compBrws in compBrwsList:
                 docIds.extend(compBrws.linkeddocuments.ids)
+            else:
+                compBrwsList = self.search([('engineering_code', '=', engineering_code)])
+                for compBrws in compBrwsList:
+                    docIds.extend(compBrws.linkeddocuments.ids)
         return {'domain': [('id', 'in', docIds)],
                 'name': _('Related documents'),
                 'view_type': 'form',

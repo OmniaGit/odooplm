@@ -42,3 +42,13 @@ class PlmCadOpenBck(models.Model):
     pws_path = fields.Char(_('PWS Path'))
     hostname = fields.Char(_('Hostname'))
     operation_type = fields.Char(_('Operation Type'))
+    
+    def name_get(self):
+        result = []
+        for r in self:
+            if r.document_id and r.userid:
+                name = "%s - R:%s - [%s]" % (r.document_id.engineering_document_name, r.document_id.revisionid, r.userid.display_name)
+            else:
+                name = "Error"
+            result.append((r.id, name))
+        return result

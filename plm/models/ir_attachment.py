@@ -56,14 +56,6 @@ def random_name():
     d = [random.choice(string.ascii_letters) for _x in range(20)]
     return "".join(d)
 
-
-def create_directory(path):
-    dir_name = random_name()
-    path = os.path.join(path, dir_name)
-    os.makedirs(path)
-    return dir_name
-
-
 class PlmDocument(models.Model):
     _name = 'ir.attachment'
     _inherit = ['ir.attachment', 'mail.thread']
@@ -923,23 +915,51 @@ class PlmDocument(models.Model):
                         if not (self.env.user._is_admin() or self.env.user._is_superuser()):
                             raise UserError(_("You cannot edit a file not in check-out by you! User ID %s" % (self.env.uid)))
 
-    
-    def unlink(self):
+    def getParentDocuments(self):
+        parent_dict = {}
+        for doc in self:
+            parent_dict.setdefault(doc, [])
+            att_rel_obj = self.env['ir.attachment.relation'].search([('child_id', '=', doc.id)])
+            for record in att_rel_obj:
+                parent_dict[doc].append((record.parent_id))
+        return parent_dict
+
+    def unlinkCheckDocumentRelations(self):
         ctx = self.env.context.copy()
-        values = {'state': 'released', }
-        checkState = ('undermodify', 'obsoleted')
         for checkObj in self:
-            docBrwsList = self.search([('engineering_document_name', '=', checkObj.engineering_document_name), ('revisionid', '=', checkObj.revisionid - 1)])
-            if len(docBrwsList) > 0:
-                oldObject = docBrwsList[0]
-                if oldObject.state in checkState:
-                    oldObject.wf_message_post(body=_('Removed : Latest Revision.'))
-                    ctx['check'] = False
-                    if not oldObject.with_context(ctx).write(values):
-                        logging.warning(
-                            "unlink : Unable to update state to old document (" + str(oldObject.engineering_document_name) + "-" + str(
-                                oldObject.revisionid) + ").")
-                        return False
+            id_parents = checkObj.getParentDocuments()
+            for child_doc, parent_docs in id_parents.items():
+                if parent_docs:
+                    msg = _('You cannot unlink a component child that is present in a related documents:\n')
+                    for parent_doc in parent_docs:
+                        msg += _('\t Engineering Name = %r   Engineering Revision = %r   Id = %r\n') % (parent_doc.engineering_document_name, parent_doc.revisionid, parent_doc.id)
+                    raise UserError(msg)
+
+    def unlinkRestorePreviousDocument(self):
+        for checkObj in self:
+            docBrwsList = self.search([('engineering_document_name', '=', checkObj.engineering_document_name), ('revisionid', '=', checkObj.revisionid - 1)], limit=1)
+            for oldObject in docBrwsList:
+                oldObject.wf_message_post(body=_('Removed : Latest Revision.'))
+                ctx['check'] = False
+                values = {'state': 'released'}
+                if not oldObject.with_context(ctx).write(values):
+                    msg = 'Unlink : Unable to update state in old document Engineering Name = %r   Engineering Revision = %r   Id = %r' % (oldObject.engineering_document_name, oldObject.revisionid, oldObject.id)
+                    logging.warning(msg)
+                    raise UserError(_('Cannot restore previous document Engineering Name = %r   Engineering Revision = %r   Id = %r' % (oldObject.engineering_document_name, oldObject.revisionid, oldObject.id)))
+        return True
+
+    def unlinkBackUp(self):
+        for checkObj in self:
+            docBrwsList = self.env['plm.backupdoc'].search([('documentid', '=', checkObj.id)])
+            for oldObject in docBrwsList:
+                oldObject.remaining_unlink()
+
+    def unlink(self):
+        for checkObj in self:
+            checkObj.unlinkCheckDocumentRelations()
+            checkObj.linkedcomponents.unlinkCheckBomRelations()
+            checkObj.unlinkRestorePreviousDocument()
+            checkObj.unlinkBackUp()
         return super(PlmDocument, self).unlink()
 
     #   Overridden methods for this entity
@@ -1107,6 +1127,9 @@ class PlmDocument(models.Model):
                                         'component_id',
                                         _('Linked Parts'),
                                         ondelete='cascade')
+    is_linkedcomponents = fields.Boolean('Is Linked Components', 
+                                         compute='_compute_linkedcomponents')
+    
     document_rel_count = fields.Integer(compute=_get_n_rel_doc)
 
     datas = fields.Binary(string='File Content (base64))',
@@ -1121,7 +1144,7 @@ class PlmDocument(models.Model):
                                      store=True,
                                      string=_('Document Type'))
     desc_modify = fields.Text(_('Modification Description'), default='')
-    is_plm = fields.Boolean('Is a plm Document', help=_("If the flag is set, the document is managed by the plm module, and imply its backup at each save and the visibility on some views."))
+    is_plm = fields.Boolean('Is A Plm Document', help=_("If the flag is set, the document is managed by the plm module, and imply its backup at each save and the visibility on some views."))
     attachment_release_user = fields.Many2one('res.users', string=_("User Release"))
     attachment_release_date = fields.Datetime(string=_('Datetime Release'))
     attachment_revision_count = fields.Integer(compute='_attachment_revision_count')
@@ -1129,6 +1152,14 @@ class PlmDocument(models.Model):
     workflow_date = fields.Datetime(string=_('Datetime Last Wkf'))
     revision_user = fields.Many2one('res.users', string=_("User Revision"))
     revision_date = fields.Datetime(string=_('Datetime Revision'))
+    
+    def _compute_linkedcomponents(self):
+        for record in self:
+            if record.linkedcomponents:
+                record['is_linkedcomponents'] = True
+            else:
+                record['is_linkedcomponents'] = False
+        return True
     
     def basePreview64ImgUrl(self):
         return "url(%s)" % self.basePreview64Img()
@@ -1482,9 +1513,7 @@ class PlmDocument(models.Model):
             Return a new name due to sequence next number.
         """
         ctx = self.env.context
-        eng_code = ctx.get('engineering_code')
-        _eng_rev = ctx.get('engineering_revision')
-        _file_path = ctx.get('filePath')
+        eng_code = ctx.get('product_attrs', {}).get("engineering_code") or ctx.get('engineering_code', '')
         if eng_code:
             documentName = eng_code
         nextDocNum = self.env['ir.sequence'].next_by_code('ir.attachment.progress')
@@ -2720,5 +2749,16 @@ class PlmDocument(models.Model):
             if self.getRelatedPkgTreeCount(doc_id)>0:
                 out.append(doc_id)
         return json.dumps(out)
+    
+    def print_Parent_Structure(self):
+        #<record id="account_invoices" model="ir.actions.report"> 
+        action = self.env.ref('plm.action_report_parents_structure').report_action(self)
+        action.update({'close_on_report_download': True})
+        return action
 
+    def print_Document_Doc_Structure(self):
+        #<record id="account_invoices" model="ir.actions.report"> 
+        action = self.env.ref('plm.action_report_doc_structure').report_action(self)
+        action.update({'close_on_report_download': True})
+        return action
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

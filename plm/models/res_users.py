@@ -31,8 +31,7 @@ from odoo import api
 from odoo import _
 
 
-class ResUsersExt(models.Model):
-    _name = 'res.users'
+class ResUsers(models.Model):
     _inherit = 'res.users'
 
 

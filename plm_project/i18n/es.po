@@ -1,0 +1,129 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* plm_project
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 15.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-03-25 15:13+0000\n"
+"PO-Revision-Date: 2022-03-25 16:15+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: es\n"
+"X-Generator: Poedit 2.0.6\n"
+
+#. module: plm_project
+#: model:ir.model,name:plm_project.model_mail_activity
+msgid "Activity"
+msgstr "Actividad"
+
+#. module: plm_project
+#: code:addons/plm_project/models/project.py:0
+#: model:ir.model.fields,help:plm_project.field_project_project__plm_use_plm
+#, python-format
+msgid "Check this box to manage plm data into project"
+msgstr "Marque esta casilla para administrar los datos plm en el proyecto"
+
+#. module: plm_project
+#: code:addons/plm_project/models/project.py:0
+#: model:ir.model.fields,field_description:plm_project.field_project_project__plm_product_count
+#, python-format
+msgid "Number of product related"
+msgstr "Número de productos relacionados"
+
+#. module: plm_project
+#: model_terms:ir.ui.view,arch_db:plm_project.plm_edit_project
+msgid "PLM"
+msgstr "PLM"
+
+#. module: plm_project
+#: code:addons/plm_project/models/project.py:0
+#: model:ir.model.fields,field_description:plm_project.field_project_project__plm_completed
+#, python-format
+msgid "Plm Complete"
+msgstr "Plm Completo"
+
+#. module: plm_project
+#: model:ir.model,name:plm_project.model_product_product
+msgid "Product"
+msgstr "Producto"
+
+#. module: plm_project
+#: model:mail.activity.type,name:plm_project.mail_activity_product_confirmed
+msgid "Product Confirmed"
+msgstr "Producto Confirmado"
+
+#. module: plm_project
+#: code:addons/plm_project/models/project_task.py:0
+#: model:ir.model.fields,field_description:plm_project.field_project_task__activity_product_ids
+#, python-format
+msgid "Product Ids"
+msgstr "Identificadores de Productos"
+
+#. module: plm_project
+#: code:addons/plm_project/models/project.py:0
+#: model:ir.model.fields,field_description:plm_project.field_project_project__plm_product_ids
+#, python-format
+msgid "Products"
+msgstr "Productos"
+
+#. module: plm_project
+#: model:ir.model,name:plm_project.model_project_project
+#: model_terms:ir.ui.view,arch_db:plm_project.plm_product_product_normal_form_view_inherit_plm_project
+#: model_terms:ir.ui.view,arch_db:plm_project.plm_project_product_extend
+msgid "Project"
+msgstr "Proyecto"
+
+#. module: plm_project
+#: code:addons/plm_project/models/product.py:0
+#: model:ir.model.fields,field_description:plm_project.field_product_product__project_ids
+#, python-format
+msgid "Projects"
+msgstr "Proyectos"
+
+#. module: plm_project
+#: code:addons/plm_project/models/product.py:0
+#: model:ir.model,name:plm_project.model_project_task
+#: model:ir.model.fields,field_description:plm_project.field_product_product__activity_task_id
+#, python-format
+msgid "Task"
+msgstr "Tarea"
+
+#. module: plm_project
+#: model:ir.model.fields,field_description:plm_project.field_project_project__plm_use_plm
+msgid "Use PLM"
+msgstr "Usar PLM"
+
+#. module: plm_project
+#: code:addons/plm_project/models/mail_activity.py:0
+#, python-format
+msgid ""
+"You cannot edit a \"Product Confirmed\" activity if is not assigned to you."
+msgstr ""
+"No puede editar una actividad de \"Producto confirmado\" si no se le ha "
+"asignado."
+
+#. module: plm_project
+#: code:addons/plm_project/models/mail_activity.py:0
+#, python-format
+msgid ""
+"You cannot mark as done a \"Product Confirmed\" activity if is not assigned "
+"to you."
+msgstr ""
+"No puede marcar como realizada una actividad de \"Producto confirmado\" si "
+"no se le ha asignado."
+
+#. module: plm_project
+#: code:addons/plm_project/models/mail_activity.py:0
+#, python-format
+msgid ""
+"You cannot unlink a \"Product Confirmed\" activity if is not assigned to "
+"you."
+msgstr ""
+"No puede desvincular una actividad de \"Producto confirmado\" si no se le "
+"ha asignado."

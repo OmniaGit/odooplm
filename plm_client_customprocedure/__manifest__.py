@@ -20,7 +20,7 @@
 ##############################################################################
 {
     "name": "PLM Client Custom Procedure",
-    "version": "15.0.3",
+    "version": "15.0.4",
     "author": "OmniaSolutions",
     "website": "https://github.com/OmniaGit/odooplm",
     "category": "Product Lifecycle Management",

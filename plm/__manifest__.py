@@ -27,7 +27,7 @@
     "live_test_url": "https://www.v15.odooplm.cloud/",
     "sequence": 15,
     "license": "LGPL-3",
-    "summary": "PLM-PDM Integration with main CAD editors (SolidWorks, SolidEdge, Inventor, Autocad, Thinkdesign, Freecad)",
+    "summary": "PLM-PDM Integration with main CAD editors (SolidWorks, SolidEdge, Inventor, Autocad, Thinkdesign, Freecad, Draftsight)",
     "images": ["static/img/odoo_plm.png"],
     "depends": ["base", "board", "product", "mrp"],
     "data": [
@@ -58,16 +58,27 @@
         # QwebTemplates
         'views/templates.xml',
         # Reports Template
+        "report/bom_document.xml",
         "report/bom_structure_report_template.xml",
         "report/document_report_templates.xml",
         "report/product_report_templates.xml",
+        "report/product_report_document.xml",
         # Report
         "report/bom_structure.xml",
         "report/component_report.xml",
         "report/document_report.xml",
     ],
     "assets": {
-        "web.assets_backend": ["plm/static/src/css/component_kanban.css"]},
+        "web.assets_backend": [
+            "plm/static/src/css/component_kanban.css",
+            "plm/static/src/css/color_fields_tree.css",
+            ],
+        'web.report_assets_common': [
+            "plm/static/src/scss/document_bom.scss",
+            "plm/static/src/css/component_kanban.css",
+            "plm/static/src/css/color_fields_tree.css",
+        ],
+        },
     "qweb": [],
     "demo": [],
     "test": [],

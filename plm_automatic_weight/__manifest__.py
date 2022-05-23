@@ -30,7 +30,6 @@
     "depends": ["plm"],
     "license": "AGPL-3",
     "data": [
-        "settings_and_data/datas.xml",
         "views/product_product.xml",
         "views/mrp_bom.xml",
     ],

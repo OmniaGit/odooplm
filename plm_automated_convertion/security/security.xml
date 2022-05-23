@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+    <record id="group_plm_convert_view" model="res.groups">
+        <field name="name">Plm Convert View</field>
+        <field name="category_id" ref="plm.odooplm_module_category"/>
+    </record>
+
+    <record id="group_plm_convert_admin" model="res.groups">
+        <field name="name">Plm Convert Admin</field>
+        <field name="category_id" ref="plm.odooplm_module_category"/>
+        <field name="implied_ids" eval="[(4, ref('group_plm_convert_view'))]"/>
+    </record>
+
+    <record id="plm_convert_rule_admin" model="ir.model.access">
+        <field name="name">Plm Convert Rule Admin</field>
+        <field name="model_id" ref="plm_automated_convertion.model_plm_convert_rule"/>
+        <field name="group_id" ref="plm_automated_convertion.group_plm_convert_admin"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="1"/>
+        <field name="perm_create" eval="1"/>
+        <field name="perm_unlink" eval="1"/>
+    </record>
+
+    <record id="plm_convert_stack_admin" model="ir.model.access">
+        <field name="name">Plm Convert Stack Admin</field>
+        <field name="model_id" ref="plm_automated_convertion.model_plm_convert_stack"/>
+        <field name="group_id" ref="plm_automated_convertion.group_plm_convert_admin"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="1"/>
+        <field name="perm_create" eval="1"/>
+        <field name="perm_unlink" eval="1"/>
+    </record>
+
+    <record id="plm_convert_servers_admin" model="ir.model.access">
+        <field name="name">Plm Convert Servers Admin</field>
+        <field name="model_id" ref="plm_automated_convertion.model_plm_convert_servers"/>
+        <field name="group_id" ref="plm_automated_convertion.group_plm_convert_admin"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="1"/>
+        <field name="perm_create" eval="1"/>
+        <field name="perm_unlink" eval="1"/>
+    </record>
+
+    <record id="plm_convert_rule_user" model="ir.model.access">
+        <field name="name">Plm Convert Rule User</field>
+        <field name="model_id" ref="plm_automated_convertion.model_plm_convert_rule"/>
+        <field name="group_id" ref="plm_automated_convertion.group_plm_convert_view"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="0"/>
+        <field name="perm_create" eval="1"/>
+        <field name="perm_unlink" eval="0"/>
+    </record>
+
+    <record id="plm_convert_stack_user" model="ir.model.access">
+        <field name="name">Plm Convert Stack User</field>
+        <field name="model_id" ref="plm_automated_convertion.model_plm_convert_stack"/>
+        <field name="group_id" ref="plm_automated_convertion.group_plm_convert_view"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="0"/>
+        <field name="perm_create" eval="1"/>
+        <field name="perm_unlink" eval="0"/>
+    </record>
+
+    <record id="plm_convert_servers_user" model="ir.model.access">
+        <field name="name">Plm Convert Servers User</field>
+        <field name="model_id" ref="plm_automated_convertion.model_plm_convert_servers"/>
+        <field name="group_id" ref="plm_automated_convertion.group_plm_convert_view"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="0"/>
+        <field name="perm_create" eval="0"/>
+        <field name="perm_unlink" eval="0"/>
+    </record>
+    
+    <record id="plm_convert_user" model="ir.model.access">
+        <field name="name">Plm Convert Wizard</field>
+        <field name="model_id" ref="plm_automated_convertion.model_plm_convert"/>
+        <field name="group_id" ref="plm_automated_convertion.group_plm_convert_view"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="1"/>
+        <field name="perm_create" eval="1"/>
+        <field name="perm_unlink" eval="1"/>
+    </record>
+
+    <record id="plm_convert_format_user" model="ir.model.access">
+        <field name="name">Plm Convert Wizard</field>
+        <field name="model_id" ref="plm_automated_convertion.model_plm_convert_format"/>
+        <field name="group_id" ref="plm_automated_convertion.group_plm_convert_view"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="1"/>
+        <field name="perm_create" eval="0"/>
+        <field name="perm_unlink" eval="0"/>
+    </record>        
+    
+
+</odoo>

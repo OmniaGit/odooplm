@@ -1,7 +1,8 @@
+# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution
-#    Copyright (C) 2010-2021 OmniaSolutions (<https://www.omniasolutions.website>).
+#    Copyright (C) 2010-2022 OmniaSolutions (<https://www.omniasolutions.website>).
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -20,7 +21,7 @@
 ##############################################################################
 {
     "name": "Product Lifecycle Management Batch conversion",
-    "version": "15.0.3",
+    "version": "15.0.4",
     "author": "OmniaSolutions",
     "website": "https://github.com/OmniaGit/odooplm",
     "category": "Product Lifecycle Management",
@@ -28,11 +29,28 @@
     "license": "AGPL-3",
     "summary": "CAD editors batch conversion tool",
     "depends": ["plm"],
-    "data": [  # security
-        "security/plm_security.xml",
+    'external_dependencies': {'python': ['ezdxf',
+                                         'matplotlib',
+                                         'cadquery2']},
+    "data": [  
+        #
+        # security
+        #
+        'security/security.xml',
+        #
         # views
-        "view/plm_component_action_extended.xml",
-        "view/data.xml",
+        #
+        'view/ir_action_server.xml',
+        'view/ir_attachment.xml',
+        'view/ir_cron.xml',
+        'view/plm_convert_rule.xml',
+        'view/plm_convert_servers.xml',
+        'view/plm_convert_stack.xml',
+        'wizards/plm_convert.xml',
+        #
+        # data
+        #
+        'data/data.xml',
     ],
     "demo": [],
     "test": [],
