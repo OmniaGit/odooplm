@@ -59,6 +59,8 @@ class PlmComponent(models.Model):
 
     def onchange(self, values, field_name, field_onchange):
         values = self.plm_sanitize(values)
+        if 'product_tmpl_id' in values:
+            del values['product_tmpl_id']
         return super(PlmComponent, self).onchange(values, field_name, field_onchange)
 
     def action_show_reference(self):
