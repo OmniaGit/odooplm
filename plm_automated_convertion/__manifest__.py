@@ -31,7 +31,8 @@
     "depends": ["plm"],
     'external_dependencies': {'python': ['ezdxf',
                                          'matplotlib',
-                                         'cadquery2']},
+                                         'cadquery2',
+                                         'numpy-stl']},
     "data": [  
         #
         # security
