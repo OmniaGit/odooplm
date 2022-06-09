@@ -1088,7 +1088,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         previous_name = self.name
         if not default.get('name', False):
             default['name'] = '-'                   # If field is required super of clone will fail returning False, this is the case
-            default['engineering_code'] = '-'
+            default['engineering_code'] = False
             default['engineering_revision'] = 0
             clearBrokenComponents()
         if default.get('engineering_code', '') == '-':
