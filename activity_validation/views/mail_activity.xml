@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-
         <record id="mail_activity_view_tree_activity_validaation" model="ir.ui.view">
             <field name="name">mail.activity.view.tree.activity.validation</field>
             <field name="model">mail.activity</field>
@@ -36,6 +35,9 @@
 			                <field name="plm_state" />
 			            </tree>
 			        </field>
+                </xpath>
+                <xpath expr="//footer[1]" position="attributes">
+                    <attribute name="attrs">{'invisible':[('plm_state', 'in', ['finished','cancel'])]}</attribute>
                 </xpath>
             </field>
         </record>

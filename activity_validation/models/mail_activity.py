@@ -89,13 +89,15 @@ class MailActivity(models.Model):
     def action_done(self):
         ret = super(MailActivity, self).action_done()
         self.checkConfirmed()
-        self.plm_state = 'finished'
+        if self.exists():
+            self.plm_state = 'finished'
         return ret
 
     def action_done_schedule_next(self):
         ret = super(MailActivity, self).action_done_schedule_next()
         self.checkConfirmed()
-        self.plm_state = 'finished'
+        if self.exists():
+            self.plm_state = 'finished'
         return ret
 
     def activity_format(self):
@@ -114,8 +116,7 @@ class MailActivity(models.Model):
     def unlink(self):
         for activity_id in self:
             if activity_id.isCustomType():
-                if not self.env.su:
-                    return
+                return
         return super(MailActivity, self).unlink()
 
     def action_to_draft(self):
