@@ -4,4 +4,5 @@
 	branch = dev
 [submodule "plm_web_3d/static/src/js/lib/dxf-viewer"]
 	path = plm_web_3d/static/src/js/lib/dxf-viewer
-	url = https://github.com/vagran/dxf-viewer.git
+	url = https://github.com/OmniaGit/dxf-viewer.git
+    branch = 15.0
