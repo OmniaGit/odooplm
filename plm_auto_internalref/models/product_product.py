@@ -36,28 +36,48 @@ class ProductProductExtension(models.Model):
 
     @api.model
     def create(self, vals):
+        new_default_code = self.computeDefaultCode(vals)
+        if new_default_code:
+            logging.info('OdooPLM: Default Code set to %s ' % (new_default_code))
+            vals['default_code'] = new_default_code
+        return super(ProductProductExtension, self).create(vals)
+    
+    @property
+    def getDefaultCodeTemplate(self):
+        return "%s_%s"
+    
+    def computeDefaultCode(self,
+                           vals={},
+                           objBrowse=None):
+        """
+        Function to be overloaded for changing the inetrnal referense computation
+        :vals dict like with all the value that be updated
+        :objBrowse product.product or product.template in case of write operation
+        """
+        out = False
+        in_revision = self.env.context.get('new_revision', False)
         engineering_code = vals.get('engineering_code', '')
         engineering_revision = vals.get('engineering_revision', 0)
-        if 'engineering_code' in vals:
-            if engineering_code and engineering_code != '-' and self.env.context.get('odooPLM') or self.env.context.get('new_revision', False):  # Cloning by client
-                vals['default_code'] = self.computeDefaultCode(engineering_code, engineering_revision)
-                logging.info('Internal ref set value %s on engineering_code: %r' % (vals['default_code'], engineering_code))
-            elif engineering_code and not vals.get('default_code') and engineering_code != '-':
-                vals['default_code'] = self.computeDefaultCode(engineering_code, engineering_revision)
-                logging.info('Internal ref set value %s on engineering_code: %r' % (vals['default_code'], engineering_code))
-        return super(ProductProductExtension, self).create(vals)
-
-    def computeDefaultCode(self, eng_code, eng_rev):
-        return '%s_%s' % (eng_code, eng_rev)
+        default_code = vals.get('default_code')
+        if objBrowse: #suppose write operation
+            if not engineering_code:
+                engineering_code = objBrowse.engineering_code
+            if not engineering_revision:
+                engineering_revision = objBrowse.engineering_revision
+            if not default_code:
+                default_code = objBrowse.default_code            
+        if in_revision and engineering_code and engineering_code != '-':
+            out = self.getDefaultCodeTemplate % (engineering_code, engineering_revision)
+        if engineering_code and not default_code and engineering_code != '-':
+             out = self.getDefaultCodeTemplate % (engineering_code, engineering_revision)
+        if default_code == out:
+            return False
+        return out
 
     def write(self, vals):
-        res = super(ProductProductExtension, self).write(vals)
-        if 'engineering_code' in vals:
-            for prodBrws in self:
-                if prodBrws.engineering_code and prodBrws.engineering_code != '-' and self.env.context.get('odooPLM'):  # Cloning by client
-                    default_code = self.computeDefaultCode(prodBrws.engineering_code, prodBrws.engineering_revision)
-                    super(ProductProductExtension, self).write({'default_code': default_code})
-                elif prodBrws.engineering_code and not prodBrws.default_code and prodBrws.engineering_code != '-':
-                    default_code = self.computeDefaultCode(prodBrws.engineering_code, prodBrws.engineering_revision)
-                    super(ProductProductExtension, self).write({'default_code': default_code})
-        return res
+        new_default_code = self.computeDefaultCode(vals,
+                                                   self)
+        if new_default_code :
+            logging.info('OdooPLM: Default Code set to %s ' % (new_default_code))
+            vals['default_code'] = new_default_code
+        return super(ProductProductExtension, self).write(vals)
