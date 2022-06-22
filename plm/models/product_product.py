@@ -767,6 +767,7 @@ class PlmComponent(models.Model):
         """
         ctx = self.env.context.copy()
         ctx['FORCE_PLM_WF'] = True
+        self.wf_message_post(body=_('Release action forced by user: %s ' % (self.env.user.name)))
         return self.with_context(ctx).action_release()
 
     def action_release(self):

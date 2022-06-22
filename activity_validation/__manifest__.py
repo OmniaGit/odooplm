@@ -21,7 +21,7 @@
 ##############################################################################
 {
     'name': 'Activity Validation',
-    'version': '13.0.0.1',
+    'version': '13.2',
     'author': 'OmniaSolutions',
     'website': 'https://www.omniasolutions.website',
     'category': 'Custom',

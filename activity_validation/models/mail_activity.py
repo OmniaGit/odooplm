@@ -114,9 +114,10 @@ class MailActivity(models.Model):
         return False
         
     def unlink(self):
-        for activity_id in self:
-            if activity_id.isCustomType():
-                return
+        if not self.env.context.get('force_delete_plm_activity'):
+            for activity_id in self:
+                if activity_id.isCustomType():
+                    return
         return super(MailActivity, self).unlink()
 
     def action_to_draft(self):
