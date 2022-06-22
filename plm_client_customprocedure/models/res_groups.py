@@ -98,7 +98,7 @@ class ResGroups(models.Model):
 
     @api.model
     def commonSave(self, vals, binary_field, content_field, fname, custom_file):
-        vals[binary_field] = base64.encodestring(vals.get(content_field, '').encode('utf-8'))
+        vals[binary_field] = base64.b64encode(vals.get(content_field, '').encode('utf-8'))
         tmpFolder = tempfile.gettempdir()
         if fname:
             customFilePath = os.path.join(tmpFolder, fname)
