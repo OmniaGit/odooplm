@@ -72,7 +72,7 @@ class ProductProductExtension(models.Model):
         if engineering_code and not default_code and engineering_code != '-':
              out = self.getDefaultCodeTemplate % (engineering_code, engineering_revision)
         
-       if default_code == out:
+        if default_code == out:
             return False
                     
         return out
