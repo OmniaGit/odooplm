@@ -72,24 +72,8 @@ class ProductProductExtension(models.Model):
         if engineering_code and not default_code and engineering_code != '-':
              out = self.getDefaultCodeTemplate % (engineering_code, engineering_revision)
         
-        if default_code == out:
+       if default_code == out:
             return False
-        # if 'engineering_code' in vals:
-        #     if engineering_code and engineering_code != '-' and self.env.context.get('odooPLM') or self.env.context.get('new_revision', False):  # Cloning by client
-        #
-        #
-        #     elif engineering_code and not vals.get('default_code') and engineering_code != '-':
-        #
-        #
-        # if 'engineering_code' in vals:
-        #     for prodBrws in self:
-        #         if prodBrws.engineering_code and prodBrws.engineering_code != '-' and self.env.context.get('odooPLM'):  # Cloning by client
-        #
-        #         elif prodBrws.engineering_code and not prodBrws.default_code and prodBrws.engineering_code != '-':
-        #
-        # if 'engineering_code' in vals:
-        #     for prodBrws in self:
-        #         if prodBrws.engineering_code and not prodBrws.default_code and prodBrws.engineering_code != '-' or self.env.context.get('new_revision', False):
                     
         return out
 
