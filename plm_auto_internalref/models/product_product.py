@@ -68,13 +68,10 @@ class ProductProductExtension(models.Model):
                 default_code = objBrowse.default_code            
         if in_revision and engineering_code and engineering_code != '-':
             out = self.getDefaultCodeTemplate % (engineering_code, engineering_revision)
-        
         if engineering_code and not default_code and engineering_code != '-':
              out = self.getDefaultCodeTemplate % (engineering_code, engineering_revision)
-        
         if default_code == out:
             return False
-                    
         return out
 
     def write(self, vals):
