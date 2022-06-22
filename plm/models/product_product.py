@@ -721,15 +721,15 @@ class PlmComponent(models.Model):
         """
             obsolete the object
         """
+        status = 'obsoleted'
+        available_status = self._fields.get('state')._description_selection(self.env)
+        dict_status = dict(available_status)
         for comp_obj in self:
-            defaults = {}
-            status = 'obsoleted'
-            doc_action = 'obsolete'
-            defaults['engineering_writable'] = False
-            defaults['state'] = status
-            skip_states = ['draft', 'confirmed', 'obsoleted']
-            error_states = []
-            comp_obj.commonWFAction(doc_action, defaults, error_states, skip_states, direction='forward')
+            defaults = {'engineering_writable': False,
+                        'state': status
+                        }
+            comp_obj.wf_message_post(body=_('Status moved to: %s by %s.' % (dict_status.get(status, ''),
+                                                                            self.env.user.name)))
         return True
 
     def action_reactivate(self):
@@ -787,12 +787,7 @@ class PlmComponent(models.Model):
             for component in components:
                 old_revision = self._getbyrevision(component.engineering_code, component.engineering_revision - 1)
                 if old_revision:
-                    defaults['engineering_writable'] = False
-                    defaults['state'] = 'obsoleted'
-                    old_revision.product_tmpl_id.write(defaults)
-                    old_revision.write(defaults)
-                    status_lable = dict_status.get(defaults.get('state', ''), '')
-                    old_revision.wf_message_post(body=_('Status moved to: %s by %s.' % (status_lable, self.env.user.name)))
+                    old_revision.action_obsolete()
                 if not component.release_date:
                     component.release_date = datetime.now()
                     component.release_user = self.env.uid
@@ -845,7 +840,7 @@ class PlmComponent(models.Model):
                     wrong_documents += wrong_documents_new
         return wrong_documents, msg, documents
 
-    def commonWFAction(self, doc_action, defaults={}, exclude_statuses=[], skip_states=[], recursive=True, direction='forward'):
+    def commonWFAction(self, doc_action, defaults={}, exclude_statuses=[], skip_states=[], recursive=True, direction='forward',):
         components = self
         to_state = defaults['state']
         msg = 'Cannot move workflow\n'
