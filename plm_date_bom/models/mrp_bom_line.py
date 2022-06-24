@@ -34,7 +34,6 @@ from datetime import timedelta
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
 class MrpBomLine(models.Model):
-    _name = 'mrp.bom.line'
     _inherit = 'mrp.bom.line'
 
     @api.onchange('state')

@@ -43,11 +43,11 @@ class plm_temporary_batch_converter(models.TransientModel):
 
     document_id = fields.Many2one('ir.attachment',
                                   'Related Document',
-                                  requite=True)
+                                  required=True)
     
     targetFormat = fields.Many2one('plm.convert.format',
                                    'Conversion Format',
-                                   requite=True)
+                                   required=True)
     
     extention = fields.Char('Extension',
                             compute='get_ext')

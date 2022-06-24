@@ -34,7 +34,6 @@ import logging
 
 
 class MrpBomLineExtension(models.Model):
-    _name = 'mrp.bom.line'
     _inherit = 'mrp.bom.line'
     _order = "itemnum"
 

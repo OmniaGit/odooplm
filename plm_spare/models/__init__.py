@@ -19,7 +19,6 @@
 #
 ##############################################################################
 from . import mrp_bom
-from . import mrp_bom_line
 from . import ir_attachment
 from . import plm_temporary
 from . import product_product

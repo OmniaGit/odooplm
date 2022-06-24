@@ -21,7 +21,7 @@
 ##############################################################################
 {
     "name": "Product Lifecycle Management Batch conversion",
-    "version": "15.0.4",
+    "version": "15.0.5",
     "author": "OmniaSolutions",
     "website": "https://github.com/OmniaGit/odooplm",
     "category": "Product Lifecycle Management",

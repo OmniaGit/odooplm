@@ -33,17 +33,4 @@ from odoo import _
 class MrpBomLineExtension(models.Model):
     _inherit = 'mrp.bom.line'
 
-    @api.model
-    def _get_reference_eng_type(self):
-        return self.env['mrp.bom']._get_reference_eng_type()
-
-    type = fields.Selection(
-        '_get_reference_eng_type',
-        _('BoM Type'),
-        required=True,
-        default='normal',
-        help=_(
-            "Phantom BOM: When processing a sales order for this product, the delivery order will contain the raw materials, instead of the finished product."
-            " Ship this product as a set of components (kit).")
-    )
     ebom_source_id = fields.Integer('Source E-Bom ID')

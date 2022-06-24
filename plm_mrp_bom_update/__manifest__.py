@@ -20,7 +20,7 @@
 ##############################################################################
 {
     'name': '[OMNIASOLUTIONS] Production Bom Update',
- 'version': '15.0.1',
+ 'version': '15.2',
  'sequence': 1,
  'category': 'Manufacturing',
  'description': """
