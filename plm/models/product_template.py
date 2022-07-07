@@ -214,7 +214,7 @@ class ProductTemplateExtension(models.Model):
 
         if not default.get('name', False):
             default['name'] = '-'                   # If field is required super of clone will fail returning False, this is the case
-            default['engineering_code'] = '-'
+            default['engineering_code'] = False
             default['engineering_revision'] = 0
             clearBrokenComponents()
         if default.get('engineering_code', '') == '-':

@@ -71,7 +71,7 @@ class plm_spareChoseLanguage(osv.osv.osv_memory):
             newContext = self.env.context.copy()
             newContext['lang'] = lang
             stream, fileExtention = self.env.ref(reportName).sudo().with_context(newContext).render_qweb_pdf(productProductId)
-            self.datas = base64.encodestring(stream)
+            self.datas = base64.b64encode(stream)
             tProductProduct = self.env['product.product']
             brwProduct = tProductProduct.browse(productProductId)
             fileName = brwProduct.name + "_" + lang + "_manual." + fileExtention
@@ -144,7 +144,7 @@ class plm_bomChoseLanguage(osv.osv.osv_memory):
             newContext['lang'] = lang
             stream, fileExtention = self.env.ref(reportName).sudo().with_context(newContext).render_qweb_pdf(self.ids)
             bomId = self.env.context.get('active_id')
-            self.datas = base64.encodestring(stream)
+            self.datas = base64.b64encode(stream)
             tMrpBom = self.env['mrp.bom']
             brwProduct = tMrpBom.browse(bomId)
             fileName = brwProduct.product_tmpl_id.name + "_" + lang + "_bom." + fileExtention

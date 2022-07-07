@@ -493,8 +493,8 @@ class MrpBomExtension(models.Model):
             if prod_brws.source_product:
                 for bom_brws in prod_brws.source_product.bom_ids:
                     if bom_brws.source_id:
-                        return bom_brws.type, bom_brws.routing_id.id
-            return bom_type, False
+                        return bom_brws.type
+            return bom_type
 
         def get_parent_vals(parent_name, part_id, source_id, args=None, bom_type='normal'):
             """
@@ -505,7 +505,7 @@ class MrpBomExtension(models.Model):
             res['product_tmpl_id'] = obj_part.product_tmpl_id.id
             res['product_id'] = part_id
             res['source_id'] = source_id
-            res['type'], res['routing_id'] = check_cloned_from(part_id, bom_type=bom_type)
+            res['type'] = check_cloned_from(part_id, bom_type=bom_type)
             return res
 
         def save_parent(name, part_id, source_id, kind_bom='normal'):

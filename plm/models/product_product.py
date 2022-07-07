@@ -61,6 +61,8 @@ class PlmComponent(models.Model):
 
     def onchange(self, values, field_name, field_onchange):
         values = self.plm_sanitize(values)
+        if 'product_tmpl_id' in values:
+            del values['product_tmpl_id']
         return super(PlmComponent, self).onchange(values, field_name, field_onchange)
 
     def action_show_reference(self):
@@ -1086,7 +1088,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         previous_name = self.name
         if not default.get('name', False):
             default['name'] = '-'                   # If field is required super of clone will fail returning False, this is the case
-            default['engineering_code'] = '-'
+            default['engineering_code'] = False
             default['engineering_revision'] = 0
             clearBrokenComponents()
         if default.get('engineering_code', '') == '-':
@@ -1155,10 +1157,16 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         if customFields:
             fieldsGet = obj.fields_get(customFields)
             for fieldName, fieldDefinition in fieldsGet.items():
-                refId = self.customFieldConvert(fieldDefinition, vals, fieldName, force_create=force_create)
-                out[fieldName] = False
-                if refId:
-                    out[fieldName] = refId.id
+                field_id = False
+                try:
+                    field_id = vals.get(fieldName, False)
+                except Exception as ex:
+                    logging.warning('Cannot get m2o field value due to error %r' % (ex))
+                if not field_id:
+                    refId = self.customFieldConvert(fieldDefinition, vals, fieldName, force_create=force_create)
+                    out[fieldName] = False
+                    if refId:
+                        out[fieldName] = refId.id
         return out
 
     def customFieldConvert(self, fieldDefinition, vals, fieldName, force_create=False):

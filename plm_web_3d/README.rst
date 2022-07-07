@@ -1,2 +1,2 @@
-This module allows you to rendere the 3d sean in the odoo web interface using treejs
-====================================================================================
+This module allows you to render the 3d scene in the odoo web interface using three.js
+======================================================================================

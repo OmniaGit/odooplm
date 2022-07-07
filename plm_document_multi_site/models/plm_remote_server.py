@@ -103,7 +103,7 @@ class PlmRemoteServer(models.Model):
                 for chunk in r.iter_content(chunk_size=8192):
                     if chunk:  # filter out keep-alive new chunks
                         f.write(chunk)
-                ir_attachment_id.datas = base64.encodestring(f.getvalue())
+                ir_attachment_id.datas = base64.b64encode(f.getvalue())
             return ret
         except Exception as ex:
             logging.error(ex)

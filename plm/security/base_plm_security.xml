@@ -569,7 +569,7 @@
 
 
     <record id="plm_cad_open_admin" model="ir.model.access">
-        <field name="name">Plm Cad Open Admin</field>
+        <field name="name">PLM Cad Open Admin</field>
         <field name="model_id" ref="plm.model_plm_cad_open"/>
         <field name="group_id" ref="plm.group_plm_admin"/>
         <field name="perm_read" eval="1"/>
@@ -589,7 +589,7 @@
     </record>
 
     <record id="plm_cad_open_bck_admin" model="ir.model.access">
-        <field name="name">Plm Cad Open Bck Admin</field>
+        <field name="name">PLM Cad Open Bck Admin</field>
         <field name="model_id" ref="plm.model_plm_cad_open_bck"/>
         <field name="group_id" ref="plm.group_plm_admin"/>
         <field name="perm_read" eval="1"/>

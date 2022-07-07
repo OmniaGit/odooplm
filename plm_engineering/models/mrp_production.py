@@ -48,7 +48,6 @@ class MrpProductionExtension(models.Model):
                 return {'value': {
                     'product_uom_id': False,
                     'bom_id': False,
-                    'routing_id': False,
                     'product_uos_qty': 0,
                     'product_uos': False
                 }}
