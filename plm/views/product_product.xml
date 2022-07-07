@@ -185,7 +185,7 @@
                            statusbar_colors='{"undermodify":"red","obsoleted":"red"}'
                            readonly="1"/>
             </xpath>
-            <!--  -->
+
             <xpath expr="//button[@name='action_view_mos']" position="after">
                 <button name="open_related_revisions"
                         type="object"
@@ -391,7 +391,7 @@
         <field name="name">Engineering Parts</field>
         <field name="res_model">product.product</field>
         <field name="view_mode">kanban,tree,form</field>
-        <field name="view_id" ref="plm_component_base_tree"/>
+        <field name="view_id" ref="plm.plm_component_base_tree"/>
         <field name="context">{"search_default_latest": 1, 'odooPLM': True, 'odoo_side_call': True}</field>
         <field name="domain">[('engineering_code','not in', ('', False))]</field>
     </record>

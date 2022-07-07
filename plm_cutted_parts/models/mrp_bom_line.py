@@ -73,7 +73,7 @@ class MrpBomLineTemplateCuttedParts(models.Model):
         material_added_y = product_id.material_added_y
         new_qty = (product_id.row_material_y_length * wastage_percent_y) + material_added_y
         return new_qty
-        
+
     def computeXLenghtByProduct(self, product_id):
         material_percentage = product_id.wastage_percent or 1
         material_added = product_id.material_added

@@ -3,6 +3,7 @@
     <menuitem
             id="plm_menu"
             name="PLM"
+            action=""
             web_icon="plm,static/description/icon.png"
             groups="plm.group_plm_admin,plm.group_plm_integration_user,plm.group_plm_view_user,plm.group_plm_readonly_released"
 
@@ -11,18 +12,21 @@
             id="plm_component_menu_view"
             name="Components"
             parent="plm.plm_menu"
+            action=""
             sequence="10"/>
 
     <menuitem
             id="ir_attachment_form"
             name="Documents"
             parent="plm.plm_menu"
+            action=""
             sequence="11"/>
 
     <menuitem
             id="plm_menu_relation"
             name="Component Relations"
             parent="plm.plm_menu"
+            action=""
             sequence="12"/>
 
     <menuitem
@@ -30,6 +34,7 @@
             name="Configuration"
             parent="plm.plm_menu"
             sequence="50"
+            action=""
             groups="plm.group_plm_integration_user"/>
 
 
@@ -121,7 +126,7 @@
             name="DbThread"
             parent="plm.plm_menu_dictionaries"
             groups="plm.group_plm_admin"
-            action="plm_action_plm_dbthread"/>
+            action="plm.plm_action_plm_dbthread"/>
             
     <menuitem
             id="plm_settings"
@@ -129,22 +134,22 @@
             parent="plm.plm_menu_dictionaries"
             sequence="50"
             groups="plm.group_plm_admin"
-            action="plm_action_settings_form"/>
+            action="plm.plm_action_settings_form"/>
 
 
 
-    <!-- Parent menu "Configuration" -->
+    <!-- Parent menu "Components" -->
     <menuitem
             id="menu_base_component"
             name="Search on Engineering Parts"
             parent="plm.plm_component_menu_view"
-            action="action_plm_component_base"/>
+            action="plm.action_plm_component_base"/>
 
     <!-- Parent menu "Component Relations" -->
     <menuitem
             name="Search on Normal Bill of Materials"
             id="menu_relation_normal"
             parent="plm.plm_menu_relation"
-            action="plm_action_normal_form"
+            action="plm.plm_action_normal_form"
     />
 </odoo>

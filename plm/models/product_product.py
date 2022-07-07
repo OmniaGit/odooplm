@@ -963,7 +963,7 @@ class PlmComponent(models.Model):
     @api.model
     def checkSetupDueToVariants(self, vals):
         tmplt_id = vals.get('product_tmpl_id')
-        attribute_value_ids = vals.get('attribute_value_ids')
+        attribute_value_ids = vals.get('product_template_attribute_value_ids')
         if tmplt_id and attribute_value_ids:
             outVals = {}
             tmplBrws = self.env['product.template'].browse(tmplt_id)
