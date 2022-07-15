@@ -452,7 +452,7 @@ class Plm_box(models.Model):
     def getBoxesStructureFromServer(self, box_ids, primary_box_ids=[], download_all=False):
         outDict = {}
         available_box_ids = self.getAvaiableBoxIds()
-        if not box_ids:
+        if not box_ids and not download_all:
             return outDict
         all_boxes = {}
         for box_obj in self.browse(box_ids):
