@@ -1071,8 +1071,9 @@ class PlmComponent(models.Model):
                 product.with_context(ctx).on_change_tmpmater()
                 product.with_context(ctx).on_change_tmpsurface()
                 product.with_context(ctx).on_change_tmptreatment()
-        if self._origin.id: 
-            self.checkFromOdooPlm()
+        for product_id in self:
+            if product_id._origin.id: 
+                product_id.checkFromOdooPlm()
         return res
 
     def read(self, fields=[], load='_classic_read'):

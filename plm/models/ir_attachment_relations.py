@@ -42,7 +42,7 @@ class PlmDocumentRelations(models.Model):
                                     string=_("Parent Linked Components"),
                                     store=False)
     parent_type = fields.Selection(related="parent_id.document_type",
-                                    string=_("Document Type"),
+                                    string=_("Parent Document Type"),
                                     store=False)
     child_preview = fields.Binary(related="child_id.preview",
                                   string=_("Child Preview"),
@@ -57,7 +57,7 @@ class PlmDocumentRelations(models.Model):
                                     string=_("Child Linked Components"),
                                     store=False)
     child_type = fields.Selection(related="child_id.document_type",
-                                    string=_("Document Type"),
+                                    string=_("Child Document Type"),
                                     store=False)
     parent_id = fields.Many2one('ir.attachment',
                                 _('Related parent document'),

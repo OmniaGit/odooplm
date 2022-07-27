@@ -73,6 +73,6 @@ class ProductExtension(models.Model):
             self.env['mail.activity'].search([
                 ('activity_type_id', '=', self.env.ref('plm_project.mail_activity_product_confirmed').id),
                 ('res_id', '=', product.id),
-                ('res_model_id', '=', self.env['ir.model'].search([('model', '=', self._name)]).id),
+                ('res_model_id', '=', self.env['ir.model'].sudo().search([('model', '=', self._name)]).id),
                 ]).action_done()
         return super(ProductExtension, self).action_release()

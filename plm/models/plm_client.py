@@ -35,7 +35,8 @@ from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
 class PlmClient(models.TransientModel):
     _name = "plm.client"
-    
+    _description = "PLM Client Support object"
+
     @api.model
     def getFileStructure(self, ir_attachemnt_id, hostname, pws_path):
         """

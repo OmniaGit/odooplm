@@ -21,7 +21,7 @@
 ##############################################################################
 {
     "name": "Product Lifecycle Management Batch conversion",
-    "version": "15.0.4",
+    "version": "15.0.5",
     "author": "OmniaSolutions",
     "website": "https://github.com/OmniaGit/odooplm",
     "category": "Product Lifecycle Management",
@@ -31,7 +31,8 @@
     "depends": ["plm"],
     'external_dependencies': {'python': ['ezdxf',
                                          'matplotlib',
-                                         'cadquery2']},
+                                         'cadquery2',
+                                         'numpy-stl']},
     "data": [  
         #
         # security

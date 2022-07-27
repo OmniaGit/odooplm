@@ -1,0 +1,4 @@
+ezdxf
+matplotlib
+cadquery2
+numpy-stl
