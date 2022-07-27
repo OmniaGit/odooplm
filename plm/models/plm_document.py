@@ -2183,6 +2183,21 @@ class PlmDocument(models.Model):
                 return True
         return False
 
+    @api.multi
+    def checkUnlinkCadOpen(self, operation_type, hostname):
+        cad_open = self.sudo().env['plm.cad.open']
+        for document in self:
+            cad_opens = cad_open.search([
+                ('document_id', '=', document.id),
+                ('operation_type', '=', operation_type),
+                ('hostname', '=', hostname)
+                ],
+                limit=1,
+                order='id desc'
+            )
+            cad_opens.unlink()
+        return True
+
     @api.model
     def GetDocumentInfosFromFileName(self, fileName):
         """
