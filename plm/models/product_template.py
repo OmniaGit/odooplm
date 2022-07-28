@@ -129,7 +129,6 @@ class ProductTemplateExtension(models.Model):
         related_product_brws_list = self.env['product.product'].search([('product_tmpl_id', '=', self.id)])
         for related_product_brws in related_product_brws_list:
             product_id = related_product_brws.id
-        mod_obj = self.env['ir.model.data']
         form_id = self.env.ref("plm.plm_component_base_form")
         if product_id and form_id:
             return {
