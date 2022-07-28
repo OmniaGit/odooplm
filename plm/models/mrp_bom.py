@@ -840,7 +840,8 @@ class MrpBomExtension(models.Model):
     @api.model
     def _bom_find_domain(self, products, picking_type=None, company_id=False, bom_type=False):
         domain = super(MrpBomExtension, self)._bom_find_domain(products, picking_type, company_id, bom_type)
-        available_types = ['normal', 'phantom']
-        domain = AND([domain, [('type', 'in', available_types)]])
+        if not bom_type:
+            available_types = ['engineering', 'spare']
+            domain = AND([domain, [('type', 'not in', available_types)]])
         return domain
     
