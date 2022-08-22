@@ -152,12 +152,13 @@ class MrpBomExtension(models.Model):
         if len(tmp_ids) < 1:
             return prt_datas
         comp_type = self.env['product.product']
-        tmp_datas = comp_type.browse(tmp_ids).read([])
-        for tmp_data in tmp_datas:
-            for key_data in tmp_data.keys():
-                if tmp_data[key_data] is None:
-                    del tmp_data[key_data]
-            prt_datas[str(tmp_data['id'])] = tmp_data
+        for tmp_id in tmp_ids:
+            tmp_datas = comp_type.browse(tmp_id).read([])
+            for tmp_data in tmp_datas:
+                for key_data in tmp_data.keys():
+                    if tmp_data[key_data] is None:
+                        del tmp_data[key_data]
+                prt_datas[str(tmp_data['id'])] = tmp_data
         return prt_datas
 
     @api.model
