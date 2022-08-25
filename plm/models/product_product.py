@@ -873,16 +873,14 @@ class PlmComponent(models.Model):
         self.moveDocumentWorkflow(self.env['ir.attachment'].browse(documents), doc_action)
         components.workflow_user = self.env.uid
         components.workflow_date = datetime.now()
-        product_template_ids = []
         for comp in components:
-            product_template_ids.append(comp.product_tmpl_id.id)
-        res = self.env['product.template'].browse(product_template_ids).write(defaults)
-        components.write(defaults)
-        if res:
-            available_status = self._fields.get('state')._description_selection(self.env)
-            dict_status = dict(available_status)
-            status_lable = dict_status.get(defaults.get('state', ''), '')
-            components.wf_message_post(body=_('Status moved to: %s by %s.' % (status_lable, self.env.user.name)))
+            res = self.env['product.template'].browse(comp.product_tmpl_id.id).write(defaults)
+            comp.write(defaults)
+            if res:
+                available_status = self._fields.get('state')._description_selection(self.env)
+                dict_status = dict(available_status)
+                status_lable = dict_status.get(defaults.get('state', ''), '')
+                comp.wf_message_post(body=_('Status moved to: %s by %s.' % (status_lable, self.env.user.name)))
         return components, documents
 
     def plm_sanitize(self, vals):
@@ -1065,15 +1063,14 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         default['release_date'] = False
         objId = super(PlmComponent, self).copy(default)
         if objId:
-            vals = self.fieldsToKeep()
-            vals.update(default)
-            objId.write(vals)
             objId.is_engcode_editable = True
             self.sudo().wf_message_post(body=_('Copied starting from : %s.' % previous_name))
         return objId
 
     def fieldsToKeep(self, to_write=[]):
         for vals in self.read(to_write):
+            if 'product_tmpl_id' in vals:
+                del vals['product_tmpl_id']
             return vals
         return {}
         
@@ -1249,6 +1246,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                 defaults['engineering_writable'] = True
                 defaults['state'] = 'draft'
                 defaults['linkeddocuments'] = []                  # Clean attached documents for new revision object
+                defaults['default_code'] = False
                 ctx['new_revision'] = True
                 new_tmpl_id = product_product_id.product_tmpl_id.with_context(ctx).copy(defaults)
                 newCompBrws = new_tmpl_id.product_variant_id
