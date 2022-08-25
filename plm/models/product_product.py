@@ -1100,9 +1100,6 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         default['release_date'] = False
         objId = super(PlmComponent, self).copy(default)
         if objId:
-            vals = self.fieldsToKeep()
-            vals.update(default)
-            objId.write(vals)
             objId.is_engcode_editable = True
             self.sudo().wf_message_post(body=_('Copied starting from : %s.' % previous_name))
         return objId
