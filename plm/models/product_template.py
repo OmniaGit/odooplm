@@ -206,6 +206,7 @@ class ProductTemplateExtension(models.Model):
         default['engineering_writable'] = True
         default['linkeddocuments'] = []
         default['release_date'] = False
+        default['default_code'] = False
         objId = super(ProductTemplateExtension, self).copy(default)
         if objId:
             objId.is_engcode_editable = True

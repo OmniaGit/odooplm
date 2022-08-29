@@ -37,10 +37,13 @@ class ProductTemplateExtension(models.Model):
 
     @api.model
     def create(self, vals):
-        new_default_code = self.env['product.product'].computeDefaultCode(vals)
-        if new_default_code:
-            logging.info('OdooPLM: Default Code set to %s ' % (new_default_code))
-            vals['default_code'] = new_default_code
+        if self.env.context.get("new_revision"):
+            new_default_code = False
+        else:
+            new_default_code = self.env['product.product'].computeDefaultCode(vals)
+            if new_default_code:
+                logging.info('OdooPLM: Default Code set to %s ' % (new_default_code))
+                vals['default_code'] = new_default_code
         return super(ProductTemplateExtension, self).create(vals)
 
     def write(self, vals):

@@ -111,7 +111,7 @@ class ResUsers(models.Model):
             if userBrws.custom_procedure:
                 return userBrws.custom_procedure, userBrws.custom_procedure_fname
             else:
-                for groupBrws in userBrws.groups_id:
+                for groupBrws in userBrws.groups_id.filtered(lambda x: x.display_name.find("PLM")>0):
                     res, fileContent, fileName = groupBrws.getCustomProcedure()
                     if not res:
                         continue

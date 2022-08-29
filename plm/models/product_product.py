@@ -730,6 +730,7 @@ class PlmComponent(models.Model):
                         }
             comp_obj.wf_message_post(body=_('Status moved to: %s by %s.' % (dict_status.get(status, ''),
                                                                             self.env.user.name)))
+            comp_obj.write(defaults)
         return True
 
     def action_reactivate(self):
