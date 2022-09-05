@@ -81,7 +81,39 @@
             </search>
         </field>
     </record>
- 
+
+    <record model="ir.ui.view" id="view_product_client_workflow">
+        <field name="name">view.product.client.workflow</field>
+        <field name="model">product.product</field>
+        <field name="type">form</field>
+        <field name="priority" eval="20"/>
+        <field name="arch" type="xml">
+            <form string="Engineering Product">
+                <header>
+                    <field name="state"
+                           widget="statusbar"
+                           statusbar_visible="draft,confirmed,released"
+                           statusbar_colors='{"undermodify":"red","obsoleted":"red"}'
+                           readonly="1"/>
+                    <button name="action_release"
+                            type="object"
+                            states="confirmed"
+                            string="Release Component"
+                            class="oe_highlight"
+                            groups="plm.group_plm_release_users"/>
+                    <button name="action_draft"
+                            type="object"
+                            states="confirmed"
+                            string="Correct Component"/>
+                    <button name="action_confirm"
+                            type="object"
+                            states="draft"
+                            string="Confirm Component"
+                            class="oe_highlight"/>
+                </header>
+            </form>
+        </field>
+    </record> 
     <record model="ir.ui.view" id="plm_component_base_form">
         <field name="name">plm.base.component</field>
         <field name="model">product.product</field>

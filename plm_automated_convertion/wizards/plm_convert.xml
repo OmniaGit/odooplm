@@ -9,7 +9,7 @@
         	<field name="arch" type="xml">
 	        	<form string="Convert Form">
 	        		<group colspan="4" col="4">
-		        		<field string = "Document Of Origin" name="document_id" />
+		        		<field string = "Document Of Origin" name="document_id" readonly="1"/>
 		        		<field name="extention" groups="base.group_no_one"/>
 						<field string = "Convertion Format" name="targetFormat" domain="[('start_format', '=', extention), ('available', '=', True)]"/> 		        		
 	            	</group>

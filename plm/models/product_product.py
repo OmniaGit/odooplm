@@ -864,13 +864,13 @@ class PlmComponent(models.Model):
                 product_tmpl_ids.append(currentProductId.product_tmpl_id.id)
             self.browse(children_product_to_emit).perform_action('release')
             self.browse(children_product_to_emit).write(defaults)
-            objId = self.env['product.template'].browse(product_tmpl_ids).write(defaults)
-            comp_obj.write(defaults)
-            if (objId):
+            objIds = self.env['product.template'].browse(product_tmpl_ids)
+            for objId in objIds:
+                objId.write(defaults)
                 status_lable = dict_status.get(defaults.get('state', ''), '')
                 self.browse(product_ids).wf_message_post(body=_('Status moved to: %s by %s.' % (status_lable, self.env.user.name)))
-            return objId
-        return False
+            comp_obj.write(defaults)
+        return True
 
     def action_obsolete(self):
         """
@@ -885,7 +885,13 @@ class PlmComponent(models.Model):
             defaults['state'] = status
             exclude_statuses = ['draft', 'confirmed', 'undermodify', 'obsoleted']
             include_statuses = ['released']
-            comp_obj.commonWFAction(status, action, doc_action, defaults, exclude_statuses, include_statuses)
+            comp_obj.commonWFAction(status,
+                                    action,
+                                    doc_action,
+                                    defaults,
+                                    exclude_statuses,
+                                    include_statuses,
+                                    recursive=False)
         return True
 
     def action_reactivate(self):
@@ -934,13 +940,14 @@ class PlmComponent(models.Model):
             product_ids.perform_action(action)
             product_ids.workflow_user = self.env.uid
             product_ids.workflow_date = datetime.now()
-        objId = self.env['product.template'].browse(product_template_ids).write(defaults)
-        if objId:
+        objIds = self.env['product.template'].browse(product_template_ids)
+        for objId in objIds:
+            objId.write(defaults)
             available_status = self._fields.get('state')._description_selection(self.env)
             dict_status = dict(available_status)
             status_lable = dict_status.get(defaults.get('state', ''), '')
             self.browse(allIDs).wf_message_post(body=_('Status moved to: %s by %s.' % (status_lable, self.env.user.name)))
-        return objId
+        return objIds
 
 #  ######################################################################################################################################33
     def plm_sanitize(self, vals):

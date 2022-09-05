@@ -944,9 +944,8 @@ class PlmDocument(models.Model):
             docBrwsList = self.search([('engineering_document_name', '=', checkObj.engineering_document_name), ('revisionid', '=', checkObj.revisionid - 1)], limit=1)
             for oldObject in docBrwsList:
                 oldObject.wf_message_post(body=_('Removed : Latest Revision.'))
-                ctx['check'] = False
                 values = {'state': 'released'}
-                if not oldObject.with_context(ctx).write(values):
+                if not oldObject.with_context(check=False).write(values):
                     msg = 'Unlink : Unable to update state in old document Engineering Name = %r   Engineering Revision = %r   Id = %r' % (oldObject.engineering_document_name, oldObject.revisionid, oldObject.id)
                     logging.warning(msg)
                     raise UserError(_('Cannot restore previous document Engineering Name = %r   Engineering Revision = %r   Id = %r' % (oldObject.engineering_document_name, oldObject.revisionid, oldObject.id)))
@@ -962,6 +961,7 @@ class PlmDocument(models.Model):
         for checkObj in self:
             checkObj.unlinkCheckDocumentRelations()
             checkObj.linkedcomponents.unlinkCheckBomRelations()
+            checkObj.linkedcomponents = False
             checkObj.unlinkRestorePreviousDocument()
             checkObj.unlinkBackUp()
         return super(PlmDocument, self).unlink()

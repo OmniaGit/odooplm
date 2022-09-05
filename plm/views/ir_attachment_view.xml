@@ -1,5 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+     <record model="ir.ui.view" id="view_attachment_client_workflow">
+        <field name="name">view.attachment.client.workflow</field>
+        <field name="model">ir.attachment</field>
+        <field name="inherit_id"></field>
+        <field name="type">form</field>
+        <field name="priority" eval="20"/>
+        <field name="arch" type="xml">
+            <form string="Attachments">
+                <header>
+                    <field name="is_checkout" invisible="1"></field>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,released" statusbar_colors='{"undermodify":"red","obsoleted":"red"}' readonly="1"/>
+                    <button name="action_release"
+                            states="confirmed"
+                            string="Release Document"
+                            class="oe_highlight"
+                            type="object"
+                            groups="plm.group_plm_release_users"
+                            attrs="{'invisible': [('is_checkout','=',True)]}"/>
+                    <button name="action_draft"
+                            states="confirmed"
+                            type="object"
+                            string="Correct Document"/>
+                    <button name="action_confirm"
+                            states="draft"
+                            type="object"
+                            string="Confirm Document"
+                            class="oe_highlight"
+                            attrs="{'invisible': [('is_checkout','=',True)]}"/>
+                </header>
+              </form>
+        </field>
+       </record>
+                
+                
      <record model="ir.ui.view" id="view_attachment_form_plm_hinerit">
         <field name="name">ir.attachment</field>
         <field name="model">ir.attachment</field>
@@ -15,7 +49,7 @@
                             class="oe_highlight"
                             type="object"
                             groups="plm.group_plm_release_users"
-                            attrs="{'invisible': ['|',('is_checkout','=',True)]}"/>
+                            attrs="{'invisible': [('is_checkout','=',True)]}"/>
                     <button name="action_draft"
                             states="confirmed"
                             type="object"
@@ -25,7 +59,7 @@
                             type="object"
                             string="Confirm Document"
                             class="oe_highlight"
-                            attrs="{'invisible': ['|',('is_checkout','=',True)]}"/>
+                            attrs="{'invisible': [('is_checkout','=',True)]}"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,released" statusbar_colors='{"undermodify":"red","obsoleted":"red"}' readonly="1"/>
                 </header>
                	<sheet>
