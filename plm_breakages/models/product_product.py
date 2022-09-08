@@ -44,6 +44,6 @@ class ProductProduct(models.Model):
     
     def _compute_breakages_count(self):
         for product in self:
-            product.breakages_count = self.env['plm.breakages'].search_count([('product_id', '=', self.id)])
+            product.breakages_count = self.env['plm.breakages'].search_count([('product_id', '=', product.id)])
 
             
