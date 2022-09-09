@@ -158,7 +158,8 @@ class mrp_bom_extension_data(models.Model):
                             break
                     bom_id.obsolete_presents_recursive = obsoleteRecursive
                     bom_id._obsolete_compute()
-                    
+                    if not bom_id.product_tmpl_id.product_variant_ids:
+                        logging.warning("Product template %s without variant" % bom_id.product_tmpl_id)
                     for productBrws in bom_id.product_tmpl_id.product_variant_ids:
                         if (not beforeObsolete and bom_id.obsolete_presents) or (not beforeObsoleteRecursive and bom_id.obsolete_presents_recursive):
                             # I added obsoleted at first level or added a line containing recursive obsoleted --> Need to update where used
