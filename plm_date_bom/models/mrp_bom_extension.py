@@ -159,14 +159,14 @@ class mrp_bom_extension_data(models.Model):
                     bom_id.obsolete_presents_recursive = obsoleteRecursive
                     bom_id._obsolete_compute()
                     
-                    productBrws = bom_id.product_tmpl_id.product_variant_ids[0]
-                        
-                    if (not beforeObsolete and bom_id.obsolete_presents) or (not beforeObsoleteRecursive and bom_id.obsolete_presents_recursive):
-                        # I added obsoleted at first level or added a line containing recursive obsoleted --> Need to update where used
-                        self.updateWhereUsed(productBrws, True)
-                    elif (beforeObsolete and not bom_id.obsolete_presents) or (beforeObsoleteRecursive and  not bom_id.obsolete_presents_recursive):
-                        # I removed all obsoleted at first or other sublevels --> Need to update where used
-                        bom_id.updateWhereUsed(productBrws, False)
+                    for productBrws in bom_id.product_tmpl_id.product_variant_ids:
+                        if (not beforeObsolete and bom_id.obsolete_presents) or (not beforeObsoleteRecursive and bom_id.obsolete_presents_recursive):
+                            # I added obsoleted at first level or added a line containing recursive obsoleted --> Need to update where used
+                            self.updateWhereUsed(productBrws, True)
+                        elif (beforeObsolete and not bom_id.obsolete_presents) or (beforeObsoleteRecursive and  not bom_id.obsolete_presents_recursive):
+                            # I removed all obsoleted at first or other sublevels --> Need to update where used
+                            bom_id.updateWhereUsed(productBrws, False)
+                        break
         return res
 
     def updateWhereUsed(self, prodBrws, defaultUpdate=False):
