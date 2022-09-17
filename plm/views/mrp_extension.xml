@@ -94,6 +94,7 @@
                 <field name="state" readonly="True"/>
                 <field name="description" readonly="True"/>
                 <field name="source_id" string="Source Relation Document"/>
+                 <field name="weight_net" readonly="True"/>
             </xpath>
 
             <xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_qty']" position="after">
