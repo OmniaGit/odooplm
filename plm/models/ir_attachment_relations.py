@@ -78,7 +78,10 @@ class PlmDocumentRelations(models.Model):
     def name_get(self):
         result = []
         for r in self:
-            name = "%s .. %s.." % (r.parent_id.name[:8], r.child_id.name[:8])
+            if r.parent_id.name or r.child_id:
+                name = "%s .. %s.." % (r.parent_id.name[:8], r.child_id.name[:8])
+            else:
+                name = "UNK"
             result.append((r.id, name))
         return result
 
