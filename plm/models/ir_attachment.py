@@ -865,6 +865,8 @@ class PlmDocument(models.Model):
     @api.multi
     def read(self, fields=[], load='_classic_read'):
         try:
+            if not fields:
+                fields=[]
             customFields = [field.replace('plm_m2o_', '') for field in fields if field.startswith('plm_m2o_')]
             fields.extend(customFields)
             fields = list(set(fields))
