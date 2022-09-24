@@ -20,6 +20,17 @@
             <field name="binding_type">report</field>
             <field name="print_report_name">'%s_%s' % (object.engineering_code or object.display_name, object.engineering_revision)</field>
         </record>
+        
+        <record id="report_one_product_product_pdf_latest" model="ir.actions.report">
+            <field name="name">PDF Drawings latest revsion</field>
+            <field name="model">product.product</field>
+            <field name="binding_model_id" ref="model_product_product"/>
+            <field name="report_type">qweb-html</field>
+            <field name="report_name">plm.one_product_pdf_latest</field>
+            <field name="binding_type">report</field>
+            <field name="print_report_name">'%s_%s' % (object.engineering_code or object.display_name, object.engineering_revision)</field>
+        </record>
+        
 
         <record id="report_product_product_pdf" model="ir.actions.report">
             <field name="name">PDF Drawings</field>

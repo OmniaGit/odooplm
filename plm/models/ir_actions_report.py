@@ -38,7 +38,7 @@ class IrActionsReport(models.Model):
 
     def _render_qweb_pdf(self, res_ids=None, data=None):
         self_sudo = self.sudo()
-        if self_sudo.report_name in ['plm.product_pdf', 'plm.one_product_pdf', 'plm.all_product_pdf', 'plm.product_production_pdf_latest', 'plm.product_production_one_pdf_latest', 'plm.product_production_all_pdf_latest', 'plm.ir_attachment_pdf']:
+        if self_sudo.report_name in ['plm.product_pdf', 'plm.one_product_pdf','plm.one_product_pdf_latest', 'plm.all_product_pdf', 'plm.product_production_pdf_latest', 'plm.product_production_one_pdf_latest', 'plm.product_production_all_pdf_latest', 'plm.ir_attachment_pdf']:
             report_name = 'report.' + self_sudo.report_name
             report_obj = self.env[report_name]
             prod_ids = self.env[self_sudo.model].browse(res_ids)
