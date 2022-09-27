@@ -49,7 +49,10 @@ class MrpWorkorder(models.Model):
     def create(self, vals):
         ret = super(MrpWorkorder, self).create(vals)
         if ret.operation_id.use_plm_pdf:
-            ret.plm_pdf = base64.b64encode(self.getPDF(ret))
+            try:
+                ret.plm_pdf = base64.b64encode(self.getPDF(ret))
+            except Exception as ex:
+                logging.error(ex)
         return ret
 
     def getPDF(self, workorder_id):
