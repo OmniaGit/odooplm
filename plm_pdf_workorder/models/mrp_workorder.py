@@ -54,4 +54,5 @@ class MrpWorkorder(models.Model):
 
     def getPDF(self, workorder_id):
         report_model = self.env['report.plm.product_production_one_pdf_latest']
-        return report_model._render_qweb_pdf(workorder_id.product_id, checkState=True)
+        content, _format = report_model._render_qweb_pdf(workorder_id.product_id, checkState=True)
+        return content

@@ -252,12 +252,11 @@ class ReportProductPdf(models.AbstractModel):
             documentContent = packDocuments(docRepository,
                                             documents,
                                             mainBookCollector)
-            content = documentContent[0]
-        return content
+        return documentContent
     
     def render_qweb_pdf(self, products=None, level=0, checkState=False, latest=False):
         content = self._render_qweb_pdf(products, level, checkState, latest)
-        byteString = b"data:application/pdf;base64," + base64.b64encode(content)
+        byteString = b"data:application/pdf;base64," + base64.b64encode(content[0])
         return byteString.decode('UTF-8')
 
     @api.model
