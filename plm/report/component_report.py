@@ -247,7 +247,7 @@ class ReportProductPdf(models.AbstractModel):
                     childProduct = self.env['product.product'].browse(childProduct)
                     documents.extend(self.getDocument(childProduct, checkState, latest))
         if len(documents) == 0:
-            content = getEmptyDocument()
+            documentContent = getEmptyDocument()
         else:
             documentContent = packDocuments(docRepository,
                                             documents,
