@@ -20,7 +20,7 @@
 ##############################################################################
 {
     "name": "PLM Product Description Language Helper",
-    "version": "15.0.3",
+    "version": "16.0.1",
     "author": "OmniaSolutions",
     "website": "https://github.com/OmniaGit/odooplm",
     "category": "Product Lifecycle Management",

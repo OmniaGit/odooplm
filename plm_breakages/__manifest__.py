@@ -24,7 +24,7 @@
 
 {
     "name": "PLM Breakages",
-    "version": "15.0.4",
+    "version": "16.0.1",
     "author": "OmniaSolutions",
     "website": "https://www.omniasolutions.website",
     "category": "Custom",

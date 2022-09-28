@@ -20,7 +20,7 @@
 ##############################################################################
 {
     "name": "Product Lifecycle Management",
-    "version": "15.0.5",
+    "version": "16.0.1",
     "author": "OmniaSolutions",
     "website": "https://github.com/OmniaGit/odooplm",
     "category": "Manufacturing/Product Lifecycle Management",
