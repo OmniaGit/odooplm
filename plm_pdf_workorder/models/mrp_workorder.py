@@ -23,15 +23,16 @@ Created on Mar 30, 2016
 
 @author: Daniel Smerghetto
 """
+import logging
+import base64
+#
 from odoo import models
 from odoo import fields
 from odoo import api
 from odoo import _
 from odoo.exceptions import UserError
-import logging
-import base64
-
-    
+#
+#
 class MrpWorkorder(models.Model):
     _inherit = 'mrp.workorder'
 
