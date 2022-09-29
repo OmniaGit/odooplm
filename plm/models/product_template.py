@@ -168,7 +168,7 @@ class ProductTemplateExtension(models.Model):
                 'context': {}}
 
     def plm_sanitize(self, vals):
-        fields_view_get = self.fields_get_keys()
+        fields_view_get = self._fields
         out = []
         if isinstance(vals, (list, tuple)):
             for k in vals:

@@ -215,7 +215,7 @@ class MrpBomLineExtension(models.Model):
         default='none')
 
     def plm_sanitize(self, vals):
-        all_keys = self.fields_get_keys()
+        all_keys = self._field
         if isinstance(vals, dict):
             valsKey = list(vals.keys())
             for k in valsKey:

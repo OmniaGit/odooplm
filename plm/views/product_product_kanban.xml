@@ -187,9 +187,10 @@
                             <t t-foreach="record.linkeddocuments.raw_value" t-as="documentId">
                                 <div>
                                 <!-- data-name="return_action_to_open"  -->
-                                    <a type="action" class="a_preview"
+                                    <a type="action"
+                                        class="a_preview"
                                         href="#"
-                                        data-context='{"xml_id":"plm_action_document_form", "id": documentId}'>
+                                        data-context='{"xml_id":"plm_action_document_form", "id": documentId}'> 
                                         <img class="image_component_kanban"
                                                 alt="No Image"
                                                 t-att-src="kanban_image('ir.attachment', 'preview', documentId)"/>

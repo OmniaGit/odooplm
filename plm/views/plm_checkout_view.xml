@@ -78,7 +78,8 @@
 	            <field name="name">plm.checkout</field>
 	            <field name="model">plm.checkout</field>
 	            <field name="inherit_id" ref="plm.view_plm_checkout_form" />
-	            <field name="groups_id" eval="[(6, 0, [ref('plm.group_plm_admin') ])]" />                
+	            <!-- <field name="groups_id" eval="[(6, 0, [ref('plm.group_plm_admin') ])]" /> -->
+	            <!-- Inherited view cannot have 'Groups' define on the record. Use 'groups' attributes inside the view definition -->
 	            <field name="arch" type="xml">                                   
 	                <field name="userid" position="attributes">
 	                   <attribute name="readonly">0</attribute>                   

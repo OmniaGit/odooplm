@@ -149,15 +149,16 @@
                 <sheet>
                     <group name="plm_fields_area" colspan="6" col="6">
 	                    <field name="name" string="Description" colspan="6"/>
-                        <field name="engineering_code" colspan="4" attrs="{'readonly':[('is_engcode_editable','=', False)]}" select="1"/>
+	                    <!-- attrs="{'readonly':[('is_engcode_editable','=', False)]}" -->
+                        <field name="engineering_code" colspan="4"  select="1"/>
                         <field name="engineering_revision" colspan="2" attrs="{'readonly':[('is_engcode_editable','=', False)]}"/>
                         <field name="std_description" colspan="6" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
-                        <field name="show_std_field1" groups='base.group_no_one'/>
-                        <field name="show_std_field2" groups='base.group_no_one'/>
-                        <field name="show_std_field3" groups='base.group_no_one'/>
-                        <field name="readonly_std_umc1" groups='base.group_no_one'/>
-                        <field name="readonly_std_umc2" groups='base.group_no_one'/>
-                        <field name="readonly_std_umc3" groups='base.group_no_one'/>
+                        <field name="show_std_field1" invisible="1"/>
+                        <field name="show_std_field2" invisible="1"/>
+                        <field name="show_std_field3" invisible="1"/>
+                        <field name="readonly_std_umc1" invisible="1"/>
+                        <field name="readonly_std_umc2" invisible="1"/>
+                        <field name="readonly_std_umc3" invisible="1"/>
                         <group name="std_desc_attrs" col="4" colspan="4" string="Standard Description Parameters" attrs="{'invisible': [('std_description','=', False)]}">
                             <field name="std_umc1"
                                    force_save="1"
@@ -269,7 +270,8 @@
                         attrs="{'invisible':[('revision_count','&lt;=','1')]}"
                         >
                         <field name="revision_count"
-                               string=" "
+                               string="Rev.s."
+                               modifiers="{&quot;readonly&quot;: true}"
                                widget="statinfo"/>
                 </button>
                 <button name="open_template"
@@ -293,14 +295,14 @@
                		<group>
                			<group colpsan="3" col="3">
 	                		<field name="std_description" colspan="4" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
-	                		<separator colspan="3" string="" groups='base.group_no_one'/>
-	               			<field name="show_std_field1" groups='base.group_no_one' colspan="1"/>
-	               			<field name="show_std_field2" groups='base.group_no_one' colspan="1"/>
-	               			<field name="show_std_field3" groups='base.group_no_one' colspan="1"/>
-	               			<field name="readonly_std_umc1" groups='base.group_no_one' colspan="1"/>
-	                		<field name="readonly_std_umc2" groups='base.group_no_one' colspan="1"/>
-	                		<field name="readonly_std_umc3" groups='base.group_no_one' colspan="1"/>
-	                		<separator colspan="3" string="" groups='base.group_no_one'/>
+	                		<separator colspan="3" string="" invisible="1"/>
+	               			<field name="show_std_field1" invisible="1" colspan="1"/>
+	               			<field name="show_std_field2" invisible="1" colspan="1"/>
+	               			<field name="show_std_field3" invisible="1" colspan="1"/>
+	               			<field name="readonly_std_umc1" invisible="1" colspan="1"/>
+	                		<field name="readonly_std_umc2" invisible="1" colspan="1"/>
+	                		<field name="readonly_std_umc3" invisible="1" colspan="1"/>
+	                		<separator colspan="3" string="" invisible="1"/>
 	                	</group>
 	                </group>
 	                
@@ -447,7 +449,12 @@
                             <t t-foreach="record.linkeddocuments.raw_value" t-as="documentId">
                                 <t t-debug="plm"/>
                                 <div>
-                                    <a type="object" role="button" class="a_preview " name="action_show_reference" href="#" t-attf-data-context='{"ir_attachment_id": {{documentId}}}'>
+                                    <a type="object"
+                                       role="button"
+                                       class="a_preview"
+                                       name="action_show_reference"
+                                       href="#"
+                                       t-attf-data-context='{"ir_attachment_id": {{documentId}}}'>
                                        <img class="image_component_kanban" alt="No Image" t-att-src="kanban_image('ir.attachment', 'preview', documentId)"/>
                                     </a>
                                 </div>

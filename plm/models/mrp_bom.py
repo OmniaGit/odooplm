@@ -823,7 +823,7 @@ class MrpBomExtension(models.Model):
             raise ex
 
     def plm_sanitize(self, vals):
-        all_keys = self.fields_get_keys()
+        all_keys = self._fields
         if isinstance(vals, dict):
             valsKey = list(vals.keys())
             for k in valsKey:

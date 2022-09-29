@@ -28,7 +28,7 @@
 	                    <separator/>
 	                </group>
   	               	<group colspan="4" col="4" string="Technical Features" name="tech_features">
-  	               				<field name="show_help" groups="base.group_no_one" invisible="True"></field>
+  	               				<field name="show_help" invisible="True"></field>
 		                    	<div style="display: inline-flex; 
 		                    				width: 100%;
 		                    				text-align=right;" attrs="{'invisible': [('show_help', '=', False)]}">

@@ -128,6 +128,7 @@
                 <button name="openRelatedBoms"
                         type="object"
                         icon="fa-level-down" 
+                        title="Open Related Boms"
                         class="btn btn-sm oe_stat_button"
                         attrs="{'invisible':[('hasChildBoms', '=', False)]}"/>
             	<field name="related_document_ids" invisible="True"/>

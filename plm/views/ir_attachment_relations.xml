@@ -150,7 +150,8 @@
             <field name="name">plm.docbom.form.view.readonly</field>
             <field name="model">ir.attachment.relation</field>
             <field name="inherit_id" ref="plm.plm_docbom_form_view" />
-            <field name="groups_id" eval="[(6, 0, [ref('plm.group_plm_admin')])]" />                
+            <!-- <field name="groups_id" eval="[(6, 0, [ref('plm.group_plm_admin')])]" /> -->
+            <!-- Inherited view cannot have 'Groups' define on the record. Use 'groups' attributes inside the view definition -->            
             <field name="arch" type="xml">                                   
                 <field name="parent_id" position="attributes">
                    <attribute name="readonly">0</attribute>                   

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-    
         <record id="view_plm_settings" model="ir.ui.view">
             <field name="name">plm settings</field>
             <field name="model">res.config.settings</field>
@@ -335,10 +334,7 @@
             <field name="type">ir.actions.server</field>
             <field name="state">code</field>
             <field name="model_id" ref="base.model_ir_attachment"/>
-<!--             <field name="binding_model_id" ref="base.model_ir_attachment"/> enable to have in action menu-->
-            <field name="code">
-records._compute_document_type()
-            </field>
+            <field name="code">records._compute_document_type()</field>
         </record>
 
     </data>

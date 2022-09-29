@@ -3,14 +3,16 @@
      <record model="ir.ui.view" id="view_attachment_client_workflow">
         <field name="name">view.attachment.client.workflow</field>
         <field name="model">ir.attachment</field>
-        <field name="inherit_id"></field>
         <field name="type">form</field>
         <field name="priority" eval="20"/>
         <field name="arch" type="xml">
             <form string="Attachments">
                 <header>
                     <field name="is_checkout" invisible="1"></field>
-                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,released" statusbar_colors='{"undermodify":"red","obsoleted":"red"}' readonly="1"/>
+                    <field name="state" widget="statusbar"
+                            statusbar_visible="draft,confirmed,released"
+                            statusbar_colors='{"undermodify":"red","obsoleted":"red"}' 
+                            readonly="1"/>
                     <button name="action_release"
                             states="confirmed"
                             string="Release Document"
@@ -37,7 +39,6 @@
      <record model="ir.ui.view" id="view_attachment_form_plm_hinerit">
         <field name="name">ir.attachment</field>
         <field name="model">ir.attachment</field>
-        <field name="inherit_id"></field>
         <field name="type">form</field>
         <field name="priority" eval="20"/>
         <field name="arch" type="xml">
@@ -109,10 +110,13 @@
 	                    	<field string="Eng. Document Name" name="engineering_document_name" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
 	                    	<label for="revisionid" class="oe_edit_only"/>
 	                    	<field string="Enineering revision" name="revisionid" readonly="True"/>
-	                    	<field string="Is a Plm Document" name="is_plm" groups="base.group_no_one" widget="boolean_toggle"/>
+	                    	<field string="Is a Plm Document" name="is_plm" visible="0" widget="boolean_toggle"/>
 	                	</group>
 	                 	<group name="doc_preview">
-	                    	<field name="preview" widget="image" nolabel="1" attrs="{'readonly':[('is_plm','=', True)]}"/>
+	                    	<field name="preview"
+	                    	      widget="image"
+	                    	      nolabel="1"
+	                    	      attrs="{'readonly':[('is_plm','=', True)]}"/>
 	                	</group>
 	               	</group>
                     <notebook>
@@ -123,7 +127,7 @@
                                     <field name="name" select="1" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
                                     <field name="document_type" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
                                     <field name="type" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
-                                    <field name="printout" groups="base.group_no_one"/>
+                                    <field name="printout" invisible="1"/>
                                 </group>
                                 <group string="Website:" name="group_url" colspan="4" attrs="{'invisible':[('type','=','binary')],'readonly':[('state','in',['released','obsoleted'])]}">
                                     <field name="url" widget="url"/>
@@ -326,7 +330,9 @@
                         		</tr>
                             	<tr>
                             		<td>
-                            			<field name="preview" nolabel="1" widget="image" class="oe_right oe_avatar" height="100" width="100"/>
+                            			<field name="preview" nolabel="1" 
+                            			       widget="image"
+                            			       class="oe_right oe_avatar"/>
                             		</td>
                                 	<td style="padding-left:10px; vertical-align: middle;" colspan="2">
                                 		<table style="width:100%">
