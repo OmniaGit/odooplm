@@ -94,10 +94,13 @@ class PlmDocument(models.Model):
                 return True
         return False
 
-    
+        
     def _getlastrev(self, resIds):
+        return self.browse(resIds)._get_last_rev_no_browser()
+    
+    def _get_last_rev_no_browser(self):
         result = []
-        for objDoc in self.browse(resIds):
+        for objDoc in self:
             doc_ids = self.search([('engineering_document_name', '=', objDoc.engineering_document_name)], order='revisionid DESC')
             for doc in doc_ids:
                 result.append(doc.id)
@@ -106,6 +109,15 @@ class PlmDocument(models.Model):
                 logging.warning('[_getlastrev] No documents are found for object with engineering_document_name: "%s"' % (objDoc.engineering_document_name))
         return list(set(result))
 
+    
+    def browseLastRev(self):
+        self.ensure_one()
+        out = self.search([('engineering_document_name', '=', objDoc.engineering_document_name)],
+                          order='revisionid DESC',
+                          limit=1)
+        for obj in out:
+            return obj
+        return out
     
     def GetLastNamesFromID(self):
         """
@@ -377,21 +389,37 @@ class PlmDocument(models.Model):
                 continue
             computed.append(active_attachment_id)
             #
+            is_collectable = False
             isCheckedOutToMe, checkOutUser = ir_attachment_id.checkoutByMeWithUser()
-            isNewer = ir_attachment_id.checkNewer()
+            if not isCheckedOutToMe:
+                is_collectable = ir_attachment_id.isCollectable(hostname,
+                                                                pws_path)
             #   
             out.append({'id': active_attachment_id,
-                        'collectable': isNewer and not isCheckedOutToMe,
+                        'collectable': is_collectable,
                         'isCheckedOutToMe': isCheckedOutToMe,
                         'writable': isCheckedOutToMe,
                         'file_name': ir_attachment_id.name,
                         'write_date': ir_attachment_id.write_date,
                         'check_out_user': checkOutUser,
                         'state': ir_attachment_id.state,
-                        'zip_ids': self.getRelatedPkgTree(active_attachment_id)
+                        'zip_ids': self.getRelatedPkgTree(active_attachment_id),
+                        'is_last_version': ir_attachment_id.isLatestRevision(),
                         })
         return out                     
-                               
+    
+    def isCollectable(self, hostname, pws_path):
+        self.ensure_one()
+        out = True
+        if self.isCheckedOutByMe(): out=False
+        plm_cad_open = self.sudo().env['plm.cad.open'].getLastCadOpenByUser(self, self.env.user)
+        if plm_cad_open:
+            if plm_cad_open.hostname==hostname and plm_cad_open.pws_path==pws_path:
+                last_revision_id = self.browseLastRev()
+                if last_revision_id != last_revision_id:
+                    if last_revision_id.isCheckedOutByMe():
+                        out=False
+        return out
             
     def _data_check_files(self, targetIds, listedFiles=(), forceFlag=False, retDict=False, hostname='', hostpws=''):
         result = []
