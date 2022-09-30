@@ -638,8 +638,7 @@ class PlmComponent(models.Model):
         self.wf_message_post(body=_('Created Normal Bom.'))
         return False
 
-    def checkWorkflow(self, docInError, linkeddocuments, check_state):
-        docIDs = []
+    def checkWorkflow(self, docInError, linkeddocuments, check_state, docIDs=[]):
         attachment = self.env['ir.attachment']
         for documentBrws in linkeddocuments:
             if documentBrws.state == check_state:
@@ -649,9 +648,11 @@ class PlmComponent(models.Model):
                 docIDs.append(documentBrws.id)
                 if documentBrws.is3D():
                     doc_layout_ids = documentBrws.getRelatedLyTree(documentBrws.id)
-                    docIDs.extend(self.checkWorkflow(docInError, attachment.browse(doc_layout_ids), check_state))
-                    raw_doc_ids = documentBrws.getRelatedRfTree(documentBrws.id, recursion=True)
-                    docIDs.extend(self.checkWorkflow(docInError, attachment.browse(raw_doc_ids), check_state))
+                    for child_doc_id in doc_layout_ids:
+                        if child_doc_id not in docIDs:
+                            docIDs.extend(self.checkWorkflow(docInError, attachment.browse(child_doc_id), check_state), docIDs)
+                            raw_doc_ids = documentBrws.getRelatedRfTree(documentBrws.id, recursion=True)
+                            docIDs.extend(self.checkWorkflow(docInError, attachment.browse(raw_doc_ids), check_state), docIDs)
         return list(set(docIDs))
 
     def _action_ondocuments(self, action_name, include_statuses=[]):
