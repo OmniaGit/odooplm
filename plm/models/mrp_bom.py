@@ -18,6 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+from odoo.exceptions import UserError
 
 """
 Created on 25 Aug 2016
@@ -639,9 +640,9 @@ class MrpBomExtension(models.Model):
         new_bom_brws = super(MrpBomExtension, self).copy(default)
         if new_bom_brws:
             for bom_line in new_bom_brws.bom_line_ids:
-                if bom_line.product_id.product_tmpl_id.engineering_code:
+                if bom_line.product_id.engineering_code:
                     late_rev_id_c = self.env['product.product'].GetLatestIds([
-                        (bom_line.product_id.product_tmpl_id.engineering_code,
+                        (bom_line.product_id.engineering_code,
                          False,
                          False)
                     ])  # Get Latest revision of each Part
@@ -654,6 +655,8 @@ class MrpBomExtension(models.Model):
                         vals['product_id'] = late_rev_id_c[0]
                     if vals:
                         bom_line.sudo().write(vals)
+                else:
+                    logging.warning("Product [%s] %r doesn't contain engineering code" % (bom_line.product_id.id, bom_line.product_id.display_name))
             if new_bom_brws.product_tmpl_id.engineering_code:
                 new_bom_brws.sudo().with_context({'check': False}).write({
                     'source_id': False,

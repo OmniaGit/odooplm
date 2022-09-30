@@ -443,16 +443,16 @@ class PlmComponent(models.Model):
         plmDocObj = self.env['ir.attachment']
 
         def getCompIds(partName, partRev):
-            if docRev is None or docRev is False:
+            if not partRev:
                 partIds = self.search([('engineering_code', '=', partName)],
-                                      order='engineering_revision').ids
+                                      order='engineering_revision ASC').ids
                 if len(partIds) > 0:
                     ids.append(partIds[-1])
             else:
                 ids.extend(self.search([('engineering_code', '=', partName),
                                         ('engineering_revision', '=', partRev)]).ids)
 
-        for docName, docRev, docIdToOpen in vals:
+        for eng_code, eng_rev, docIdToOpen in vals:
             docBrw = plmDocObj.browse(docIdToOpen)
             checkOutUser = docBrw.get_checkout_user()
             if checkOutUser:
@@ -460,9 +460,9 @@ class PlmComponent(models.Model):
                 if isMyDocument and forceCADProperties:
                     return []    # Document properties will be not updated
                 else:
-                    getCompIds(docName, docRev)
+                    getCompIds(eng_code, eng_rev)
             else:
-                getCompIds(docName, docRev)
+                getCompIds(eng_code, eng_rev)
         return list(set(ids))
 
     @api.model
