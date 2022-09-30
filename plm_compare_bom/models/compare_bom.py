@@ -292,7 +292,23 @@ class plm_compare_bom(osv.osv.osv_memory):
         return leftItems, rightItems
 
     def computeSummarized(self, bom1Dict, bom2Dict):
-
+        
+        def summarizeBom(bomDict):
+            out_sum = {}
+            for rows in bomDict.values():
+                for row in rows:
+                    part_id = row['part_id']
+                    if part_id not in out_sum:
+                        out_sum[part_id] = row
+                    else:
+                        out_sum[part_id]['itemqty'] += row['itemqty']
+            return list(bomDict.keys())[0], list(out_sum.values())
+        bom_id_1, sum_dict_1 = summarizeBom(bom1Dict)
+        bom1Dict_sum = {bom_id_1: sum_dict_1} 
+        bom_id_2, sum_dict_2 = summarizeBom(bom2Dict)
+        bom2Dict_sum = {bom_id_2: sum_dict_2} 
+        
+        
         def checkAndAdd(leftDict, rightDict, listToAppend):
             for product_id, toCreateValsList in leftDict.items():
                 for toCreateVals in toCreateValsList:  # Always 1 because summarized
@@ -312,10 +328,10 @@ class plm_compare_bom(osv.osv.osv_memory):
                         del rightDict[product_id]   # Erase already computed product
         leftItems = []
         rightItems = []
-        tmpDict2 = bom2Dict.copy()
-        checkAndAdd(bom1Dict, tmpDict2, leftItems)
+        tmpDict2_sum_copy = bom2Dict_sum.copy()
+        checkAndAdd(bom1Dict_sum, tmpDict2_sum_copy, leftItems)
         # Append lines presents only on right side
-        for toCreateValsList in tmpDict2.values():
+        for toCreateValsList in tmpDict2_sum_copy.values():
             toCreateValsList[0]['reason'] = 'added'
             rightItems.append(self.getRightBomObj(toCreateValsList[0]))
         return leftItems, rightItems

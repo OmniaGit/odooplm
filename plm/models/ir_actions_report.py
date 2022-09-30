@@ -32,17 +32,32 @@ from odoo import api
 from odoo import _
 import logging
 
+REPORT_TEMPLATE_VALS = {'plm.product_pdf':{'level': -1, 'checkState': False,'latest':False,},
+                        'plm.one_product_pdf':{'level':1, 'checkState':False,'latest':False,},
+                        'plm.one_product_pdf_latest':{'level':1, 'checkState':False,'latest':True,},
+                        'plm.all_product_pdf':{'level':9999999999, 'checkState':False,'latest':False,},
+                        'plm.product_production_pdf_latest':{'level':0, 'checkState':True,'latest':True,},
+                        'plm.product_production_one_pdf_latest':{'level':1, 'checkState':True,'latest':True,},
+                        'plm.product_production_all_pdf_latest':{'level':9999999999, 'checkState':True,'latest':True,},
+                        'plm.ir_attachment_pdf':{'level':0, 'checkState':False,'latest':False,}
+                        }
 
 class IrActionsReport(models.Model):
     _inherit = 'ir.actions.report'
 
     def _render_qweb_pdf(self, res_ids=None, data=None):
         self_sudo = self.sudo()
-        if self_sudo.report_name in ['plm.product_pdf', 'plm.one_product_pdf','plm.one_product_pdf_latest', 'plm.all_product_pdf', 'plm.product_production_pdf_latest', 'plm.product_production_one_pdf_latest', 'plm.product_production_all_pdf_latest', 'plm.ir_attachment_pdf']:
-            report_name = 'report.' + self_sudo.report_name
+        report_name = self_sudo.report_name
+        plm_report = REPORT_TEMPLATE_VALS.get(report_name)
+        if  plm_report:
+            report_name = 'report.' + report_name
             report_obj = self.env[report_name]
             prod_ids = self.env[self_sudo.model].browse(res_ids)
-            pdf_content = report_obj._render_qweb_pdf(prod_ids)
-            return pdf_content, 'pdf'
+
+            return report_obj._render_qweb_pdf(products=prod_ids,
+                                               level=plm_report.get("level",-1),
+                                               checkState=plm_report.get('checkState', False),
+                                               latest=plm_report.get('latest',False))
+
         return super(IrActionsReport, self)._render_qweb_pdf(res_ids, data)
 
