@@ -650,9 +650,9 @@ class PlmComponent(models.Model):
                     doc_layout_ids = documentBrws.getRelatedLyTree(documentBrws.id)
                     for child_doc_id in doc_layout_ids:
                         if child_doc_id not in docIDs:
-                            docIDs.extend(self.checkWorkflow(docInError, attachment.browse(child_doc_id), check_state), docIDs)
+                            docIDs.extend(self.checkWorkflow(docInError, attachment.browse(child_doc_id), check_state, docIDs))
                             raw_doc_ids = documentBrws.getRelatedRfTree(documentBrws.id, recursion=True)
-                            docIDs.extend(self.checkWorkflow(docInError, attachment.browse(raw_doc_ids), check_state), docIDs)
+                            docIDs.extend(self.checkWorkflow(docInError, attachment.browse(raw_doc_ids), check_state, docIDs))
         return list(set(docIDs))
 
     def _action_ondocuments(self, action_name, include_statuses=[]):
