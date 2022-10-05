@@ -53,8 +53,9 @@ class IrActionsReport(models.Model):
             report_name = 'report.' + report_name
             report_obj = self.env[report_name]
             prod_ids = self.env[self_sudo.model].browse(res_ids)
-
-            return report_obj._render_qweb_pdf(products=prod_ids,
+            if self_sudo.model=='ir.attachment':
+                return report_obj._render_qweb_pdf(res_ids=prod_ids)
+            return report_obj._render_qweb_pdf(res_ids=prod_ids,
                                                level=plm_report.get("level",-1),
                                                checkState=plm_report.get('checkState', False),
                                                latest=plm_report.get('latest',False))

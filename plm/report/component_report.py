@@ -192,7 +192,7 @@ MDAwMCBuIAowMDAwMDA4MDc2IDAwMDAwIG4gCjAwMDAwMDgxMDggMDAwMDAgbiAKMDAwMDAwODQw
 NSAwMDAwMCBuIAowMDAwMDA4NTAyIDAwMDAwIG4gCnRyYWlsZXIKPDwvU2l6ZSAxNC9Sb290IDEy
 IDAgUgovSW5mbyAxMyAwIFIKL0lEIFsgPEMzRDZBMzFBMTcxNkU1QjAyMjkxN0Y4QzkxQUM1MDk3
 Pgo8QzNENkEzMUExNzE2RTVCMDIyOTE3RjhDOTFBQzUwOTc+IF0KL0RvY0NoZWNrc3VtIC8wQjMy
-RjYxNzJGNDFCNzYwNjRBM0NDQjFEMTgxOTFCQgo+PgpzdGFydHhyZWYKODc0NwolJUVPRgo=""")
+RjYxNzJGNDFCNzYwNjRBM0NDQjFEMTgxOTFCQgo+PgpzdGFydHhyZWYKODc0NwolJUVPRgo="""), 'pdf'
 
 
 class ReportProductPdf(models.AbstractModel):
@@ -236,11 +236,10 @@ class ReportProductPdf(models.AbstractModel):
         return out
 
     @api.model
-    def _render_qweb_pdf(self, products=None, level=0, checkState=False, latest=False):
+    def _render_qweb_pdf(self, res_ids=None, level=0, checkState=False, latest=False):
         docRepository, mainBookCollector = self.commonInfos()
         documents = []
-
-        for product in products:
+        for product in res_ids:
             documents.extend(self.getDocument(product, checkState, latest))
             if level > -1:
                 for childProduct in product._getChildrenBom(product, level):

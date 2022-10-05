@@ -131,8 +131,6 @@ class ReportSpareDocumentOne(models.AbstractModel):
         recursion = True
         if self._name == 'report.plm_spare.pdf_one':
             recursion = False
-        self.processed_objs = []
-
         component_type = self.env['product.product']
         bom_type = self.env['mrp.bom']
         to_zone = tz.gettz(self.env.context.get('tz', 'Europe/Rome'))
@@ -149,10 +147,10 @@ class ReportSpareDocumentOne(models.AbstractModel):
                 }
         main_book_collector = BookCollector(customText=(msg, msg_vals))
         for component in components:
-            self.processed_objs = []
+            processed_objs = []
             buf = self.get_first_page([component.id])
             main_book_collector.addPage((buf, ''))
-            self.get_spare_parts_pdf_file(component, main_book_collector, component_type, bom_type, recursion)
+            self.get_spare_parts_pdf_file(component, main_book_collector, component_type, bom_type, recursion, processed_objs)
         if main_book_collector is not None:
             pdf_string = BytesIO()
             main_book_collector.collector.write(pdf_string)
@@ -163,17 +161,17 @@ class ReportSpareDocumentOne(models.AbstractModel):
         logging.warning('Unable to create PDF')
         return False, ''
 
-    def get_spare_parts_pdf_file(self, product, output, component_template, bom_template, recursion):
+    def get_spare_parts_pdf_file(self, product, output, component_template, bom_template, recursion, processed_objs):
         packed_objs = []
         packed_ids = []
-        if product in self.processed_objs:
+        if product in processed_objs:
             return
         bom_brws_ids = bom_template.search([('product_id', '=', product.id), ('type', '=', 'spbom')])
         if len(bom_brws_ids) < 1:
             bom_brws_ids = bom_template.search([('product_tmpl_id', '=', product.product_tmpl_id.id), ('type', '=', 'spbom')])
         if len(bom_brws_ids) > 0:
             if bom_brws_ids:
-                self.processed_objs.append(product)
+                processed_objs.append(product)
                 for bom_line in bom_brws_ids.bom_line_ids:
                     packed_objs.append(bom_line.product_id)
                     packed_ids.append(bom_line.id)
@@ -190,8 +188,8 @@ class ReportSpareDocumentOne(models.AbstractModel):
                     output.addPage((page_stream, ''))
                     if recursion:
                         for packed_obj in packed_objs:
-                            if packed_obj not in self.processed_objs:
-                                self.get_spare_parts_pdf_file(packed_obj, output, component_template, bom_template, recursion)
+                            if packed_obj not in processed_objs:
+                                self.get_spare_parts_pdf_file(packed_obj, output, component_template, bom_template, recursion, processed_objs)
 
     def get_pdf_component_layout(self, component):
         ret = []
@@ -208,7 +206,7 @@ class ReportSpareDocumentOne(models.AbstractModel):
 
     def get_first_page(self, ids):
         str_buffer = BytesIO()
-        pdf = self.env.ref('plm_spare.report_product_product_spare_header').sudo().render_qweb_pdf(ids)[0]
+        pdf = self.env.ref('plm_spare.report_product_product_spare_header').sudo()._render_qweb_pdf(ids)[0]
         str_buffer.write(pdf)
         return str_buffer
 
@@ -222,3 +220,21 @@ class ReportSpareDocumentOne(models.AbstractModel):
 class ReportSpareDocumentAll(ReportSpareDocumentOne):
     _name = 'report.plm_spare.pdf_all'
     _description = "Report Spare Pdf All"
+    
+        
+
+
+class IrActionsReport(models.Model):
+    _inherit = 'ir.actions.report'
+    
+    def _render_qweb_pdf(self, res_ids=None, data=None):
+        self_sudo = self.sudo()
+        report_name = self_sudo.report_name
+        full_report_name ='report.' + report_name
+        if full_report_name in (ReportSpareDocumentAll._name, ReportSpareDocumentOne._name): 
+            report_obj = self.env[full_report_name]
+            prod_ids = self.env[self_sudo.model].browse(res_ids)
+            return report_obj.create_spare_pdf(prod_ids), 'pdf'
+        return super(IrActionsReport, self)._render_qweb_pdf(res_ids, data)
+
+    
