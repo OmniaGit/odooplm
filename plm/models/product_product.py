@@ -1003,11 +1003,16 @@ class PlmComponent(models.Model):
         eng_rev = vals.get('engineering_revision', 0)
         eng_code = vals.get('engineering_code')
         if eng_code:
-            prodBrwsList = self.search([('engineering_code', '=', vals['engineering_code']),
-                                        ('engineering_revision', '=', eng_rev)
-                                        ])
+            prodBrwsList = self.search([
+                ('active', 'in', [True, False]),
+                ('engineering_code', '=', vals['engineering_code']),
+                ('engineering_revision', '=', eng_rev)
+                ])
             if prodBrwsList:
-                raise UserError('Component %r already exists' % (vals['engineering_code']))
+                msg = _('\nComponents with same Engineering Code already exists:\n')
+                for prod in prodBrwsList:
+                    msg += '- [%r] %s revision %r active %r\n' % (prod.id, prod.engineering_code, prod.engineering_revision, prod.active)
+                raise UserError(msg)
         try:
             vals['is_engcode_editable'] = False
             vals.update(self.checkMany2oneClient(vals))
