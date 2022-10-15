@@ -32,26 +32,32 @@ class MrpBom(models.Model):
     
     def open_breakages(self):
         product_id = self.product_id
-        if not product_id:
-            for product_id in self.env['product.product'].search([('product_tmpl_id','=',self.product_tmpl_id.id)]):
-                break
+        product_ids = self.get_bom_product_breakeges()             
         return {'name': _('Products'),
                 'res_model': 'plm.breakages',
                 'view_type': 'form',
                 'view_mode': 'tree,form,pivot',
                 'type': 'ir.actions.act_window',
-                'domain': [('product_id', '=', product_id.id)],
+                'domain': [('product_id', 'in', product_ids)],
                 'context': {'default_parent_id': product_id.id}}
 
     breakages_count = fields.Integer('# Breakages',
         compute='_compute_breakages_count', compute_sudo=False)
     
-    def _compute_breakages_count(self):
+    def get_bom_product_breakeges(self):
+        out = []
         for mrp_bom in self:
             product_id = mrp_bom.product_id
+            out.append(product_id.id)
             if not product_id:
                 for product_id in self.env['product.product'].search([('product_tmpl_id','=', mrp_bom.product_tmpl_id.id)]):
                     break
-            mrp_bom.breakages_count = self.env['plm.breakages'].search_count([('product_id', '=', product_id.id)])
+            out.extend(mrp_bom.bom_line_ids.mapped("product_id").ids)
+        return out
+
+    def _compute_breakages_count(self):
+        for mrp_bom in self:
+            product_ids = self.get_bom_product_breakeges()              
+            mrp_bom.breakages_count = self.env['plm.breakages'].search_count([('product_id', 'in', product_ids )])
 
             
