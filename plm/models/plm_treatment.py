@@ -36,7 +36,6 @@ class PlmTreatment(models.Model):
     _description = "Termic Treatment"
 
     name = fields.Char(_('Specification'),
-                       size=128,
                        required=True,
                        translate=True)
     description = fields.Char(_('Description'),

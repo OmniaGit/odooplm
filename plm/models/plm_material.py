@@ -35,7 +35,6 @@ class PlmMaterial(models.Model):
     _description = "PLM Materials"
 
     name = fields.Char(_('Designation'),
-                       size=128,
                        required=True,
                        translate=True)
     description = fields.Char(_('Description'),

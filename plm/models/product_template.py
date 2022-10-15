@@ -89,16 +89,19 @@ class ProductTemplateExtension(models.Model):
                              default=False,
                              help="Specify if the product can be selected in a sales order line.")
 
-    engineering_writable = fields.Boolean(_('Writable'),
+    engineering_writable = fields.Boolean('Writable',
                                           default=True)
-    is_engcode_editable = fields.Boolean(_('Engineering Editable'), default=True, compute='_compute_eng_code_editable')
+    is_engcode_editable = fields.Boolean('Engineering Editable',
+                                         default=True,
+                                         compute=lambda self: self._compute_eng_code_editable()
+                                         )
 
     revision_count = fields.Integer(compute='_revisions_count')
 
     _sql_constraints = [
         ('partnumber_uniq', 'unique (engineering_code,engineering_revision)', _('Part Number has to be unique!'))
     ]
-
+    
     def isLastVersion(self):
         for tempate_id in self:
             if tempate_id.id in tempate_id._getlastrev():

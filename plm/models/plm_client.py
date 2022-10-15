@@ -23,6 +23,7 @@ Created on 1 Dec 2021
 
 @author: mboscolo
 '''
+import os
 import logging
 import datetime
 from odoo import models

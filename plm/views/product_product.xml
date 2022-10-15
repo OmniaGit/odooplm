@@ -151,7 +151,8 @@
 	                    <field name="name" string="Description" colspan="6"/>
 	                    <!-- attrs="{'readonly':[('is_engcode_editable','=', False)]}" -->
                         <field name="engineering_code" colspan="4"  select="1"/>
-                        <field name="engineering_revision" colspan="2" attrs="{'readonly':[('is_engcode_editable','=', False)]}"/>
+                        <field name="engineering_revision" colspan="2"
+                                    attrs="{'readonly':[('is_engcode_editable','=', False)]}"/>
                         <field name="std_description" colspan="6" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
                         <field name="show_std_field1" invisible="1"/>
                         <field name="show_std_field2" invisible="1"/>

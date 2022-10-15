@@ -56,7 +56,7 @@ def emptyStringIfFalse(value):
 
 class PlmComponent(models.Model):
     _inherit = 'product.product'
-
+    
     def onchange(self, values, field_name, field_onchange):
         values = self.plm_sanitize(values)
         if 'product_tmpl_id' in values:
@@ -174,7 +174,6 @@ class PlmComponent(models.Model):
     readonly_std_umc1 = fields.Boolean(_("put readOnly the field standard description 1"))
     readonly_std_umc2 = fields.Boolean(_("put readOnly the field standard description 2"))
     readonly_std_umc3 = fields.Boolean(_("put readOnly the field standard description 3"))
-    
     
     @api.onchange("std_description")
     def _showStd(self):
@@ -1063,7 +1062,7 @@ class PlmComponent(models.Model):
     
     def write(self, vals):
         for product in self:
-            if 'is_engcode_editable' not in vals:
+            if 'is_engcode_editable' not in vals and product.engineering_code not in ['-',False]:
                 vals['is_engcode_editable'] = False
             vals.update(product.checkMany2oneClient(vals))
             vals = product.plm_sanitize(vals)

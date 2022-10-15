@@ -35,7 +35,6 @@ class PlmFinishing(models.Model):
     _description = "Surface Finishing"
 
     name = fields.Char(_('Specification'),
-                       size=128,
                        required=True,
                        translate=True)
     description = fields.Char(_('Description'),

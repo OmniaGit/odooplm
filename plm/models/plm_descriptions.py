@@ -34,7 +34,7 @@ class PlmDescription(models.Model):
     _description = "PLM Descriptions"
 
     name = fields.Char(_('Note to Description'),
-                       size=128, translate=True)
+                       translate=True)
     description = fields.Char(_('Standard Description'),
                               default='',
                               size=128)
