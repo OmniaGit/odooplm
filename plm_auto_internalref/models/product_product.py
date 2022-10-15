@@ -69,17 +69,19 @@ class ProductProductExtension(models.Model):
         if in_revision and engineering_code and engineering_code != '-':
             out = self.getDefaultCodeTemplate % (engineering_code, engineering_revision)
         if engineering_code and not default_code and engineering_code != '-':
-             out = self.getDefaultCodeTemplate % (engineering_code, engineering_revision)
+            out = self.getDefaultCodeTemplate % (engineering_code, engineering_revision)
         if default_code == out:
             return False
         return out
 
     def write(self, vals):
-        for product_id in self:
-            new_default_code = self.computeDefaultCode(vals,
-                                                       product_id)
-            if new_default_code :
+        ret = False
+        for product in self:
+            new_default_code = product.computeDefaultCode(vals,
+                                                          product)
+            if new_default_code:
                 logging.info('OdooPLM: Default Code set to %s ' % (new_default_code))
                 vals['default_code'] = new_default_code
-            break
-        return super(ProductProductExtension, self).write(vals)
+            ret = super(models.Model, product).write(vals)
+        return ret
+
