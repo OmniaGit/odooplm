@@ -132,8 +132,7 @@
                 		readonly="1"
                 		nolabel="1"
                 		colspan="2"
-                		img_height="400"
-                		img_width="400"/>
+                		options="{'size':[400,400]}"/>
                     <field name="component_id" readonly="True"/>
                     <field name="comp_rev" readonly="True"/>
                     <field name="document_id" readonly="True"/>

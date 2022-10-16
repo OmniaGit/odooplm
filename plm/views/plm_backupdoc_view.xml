@@ -26,8 +26,7 @@
                         	widget="image"
                         	readonly="1"
                         	nolabel="1"
-                        	img_height="400"
-                        	img_width="400"/>
+                        	options="{'size':[400,400]}"/>
                 </group>
                 </sheet>
            </form>
