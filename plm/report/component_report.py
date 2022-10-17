@@ -20,6 +20,7 @@
 ##############################################################################
 from .book_collector import BookCollector
 from .book_collector import packDocuments
+from .book_collector import isPdf
 from datetime import datetime
 from dateutil import tz
 import base64
@@ -232,6 +233,9 @@ class ReportProductPdf(models.AbstractModel):
                     if doc.state in ['released', 'undermodify']:
                         out.append(doc)
                     continue
+                out.append(doc)
+        for doc in product.linkeddocuments.filtered(lambda x: x.document_type == 'other'):
+            if isPdf(doc.name):
                 out.append(doc)
         return out
 
