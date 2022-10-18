@@ -171,10 +171,10 @@ class MrpBomLineExtension(models.Model):
         for bom_line_brws in self:
             bom_line_brws.related_document_ids = bom_line_brws.product_id.linkeddocuments
 
-    state = fields.Selection(related="product_id.state",
-                             string=_("Status"),
-                             help=_("The status of the product in its LifeCycle."),
-                             store=False)
+    engineering_state = fields.Selection(related="product_id.engineering_state",
+                                         string=_("Status"),
+                                         help=_("The status of the product in its LifeCycle."),
+                                         store=False)
     description = fields.Char(related="product_id.name",
                               string=_("Description"),
                               store=False)

@@ -9,27 +9,25 @@
             <form string="Attachments">
                 <header>
                     <field name="is_checkout" invisible="1"></field>
-                    <field name="state" widget="statusbar"
+                    <field name="engineering_state" widget="statusbar"
                             statusbar_visible="draft,confirmed,released"
                             statusbar_colors='{"undermodify":"red","obsoleted":"red"}' 
                             readonly="1"/>
                     <button name="action_release"
-                            states="confirmed"
                             string="Release Document"
                             class="oe_highlight"
                             type="object"
                             groups="plm.group_plm_release_users"
-                            attrs="{'invisible': [('is_checkout','=',True)]}"/>
+                            attrs="{'invisible': [('is_checkout','=',True),('engineering_state','!=','engineering_state')]}"/>
                     <button name="action_draft"
-                            states="confirmed"
+                            attrs="{'invisible': [('engineering_state','!=','confirmed')]}"
                             type="object"
                             string="Correct Document"/>
                     <button name="action_confirm"
-                            states="draft"
                             type="object"
                             string="Confirm Document"
                             class="oe_highlight"
-                            attrs="{'invisible': [('is_checkout','=',True)]}"/>
+                            attrs="{'invisible': [('is_checkout','=',True),('engineering_state','!=','draft')]}"/>
                 </header>
               </form>
         </field>
@@ -45,23 +43,25 @@
             <form string="Attachments">
                 <header>
                     <button name="action_release"
-                            states="confirmed"
                             string="Release Document"
                             class="oe_highlight"
                             type="object"
                             groups="plm.group_plm_release_users"
-                            attrs="{'invisible': [('is_checkout','=',True)]}"/>
+                            attrs="{'invisible': [('is_checkout','=',True),('engineering_state','!=','confirmed')]}"/>
                     <button name="action_draft"
-                            states="confirmed"
+                            attrs="{'invisible': [('is_checkout','=',True),('engineering_state','!=','confirmed')]}"
                             type="object"
                             string="Correct Document"/>
                     <button name="action_confirm"
-                            states="draft"
                             type="object"
                             string="Confirm Document"
                             class="oe_highlight"
-                            attrs="{'invisible': [('is_checkout','=',True)]}"/>
-                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,released" statusbar_colors='{"undermodify":"red","obsoleted":"red"}' readonly="1"/>
+                            attrs="{'invisible': [('is_checkout','=',True),('engineering_state','!=','draft')]}"/>
+                    <field name="engineering_state"
+                           widget="statusbar"
+                           statusbar_visible="draft,confirmed,released"
+                           statusbar_colors='{"undermodify":"red","obsoleted":"red"}'
+                           readonly="1"/>
                 </header>
                	<sheet>
 	                <div class="oe_button_box" name="button_box">
@@ -97,8 +97,8 @@
 						        string="BOM Rev."
 						        class="oe_stat_button"
 						        icon="fa-tasks"
-						        attrs="{'invisible':[('attachment_revision_count','&lt;=','1')]}">
-						        <field name="attachment_revision_count" string=" " widget="statinfo"/>
+						        attrs="{'invisible':[('engineering_revision_count','&lt;=','1')]}">
+						        <field name="engineering_revision_count" string=" " widget="statinfo"/>
 						</button>
 						<button name="check_out_user" icon="fa-user" attrs="{'invisible': ['|',('checkout_user', '=', 'False'),('checkout_user', '=', '')]}">
 							<field name="checkout_user"/>
@@ -107,7 +107,7 @@
 		           	<group>
 	                	<group string= "PLM Infos:" name="main_doc_info">
 	                    	<label for="engineering_document_name" class="oe_edit_only"/>
-	                    	<field string="Eng. Document Name" name="engineering_document_name" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+	                    	<field string="Eng. Document Name" name="engineering_document_name" attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}"/>
 	                    	<label for="revisionid" class="oe_edit_only"/>
 	                    	<field string="Enineering revision" name="revisionid" readonly="True"/>
 	                    	<field string="Is a Plm Document" name="is_plm" visible="0" widget="boolean_toggle"/>
@@ -123,13 +123,13 @@
                     	<page string="Attachment">
                         	<group string="File Data:" name="FileData">
                             	<group attrs="{'invisible':[('type','=','url')]}" name="group_datas" colspan="4" col="2">
-                                    <field name="datas" filename="name" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
-                                    <field name="name" select="1" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
-                                    <field name="document_type" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
-                                    <field name="type" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                                    <field name="datas" filename="name" attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}"/>
+                                    <field name="name" select="1" attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}"/>
+                                    <field name="document_type" attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}"/>
+                                    <field name="type" attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}"/>
                                     <field name="printout" invisible="1"/>
                                 </group>
-                                <group string="Website:" name="group_url" colspan="4" attrs="{'invisible':[('type','=','binary')],'readonly':[('state','in',['released','obsoleted'])]}">
+                                <group string="Website:" name="group_url" colspan="4" attrs="{'invisible':[('type','=','binary')],'readonly':[('engineering_state','in',['released','obsoleted'])]}">
                                     <field name="url" widget="url"/>
                                 </group>
                             </group>
@@ -174,16 +174,16 @@
                         	</group>
                         </page>
                         <page string="Linked Parts" name="page_liked_parts">
-                            <field colspan="4" name="linkedcomponents" nolabel="1" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                            <field colspan="4" name="linkedcomponents" nolabel="1" attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}"/>
                         </page>
                         <page string="Indexed Content" name="page_indexed_content">
-                            <field name="index_content" colspan="4" nolabel="1" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                            <field name="index_content" colspan="4" nolabel="1" attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}"/>
                         </page>
                         <page string="Notes" name="page_notes">
                             <label for="description" class="oe_edit_only"/>
-                            <field colspan="4" name="description" nolabel="1" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                            <field colspan="4" name="description" nolabel="1" attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}"/>
                             <label for="desc_modify" class="oe_edit_only"/>
-                            <field colspan="4" name="desc_modify" nolabel="1" attrs="{'readonly':[('state','in',['released','obsoleted'])], 'invisible': [('revisionid', '=', 0)]}"/>
+                            <field colspan="4" name="desc_modify" nolabel="1" attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])], 'invisible': [('revisionid', '=', 0)]}"/>
                         </page>
                     </notebook>
                </sheet>
@@ -202,14 +202,14 @@
         <field name="priority" eval="20"/>
         <field name="arch" type="xml">
             <tree string="Documents"
-                  decoration-info="state == 'confirmed'"
-                  decoration-success="state == 'released'"
-                  decoration-warning="state == 'undermodify'"
-                  decoration-muted="state == 'obsoleted'">
+                  decoration-info="engineering_state == 'confirmed'"
+                  decoration-success="engineering_state == 'released'"
+                  decoration-warning="engineering_state == 'undermodify'"
+                  decoration-muted="engineering_state == 'obsoleted'">
 
                 <field name="name" select="True"/>
                 <field name="revisionid" select="True"/>
-                <field name="state" select="True"/>
+                <field name="engineering_state" select="True"/>
                 <field name="engineering_document_name" select="True"/>
                 <field name="checkout_user" colspan="2"/>
                 <field name="create_uid" select="True"/>
@@ -243,16 +243,16 @@
             		string="Last Week" 
             		domain="[('create_date','&gt;=',(datetime.date.today() - datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"/>
             	<separator orientation="vertical"/>
-            	<field name="state"/>
+            	<field name="engineering_state"/>
               	<filter name="confirmed"
                       	string="Confirmed"
-                      	domain="[('state', '=', 'confirmed')]"/>
+                      	domain="[('engineering_state', '=', 'confirmed')]"/>
               	<filter name="released"
                       	string="Released"
-                      	domain="[('state', 'in', ['released','undermodify'])]"/>
+                      	domain="[('engineering_state', 'in', ['released','undermodify'])]"/>
               	<filter name="latest"
                       	string="Latest"
-                      	domain="[('state', 'not in', ['obsoleted','undermodify'])]"/>
+                      	domain="[('engineering_state', 'not in', ['obsoleted','undermodify'])]"/>
               	<separator orientation="vertical"/>
           		<group>
 	                <field name="create_uid"/>
@@ -289,7 +289,7 @@
                     <filter name="status"
                             string="Status"
                             domain="[]"
-                            context="{'group_by':'state'}"/>
+                            context="{'group_by':'engineering_state'}"/>
                     <filter name="type"
                             string="Type Document"
                             domain="[]"
@@ -309,12 +309,12 @@
                 <field name="engineering_document_name"/>
                 <field name="revisionid"/>
                 <field name="description"/>
-                <field name="state"/>
+                <field name="engineering_state"/>
                 <field name="document_type"/>
                 <field name="is_linkedcomponents" invisible="True"/>
                 <templates>
                     <t t-name="kanban-box">
-                        <t t-value="record.state.raw_value" t-set="stateToUse"/>
+                        <t t-value="record.engineering_state.raw_value" t-set="stateToUse"/>
                         <div class="oe_kanban_global_click">
                             <table style="width: 100%; line-height: 1;">
                             	<tr>
@@ -376,32 +376,32 @@
                                                     <strong>State:</strong>
                                                     <t t-if="stateToUse == 'draft'">
                                                         <b><span style="color: rgb(110, 51, 197);padding-left: 5px;">
-                                                         	<u><field name="state"/></u>
+                                                         	<u><field name="engineering_state"/></u>
                                                        	</span></b>
                                                     </t>
                                                     <t t-elif="stateToUse == 'confirmed'">
                                                         <b><span style="color: blue;padding-left: 5px;">
-                                                        	<u><field name="state"/></u>
+                                                        	<u><field name="engineering_state"/></u>
                                                         </span></b>
                                                     </t>
                                                     <t t-elif="stateToUse == 'released'">
                                                         <b><span style="color: rgba(0, 170, 34, 0.66);padding-left: 5px;">
-                                                        	<u><field name="state"/></u>
+                                                        	<u><field name="engineering_state"/></u>
                                                        	</span></b>
                                                     </t>
                                                     <t t-elif="stateToUse == 'undermodify'">
                                                         <b><span style="color: rgb(218, 159, 34);padding-left: 5px;">
-                                                        	<u><field name="state"/></u>
+                                                        	<u><field name="engineering_state"/></u>
                                                       	</span></b>
                                                     </t>
                                                     <t t-elif="stateToUse == 'obsoleted'">
                                                         <b><span style="color: rgb(231, 43, 26);padding-left: 5px;">
-                                                        	<u><field name="state"/></u>
+                                                        	<u><field name="engineering_state"/></u>
                                                         </span></b>
                                                     </t>
 													<t t-else="">
                                                         <b><span style="color: black;padding-left: 5px;">
-                                                        	<u><field name="state"/></u>
+                                                        	<u><field name="engineering_state"/></u>
                                                       	</span></b>
 													</t>
                                                 </td>

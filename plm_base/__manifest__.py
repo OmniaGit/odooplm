@@ -1,8 +1,7 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution
-#    Copyright (C) 2010-2022 OmniaSolutions (<https://www.omniasolutions.website>).
+#    Copyright (C) 2022-2022 OmniaSolutions (<https://www.omniasolutions.website>).
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -20,42 +19,33 @@
 #
 ##############################################################################
 {
-    "name": "Product Lifecycle Management Batch conversion",
+    "name": "Product Lifecycle Management",
     "version": "16.0.1",
     "author": "OmniaSolutions",
     "website": "https://github.com/OmniaGit/odooplm",
-    "category": "Product Lifecycle Management",
+    "category": "Manufacturing/Product Lifecycle Management",
     "sequence": 15,
-    "license": "AGPL-3",
-    "summary": "CAD editors batch conversion tool",
-    "depends": ["plm"],
-    'external_dependencies': {'python': ['ezdxf',
-                                         'matplotlib',
-                                         'cadquery',
-                                         'numpy-stl']},
-    "data": [  
-        #
+    "license": "LGPL-3",
+    "summary": "PLM-PDM Integration base module [tehcnical module",
+    "images": ["static/img/odoo_plm.png"],
+    "depends": ["base"],
+    "data": [
         # security
-        #
-        'security/security.xml',
-        #
         # views
-        #
-        'view/ir_action_server.xml',
-        'view/ir_attachment.xml',
-        'view/ir_cron.xml',
-        'view/plm_convert_rule.xml',
-        'view/plm_convert_servers.xml',
-        'view/plm_convert_stack.xml',
-        'wizards/plm_convert.xml',
-        #
-        # data
-        #
-        'data/data.xml',
+        # QwebTemplates
+        # Reports Template
+        # Report
     ],
+    "assets": {
+        "web.assets_backend": [
+            ],
+        'web.report_assets_common': [
+        ],
+        },
+    "qweb": [],
     "demo": [],
     "test": [],
     "installable": True,
-    "application": False,
+    "application": True,
     "auto_install": False,
 }

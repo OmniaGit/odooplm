@@ -45,7 +45,7 @@
 		                        	<td class="text-center">
 		                            	<t t-esc="record_browse.revisionid"/>
 		                        	</td>
-		                        	<t t-set="state" t-value="record_browse.state"/>
+		                        	<t t-set="state" t-value="record_browse.engineering_state"/>
 		                        	<t t-call="plm.docuemnt_state_row"/>
 		                        	<td>
 		                            	<t t-if="record_browse.linkedcomponents">
@@ -70,7 +70,7 @@
 			<t t-if="child_dict['visible']">
 				<t t-set="record_child" t-value="child_dict['id']"/>
 		    	<t t-set="record_child_level" t-value="child_dict['level']"/>
-		    	<t t-set="state" t-value="record_child.state"/>
+		    	<t t-set="state" t-value="record_child.engineering_state"/>
 				<t t-set="space_td" t-value="'display: flex; font-weight:bold; color: #008b8b;'"/>
 				<tr class="document_report_line" t-att-data-level="child_dict['level']">
 					<td class="text-center">

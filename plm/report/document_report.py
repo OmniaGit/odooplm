@@ -46,7 +46,7 @@ class ReportDocumentPdf(models.AbstractModel):
         msg_vals = {
             'print_user': 'user_id.name',
             'date_now': localDT.ctime(),
-            'state': 'doc_obj.state',
+            'state': 'doc_obj.engineering_state',
                 }
         output = BookCollector(jumpFirst=False, customText=(msg, msg_vals), bottomHeight=10, poolObj=self.env)
         return packDocuments(docRepository, documents, output)

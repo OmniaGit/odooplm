@@ -33,6 +33,82 @@ from odoo import _
 from odoo.exceptions import UserError
 from datetime import timedelta
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
+# SaveStructure
+# GetExploseSum
+# GetExplose  
+# GetWhereUsedSum
+# GetWhereUsed
+# ConvertToPlmProduct
+# createOrUpdate
+# getLastTime
+# SaveOrUpdate
+# Clone
+# NewRevision
+# GetUpdated
+# GetLatestIds
+# SaveStructure
+# getLastTime
+# GetNextDocumentName
+# Clone
+# NewRevision
+# GetUpdated
+# GetLatestIds
+# GetRelatedDocs
+# GetLastNamesFromID
+# CheckIn
+# RegMessage 
+# CheckSaveUpdate
+# SaveOrUpdate  
+# CheckedIn
+# UpdateDocuments 
+# CleanUp
+# getCheckedOut
+# SaveStructure
+# checkout
+# search_read
+# getServerTime
+# getServerTime
+# getRelatedLyTree
+# action_confirm
+# action_release
+# wf_message_post_client
+# saveRelationNew
+# CheckAllFiles
+# getPartOfFile
+# isDownloadableFromServer
+# GetSomeFiles
+# CheckIn2
+# CheckInRecursive2
+# isLatestRevision
+# getUserSign
+# QueryLast
+# GetSomeFiles
+# getNewThreadTransaction
+# getErrorMissingDocument
+# GetProductDocumentId
+# getRelated3DFiles
+# 
+#
+# CallCustomFunction
+# cleanZipArchives
+# checkNewer
+# checkUnlinkCadOpen
+#
+# callCustomMethodNoDisplay
+#
+# getCustomProcedure
+# getMacros
+# getMacroUserInfos
+# create_server_syncronize
+# clientCanIUpload
+# notifieDoneToDbThread
+# freezeDbThread
+# saveSingleLevel
+# preCheckInRecursive
+# preCheckOutRecursive
+# 
+
+
 
 class PlmClient(models.TransientModel):
     _name = "plm.client"

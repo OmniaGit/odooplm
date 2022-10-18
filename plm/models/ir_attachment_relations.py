@@ -32,7 +32,7 @@ class PlmDocumentRelations(models.Model):
     parent_preview = fields.Binary(related="parent_id.preview",
                                    string=_("Parent Preview"),
                                    store=False)
-    parent_state = fields.Selection(related="parent_id.state",
+    parent_state = fields.Selection(related="parent_id.engineering_state",
                                     string=_("Parent Status"),
                                     store=False)
     parent_revision = fields.Integer(related="parent_id.revisionid",
@@ -47,7 +47,7 @@ class PlmDocumentRelations(models.Model):
     child_preview = fields.Binary(related="child_id.preview",
                                   string=_("Child Preview"),
                                   store=False)
-    child_state = fields.Selection(related="child_id.state",
+    child_state = fields.Selection(related="child_id.engineering_state",
                                    string=_("Child Status"),
                                    store=False)
     child_revision = fields.Integer(related="child_id.revisionid",

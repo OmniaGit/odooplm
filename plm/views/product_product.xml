@@ -27,20 +27,20 @@
                 <filter 
                 	name="string" 
                 	string="Confirmed" 
-                	domain="[('state', '=', 'confirmed')]"/>
+                	domain="[('engineering_state', '=', 'confirmed')]"/>
                 <filter 
                 	name="released" 
                 	string="Released" 
-                	domain="[('state', 'in', ['released','undermodify'])]"/>
+                	domain="[('engineering_state', 'in', ['released','undermodify'])]"/>
                 <filter 
                 	name="obsolated" 
                 	string="Obsoleted" 
-                	domain="[('state', '=', 'obsoleted')]"/>
+                	domain="[('engineering_state', '=', 'obsoleted')]"/>
                 <separator orientation="vertical"/>
                 <filter 
                 	name="latest" 
                 	string="Latest" 
-                	domain="[('state', 'not in', ['obsoleted','undermodify'])]"/>
+                	domain="[('engineering_state', 'not in', ['obsoleted','undermodify'])]"/>
                 <separator orientation="vertical"/>
                 <group>
 	                <field name="create_uid"/>
@@ -76,7 +76,7 @@
                     <filter name="status"
                             string="Status"
                             domain="[]"
-                            context="{'group_by':'state'}"/>
+                            context="{'group_by':'engineering_state'}"/>
               	</group>
             </search>
         </field>
@@ -90,24 +90,24 @@
         <field name="arch" type="xml">
             <form string="Engineering Product">
                 <header>
-                    <field name="state"
+                    <field name="engineering_state"
                            widget="statusbar"
                            statusbar_visible="draft,confirmed,released"
                            statusbar_colors='{"undermodify":"red","obsoleted":"red"}'
                            readonly="1"/>
                     <button name="action_release"
                             type="object"
-                            states="confirmed"
+                            attrs="{'invisible': [('engineering_state','!=','confirmed')]}"
                             string="Release Component"
                             class="oe_highlight"
                             groups="plm.group_plm_release_users"/>
                     <button name="action_draft"
                             type="object"
-                            states="confirmed"
+                            attrs="{'invisible': [('engineering_state','!=','confirmed')]}"
                             string="Correct Component"/>
                     <button name="action_confirm"
                             type="object"
-                            states="draft"
+                            attrs="{'invisible': [('engineering_state','!=','draft')]}"
                             string="Confirm Component"
                             class="oe_highlight"/>
                 </header>
@@ -125,21 +125,21 @@
                 <!-- This button are also used for workflow action do not remove -->
                     <button name="action_release"
                             type="object"
-                            states="confirmed"
+                            attrs="{'invisible': [('engineering_state','!=','confirmed')]}"
                             string="Release Component"
                             class="oe_highlight"
                             groups="plm.group_plm_release_users"/>
                     <button name="action_draft"
                             type="object"
-                            states="confirmed"
+                            attrs="{'invisible': [('engineering_state','!=','confirmed')]}"
                             string="Correct Component"
                     />
                     <button name="action_confirm"
                             type="object"
-                            states="draft"
+                            attrs="{'invisible': [('engineering_state','!=','draft')]}"
                             string="Confirm Component"
                             class="oe_highlight"/>
-                    <field name="state"
+                    <field name="engineering_state"
                            widget="statusbar"
                            statusbar_visible="draft,confirmed,released"
                            statusbar_colors='{"undermodify":"red","obsoleted":"red"}'
@@ -153,7 +153,7 @@
                         <field name="engineering_code" colspan="4"  select="1"/>
                         <field name="engineering_revision" colspan="2"
                                     attrs="{'readonly':[('is_engcode_editable','=', False)]}"/>
-                        <field name="std_description" colspan="6" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                        <field name="std_description" colspan="6" attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}"/>
                         <field name="show_std_field1" invisible="1"/>
                         <field name="show_std_field2" invisible="1"/>
                         <field name="show_std_field3" invisible="1"/>
@@ -163,21 +163,21 @@
                         <group name="std_desc_attrs" col="4" colspan="4" string="Standard Description Parameters" attrs="{'invisible': [('std_description','=', False)]}">
                             <field name="std_umc1"
                                    force_save="1"
-                                   attrs="{'readonly':['|',('readonly_std_umc1','=',True),('state','in',['released','obsoleted'])], 'invisible': [('show_std_field1','=',False)]}"/>
+                                   attrs="{'readonly':['|',('readonly_std_umc1','=',True),('engineering_state','in',['released','obsoleted'])], 'invisible': [('show_std_field1','=',False)]}"/>
                             <field name="std_value1"
-                                   attrs="{'readonly':[('std_umc1','=',False),('state','in',['released','obsoleted'])], 'invisible': [('show_std_field1','=',False)]}"/>
+                                   attrs="{'readonly':[('std_umc1','=',False),('engineering_state','in',['released','obsoleted'])], 'invisible': [('show_std_field1','=',False)]}"/>
                             <field name="std_umc2"
                                    force_save="1"
-                                   attrs="{'readonly':['|',('readonly_std_umc2','=',True),('state','in',['released','obsoleted'])], 'invisible': [('show_std_field2','=',False)]}"/>
+                                   attrs="{'readonly':['|',('readonly_std_umc2','=',True),('engineering_state','in',['released','obsoleted'])], 'invisible': [('show_std_field2','=',False)]}"/>
                             <field name="std_value2"
-                                   attrs="{'readonly':[('std_umc2','=',False),('state','in',['released','obsoleted'])], 'invisible': [('show_std_field2','=',False)]}"/>
+                                   attrs="{'readonly':[('std_umc2','=',False),('engineering_state','in',['released','obsoleted'])], 'invisible': [('show_std_field2','=',False)]}"/>
                             <field name="std_umc3"
                                    force_save="1"
-                                   attrs="{'readonly':['|',('readonly_std_umc3','=',True),('state','in',['released','obsoleted'])], 'invisible': [('show_std_field3','=',False)]}"/>
+                                   attrs="{'readonly':['|',('readonly_std_umc3','=',True),('engineering_state','in',['released','obsoleted'])], 'invisible': [('show_std_field3','=',False)]}"/>
                             <field name="std_value3"
-                                   attrs="{'readonly':[('std_umc3','=',False),('state','in',['released','obsoleted'])], 'invisible': [('show_std_field3','=', False)]}"/>
+                                   attrs="{'readonly':[('std_umc3','=',False),('engineering_state','in',['released','obsoleted'])], 'invisible': [('show_std_field3','=', False)]}"/>
                         </group>
-                        <field name="desc_modify" colspan="6" attrs="{'readonly':[('state','in',['released','obsoleted'])], 'invisible': [('engineering_revision', '=', 0)]}"/>
+                        <field name="desc_modify" colspan="6" attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])], 'invisible': [('engineering_revision', '=', 0)]}"/>
 	                    <field name="detailed_type" invisible="1"/>
 	                    <field name="source_product" invisible="1"/>
 	                    <field name="is_engcode_editable" invisible="1"/>
@@ -189,29 +189,29 @@
                             </group>
                             <group col="4" colspan="4" name='uom_weight'>
                                 <label for="weight"/>
-                                <div class="o_row" name="weight" attrs="{'readonly':[('state','in',['released','obsoleted'])]}">
-                                    <field name="weight" attrs="{'readonly':[('state','in',['released','obsoleted'])]}" digits="[14,3]"/>
+                                <div class="o_row" name="weight" attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}">
+                                    <field name="weight" attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}" digits="[14,3]"/>
                                     <span><field name="weight_uom_name"/></span>
                                 </div>
                                 <field name="uom_id"
-                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                                       attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}"/>
                                 <field name="uom_po_id"
-                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"
+                                       attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}"
                                        groups="base.group_no_one"/>
                             </group>
                             <group colspan="4" col="4" name="technical_infos_group" string="Material / Surface / Treatment">
                                 <field name="tmp_material"
-                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                                       attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}"/>
                                 <field name="engineering_material"
-                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}" colspan="2" groups='base.group_no_one'/>
+                                       attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}" colspan="2" groups='base.group_no_one'/>
                                 <field name="tmp_surface"
-                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                                       attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}"/>
                                 <field name="engineering_surface"
-                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}" colspan="2" groups='base.group_no_one'/>
+                                       attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}" colspan="2" groups='base.group_no_one'/>
                                 <field name="tmp_treatment"
-                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                                       attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}"/>
                                 <field name="engineering_treatment"
-                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}" colspan="2" groups='base.group_no_one'/>
+                                       attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}" colspan="2" groups='base.group_no_one'/>
                             </group>
 
                             <group col="4" colspan="4" name="workflow_section" string="Workflow">
@@ -238,20 +238,20 @@
             <xpath expr="//header" position="inside">
                     <button name="action_release"
                             type="object"
-                            states="confirmed"
+                            attrs="{'invisible':[('engineering_state','!=','confirmed')]}"
                             string="Release Component"
                             class="oe_highlight"
                             groups="plm.group_plm_release_users"/>
                     <button name="action_draft"
                             type="object"
-                            states="confirmed"
+                            attrs="{'invisible':[('engineering_state','!=','confirmed')]}"
                             string="Correct Component"/>
                     <button name="action_confirm"
                             type="object"
-                            states="draft"
+                            attrs="{'invisible':[('engineering_state','!=','draft')]}"
                             string="Confirm Component"
                             class="oe_highlight"/>
-                    <field name="state"
+                    <field name="engineering_state"
                            widget="statusbar"
                            statusbar_visible="draft,confirmed,released"
                            statusbar_colors='{"undermodify":"red","obsoleted":"red"}'
@@ -268,9 +268,9 @@
                         string="Rev.s."
                         class="oe_stat_button"
                         icon="fa-tasks"
-                        attrs="{'invisible':[('revision_count','&lt;=','1')]}"
+                        attrs="{'invisible':[('engineering_revision_count','&lt;=','1')]}"
                         >
-                        <field name="revision_count"
+                        <field name="engineering_revision_count"
                                string="Rev.s."
                                modifiers="{&quot;readonly&quot;: true}"
                                widget="statinfo"/>
@@ -295,7 +295,7 @@
                <group>
                		<group>
                			<group colpsan="3" col="3">
-	                		<field name="std_description" colspan="4" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+	                		<field name="std_description" colspan="4" attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}"/>
 	                		<separator colspan="3" string="" invisible="1"/>
 	               			<field name="show_std_field1" invisible="1" colspan="1"/>
 	               			<field name="show_std_field2" invisible="1" colspan="1"/>
@@ -313,53 +313,53 @@
                             <group col="4" colspan="4">
                             <field name="std_umc1"
                                    force_save="1"
-                                   attrs="{'readonly':['|',('readonly_std_umc1','=',True),('state','in',['released','obsoleted'])], 'invisible': [('show_std_field1','=',False)]}"/>
+                                   attrs="{'readonly':['|',('readonly_std_umc1','=',True),('engineering_state','in',['released','obsoleted'])], 'invisible': [('show_std_field1','=',False)]}"/>
                             <field name="std_value1"
-                                   attrs="{'readonly':[('std_umc1','=',False),('state','in',['released','obsoleted'])], 'invisible': [('show_std_field1','=',False)]}"/>
+                                   attrs="{'readonly':[('std_umc1','=',False),('engineering_state','in',['released','obsoleted'])], 'invisible': [('show_std_field1','=',False)]}"/>
                             <field name="std_umc2"
                                    force_save="1"
-                                   attrs="{'readonly':['|',('readonly_std_umc2','=',True),('state','in',['released','obsoleted'])], 'invisible': [('show_std_field2','=',False)]}"/>
+                                   attrs="{'readonly':['|',('readonly_std_umc2','=',True),('engineering_state','in',['released','obsoleted'])], 'invisible': [('show_std_field2','=',False)]}"/>
                             <field name="std_value2"
-                                   attrs="{'readonly':[('std_umc2','=',False),('state','in',['released','obsoleted'])], 'invisible': [('show_std_field2','=',False)]}"/>
+                                   attrs="{'readonly':[('std_umc2','=',False),('engineering_state','in',['released','obsoleted'])], 'invisible': [('show_std_field2','=',False)]}"/>
                             <field name="std_umc3"
                                    force_save="1"
-                                   attrs="{'readonly':['|',('readonly_std_umc3','=',True),('state','in',['released','obsoleted'])], 'invisible': [('show_std_field3','=',False)]}"/>
+                                   attrs="{'readonly':['|',('readonly_std_umc3','=',True),('engineering_state','in',['released','obsoleted'])], 'invisible': [('show_std_field3','=',False)]}"/>
                             <field name="std_value3"
-                                   attrs="{'readonly':[('std_umc3','=',False),('state','in',['released','obsoleted'])], 'invisible': [('show_std_field3','=', False)]}"/>
+                                   attrs="{'readonly':[('std_umc3','=',False),('engineering_state','in',['released','obsoleted'])], 'invisible': [('show_std_field3','=', False)]}"/>
                             </group>
                     </group>
 	                <field name="source_product" invisible="1"/>
 	                <field name="desc_modify" colspan="6"
-	                       attrs="{'readonly':[('state','in',['released','obsoleted'])], 'invisible': [('engineering_revision', '=', 0)]}"/>
+	                       attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])], 'invisible': [('engineering_revision', '=', 0)]}"/>
                </group>
             </xpath>
             <xpath expr="//notebook[last()]" position="inside">
                 <page name="technical_infos" string="Technical Information">
                             <group col="4" colspan="4" name='uom_weight'>
                                 <label for="weight"/>
-                                <div class="o_row" name="weight" attrs="{'readonly':[('state','in',['released','obsoleted'])]}">
-                                    <field name="weight" attrs="{'readonly':[('state','in',['released','obsoleted'])]}" digits="[14,3]"/>
+                                <div class="o_row" name="weight" attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}">
+                                    <field name="weight" attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}" digits="[14,3]"/>
                                     <span><field name="weight_uom_name"/></span>
                                 </div>
                                 <field name="uom_id"
-                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                                       attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}"/>
                                 <field name="uom_po_id"
-                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"
+                                       attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}"
                                        groups="base.group_no_one"/>
                             </group>
                             <group colspan="4" col="4" name="technical_infos_group" string="Material / Surface / Treatment">
                                 <field name="tmp_material"
-                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                                       attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}"/>
                                 <field name="engineering_material"
-                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}" colspan="2" groups='base.group_no_one'/>
+                                       attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}" colspan="2" groups='base.group_no_one'/>
                                 <field name="tmp_surface"
-                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                                       attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}"/>
                                 <field name="engineering_surface"
-                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}" colspan="2" groups='base.group_no_one'/>
+                                       attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}" colspan="2" groups='base.group_no_one'/>
                                 <field name="tmp_treatment"
-                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                                       attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}"/>
                                 <field name="engineering_treatment"
-                                       attrs="{'readonly':[('state','in',['released','obsoleted'])]}" colspan="2" groups='base.group_no_one'/>
+                                       attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}" colspan="2" groups='base.group_no_one'/>
                             </group>
                             <group col="4" colspan="4" name="workflow_section" string="Workflow">
 				                 <field name="release_user"   readonly="1"/>
@@ -396,45 +396,45 @@
                 <field name="linkeddocuments"/>
                 <field name="engineering_code"/>
                 <field name="engineering_revision"/>
-                <field name="state"/>
+                <field name="engineering_state"/>
             </xpath>
             
             <xpath expr="//div/div[hasclass('o_kanban_image')]" position="replace">
-                <t t-value="record.state.raw_value" t-set="stateToUse"/>
+                <t t-value="record.engineering_state.raw_value" t-set="stateToUse"/>
                 <field name="engineering_code"/>-
                 <field name="engineering_revision"/>-
                 <t t-if="stateToUse == 'draft'">
 				    <span style="color: rgb(110, 51, 197);padding-left: 5px;">
 				        <b>
-				            <field name="state"/>
+				            <field name="engineering_state"/>
 				        </b>
 				    </span>
 				</t>
 				<t t-if="stateToUse == 'confirmed'">
 				    <span style="color: blue;padding-left: 5px;">
 				        <b>
-				            <field name="state"/>
+				            <field name="engineering_state"/>
 				        </b>
 				    </span>
 				</t>
 				<t t-if="stateToUse == 'released'">
 				    <span style="color: rgba(0, 170, 34, 0.66);padding-left: 5px;">
 				        <b>
-				            <field name="state"/>
+				            <field name="engineering_state"/>
 				        </b>
 				    </span>
 				</t>
 				<t t-if="stateToUse == 'undermodify'">
 				    <span style="color: rgb(218, 159, 34);padding-left: 5px;">
 				        <b>
-				            <field name="state"/>
+				            <field name="engineering_state"/>
 				        </b>
 				    </span>
 				</t>
 				<t t-if="stateToUse == 'obsoleted'">
 				    <span style="color: rgb(231, 43, 26);padding-left: 5px;">
 				        <b>
-				            <field name="state"/>
+				            <field name="engineering_state"/>
 				        </b>
 				    </span>
 				</t>

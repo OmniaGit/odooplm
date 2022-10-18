@@ -54,14 +54,16 @@ def emptyStringIfFalse(value):
         return ''
 
 
-class PlmComponent(models.Model):
-    _inherit = 'product.product'
+class ProductProduct(models.Model):
+    _name='product.product'
+    _inherit = ['revision.base.mixin', 'product.product']
+    _description ="Product Product"
     
     def onchange(self, values, field_name, field_onchange):
         values = self.plm_sanitize(values)
         if 'product_tmpl_id' in values:
             del values['product_tmpl_id']
-        return super(PlmComponent, self).onchange(values, field_name, field_onchange)
+        return super(ProductProduct, self).onchange(values, field_name, field_onchange)
 
     def action_show_reference(self):
         localCtx = self.env.context.copy()
@@ -155,7 +157,6 @@ class PlmComponent(models.Model):
     # Don't overload std_umc1, std_umc2, std_umc3 setting them related to std_description because odoo try to set value
     # of related fields and integration users doesn't have write permissions in std_description. The result is that
     # integration users can't create products if in changed values there is std_description
-    revision_count = fields.Integer(compute='_revisions_count')
     release_user = fields.Many2one('res.users', string=_("User Release"))
     release_date = fields.Datetime(string=_('Datetime Release'))
     workflow_user = fields.Many2one('res.users', string=_("User Last Wkf"))
@@ -198,15 +199,7 @@ class PlmComponent(models.Model):
                 if product_product_id.std_description.umc3 or product_product_id.std_description.fmt3:
                     product_product_id.show_std_field3 = True
         
-    def _revisions_count(self):
-        """
-        get All version product_tempate based on this one
-        """
-        for product_product_id in self:
-            if product_product_id.engineering_code:
-                product_product_id.revision_count = product_product_id.search_count([('engineering_code', '=', product_product_id.engineering_code)])
-            else:
-                product_product_id.revision_count = 0 
+
 
     @api.onchange('std_description')
     def on_change_stddesc(self):
@@ -273,7 +266,7 @@ class PlmComponent(models.Model):
     def getLatestReleasedRevision(self):
         for product_id in self.search([('engineering_code', '=', self.engineering_code)], order="engineering_code desc"):
             if product_id.id != self.id:
-                if product_id.state in ['released', 'undermodifie']:
+                if product_id.engineering_state in ['released', 'undermodifie']:
                     return product_id
         return self
     
@@ -617,10 +610,10 @@ class PlmComponent(models.Model):
         tobeReleasedIDs.extend(self.ids)
         for prodBrws in self:
             for childProdBrws in self.browse(self._getChildrenBom(prodBrws, 1)).filtered(lambda x: x.engineering_code not in [False, '']):
-                if (childProdBrws.state not in exclude_statuses) and (childProdBrws.state not in include_statuses):
+                if (childProdBrws.engineering_state not in exclude_statuses) and (childProdBrws.engineering_state not in include_statuses):
                     errors.append(_("Product code: %r revision %r status %r") % (childProdBrws.engineering_code, childProdBrws.engineering_revision, childProdBrws.state))
                     continue
-                if childProdBrws.state in include_statuses:
+                if childProdBrws.engineering_state in include_statuses:
                     if childProdBrws.id not in tobeReleasedIDs:
                         tobeReleasedIDs.append(childProdBrws.id)
         msg = ''
@@ -644,7 +637,7 @@ class PlmComponent(models.Model):
         docIDs = []
         attachment = self.env['ir.attachment']
         for documentBrws in linkeddocuments:
-            if documentBrws.state == check_state:
+            if documentBrws.engineering_state == check_state:
                 if documentBrws.is_checkout:
                     docInError.append(_("Document %r : %r is checked out by user %r") % (documentBrws.name, documentBrws.revisionid, documentBrws.checkout_user))
                     continue
@@ -665,7 +658,7 @@ class PlmComponent(models.Model):
         documentType = self.env['ir.attachment']
         for oldObject in self:
             if (action_name != 'transmit') and (action_name != 'reject') and (action_name != 'release'):
-                check_state = oldObject.state
+                check_state = oldObject.engineering_state
             else:
                 check_state = 'confirmed'
             docIDs.extend(self.checkWorkflow(docInError, oldObject.linkeddocuments, check_state))
@@ -709,8 +702,8 @@ class PlmComponent(models.Model):
         if not oid.engineering_writable:
             logging.warning("_iswritable : Part (%r - %d) is not writable." % (oid.engineering_code, oid.engineering_revision))
             return False
-        if oid.state not in checkState:
-            logging.warning("_iswritable : Part (%r - %d) is in status %r." % (oid.engineering_code, oid.engineering_revision, oid.state))
+        if oid.engineering_state not in checkState:
+            logging.warning("_iswritable : Part (%r - %d) is in status %r." % (oid.engineering_code, oid.engineering_revision, oid.engineering_state))
             return False
         if not oid.engineering_code:
             logging.warning("_iswritable : Part (%r - %d) is without Engineering P/N." % (oid.name, oid.engineering_revision))
@@ -767,7 +760,7 @@ class PlmComponent(models.Model):
             for oldObject in prod_ids:
                 oldObject.wf_message_post(body=_('Removed : Latest Revision.'))
                 ctx['check'] = False
-                values = {'state': 'released'}
+                values = {'engineering_state': 'released'}
                 if not oldObject.with_context(ctx).write(values):
                     msg = 'Unlink : Unable to update state in product Engineering Code = %r   Engineering Revision = %r   Document Id = %r' % (oldObject.engineering_code, oldObject.engineering_revision, oldObject.id)
                     logging.warning(msg)
@@ -780,7 +773,7 @@ class PlmComponent(models.Model):
             checkObj.linkeddocuments.unlinkCheckDocumentRelations()
             checkObj.unlinkCheckBomRelations()
             checkObj.unlinkRestorePreviousComponent()
-        return super(PlmComponent, self).unlink()
+        return super(ProductProduct, self).unlink()
 
     def action_draft(self):
         """
@@ -792,7 +785,7 @@ class PlmComponent(models.Model):
             action = 'draft'
             doc_action = 'draft'
             defaults['engineering_writable'] = True
-            defaults['state'] = status
+            defaults['engineering_state'] = status
             exclude_statuses = ['draft', 'released', 'undermodify', 'obsoleted']
             include_statuses = ['confirmed']
             comp_obj.commonWFAction(status, action, doc_action, defaults, exclude_statuses, include_statuses)
@@ -808,7 +801,7 @@ class PlmComponent(models.Model):
             action = 'confirm'
             doc_action = 'confirm'
             defaults['engineering_writable'] = False
-            defaults['state'] = status
+            defaults['engineering_state'] = status
             exclude_statuses = ['confirmed', 'released', 'undermodify', 'obsoleted']
             include_statuses = ['draft']
             comp_obj.commonWFAction(status, action, doc_action, defaults, exclude_statuses, include_statuses)
@@ -844,13 +837,13 @@ class PlmComponent(models.Model):
                 old_revision = self._getbyrevision(productBrw.engineering_code, productBrw.engineering_revision - 1)
                 if old_revision:
                     defaults['engineering_writable'] = False
-                    defaults['state'] = 'obsoleted'
+                    defaults['engineering_state'] = 'obsoleted'
                     old_revision.product_tmpl_id.write(defaults)
                     old_revision.write(defaults)
-                    status_lable = dict_status.get(defaults.get('state', ''), '')
+                    status_lable = dict_status.get(defaults.get('engineering_state', ''), '')
                     old_revision.wf_message_post(body=_('Status moved to: %s by %s.' % (status_lable, self.env.user.name)))
             defaults['engineering_writable'] = False
-            defaults['state'] = 'released'
+            defaults['engineering_state'] = 'released'
             defaults['release_user'] = self.env.uid
             defaults['release_date'] = datetime.now()
             self.browse(product_ids)._action_ondocuments('release', include_statuses)
@@ -881,7 +874,7 @@ class PlmComponent(models.Model):
             action = 'obsolete'
             doc_action = 'obsolete'
             defaults['engineering_writable'] = False
-            defaults['state'] = status
+            defaults['engineering_state'] = status
             exclude_statuses = ['draft', 'confirmed', 'undermodify', 'obsoleted']
             include_statuses = ['released']
             comp_obj.commonWFAction(status,
@@ -903,7 +896,7 @@ class PlmComponent(models.Model):
             action = ''
             doc_action = 'release'
             defaults['engineering_writable'] = True
-            defaults['state'] = status
+            defaults['engineering_state'] = status
             exclude_statuses = ['draft', 'confirmed', 'released', 'undermodify', 'obsoleted']
             include_statuses = ['obsoleted']
             comp_obj.commonWFAction(status, action, doc_action, defaults, exclude_statuses, include_statuses)
@@ -942,9 +935,9 @@ class PlmComponent(models.Model):
         objIds = self.env['product.template'].browse(product_template_ids)
         for objId in objIds:
             objId.write(defaults)
-            available_status = self._fields.get('state')._description_selection(self.env)
+            available_status = self._fields.get('engineering_state')._description_selection(self.env)
             dict_status = dict(available_status)
-            status_lable = dict_status.get(defaults.get('state', ''), '')
+            status_lable = dict_status.get(defaults.get('engineering_state', ''), '')
             self.browse(allIDs).wf_message_post(body=_('Status moved to: %s by %s.' % (status_lable, self.env.user.name)))
         return objIds
 
@@ -1041,7 +1034,7 @@ class PlmComponent(models.Model):
             vals.update(self.checkMany2oneClient(vals))
             vals = self.checkSetupDueToVariants(vals)
             vals = self.plm_sanitize(vals)
-            res = super(PlmComponent, self).create(vals)
+            res = super(ProductProduct, self).create(vals)
             return res
         except Exception as ex:
             if isinstance(ex, UserError):
@@ -1068,7 +1061,7 @@ class PlmComponent(models.Model):
             vals = product.plm_sanitize(vals)
             if not product.description or ('description' in vals and not vals['description']):
                 vals['description'] = '.'
-        res =  super(PlmComponent, self).write(vals)
+        res =  super(ProductProduct, self).write(vals)
         ctx = self.env.context.copy()
         skip = ctx.get('skip_write_overload', False)
         if not skip:
@@ -1088,7 +1081,7 @@ class PlmComponent(models.Model):
             fields.extend(customFields)
             fields = list(set(fields))
             fields = self.plm_sanitize(fields)
-            res = super(PlmComponent, self).read(fields=fields, load=load)
+            res = super(ProductProduct, self).read(fields=fields, load=load)
             res = self.readMany2oneFields(res, fields)
             return res
         except Exception as ex:
@@ -1125,11 +1118,11 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         if default.get('engineering_code', '') == '-':
             clearBrokenComponents()
         # assign default value
-        default['state'] = 'draft'
+        default['engineering_state'] = 'draft'
         default['engineering_writable'] = True
         default['linkeddocuments'] = []
         default['release_date'] = False
-        objId = super(PlmComponent, self).copy(default)
+        objId = super(ProductProduct, self).copy(default)
         if objId:
             objId.is_engcode_editable = True
             self.sudo().wf_message_post(body=_('Copied starting from : %s.' % previous_name))
@@ -1288,14 +1281,14 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             latestIDs = self.GetLatestIds([(tmpObject.engineering_code, tmpObject.engineering_revision, False)])
             for product_product_id in self.browse(latestIDs[-1]):
                 product_product_id = product_product_id.sudo()
-                product_product_id.state = 'undermodify'
+                product_product_id.engineering_state = 'undermodify'
                 product_product_id.engineering_writable =  False
-                product_product_id.product_tmpl_id.state = 'undermodify'
+                product_product_id.product_tmpl_id.engineering_state = 'undermodify'
                 product_product_id.product_tmpl_id.engineering_writable =  False
                 engineering_revision = int(product_product_id.engineering_revision) + 1
-                available_status = self._fields.get('state')._description_selection(self.env)
+                available_status = self._fields.get('engineering_state')._description_selection(self.env)
                 dict_status = dict(available_status)
-                status_lable = dict_status.get(product_product_id.state, '')
+                status_lable = dict_status.get(product_product_id.engineering_state, '')
                 product_product_id.wf_message_post(body=_('Status moved to: %s by %s.' % (status_lable, self.env.user.name)))
                 # store updated infos in "revision" object
                 defaults = {}
@@ -1303,7 +1296,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                 defaults['engineering_code'] = product_product_id.engineering_code
                 defaults['engineering_revision'] = engineering_revision
                 defaults['engineering_writable'] = True
-                defaults['state'] = 'draft'
+                defaults['engineering_state'] = 'draft'
                 defaults['linkeddocuments'] = []                  # Clean attached documents for new revision object
                 ctx['new_revision'] = True
                 new_tmpl_id = product_product_id.product_tmpl_id.with_context(ctx).copy(defaults)
@@ -1466,7 +1459,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
 
     def canBeRevised(self):
         for compBrws in self:
-            if compBrws.state == 'released':
+            if compBrws.engineering_state == 'released':
                 return True
         return False
 
@@ -1813,7 +1806,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             found = True
             break
         if found:  # Write
-            if product_produc_id.state not in ['released', 'obsoleted']:
+            if product_produc_id.engineering_state not in ['released', 'obsoleted']:
                 out_product_produc_id.write(productAttribute)
         else:  # write
             out_product_produc_id = self.create(productAttribute)
@@ -1821,7 +1814,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
 
     def name_get(self):
         result = []
-        ret = super(PlmComponent, self).name_get()
+        ret = super(ProductProduct, self).name_get()
         for res in ret:
             prod_id, eng_code = res
             prod = self.browse(prod_id)
@@ -1838,7 +1831,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         if not args:
             args = []
         product_ids = list(self._search([('engineering_code', operator, name)] + args, limit=limit, access_rights_uid=name_get_uid))
-        product_ids += list(super(PlmComponent, self)._name_search(name, args, operator, limit, name_get_uid))
+        product_ids += list(super(ProductProduct, self)._name_search(name, args, operator, limit, name_get_uid))
         return list(set(product_ids))
     
     @api.model
@@ -1928,10 +1921,10 @@ class ProductProductDashboard(models.Model):
             CREATE OR REPLACE VIEW report_plmcomponent AS (
                 SELECT
                     (SELECT min(id) FROM product_template where engineering_code<>'') as id,
-                    (SELECT count(*) FROM product_template WHERE state = 'draft' and  engineering_code<>'') AS count_component_draft,
-                    (SELECT count(*) FROM product_template WHERE state = 'confirmed' and  engineering_code<>'') AS count_component_confirmed,
-                    (SELECT count(*) FROM product_template WHERE state = 'released' and  engineering_code<>'') AS count_component_released,
-                    (SELECT count(*) FROM product_template WHERE state = 'undermodify' and  engineering_code<>'') AS count_component_modified,
-                    (SELECT count(*) FROM product_template WHERE state = 'obsoleted' and  engineering_code<>'') AS count_component_obsoleted
+                    (SELECT count(*) FROM product_template WHERE engineering_state = 'draft' and  engineering_code<>'') AS count_component_draft,
+                    (SELECT count(*) FROM product_template WHERE engineering_state = 'confirmed' and  engineering_code<>'') AS count_component_confirmed,
+                    (SELECT count(*) FROM product_template WHERE engineering_state = 'released' and  engineering_code<>'') AS count_component_released,
+                    (SELECT count(*) FROM product_template WHERE engineering_state = 'undermodify' and  engineering_code<>'') AS count_component_modified,
+                    (SELECT count(*) FROM product_template WHERE engineering_state = 'obsoleted' and  engineering_code<>'') AS count_component_obsoleted
              )
         """)

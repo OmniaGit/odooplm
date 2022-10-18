@@ -52,9 +52,9 @@ class PlmBackupDocument(models.Model):
     revisionid = fields.Integer(related="documentid.revisionid",
                                 string=_("Revision"),
                                 store=True)
-    state = fields.Selection(related="documentid.state",
-                             string=_("Status"),
-                             store=True)
+    engineering_state = fields.Selection(related="documentid.engineering_state",
+                                         string=_("Status"),
+                                         store=True)
     document_name = fields.Char(related="documentid.engineering_document_name",
                                 string=_("Stored Name"),
                                 store=True)

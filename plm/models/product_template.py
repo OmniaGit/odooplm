@@ -38,16 +38,11 @@ USED_STATES = [('draft', _('Draft')),
                ('obsoleted', _('Obsoleted'))]
 
 
-class ProductTemplateExtension(models.Model):
-    _name = 'product.template'
-    _inherit = 'product.template'
+class ProductTemplate(models.Model):
+    _name='product.template'
+    _description = 'Product Template'
+    _inherit = ['revision.base.mixin', 'product.template']
 
-    state = fields.Selection(USED_STATES,
-                             _('Status'),
-                             default='draft',
-                             help=_("The status of the product in its LifeCycle."),
-                             readonly="True",
-                             index=True)
     engineering_material = fields.Char(_('Cad Raw Material'),
                                        size=128,
                                        required=False,
@@ -64,16 +59,6 @@ class ProductTemplateExtension(models.Model):
                                         required=False,
                                         help=_("Termic treatment for current product, only description for titleblock."))
 
-    engineering_revision = fields.Integer(_('Revision'),
-                                          required=True,
-                                          help=_("The revision of the product."),
-                                          index=True,
-                                          default=0)
-
-    engineering_code = fields.Char(_('Part Number'),
-                                   index=True,
-                                   help=_("This is engineering reference to manage a different P/N from item Name."),
-                                   size=256)
 
     #   ####################################    Overload to set default values    ####################################
     standard_price = fields.Float('Cost',
@@ -96,11 +81,6 @@ class ProductTemplateExtension(models.Model):
                                          compute=lambda self: self._compute_eng_code_editable()
                                          )
 
-    revision_count = fields.Integer(compute='_revisions_count')
-
-    _sql_constraints = [
-        ('partnumber_uniq', 'unique (engineering_code,engineering_revision)', _('Part Number has to be unique!'))
-    ]
     
     def isLastVersion(self):
         for tempate_id in self:
@@ -144,30 +124,13 @@ class ProductTemplateExtension(models.Model):
                 'views': [(form_id.id, 'form')],
             }
 
-    @api.model
-    def getAllVersionTemplate(self):
-        """
-        get All version product_tempate based on this one
-        """
-        return self.search([('engineering_code', '=', self.engineering_code)])
-
-    def _revisions_count(self):
-        """
-        get All version product_tempate based on this one
-        """
-        for product_template_id in self:
-            if product_template_id.engineering_code:
-                product_template_id.revision_count = product_template_id.search_count([('engineering_code', '=', product_template_id.engineering_code)])
-            else:
-                product_template_id.revision_count = 0
-
     def open_related_revisions(self):
         return {'name': _('Products'),
                 'res_model': 'product.template',
                 'view_type': 'form',
                 'view_mode': 'tree,form',
                 'type': 'ir.actions.act_window',
-                'domain': [('id', 'in', self.getAllVersionTemplate().ids)],
+                'domain': [('id', 'in', self.get_all_revision().ids)],
                 'context': {}}
 
     def plm_sanitize(self, vals):
@@ -188,18 +151,18 @@ class ProductTemplateExtension(models.Model):
     @api.model
     def create(self, vals):
         vals = self.plm_sanitize(vals)
-        return super(ProductTemplateExtension, self).create(vals)
+        return super(ProductTemplate, self).create(vals)
 
     def write(self, vals):
         vals = self.plm_sanitize(vals)
-        return super(ProductTemplateExtension, self).write(vals)
+        return super(ProductTemplate, self).write(vals)
 
     def copy(self, default={}):
         """
             Overwrite the default copy method
         """
         if not self.engineering_code:
-            return super(ProductTemplateExtension, self).copy(default)
+            return super(ProductTemplate, self).copy(default)
         if not default:
             default = {}
 
@@ -221,11 +184,11 @@ class ProductTemplateExtension(models.Model):
         if default.get('engineering_code', '') == '-':
             clearBrokenComponents()
         # assign default value
-        default['state'] = 'draft'
+        default['engineering_state'] = 'draft'
         default['engineering_writable'] = True
         default['linkeddocuments'] = []
         default['release_date'] = False
-        objId = super(ProductTemplateExtension, self).copy(default)
+        objId = super(ProductTemplate, self).copy(default)
         if objId:
             objId.is_engcode_editable = True
         return objId

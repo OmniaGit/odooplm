@@ -36,7 +36,7 @@ import copy
 
 
 class MrpBomExtension(models.Model):
-    _name = 'mrp.bom'
+    _name='mrp.bom'
     _inherit = 'mrp.bom'
 
     def _father_compute(self, name='', arg={}):
@@ -67,11 +67,12 @@ class MrpBomExtension(models.Model):
                     if not (bom_line_brws.bom_id.id in result):
                         result.extend([bom_line_brws.bom_id.id])
             bom_obj.father_complete_ids = self.env['mrp.bom'].browse(list(set(result)))
-
-    state = fields.Selection(related="product_tmpl_id.state",
-                             string=_("Status"),
-                             help=_("The status of the product in its LifeCycle."),
-                             store=False)
+    
+    engineering_state = fields.Selection(related="product_id.engineering_state",
+                                         string=_("Status"),
+                                         help=_("The status of the product in its LifeCycle."),
+                                         store=False)
+    
     description = fields.Char(related="product_tmpl_id.name",
                               string=_("Description"),
                               store=False)
@@ -98,7 +99,7 @@ class MrpBomExtension(models.Model):
                                           help=_("The revision of the product."),
                                           store=True)
 
-    bom_revision_count = fields.Integer(related='product_tmpl_id.revision_count')
+    bom_revision_count = fields.Integer(related='product_tmpl_id.engineering_revision_count')
     
     att_count = fields.Integer(compute='attch_count')
     
@@ -677,7 +678,7 @@ class MrpBomExtension(models.Model):
         if new_bom_brws:
             for bom_line in new_bom_brws.bom_line_ids:
                 if not bom_line.product_id.product_tmpl_id.engineering_code:
-                    bom_line.sudo().write({'state': 'draft',
+                    bom_line.sudo().write({'engineering_state': 'draft',
                                            'source_id': False,})   
                     continue
                 late_rev_id_c = self.env['product.product'].GetLatestIds([
@@ -686,7 +687,7 @@ class MrpBomExtension(models.Model):
                      False)
                 ])  # Get Latest revision of each Part
                 bom_line.sudo().write({
-                    'state': 'draft',
+                    'engineering_state': 'draft',
                     'source_id': False,
                     'name': bom_line.product_id.product_tmpl_id.name,
                     'product_id': late_rev_id_c[0]
@@ -765,7 +766,7 @@ class MrpBomExtension(models.Model):
         product_product = self.env['product.product']
         ir_attachment_relation = self.env['ir.attachment.relation']
         try:
-            domain = [('state', 'in', ['installed', 'to upgrade', 'to remove']), ('name', '=', 'plm_engineering')]
+            domain = [('engineering_state', 'in', ['installed', 'to upgrade', 'to remove']), ('name', '=', 'plm_engineering')]
             apps = self.env['ir.module.module'].sudo().search_read(domain, ['name'])
             bomType = 'normal'
             if apps:

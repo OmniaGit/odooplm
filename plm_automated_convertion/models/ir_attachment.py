@@ -53,6 +53,10 @@ try:
     import cadquery2 as cq
 except Exception as ex:
     logging.error(ex)
+    try:
+        import cadquery as cq
+    except Exception as ex:
+        logging.error(ex)        
 #
 #
 from .cad_excenge import convert as exConvert

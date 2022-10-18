@@ -56,9 +56,10 @@ def random_name():
     d = [random.choice(string.ascii_letters) for _x in range(20)]
     return "".join(d)
 
-class PlmDocument(models.Model):
-    _name = 'ir.attachment'
-    _inherit = ['ir.attachment', 'mail.thread']
+class IrAttachment(models.Model):
+    _name='ir.attachment'
+    _description="Ir Attachment"
+    _inherit = ['ir.attachment', 'revision.base.mixin']
 
     @property
     def actions(self):
@@ -203,7 +204,7 @@ class PlmDocument(models.Model):
 
     
     def _inverse_datas(self):
-        super(PlmDocument, self)._inverse_datas()
+        super(IrAttachment, self)._inverse_datas()
         for ir_attachment_id in self:
             try:
                 shutil.copyfile(self._full_path(ir_attachment_id.store_fname),
@@ -401,7 +402,7 @@ class PlmDocument(models.Model):
                         'file_name': ir_attachment_id.name,
                         'write_date': ir_attachment_id.write_date,
                         'check_out_user': checkOutUser,
-                        'state': ir_attachment_id.state,
+                        'state': ir_attachment_id.engineering_state,
                         'zip_ids': self.getRelatedPkgTree(active_attachment_id),
                         'is_last_version': ir_attachment_id.isLatestRevision(),
                         })
@@ -455,7 +456,7 @@ class PlmDocument(models.Model):
                                'collectable': collectable,
                                'isCheckedOutToMeLastRev': isCheckedOutToMe,
                                'checkOutUser': checkOutUser,
-                               'state': objDoc.state})
+                               'state': objDoc.engineering_state})
             else:
                 result.append((outId, objDoc.name, file_size, collectable, isCheckedOutToMe, checkOutUser))
             if collectable:
@@ -480,9 +481,9 @@ class PlmDocument(models.Model):
 #         fname, filesize = self._manageFile()
 #         defaults['store_fname'] = fname
 #         defaults['file_size'] = filesize
-        defaults['state'] = 'draft'
+        defaults['engineering_state'] = 'draft'
         defaults['writable'] = True
-        newDocBrws = super(PlmDocument, self).copy(defaults)
+        newDocBrws = super(IrAttachment, self).copy(defaults)
         if newDocBrws:
             newDocBrws.wf_message_post(body=_('Copied starting from : %s.' % previous_name))
         for brwEnt in docBrwsList:
@@ -500,9 +501,9 @@ class PlmDocument(models.Model):
             logging.warning(
                 "_iswritable : Part (" + str(oid.name) + "-" + str(oid.revisionid) + ") not writable as hyperlink.")
             return False
-        if oid.state not in ('draft'):
+        if oid.engineering_state not in ('draft'):
             logging.warning("_iswritable : Part (" + str(oid.name) + "-" + str(oid.revisionid) + ") in status ; " + str(
-                oid.state) + ".")
+                oid.engineering_state) + ".")
             return False
         if not oid.name:
             logging.warning(
@@ -549,14 +550,14 @@ class PlmDocument(models.Model):
         for tmpObject in self.browse(docId):
             latestIDs = self.GetLatestIds([(tmpObject.engineering_document_name, tmpObject.revisionid, False)])
             for oldObject in self.browse(latestIDs):
-                oldObject.with_context(ctx).write({'state': 'undermodify'})
+                oldObject.with_context(ctx).write({'engineering_state': 'undermodify'})
                 defaults = {}
                 newRevIndex = int(oldObject.revisionid) + 1
                 defaults['engineering_document_name'] = oldObject.engineering_document_name
                 defaults['revisionid'] = newRevIndex
                 defaults['writable'] = True
-                defaults['state'] = 'draft'
-                res = super(PlmDocument, oldObject).copy(defaults)
+                defaults['engineering_state'] = 'draft'
+                res = super(IrAttachment, oldObject).copy(defaults)
                 newID = res.id
                 res.revision_user = self.env.uid
                 res.revision_date = datetime.now()
@@ -750,19 +751,19 @@ class PlmDocument(models.Model):
             newContext = self.env.context.copy()
             newContext['check'] = False
             objId = ir_attachment_id.with_context(newContext).write({'writable': writable,
-                                                                     'state': state,
+                                                                     'engineering_state': state,
                                                                      'workflow_user': self.env.uid,
                                                                      'workflow_date': datetime.now()
                                                                      })
             if objId:
-                available_status = self._fields.get('state')._description_selection(self.env)
+                available_status = self._fields.get('engineering_state')._description_selection(self.env)
                 dict_status = dict(available_status)
-                status_lable = dict_status.get(state, '')
+                status_lable = dict_status.get(engineering_state, '')
                 ir_attachment_id.wf_message_post(body=_('Status moved to: %s by %s.' % (status_lable, self.env.user.name)))
                 out.append(objId)
             if ir_attachment_id.is3D():
                 pkg_doc_ids = self.getRelatedPkgTree(ir_attachment_id.id)
-                self.browse(pkg_doc_ids).commonWFAction(writable, state, check)
+                self.browse(pkg_doc_ids).commonWFAction(writable, engineering_state, check)
         return out
 
     
@@ -813,14 +814,14 @@ class PlmDocument(models.Model):
         """
         defaults = {}
         defaults['engineering_writable'] = False
-        defaults['state'] = 'released'
+        defaults['engineering_state'] = 'released'
         if self.ischecked_in():
             self.setCheckContextWrite(False)
             objId = self.write(defaults)
             if objId:
-                available_status = self._fields.get('state')._description_selection(self.env)
+                available_status = self._fields.get('engineering_state')._description_selection(self.env)
                 dict_status = dict(available_status)
-                status_lable = dict_status.get(defaults.get('state', ''), '')
+                status_lable = dict_status.get(defaults.get('engineering_state', ''), '')
                 self.wf_message_post(body=_('Status moved to: %s.' % (_('Status moved to: %s.' % (status_lable)))))
             return objId
         return False
@@ -879,20 +880,20 @@ class PlmDocument(models.Model):
     @api.model
     def create(self, vals):
         if not self.env.context.get('odooPLM'):
-            return super(PlmDocument, self).create(vals)
+            return super(IrAttachment, self).create(vals)
         vals['is_plm'] = True
         vals.update(self.checkMany2oneClient(vals))
         vals = self.plm_sanitize(vals)
         vals['workflow_user'] = self.env.uid
         vals['workflow_date'] = datetime.now()
-        res = super(PlmDocument, self).create(vals)
+        res = super(IrAttachment, self).create(vals)
         res.check_unique()
         return res
 
     
     def write(self, vals):
         if not self.env.context.get('odooPLM'):
-            return super(PlmDocument, self).write(vals)
+            return super(IrAttachment, self).write(vals)
         check = self.env.context.get('check', True)
         if check:
             if not self.is_plm_state_writable() and not (self.env.user._is_admin() or self.env.user._is_superuser()):
@@ -900,7 +901,7 @@ class PlmDocument(models.Model):
         self.writeCheckDatas(vals)
         vals.update(self.checkMany2oneClient(vals))
         vals = self.plm_sanitize(vals)
-        res = super(PlmDocument, self).write(vals)
+        res = super(IrAttachment, self).write(vals)
         self.check_unique()
         return res
 
@@ -915,7 +916,7 @@ class PlmDocument(models.Model):
             plm_flag = ctx.get('odooPLM', False)
             if plm_flag:
                 self = self.sudo()
-            res = super(PlmDocument, self).read(fields=fields, load=load)
+            res = super(IrAttachment, self).read(fields=fields, load=load)
             res = self.readMany2oneFields(res, fields)
             return res
         except Exception as ex:
@@ -932,8 +933,8 @@ class PlmDocument(models.Model):
     @api.model
     def is_plm_state_writable(self):
         for customObject in self:
-            if customObject.state in PLM_NO_WRITE_STATE:
-                logging.info("state %r not in %r" % (customObject.state, PLM_NO_WRITE_STATE))
+            if customObject.engineering_state in PLM_NO_WRITE_STATE:
+                logging.info("state %r not in %r" % (customObject.engineering_state, PLM_NO_WRITE_STATE))
                 return False
         return True
 
@@ -971,7 +972,7 @@ class PlmDocument(models.Model):
             docBrwsList = self.search([('engineering_document_name', '=', checkObj.engineering_document_name), ('revisionid', '=', checkObj.revisionid - 1)], limit=1)
             for oldObject in docBrwsList:
                 oldObject.wf_message_post(body=_('Removed : Latest Revision.'))
-                values = {'state': 'released'}
+                values = {'engineering_state': 'released'}
                 if not oldObject.with_context(check=False).write(values):
                     msg = 'Unlink : Unable to update state in old document Engineering Name = %r   Engineering Revision = %r   Id = %r' % (oldObject.engineering_document_name, oldObject.revisionid, oldObject.id)
                     logging.warning(msg)
@@ -991,7 +992,7 @@ class PlmDocument(models.Model):
             checkObj.linkedcomponents = False
             checkObj.unlinkRestorePreviousDocument()
             checkObj.unlinkBackUp()
-        return super(PlmDocument, self).unlink()
+        return super(IrAttachment, self).unlink()
 
     #   Overridden methods for this entity
     @api.model
@@ -1141,12 +1142,7 @@ class PlmDocument(models.Model):
                            max_width=1920,
                            max_height=1920,
                            attachment=False)
-    state = fields.Selection(USED_STATES,
-                             _('Status'),
-                             help=_("The status of the product."),
-                             readonly="True",
-                             default='draft',
-                             index=True)
+
     checkout_user = fields.Char(string=_("Checked-Out to"),
                                 compute=_get_checkout_state)
     is_checkout = fields.Boolean(_('Is Checked-Out'),
@@ -1536,7 +1532,7 @@ class PlmDocument(models.Model):
         """
         backupDocBrwsList = self.env['plm.backupdoc'].search([('existingfile', '=', fname)])
         if not backupDocBrwsList:
-            return super(PlmDocument, self)._file_delete(fname)
+            return super(IrAttachment, self)._file_delete(fname)
 
     @api.model
     def GetNextDocumentName(self, documentName):
@@ -1569,7 +1565,7 @@ class PlmDocument(models.Model):
         """
         outMessage = ''
         outCode = 'NO_ERROR'
-        if self.state in ['released', 'obsoleted']:
+        if self.engineering_state in ['released', 'obsoleted']:
             outMessage = _("Document is released and cannot be saved")
             outCode = 'DOC_RELEASED'
             if raiseError:
@@ -1697,7 +1693,7 @@ class PlmDocument(models.Model):
                         documentAttribute[
                             'TO_UPDATE'] = False  # To skip same document preview/pdf uploading by the client
                         break
-                    if brwItem.state not in ['released', 'obsoleted']:
+                    if brwItem.engineering_state not in ['released', 'obsoleted']:
                         if brwItem.needUpdate():
                             brwItem.write(documentAttribute)
                             documentAttribute['TO_UPDATE'] = True
@@ -1734,7 +1730,7 @@ class PlmDocument(models.Model):
                     if brwItem.id in productsEvaluated:
                         prodBrws = brwItem
                         break
-                    if brwItem.state not in ['released', 'obsoleted']:
+                    if brwItem.engineering_state not in ['released', 'obsoleted']:
                         brwItem.write(productAttribute)
                     prodBrws = brwItem
                     productsEvaluated.append(brwItem.id)
@@ -1787,7 +1783,7 @@ class PlmDocument(models.Model):
                 logging.error(ex)
                 raise ex
         # Save the product relation
-        domain = [('state', 'in', ['installed', 'to upgrade', 'to remove']), ('name', '=', 'plm_engineering')]
+        domain = [('engineering_state', 'in', ['installed', 'to upgrade', 'to remove']), ('name', '=', 'plm_engineering')]
         apps = self.env['ir.module.module'].sudo().search_read(domain, ['name'])
         bomType = 'normal'
         if apps:
@@ -1865,7 +1861,7 @@ class PlmDocument(models.Model):
                 if showError:
                     raise UserError(msg)
                 return False, msg
-            if docBrws.state != 'draft':
+            if docBrws.engineering_state != 'draft':
                 msg = _("Unable to check-Out a document that is in state %r" % docBrws.state)
                 if showError:
                     raise UserError(msg)
@@ -1937,7 +1933,7 @@ class PlmDocument(models.Model):
     
     def canBeRevised(self):
         for docBrws in self:
-            if docBrws.state == 'released' and docBrws.ischecked_in():
+            if docBrws.engineering_state == 'released' and docBrws.ischecked_in():
                 return True
         return False
 
@@ -1964,14 +1960,14 @@ class PlmDocument(models.Model):
         existingDocs = {}
         graterDocBrws = None
         matchDocBrws = None
-        docAttrs['state'] = 'draft'
+        docAttrs['engineering_state'] = 'draft'
         for docBrws in docBrwsList:
             if docBrws.revisionid == docRev:
-                docAttrs['state'] = docBrws.state
+                docAttrs['engineering_state'] = docBrws.engineering_state
                 matchDocBrws = docBrws
             if not graterDocBrws:
                 graterDocBrws = docBrws
-            existingDocs[docBrws.revisionid] = (docBrws.engineering_document_name, docBrws.state)
+            existingDocs[docBrws.revisionid] = (docBrws.engineering_document_name, docBrws.engineering_state)
         docAttrs['existing_docs'] = existingDocs
         docAttrs['is_latest_revision'] = False
         if graterDocBrws and (graterDocBrws == matchDocBrws):
@@ -1992,14 +1988,14 @@ class PlmDocument(models.Model):
         existingCompRevisions = {}
         foundCompBrws = None
         graterCompBrws = None
-        compAttrs['state'] = 'draft'
+        compAttrs['engineering_state'] = 'draft'
         for compBrws in prodBrwsList:
             if engRev == compBrws.engineering_revision:
-                compAttrs['state'] = compBrws.state
+                compAttrs['engineering_state'] = compBrws.engineering_state
                 foundCompBrws = compBrws
             if not graterCompBrws:
                 graterCompBrws = compBrws
-            existingCompRevisions[compBrws.engineering_revision] = (compBrws.engineering_code, compBrws.state)
+            existingCompRevisions[compBrws.engineering_revision] = (compBrws.engineering_code, compBrws.engineering_state)
         compAttrs['existing_comps'] = existingCompRevisions
         if graterCompBrws == foundCompBrws:
             compAttrs['is_latest_revision'] = True
@@ -2111,14 +2107,14 @@ class PlmDocument(models.Model):
             outLocalDict['can_checkout'] = False
             outLocalDict['hostname'] = hostname
             outLocalDict['hostpws'] = hostpws
-            outLocalDict['state'] = ''
+            outLocalDict['engineering_state'] = ''
             outLocalDict['_id'] = False
             if not docBrwsList:
                 outLocalDict['help_checkout'] = _('Unable to find document to check-out. Please save it.')
             else:
                 for docBrws in docBrwsList:
                     outLocalDict['_id'] = docBrws.id
-                    outLocalDict['state'] = docBrws.state
+                    outLocalDict['engineering_state'] = docBrws.engineering_state
                     flag, msg = docBrws.canCheckOut(showError=False)
                     if flag:
                         outLocalDict['can_checkout'] = True
@@ -2243,7 +2239,7 @@ class PlmDocument(models.Model):
             plm_checkout_vals['documentid'] = ir_attachemnt_id.id
             break
         if found:  # write
-            if ir_attachemnt_id.state not in ['released', 'obsoleted']:
+            if ir_attachemnt_id.engineering_state not in ['released', 'obsoleted']:
                 if ir_attachemnt_id.needUpdate():
                     ir_attachemnt_id.write(documentAttribute)
                     action = ir_attachemnt_id.canIUpload(dbThread)
