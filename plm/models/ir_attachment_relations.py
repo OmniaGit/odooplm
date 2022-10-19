@@ -35,7 +35,7 @@ class PlmDocumentRelations(models.Model):
     parent_state = fields.Selection(related="parent_id.engineering_state",
                                     string=_("Parent Status"),
                                     store=False)
-    parent_revision = fields.Integer(related="parent_id.revisionid",
+    parent_revision = fields.Integer(related="parent_id.engineering_revision",
                                      string=_("Parent Revision"),
                                      store=False)
     parent_linked = fields.Boolean(related="parent_id.is_linkedcomponents",
@@ -50,7 +50,7 @@ class PlmDocumentRelations(models.Model):
     child_state = fields.Selection(related="child_id.engineering_state",
                                    string=_("Child Status"),
                                    store=False)
-    child_revision = fields.Integer(related="child_id.revisionid",
+    child_revision = fields.Integer(related="child_id.engineering_revision",
                                     string=_("Child Revision"),
                                     store=False)
     child_linked = fields.Boolean(related="child_id.is_linkedcomponents",
@@ -100,13 +100,13 @@ class PlmDocumentRelations(models.Model):
             child_name = ''
             parent_name = ''
             if r.parent_id:
-                if r.parent_id.engineering_document_name:
-                    parent_name = r.parent_id.engineering_document_name[:8]
+                if r.parent_id.engineering_code:
+                    parent_name = r.parent_id.engineering_code[:8]
                 else:
                     parent_name = r.parent_id.name[:8]
             if r.child_id:
-                if r.child_id.engineering_document_name:
-                    child_name = r.child_id.engineering_document_name[:8]
+                if r.child_id.engineering_code:
+                    child_name = r.child_id.engineering_code[:8]
                 elif r.child_id:
                     child_name = r.child_id.name[:8]
             name = "%s .. %s.." % (parent_name, child_name)

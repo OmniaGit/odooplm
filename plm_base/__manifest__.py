@@ -28,7 +28,7 @@
     "license": "LGPL-3",
     "summary": "PLM-PDM Integration base module [tehcnical module",
     "images": ["static/img/odoo_plm.png"],
-    "depends": ["base"],
+    "depends": ["base","mail"],
     "data": [
         # security
         # views

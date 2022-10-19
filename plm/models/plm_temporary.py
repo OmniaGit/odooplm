@@ -81,8 +81,8 @@ class ProductTemporary(models.TransientModel):
         ir_attachemnt_id = False
         if ir_attachment_props :
             ir_attachemnt_id = writeOrUpdate('ir.attachment',
-                                             'engineering_document_name',
-                                             'revisionid',
+                                             'engineering_code',
+                                             'engineering_revision',
                                              ir_attachment_props).id
         return ir_attachemnt_id, product_id 
 

@@ -18,6 +18,7 @@
 #    along with this prograIf not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+from lib2to3.pgen2.token import STAREQUAL
 '''
 Created on 28 Sep 2022
 
@@ -45,12 +46,12 @@ _logger = logging.getLogger(__name__)
 
 START_STATE ='draft'
 RELEASED_STATUS = 'released'
-
+OBSOLATED_STATUS = 'obsoleted'
 USED_STATES = [(START_STATE, _('Draft')),
                ('confirmed', _('Confirmed')),
                (RELEASED_STATUS, _('Released')),
                ('undermodify', _('UnderModify')),
-               ('obsoleted', _('Obsoleted'))]
+               (OBSOLATED_STATUS, _('Obsoleted'))]
 
 
 class RevisionBaseMixin(models.AbstractModel):
@@ -64,6 +65,9 @@ class RevisionBaseMixin(models.AbstractModel):
                                          string="Engineering Status",
                                          default='draft',
                                          tracking=True)
+    #
+    # workflow filed to manage revisio information
+    #
     engineering_release_date = fields.Datetime(_('Release date'),
                                                tracking=True)
     engineering_release_user = fields.Many2one('res.users', string=_("Release User"))
@@ -71,6 +75,10 @@ class RevisionBaseMixin(models.AbstractModel):
                                                 tracking=True)
     engineering_workflow_user = fields.Many2one('res.users', string=_("Workflow User"))
     
+    engineering_writable = fields.Boolean('Writable',
+                                          default=True)
+    engineering_revision_user = fields.Many2one('res.users', string=_("User Revision"))
+    engineering_revision_date = fields.Datetime(string=_('Datetime Revision'))
     _sql_constraints = [
         ('engineering_uniq', 'unique (engineering_code, engineering_revision)', _('Part Number has to be unique!'))
     ]
@@ -88,11 +96,19 @@ class RevisionBaseMixin(models.AbstractModel):
                 obj_id.engineering_revision_count = 0
                 
     def _mark_workflow_release_now(self):
+        """
+        mark the object to be released if is in the proper status
+        """
         for obj in self:
             if obj.engineering_state==RELEASED_STATUS:
+                obj.engineering_writable=False
                 obj.engineering_release_date=datetime.now()
                 obj.engineering_release_user=self.env.uid
-                        
+            elif obj.engineering_state== OBSOLATED_STATUS:
+                obj.engineering_writable=False
+            else:
+                obj.engineering_writable=True
+
     def _mark_worklow_user_date(self):
         for obj in self:
             obj.engineering_workflow_date=datetime.now()
@@ -109,11 +125,30 @@ class RevisionBaseMixin(models.AbstractModel):
             obj.engineering_state = START_STATE
             obj._mark_worklow_user_date() 
 
-    def action_from_confirmed_to_released(self):
+    def action_from_confirmed_to_release(self):
         for obj in self:
             obj.engineering_state = RELEASED_STATUS
             obj._mark_worklow_user_date()
-            
+            obj._mark_obsolete_previous()
+    
+    def _mark_obsolare(self):
+        for obj in self:
+            obj.engineering_state = OBSOLATED_STATUS
+            obj._mark_worklow_user_date()           
+             
+    def _mark_obsolete_previous(self):
+        for obj in self:
+            if obj.engineering_revision in [False, 0]:
+                continue
+            obj_previus_version = obj.get_previus_version()
+            obj_previus_version._mark_obsolare()
+        
+    def move_to_state(self, state):
+        for obj in self:
+            function_name = "action_from_%s_to_%s" % (obj.engineering_state, state)
+            f=getattr(obj, function_name)
+            f()
+        
     def is_released(self):
         self.ensure_one()
         return self.engineering_state==RELEASED_STATUS
@@ -142,6 +177,11 @@ class RevisionBaseMixin(models.AbstractModel):
         self.ensure_one()
         return self.search([('engineering_code','=', self.engineering_code)], order='engineering_revision DESC', limit=1)
     
+    def get_previus_version(self):
+        self.ensure_one()
+        return self.search([('engineering_code','=', self.engineering_code),
+                            ('engineering_revision','=', self.engineering_revision-1)])
+                
     def get_released(self):
         self.ensure_one()
         return self.search([('engineering_code','=', self.engineering_code),

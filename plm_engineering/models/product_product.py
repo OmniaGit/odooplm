@@ -142,7 +142,7 @@ class ProductProductExtension(models.Model):
                                                    evaluated=evaluated)
                         line_brws.type = new_bom_type
                         line_brws.ebom_source_id = e_bom_id
-                obj_product_product_brw.wf_message_post(body=_('Created %r' % new_bom_type))
+                obj_product_product_brw.message_post(body=_('Created %r' % new_bom_type))
                 break
         if new_nbom_id and e_bom_id and migrate_custom_lines:
             # if e_bom_id --> normal BOM was not existing

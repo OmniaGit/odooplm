@@ -106,10 +106,10 @@
 	           		</div>
 		           	<group>
 	                	<group string= "PLM Infos:" name="main_doc_info">
-	                    	<label for="engineering_document_name" class="oe_edit_only"/>
-	                    	<field string="Eng. Document Name" name="engineering_document_name" attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}"/>
-	                    	<label for="revisionid" class="oe_edit_only"/>
-	                    	<field string="Enineering revision" name="revisionid" readonly="True"/>
+	                    	<label for="engineering_code" class="oe_edit_only"/>
+	                    	<field string="Eng. Document Name" name="engineering_code" attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}"/>
+	                    	<label for="engineering_revision" class="oe_edit_only"/>
+	                    	<field string="Enineering revision" name="engineering_revision" readonly="True"/>
 	                    	<field string="Is a Plm Document" name="is_plm" visible="0" widget="boolean_toggle"/>
 	                	</group>
 	                 	<group name="doc_preview">
@@ -156,19 +156,19 @@
 	                        		</div>	
                         		</group>
                         		<group>
-	                            	<label for="workflow_user"/>
+	                            	<label for="engineering_workflow_user"/>
 	                            	<div name="workflow_user_div">
-	                                	<field name="workflow_user" readonly="1" class="oe_inline"/> on <field name="workflow_date" readonly="1" class="oe_inline"/>
+	                                	<field name="engineering_workflow_user" readonly="1" class="oe_inline"/> on <field name="engineering_workflow_date" readonly="1" class="oe_inline"/>
 	                            	</div>
                         		</group>
-                        		<group string="User" attrs="{'invisible':['|', ('attachment_release_user', '=', False), ('revision_user', '=', False)]}">
-                        			<label for="attachment_release_user"/>
+                        		<group string="User" attrs="{'invisible':['|', ('engineering_release_user', '=', False), ('engineering_revision_user', '=', False)]}">
+                        			<label for="engineering_release_user"/>
 	                            	<div name="attachment_release_user_div">
-	                                	<field name="attachment_release_user" readonly="1" class="oe_inline"/> on <field name="attachment_release_date" readonly="1" class="oe_inline"/>
+	                                	<field name="engineering_release_user" readonly="1" class="oe_inline"/> on <field name="engineering_release_date" readonly="1" class="oe_inline"/>
 	                            	</div>
-                        			<label for="revision_user"/>
-	                            	<div name="revision_user">
-	                                	<field name="revision_user" readonly="1" class="oe_inline"/> on <field name="revision_date" readonly="1" class="oe_inline"/>
+                        			<label for="engineering_revision_user"/>
+	                            	<div name="engineering_revision_user">
+	                                	<field name="engineering_revision_user" readonly="1" class="oe_inline"/> on <field name="engineering_revision_date" readonly="1" class="oe_inline"/>
 	                            	</div>
                         		</group>
                         	</group>
@@ -183,7 +183,7 @@
                             <label for="description" class="oe_edit_only"/>
                             <field colspan="4" name="description" nolabel="1" attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}"/>
                             <label for="desc_modify" class="oe_edit_only"/>
-                            <field colspan="4" name="desc_modify" nolabel="1" attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])], 'invisible': [('revisionid', '=', 0)]}"/>
+                            <field colspan="4" name="desc_modify" nolabel="1" attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])], 'invisible': [('engineering_revision', '=', 0)]}"/>
                         </page>
                     </notebook>
                </sheet>
@@ -208,9 +208,9 @@
                   decoration-muted="engineering_state == 'obsoleted'">
 
                 <field name="name" select="True"/>
-                <field name="revisionid" select="True"/>
+                <field name="engineering_revision" select="True"/>
                 <field name="engineering_state" select="True"/>
-                <field name="engineering_document_name" select="True"/>
+                <field name="engineering_code" select="True"/>
                 <field name="checkout_user" colspan="2"/>
                 <field name="create_uid" select="True"/>
                 <field name="create_date" select="True"/>
@@ -227,7 +227,7 @@
         <field name="priority" eval="20"/>
         <field name="arch" type="xml">
             <search string="Documents">
-             	<field name="engineering_document_name"/>
+             	<field name="engineering_code"/>
              	<field name="name"/>
              	<field name="document_type"/>
             	<filter 
@@ -306,8 +306,8 @@
         <field name="arch" type="xml">
             <kanban>
                 <field name="id"/>    											<!-- Necessary to render previews -->
-                <field name="engineering_document_name"/>
-                <field name="revisionid"/>
+                <field name="engineering_code"/>
+                <field name="engineering_revision"/>
                 <field name="description"/>
                 <field name="engineering_state"/>
                 <field name="document_type"/>
@@ -361,14 +361,14 @@
 											<tr>
 												<td>
                                                     <t><strong>Name:</strong></t>
-                                                    <field name="engineering_document_name"/>
+                                                    <field name="engineering_code"/>
                                                     <field name="display_name" attrs="{'invisible': [('id', 'not in', [False, []])]}"/>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>
                                                     <t><strong>Revision:</strong></t>
-                                                    <field name="revisionid"/>
+                                                    <field name="engineering_revision"/>
                                                 </td>
                                             </tr>
                                             <tr name="state">

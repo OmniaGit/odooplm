@@ -143,8 +143,8 @@ class PlmClient(models.TransientModel):
         if attach_id:
             ir_browse = attach_object.browse(attach_id)
         else:
-            ir_browse = attach_object.search([('engineering_document_name', '=', document_attributes.get('engineering_document_name', '')),
-                                              ('revisionid', '=', document_attributes.get('revisionid', -1))]) 
+            ir_browse = attach_object.search([('engineering_code', '=', document_attributes.get('engineering_code', '')),
+                                              ('engineering_revision', '=', document_attributes.get('engineering_revision', -1))]) 
         return ir_browse
 
     @api.model

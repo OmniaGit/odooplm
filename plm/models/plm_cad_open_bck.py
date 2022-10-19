@@ -38,7 +38,7 @@ class PlmCadOpenBck(models.Model):
     plm_backup_doc_id = fields.Many2one('plm.backupdoc', 'Backup Document Reference')
     userid = fields.Many2one('res.users', _('Related User'))
     document_id = fields.Many2one('ir.attachment', _('Related Document'))
-    rel_doc_rev = fields.Integer(related='document_id.revisionid', string="Revision", store=True)
+    rel_doc_rev = fields.Integer(related='document_id.engineering_revision', string="Revision", store=True)
     pws_path = fields.Char(_('PWS Path'))
     hostname = fields.Char(_('Hostname'))
     operation_type = fields.Char(_('Operation Type'))
@@ -47,7 +47,7 @@ class PlmCadOpenBck(models.Model):
         result = []
         for r in self:
             if r.document_id and r.userid:
-                name = "%s - R:%s - [%s]" % (r.document_id.engineering_document_name, r.document_id.revisionid, r.userid.display_name)
+                name = "%s - R:%s - [%s]" % (r.document_id.engineering_code, r.document_id.engineering_revision, r.userid.display_name)
             else:
                 name = "Error"
             result.append((r.id, name))

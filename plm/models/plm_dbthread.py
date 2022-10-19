@@ -58,9 +58,9 @@ class PlmDbthread(models.Model):
         """
         threadCode = self.env.get('ir.sequence').next_by_code('plm.dbthread.progress')
         for docDict in list_doc[0]:
-            name = docDict.get('engineering_document_name')
+            name = docDict.get('engineering_code')
             if name:
-                key = "%s_%s" % (docDict.get('engineering_document_name'), docDict.get('revisionid', 0))
+                key = "%s_%s" % (docDict.get('engineering_code'), docDict.get('engineering_revision', 0))
                 if key:
                     self.create({'documement_name_version': key,
                                  'threadCode': threadCode})

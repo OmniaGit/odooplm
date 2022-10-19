@@ -215,12 +215,12 @@
                             </group>
 
                             <group col="4" colspan="4" name="workflow_section" string="Workflow">
-				                 <field name="release_user"   readonly="1"/>
-				                 <field name="release_date"  readonly="1"/>
-				                 <field name="revision_user"   readonly="1"/>
-				                 <field name="revision_date"  readonly="1"/>
-				                 <field name="workflow_user"   readonly="1"/>
-				                 <field name="workflow_date"  readonly="1"/>
+				                 <field name="engineering_release_user"   readonly="1"/>
+				                 <field name="engineering_release_date"  readonly="1"/>
+				                 <field name="engineering_revision_user"   readonly="1"/>
+				                 <field name="engineering_revision_date"  readonly="1"/>
+				                 <field name="engineering_workflow_user"   readonly="1"/>
+				                 <field name="engineering_workflow_date"  readonly="1"/>
                             </group>
                         </page>
                     </notebook>
@@ -362,12 +362,12 @@
                                        attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}" colspan="2" groups='base.group_no_one'/>
                             </group>
                             <group col="4" colspan="4" name="workflow_section" string="Workflow">
-				                 <field name="release_user"   readonly="1"/>
-				                 <field name="release_date"  readonly="1"/>
-				                 <field name="revision_user"   readonly="1"/>
-				                 <field name="revision_date"  readonly="1"/>
-				                 <field name="workflow_user"   readonly="1"/>
-				                 <field name="workflow_date"  readonly="1"/>
+				                 <field name="engineering_release_user"   readonly="1"/>
+				                 <field name="engineering_release_date"  readonly="1"/>
+				                 <field name="engineering_revision_user"   readonly="1"/>
+				                 <field name="engineering_revision_date"  readonly="1"/>
+				                 <field name="engineering_workflow_user"   readonly="1"/>
+				                 <field name="engineering_workflow_date"  readonly="1"/>
                             </group>
                         </page>
                         <page string="Linked Documents" name="linkeddocuments">

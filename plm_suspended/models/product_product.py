@@ -48,7 +48,7 @@ class ProductProduct(models.Model):
         obj_id = self.write(defaults)
         self.product_tmpl_id.write(defaults)
         if obj_id:
-            self.wf_message_post(body=_('Status moved to:{}.'.format(defaults['state'])))
+            self.message_post(body=_('Status moved to:{}.'.format(defaults['state'])))
         return obj_id
 
     def action_unsuspend(self):
@@ -59,5 +59,5 @@ class ProductProduct(models.Model):
         obj_id = self.write(defaults)
         self.product_tmpl_id.write(defaults)
         if obj_id:
-            self.wf_message_post(body=_('Status moved to:{}.'.format(defaults['state'])))
+            self.message_post(body=_('Status moved to:{}.'.format(defaults['state'])))
         return obj_id

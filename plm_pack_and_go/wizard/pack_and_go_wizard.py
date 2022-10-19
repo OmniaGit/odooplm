@@ -152,7 +152,7 @@ class PackAndGo(models.TransientModel):
                 compRev = comp.engineering_revision
             singleCreateDict = {'component_id': compId,
                                 'comp_rev': compRev,
-                                'doc_rev': doc.revisionid,
+                                'doc_rev': doc.engineering_revision,
                                 'document_id': doc.id,
                                 'preview': doc.preview,
                                 'available_types': False,

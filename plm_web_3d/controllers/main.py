@@ -62,8 +62,8 @@ class Web3DView(Controller):
                 <li class="attribute_info"><b>Revision:</b> %s</li>
                 <li class="attribute_info"><b>Description:</b> %s</li>
                 """ % (
-                    ir_attachment.engineering_document_name or ir_attachment.name,
-                    ir_attachment.revisionid,
+                    ir_attachment.engineering_code or ir_attachment.name,
+                    ir_attachment.engineering_revision,
                     ir_attachment.state
                     )
                 document = self.document_extra(document)

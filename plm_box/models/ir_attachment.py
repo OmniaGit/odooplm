@@ -80,7 +80,7 @@ class Plm_box_document(models.Model):
     @api.model
     def getFilesFromName(self, vals):
         docName, docRevision = vals
-        docIds = self.search([('name', '=', docName), ('revisionid', '=', docRevision)]).ids
+        docIds = self.search([('name', '=', docName), ('engineering_revision', '=', docRevision)]).ids
         if docIds:
             files = self.GetSomeFiles((docIds, [[], []], False))
             if files:
@@ -91,7 +91,7 @@ class Plm_box_document(models.Model):
     @api.model
     def checkInOrFalse(self, docDict):
         docName = docDict.get('name', '')
-        docRev = docDict.get('revisionId', '')
+        docRev = docDict.get('engineering_revision', '')
         docContent = docDict.get('fileContent', '')
         force = docDict.get('force', False)
         docBrowseList = self.search([('name', '=', docName)])
@@ -99,7 +99,7 @@ class Plm_box_document(models.Model):
             clientBytesContent = docContent.encode(encoding='utf_8', errors='strict')
             if docBrowseList[0].datas + '\n'.encode(encoding='utf_8', errors='strict') != clientBytesContent:
                 return 'File changed'
-        docIds = self.search([('name', '=', docName), ('revisionid', '=', docRev)]).ids
+        docIds = self.search([('name', '=', docName), ('engineering_revision', '=', docRev)]).ids
         if len(docIds) == 1:
             chckOutDocs = self.env.get('plm.checkout').search([('documentid', '=', docIds[0]), ('userid', '=', self.env.uid)])
             chckOutDocs.unlink()
@@ -109,9 +109,9 @@ class Plm_box_document(models.Model):
     @api.model
     def checkOutOrFalse(self, docDict):
         docName = docDict.get('name', '')
-        docRev = docDict.get('revisionId', '')
+        docRev = docDict.get('engineering_revision', '')
         plmCheckOutObj = self.env.get('plm.checkout')
-        docBrwsList = self.search([('name', '=', docName), ('revisionid', '=', docRev)])
+        docBrwsList = self.search([('name', '=', docName), ('engineering_revision', '=', docRev)])
         for docBrws in docBrwsList:
             docState = docBrws.state
             docId = docBrws.id

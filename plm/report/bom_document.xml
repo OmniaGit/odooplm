@@ -40,10 +40,10 @@
 										</div>
 		                           	</td>
 		                     		<td>
-		                            	<t t-esc="record_browse.engineering_document_name"/>
+		                            	<t t-esc="record_browse.engineering_code"/>
 		                        	</td>
 		                        	<td class="text-center">
-		                            	<t t-esc="record_browse.revisionid"/>
+		                            	<t t-esc="record_browse.engineering_revision"/>
 		                        	</td>
 		                        	<t t-set="state" t-value="record_browse.engineering_state"/>
 		                        	<t t-call="plm.docuemnt_state_row"/>
@@ -91,10 +91,10 @@
 					</div>
 				</td>
 				<td>
-					<t t-esc="record_child.engineering_document_name"/>
+					<t t-esc="record_child.engineering_code"/>
 				</td>
 				<td class="text-center">
-					<t t-esc="record_child.revisionid"/>
+					<t t-esc="record_child.engineering_revision"/>
 				</td>
                 <t t-call="plm.docuemnt_state_row"/>
 				<td>

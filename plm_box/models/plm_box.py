@@ -315,7 +315,7 @@ class Plm_box(models.Model):
         if docState in ['check-out', 'check-out-by-me']:
             getCheckOutUser = docBrws.getCheckOutUser()
         writeVal = datetime.datetime.strptime(docBrws.write_date, DEFAULT_SERVER_DATETIME_FORMAT)
-        return {'revisionid': docBrws.revisionid,
+        return {'engineering_revision': docBrws.engineering_revision,
                 'datas_fname': docBrws.name,
                 'create_date': docBrws.create_date,
                 'write_date': correctDate(writeVal, self.env.context),

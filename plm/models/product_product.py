@@ -28,6 +28,8 @@ from odoo import models
 from odoo import fields
 from odoo import api
 from odoo import _
+from odoo.addons.plm_base.models.plm_base_mixin import OBSOLATED_STATUS
+from odoo.addons.plm_base.models.plm_base_mixin import RELEASED_STATUS
 from odoo.exceptions import ValidationError
 from odoo.exceptions import AccessError
 from odoo.exceptions import UserError
@@ -157,12 +159,6 @@ class ProductProduct(models.Model):
     # Don't overload std_umc1, std_umc2, std_umc3 setting them related to std_description because odoo try to set value
     # of related fields and integration users doesn't have write permissions in std_description. The result is that
     # integration users can't create products if in changed values there is std_description
-    release_user = fields.Many2one('res.users', string=_("User Release"))
-    release_date = fields.Datetime(string=_('Datetime Release'))
-    workflow_user = fields.Many2one('res.users', string=_("User Last Wkf"))
-    workflow_date = fields.Datetime(string=_('Datetime Last Wkf'))
-    revision_user = fields.Many2one('res.users', string=_("User Revision"))
-    revision_date = fields.Datetime(string=_('Datetime Revision'))
     
     show_std_field1 = fields.Boolean(_('Show std field 1'),
                                  compute='_showStd')
@@ -443,7 +439,7 @@ class ProductProduct(models.Model):
             Registers a message for requested component
         """
         oid, message = request
-        self.browse([oid]).wf_message_post(body=_(message))
+        self.browse([oid]).message_post(body=_(message))
         return False
 
     @api.model
@@ -599,29 +595,26 @@ class ProductProduct(models.Model):
         retd = list(dic.values())
         return retd
 
-    def _get_recursive_parts(self, exclude_statuses, include_statuses):
+    def _get_recursive_parts(self, include_statuses):
         """
            Get all ids related to current one as children
         """
+        out_product =  self.env['product.product']
         errors = []
         tobeReleasedIDs = []
         if not isinstance(self.ids, (list, tuple)):
             self.ids = [self.ids]
         tobeReleasedIDs.extend(self.ids)
         for prodBrws in self:
-            for childProdBrws in self.browse(self._getChildrenBom(prodBrws, 1)).filtered(lambda x: x.engineering_code not in [False, '']):
-                if (childProdBrws.engineering_state not in exclude_statuses) and (childProdBrws.engineering_state not in include_statuses):
-                    errors.append(_("Product code: %r revision %r status %r") % (childProdBrws.engineering_code, childProdBrws.engineering_revision, childProdBrws.state))
-                    continue
-                if childProdBrws.engineering_state in include_statuses:
-                    if childProdBrws.id not in tobeReleasedIDs:
-                        tobeReleasedIDs.append(childProdBrws.id)
+            for childProdBrws in self.browse(self._getChildrenBom(prodBrws, 1)).filtered(lambda x: x.engineering_code not in [False, ''] and x.engineering_state in include_statuses):
+                if childProdBrws.id not in tobeReleasedIDs:
+                    out_product+=childProdBrws
         msg = ''
         if errors:
             msg = _("Unable to perform workFlow action due")
             for subMsg in errors:
                 msg = msg + "\n" + subMsg
-        return (msg, list(set(tobeReleasedIDs)))
+        return (msg, out_product.union())
 
     def action_create_normalBom_WF(self):
         """
@@ -630,7 +623,7 @@ class ProductProduct(models.Model):
         for prodId in self.ids:
             processedIds = []
             self._create_normalBom(prodId, processedIds)
-        self.wf_message_post(body=_('Created Normal Bom.'))
+        self.message_post(body=_('Created Normal Bom.'))
         return False
 
     def checkWorkflow(self, docInError, linkeddocuments, check_state):
@@ -639,7 +632,7 @@ class ProductProduct(models.Model):
         for documentBrws in linkeddocuments:
             if documentBrws.engineering_state == check_state:
                 if documentBrws.is_checkout:
-                    docInError.append(_("Document %r : %r is checked out by user %r") % (documentBrws.name, documentBrws.revisionid, documentBrws.checkout_user))
+                    docInError.append(_("Document %r : %r is checked out by user %r") % (documentBrws.name, documentBrws.engineering_revision, documentBrws.checkout_user))
                     continue
                 docIDs.append(documentBrws.id)
                 if documentBrws.is3D():
@@ -657,7 +650,7 @@ class ProductProduct(models.Model):
         docInError = []
         documentType = self.env['ir.attachment']
         for oldObject in self:
-            if (action_name != 'transmit') and (action_name != 'reject') and (action_name != 'release'):
+            if action_name != 'reject' and action_name != 'release':
                 check_state = oldObject.engineering_state
             else:
                 check_state = 'confirmed'
@@ -671,29 +664,25 @@ class ProductProduct(models.Model):
         self.moveDocumentWorkflow(docIDs, action_name)
 
     def moveDocumentWorkflow(self, docIDs, action_name):
-        documentType = self.env['ir.attachment']
+        ir_attachment = self.env['ir.attachment']
         if len(docIDs) > 0:
-            docBrws = documentType.browse(docIDs)
+            ir_attachment_ids = ir_attachment.browse(docIDs)
             if action_name == 'confirm':
-                docBrws.action_confirm()
-            elif action_name == 'transmit':  # TODO: Why is used? Is correct?
-                docBrws.action_confirm()
+                ir_attachment_ids.action_confirm()
             elif action_name == 'draft':
-                docBrws.action_draft()
-            elif action_name == 'correct':  # TODO: Why is used? Is correct?
-                docBrws.action_draft()
+                ir_attachment_ids.action_draft()
             elif action_name == 'reject':
-                docBrws.action_draft()
+                ir_attachment_ids.action_draft()
             elif action_name == 'release':
-                docBrws.action_release()
+                ir_attachment_ids.action_release()
             elif action_name == 'undermodify':
-                docBrws.action_cancel()
+                ir_attachment_ids.action_cancel()
             elif action_name == 'suspend':
-                docBrws.action_suspend()
+                ir_attachment_ids.action_suspend()
             elif action_name == 'reactivate':
-                docBrws.action_reactivate()
+                ir_attachment_ids.action_reactivate()
             elif action_name == 'obsolete':
-                docBrws.action_obsolete()
+                ir_attachment_ids.action_obsolete()
         return docIDs
 
     @api.model
@@ -709,14 +698,6 @@ class ProductProduct(models.Model):
             logging.warning("_iswritable : Part (%r - %d) is without Engineering P/N." % (oid.name, oid.engineering_revision))
             return False
         return True
-
-    def wf_message_post(self, body=''):
-        """
-            Writing messages to follower, on multiple objects
-        """
-        if not (body == ''):
-            for comp_obj in self:
-                comp_obj.sudo().message_post(body=_(body))
 
     def unlinkCheckFirstLevel(self):
         for product in self:
@@ -758,7 +739,7 @@ class ProductProduct(models.Model):
         for checkObj in self:
             prod_ids = self.search([('engineering_code', '=', checkObj.engineering_code), ('engineering_revision', '=', checkObj.engineering_revision - 1)], limit=1)
             for oldObject in prod_ids:
-                oldObject.wf_message_post(body=_('Removed : Latest Revision.'))
+                oldObject.message_post(body=_('Removed : Latest Revision.'))
                 ctx['check'] = False
                 values = {'engineering_state': 'released'}
                 if not oldObject.with_context(ctx).write(values):
@@ -775,171 +756,91 @@ class ProductProduct(models.Model):
             checkObj.unlinkRestorePreviousComponent()
         return super(ProductProduct, self).unlink()
 
-    def action_draft(self):
-        """
-            release the object
-        """
-        for comp_obj in self:
-            defaults = {}
-            status = 'draft'
-            action = 'draft'
-            doc_action = 'draft'
-            defaults['engineering_writable'] = True
-            defaults['engineering_state'] = status
-            exclude_statuses = ['draft', 'released', 'undermodify', 'obsoleted']
-            include_statuses = ['confirmed']
-            comp_obj.commonWFAction(status, action, doc_action, defaults, exclude_statuses, include_statuses)
-        return True
 
-    def action_confirm(self):
-        """
-            action to be executed for Draft state
-        """
-        for comp_obj in self:
-            defaults = {}
-            status = 'confirmed'
-            action = 'confirm'
-            doc_action = 'confirm'
-            defaults['engineering_writable'] = False
-            defaults['engineering_state'] = status
-            exclude_statuses = ['confirmed', 'released', 'undermodify', 'obsoleted']
-            include_statuses = ['draft']
-            comp_obj.commonWFAction(status, action, doc_action, defaults, exclude_statuses, include_statuses)
-        return True
 
     @api.model
     def _getbyrevision(self, name, revision):
         return self.search([('engineering_code', '=', name),
                             ('engineering_revision', '=', revision)])
 
-    def action_release(self):
+    def action_draft(self):
         """
-           action to be executed for Released state
+            release the object
         """
-        for comp_obj in self:
-            children_product_to_emit = []
-            product_tmpl_ids = []
-            defaults = {}
-            exclude_statuses = ['released', 'undermodify', 'obsoleted']
+        for product_product_id in self:
+            status = 'draft'
             include_statuses = ['confirmed']
-            errors, product_ids = comp_obj._get_recursive_parts(exclude_statuses, include_statuses)
-            children_products = product_ids.copy()
-            if len(product_ids) < 1 or len(errors) > 0:
-                raise UserError(errors)
-            children_products.remove(comp_obj.id)
-            if children_products:
-                self.browse(children_products).action_release()
-            available_status = self._fields.get('state')._description_selection(self.env)
-            dict_status = dict(available_status)
-            allProdObjs = self.browse(product_ids)
-            allProdObjs = allProdObjs.filtered(lambda x: x.engineering_code not in [False, ''])
-            for productBrw in allProdObjs:
-                old_revision = self._getbyrevision(productBrw.engineering_code, productBrw.engineering_revision - 1)
-                if old_revision:
-                    defaults['engineering_writable'] = False
-                    defaults['engineering_state'] = 'obsoleted'
-                    old_revision.product_tmpl_id.write(defaults)
-                    old_revision.write(defaults)
-                    status_lable = dict_status.get(defaults.get('engineering_state', ''), '')
-                    old_revision.wf_message_post(body=_('Status moved to: %s by %s.' % (status_lable, self.env.user.name)))
-            defaults['engineering_writable'] = False
-            defaults['engineering_state'] = 'released'
-            defaults['release_user'] = self.env.uid
-            defaults['release_date'] = datetime.now()
-            self.browse(product_ids)._action_ondocuments('release', include_statuses)
-            for currentProductId in allProdObjs:
-                if not currentProductId.release_date:
-                    currentProductId.release_date = datetime.now()
-                    currentProductId.release_user = self.env.uid
-                if currentProductId.id not in self.ids:
-                    children_product_to_emit.append(currentProductId.id)
-                product_tmpl_ids.append(currentProductId.product_tmpl_id.id)
-            self.browse(children_product_to_emit).perform_action('release')
-            self.browse(children_product_to_emit).write(defaults)
-            objIds = self.env['product.template'].browse(product_tmpl_ids)
-            for objId in objIds:
-                objId.write(defaults)
-                status_lable = dict_status.get(defaults.get('state', ''), '')
-                self.browse(product_ids).wf_message_post(body=_('Status moved to: %s by %s.' % (status_lable, self.env.user.name)))
-            comp_obj.write(defaults)
+            product_product_id.commonWFAction(status, include_statuses)
+        return True
+
+    def action_confirm(self):
+        """
+            action to be executed for Draft state
+        """
+        for product_product_id in self:
+            status = 'confirmed'
+            include_statuses = ['draft']
+            product_product_id.commonWFAction(status, include_statuses, recursive=True)
+        return True
+    
+    def action_release(self):
+        for product_product_id in self:
+            status = 'release'
+            include_statuses = ['confirmed']
+            product_product_id.commonWFAction(status,
+                                              include_statuses,
+                                              recursive=True)
         return True
 
     def action_obsolete(self):
         """
             obsolete the object
         """
-        for comp_obj in self:
-            defaults = {}
+        for product_product_id in self:
             status = 'obsoleted'
-            action = 'obsolete'
-            doc_action = 'obsolete'
-            defaults['engineering_writable'] = False
-            defaults['engineering_state'] = status
-            exclude_statuses = ['draft', 'confirmed', 'undermodify', 'obsoleted']
             include_statuses = ['released']
-            comp_obj.commonWFAction(status,
-                                    action,
-                                    doc_action,
-                                    defaults,
-                                    exclude_statuses,
-                                    include_statuses,
-                                    recursive=False)
+            product_product_id.commonWFAction(status,
+                                              include_statuses,
+                                              recursive=False)
         return True
 
     def action_reactivate(self):
         """
             reactivate the object
         """
-        for comp_obj in self:
-            defaults = {}
+        for product_product_id in self:
             status = 'released'
-            action = ''
-            doc_action = 'release'
-            defaults['engineering_writable'] = True
-            defaults['engineering_state'] = status
-            exclude_statuses = ['draft', 'confirmed', 'released', 'undermodify', 'obsoleted']
             include_statuses = ['obsoleted']
-            comp_obj.commonWFAction(status, action, doc_action, defaults, exclude_statuses, include_statuses)
+            product_product_id.commonWFAction(status, include_statuses)
         return True
 
-    def perform_action(self, action):
-        actions = {'reactivate': self.action_reactivate,
-                   'obsolete': self.action_obsolete,
-                   'release': self.action_release,
-                   'confirm': self.action_confirm,
-                   'draft': self.action_draft}
-        toCall = actions.get(action)
-        return toCall()
-
-    def commonWFAction(self, status, action, doc_action, defaults=[], exclude_statuses=[], include_statuses=[]):
-        product_product_ids = []
-        product_template_ids = []
-        userErrors, allIDs = self._get_recursive_parts(exclude_statuses, include_statuses)
-        if userErrors:
-            raise UserError(userErrors)
-        allIdsBrwsList = self.browse(allIDs)
-        allIdsBrwsList = allIdsBrwsList.filtered(lambda x: x.engineering_code not in [False, ''])
-        allIdsBrwsList._action_ondocuments(doc_action, include_statuses)
-        for currId in allIdsBrwsList:
-            if not(currId.id in self.ids):
-                product_product_ids.append(currId.id)
-            product_template_ids.append(currId.product_tmpl_id.id)
-            defaults['workflow_user'] = self.env.uid
-            defaults['workflow_date'] = datetime.now()
-            currId.write(defaults)
-        if action:
-            product_ids = self.browse(product_product_ids)
-            product_ids.perform_action(action)
-            product_ids.workflow_user = self.env.uid
-            product_ids.workflow_date = datetime.now()
-        objIds = self.env['product.template'].browse(product_template_ids)
-        for objId in objIds:
-            objId.write(defaults)
-            available_status = self._fields.get('engineering_state')._description_selection(self.env)
-            dict_status = dict(available_status)
-            status_lable = dict_status.get(defaults.get('engineering_state', ''), '')
-            self.browse(allIDs).wf_message_post(body=_('Status moved to: %s by %s.' % (status_lable, self.env.user.name)))
-        return objIds
+    def commonWFAction(self,
+                       status,
+                       include_statuses=[],
+                       recursive=False):
+        performed_ids=[]
+        def _commonWFAction(obj, status, include_statuses=[],recursive=False):
+            for product_product_id in obj:
+                #
+                # ansure no recursion loop
+                #
+                if product_product_id.id in performed_ids:
+                    continue
+                performed_ids.append(product_product_id.id)
+                #
+                # start recursion release action
+                #
+                if recursive:
+                    errors, product_ids = product_product_id._get_recursive_parts(include_statuses)
+                    if len(errors) > 0:
+                        raise UserError(errors)
+                    for child_product_id in product_ids:
+                        _commonWFAction(child_product_id, status, include_statuses)
+                product_product_id._action_ondocuments(status, include_statuses)
+                product_product_id.move_to_state(status)
+                product_product_id.product_tmpl_id.move_to_state(status)
+            return True
+        return _commonWFAction(self, status, include_statuses, recursive)
 
 #  ######################################################################################################################################33
     def plm_sanitize(self, vals):
@@ -1010,7 +911,7 @@ class ProductProduct(models.Model):
     def checkVariantLinkeddocs(self, doc_ids):
         for doc in self.env['ir.attachment'].browse(doc_ids):
             if not doc.ischecked_in():
-                raise UserError(_('Document %r with revision %r is in check-out, cannot create variant.' % (doc.name, doc.revisionid)))
+                raise UserError(_('Document %r with revision %r is in check-out, cannot create variant.' % (doc.name, doc.engineering_revision)))
 
     @api.model
     def create(self, vals):
@@ -1121,11 +1022,11 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         default['engineering_state'] = 'draft'
         default['engineering_writable'] = True
         default['linkeddocuments'] = []
-        default['release_date'] = False
+        default['engineering_release_date'] = False
         objId = super(ProductProduct, self).copy(default)
         if objId:
             objId.is_engcode_editable = True
-            self.sudo().wf_message_post(body=_('Copied starting from : %s.' % previous_name))
+            self.sudo().message_post(body=_('Copied starting from : %s.' % previous_name))
         return objId
 
     def fieldsToKeep(self, to_write=[]):
@@ -1289,7 +1190,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                 available_status = self._fields.get('engineering_state')._description_selection(self.env)
                 dict_status = dict(available_status)
                 status_lable = dict_status.get(product_product_id.engineering_state, '')
-                product_product_id.wf_message_post(body=_('Status moved to: %s by %s.' % (status_lable, self.env.user.name)))
+                product_product_id.message_post(body=_('Status moved to: %s by %s.' % (status_lable, self.env.user.name)))
                 # store updated infos in "revision" object
                 defaults = {}
                 defaults['name'] = product_product_id.name                 # copy function needs an explicit name value
@@ -1302,15 +1203,15 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                 new_tmpl_id = product_product_id.product_tmpl_id.with_context(ctx).copy(defaults)
                 new_tmpl_id._create_variant_ids()
                 newCompBrws = new_tmpl_id.product_variant_id
-                defaults['revision_user'] = self.env.uid
-                defaults['revision_date'] = datetime.now()
-                defaults['release_user'] = False
-                defaults['release_date'] = False
-                defaults['workflow_user'] = False
-                defaults['workflow_date'] = False
+                defaults['engineering_revision_user'] = self.env.uid
+                defaults['engineering_revision_date'] = datetime.now()
+                defaults['engineering_release_user'] = False
+                defaults['engineering_release_date'] = False
+                defaults['engineering_workflow_user'] = False
+                defaults['engineering_workflow_date'] = False
                 defaults['product_tmpl_id']=new_tmpl_id.id
                 newCompBrws.write(defaults)
-                product_product_id.wf_message_post(body=_('Created : New Revision.'))
+                product_product_id.message_post(body=_('Created : New Revision.'))
                 newComponentId = newCompBrws.id
                 break
             break
@@ -1322,7 +1223,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             args = [objId, objMessage]
         """
         objId, objMessage = args
-        self.browse(objId).wf_message_post(objMessage)
+        self.browse(objId).message_post(objMessage)
         return True
 
     @api.model
@@ -1488,7 +1389,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             return restorePreviousDocumentRevision(node)
 
         def restorePreviousDocumentRevision(node):
-            node['DOCUMENT_ATTRIBUTES']['revisionid'] = node['DOCUMENT_ATTRIBUTES']['revisionid'] - 1
+            node['DOCUMENT_ATTRIBUTES']['engineering_revision'] = node['DOCUMENT_ATTRIBUTES']['engineering_revision'] - 1
             return docEnv.getDocumentBrws(node['DOCUMENT_ATTRIBUTES'])  # Try to restore previous revision (case of only document revision)
 
         def restorePreviousComponentRevision(node):
@@ -1732,9 +1633,9 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                 compBrws = newRawComponent
             elif docName:    # Node is a document node
                 baseName = docName
-                engineering_document_name = newRootDocProps.get('engineering_document_name', '')
-                if rootEngCode or engineering_document_name:
-                    baseName = rootEngCode or engineering_document_name
+                engineering_code = newRootDocProps.get('engineering_code', '')
+                if rootEngCode or engineering_code:
+                    baseName = rootEngCode or engineering_code
                 newDocBrws = cloneWithDoc(cloneDocument,
                                           oldDocBrws,
                                           node,
@@ -1753,8 +1654,8 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         docEnv = self.env['ir.attachment']
         newDocName = docEnv.GetNextDocumentName(startingComputeName)
         docDefaultVals = {
-            'revisionid': 0,
-            'engineering_document_name': newDocName,
+            'engineering_revision': 0,
+            'engineering_code': newDocName,
             'name': '%s%s' % (newDocName, file_extension),
             'checkout_user': self.env.uid}
         newDocVals = oldDocBrws.Clone(docDefaultVals)

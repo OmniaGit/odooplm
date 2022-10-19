@@ -43,7 +43,7 @@ class ProductTemplate(models.Model):
     _description = 'Product Template'
     _inherit = ['revision.base.mixin', 'product.template']
 
-    engineering_material = fields.Char(_('Cad Raw Material'),
+    engineering_material = fields.Char('Cad Raw Material',
                                        size=128,
                                        required=False,
                                        help=_("Raw material for current product, only description for titleblock."))
@@ -54,7 +54,7 @@ class ProductTemplate(models.Model):
         help=_("Surface finishing for current product, only description for titleblock.")
     )
 
-    engineering_treatment = fields.Char(_('Cad Termic Treatment'),
+    engineering_treatment = fields.Char('Cad Termic Treatment',
                                         size=128,
                                         required=False,
                                         help=_("Termic treatment for current product, only description for titleblock."))
@@ -74,8 +74,6 @@ class ProductTemplate(models.Model):
                              default=False,
                              help="Specify if the product can be selected in a sales order line.")
 
-    engineering_writable = fields.Boolean('Writable',
-                                          default=True)
     is_engcode_editable = fields.Boolean('Engineering Editable',
                                          default=True,
                                          compute=lambda self: self._compute_eng_code_editable()
@@ -187,7 +185,7 @@ class ProductTemplate(models.Model):
         default['engineering_state'] = 'draft'
         default['engineering_writable'] = True
         default['linkeddocuments'] = []
-        default['release_date'] = False
+        default['engineering_release_date'] = False
         objId = super(ProductTemplate, self).copy(default)
         if objId:
             objId.is_engcode_editable = True

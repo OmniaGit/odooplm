@@ -174,7 +174,7 @@ class PlmConvertStack(models.Model):
         component = self.env['product.product']
         if components:
             component = components[0]
-        file_name = '%s_%s' % (document.name, document.revisionid)
+        file_name = '%s_%s' % (document.name, document.engineering_revision)
         if self.output_name_rule:
             try:
                 file_name = eval(self.output_name_rule, {'component': component,
@@ -213,7 +213,7 @@ class PlmConvertStack(models.Model):
                     'datas': encoded_content,
                     'state': self.start_document_id.state,
                     'is_plm': True,
-                    'engineering_document_name': file_name,
+                    'engineering_code': file_name,
                     'is_converted_document': True,
                     'source_convert_document': self.start_document_id.id
                     })
