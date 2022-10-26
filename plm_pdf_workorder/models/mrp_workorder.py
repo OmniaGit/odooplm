@@ -46,16 +46,6 @@ class MrpWorkorder(models.Model):
             if workorder_id.operation_id.use_plm_pdf:# and not workorder_id.plm_pdf:
                 workorder_id.plm_pdf = base64.b64encode(self.getPDF(workorder_id))
 
-    @api.model
-    def create(self, vals):
-        ret = super(MrpWorkorder, self).create(vals)
-        if ret.operation_id.use_plm_pdf:
-            try:
-                ret.plm_pdf = base64.b64encode(self.getPDF(ret))
-            except Exception as ex:
-                logging.error(ex)
-        return ret
-
     def getPDF(self, workorder_id):
         report_model = self.env['report.plm.product_production_one_pdf_latest']
         content, _format = report_model._render_qweb_pdf(workorder_id.product_id, checkState=True)
