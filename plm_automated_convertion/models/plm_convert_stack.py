@@ -211,7 +211,7 @@ class PlmConvertStack(models.Model):
                     'linkedcomponents': [(6, False, self.start_document_id.linkedcomponents.ids)],
                     'name': os.path.basename(file_name),
                     'datas': encoded_content,
-                    'state': self.start_document_id.state,
+                    'state': self.start_document_id.engineering_state,
                     'is_plm': True,
                     'engineering_code': file_name,
                     'is_converted_document': True,

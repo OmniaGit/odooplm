@@ -71,8 +71,8 @@ class ProductProductExtended(models.Model):
                     'type': 'ir.actions.act_window'}
 
     def stateAllows(self, brwsObj, objType):
-        if brwsObj.state != 'released':
-            logging.error('[action_create_new_revision_by_server:stateAllows] Cannot revise obj %s, Id: %r because state is %r' % (objType, brwsObj.id, brwsObj.state))
+        if brwsObj.engineering_state != 'released':
+            logging.error('[action_create_new_revision_by_server:stateAllows] Cannot revise obj %s, Id: %r because state is %r' % (objType, brwsObj.id, brwsObj.engineering_state))
             raise UserError(_("%s cannot be revised because the state isn't released!" % (objType)))
         return True
 

@@ -50,7 +50,7 @@ class MrpProduction(models.Model):
     
     def update_row_line_form_bom(self):
         for mrp_production_id in self:
-            if mrp_production_id.state in ['draft', 'confirmed', 'planned', 'progress']:
+            if mrp_production_id.engineering_state in ['draft', 'confirmed', 'planned', 'progress']:
                 new_product_id = mrp_production_id.product_id.getLatestReleasedRevision()
                 if new_product_id.id != mrp_production_id.product_id.id:
                     product_done_qty = {}
@@ -78,6 +78,6 @@ class MrpProduction(models.Model):
                 else:
                     super(MrpProduction, self).update_row_line_form_bom()
             else:
-                raise UserError("Unable to perform such operation from state %r" % self.state)
+                raise UserError("Unable to perform such operation from state %r" % self.engineering_state)
 
         

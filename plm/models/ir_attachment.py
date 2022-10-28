@@ -1813,7 +1813,7 @@ class IrAttachment(models.Model):
                     raise UserError(msg)
                 return False, msg
             if docBrws.engineering_state != 'draft':
-                msg = _("Unable to check-Out a document that is in state %r" % docBrws.state)
+                msg = _("Unable to check-Out a document that is in state %r" % docBrws.engineering_state)
                 if showError:
                     raise UserError(msg)
                 return False, msg

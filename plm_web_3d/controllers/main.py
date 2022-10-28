@@ -64,7 +64,7 @@ class Web3DView(Controller):
                 """ % (
                     ir_attachment.engineering_code or ir_attachment.name,
                     ir_attachment.engineering_revision,
-                    ir_attachment.state
+                    ir_attachment.engineering_state
                     )
                 document = self.document_extra(document)
                 out['document']=document

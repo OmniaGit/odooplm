@@ -45,22 +45,45 @@ from odoo.osv import expression
 _logger = logging.getLogger(__name__)
 
 START_STATE ='draft'
+CONFIRMED = 'confirmed'
 RELEASED_STATUS = 'released'
 OBSOLATED_STATUS = 'obsoleted'
+UNDER_MODIFY = 'undermodify'
 USED_STATES = [(START_STATE, _('Draft')),
-               ('confirmed', _('Confirmed')),
+               (CONFIRMED, _('Confirmed')),
                (RELEASED_STATUS, _('Released')),
-               ('undermodify', _('UnderModify')),
+               (UNDER_MODIFY, _('UnderModify')),
                (OBSOLATED_STATUS, _('Obsoleted'))]
+
+
+LOWERCASE_LETTERS = [chr(i) for i in range(ord('a'), ord('z') + 1)]
+
+UPPERCASE_LETTERS = [
+    chr(i) for i in range(ord('A'), ord('Z') + 1)
+]
+
+def convert_to_letter(l,n):
+    n_o_w = len(l)
+    if n > n_o_w-1:
+        out = l[n_o_w-1]
+        out+=convert_to_letter(n -n_o_w,l)
+    else:
+        out = l[n]
+    return out
 
 
 class RevisionBaseMixin(models.AbstractModel):
     _name = 'revision.base.mixin'
     _inherit = ['mail.thread']
     _description = 'Revision Mixin'
-    
+    #
     engineering_code = fields.Char(string="Engineering Code")
-    engineering_revision = fields.Integer(string="Engineering Revision index")
+    #
+    engineering_revision = fields.Integer(string="Engineering Revision index", default=0)
+    engineering_revision_letter = fields.Char(string="Engineering Revision letter", default="A")
+    engineering_branch_revision = fields.Integer(string="Engineering Branch index", default=0)
+    engineering_branch_revision_letter = fields.Char(string="Engineering Sub Revision letter", default="A")
+    #
     engineering_state = fields.Selection(USED_STATES,
                                          string="Engineering Status",
                                          default='draft',
@@ -79,11 +102,15 @@ class RevisionBaseMixin(models.AbstractModel):
                                           default=True)
     engineering_revision_user = fields.Many2one('res.users', string=_("User Revision"))
     engineering_revision_date = fields.Datetime(string=_('Datetime Revision'))
+    
+    engineering_revision_parent = fields.Many2one('revision.base.mixin','Parent revision')
+    engineering_branch_parent = fields.Many2one('revision.base.mixin','Parent branch')
+
+    engineering_revision_count = fields.Integer(compute='_engineering_revision_count')
+    
     _sql_constraints = [
         ('engineering_uniq', 'unique (engineering_code, engineering_revision)', _('Part Number has to be unique!'))
     ]
-    
-    engineering_revision_count = fields.Integer(compute='_engineering_revision_count')
     
     def _engineering_revision_count(self):
         """
@@ -135,7 +162,21 @@ class RevisionBaseMixin(models.AbstractModel):
         for obj in self:
             obj.engineering_state = OBSOLATED_STATUS
             obj._mark_worklow_user_date()           
-             
+    
+    def _mark_under_modifie(self):
+        for obj in self:
+            obj.engineering_state = UNDER_MODIFY
+            obj._mark_worklow_user_date()
+                
+    def _mark_under_modifie_previous(self):
+        for obj in self:
+            if obj.engineering_revision in [False, 0]:
+                continue
+            obj_previus_version = obj.get_previus_version()
+            obj_previus_version._mark_under_modifie()
+            obj.message_post(body=_("New version created from Code %s Rev. %s" % (obj_previus_version.engineering_code,
+                                                                                  obj_previus_version.engineering_revision)))
+        
     def _mark_obsolete_previous(self):
         for obj in self:
             if obj.engineering_revision in [False, 0]:
@@ -155,14 +196,70 @@ class RevisionBaseMixin(models.AbstractModel):
 
     def new_version(self):
         """
-        create a new version of the document
+        create a new version
         """
         for obj in self:
-            if obj.isReleased():
-                raise UserError(_("Unable to revise a %s in status different from released" % obj._name)) 
-            obj.engineering_revision+=1
-            obj.engineering_state = START_STATE
+            if not obj.isReleased():
+                raise UserError(_("Unable to revise a %s in status different from released" % obj._name))
+            obj._new_version()
+            obj_new._mark_under_modifie_previous()
+            """
+            "1" relased
+            "2"
+            #
+            "1.0.3" released
+            "1.0.4" draft mettere un campo che indica che una nuova versione e' stata fatta <div>
+            "2"
+            #
+            "1.0.3" released
+            "1.0.4" draft mettere un campo che indica che una nuova versione e' stata fatta <div>
+            "2"
+            "3"
+            "3.0" ->release che deriva da 1.0.4 con replace del content del file o delle info ??
             
+            #            
+            """
+            
+    def _new_version(self):
+        self.ensure_one()
+        obj_latest = self.get_latest_version()
+        obj_new = self.copy() 
+        obj_new.engineering_revision = obj_latest.engineering_revision + 1
+        obj_new.engineering_revision_letter = obj_new.get_revision_letter()
+        obj_new.engineering_state = START_STATE
+        obj_new.engineering_revision_parent = self.id
+        return obj_new
+    
+    def new_sub_version(self):
+        for obj in self:
+            obj._new_sub_version()
+    
+    def _new_branch_version(self):
+        self.ensure_one()
+        obj_latest = self.get_latest_version()
+        obj_new = self.copy() 
+        obj_new.engineering_branch_revision = obj_latest.engineering_branch_revision + 1
+        path = ".".join(self.engineering_branch_parent.engineering_sub_revision_letter.split(".")[:-1])
+        obj_new.engineering_sub_revision_letter = "%s.%s" % (path, obj_new.engineering_branch_revision)
+        obj_new.engineering_state = START_STATE
+        obj_new.engineering_revision_parent = self.id
+        return obj_new
+    
+    def _new_branch(self):
+        self.ensure_one()
+        obj_new = self._new_revision()
+        obj_new.engineering_branch_revision = 0 
+        obj_new.engineering_branch_parent = self.id
+        if not self.engineering_branch_parent:
+            parnet_path = self.engineering_revision
+        else:
+            parnet_path = self.engineering_branch_parent.engineering_sub_revision_letter
+        obj_new.engineering_sub_revision_letter = "%s.0" % parnet_path 
+        
+    def get_revision_letter(self):
+        self.ensure_one()
+        return convert_to_letter(UPPERCASE_LETTERS, self.engineering_revision)
+    
     def copy(self, default=None):
         default = default or {}
         default['engineering_state']=START_STATE

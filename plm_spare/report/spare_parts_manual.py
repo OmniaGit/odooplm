@@ -144,7 +144,7 @@ class ReportSpareDocumentOne(models.AbstractModel):
         msg_vals = {
             'print_user': 'user_id.name',
             'date_now': localDT.ctime(),
-            'state': 'doc_obj.state',
+            'state': 'doc_obj.engineering_state',
                 }
         main_book_collector = BookCollector(customText=(msg, msg_vals),
                                             bottomHeight=10,

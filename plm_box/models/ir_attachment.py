@@ -113,7 +113,7 @@ class Plm_box_document(models.Model):
         plmCheckOutObj = self.env.get('plm.checkout')
         docBrwsList = self.search([('name', '=', docName), ('engineering_revision', '=', docRev)])
         for docBrws in docBrwsList:
-            docState = docBrws.state
+            docState = docBrws.engineering_state
             docId = docBrws.id
             if not docState or docState != 'draft':
                 return False

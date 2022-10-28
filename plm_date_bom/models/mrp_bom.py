@@ -52,7 +52,7 @@ class mrp_bom_extension_data(models.Model):
                 continue
             obsoleteFlag = False
             for bomLine in bomObj.bom_line_ids:
-                if bomLine.product_id.state == 'obsoleted':
+                if bomLine.product_id.engineering_state == 'obsoleted':
                     obsoleteFlag = True
                     break
             bomObj.sudo().obsolete_presents = obsoleteFlag
@@ -104,7 +104,7 @@ class mrp_bom_extension_data(models.Model):
                     if not templateBrws:
                         logging.warning('Product %s is not related to a product template.' % (bomLineBrws.product_id.id))
                         continue
-                    if templateBrws.state == 'obsoleted':
+                    if templateBrws.engineering_state == 'obsoleted':
                         outLines.append(bomBrws.id)
         recursion(self)
         return list(set(outLines))

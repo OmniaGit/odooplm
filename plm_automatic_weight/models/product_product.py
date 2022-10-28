@@ -112,8 +112,8 @@ class PlmComponent(models.Model):
                             bom_total_weight = bom_total_weight + line_amount
                         product_brws.write({'weight_n_bom_computed': bom_total_weight})
                         product_brws.weight_n_bom_computed = bom_total_weight
-                        if product_brws.state not in ['released', 'obsoleted'] or (
-                                product_brws.state in ['released', 'obsoleted'] and is_user_admin):
+                        if product_brws.engineering_state not in ['released', 'obsoleted'] or (
+                                product_brws.engineering_state in ['released', 'obsoleted'] and is_user_admin):
                             bom_brws.write({'weight_net': bom_total_weight})
                         self.common_weight_compute(product_brws, is_user_admin, product_brws.weight_n_bom_computed)
                         break
@@ -135,7 +135,7 @@ class PlmComponent(models.Model):
                 product_b.write({'weight': common})
                 product_b.weight = common
 
-        if product_brws.state in ['released', 'obsoleted']:
+        if product_brws.engineering_state in ['released', 'obsoleted']:
             if is_user_admin:
                 common_set(product_brws)
         else:
