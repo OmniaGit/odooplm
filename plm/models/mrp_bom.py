@@ -836,6 +836,8 @@ class MrpBomExtension(models.Model):
                 bomType = 'ebom'
             parentOdooTuple, childrenOdooTuple  = clientArgs
             l_tree_document_id, parent_product_product_id, parent_ir_attachment_id = parentOdooTuple
+            if not parent_ir_attachment_id:
+                parent_ir_attachment_id = l_tree_document_id
             parent_product_product_id = product_product.browse(parent_product_product_id)
             product_tmpl_id = parent_product_product_id.product_tmpl_id.id
             ir_attachment_relation.removeChildRelation(parent_ir_attachment_id)  # perform default unlink to HiTree, need to perform RfTree also
