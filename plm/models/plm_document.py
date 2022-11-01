@@ -2053,12 +2053,7 @@ class PlmDocument(models.Model):
         if not doc_id:
             logging.warning('Cannot get links from %r document' % (doc_id))
             return []
-        to_search = [('link_kind', 'in', ['RfTree']),
-                     '|', 
-                        ('parent_id', '=', doc_id),
-                        ('child_id', '=', doc_id)]
-        if recursion:
-            to_search = [('link_kind', 'in', ['RfTree']),('parent_id', '=', doc_id)]
+        to_search = [('link_kind', 'in', ['RfTree']),('parent_id', '=', doc_id)]
         doc_rel_ids = self.env['plm.document.relation'].search(to_search)
         for doc_rel_id in doc_rel_ids:
             if doc_rel_id.child_id.id == doc_id:
@@ -2187,6 +2182,21 @@ class PlmDocument(models.Model):
             if plm_cad_open.plm_backup_doc_id.id != last_bck.id:
                 return True
         return False
+
+    @api.multi
+    def checkUnlinkCadOpen(self, operation_type, hostname):
+        cad_open = self.sudo().env['plm.cad.open']
+        for document in self:
+            cad_opens = cad_open.search([
+                ('document_id', '=', document.id),
+                ('operation_type', '=', operation_type),
+                ('hostname', '=', hostname)
+                ],
+                limit=1,
+                order='id desc'
+            )
+            cad_opens.unlink()
+        return True
 
     @api.model
     def GetDocumentInfosFromFileName(self, fileName):

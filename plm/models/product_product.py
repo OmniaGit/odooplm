@@ -865,16 +865,26 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         return super(PlmComponent, self).write(vals)
 
     @api.multi
-    def checkMany2oneClient(self, vals):
+    def checkMany2oneClient(self, vals, force_create=False):
+        return self._checkMany2oneClient(self.env['product.product'], vals, force_create)
+        
+    @api.model
+    def _checkMany2oneClient(self, obj, vals, force_create=False):
         out = {}
         customFields = [field.replace('plm_m2o_', '') for field in vals.keys() if field.startswith('plm_m2o_')]
         if customFields:
-            fieldsGet = self.fields_get(customFields)
+            fieldsGet = obj.fields_get(customFields)
             for fieldName, fieldDefinition in fieldsGet.items():
-                refId = self.customFieldConvert(fieldDefinition, vals, fieldName)
-                out[fieldName] = False
-                if refId:
-                    out[fieldName] = refId.id
+                field_id = False
+                try:
+                    field_id = vals.get(fieldName, False)
+                except Exception as ex:
+                    logging.warning('Cannot get m2o field value due to error %r' % (ex))
+                if not field_id:
+                    refId = self.customFieldConvert(fieldDefinition, vals, fieldName, force_create=force_create)
+                    out[fieldName] = False
+                    if refId:
+                        out[fieldName] = refId.id
         return out
 
     @api.multi
@@ -1637,13 +1647,15 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
     @api.multi
     def name_get(self):
         result = []
-        for prod in self:
-            eng_code = ''
+        ret = super(PlmComponent, self).name_get()
+        for res in ret:
+            prod_id, eng_code = res
+            prod = self.browse(prod_id)
             if prod.default_code:
-                eng_code = '[%s] ' % (prod.default_code)
+                result.append(res)
+                continue
             elif prod.engineering_code:
-                eng_code = '[%s] ' % ('%s_%s' % (prod.engineering_code, prod.engineering_revision))
-            eng_code += prod.name
+                eng_code = '[%s_%s] %s' % (prod.engineering_code, prod.engineering_revision, eng_code)
             result.append((prod.id, eng_code))
         return result
 

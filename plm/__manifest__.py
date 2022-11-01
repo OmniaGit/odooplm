@@ -92,6 +92,9 @@ Supported Editors :
             'views/product_template.xml',
             'views/plm_dbthread.xml',
             'views/sequence.xml',
+            'views/plm_cad_open.xml',
+            'views/plm_cad_open_bck.xml',
+            'views/ir_cron.xml',
             'views/menu.xml',
             # Reports Template
             'report/bom_structure_report_template.xml',
