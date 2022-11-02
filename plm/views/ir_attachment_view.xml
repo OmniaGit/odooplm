@@ -18,7 +18,7 @@
                             class="oe_highlight"
                             type="object"
                             groups="plm.group_plm_release_users"
-                            attrs="{'invisible': [('is_checkout','=',True),('engineering_state','!=','engineering_state')]}"/>
+                            attrs="{'invisible': ['|',('is_checkout','=',True),('engineering_state','!=','engineering_state')]}"/>
                     <button name="action_draft"
                             attrs="{'invisible': [('engineering_state','!=','confirmed')]}"
                             type="object"
@@ -27,7 +27,7 @@
                             type="object"
                             string="Confirm Document"
                             class="oe_highlight"
-                            attrs="{'invisible': [('is_checkout','=',True),('engineering_state','!=','draft')]}"/>
+                            attrs="{'invisible': ['|',('is_checkout','=',True),('engineering_state','!=','draft')]}"/>
                 </header>
               </form>
         </field>
@@ -47,16 +47,16 @@
                             class="oe_highlight"
                             type="object"
                             groups="plm.group_plm_release_users"
-                            attrs="{'invisible': [('is_checkout','=',True),('engineering_state','!=','confirmed')]}"/>
+                            attrs="{'invisible': ['|',('is_checkout','=',True),('engineering_state','!=','confirmed')]}"/>
                     <button name="action_draft"
-                            attrs="{'invisible': [('is_checkout','=',True),('engineering_state','!=','confirmed')]}"
+                            attrs="{'invisible': ['|',('is_checkout','=',True),('engineering_state','!=','confirmed')]}"
                             type="object"
                             string="Correct Document"/>
                     <button name="action_confirm"
                             type="object"
                             string="Confirm Document"
                             class="oe_highlight"
-                            attrs="{'invisible': [('is_checkout','=',True),('engineering_state','!=','draft')]}"/>
+                            attrs="{'invisible': ['|',('is_checkout','=',True),('engineering_state','!=','draft')]}"/>
                     <field name="engineering_state"
                            widget="statusbar"
                            statusbar_visible="draft,confirmed,released"

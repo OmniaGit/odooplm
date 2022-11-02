@@ -1,7 +1,8 @@
+# -*- encoding: utf-8 -*-
 ##############################################################################
 #
-#    OmniaSolutions, Open Source Management Solution
-#    Copyright (C) 2010-2021 OmniaSolutions (<https://www.omniasolutions.website>).
+#    OmniaSolutions, Open Source Management Solution    
+#    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -18,24 +19,5 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-{
-    "name": "PLM Automatic Engineering Code",
-    "version": "16.0.1",
-    "author": "OmniaSolutions",
-    "website": "https://github.com/OmniaGit/odooplm",
-    "category": "Product Lifecycle Management",
-    "sequence": 15,
-    "summary": "",
-    "images": [],
-    "license": "AGPL-3",
-    "depends": ["plm"],
-    "data": [
-        "views/ir_sequence.xml",
-        "views/product_category.xml"
-    ],
-    "demo": [],
-    "test": [],
-    "installable": True,
-    "application": False,
-    "auto_install": False,
-}
+from . import test_plm
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -103,8 +103,8 @@ class PlmCheckout(models.Model):
         for checkObj in self:
             if not checkObj.documentid:
                 continue
-            checkObj.documentid.writable = False
-            values = {'writable': False}
+            checkObj.documentid.engineering_writable = False
+            values = {'engineering_writable': False}
             docids.append(checkObj.documentid.id)
             if not documentType.browse([checkObj.documentid.id]).write(values):
                 logging.warning("unlink : Unable to check-in the document (" + str(checkObj.documentid.engineering_code) + "-" + str(checkObj.documentid.engineering_revision) + ").\n You can't change writable flag.")

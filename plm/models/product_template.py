@@ -41,7 +41,7 @@ USED_STATES = [('draft', _('Draft')),
 class ProductTemplate(models.Model):
     _name='product.template'
     _description = 'Product Template'
-    _inherit = ['revision.base.mixin', 'product.template']
+    _inherit = ['revision.plm.mixin', 'product.template']
 
     engineering_material = fields.Char('Cad Raw Material',
                                        size=128,
@@ -79,6 +79,12 @@ class ProductTemplate(models.Model):
                                          compute=lambda self: self._compute_eng_code_editable()
                                          )
 
+    linkeddocuments = fields.Many2many('ir.attachment',
+                                       'plm_component_document_rel',
+                                       'component_id',
+                                       'document_id',
+                                       _('Linked Docs'),
+                                       ondelete='cascade')
     
     def isLastVersion(self):
         for tempate_id in self:
@@ -154,42 +160,6 @@ class ProductTemplate(models.Model):
     def write(self, vals):
         vals = self.plm_sanitize(vals)
         return super(ProductTemplate, self).write(vals)
-
-    def copy(self, default={}):
-        """
-            Overwrite the default copy method
-        """
-        if not self.engineering_code:
-            return super(ProductTemplate, self).copy(default)
-        if not default:
-            default = {}
-
-        def clearBrokenComponents():
-            """
-                Remove broken components before make the copy. So the procedure will not fail
-            """
-            # Do not check also for name because may cause an error in revision procedure
-            # due to translations
-            brokenComponents = self.search([('engineering_code', '=', '-')])
-            for brokenComp in brokenComponents:
-                brokenComp.unlink()
-
-        if not default.get('name', False):
-            default['name'] = '-'                   # If field is required super of clone will fail returning False, this is the case
-            default['engineering_code'] = '-'
-            default['engineering_revision'] = 0
-            clearBrokenComponents()
-        if default.get('engineering_code', '') == '-':
-            clearBrokenComponents()
-        # assign default value
-        default['engineering_state'] = 'draft'
-        default['engineering_writable'] = True
-        default['linkeddocuments'] = []
-        default['engineering_release_date'] = False
-        objId = super(ProductTemplate, self).copy(default)
-        if objId:
-            objId.is_engcode_editable = True
-        return objId
 
     @api.model
     def init(self):

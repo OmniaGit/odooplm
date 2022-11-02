@@ -59,7 +59,46 @@ def random_name():
 class IrAttachment(models.Model):
     _name='ir.attachment'
     _description="Ir Attachment"
-    _inherit = ['ir.attachment', 'revision.base.mixin']
+    _inherit = ['ir.attachment', 'revision.plm.mixin']
+
+    printout = fields.Binary(_('Printout Content'),
+                             help=_("Print PDF content."))
+    preview = fields.Image(_('Preview Content'),
+                           max_width=1920,
+                           max_height=1920,
+                           attachment=False)
+
+    checkout_user = fields.Char(string=_("Checked-Out to"),
+                                compute='_get_checkout_state')
+    is_checkout = fields.Boolean(_('Is Checked-Out'),
+                                 compute='_is_checkout',
+                                 store=False)
+    linkedcomponents = fields.Many2many('product.template',
+                                        'plm_component_document_rel',
+                                        'document_id',
+                                        'component_id',
+                                        _('Linked Parts'),
+                                        ondelete='cascade')
+    is_linkedcomponents = fields.Boolean('Is Linked Components', 
+                                         compute='_compute_linkedcomponents')
+    
+    document_rel_count = fields.Integer(compute='_get_n_rel_doc')
+
+    datas = fields.Binary(string='File Content (base64))',
+                          compute='_compute_datas',
+                          inverse='_inverse_datas')
+
+    document_type = fields.Selection([('other', _('Other')),
+                                      ('2d', _('2D')),
+                                      ('3d', _('3D')),
+                                      ],
+                                     compute='_compute_document_type',
+                                     store=True,
+                                     string=_('Document Type'))
+    desc_modify = fields.Text(_('Modification Description'), default='')
+    is_plm = fields.Boolean('Is A Plm Document', help=_("If the flag is set, the document is managed by the plm module, and imply its backup at each save and the visibility on some views."))
+    attachment_revision_count = fields.Integer(compute='_attachment_revision_count')
+
 
     @property
     def actions(self):
@@ -398,7 +437,7 @@ class IrAttachment(models.Model):
             out.append({'id': active_attachment_id,
                         'collectable': is_collectable,
                         'isCheckedOutToMe': isCheckedOutToMe,
-                        'writable': isCheckedOutToMe,
+                        'engineering_writable': isCheckedOutToMe,
                         'file_name': ir_attachment_id.name,
                         'write_date': ir_attachment_id.write_date,
                         'check_out_user': checkOutUser,
@@ -482,7 +521,7 @@ class IrAttachment(models.Model):
 #         defaults['store_fname'] = fname
 #         defaults['file_size'] = filesize
         defaults['engineering_state'] = 'draft'
-        defaults['writable'] = True
+        defaults['engineering_writable'] = True
         newDocBrws = super(IrAttachment, self).copy(defaults)
         if newDocBrws:
             newDocBrws.message_post(body=_('Copied starting from : %s.' % previous_name))
@@ -555,7 +594,7 @@ class IrAttachment(models.Model):
                 newRevIndex = int(oldObject.engineering_revision) + 1
                 defaults['engineering_code'] = oldObject.engineering_code
                 defaults['engineering_revision'] = newRevIndex
-                defaults['writable'] = True
+                defaults['engineering_writable'] = True
                 defaults['engineering_state'] = 'draft'
                 res = super(IrAttachment, oldObject).copy(defaults)
                 newID = res.id
@@ -755,17 +794,10 @@ class IrAttachment(models.Model):
         """
         to_release = self.env['ir.attachment']
         for oldObject in self:
-            lastDocBrws = self._getbyrevision(oldObject.engineering_code, oldObject.engineering_revision - 1)
-            if lastDocBrws:
-                lastDocBrws.commonWFAction(False, 'obsoleted', False)
             if oldObject.ischecked_in():
-                ctx = self.env.context.copy()
-                ctx['check'] = False
-                oldObject.with_context(ctx).engineering_release_user = self.env.uid
-                oldObject.with_context(ctx).engineering_release_date = datetime.utcnow()
                 to_release += oldObject
         if to_release:
-            to_release.commonWFAction(False, 'released', False)
+            to_release.commonWFAction(False, 'release', False)
         return False
 
     
@@ -1013,6 +1045,7 @@ class IrAttachment(models.Model):
                     raise UserError("Unable to check out. The owner of this document is %s" % ir_attachment_id.checkout_user)
                 else:
                     ir_attachment_id.checkout("localhost", r"check/web")
+        
 
     @api.model
     def CheckIn(self, attrs):
@@ -1032,11 +1065,12 @@ class IrAttachment(models.Model):
     def _check_in(self):
         checkOutId = self.isCheckedOutByMe()
         if not checkOutId:
-            logging.info(
-                'Document %r is not in check out by user %r so cannot be checked-in' % (self.id, self.env.user.id))
+            msg =""""Document %r is not in check out by user %r so cannot be checked-in""" % (self.id, self.env.user.id)
+            logging.info(msg)
             return False
         if self.file_size <= 0 or not self.name:
-            logging.warning('Document %r has not document content so cannot be checked-in' % (self.id))
+            msg='Document %r has not document content so cannot be checked-in' % (self.id)
+            logging.warning(msg)
             return False
         self.env['plm.checkout'].browse(checkOutId).unlink()
         return self.id
@@ -1090,46 +1124,7 @@ class IrAttachment(models.Model):
                                                                                        ('parent_id', '=', ir_a_id),
                                                                                        ('child_id', '=', ir_a_id)])
 
-    writable = fields.Boolean(_('Writable'),
-                              default=True)
-    printout = fields.Binary(_('Printout Content'),
-                             help=_("Print PDF content."))
-    preview = fields.Image(_('Preview Content'),
-                           max_width=1920,
-                           max_height=1920,
-                           attachment=False)
-
-    checkout_user = fields.Char(string=_("Checked-Out to"),
-                                compute=_get_checkout_state)
-    is_checkout = fields.Boolean(_('Is Checked-Out'),
-                                 compute=_is_checkout,
-                                 store=False)
-    linkedcomponents = fields.Many2many('product.product',
-                                        'plm_component_document_rel',
-                                        'document_id',
-                                        'component_id',
-                                        _('Linked Parts'),
-                                        ondelete='cascade')
-    is_linkedcomponents = fields.Boolean('Is Linked Components', 
-                                         compute='_compute_linkedcomponents')
-    
-    document_rel_count = fields.Integer(compute=_get_n_rel_doc)
-
-    datas = fields.Binary(string='File Content (base64))',
-                          compute='_compute_datas',
-                          inverse='_inverse_datas')
-
-    document_type = fields.Selection([('other', _('Other')),
-                                      ('2d', _('2D')),
-                                      ('3d', _('3D')),
-                                      ],
-                                     compute=_compute_document_type,
-                                     store=True,
-                                     string=_('Document Type'))
-    desc_modify = fields.Text(_('Modification Description'), default='')
-    is_plm = fields.Boolean('Is A Plm Document', help=_("If the flag is set, the document is managed by the plm module, and imply its backup at each save and the visibility on some views."))
-    attachment_revision_count = fields.Integer(compute='_attachment_revision_count')
-
+ 
     
     def _compute_linkedcomponents(self):
         for record in self:

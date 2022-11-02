@@ -43,58 +43,52 @@ class ProductProductExtended(models.Model):
     reviseSbom = fields.Boolean(_('Spare Bom Revision'), help=_("""Make new revision of the linked Spare BOM ?"""))
 
     def action_create_new_revision_by_server(self):
-        product_id = self.env.context.get('default_product_id', False)
-        if not product_id:
-            logging.error('[action_create_new_revision_by_server] Cannot revise because product_id is %r' % (product_id))
-            raise UserError(_('Current component cannot be revised!'))
-        prodProdEnv = self.env['product.product']
-        prodBrws = prodProdEnv.browse(product_id)
-        if self.stateAllows(prodBrws, 'Component'):
-            revRes = prodBrws.NewRevision()
-            newID, _newIndex = revRes
-            if not newID:
-                logging.error('[action_create_new_revision_by_server] newID: %r' % (newID))
-                raise UserError(_('Something wrong happens during new component revision process.'))
+        product_id = self.env.context.get('active_id', False)
+        active_model = self.env.context.get('active_model', False)
+        if product_id and active_model:
+            old_product_product_id = self.env[active_model].browse(product_id)
+            old_product_template_id =old_product_product_id.product_tmpl_id
+            old_product_template_id.new_version()
+            new_product_template_id = old_product_product_id.product_tmpl_id.get_next_version()
+
             if self.reviseDocument:
-                self.docRev(prodBrws, newID, prodProdEnv)
+                self.revise_related_attachment(old_product_template_id, new_product_template_id, prodProdEnv)
             if self.reviseEbom:
-                self.commonBomRev(prodBrws, newID, prodProdEnv, 'ebom')
+                self.common_bom_revision(old_product_template_id, new_product_template_id, prodProdEnv, 'ebom')
             if self.reviseNbom:
-                self.commonBomRev(prodBrws, newID, prodProdEnv, 'normal')
+                self.common_bom_revision(old_product_template_id, new_product_template_id, prodProdEnv, 'normal')
             if self.reviseSbom:
-                self.commonBomRev(prodBrws, newID, prodProdEnv, 'spbom')
+                self.common_bom_revision(old_product_template_id, new_product_template_id, prodProdEnv, 'spbom')
+            
+            new_product_id = self.env['product.product'].search([('product_tmpl_id','=', new_product_template_id.id)], limit=1)
+            
             return {'name': _('Revised Product'),
                     'view_type': 'tree,form',
                     "view_mode": 'form',
                     'res_model': 'product.product',
-                    'res_id': newID,
+                    'res_id': new_product_id.id,
                     'type': 'ir.actions.act_window'}
+            
+        else:
+            logging.error('[action_create_new_revision_by_server] Cannot revise because product_id is %r' % (product_id))
+            raise UserError(_('Current component cannot be revised!'))
 
-    def stateAllows(self, brwsObj, objType):
-        if brwsObj.engineering_state != 'released':
-            logging.error('[action_create_new_revision_by_server:stateAllows] Cannot revise obj %s, Id: %r because state is %r' % (objType, brwsObj.id, brwsObj.engineering_state))
-            raise UserError(_("%s cannot be revised because the state isn't released!" % (objType)))
-        return True
+    def revise_related_attachment(self, old_product_id, new_product_id, prodProdEnv):
+        new_ir_attachment_ids = self.env['ir.attachment']
+        for old_ir_attachment_id in old_product_id.linkeddocuments:
+            try:
+                old_ir_attachment_id.new_version()
+                new_ir_attachment_id = old_ir_attachment_id.get_next_version()
+                new_ir_attachment_ids+=new_ir_attachment_id
+            except Exception as ex:
+                logging.warning("ex")
+        new_product_id.linkeddocuments = new_ir_attachment_ids
 
-    def docRev(self, prodBrws, newID, prodProdEnv):
-        createdDocIds = []
-        for docBrws in prodBrws.linkeddocuments:
-            if self.stateAllows(docBrws, 'Document'):
-                resDoc = docBrws.NewRevision(docBrws.id)
-                newDocID, newDocIndex = resDoc
-                newDocIndex
-                if not newDocID:
-                    logging.error('[action_create_new_revision_by_server] newDocID: %r' % (newDocID))
-                    raise UserError(_('Something wrong happens during new document revision process.'))
-                createdDocIds.append(newDocID)
-        prodProdEnv.browse(newID).linkeddocuments = createdDocIds
-
-    def commonBomRev(self, oldProdBrws, newID, prodProdEnv, bomType):
+    def common_bom_revision(self, oldProdBrws, new_obj_brw, prodProdEnv, bomType):
         bomObj = self.env['mrp.bom']
-        newProdBrws = prodProdEnv.browse(newID)
         for bomBrws in bomObj.search([('product_tmpl_id', '=', oldProdBrws.product_tmpl_id.id), ('type', '=', bomType)]):
             newBomBrws = bomBrws.copy()
             source_id = False
-            if newProdBrws.linkeddocuments.ids:
+            if new_obj_brw.linkeddocuments.ids:
                 source_id = newProdBrws.linkeddocuments.ids[0]
-            newBomBrws.sudo().write({'product_tmpl_id': newProdBrws.product_tmpl_id.id, 'source_id': source_id})
+            new_obj_brw.sudo().write({'product_tmpl_id': new_obj_brw.product_tmpl_id.id, 'source_id': source_id})

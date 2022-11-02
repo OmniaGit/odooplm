@@ -28,8 +28,8 @@ from odoo import models
 from odoo import fields
 from odoo import api
 from odoo import _
-from odoo.addons.plm_base.models.plm_base_mixin import OBSOLATED_STATUS
-from odoo.addons.plm_base.models.plm_base_mixin import RELEASED_STATUS
+from odoo.addons.plm.models.plm_mixin import OBSOLATED_STATUS
+from odoo.addons.plm.models.plm_mixin import RELEASED_STATUS
 from odoo.exceptions import ValidationError
 from odoo.exceptions import AccessError
 from odoo.exceptions import UserError
@@ -58,7 +58,7 @@ def emptyStringIfFalse(value):
 
 class ProductProduct(models.Model):
     _name='product.product'
-    _inherit = ['revision.base.mixin', 'product.product']
+    _inherit = ['product.product']
     _description ="Product Product"
     
     def onchange(self, values, field_name, field_onchange):
@@ -101,12 +101,6 @@ class ProductProduct(models.Model):
                     prod_ids.append(objPrd.id)
             prod_obj.father_part_ids = prod_ids
 
-    linkeddocuments = fields.Many2many('ir.attachment',
-                                       'plm_component_document_rel',
-                                       'component_id',
-                                       'document_id',
-                                       _('Linked Docs'),
-                                       ondelete='cascade')
     tmp_material = fields.Many2one('plm.material',
                                    _('Raw Material'),
                                    required=False,
@@ -837,7 +831,6 @@ class ProductProduct(models.Model):
                     for child_product_id in product_ids:
                         _commonWFAction(child_product_id, status, include_statuses)
                 product_product_id._action_ondocuments(status, include_statuses)
-                product_product_id.move_to_state(status)
                 product_product_id.product_tmpl_id.move_to_state(status)
             return True
         return _commonWFAction(self, status, include_statuses, recursive)
@@ -914,9 +907,11 @@ class ProductProduct(models.Model):
                 raise UserError(_('Document %r with revision %r is in check-out, cannot create variant.' % (doc.name, doc.engineering_revision)))
 
     @api.model
-    def create(self, vals):
-        if not vals:
-            raise ValidationError(_("""You are trying to create a product without values"""))
+    def create(self, vals={}):
+        vals = vals.copy()
+        copy_context = self.env.context.get('copy_context')
+        if copy_context:
+            vals.update(copy_context)
         eng_code = vals.get('engineering_code')
         name = vals.get('name')
         if not name and eng_code:
@@ -925,9 +920,9 @@ class ProductProduct(models.Model):
         eng_rev = vals.get('engineering_revision', 0)
         eng_code = vals.get('engineering_code')
         if eng_code:
-            prodBrwsList = self.search([('engineering_code', '=', vals['engineering_code']),
-                                        ('engineering_revision', '=', eng_rev)
-                                        ])
+            prodBrwsList = self.search_count([('engineering_code', '=', eng_code),
+                                              ('engineering_revision', '=', eng_rev)
+                                              ])
             if prodBrwsList:
                 raise UserError('Component %r already exists' % (vals['engineering_code']))
         try:
@@ -992,42 +987,6 @@ Your user does not have enough permissions to make this operation. Error: \n
 %r\n
 Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fix module to solve the problem.""" % (ex)
             raise ex
-
-    def copy(self, default={}):
-        """
-            Overwrite the default copy method
-        """
-        if not default:
-            default = {}
-
-        def clearBrokenComponents():
-            """
-                Remove broken components before make the copy. So the procedure will not fail
-            """
-            # Do not check also for name because may cause an error in revision procedure
-            # due to translations
-            brokenComponents = self.search([('engineering_code', '=', '-')])
-            for brokenComp in brokenComponents:
-                brokenComp.unlink()
-
-        previous_name = self.name
-        if not default.get('name', False):
-            default['name'] = '-'                   # If field is required super of clone will fail returning False, this is the case
-            default['engineering_code'] = '-'
-            default['engineering_revision'] = 0
-            clearBrokenComponents()
-        if default.get('engineering_code', '') == '-':
-            clearBrokenComponents()
-        # assign default value
-        default['engineering_state'] = 'draft'
-        default['engineering_writable'] = True
-        default['linkeddocuments'] = []
-        default['engineering_release_date'] = False
-        objId = super(ProductProduct, self).copy(default)
-        if objId:
-            objId.is_engcode_editable = True
-            self.sudo().message_post(body=_('Copied starting from : %s.' % previous_name))
-        return objId
 
     def fieldsToKeep(self, to_write=[]):
         for vals in self.read(to_write):
@@ -1193,7 +1152,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                 product_product_id.message_post(body=_('Status moved to: %s by %s.' % (status_lable, self.env.user.name)))
                 # store updated infos in "revision" object
                 defaults = {}
-                defaults['name'] = product_product_id.name                 # copy function needs an explicit name value
+                defaults['name'] = product_product_id.name          # copy function needs an explicit name value
                 defaults['engineering_code'] = product_product_id.engineering_code
                 defaults['engineering_revision'] = engineering_revision
                 defaults['engineering_writable'] = True

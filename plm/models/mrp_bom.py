@@ -766,7 +766,7 @@ class MrpBomExtension(models.Model):
         product_product = self.env['product.product']
         ir_attachment_relation = self.env['ir.attachment.relation']
         try:
-            domain = [('engineering_state', 'in', ['installed', 'to upgrade', 'to remove']), ('name', '=', 'plm_engineering')]
+            domain = [('state', 'in', ['installed', 'to upgrade', 'to remove']), ('name', '=', 'plm_engineering')]
             apps = self.env['ir.module.module'].sudo().search_read(domain, ['name'])
             bomType = 'normal'
             if apps:
