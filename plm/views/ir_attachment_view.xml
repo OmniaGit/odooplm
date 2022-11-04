@@ -106,17 +106,16 @@
 	           		</div>
 		           	<group>
 	                	<group string= "PLM Infos:" name="main_doc_info">
-	                    	<label for="engineering_code" class="oe_edit_only"/>
 	                    	<field string="Eng. Document Name" name="engineering_code" attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}"/>
-	                    	<label for="engineering_revision" class="oe_edit_only"/>
 	                    	<field string="Enineering revision" name="engineering_revision" readonly="True"/>
 	                    	<field string="Is a Plm Document" name="is_plm" visible="0" widget="boolean_toggle"/>
 	                	</group>
 	                 	<group name="doc_preview">
 	                    	<field name="preview"
-	                    	      widget="image"
-	                    	      nolabel="1"
-	                    	      attrs="{'readonly':[('is_plm','=', True)]}"/>
+	                    	       widget="image"
+	                    	       options="{'zoom': true, 'zoom_delay': 800}"
+	                    	       nolabel="1"
+	                    	       attrs="{'readonly':[('is_plm','=', True)]}"/>
 	                	</group>
 	               	</group>
                     <notebook>
@@ -313,9 +312,15 @@
                 <field name="document_type"/>
                 <field name="is_linkedcomponents" invisible="True"/>
                 <templates>
+                    <t t-value="record.engineering_state.raw_value" t-set="stateToUse"/>
                     <t t-name="kanban-box">
-                        <t t-value="record.engineering_state.raw_value" t-set="stateToUse"/>
-                        <div class="oe_kanban_global_click">
+                        <div class="oe_kanban_global_click o_kanban_record_has_image_fill">
+                            <div style="margin-right: 3px;border-left: 1px solid lightgray;border-right: 1px solid lightgray;">
+	                           <field name="preview" 
+	                                  widget="image"
+	                                  options="{'zoom': true, 'zoom_delay': 800, 'width':150,'height':150}"
+	                                  />
+                            </div>
                             <table style="width: 100%; line-height: 1;">
                             	<tr>
                         			<td>
@@ -330,9 +335,7 @@
                         		</tr>
                             	<tr>
                             		<td>
-                            			<field name="preview" nolabel="1" 
-                            			       widget="image"
-                            			       class="oe_right oe_avatar"/>
+
                             		</td>
                                 	<td style="padding-left:10px; vertical-align: middle;" colspan="2">
                                 		<table style="width:100%">
