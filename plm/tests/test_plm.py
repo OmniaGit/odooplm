@@ -49,36 +49,60 @@ DUMMY_CONTENT = b"R0lGODdhAQABAIAAAP///////ywAAAAAAQABAAACAkQBADs="
 #
 @tagged('-standard', 'odoo_plm')
 class PlmDateBom(TransactionCase):
+    
+    def create_uom(self):
+        Uom = self.env['uom.uom']
+        self.uom_unit = self.env.ref('uom.product_uom_unit')
+        self.uom_dozen = self.env.ref('uom.product_uom_dozen')
+        self.uom_dunit = Uom.create({
+            'name': 'DeciUnit',
+            'category_id': self.uom_unit.category_id.id,
+            'factor_inv': 0.1,
+            'factor': 10.0,
+            'uom_type': 'smaller',
+            'rounding': 0.001})
+        self.uom_weight = self.env.ref('uom.product_uom_kgm')
+    
+    def create_product_template(self, name):
+        ProductTemplate = self.env['product.template']
+        default_data = ProductTemplate.default_get(['uom_id','uom_po_id'])
+        default_data.update({
+            'name': name,
+            })                                  
+        return ProductTemplate.create(default_data) 
+    
+    def create_store_product(self, name, eng_code=False):
+        if not eng_code:
+            eng_code="eng_code_" + name
+        Product = self.env['product.product'] 
+        default_data = Product.default_get(['uom_id','uom_po_id','sale_line_warn'])
+        default_data.update({
+            'name': name,
+            'engineering_code' : eng_code,
+            })    
+        return Product.create(default_data)
+    
+    def create_document(self, name, eng_code=False):
+        if not eng_code:
+            eng_code="eng_code_" + name
+        return self.env['ir.attachment'].create({
+            'datas': DUMMY_CONTENT,
+            'name': name,
+            'engineering_code': eng_code,
+            'res_model': 'ir.attachment',
+            'res_id': 0,
+        })
+        
     def test_some_wk(cls):
         #
         # Product environment related data
         #
         product_product_name = "plm_test_product_product_name_wf"
         product_product_code = "plm_test_product_product_code_wf"
-        Uom = cls.env['uom.uom']
-        cls.uom_unit = cls.env.ref('uom.product_uom_unit')
-        cls.uom_dozen = cls.env.ref('uom.product_uom_dozen')
-        cls.uom_dunit = Uom.create({
-            'name': 'DeciUnit',
-            'category_id': cls.uom_unit.category_id.id,
-            'factor_inv': 0.1,
-            'factor': 10.0,
-            'uom_type': 'smaller',
-            'rounding': 0.001})
-        cls.uom_weight = cls.env.ref('uom.product_uom_kgm')
         #
         # create main product
         #
-        Product = cls.env['product.product'] 
-        default_data = Product.default_get([])
-        default_data.update({
-            'name': product_product_name,
-            'engineering_code' : product_product_code,
-            'uom_id': cls.uom_unit.id,
-            'uom_po_id': cls.uom_unit.id,
-            'sale_line_warn':'no-message'})
-        cls.product_parent_id = Product.create(default_data)
-     
+        cls.product_parent_id=cls.create_store_product(product_product_name,product_product_code)
         #
         # release the product
         #
@@ -137,7 +161,7 @@ class PlmDateBom(TransactionCase):
         #
         latest_version = cls.product_parent_id.product_tmpl_id.get_latest_version()
         latest_version.action_from_draft_to_confirmed()
-        latest_version.action_from_confirmed_to_release()
+        latest_version.action_from_confirmed_to_released()
         #
         assert latest_version.engineering_revision==1
         assert latest_version.engineering_code==product_product_code
@@ -157,41 +181,61 @@ class PlmDateBom(TransactionCase):
         #
         # template
         #
-        ProductTemplate = cls.env['product.template']
-        default_data = ProductTemplate.default_get([])
-        default_data.update({
-            'name': 'test_product_template',
-            'uom_id': cls.uom_unit.id,
-            'uom_po_id': cls.uom_unit.id})                                  
-        cls.product_tmpl_1 = Product.create(default_data)
+        cls.product_tmpl_1 = cls.create_product_template('test_product_template')
         cls.product_tmpl_copy = cls.product_tmpl_1.copy({'name': 'test_product_template_copy'})         
         
     def test_attachment_wk(self):
-        attachment = self.env['ir.attachment'].create({
-            'datas': DUMMY_CONTENT,
-            'name': 'DUMMY_CONTENT.gif',
-            'engineering_code': 'test_ir_attachment',
-            'res_model': 'documents.document',
-            'res_id': 0,
-        })
+        attachment = self.create_document('document_wk_test')
         #
-        assert attachment.engineering_code==0
-        assert attachment.ischecked_in()==False
-        #
-        attchment.check.toggle_check_out()
+        assert attachment.engineering_revision==0
         assert attachment.ischecked_in()==True
-        attchment.check.toggle_check_out()      
-        assert attachment.ischecked_in()==False
         #
-        attchment.action_confirm()
-        attchment.engineering_state==CONFIRMED_STATUS
-        attchment.action_reactivate()
-        attchment.engineering_state==START_STATUS
-        attchment.action_confirm()
-        attchment.action_release()
+        attachment.toggle_check_out()
+        assert attachment.ischecked_in()==False
+        attachment.toggle_check_out()      
+        assert attachment.ischecked_in()==True
+        #
+        attachment.action_confirm()
+        attachment.engineering_state==CONFIRMED_STATUS
+        attachment.action_reactivate()
+        attachment.engineering_state==START_STATUS
+        attachment.action_confirm()
+        attachment.action_release()
+        latest_version = attachment.get_latest_version()
         assert latest_version.is_released()==True
         #
         #  new version
         #
-        #attachment.
+        attachment.new_version()
+        assert attachment.engineering_state==UNDER_MODIFY_STATUS
+        #
+        new_version_attachment = attachment.get_next_version()
+        #
+        assert new_version_attachment.engineering_revision==1
+        assert new_version_attachment.engineering_state==START_STATUS
+        #
+    
+    def test_product_attachment_wk(self):
+        product = self.create_store_product("test_product_attachment_product")
+        document = self.create_document("test_product_attachment_docuemnt")
+        document.linkedcomponents =[(4,product.product_tmpl_id.id)]
+        #
+        # test confirm
+        #
+        product.action_confirm()
+        assert product.engineering_state==CONFIRMED_STATUS
+        assert document.engineering_state==CONFIRMED_STATUS
+        #
+        # test confirm->draft
+        #
+        product.action_draft()
+        assert product.engineering_state==START_STATUS
+        assert document.engineering_state==START_STATUS , "status is %s" % document.engineering_state
+        #
+        # test release
+        #
+        product.action_confirm()
+        product.action_release()
+        assert product.engineering_state==RELEASED_STATUS, "status is %s" % product.engineering_state
+        assert document.engineering_state==RELEASED_STATUS, "status is %s" % document.engineering_state  
     

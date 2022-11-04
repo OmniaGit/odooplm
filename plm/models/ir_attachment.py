@@ -34,21 +34,24 @@ from odoo import models
 from odoo import fields
 from odoo import api
 from odoo import _
+#
+#
+#
+from odoo.addons.plm.models.plm_mixin import START_STATUS
+from odoo.addons.plm.models.plm_mixin import CONFIRMED_STATUS
+from odoo.addons.plm.models.plm_mixin import RELEASED_STATUS
+from odoo.addons.plm.models.plm_mixin import PLM_NO_WRITE_STATE
+from odoo.addons.plm.models.plm_mixin import OBSOLATED_STATUS
+#
 from collections import defaultdict
 import itertools
 import logging
 
 _logger = logging.getLogger(__name__)
 
-# To be adequated to plm.component class states
-USED_STATES = [('draft', _('Draft')),
-               ('confirmed', _('Confirmed')),
-               ('released', _('Released')),
-               ('undermodify', _('UnderModify')),
-               ('obsoleted', _('Obsoleted'))]
-USE_DIC_STATES = dict(USED_STATES)
 
-PLM_NO_WRITE_STATE = ['confirmed', 'released', 'undermodify', 'obsoleted']
+
+
 
 
 def random_name():
@@ -520,7 +523,7 @@ class IrAttachment(models.Model):
 #         fname, filesize = self._manageFile()
 #         defaults['store_fname'] = fname
 #         defaults['file_size'] = filesize
-        defaults['engineering_state'] = 'draft'
+        defaults['engineering_state'] = START_STATUS
         defaults['engineering_writable'] = True
         newDocBrws = super(IrAttachment, self).copy(defaults)
         if newDocBrws:
@@ -540,7 +543,7 @@ class IrAttachment(models.Model):
             logging.warning(
                 "_iswritable : Part (" + str(oid.name) + "-" + str(oid.engineering_revision) + ") not writable as hyperlink.")
             return False
-        if oid.engineering_state not in ('draft'):
+        if oid.engineering_state not in (START_STATUS):
             logging.warning("_iswritable : Part (" + str(oid.name) + "-" + str(oid.engineering_revision) + ") in status ; " + str(
                 oid.engineering_state) + ".")
             return False
@@ -595,7 +598,7 @@ class IrAttachment(models.Model):
                 defaults['engineering_code'] = oldObject.engineering_code
                 defaults['engineering_revision'] = newRevIndex
                 defaults['engineering_writable'] = True
-                defaults['engineering_state'] = 'draft'
+                defaults['engineering_state'] = START_STATUS
                 res = super(IrAttachment, oldObject).copy(defaults)
                 newID = res.id
                 res.engineering_revision_user = self.env.uid
@@ -778,14 +781,14 @@ class IrAttachment(models.Model):
         """
             action to be executed for Draft state
         """
-        return self.commonWFAction(True, 'draft', False)
+        return self.commonWFAction(True, START_STATUS, False)
 
     
     def action_confirm(self):
         """
             action to be executed for Confirm state
         """
-        return self.commonWFAction(False, 'confirmed', False)
+        return self.commonWFAction(False, CONFIRMED_STATUS, False)
 
     
     def action_release(self):
@@ -797,7 +800,7 @@ class IrAttachment(models.Model):
             if oldObject.ischecked_in():
                 to_release += oldObject
         if to_release:
-            to_release.commonWFAction(False, 'release', False)
+            to_release.commonWFAction(False, RELEASED_STATUS, False)
         return False
 
     
@@ -805,20 +808,17 @@ class IrAttachment(models.Model):
         """
             obsolete the object
         """
-        return self.commonWFAction(False, 'obsoleted', False)
+        return self.commonWFAction(False, OBSOLATED_STATUS, False)
 
     
     def action_reactivate(self):
         """
             reactivate the object
         """
-        defaults = {}
-        defaults['engineering_writable'] = False
-        defaults['engineering_state'] = 'released'
-        if self.ischecked_in():
-            objId = self.with_context(check=False).write(defaults)
-            return objId
-        return False
+        for attachment_id in self:
+            if attachment_id.ischecked_in():
+                attachment_id.with_context(check=False).move_to_state(START_STATUS)
+        return True
 
     
     def blindwrite(self, vals):
@@ -966,7 +966,7 @@ class IrAttachment(models.Model):
             docBrwsList = self.search([('engineering_code', '=', checkObj.engineering_code), ('engineering_revision', '=', checkObj.engineering_revision - 1)], limit=1)
             for oldObject in docBrwsList:
                 oldObject.message_post(body=_('Removed : Latest Revision.'))
-                values = {'engineering_state': 'released'}
+                values = {'engineering_state': RELEASED_STATUS}
                 if not oldObject.with_context(check=False).write(values):
                     msg = 'Unlink : Unable to update state in old document Engineering Name = %r   Engineering Revision = %r   Id = %r' % (oldObject.engineering_code, oldObject.engineering_revision, oldObject.id)
                     logging.warning(msg)
@@ -1511,7 +1511,7 @@ class IrAttachment(models.Model):
         """
         outMessage = ''
         outCode = 'NO_ERROR'
-        if self.engineering_state in ['released', 'obsoleted']:
+        if self.engineering_state in [RELEASED_STATUS, OBSOLATED_STATUS]:
             outMessage = _("Document is released and cannot be saved")
             outCode = 'DOC_RELEASED'
             if raiseError:
@@ -1639,7 +1639,7 @@ class IrAttachment(models.Model):
                         documentAttribute[
                             'TO_UPDATE'] = False  # To skip same document preview/pdf uploading by the client
                         break
-                    if brwItem.engineering_state not in ['released', 'obsoleted']:
+                    if brwItem.engineering_state not in [RELEASED_STATUS, OBSOLATED_STATUS]:
                         if brwItem.needUpdate():
                             brwItem.write(documentAttribute)
                             documentAttribute['TO_UPDATE'] = True
@@ -1676,7 +1676,7 @@ class IrAttachment(models.Model):
                     if brwItem.id in productsEvaluated:
                         prodBrws = brwItem
                         break
-                    if brwItem.engineering_state not in ['released', 'obsoleted']:
+                    if brwItem.engineering_state not in [RELEASED_STATUS, OBSOLATED_STATUS]:
                         brwItem.write(productAttribute)
                     prodBrws = brwItem
                     productsEvaluated.append(brwItem.id)
@@ -1807,7 +1807,7 @@ class IrAttachment(models.Model):
                 if showError:
                     raise UserError(msg)
                 return False, msg
-            if docBrws.engineering_state != 'draft':
+            if docBrws.engineering_state != START_STATUS:
                 msg = _("Unable to check-Out a document that is in state %r" % docBrws.engineering_state)
                 if showError:
                     raise UserError(msg)
@@ -1878,7 +1878,7 @@ class IrAttachment(models.Model):
     
     def canBeRevised(self):
         for docBrws in self:
-            if docBrws.engineering_state == 'released' and docBrws.ischecked_in():
+            if docBrws.engineering_state == RELEASED_STATUS and docBrws.ischecked_in():
                 return True
         return False
 
@@ -1905,7 +1905,7 @@ class IrAttachment(models.Model):
         existingDocs = {}
         graterDocBrws = None
         matchDocBrws = None
-        docAttrs['engineering_state'] = 'draft'
+        docAttrs['engineering_state'] = START_STATUS
         for docBrws in docBrwsList:
             if docBrws.engineering_revision == docRev:
                 docAttrs['engineering_state'] = docBrws.engineering_state
@@ -1933,7 +1933,7 @@ class IrAttachment(models.Model):
         existingCompRevisions = {}
         foundCompBrws = None
         graterCompBrws = None
-        compAttrs['engineering_state'] = 'draft'
+        compAttrs['engineering_state'] = START_STATUS
         for compBrws in prodBrwsList:
             if engRev == compBrws.engineering_revision:
                 compAttrs['engineering_state'] = compBrws.engineering_state
@@ -2184,7 +2184,7 @@ class IrAttachment(models.Model):
             plm_checkout_vals['documentid'] = ir_attachemnt_id.id
             break
         if found:  # write
-            if ir_attachemnt_id.engineering_state not in ['released', 'obsoleted']:
+            if ir_attachemnt_id.engineering_state not in [RELEASED_STATUS, OBSOLATED_STATUS]:
                 if ir_attachemnt_id.needUpdate():
                     ir_attachemnt_id.write(documentAttribute)
                     action = ir_attachemnt_id.canIUpload(dbThread)

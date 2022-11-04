@@ -55,6 +55,10 @@ USED_STATES = [(START_STATUS, _('Draft')),
                (UNDER_MODIFY_STATUS, _('UnderModify')),
                (OBSOLATED_STATUS, _('Obsoleted'))]
 
+PLM_NO_WRITE_STATE = [CONFIRMED_STATUS,
+                      RELEASED_STATUS,
+                      UNDER_MODIFY_STATUS,
+                      OBSOLATED_STATUS]
 
 LOWERCASE_LETTERS = [chr(i) for i in range(ord('a'), ord('z') + 1)]
 
@@ -105,9 +109,7 @@ class RevisionBaseMixin(models.AbstractModel):
 
     engineering_revision_user = fields.Many2one('res.users', string=_("User Revision"))
     engineering_revision_date = fields.Datetime(string=_('Datetime Revision'))
-    
-    engineering_revision_parent = fields.Many2one('revision.plm.mixin','Parent revision')
-    
+        
     engineering_branch_parent_id = fields.Integer('Parent branch')
     engineering_sub_revision_letter = fields.Char("Sub revision path")
     engineering_revision_count = fields.Integer(compute='_engineering_revision_count')
@@ -172,7 +174,7 @@ class RevisionBaseMixin(models.AbstractModel):
             obj.engineering_state = START_STATUS
             obj._mark_worklow_user_date() 
 
-    def action_from_confirmed_to_release(self):
+    def action_from_confirmed_to_released(self):
         for obj in self:
             obj.engineering_state = RELEASED_STATUS
             obj._mark_worklow_user_date()

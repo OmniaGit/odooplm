@@ -28,23 +28,20 @@ from odoo import models
 from odoo import fields
 from odoo import api
 from odoo import _
-from odoo.addons.plm.models.plm_mixin import OBSOLATED_STATUS
+
+from odoo.addons.plm.models.plm_mixin import START_STATUS
+from odoo.addons.plm.models.plm_mixin import CONFIRMED_STATUS
 from odoo.addons.plm.models.plm_mixin import RELEASED_STATUS
+from odoo.addons.plm.models.plm_mixin import UNDER_MODIFY_STATUS
+from odoo.addons.plm.models.plm_mixin import PLM_NO_WRITE_STATE
+from odoo.addons.plm.models.plm_mixin import OBSOLATED_STATUS
+
 from odoo.exceptions import ValidationError
 from odoo.exceptions import AccessError
 from odoo.exceptions import UserError
 import odoo.tools as tools
 
 _logger = logging.getLogger(__name__)
-
-USED_STATES = [
-    ('draft', _('Draft')),
-    ('confirmed', _('Confirmed')),
-    ('released', _('Released')),
-    ('undermodify', _('UnderModify')),
-    ('obsoleted', _('Obsoleted'))
-]
-USE_DIC_STATES = dict(USED_STATES)
 
 def emptyStringIfFalse(value):
     """
@@ -256,7 +253,7 @@ class ProductProduct(models.Model):
     def getLatestReleasedRevision(self):
         for product_id in self.search([('engineering_code', '=', self.engineering_code)], order="engineering_code desc"):
             if product_id.id != self.id:
-                if product_id.engineering_state in ['released', 'undermodifie']:
+                if product_id.engineering_state in [RELEASED_STATUS, 'undermodifie']:
                     return product_id
         return self
     
@@ -647,7 +644,7 @@ class ProductProduct(models.Model):
             if action_name != 'reject' and action_name != 'release':
                 check_state = oldObject.engineering_state
             else:
-                check_state = 'confirmed'
+                check_state = CONFIRMED_STATUS
             docIDs.extend(self.checkWorkflow(docInError, oldObject.linkeddocuments, check_state))
         if docInError:
             msg = _("Error on workflow operation")
@@ -661,27 +658,27 @@ class ProductProduct(models.Model):
         ir_attachment = self.env['ir.attachment']
         if len(docIDs) > 0:
             ir_attachment_ids = ir_attachment.browse(docIDs)
-            if action_name == 'confirm':
+            if action_name == CONFIRMED_STATUS:
                 ir_attachment_ids.action_confirm()
-            elif action_name == 'draft':
+            elif action_name == START_STATUS:
                 ir_attachment_ids.action_draft()
             elif action_name == 'reject':
                 ir_attachment_ids.action_draft()
-            elif action_name == 'release':
+            elif action_name == RELEASED_STATUS:
                 ir_attachment_ids.action_release()
-            elif action_name == 'undermodify':
+            elif action_name == UNDER_MODIFY_STATUS:
                 ir_attachment_ids.action_cancel()
             elif action_name == 'suspend':
                 ir_attachment_ids.action_suspend()
             elif action_name == 'reactivate':
                 ir_attachment_ids.action_reactivate()
-            elif action_name == 'obsolete':
+            elif action_name == OBSOLATED_STATUS:
                 ir_attachment_ids.action_obsolete()
         return docIDs
 
     @api.model
     def _iswritable(self, oid):
-        checkState = ('draft')
+        checkState = (START_STATUS,)
         if not oid.engineering_writable:
             logging.warning("_iswritable : Part (%r - %d) is not writable." % (oid.engineering_code, oid.engineering_revision))
             return False
@@ -735,7 +732,7 @@ class ProductProduct(models.Model):
             for oldObject in prod_ids:
                 oldObject.message_post(body=_('Removed : Latest Revision.'))
                 ctx['check'] = False
-                values = {'engineering_state': 'released'}
+                values = {'engineering_state': RELEASED_STATUS}
                 if not oldObject.with_context(ctx).write(values):
                     msg = 'Unlink : Unable to update state in product Engineering Code = %r   Engineering Revision = %r   Document Id = %r' % (oldObject.engineering_code, oldObject.engineering_revision, oldObject.id)
                     logging.warning(msg)
@@ -762,9 +759,7 @@ class ProductProduct(models.Model):
             release the object
         """
         for product_product_id in self:
-            status = 'draft'
-            include_statuses = ['confirmed']
-            product_product_id.commonWFAction(status, include_statuses)
+            product_product_id.commonWFAction(START_STATUS, [CONFIRMED_STATUS])
         return True
 
     def action_confirm(self):
@@ -772,17 +767,13 @@ class ProductProduct(models.Model):
             action to be executed for Draft state
         """
         for product_product_id in self:
-            status = 'confirmed'
-            include_statuses = ['draft']
-            product_product_id.commonWFAction(status, include_statuses, recursive=True)
+            product_product_id.commonWFAction(CONFIRMED_STATUS, [START_STATUS], recursive=True)
         return True
     
     def action_release(self):
         for product_product_id in self:
-            status = 'release'
-            include_statuses = ['confirmed']
-            product_product_id.commonWFAction(status,
-                                              include_statuses,
+            product_product_id.commonWFAction(RELEASED_STATUS,
+                                              [CONFIRMED_STATUS],
                                               recursive=True)
         return True
 
@@ -791,8 +782,8 @@ class ProductProduct(models.Model):
             obsolete the object
         """
         for product_product_id in self:
-            status = 'obsoleted'
-            include_statuses = ['released']
+            status = OBSOLATED_STATUS
+            include_statuses = [RELEASED_STATUS]
             product_product_id.commonWFAction(status,
                                               include_statuses,
                                               recursive=False)
@@ -803,9 +794,8 @@ class ProductProduct(models.Model):
             reactivate the object
         """
         for product_product_id in self:
-            status = 'released'
-            include_statuses = ['obsoleted']
-            product_product_id.commonWFAction(status, include_statuses)
+            product_product_id.commonWFAction(RELEASED_STATUS,
+                                              [OBSOLATED_STATUS])
         return True
 
     def commonWFAction(self,
@@ -1156,7 +1146,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                 defaults['engineering_code'] = product_product_id.engineering_code
                 defaults['engineering_revision'] = engineering_revision
                 defaults['engineering_writable'] = True
-                defaults['engineering_state'] = 'draft'
+                defaults['engineering_state'] = START_STATUS
                 defaults['linkeddocuments'] = []                  # Clean attached documents for new revision object
                 ctx['new_revision'] = True
                 new_tmpl_id = product_product_id.product_tmpl_id.with_context(ctx).copy(defaults)
@@ -1182,7 +1172,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             args = [objId, objMessage]
         """
         objId, objMessage = args
-        self.browse(objId).message_post(objMessage)
+        self.browse(objId).message_post(body=objMessage)
         return True
 
     @api.model
@@ -1319,7 +1309,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
 
     def canBeRevised(self):
         for compBrws in self:
-            if compBrws.engineering_state == 'released':
+            if compBrws.engineering_state == RELEASED_STATUS:
                 return True
         return False
 
@@ -1666,7 +1656,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             found = True
             break
         if found:  # Write
-            if product_produc_id.engineering_state not in ['released', 'obsoleted']:
+            if product_produc_id.engineering_state not in [RELEASED_STATUS, OBSOLATED_STATUS]:
                 out_product_produc_id.write(productAttribute)
         else:  # write
             out_product_produc_id = self.create(productAttribute)
