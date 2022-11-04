@@ -29,7 +29,7 @@ from odoo import api
 from odoo import models
 from odoo import fields
 
-from odoo.addons.plm.models.ir_attachment import USED_STATES
+from odoo.addons.plm.models.plm_mixin import USED_STATES
 
 USED_STATES.append(('suspended', _('Suspended')))
 

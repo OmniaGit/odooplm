@@ -51,7 +51,7 @@ class PlmEntityCreator(object):
             })                                  
         return ProductTemplate.create(default_data) 
     
-    def create_store_product(self, name, eng_code=False):
+    def create_product_product(self, name, eng_code=False):
         if not eng_code:
             eng_code="eng_code_" + name
         Product = self.env['product.product'] 
@@ -74,7 +74,7 @@ class PlmEntityCreator(object):
         })
     
     def create_product_document(self, name):
-        product = self.create_store_product("product_" + name)
+        product = self.create_product_product("product_" + name)
         document = self.create_document("attachment_" + name)
         document.linkedcomponents =[(4,product.product_tmpl_id.id)]
         return product, document

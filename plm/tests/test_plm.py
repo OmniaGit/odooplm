@@ -60,7 +60,7 @@ class PlmDateBom(TransactionCase, PlmEntityCreator):
         #
         # create main product
         #
-        cls.product_parent_id=cls.create_store_product(product_product_name,product_product_code)
+        cls.product_parent_id=cls.create_product_product(product_product_name,product_product_code)
         #
         # release the product
         #
@@ -174,7 +174,7 @@ class PlmDateBom(TransactionCase, PlmEntityCreator):
         #
     
     def test_product_attachment_wk(self):
-        product = self.create_store_product("test_product_attachment_product")
+        product = self.create_product_product("test_product_attachment_product")
         document = self.create_document("test_product_attachment_docuemnt")
         document.linkedcomponents =[(4,product.product_tmpl_id.id)]
         #
