@@ -167,7 +167,10 @@ class PlmComponent(models.Model):
         get All version product_tempate based on this one
         """
         for product_product_id in self:
-            product_product_id.revision_count = product_product_id.search_count([('engineering_code', '=', product_product_id.engineering_code)])
+            if product_product_id.engineering_code:
+                product_product_id.revision_count = product_product_id.search_count([('engineering_code', '=', product_product_id.engineering_code)])
+            else:
+                product_product_id.revision_count = 0
 
     @api.onchange('std_description')
     def on_change_stddesc(self):
