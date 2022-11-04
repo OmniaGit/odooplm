@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 ##############################################################################
 #
-#    OmniaSolutions, Open Source Management Solution
+#    OmniaSolutions, Open Source Management Solution    
 #    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
 #    $Id$
 #
@@ -19,5 +19,5 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from . import wizard
+from . import test_plm
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

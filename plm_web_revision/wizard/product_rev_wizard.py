@@ -33,7 +33,7 @@ from odoo import _
 import logging
 
 
-class ProductProductExtended(models.Model):
+class ProductProductExtended(models.TransientModel):
     _name = 'product.rev_wizard'
     _description = "Product Revision wizard"
 
@@ -47,18 +47,18 @@ class ProductProductExtended(models.Model):
         active_model = self.env.context.get('active_model', False)
         if product_id and active_model:
             old_product_product_id = self.env[active_model].browse(product_id)
-            old_product_template_id =old_product_product_id.product_tmpl_id
+            old_product_template_id = old_product_product_id.product_tmpl_id
             old_product_template_id.new_version()
             new_product_template_id = old_product_product_id.product_tmpl_id.get_next_version()
 
             if self.reviseDocument:
-                self.revise_related_attachment(old_product_template_id, new_product_template_id, prodProdEnv)
+                self.revise_related_attachment(old_product_template_id, new_product_template_id)
             if self.reviseEbom:
-                self.common_bom_revision(old_product_template_id, new_product_template_id, prodProdEnv, 'ebom')
+                self.common_bom_revision(old_product_template_id, new_product_template_id, 'ebom')
             if self.reviseNbom:
-                self.common_bom_revision(old_product_template_id, new_product_template_id, prodProdEnv, 'normal')
+                self.common_bom_revision(old_product_template_id, new_product_template_id, 'normal')
             if self.reviseSbom:
-                self.common_bom_revision(old_product_template_id, new_product_template_id, prodProdEnv, 'spbom')
+                self.common_bom_revision(old_product_template_id, new_product_template_id, 'spbom')
             
             new_product_id = self.env['product.product'].search([('product_tmpl_id','=', new_product_template_id.id)], limit=1)
             
@@ -73,7 +73,7 @@ class ProductProductExtended(models.Model):
             logging.error('[action_create_new_revision_by_server] Cannot revise because product_id is %r' % (product_id))
             raise UserError(_('Current component cannot be revised!'))
 
-    def revise_related_attachment(self, old_product_id, new_product_id, prodProdEnv):
+    def revise_related_attachment(self, old_product_id, new_product_id):
         new_ir_attachment_ids = self.env['ir.attachment']
         for old_ir_attachment_id in old_product_id.linkeddocuments:
             try:
@@ -84,11 +84,11 @@ class ProductProductExtended(models.Model):
                 logging.warning("ex")
         new_product_id.linkeddocuments = new_ir_attachment_ids
 
-    def common_bom_revision(self, oldProdBrws, new_obj_brw, prodProdEnv, bomType):
+    def common_bom_revision(self, oldProdBrws, new_obj_brw, bomType):
         bomObj = self.env['mrp.bom']
-        for bomBrws in bomObj.search([('product_tmpl_id', '=', oldProdBrws.product_tmpl_id.id), ('type', '=', bomType)]):
+        for bomBrws in bomObj.search([('product_tmpl_id', '=', oldProdBrws.id), ('type', '=', bomType)]):
             newBomBrws = bomBrws.copy()
             source_id = False
             if new_obj_brw.linkeddocuments.ids:
-                source_id = newProdBrws.linkeddocuments.ids[0]
-            new_obj_brw.sudo().write({'product_tmpl_id': new_obj_brw.product_tmpl_id.id, 'source_id': source_id})
+                source_id = new_obj_brw.linkeddocuments.ids[0]
+            new_obj_brw.sudo().write({'product_tmpl_id': new_obj_brw.id, 'source_id': source_id})

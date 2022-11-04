@@ -40,58 +40,16 @@ from odoo.addons.plm.models.plm_mixin import UNDER_MODIFY_STATUS
 from odoo.addons.plm.models.plm_mixin import START_STATUS
 from odoo.addons.plm.models.plm_mixin import CONFIRMED_STATUS
 from odoo.addons.plm.models.plm_mixin import OBSOLATED_STATUS
+from odoo.addons.plm.tests.entity_creator import PlmEntityCreator
 #
 #
 # --test-tags=odoo_plm
 #
 #
-DUMMY_CONTENT = b"R0lGODdhAQABAIAAAP///////ywAAAAAAQABAAACAkQBADs="
+
 #
 @tagged('-standard', 'odoo_plm')
-class PlmDateBom(TransactionCase):
-    
-    def create_uom(self):
-        Uom = self.env['uom.uom']
-        self.uom_unit = self.env.ref('uom.product_uom_unit')
-        self.uom_dozen = self.env.ref('uom.product_uom_dozen')
-        self.uom_dunit = Uom.create({
-            'name': 'DeciUnit',
-            'category_id': self.uom_unit.category_id.id,
-            'factor_inv': 0.1,
-            'factor': 10.0,
-            'uom_type': 'smaller',
-            'rounding': 0.001})
-        self.uom_weight = self.env.ref('uom.product_uom_kgm')
-    
-    def create_product_template(self, name):
-        ProductTemplate = self.env['product.template']
-        default_data = ProductTemplate.default_get(['uom_id','uom_po_id'])
-        default_data.update({
-            'name': name,
-            })                                  
-        return ProductTemplate.create(default_data) 
-    
-    def create_store_product(self, name, eng_code=False):
-        if not eng_code:
-            eng_code="eng_code_" + name
-        Product = self.env['product.product'] 
-        default_data = Product.default_get(['uom_id','uom_po_id','sale_line_warn'])
-        default_data.update({
-            'name': name,
-            'engineering_code' : eng_code,
-            })    
-        return Product.create(default_data)
-    
-    def create_document(self, name, eng_code=False):
-        if not eng_code:
-            eng_code="eng_code_" + name
-        return self.env['ir.attachment'].create({
-            'datas': DUMMY_CONTENT,
-            'name': name,
-            'engineering_code': eng_code,
-            'res_model': 'ir.attachment',
-            'res_id': 0,
-        })
+class PlmDateBom(TransactionCase, PlmEntityCreator):
         
     def test_some_wk(cls):
         #
@@ -237,5 +195,20 @@ class PlmDateBom(TransactionCase):
         product.action_confirm()
         product.action_release()
         assert product.engineering_state==RELEASED_STATUS, "status is %s" % product.engineering_state
-        assert document.engineering_state==RELEASED_STATUS, "status is %s" % document.engineering_state  
+        assert document.engineering_state==RELEASED_STATUS, "status is %s" % document.engineering_state
+    
+    def test_bom_wk(self):
+        bom_id = self.create_bom_with_document("base_test_bom_wk")
+        root_product_id = bom_id.product_id
+        root_product_id.action_confirm()
+        
+        children_ids =  self.env['product.product']._getChildrenBom(root_product_id,
+                                                                    level=1)
+        for child in self.env['product.product'].browse(children_ids):
+            assert child.engineering_state==CONFIRMED_STATUS
+
+        
+        
+        
+#
     

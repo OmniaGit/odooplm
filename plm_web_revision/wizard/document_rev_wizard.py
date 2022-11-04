@@ -33,7 +33,7 @@ from odoo import _
 import logging
 
 
-class PlmDocumentExtended(models.Model):
+class PlmDocumentExtended(models.TransientModel):
     _name = 'document.rev_wizard'
     _description = "Document Revision Wizard"
 

@@ -775,7 +775,7 @@ class IrAttachment(models.Model):
             ir_attachment_id.with_context(check=False).move_to_state(state)
             if ir_attachment_id.is3D():
                 pkg_doc_ids = self.getRelatedPkgTree(ir_attachment_id.id)
-                self.browse(pkg_doc_ids).commonWFAction(writable, engineering_state, check)
+                self.browse(pkg_doc_ids).commonWFAction(writable, state, check)
 
     def action_draft(self):
         """
