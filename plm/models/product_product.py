@@ -172,52 +172,67 @@ class ProductProduct(models.Model):
             product_product_id.readonly_std_umc1 = False
             product_product_id.readonly_std_umc2 = False
             product_product_id.readonly_std_umc3 = False
-            if product_product_id.std_description:
-                if product_product_id.std_description.umc1:
+            std_description = product_product_id.std_description
+            if std_description:
+                product_product_id.std_umc1 = std_description.umc1
+                product_product_id.std_umc2 = std_description.umc2
+                product_product_id.std_umc3 = std_description.umc3
+                #
+                if product_product_id.std_umc1:
                     product_product_id.readonly_std_umc1=True
-                if product_product_id.std_description.umc2:
-                    product_product_id.readonly_std_umc2=True
-                if product_product_id.std_description.umc3:
-                    product_product_id.readonly_std_umc3=True
-                if product_product_id.std_description.umc1 or product_product_id.std_description.fmt1:
                     product_product_id.show_std_field1 = True
-                if product_product_id.std_description.umc2 or product_product_id.std_description.fmt2:
+                else:
+                    product_product_id.std_value1 = False
+                        
+                if product_product_id.std_umc2:
+                    product_product_id.readonly_std_umc2=True
                     product_product_id.show_std_field2 = True
-                if product_product_id.std_description.umc3 or product_product_id.std_description.fmt3:
+                else:
+                    product_product_id.std_value2 = False
+                if product_product_id.std_umc3:
+                    product_product_id.readonly_std_umc3=True
                     product_product_id.show_std_field3 = True
-        
-
-
-    @api.onchange('std_description')
-    def on_change_stddesc(self):
-        if self.std_description:
-            if self.std_description.description:
-                self.name = self.std_description.description
-                if self.std_description.umc1:
-                    self.std_umc1 = self.std_description.umc1
                 else:
-                    self.std_umc1=""
-                    self.std_value1=False
-                if self.std_description.umc2:
-                    self.std_umc2 = self.std_description.umc2
-                else:
-                    self.std_umc2=""
-                    self.std_value2=False
-                if self.std_description.umc3:
-                    self.std_umc3 = self.std_description.umc3
-                else:
-                    self.std_umc3=""
-                    self.std_value3=False
-                if self.std_description.unitab:
-                    self.name = self.name + " " + self.std_description.unitab
+                    product_product_id.std_value3 = False
+                #
+            product_product_id.on_change_stdvalue()
+            
+                
+    # @api.onchange('std_description')
+    # def on_change_stddesc(self):
+    #     if self.std_description:
+    #         if self.std_description.description:
+    #             self.name = self.std_description.description
+    #             if self.std_description.umc1:
+    #                 self.std_umc1 = self.std_description.umc1
+    #             else:
+    #                 self.std_umc1=""
+    #                 self.std_value1=False
+    #             if self.std_description.umc2:
+    #                 self.std_umc2 = self.std_description.umc2
+    #             else:
+    #                 self.std_umc2=""
+    #                 self.std_value2=False
+    #             if self.std_description.umc3:
+    #                 self.std_umc3 = self.std_description.umc3
+    #             else:
+    #                 self.std_umc3=""
+    #                 self.std_value3=False
+    #             if self.std_description.unitab:
+    #                 self.name = self.name + " " + self.std_description.unitab
 
                 
 
     @api.onchange('std_value1', 'std_value2', 'std_value3', 'std_umc1','std_umc2','std_umc3')
     def on_change_stdvalue(self):
         if self.std_description:
-            if self.std_description.description:
-                self.name = self.computeDescription(self.std_description, self.std_description.description, self.std_umc1, self.std_umc2, self.std_umc3, self.std_value1, self.std_value2, self.std_value3)
+            self.name = self.computeDescription(self.std_description,
+                                                self.std_umc1,
+                                                self.std_umc2,
+                                                self.std_umc3,
+                                                self.std_value1,
+                                                self.std_value2,
+                                                self.std_value3)
 
     @api.onchange('tmp_material')
     def on_change_tmpmater(self):
@@ -332,11 +347,11 @@ class ProductProduct(models.Model):
                 retvalue = fmt
         return retvalue
 
-    def computeDescription(self, thisObject, initialVal, std_umc1, std_umc2, std_umc3, std_value1, std_value2, std_value3):
+    def computeDescription(self, thisObject, std_umc1, std_umc2, std_umc3, std_value1, std_value2, std_value3):
         description1 = False
         description2 = False
         description3 = False
-        description = initialVal
+        description = thisObject.description or thisObject.name or 'ERROR !!'
         if thisObject.fmtend:
             if std_umc1 and std_value1:
                 description1 = self._packvalues(thisObject.fmt1, std_umc1, std_value1)
