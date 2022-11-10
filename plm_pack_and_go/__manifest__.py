@@ -22,7 +22,7 @@
     "name": "Plm Pack and Go",
     "version": "16.0.1",
     "author": "OmniaSolutions",
-    "website": "https://github.com/OmniaGit/odooplm",
+    "website": "https://odooplm.omniasolutions.website",
     "category": "Product Lifecycle Management",
     "sequence": 15,
     "summary": "Download BOM structure files from a component",

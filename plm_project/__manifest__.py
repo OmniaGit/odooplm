@@ -22,7 +22,7 @@
     "name": "PLM Project",
     "version": "16.0.1",
     "author": "OmniaSolutions",
-    "website": "https://github.com/OmniaGit/odooplm",
+    "website": "https://odooplm.omniasolutions.website",
     "category": "Product Lifecycle Management",
     "license": "AGPL-3",
     "sequence": 15,

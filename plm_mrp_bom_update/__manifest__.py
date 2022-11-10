@@ -30,7 +30,7 @@ This module allows you to update your working manufacture order based on the bom
 """,
  'author': 'mboscolo',
  'maintainer': 'https://www.OmniaSolutions.website',
- 'website': 'https://www.OmniaSolutions.website',
+ 'website': 'https://odooplm.omniasolutions.website',
  'depends': ['omnia_mrp_bom_update',
              'plm',
              'stock'],

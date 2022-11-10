@@ -22,7 +22,7 @@
     "name": "PLM Cutted Parts",
     "version": "16.0.1",
     "author": "OmniaSolutions",
-    "website": "https://github.com/OmniaGit/odooplm",
+    "website": "https://odooplm.omniasolutions.website",
     "category": "Product Lifecycle Management",
     "sequence": 15,
     "summary": "Manage bom explosion for cutted parts",

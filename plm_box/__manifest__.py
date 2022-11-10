@@ -22,7 +22,7 @@
     "name": "Plm Box",
     "version": "16.0.1",
     "author": "OmniaSolutions",
-    "website": "https://github.com/OmniaGit/odooplm",
+    "website": "https://odooplm.omniasolutions.website",
     "category": "Custom",
     "sequence": 1,
     "summary": "",
