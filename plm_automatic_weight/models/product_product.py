@@ -30,6 +30,11 @@ from odoo import fields
 from odoo import api
 from odoo import _
 import odoo.addons.decimal_precision as dp
+from odoo.addons.plm.models.plm_mixin import START_STATUS
+from odoo.addons.plm.models.plm_mixin import CONFIRMED_STATUS
+from odoo.addons.plm.models.plm_mixin import RELEASED_STATUS
+from odoo.addons.plm.models.plm_mixin import UNDER_MODIFY_STATUS
+from odoo.addons.plm.models.plm_mixin import OBSOLATED_STATUS
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -46,11 +51,14 @@ class PlmComponent(models.Model):
         _('Weight compute mode'),
         default='use_net',
         help=_(
-            """Set "Use Net Weight" to use only gross weight. Set "Use CAD Weight" to use CAD weight + Additional Weight as gross weight. Set "Use Normal Bom" to use NBOM Weight Computed + Additional weight as gross weight.""")
+            """Set "Use Net Weight" to use only gross weight. \n
+               Set "Use CAD Weight" to use CAD weight + Additional Weight as gross weight. \n
+               Set "Use Normal Bom" to use NBOM Weight Computed + Additional weight as gross weight.""")
     )
     weight_additional = fields.Float(_('Additional Weight'), digits='Stock Weight', default=0)
     weight_cad = fields.Float(_('CAD Weight'), readonly=True, digits='Stock Weight', default=0)
-    weight_n_bom_computed = fields.Float(_('NBOM Weight Computed'), readonly=True,
+    weight_n_bom_computed = fields.Float(_('NBOM Weight Computed'),
+                                         readonly=True,
                                          digits='Stock Weight', default=0)
 
     @api.model
@@ -66,25 +74,15 @@ class PlmComponent(models.Model):
             vals['weight_cad'] = weight
         return super(PlmComponent, self).create(vals)
 
-    @api.onchange('automatic_compute_selection')
+    @api.onchange('automatic_compute_selection','weight_additional')
     def on_change_automatic_compute(self):
         """
             Compute weight due to selection choice
         """
         if self.automatic_compute_selection == 'use_cad':
-            self.weight = self.weight_cad + self.weight_additional
+            self.weight = self.weight_additional + self.weight_cad 
         elif self.automatic_compute_selection == 'use_normal_bom':
             self.weight = self.weight_additional + self.weight_n_bom_computed
-
-    @api.onchange('weight_additional')
-    def on_change_weight_additional(self):
-        """
-            Compute weight due to additional weight change
-        """
-        if self.automatic_compute_selection == 'use_normal_bom':
-            self.weight = self.weight_n_bom_computed + self.weight_additional
-        elif self.automatic_compute_selection == 'use_cad':
-            self.weight = self.weight_cad + self.weight_additional
 
     def compute_bom_weight(self):
         """
@@ -112,8 +110,8 @@ class PlmComponent(models.Model):
                             bom_total_weight = bom_total_weight + line_amount
                         product_brws.write({'weight_n_bom_computed': bom_total_weight})
                         product_brws.weight_n_bom_computed = bom_total_weight
-                        if product_brws.engineering_state not in ['released', 'obsoleted'] or (
-                                product_brws.engineering_state in ['released', 'obsoleted'] and is_user_admin):
+                        if product_brws.engineering_state not in [RELEASED_STATUS, OBSOLATED_STATUS] or (
+                                product_brws.engineering_state in [RELEASED_STATUS, OBSOLATED_STATUS] and is_user_admin):
                             bom_brws.write({'weight_net': bom_total_weight})
                         self.common_weight_compute(product_brws, is_user_admin, product_brws.weight_n_bom_computed)
                         break
@@ -135,7 +133,7 @@ class PlmComponent(models.Model):
                 product_b.write({'weight': common})
                 product_b.weight = common
 
-        if product_brws.engineering_state in ['released', 'obsoleted']:
+        if product_brws.engineering_state in [RELEASED_STATUS, OBSOLATED_STATUS]:
             if is_user_admin:
                 common_set(product_brws)
         else:

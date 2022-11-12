@@ -140,7 +140,7 @@ class BackupDocWizard(models.TransientModel):
             else:
                 # Note that if I don't have a document I can't relate it to it's component
                 # User have to do it hand made
-                values.update({'state': 'draft',
+                values.update({'engineering_state': 'draft',
                                'engineering_revision': backupDocBrws.engineering_revision,
                                'name': backupDocBrws.document_name,
                                }

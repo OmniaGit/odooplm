@@ -28,7 +28,7 @@ Created on 26 Jul 2016
 import logging
 from odoo import models
 from odoo import api
-
+from odoo.addons.plm.modules.plm_mixin import RELEASED_STATUS
 
 class ProdProdExtension(models.Model):
     _inherit = 'product.product'
@@ -44,7 +44,7 @@ class ProdProdExtension(models.Model):
         if force_products:
             releasedComponents = force_products
         else:
-            releasedComponents = self.search([('state', '=', 'released')])
+            releasedComponents = self.search([('engineering_state', '=', RELEASED_STATUS)])
         logging.info('[Automate Nbom scheduler started] found %s components' % (len(releasedComponents.ids)))
         for prodBrws in releasedComponents:
             try:

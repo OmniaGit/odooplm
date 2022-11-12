@@ -12,9 +12,9 @@
             <xpath expr="//group[@name='technical_infos_group']" position="after">
                 <group name="weight" string="Weight" colspan="4" col="4">
                     <field name="automatic_compute_selection" widget='radio'/>
-                    <field name="weight" attrs="{'readonly':[('state', 'in', ['released', 'obsoleted'])]}"/>
+                    <field name="weight" attrs="{'readonly':[('engineering_state', 'in', ['released', 'obsoleted'])]}"/>
                     <field name="weight_additional"
-                           attrs="{'readonly':['|', ('state', 'in', ['released', 'obsoleted']),
+                           attrs="{'readonly':['|', ('engineering_state', 'in', ['released', 'obsoleted']),
                            ('automatic_compute_selection', 'not in', ['use_normal_bom', 'use_cad'])]}"/>
                     <field name="weight_cad"/>
                     <field name="weight_n_bom_computed"/>
@@ -33,7 +33,7 @@
                 <group name="weight" string="Weight" colspan="4" col="4">
                     <field name="automatic_compute_selection" widget='radio'/>
                     <field name="weight_additional"
-                           attrs="{'readonly':['|', ('state', 'in', ['released', 'obsoleted']),
+                           attrs="{'readonly':['|', ('engineering_state', 'in', ['released', 'obsoleted']),
                            ('automatic_compute_selection', 'not in', ['use_normal_bom', 'use_cad'])]}"/>
                     <field name="weight_cad"/>
                     <field name="weight_n_bom_computed"/>

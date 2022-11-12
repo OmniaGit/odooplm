@@ -73,6 +73,22 @@ class PlmEntityCreator(object):
             'res_id': 0,
         })
     
+    def create_bom_2_level(self, name):
+        p_product = self.create_product_product("parent" + name)
+        p_product1 = self.create_product_product("child_1" + name)
+        p_product2 = self.create_product_product("child_2" + name)
+        parent_bom = self.env['mrp.bom'].create({'product_id': p_product.id,
+                                                 'product_tmpl_id': p_product.product_tmpl_id.id})
+        self.env['mrp.bom.line'].create({'bom_id': parent_bom.id,
+                                         'product_id': p_product1.id,
+                                         'product_qty': 1})
+        child_bom = self.env['mrp.bom'].create({'product_id': p_product1.id,
+                                                'product_tmpl_id': p_product1.product_tmpl_id.id})
+        self.env['mrp.bom.line'].create({'bom_id': child_bom.id,
+                                         'product_id': p_product2.id,
+                                         'product_qty': 1})
+        return p_product, p_product1, p_product2, parent_bom, child_bom
+    
     def create_product_document(self, name):
         product = self.create_product_product("product_" + name)
         document = self.create_document("attachment_" + name)
