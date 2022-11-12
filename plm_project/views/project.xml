@@ -8,10 +8,8 @@
         <field name="arch" type="xml">
             <field name="partner_id" position="after">
                     <field string="PLM" name="plm_use_plm"  />
+                    <field name="plm_completed" widget="progressbar" attrs="{'invisible':[('plm_use_plm', '=', False)]}" />                    
             </field>
-            <field name="company_id" position="after">
-                <field name="plm_completed" widget="progressbar" attrs="{'invisible':[('plm_use_plm', '=', False)]}" />
-             </field>
             <xpath expr="//notebook" position="inside">
                 <page string="PLM" attrs="{'invisible':[('plm_use_plm', '=', False)]}">
                     <group>
