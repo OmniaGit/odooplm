@@ -7,26 +7,29 @@
         <field name="type">form</field>
         <field name="arch" type="xml">
         <form string="Export Form">
+            <field name="convertion_server_available" invisible="1"/>
         	<group>
-        			<field name="component_id" colspan="2"/>
-        			<field name="export_type" />
-        			<field name="convertion_server_available" invisible="1"/>
-        			<button string="Compute Bom" name="computeExportRelField" type="object"/>
+        	   <group>
+                    <field name="component_id" colspan="2"/>
+	        		<field name="export_type" />
+        		</group>
+        		<group>
+                    <button string="Compute Bom" name="computeExportRelField" type="object"/>
+        		</group>
 		    </group>
-		    
-		    	<notebook>
-                        <page string="2D" id="2d_page">
-                        	<group>
-			        			<field name="force_types_2d"
+		    <notebook>
+                <page string="2D" id="2d_page">
+                    <group colspan="4" >
+			            <field name="force_types_2d"
 			        			options="{'no_open':True,'no_create':True}"
-			        			attrs="{'readonly': [('convertion_server_available', '=', False)]}"/>
-			        			<button string="Force Types" name="forceTypes2d" type="object"
-			        			attrs="{'readonly': [('convertion_server_available', '=', False)]}"/>
-			        			<button string="Clear" name="clear2d" type="object"/>
-			        		</group>
-			        		<group>
-					            <field name="export_2d" nolabel="1">
-						            <tree editable='bottom'>
+			        			attrs="{'invisible': [('convertion_server_available', '=', False)]}"/>
+			        	<button string="Force Types" name="forceTypes2d" type="object"
+			        			attrs="{'invisible': [('convertion_server_available', '=', False)]}"/>
+			        	<button string="Clear" name="clear2d" type="object"/>
+			        </group>
+			        <group colspan="4">
+					   <field name="export_2d" colspan="2" nolabel="1">
+					       <tree editable='bottom' >
 						                <field name="component_id" readonly="1"/>
 						                <field name="comp_rev" readonly="1"/>
 						                <field name="comp_description" readonly="1"/>
@@ -35,53 +38,53 @@
 						                <field name="doc_rev" readonly="1"/>
 						                <field name="document_description" readonly="1"/>
 						                <field name="available_types" options="{'no_open':True,'no_create':True}"/>
-						            </tree>
-						        </field>
-						    </group>
-                		</page>
-                        <page string="PDF" id="pdf_page">
-                        	<button string="Clear" name="clearpdf" type="object"/>
-                        	<group>
-					            <field name="export_pdf" nolabel="1">
-						            <tree editable='bottom'>
-						                <field name="component_id" readonly="1"/>
-						                <field name="comp_rev" readonly="1"/>
-						                <field name="comp_description" readonly="1"/>
-						                <field name="document_id" readonly="1"/>
-						                <field name="doc_file_name" readonly="1"/>
-						                <field name="doc_rev" readonly="1"/>
-						                <field name="document_description" readonly="1"/>
-						            </tree>
-						        </field>
-						    </group>
-                		</page>
-                        <page string="3D" id="3d_page">
-                        	<group>
-			        			<field name="force_types_3d" options="{'no_open':True,'no_create':True}"
-			        			attrs="{'readonly': [('convertion_server_available', '=', False)]}"/>
-			        			<button string="Force Types" name="forceTypes3d" type="object"
-			        			attrs="{'readonly': [('convertion_server_available', '=', False)]}"/>
-			        			<button string="Clear" name="clear3d" type="object"/>
-			        		</group>
-			        		<group>
-					            <field name="export_3d" nolabel="1">
-						            <tree editable='bottom'>
-						                <field name="component_id" readonly="1"/>
-						                <field name="comp_rev" readonly="1"/>
-						                <field name="comp_description" readonly="1"/>
-						                <field name="document_id" readonly="1"/>
-						                <field name="doc_file_name" readonly="1"/>
-						                <field name="doc_rev" readonly="1"/>
-						                <field name="document_description" readonly="1"/>
-						                <field name="available_types" options="{'no_open':True,'no_create':True}"/>
-						            </tree>
-						        </field>
-						    </group>
+						   </tree>
+						</field>
+					</group>
+                </page>
+                <page string="PDF" id="pdf_page">
+                    <button string="Clear" name="clearpdf" type="object"/>
+                    <group>
+					   <field name="export_pdf" colspan="2" nolabel="1">
+						<tree editable='bottom'>
+			                <field name="component_id" readonly="1"/>
+			                <field name="comp_rev" readonly="1"/>
+			                <field name="comp_description" readonly="1"/>
+			                <field name="document_id" readonly="1"/>
+			                <field name="doc_file_name" readonly="1"/>
+			                <field name="doc_rev" readonly="1"/>
+			                <field name="document_description" readonly="1"/>
+			            </tree>
+                       </field>
+					</group>
+                </page>
+                <page string="3D" id="3d_page">
+                    <group>
+                        <field name="force_types_3d" options="{'no_open':True,'no_create':True}"
+			        			attrs="{'invisible': [('convertion_server_available', '=', False)]}"/>
+			        	<button string="Force Types" name="forceTypes3d" type="object"
+			        			attrs="{'invisible': [('convertion_server_available', '=', False)]}"/>
+			        	<button string="Clear" name="clear3d" type="object"/>
+			        </group>
+                    <group>
+	                    <field name="export_3d" colspan="2" nolabel="1">
+	                        <tree editable='bottom'>
+	                            <field name="component_id" readonly="1"/>
+	                            <field name="comp_rev" readonly="1"/>
+	                            <field name="comp_description" readonly="1"/>
+	                            <field name="document_id" readonly="1"/>
+	                            <field name="doc_file_name" readonly="1"/>
+	                            <field name="doc_rev" readonly="1"/>
+	                            <field name="document_description" readonly="1"/>
+	                            <field name="available_types" options="{'no_open':True,'no_create':True}"/>
+	                        </tree>
+	                    </field>
+					</group>
                 		</page>
                         <page string="Other" id="other_page">
                         	<button string="Clear" name="clearother" type="object"/>
                         	<group>
-					            <field name="export_other" nolabel="1">
+					            <field name="export_other" colspan="2" nolabel="1">
 						            <tree editable='bottom'>
 						                <field name="component_id" readonly="1"/>
 						                <field name="comp_rev" readonly="1"/>
@@ -97,8 +100,8 @@
                 </notebook>		
                 
             <group>
-	        		<field name="datas_fname" readonly="1"/>
-		            <field name="datas" readonly="1" filename="datas_fname"/>
+        		<field name="datas_fname" readonly="1"/>
+	            <field name="datas" readonly="1" filename="datas_fname"/>
 			</group>
             <separator string=""/>
             <footer>
