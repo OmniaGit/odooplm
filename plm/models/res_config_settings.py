@@ -58,6 +58,7 @@ class PlmConfigSettings(models.TransientModel):
     module_plm_web_3d = fields.Boolean("Enable 3D WebGl")
     module_plm_web_3d_sale = fields.Boolean("Enable 3D WebGl for e-commerce and sale")
     module_plm_breakages = fields.Boolean("Enable breakages management")
+    module_plm_ent_breakages_helpdesk = fields.Boolean("Enable breakages management on Helpdesk (Enterprise only)")
     module_plm_pdf_workorder = fields.Boolean("Enable Plm PDF document inside workorder")
     module_plm_sale_fix = fields.Boolean("Add plm groups permission to sale")
     module_plm_document_multi_site = fields.Boolean("Multi side storage system")

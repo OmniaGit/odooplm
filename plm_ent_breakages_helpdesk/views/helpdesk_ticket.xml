@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="helpdesk_ticket_view_form_hinerith" model="ir.ui.view">
+            <field name="name">helpdesk.ticket.view.form.hinerith</field>
+            <field name="model">helpdesk.ticket</field>
+            <field name="inherit_id" ref="helpdesk.helpdesk_ticket_view_form"/>
+            <field name="arch" type="xml">
+                 <field name="description" position="replace">
+                     <notebook>
+                         <page string="Description">
+                             <field name="description" class="oe-bordered-editor field_description" placeholder="Description of the ticket..."/>
+                         </page>
+                         <page string="Breakeges">
+                             <field name="breackage_ids" nolabel="1"/>
+                         </page>
+                     </notebook>
+                 </field>
+            </field>
+        </record>
+    </data>
+</odoo>
