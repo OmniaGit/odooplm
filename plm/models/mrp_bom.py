@@ -704,6 +704,15 @@ class MrpBomExtension(models.Model):
                 'context': {}}
 
     def saveRelationNewGetBom(self, product_tmpl_id, bomType, parent_product_product_id):
+        prod_template = self.env['product.template'].browse(product_tmpl_id)
+        if parent_product_product_id.kit_bom:
+            bomType = 'phantom'
+        elif prod_template.kit_bom:
+            bomType = 'phantom'
+        elif parent_product_product_id.categ_id.kit_bom:
+            bomType = 'phantom'
+        elif prod_template.categ_id.kit_bom:
+            bomType = 'phantom'
         mrp_bom_found_id = self.env['mrp.bom']
         for mrp_bom_id in self.search([('product_tmpl_id', '=', product_tmpl_id),
                                        ('type', '=', bomType)]):

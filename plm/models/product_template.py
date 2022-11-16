@@ -94,6 +94,7 @@ class ProductTemplateExtension(models.Model):
     is_engcode_editable = fields.Boolean(_('Engineering Editable'), default=True, compute='_compute_eng_code_editable')
 
     revision_count = fields.Integer(compute='_revisions_count')
+    kit_bom = fields.Boolean(_('KIT Bom Type'))
 
     _sql_constraints = [
         ('partnumber_uniq', 'unique (engineering_code,engineering_revision)', _('Part Number has to be unique!'))
