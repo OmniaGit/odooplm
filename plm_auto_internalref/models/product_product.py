@@ -62,9 +62,9 @@ class ProductProductExtension(models.Model):
         if product_product_ids:
             for product_product_id in product_product_ids: #suppose write operation
                 if not engineering_code:
-                    engineering_code = product_product_ids.engineering_code
+                    engineering_code = product_product_id.engineering_code
                 if not engineering_revision:
-                    engineering_revision = product_product_ids.engineering_revision
+                    engineering_revision = product_product_id.engineering_revision
                 if not default_code:
                     default_code = product_product_id.default_code            
         if in_revision and engineering_code and engineering_code != '-':
