@@ -3,10 +3,10 @@
 
 <template id="plm_spare.pdf_all">
 	<t t-foreach="docs" t-as="o">
-   		<div class="o_composer_container">
-   			<embed width="100%" height="100%" t-att-src="get_content(o)"/>
-   		</div>
-   		</t>
+  		<div class="o_composer_container">
+  			<embed width="100%" height="100%" t-att-src="get_content(o)"/>
+  		</div>
+    </t>
 </template>
 
 <template id="plm_spare.pdf_one">
@@ -14,7 +14,7 @@
    		<div class="o_composer_container">
    			<embed width="100%" height="100%" t-att-src="get_content(o)"/>
    		</div>
-   		</t>
+   	</t>
 </template>
 
 <template id="plm_spare.bom_spare_header">

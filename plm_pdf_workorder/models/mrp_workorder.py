@@ -23,15 +23,16 @@ Created on Mar 30, 2016
 
 @author: Daniel Smerghetto
 """
+import logging
+import base64
+#
 from odoo import models
 from odoo import fields
 from odoo import api
 from odoo import _
 from odoo.exceptions import UserError
-import logging
-import base64
-
-    
+#
+#
 class MrpWorkorder(models.Model):
     _inherit = 'mrp.workorder'
 
@@ -45,13 +46,7 @@ class MrpWorkorder(models.Model):
             if workorder_id.operation_id.use_plm_pdf:# and not workorder_id.plm_pdf:
                 workorder_id.plm_pdf = base64.b64encode(self.getPDF(workorder_id))
 
-    @api.model
-    def create(self, vals):
-        ret = super(MrpWorkorder, self).create(vals)
-        if ret.operation_id.use_plm_pdf:
-            ret.plm_pdf = base64.b64encode(self.getPDF(ret))
-        return ret
-
     def getPDF(self, workorder_id):
         report_model = self.env['report.plm.product_production_one_pdf_latest']
-        return report_model._render_qweb_pdf(workorder_id.product_id, checkState=True)
+        content, _format = report_model._render_qweb_pdf(workorder_id.product_id, checkState=True)
+        return content

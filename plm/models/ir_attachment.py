@@ -101,6 +101,14 @@ class PlmDocument(models.Model):
                 return True
         return False
 
+    def getLastRevision(self):
+        out = []
+        for ir_attachment in self:
+            for last_attachment_id in self.search([('engineering_document_name', '=', ir_attachment.engineering_document_name)],
+                                                  order='revisionid DESC',
+                                                  limit=1):
+                out.append(last_attachment_id)
+        return out
     
     def _getlastrev(self, resIds):
         result = []

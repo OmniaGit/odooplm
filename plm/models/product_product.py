@@ -176,6 +176,7 @@ class PlmComponent(models.Model):
     readonly_std_umc1 = fields.Boolean(_("put readOnly the field standard description 1"))
     readonly_std_umc2 = fields.Boolean(_("put readOnly the field standard description 2"))
     readonly_std_umc3 = fields.Boolean(_("put readOnly the field standard description 3"))
+    kit_bom = fields.Boolean(_('KIT Bom Type'))
     
     
     @api.onchange("std_description")
@@ -638,8 +639,7 @@ class PlmComponent(models.Model):
         self.wf_message_post(body=_('Created Normal Bom.'))
         return False
 
-    def checkWorkflow(self, docInError, linkeddocuments, check_state):
-        docIDs = []
+    def checkWorkflow(self, docInError, linkeddocuments, check_state, docIDs=[]):
         attachment = self.env['ir.attachment']
         for documentBrws in linkeddocuments:
             if documentBrws.state == check_state:
@@ -649,9 +649,11 @@ class PlmComponent(models.Model):
                 docIDs.append(documentBrws.id)
                 if documentBrws.is3D():
                     doc_layout_ids = documentBrws.getRelatedLyTree(documentBrws.id)
-                    docIDs.extend(self.checkWorkflow(docInError, attachment.browse(doc_layout_ids), check_state))
-                    raw_doc_ids = documentBrws.getRelatedRfTree(documentBrws.id, recursion=True)
-                    docIDs.extend(self.checkWorkflow(docInError, attachment.browse(raw_doc_ids), check_state))
+                    for child_doc_id in doc_layout_ids:
+                        if child_doc_id not in docIDs:
+                            docIDs.extend(self.checkWorkflow(docInError, attachment.browse(child_doc_id), check_state, docIDs))
+                            raw_doc_ids = documentBrws.getRelatedRfTree(documentBrws.id, recursion=True)
+                            docIDs.extend(self.checkWorkflow(docInError, attachment.browse(raw_doc_ids), check_state, docIDs))
         return list(set(docIDs))
 
     def _action_ondocuments(self, action_name, include_statuses=[]):
@@ -1002,11 +1004,16 @@ class PlmComponent(models.Model):
         eng_rev = vals.get('engineering_revision', 0)
         eng_code = vals.get('engineering_code')
         if eng_code:
-            prodBrwsList = self.search([('engineering_code', '=', vals['engineering_code']),
-                                        ('engineering_revision', '=', eng_rev)
-                                        ])
+            prodBrwsList = self.search([
+                ('active', 'in', [True, False]),
+                ('engineering_code', '=', vals['engineering_code']),
+                ('engineering_revision', '=', eng_rev)
+                ])
             if prodBrwsList:
-                raise UserError('Component %r already exists' % (vals['engineering_code']))
+                msg = _('\nComponents with same Engineering Code already exists:\n')
+                for prod in prodBrwsList:
+                    msg += '- [%r] %s revision %r active %r\n' % (prod.id, prod.engineering_code, prod.engineering_revision, prod.active)
+                raise UserError(msg)
         try:
             vals['is_engcode_editable'] = False
             vals.update(self.checkMany2oneClient(vals))

@@ -20,6 +20,7 @@
 ##############################################################################
 from .book_collector import BookCollector
 from .book_collector import packDocuments
+from .book_collector import isPdf
 from datetime import datetime
 from dateutil import tz
 import base64
@@ -192,7 +193,7 @@ MDAwMCBuIAowMDAwMDA4MDc2IDAwMDAwIG4gCjAwMDAwMDgxMDggMDAwMDAgbiAKMDAwMDAwODQw
 NSAwMDAwMCBuIAowMDAwMDA4NTAyIDAwMDAwIG4gCnRyYWlsZXIKPDwvU2l6ZSAxNC9Sb290IDEy
 IDAgUgovSW5mbyAxMyAwIFIKL0lEIFsgPEMzRDZBMzFBMTcxNkU1QjAyMjkxN0Y4QzkxQUM1MDk3
 Pgo8QzNENkEzMUExNzE2RTVCMDIyOTE3RjhDOTFBQzUwOTc+IF0KL0RvY0NoZWNrc3VtIC8wQjMy
-RjYxNzJGNDFCNzYwNjRBM0NDQjFEMTgxOTFCQgo+PgpzdGFydHhyZWYKODc0NwolJUVPRgo=""")
+RjYxNzJGNDFCNzYwNjRBM0NDQjFEMTgxOTFCQgo+PgpzdGFydHhyZWYKODc0NwolJUVPRgo="""), 'pdf'
 
 
 class ReportProductPdf(models.AbstractModel):
@@ -220,39 +221,45 @@ class ReportProductPdf(models.AbstractModel):
                                           poolObj=self.env)
         return docRepository, mainBookCollector
 
-    def getDocument(self, product, check):
+    def getDocument(self, product, check, latest=False):
         out = []
-        for doc in product.linkeddocuments:
-            if check:
-                if doc.state in ['released', 'undermodify']:
-                    out.append(doc)
-                continue
-            out.append(doc)
+        if latest:
+            for doc in product.linkeddocuments.filtered(lambda x: x.document_type == '2d' and x.printout):
+                for lastRevDoc in doc.getLastRevision():
+                    out.append(lastRevDoc)
+        else:
+            for doc in product.linkeddocuments.filtered(lambda x: x.document_type == '2d' and x.printout):
+                if check:
+                    if doc.state in ['released', 'undermodify']:
+                        out.append(doc)
+                    continue
+                out.append(doc)
+        for doc in product.linkeddocuments.filtered(lambda x: x.document_type == 'other'):
+            if isPdf(doc.name):
+                out.append(doc)
         return out
 
     @api.model
-    def _render_qweb_pdf(self, products=None, level=0, checkState=False):
+    def _render_qweb_pdf(self, res_ids=None, level=0, checkState=False, latest=False):
         docRepository, mainBookCollector = self.commonInfos()
         documents = []
-
-        for product in products:
-            documents.extend(self.getDocument(product, checkState))
+        for product in res_ids:
+            documents.extend(self.getDocument(product, checkState, latest))
             if level > -1:
                 for childProduct in product._getChildrenBom(product, level):
                     childProduct = self.env['product.product'].browse(childProduct)
-                    documents.extend(self.getDocument(childProduct, checkState))
+                    documents.extend(self.getDocument(childProduct, checkState, latest))
         if len(documents) == 0:
-            content = getEmptyDocument()
+            documentContent = getEmptyDocument()
         else:
             documentContent = packDocuments(docRepository,
                                             documents,
                                             mainBookCollector)
-            content = documentContent[0]
-        return content
+        return documentContent
     
-    def render_qweb_pdf(self, products=None, level=0, checkState=False):
-        content = self._render_qweb_pdf(products, level, checkState)
-        byteString = b"data:application/pdf;base64," + base64.b64encode(content)
+    def render_qweb_pdf(self, products=None, level=0, checkState=False, latest=False):
+        content = self._render_qweb_pdf(products, level, checkState, latest)
+        byteString = b"data:application/pdf;base64," + base64.b64encode(content[0])
         return byteString.decode('UTF-8')
 
     @api.model
@@ -266,6 +273,9 @@ class ReportOneLevelProductPdf(ReportProductPdf):
     _name = 'report.plm.one_product_pdf'
     _description = 'Report pdf'
 
+class ReportOneLevelProductPdfLatest(ReportProductPdf):
+    _name = 'report.plm.one_product_pdf_latest'
+    _description = 'Report pdf'
 
 class ReportAllLevelProductPdf(ReportProductPdf):
     _name = 'report.plm.all_product_pdf'

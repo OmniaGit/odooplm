@@ -33,7 +33,7 @@ class ReportDocumentPdf(models.AbstractModel):
     _description = 'Report Document PDF'
 
     @api.model
-    def _render_qweb_pdf(self, documents=None, data=None):
+    def _render_qweb_pdf(self, res_ids=None, data=None):
         docType = self.env['ir.attachment']
         docRepository = docType._get_filestore()
         to_zone = tz.gettz(self.env.context.get('tz', 'Europe/Rome'))
@@ -49,7 +49,7 @@ class ReportDocumentPdf(models.AbstractModel):
             'state': 'doc_obj.state',
                 }
         output = BookCollector(jumpFirst=False, customText=(msg, msg_vals), bottomHeight=10, poolObj=self.env)
-        return packDocuments(docRepository, documents, output)
+        return packDocuments(docRepository, res_ids, output)
         
     @api.model
     def render_qweb_pdf(self, documents=None, data=None):

@@ -35,7 +35,9 @@ def getDocumentStream(docRepository, objDoc):
         if (not objDoc.store_fname) and (objDoc.db_datas):
             content = base64.b64decode(objDoc.db_datas)
         else:
-            content = file(os.path.join(docRepository, objDoc.store_fname), 'rb').read()
+            file_path = os.path.join(docRepository, objDoc.store_fname)
+            with open(file_path, 'rb') as fobj:
+                content = fobj.read()
     except Exception as ex:
         logging.error("getFileStream : Exception (%s)reading  stream on file : %s." % (str(ex), objDoc.name))
     return content
