@@ -3,7 +3,6 @@
      <record model="ir.ui.view" id="view_attachment_client_workflow">
         <field name="name">view.attachment.client.workflow</field>
         <field name="model">ir.attachment</field>
-        <field name="inherit_id"></field>
         <field name="type">form</field>
         <field name="priority" eval="20"/>
         <field name="arch" type="xml">
@@ -33,7 +32,172 @@
         </field>
        </record>
                 
-                
+                    
+     <record model="ir.ui.view" id="plm_view_attachment_form">
+        <field name="name">plm.view.attachment.form</field>
+        <field name="model">ir.attachment</field>
+        <field name="inherit_id" ref="base.view_attachment_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="before">
+                  <header>
+                    <field name="is_checkout" invisible="1"></field>
+                    <button name="action_release"
+                            states="confirmed"
+                            string="Release Document"
+                            class="oe_highlight"
+                            type="object"
+                            groups="plm.group_plm_release_users"
+                            attrs="{'invisible': [('is_checkout','=',True)]}"/>
+                    <button name="action_draft"
+                            states="confirmed"
+                            type="object"
+                            string="Correct Document"/>
+                    <button name="action_confirm"
+                            states="draft"
+                            type="object"
+                            string="Confirm Document"
+                            class="oe_highlight"
+                            attrs="{'invisible': [('is_checkout','=',True)]}"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,released" statusbar_colors='{"undermodify":"red","obsoleted":"red"}' readonly="1"/>
+                </header>
+            </xpath>
+            
+            <xpath expr="//sheet/label" position="before">
+                        <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" icon="fa-sitemap" type="object" name="action_view_rel_doc">
+                            <field name="document_rel_count" string="Documents" widget="statinfo"/>
+                        </button>
+                        <field name="is_checkout" invisible="True"/>
+                        <button name="toggle_check_out"
+                                class="oe_stat_button"
+                                icon="fa-lock" 
+                                type="object"
+                                attrs="{'invisible': [('is_checkout','=', True)]}">
+                                <div class="o_field_widget o_stat_info o_readonly_modifier">
+                                   <span>Check-Out</span>
+                                </div>                        
+                        </button>
+                        <button name="toggle_check_out"
+                                class="oe_stat_button"
+                                icon="fa-unlock"
+                                attrs="{'invisible': [('is_checkout','=', False)]} "
+                                type="object">
+                                <div class="o_field_widget o_stat_info o_readonly_modifier">
+                                   <span>Check-In</span>
+                                </div>
+                        </button>
+                        <button name="print_Document_Doc_Structure"
+                                string="Doc Structure"
+                                type="object"
+                                class="oe_stat_button" 
+                                icon="fa-bars"/>
+                        <button name="open_related_document_revisions"
+                                type="object"
+                                string="BOM Rev."
+                                class="oe_stat_button"
+                                icon="fa-tasks"
+                                attrs="{'invisible':[('attachment_revision_count','&lt;=','1')]}">
+                                <field name="attachment_revision_count" string=" " widget="statinfo"/>
+                        </button>
+                        <button name="check_out_user" icon="fa-user" attrs="{'invisible': ['|',('checkout_user', '=', 'False'),('checkout_user', '=', '')]}">
+                            <field name="checkout_user"/>
+                        </button>
+                    </div>
+            </xpath>
+            <xpath expr="//sheet/label" position="replace"></xpath>
+            <xpath expr="//h1" position="replace">
+                <div class="oe_row oe_spaced">
+                    <div class="oe_span6">
+	                    <label for="name"/>
+	                    <field name="name"/>
+                    </div>
+                    <div class="oe_span6">
+                        <field name="preview" widget="image" nolabel="1" attrs="{'readonly':[('is_plm','=', True)]}"/>
+                    </div>
+                </div>
+            </xpath>            
+            <xpath expr="//field[@name='index_content']" position="replace">
+                <notebook>
+                    <page string="File Content">
+                        <field name="index_content" nolabel="1"/>
+                    </page>
+                    <page string="Plm Data">
+                        <group string= "PLM Infos:" name="main_doc_info">
+                            <label for="engineering_document_name" class="oe_edit_only"/>
+                            <field string="Eng. Document Name" name="engineering_document_name" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                            <label for="revisionid" class="oe_edit_only"/>
+                            <field string="Enineering revision" name="revisionid" readonly="True"/>
+                            <field string="Is a Plm Document" name="is_plm" groups="base.group_no_one" widget="boolean_toggle"/>
+                        </group>
+                            <group string="File Data:" name="FileData">
+                                <group attrs="{'invisible':[('type','=','url')]}" name="group_datas" colspan="4" col="2">
+                                    <field name="datas" filename="name" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                                    <field name="name" select="1" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                                    <field name="document_type" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                                    <field name="type" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                                    <field name="printout" groups="base.group_no_one"/>
+                                </group>
+                                <group string="Website:" name="group_url" colspan="4" attrs="{'invisible':[('type','=','binary')],'readonly':[('state','in',['released','obsoleted'])]}">
+                                    <field name="url" widget="url"/>
+                                </group>
+                            </group>
+                            <group name="related">
+                                <group string="Related To">
+                                    <field name="res_id" readonly="True" colspan="1"/>
+                                </group>
+                                <group string="Attachments To">
+                                    <field name="res_name" readonly="1" colspan="1"/>
+                                    <field name="res_model" readonly="True" colspan="1"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="History" name="workflow_section">
+                            <group string="Changes">
+                                <group>
+                                    <label for="create_uid" string="Creation"/>
+                                    <div name="create_uid_div">
+                                        <field name="create_uid" readonly="1" class="oe_inline"/> on <field name="create_date" readonly="1" class="oe_inline"/>
+                                    </div>
+                                    <label for="write_uid"/>
+                                    <div name="write_uid_div">
+                                        <field name="write_uid" readonly="1" class="oe_inline"/> on <field name="write_date" readonly="1" class="oe_inline"/>
+                                    </div>  
+                                </group>
+                                <group>
+                                    <label for="workflow_user"/>
+                                    <div name="workflow_user_div">
+                                        <field name="workflow_user" readonly="1" class="oe_inline"/> on <field name="workflow_date" readonly="1" class="oe_inline"/>
+                                    </div>
+                                </group>
+                                <group string="User" attrs="{'invisible':['|', ('attachment_release_user', '=', False), ('revision_user', '=', False)]}">
+                                    <label for="attachment_release_user"/>
+                                    <div name="attachment_release_user_div">
+                                        <field name="attachment_release_user" readonly="1" class="oe_inline"/> on <field name="attachment_release_date" readonly="1" class="oe_inline"/>
+                                    </div>
+                                    <label for="revision_user"/>
+                                    <div name="revision_user">
+                                        <field name="revision_user" readonly="1" class="oe_inline"/> on <field name="revision_date" readonly="1" class="oe_inline"/>
+                                    </div>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Linked Parts" name="page_liked_parts">
+                            <field colspan="4" name="linkedcomponents" nolabel="1" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                        </page>
+                        <page string="Indexed Content" name="page_indexed_content">
+                            <field name="index_content" colspan="4" nolabel="1" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                        </page>
+                        <page string="Notes" name="page_notes">
+                            <label for="description" class="oe_edit_only"/>
+                            <field colspan="4" name="description" nolabel="1" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
+                            <label for="desc_modify" class="oe_edit_only"/>
+                            <field colspan="4" name="desc_modify" nolabel="1" attrs="{'readonly':[('state','in',['released','obsoleted'])], 'invisible': [('revisionid', '=', 0)]}"/>
+                        </page>
+                </notebook>
+            </xpath>
+        </field>
+     </record>
+                            
      <record model="ir.ui.view" id="view_attachment_form_plm_hinerit">
         <field name="name">ir.attachment</field>
         <field name="model">ir.attachment</field>
