@@ -48,6 +48,7 @@
         "views/plm_material_view.xml",
         "views/product_product.xml",
         "views/product_template.xml",
+        "views/product_category.xml",
         "views/ir_config_parameter.xml",
         "views/ir_cron.xml",
         "views/plm_cad_open.xml",

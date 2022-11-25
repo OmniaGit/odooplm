@@ -759,6 +759,27 @@ class MrpBomExtension(models.Model):
                 'domain': [('id', 'in', bom_ids.ids)],
                 'context': {}}
 
+    def saveRelationNewGetBom(self, product_tmpl_id, bomType, parent_product_product_id):
+        prod_template = self.env['product.template'].browse(product_tmpl_id)
+        if parent_product_product_id.kit_bom:
+            bomType = 'phantom'
+        elif prod_template.kit_bom:
+            bomType = 'phantom'
+        elif parent_product_product_id.categ_id.kit_bom:
+            bomType = 'phantom'
+        elif prod_template.categ_id.kit_bom:
+            bomType = 'phantom'
+        mrp_bom_found_id = self.env['mrp.bom']
+        for mrp_bom_id in self.search([('product_tmpl_id', '=', product_tmpl_id),
+                                       ('type', '=', bomType)]):
+            mrp_bom_found_id = mrp_bom_id
+        if not mrp_bom_found_id:
+            if product_tmpl_id:
+                mrp_bom_found_id = self.create({'product_tmpl_id': product_tmpl_id,
+                                                'product_id': parent_product_product_id.id,
+                                                'type': bomType})
+        return mrp_bom_found_id
+
     @api.model
     def saveRelationNew(self,
                         clientArgs):
@@ -778,16 +799,8 @@ class MrpBomExtension(models.Model):
             product_tmpl_id = parent_product_product_id.product_tmpl_id.id
             ir_attachment_relation.removeChildRelation(parent_ir_attachment_id)  # perform default unlink to HiTree, need to perform RfTree also
             ir_attachment_relation.removeChildRelation(parent_ir_attachment_id, linkType='RfTree')
-            mrp_bom_found_id = self.env['mrp.bom']
-            for mrp_bom_id in self.search([('product_tmpl_id', '=', product_tmpl_id),
-                                           ('type', '=', bomType)]):
-                mrp_bom_found_id = mrp_bom_id
-            if not mrp_bom_found_id:
-                if product_tmpl_id:
-                    mrp_bom_found_id = self.create({'product_tmpl_id': product_tmpl_id,
-                                                    'product_id': parent_product_product_id.id,
-                                                    'type': bomType})
-            else:
+            mrp_bom_found_id = self.saveRelationNewGetBom(product_tmpl_id, bomType, parent_product_product_id)
+            if mrp_bom_found_id:
                 mrp_bom_found_id.delete_child_row(parent_ir_attachment_id)
             #
             # add rows
