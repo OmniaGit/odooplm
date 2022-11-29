@@ -31,6 +31,7 @@
     "depends": ["plm"],
     "data": [
         "views/sequence.xml",
+        "views/product_category.xml",
     ],
     "demo": [],
     "test": [],

@@ -1264,13 +1264,15 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                 compBrwsList = self.search([('engineering_code', '=', engineering_code)])
                 for compBrws in compBrwsList:
                     docIds.extend(compBrws.linkeddocuments.ids)
-        return {'domain': [('id', 'in', docIds)],
-                'name': _('Related documents'),
-                'view_type': 'form',
-                'view_mode': 'tree,form',
-                'res_model': 'ir.attachment',
-                'type': 'ir.actions.act_window',
-                }
+            return {'domain': [('id', 'in', docIds)],
+                    'name': _('Related documents'),
+                    'view_type': 'form',
+                    'view_mode': 'tree,form',
+                    'res_model': 'ir.attachment',
+                    'type': 'ir.actions.act_window',
+                    'context': {'default_linkedcomponents':  [(4, compBrws.id, False)]},
+                    }
+        return {}
 
     def action_view_mos(self):
         tmplBrws = self.product_tmpl_id

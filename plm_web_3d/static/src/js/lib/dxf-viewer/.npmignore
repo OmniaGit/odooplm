@@ -1,0 +1,5 @@
+/build/
+/.idea/
+*.iml
+/bitbucket-pipelines.yml
+test-data/

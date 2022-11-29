@@ -20,7 +20,7 @@
             		string="Last Week" 
             		domain="[('create_date','&gt;=',(datetime.date.today() - datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"/>
                 <separator orientation="vertical"/>
-                <field name="engineering_code"/>
+                <field name="engineering_code" force_save="1"/>
                 <field name="description" invisible="1"/>
                 <field name="name"/>
                 <separator orientation="vertical"/>
@@ -149,7 +149,7 @@
                 <sheet>
                     <group name="plm_fields_area" colspan="6" col="6">
 	                    <field name="name" string="Description" colspan="6"/>
-                        <field name="engineering_code" colspan="4" attrs="{'readonly':[('is_engcode_editable','=', False)]}" select="1"/>
+                        <field name="engineering_code" force_save="1" colspan="4" attrs="{'readonly':[('is_engcode_editable','=', False)]}" select="1"/>
                         <field name="engineering_revision" colspan="2" attrs="{'readonly':[('is_engcode_editable','=', False)]}"/>
                         <field name="std_description" colspan="6" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
                         <field name="show_std_field1" groups='base.group_no_one'/>
@@ -286,7 +286,7 @@
             <xpath expr="//notebook[last()]" position="before">
                <field name="is_engcode_editable" invisible="1"/>
                <group col="8">
-                    <field name="engineering_code" attrs="{'readonly':[('is_engcode_editable','=', False)]}"/>
+                    <field name="engineering_code" force_save="1" attrs="{'readonly':[('is_engcode_editable','=', False)]}"/>
                     <field name="engineering_revision" attrs="{'readonly':[('is_engcode_editable','=', False)]}" colspan="6"/>
                </group>       
                <group>
@@ -391,14 +391,14 @@
         <field name="arch" type="xml">
             <xpath expr="//kanban/field[1]" position="after">
                 <field name="linkeddocuments"/>
-                <field name="engineering_code"/>
+                <field name="engineering_code" force_save="1"/>
                 <field name="engineering_revision"/>
                 <field name="state"/>
             </xpath>
             
             <xpath expr="//div/div[hasclass('o_kanban_image')]" position="replace">
                 <t t-value="record.state.raw_value" t-set="stateToUse"/>
-                <field name="engineering_code"/>-
+                <field name="engineering_code" force_save="1"/>-
                 <field name="engineering_revision"/>-
                 <t t-if="stateToUse == 'draft'">
 				    <span style="color: rgb(110, 51, 197);padding-left: 5px;">

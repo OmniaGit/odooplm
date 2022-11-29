@@ -109,7 +109,7 @@
                 <div class="oe_row oe_spaced">
                     <div class="oe_span6">
 	                    <label for="name"/>
-	                    <field name="name"/>
+	                    <field name="name" select="1" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
                     </div>
                     <div class="oe_span6">
                         <field name="preview" widget="image" nolabel="1" attrs="{'readonly':[('is_plm','=', True)]}"/>
@@ -131,8 +131,6 @@
                         </group>
                             <group string="File Data:" name="FileData">
                                 <group attrs="{'invisible':[('type','=','url')]}" name="group_datas" colspan="4" col="2">
-                                    <field name="datas" filename="name" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
-                                    <field name="name" select="1" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
                                     <field name="document_type" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
                                     <field name="type" attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
                                     <field name="printout" groups="base.group_no_one"/>

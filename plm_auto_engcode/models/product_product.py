@@ -26,21 +26,37 @@ Created on Mar 30, 2016
 from odoo import models
 from odoo import fields
 from odoo import api
+
 from odoo import _
 from odoo.exceptions import UserError
 import logging
 
+class pProductProduct(models.Model):
+    _inherit = 'product.product'
     
+    @api.onchange("categ_id")
+    def onchange_categ_id(self):
+        if not self.id.origin:
+            eng_code = self.product_tmpl_id._getNewCode()
+            self.engineering_code = eng_code
+            self.product_tmpl_id.engineering_code = eng_code
+                
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
     def _getNewCode(self):
         if self.env.context.get('odooPLM', False):
-           return self.env['ir.sequence'].next_by_code('plm.eng.code')        
+            if self.categ_id and self.categ_id.plm_code_sequence:
+                return self.categ_id.plm_code_sequence.next_by_id()
+            return self.env['ir.sequence'].next_by_code('plm.eng.code')
         return False
     
+    @api.onchange("categ_id")
+    def onchange_categ_id(self):
+        if self.id.origin:
+            self.engineering_code = self._getNewCode()
+        
     engineering_code = fields.Char(_('Part Number'),
                                    index=True,
-                                   default = _getNewCode,
                                    help=_("This is engineering reference to manage a different P/N from item Name."),
                                    size=64)
