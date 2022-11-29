@@ -75,12 +75,15 @@ class PlmDateBom(TransactionCase,PlmEntityCreator):
         p_product.automatic_compute_selection='use_cad'
         p_product.weight=0
         p_product.weight_cad=10
+        #
         p_product1.automatic_compute_selection='use_cad'
         p_product1.weight=0
         p_product1.weight_cad=20
+        #
         p_product2.automatic_compute_selection='use_cad'
         p_product2.weight=0
         p_product2.weight_cad=30
+        #
         p_product.compute_bom_weight()
         assert p_product.weight==10
         #
@@ -89,29 +92,35 @@ class PlmDateBom(TransactionCase,PlmEntityCreator):
         p_product.automatic_compute_selection='use_normal_bom'
         p_product.weight=11
         p_product.weight_cad=10
+        #
         p_product1.automatic_compute_selection='use_normal_bom'
         p_product1.weight=22
         p_product1.weight_cad=20
+        #
         p_product2.automatic_compute_selection='use_normal_bom'
         p_product2.weight=33
         p_product2.weight_cad=30
+        #
         p_product.compute_bom_weight()
-        assert p_product.weight==30
+        assert p_product.weight==33, "value is %s " % p_product.weight
         #
         # use_normal_bom + weight_additional
         #
         p_product.automatic_compute_selection='use_normal_bom'
         p_product.weight=11
         p_product.weight_cad=10
-        p_product2.weight_additional=5
+        p_product.weight_additional=5
+        #
         p_product1.automatic_compute_selection='use_normal_bom'
         p_product1.weight=22
         p_product1.weight_cad=20
-        p_product2.weight_additional=5
+        p_product1.weight_additional=5
+        #
         p_product2.automatic_compute_selection='use_normal_bom'
         p_product2.weight=33
         p_product2.weight_cad=30
         p_product2.weight_additional=5
+        #
         p_product.compute_bom_weight()
-        assert p_product.weight==45
+        assert p_product.weight==48, "value is %s " % p_product.weight
         

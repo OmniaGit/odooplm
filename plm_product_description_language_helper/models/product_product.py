@@ -55,7 +55,7 @@ class ProductProductExtension(models.Model):
                 break 
         if update_translation:
             land_trans = self.get_description_leng()
-            self.update_field_translations('name',land_trans)
+            self.update_field_translations('name', land_trans)
                         
     def get_description_leng(self):
         out = {}

@@ -92,7 +92,7 @@ class PlmEntityCreator(object):
     def create_product_document(self, name):
         product = self.create_product_product("product_" + name)
         document = self.create_document("attachment_" + name)
-        document.linkedcomponents =[(4,product.product_tmpl_id.id)]
+        document.linkedcomponents =[(4, product.product_tmpl_id.id)]
         return product, document
     
     def create_bom_with_document(self, name):

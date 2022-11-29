@@ -89,8 +89,8 @@ class PlmComponent(models.Model):
             - Compute first founded Normal Bom weight
             - Compute and set weight for all products and boms during computation
         """
+        bom_obj = self.env['mrp.bom']
         for prod_brws in self:
-            bom_obj = self.env['mrp.bom']
 
             def recursion_bom(product_brws):
                 product_tmpl_id = product_brws.product_tmpl_id.id
@@ -99,7 +99,7 @@ class PlmComponent(models.Model):
                 bom_brws_list = bom_obj.search([('type', '=', 'normal'), ('product_tmpl_id', '=', product_tmpl_id)])
                 is_user_admin = self.is_user_weight_admin()
                 if not bom_brws_list:
-                    self.common_weight_compute(product_brws, is_user_admin, product_brws.weight_cad)
+                    self.common_weight_compute(product_brws, is_user_admin, product_brws.weight)
                 else:
                     for bom_brws in bom_brws_list:
                         bom_total_weight = 0
@@ -118,26 +118,25 @@ class PlmComponent(models.Model):
 
             recursion_bom(prod_brws)
 
-    def common_weight_compute(self, product_brws, is_user_admin, to_add):
+    def common_weight_compute(self, product_product_id, is_user_admin, to_add=0.0):
         """
             Common compute and set weight in single product
         """
 
-        def common_set(product_b):
-            if product_b.automatic_compute_selection == 'use_cad':
-                common_weight = product_b.weight_cad + product_b.weight_additional
-                product_b.write({'weight': common_weight})
-                product_b.weight = common_weight
-            elif product_b.automatic_compute_selection == 'use_normal_bom':
-                common = to_add + product_b.weight_additional
-                product_b.write({'weight': common})
-                product_b.weight = common
+        def common_set(product_product_id):
+            common_weight = False
+            if product_product_id.automatic_compute_selection == 'use_cad':
+                common_weight = product_product_id.weight_cad + product_product_id.weight_additional
+            elif product_product_id.automatic_compute_selection == 'use_normal_bom':
+                common_weight = product_product_id.weight_additional + to_add
+            if common_weight!=False:
+                product_product_id.write({'weight': common_weight})
 
-        if product_brws.engineering_state in [RELEASED_STATUS, OBSOLATED_STATUS]:
+        if product_product_id.engineering_state in [RELEASED_STATUS, OBSOLATED_STATUS]:
             if is_user_admin:
-                common_set(product_brws)
+                common_set(product_product_id)
         else:
-            common_set(product_brws)
+            common_set(product_product_id)
 
     def is_user_weight_admin(self):
         """

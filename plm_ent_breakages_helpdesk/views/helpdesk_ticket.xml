@@ -12,7 +12,7 @@
                              <field name="description" class="oe-bordered-editor field_description" placeholder="Description of the ticket..."/>
                          </page>
                          <page string="Breakeges">
-                             <field name="breackage_ids" nolabel="1"/>
+                             <field name="breackage_ids" nolabel="1" context="{'default_partner_id': partner_id}"/>
                          </page>
                      </notebook>
                  </field>
