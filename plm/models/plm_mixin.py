@@ -24,26 +24,22 @@ Created on 28 Sep 2022
 
 @author: mboscolo
 '''
+import pytz
 import logging
 import datetime
+from datetime import datetime
+from datetime import timedelta
+#
 from odoo import models
 from odoo import fields
 from odoo import api
 from odoo import _
-from odoo.exceptions import UserError
-from datetime import timedelta
-from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
-
-from datetime import datetime
-
-import logging
-import pytz
-
-from odoo import api, fields, models
 from odoo.osv import expression
-
+from odoo.exceptions import UserError
+from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
+#
 _logger = logging.getLogger(__name__)
-
+#
 START_STATUS = 'draft'
 CONFIRMED_STATUS = 'confirmed'
 RELEASED_STATUS = 'released'
@@ -54,18 +50,18 @@ USED_STATES = [(START_STATUS, _('Draft')),
                (RELEASED_STATUS, _('Released')),
                (UNDER_MODIFY_STATUS, _('UnderModify')),
                (OBSOLATED_STATUS, _('Obsoleted'))]
-
+#
 PLM_NO_WRITE_STATE = [CONFIRMED_STATUS,
                       RELEASED_STATUS,
                       UNDER_MODIFY_STATUS,
                       OBSOLATED_STATUS]
-
+#
 LOWERCASE_LETTERS = [chr(i) for i in range(ord('a'), ord('z') + 1)]
-
+#
 UPPERCASE_LETTERS = [
     chr(i) for i in range(ord('A'), ord('Z') + 1)
 ]
-
+#
 def convert_to_letter(l,n):
     n_o_w = len(l)
     if n > n_o_w-1:
@@ -74,8 +70,8 @@ def convert_to_letter(l,n):
     else:
         out = l[n]
     return out
-
-
+#
+#
 class RevisionBaseMixin(models.AbstractModel):
     _name = 'revision.plm.mixin'
     _inherit = ['mail.thread']
@@ -85,6 +81,7 @@ class RevisionBaseMixin(models.AbstractModel):
     #
     engineering_revision = fields.Integer(string="Engineering Revision index", default=0)
     engineering_revision_letter = fields.Char(string="Engineering Revision letter", default="A")
+    #
     engineering_branch_revision = fields.Integer(string="Engineering Branch index", default=0)
     engineering_branch_revision_letter = fields.Char(string="Engineering Sub Revision letter", default="A")
     #
@@ -93,7 +90,7 @@ class RevisionBaseMixin(models.AbstractModel):
                                          default='draft',
                                          tracking=True)
     #
-    # workflow filed to manage revisio information
+    # workflow filed to manage revision information
     #
     engineering_release_date = fields.Datetime(_('Release date'),
                                                tracking=True)
@@ -260,34 +257,54 @@ class RevisionBaseMixin(models.AbstractModel):
         obj_new = self.with_context(copy_context = write_context).copy(write_context)
         return obj_new
     
-    def new_sub_version(self):
-        for obj in self:
-            obj._new_sub_version()
+    def new_branch(self):
+        """
+        Make a new branch of the current object
+        es:
+            product_1 -> revision branch 0
+            to
+            product_1 -> revision branch 0.0
+        """
+        self._new_branch()
     
+    def new_branch_version(self):
+        """
+        make a new version branch of the current prduct
+        es:
+            product_1-> revision branch 0
+            to
+            product_1-> revision branch 1
+        """
+        self._new_branch_version()
+        
     def _new_branch_version(self):
         self.ensure_one()
         obj_latest = self.get_latest_version()
-        obj_new = self.copy() 
-        obj_new.engineering_branch_revision = obj_latest.engineering_branch_revision + 1
-        path = ".".join(self.get_engineering_branch_parent.engineering_sub_revision_letter.split(".")[:-1])
-        obj_new.engineering_sub_revision_letter = "%s.%s" % (path, obj_new.engineering_branch_revision)
-        obj_new.engineering_state = START_STATUS
-        return obj_new
+        new_eng_revision = obj_latest.engineering_revision + 1
+        new_branch_revision = self.get_latest_level_branch_revision().engineering_branch_revision + 1
+        path = ".".join(self.engineering_sub_revision_letter.split(".")[:-1])
+        return self.copy({
+            'engineering_revision': new_eng_revision,
+            'engineering_code':obj_latest.engineering_code,
+            'engineering_branch_revision': new_branch_revision,
+            'engineering_sub_revision_letter': "%s.%s" % (path, new_branch_revision),
+            'engineering_state': START_STATUS,
+            }) 
     
     def _new_branch(self):
         self.ensure_one()
-        obj_new = self._new_revision()
+        obj_new = self._new_version()
         obj_new.engineering_branch_revision = 0 
         obj_new.engineering_branch_parent_id = self.id
         if not self.engineering_branch_parent_id:
             parnet_path = self.engineering_revision
         else:
-            parnet_path = self.get_engineering_branch_parent().engineering_sub_revision_letter
+            parnet_path = self.engineering_sub_revision_letter
         obj_new.engineering_sub_revision_letter = "%s.0" % parnet_path 
     
     def get_engineering_branch_parent(self):
         self.ensure_one()
-        return self.env[self._name].browse(self.engineering_branch_parent_id)
+        return self.browse(self.engineering_branch_parent_id)
         
     def get_revision_letter(self, engineering_revision=False):
         self.ensure_one()
@@ -295,6 +312,16 @@ class RevisionBaseMixin(models.AbstractModel):
             return convert_to_letter(UPPERCASE_LETTERS, engineering_revision)
         return convert_to_letter(UPPERCASE_LETTERS, self.engineering_revision)
     
+    def children_branch(self):
+        self.ensure_one()
+        return self.search([('engineering_branch_parent_id','=', self.id)], order="engineering_branch_revision desc")
+    
+    def get_latest_level_branch_revision(self):
+        if self.engineering_branch_parent_id:
+            for children in self.search([('engineering_branch_parent_id','=', self.engineering_branch_parent_id)], order="engineering_branch_revision desc"):
+                return children
+        return []
+        
     def copy(self, default=None):
         default = default or {}
         if 'engineering_state' not in default:

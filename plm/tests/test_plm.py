@@ -51,7 +51,7 @@ from odoo.addons.plm.tests.entity_creator import PlmEntityCreator
 @tagged('-standard', 'odoo_plm')
 class PlmDateBom(TransactionCase, PlmEntityCreator):
         
-    def test_some_wk(cls):
+    def test_1_some_wk(cls):
         #
         # Product environment related data
         #
@@ -142,7 +142,7 @@ class PlmDateBom(TransactionCase, PlmEntityCreator):
         cls.product_tmpl_1 = cls.create_product_template('test_product_template')
         cls.product_tmpl_copy = cls.product_tmpl_1.copy({'name': 'test_product_template_copy'})         
         
-    def test_attachment_wk(self):
+    def test_2_attachment_wk(self):
         attachment = self.create_document('document_wk_test')
         #
         assert attachment.engineering_revision==0
@@ -173,7 +173,7 @@ class PlmDateBom(TransactionCase, PlmEntityCreator):
         assert new_version_attachment.engineering_state==START_STATUS
         #
     
-    def test_product_attachment_wk(self):
+    def test_3_product_attachment_wk(self):
         product = self.create_product_product("test_product_attachment_product")
         document = self.create_document("test_product_attachment_docuemnt")
         document.linkedcomponents =[(4,product.product_tmpl_id.id)]
@@ -197,7 +197,7 @@ class PlmDateBom(TransactionCase, PlmEntityCreator):
         assert product.engineering_state==RELEASED_STATUS, "status is %s" % product.engineering_state
         assert document.engineering_state==RELEASED_STATUS, "status is %s" % document.engineering_state
     
-    def test_bom_wk(self):
+    def test_4_bom_wk(self):
         bom_id = self.create_bom_with_document("base_test_bom_wk")
         root_product_id = bom_id.product_id
         root_product_id.action_confirm()
@@ -207,8 +207,42 @@ class PlmDateBom(TransactionCase, PlmEntityCreator):
         for child in self.env['product.product'].browse(children_ids):
             assert child.engineering_state==CONFIRMED_STATUS
 
-        
-        
-        
+    def test_5_branch_only_product(self):
+        product = self.create_product_product("test_5_branch_only_product")
+        product = product.product_tmpl_id 
+        product.new_branch()
+        children_branch = product.children_branch()
+        assert len(children_branch)==1
+        for child_branch in children_branch:
+            assert child_branch.engineering_branch_revision==0
+            assert child_branch.engineering_revision==1
+            assert child_branch.engineering_sub_revision_letter=="0.0"
+            child_branch.new_branch()
+            children_branch_1 = child_branch.children_branch()
+            assert len(children_branch_1)==1
+            for child_branch_1 in children_branch_1:
+                assert child_branch_1.engineering_branch_revision==0
+                assert child_branch_1.engineering_revision==2
+                assert child_branch_1.engineering_sub_revision_letter=="0.0.0"
+                break
+            break
+        #
+        for child_branch in children_branch:
+            new_version_1 = child_branch._new_branch_version() # "0.1"
+            assert new_version_1.engineering_revision==3
+            assert new_version_1.engineering_branch_revision==1
+            assert new_version_1.engineering_sub_revision_letter=="0.1"
+            #
+            child_branch_level = child_branch.get_latest_level_branch_revision()
+            assert new_version_1.id == child_branch_level.id
+            #
+            new_version_2 = child_branch._new_branch_version()
+            assert new_version_2.engineering_revision==4
+            assert new_version_1.id < new_version_2.id
+            assert new_version_2.engineering_branch_revision==2
+            assert new_version_2.engineering_sub_revision_letter=="0.2"        
+            #
+            child_branch_level = child_branch.get_latest_level_branch_revision()
+            assert new_version_2.id == child_branch_level.id
 #
     
