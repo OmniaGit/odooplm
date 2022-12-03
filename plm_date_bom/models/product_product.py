@@ -22,7 +22,7 @@
 
 from odoo import models
 from odoo import api
-from odoo.addons.plm.modules.plm_mixin import OBSOLATED_STATUS
+from odoo.addons.plm.models.plm_mixin import OBSOLATED_STATUS
 
 class ProductExtension(models.Model):
     _name = 'product.template'

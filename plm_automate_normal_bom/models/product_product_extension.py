@@ -28,7 +28,7 @@ Created on 26 Jul 2016
 import logging
 from odoo import models
 from odoo import api
-from odoo.addons.plm.modules.plm_mixin import RELEASED_STATUS
+from odoo.addons.plm.models.plm_mixin import RELEASED_STATUS
 
 class ProdProdExtension(models.Model):
     _inherit = 'product.product'

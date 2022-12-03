@@ -9,6 +9,7 @@
             	<field name="priority" position="before">
                     <field name="breakages_count" invisible="True"/>
                     <button name="open_breakages"
+                            string="Open Breakages"
                             type="object"
                             icon="fa-chain-broken" 
                             style="font-size: 20px;"

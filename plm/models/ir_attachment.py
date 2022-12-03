@@ -1487,6 +1487,12 @@ class IrAttachment(models.Model):
         """
         ctx = self.env.context
         eng_code = ctx.get('product_attrs', {}).get("engineering_code") or ctx.get('engineering_code', '')
+        #
+        # this check is to solve some issiued on the client call
+        #
+        if isinstance(documentName, list):
+            documentName=documentName[0]
+        #
         if eng_code:
             documentName = eng_code
         nextDocNum = self.env['ir.sequence'].next_by_code('ir.attachment.progress')
