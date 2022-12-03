@@ -61,10 +61,6 @@ class ProductProductExtension(models.Model):
         bom_type = self.env['mrp.bom']
         bom_l_type = self.env['mrp.bom.line']
         prod_tmpl_obj = self.env['product.template']
-        stock_config_settings = self.env['res.config.settings']
-        variant_is_installed = False
-        if len(stock_config_settings.search([('group_product_variant', '=', 1)])) > 0:
-            variant_is_installed = True
         collect_list = []
 
         def get_previous_normal_bom(bomBrws, exclude_bom_id=False):
@@ -113,8 +109,6 @@ class ProductProductExtension(models.Model):
                           'product_tmpl_id': product_template_id,
                           'type': new_bom_type,
                           'ebom_source_id': e_bom_id, }
-                if not variant_is_installed:
-                    values['product_id'] = False
                 new_bom_brws.write(values)
 
                 if summarize:

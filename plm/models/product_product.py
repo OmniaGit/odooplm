@@ -712,33 +712,7 @@ class ProductProduct(models.Model):
             if product.bom_ids:
                 raise UserError('Cannot unlink a product containing BOMs')
 
-    def unlinkCheckBomRelations(self):
 
-        def print_where_struct(self, where_struct):
-            print_struct = []
-            prod_struct = []
-            for id1, id2 in where_struct:
-                    if id1 not in print_struct or id1 != False:
-                        print_struct.append(id1)
-            for ids in print_struct:
-                prod_obj = self.env['product.product'].search([('id', '=', ids)])
-                prod_struct.append((prod_obj.engineering_code, prod_obj.engineering_revision, ids))
-            return prod_struct
-
-        for product_id in self:
-            bom_obj = self.env['mrp.bom']
-            field_type_def = bom_obj.fields_get('type').get('type', {})
-            bom_types = []
-            for option in field_type_def.get('selection', []):
-                bom_types.append(option[0])
-            bom_line = bom_obj._get_in_bom(product_id.id, False, bom_types)
-            where_struct = bom_obj._implode_bom(bom_line, False, bom_types)
-            prod_struct = print_where_struct(self, where_struct)
-            if where_struct:
-                msg = _('You cannot unlink a component that is present in a BOM:\n')
-                for prod in prod_struct:
-                    msg += (_('\t Engineering Code = %r   Engineering Revision = %r   Product Id = %r\n' % (prod[0], prod[1], prod[2])))
-                raise UserError(msg)
 
     def unlinkRestorePreviousComponent(self):
         ctx = self.env.context.copy()

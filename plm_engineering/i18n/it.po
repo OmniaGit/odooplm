@@ -55,7 +55,7 @@ msgstr "Impossibile convertire il codice sorgente in %r"
 #: model:ir.actions.act_window,name:plm_engineering.act_create_normalBom
 #: model_terms:ir.ui.view,arch_db:plm_engineering.plm_component_create_normal_bom
 msgid "Create Normal Bom"
-msgstr "Impossibile convertire la distinta base di origine in %r"
+msgstr "Crea Bom Normale"
 
 #. module: plm_engineering
 #: model_terms:ir.actions.act_window,help:plm_engineering.plm_action_ebom_form
