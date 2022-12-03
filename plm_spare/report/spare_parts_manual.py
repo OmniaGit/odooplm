@@ -196,7 +196,9 @@ class ReportSpareDocumentOne(models.AbstractModel):
                         except Exception as ex:
                             logging.error(ex)
                             raise ex
-                    pdf = self.env.ref('plm.report_plm_bom_structure_one').sudo().with_context(force_report_rendering=True)._render_qweb_pdf(bom_brws_ids.ids)[0]
+                    report_ref = self.env.ref('plm.report_plm_bom_structure_one')
+                    pdf = report_ref.sudo().with_context(force_report_rendering=True)._render_qweb_pdf(report_ref,
+                                                                                                       res_ids=bom_brws_ids.ids)[0]
                     page_stream = BytesIO()
                     page_stream.write(pdf)
                     output.addPage((page_stream, ''))
@@ -226,7 +228,9 @@ class ReportSpareDocumentOne(models.AbstractModel):
 
     def get_first_page(self, ids):
         str_buffer = BytesIO()
-        pdf = self.env.ref('plm_spare.report_product_product_spare_header').sudo().with_context(force_report_rendering=True)._render_qweb_pdf(ids)[0]
+        report_ref = self.env.ref('plm_spare.report_product_product_spare_header')
+        pdf = report_ref.sudo().with_context(force_report_rendering=True)._render_qweb_pdf(report_ref.id,
+                                                                                           res_ids=ids)[0]
         str_buffer.write(pdf)
         return str_buffer
 
