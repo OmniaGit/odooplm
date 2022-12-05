@@ -64,16 +64,20 @@ class UploadDocument(Controller):
             logging.info('start json %r' % (doc_id))
             doc_id = json.loads(doc_id)
             logging.info('start write %r' % (doc_id))
-            value1 = mod_file.stream.read()
-            to_write = {'datas': base64.b64encode(value1),
-                        'name': filename}
-            preview = kw.get('preview', '')
-            if preview:
-                #to_write['preview'] = preview.stream.read()
-                val_2 = base64.b64encode(preview.stream.read())
-                to_write['preview'] = val_2
-            doc_brws = request.env['ir.attachment'].browse(doc_id)
-            doc_brws.write(to_write)
+            try:
+                value1 = mod_file.stream.read()
+                to_write = {'datas': base64.b64encode(value1),
+                            'name': filename}
+                preview = kw.get('preview', '')
+                if preview:
+                    #to_write['preview'] = preview.stream.read()
+                    val_2 = base64.b64encode(preview.stream.read())
+                    to_write['preview'] = val_2
+                doc_brws = request.env['ir.attachment'].browse(doc_id)
+                doc_brws.write(to_write)
+            except Exception as ex:
+                logging.error(ex)
+                raise ex
             doc_brws.setupCadOpen(kw.get('hostname', ''), kw.get('hostpws', ''), operation_type='save')
             logging.info('upload %r' % (doc_id))
             return Response('Upload succeeded', status=200)

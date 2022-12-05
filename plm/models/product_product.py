@@ -891,13 +891,16 @@ class PlmComponent(models.Model):
         if WORKFLOW_ONLY_CLIENT and is_odooplm and odoo_side_call:
             raise UserError('You can move workflow only by the client side')
 
-    def commonWFAction(self, status, action, doc_action, defaults=[], exclude_statuses=[], include_statuses=[]):
+    def commonWFAction(self, status, action, doc_action, defaults=[], exclude_statuses=[], include_statuses=[], recursive=True):
         self.canMoveWFByParam()
         product_product_ids = []
         product_template_ids = []
-        userErrors, allIDs = self._get_recursive_parts(exclude_statuses, include_statuses)
-        if userErrors:
-            raise UserError(userErrors)
+        if recursive:
+            userErrors, allIDs = self._get_recursive_parts(exclude_statuses, include_statuses)
+            if userErrors:
+                raise UserError(userErrors)
+        else:
+            allIDs = self.id
         allIdsBrwsList = self.browse(allIDs)
         allIdsBrwsList = allIdsBrwsList.filtered(lambda x: x.engineering_code not in [False, ''])
         allIdsBrwsList._action_ondocuments(doc_action, include_statuses)
