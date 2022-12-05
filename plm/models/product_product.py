@@ -1013,9 +1013,9 @@ class PlmComponent(models.Model):
                 ('engineering_revision', '=', eng_rev)
                 ])
             if prodBrwsList:
-                msg = _('\nComponents with same Engineering Code already exists:\n')
+                msg = _('Engineering Code exists:')
                 for prod in prodBrwsList:
-                    msg += '- [%r] %s revision %r active %r\n' % (prod.id, prod.engineering_code, prod.engineering_revision, prod.active)
+                    msg += '[%r] %s | R:%r | active:%r' % (prod.id, prod.engineering_code, prod.engineering_revision, prod.active)
                 raise UserError(msg)
         try:
             vals['is_engcode_editable'] = False
