@@ -15,15 +15,17 @@
                             class="oe_highlight"
                             type="object"
                             groups="plm.group_plm_release_users"
-                            attrs="{'invisible': [('is_checkout','=',True)]}"/>
+                            attrs="{'invisible': ['|',('is_checkout','=',True), ('state', '!=', 'confirmed')]}"/>
                     <button name="action_draft"
                             type="object"
-                            string="Correct Document"/>
+                            string="Correct Document"
+                    		attrs="{'invisible': ['|',('is_checkout','=',True), ('state', '!=', 'confirmed')]}"
+                    />
                     <button name="action_confirm"
                             type="object"
                             string="Confirm Document"
                             class="oe_highlight"
-                            attrs="{'invisible': [('is_checkout','=',True)]}"/>
+                            attrs="{'invisible': ['|', ('is_checkout','=',True), ('state', '!=', 'draft')]}"/>
                 </header>
               </form>
         </field>
