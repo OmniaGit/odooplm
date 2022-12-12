@@ -35,24 +35,24 @@ msgstr "Distinta base di tutti i livelli riassunti"
 #. module: plm_report_language_helper
 #: model:ir.model.fields.selection,name:plm_report_language_helper.selection__plm_bomchoselanguage__bom_type__plm_report_plm_bom_structure_one
 msgid "BOM One Level"
-msgstr "Distinta base 1 livello"
+msgstr "BOM singolo livello"
 
 #. module: plm_report_language_helper
 #: model:ir.model.fields.selection,name:plm_report_language_helper.selection__plm_bomchoselanguage__bom_type__plm_report_plm_bom_structure_one_sum
 msgid "BOM One Level Summarized"
-msgstr "Distinta base a un livello riassunto"
+msgstr "Distinta base a un livello sommarizzato"
 
 #. module: plm_report_language_helper
 #: model:ir.model.fields.selection,name:plm_report_language_helper.selection__plm_bomchoselanguage__bom_type__plm_report_plm_bom_structure_leaves
 msgid "BOM Only Leaves Summarized"
-msgstr "Distinta base solo foglie riassunte"
+msgstr "Distinta base solo foglie sommarizate"
 
 #. module: plm_report_language_helper
 #: code:addons/plm_report_language_helper/wizard/wizard.py:0
 #: model:ir.model.fields,field_description:plm_report_language_helper.field_plm_bomchoselanguage__bom_type
 #, python-format
 msgid "Bom Report Type"
-msgstr "Tipo di rapporto distinta base"
+msgstr "Tipo Report Bom"
 
 #. module: plm_report_language_helper
 #: model_terms:ir.ui.view,arch_db:plm_report_language_helper.plm_bomchoselanguage_form
@@ -65,23 +65,23 @@ msgstr "Annulla"
 #: model:ir.model.fields,help:plm_report_language_helper.field_plm_bomchoselanguage__bom_type
 #, python-format
 msgid "Chose the Bom report you would like to print"
-msgstr "Scegli il rapporto sulla distinta base che desideri stampare"
+msgstr "Scegli la stampa sulla Bom che desideri stampare"
 
 #. module: plm_report_language_helper
 #: model:ir.actions.act_window,name:plm_report_language_helper.act_plm_print_boms
 msgid "Create Boms Report"
-msgstr "Crea rapporto sulle distinte base"
+msgstr "Crea Stampa su Bom"
 
 #. module: plm_report_language_helper
 #: model:ir.actions.act_window,name:plm_report_language_helper.act_plm_print_spare_bom
 msgid "Create Report Spare Bom"
-msgstr "Crea rapporto distinta base di riserva"
+msgstr "Crea stampa Bom ricambio"
 
 #. module: plm_report_language_helper
 #: model_terms:ir.ui.view,arch_db:plm_report_language_helper.plm_bomchoselanguage_form
 #: model_terms:ir.ui.view,arch_db:plm_report_language_helper.plm_sparechoselanguage_form
 msgid "Create Spare Report"
-msgstr "Crea rapporto di ricambio"
+msgstr "Crea stampa ricambio"
 
 #. module: plm_report_language_helper
 #: model:ir.model.fields,field_description:plm_report_language_helper.field_plm_bomchoselanguage__create_uid
@@ -194,7 +194,7 @@ msgstr "Primo livello"
 #. module: plm_report_language_helper
 #: model_terms:ir.ui.view,arch_db:plm_report_language_helper.plm_bomchoselanguage_form
 msgid "Print Bom Type"
-msgstr "Stampa tipo di distinta base"
+msgstr "Stampa tipo Bom"
 
 #. module: plm_report_language_helper
 #: code:addons/plm_report_language_helper/wizard/wizard.py:0

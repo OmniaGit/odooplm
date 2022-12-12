@@ -127,7 +127,7 @@ class ReportSpareDocumentOne(models.AbstractModel):
     """
 
     @api.model
-    def create_spare_pdf(self, components):
+    def _create_spare_pdf(self, components):
         recursion = True
         if self._name == 'report.plm_spare.pdf_one':
             recursion = False
@@ -164,7 +164,14 @@ class ReportSpareDocumentOne(models.AbstractModel):
             main_book_collector.collector.write(pdf_string)
             out = pdf_string.getvalue()
             pdf_string.close()
-            byte_string = b"data:application/pdf;base64," + base64.b64encode(out)
+            return out
+        return ''
+
+    @api.model
+    def create_spare_pdf(self, components):
+        stream = self._create_spare_pdf(components)
+        if stream:
+            byte_string = b"data:application/pdf;base64," + base64.b64encode(stream)
             return byte_string.decode('UTF-8')
         logging.warning('Unable to create PDF')
         return False, ''

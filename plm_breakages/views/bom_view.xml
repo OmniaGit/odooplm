@@ -23,6 +23,8 @@
                 <field name="breakages_count" invisible="True"/>
                 <button name="open_breakages"
                         type="object"
+                        string="Open Brackages"
+                        title="Open Brackages"
                         icon="fa-chain-broken" 
                         class="btn btn-sm oe_stat_button text-danger"
                         attrs="{'invisible':[('breakages_count', '=', 0)]}"/>
