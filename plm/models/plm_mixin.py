@@ -51,6 +51,8 @@ USED_STATES = [(START_STATUS, _('Draft')),
                (UNDER_MODIFY_STATUS, _('UnderModify')),
                (OBSOLATED_STATUS, _('Obsoleted'))]
 #
+RELEASED_STATUSES = [RELEASED_STATUS,OBSOLATED_STATUS]
+#
 PLM_NO_WRITE_STATE = [CONFIRMED_STATUS,
                       RELEASED_STATUS,
                       UNDER_MODIFY_STATUS,
