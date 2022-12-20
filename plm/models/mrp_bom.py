@@ -630,11 +630,13 @@ class MrpBomExtension(models.Model):
                      False)
                 ])  # Get Latest revision of each Part
                 bom_line.sudo().write({'state': 'draft'})
-                bom_line.write({
+                write_vals = {
                     'source_id': False,
                     'name': bom_line.product_id.product_tmpl_id.name,
-                    'product_id': late_rev_id_c[0]
-                })
+                }
+                if late_rev_id_c:
+                    write_vals['product_id'] = late_rev_id_c[0]
+                bom_line.write(write_vals)
             new_bom_brws.sudo().with_context({'check': False}).write({
                 'source_id': False,
                 'name': new_bom_brws.product_tmpl_id.name
