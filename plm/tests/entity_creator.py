@@ -45,22 +45,22 @@ class PlmEntityCreator(object):
     
     def create_product_template(self, name):
         ProductTemplate = self.env['product.template']
-        default_data = ProductTemplate.default_get(['uom_id','uom_po_id'])
+        default_data = ProductTemplate.default_get(['uom_id','uom_po_id','sale_line_warn'])
         default_data.update({
             'name': name,
-            })                                  
+            })       
+        # if self.env['ir.module.module'].search([('state','=','installed'),
+        #                                         ('name','=','sale')]):
+        default_data['sale_line_warn']='no-message'        
         return ProductTemplate.create(default_data) 
     
     def create_product_product(self, name, eng_code=False):
         if not eng_code:
             eng_code="eng_code_" + name
-        Product = self.env['product.product'] 
-        default_data = Product.default_get(['uom_id','uom_po_id','sale_line_warn'])
-        default_data.update({
-            'name': name,
-            'engineering_code' : eng_code,
-            })    
-        return Product.create(default_data)
+        product_tmpl = self.create_product_template(eng_code)
+        product_tmpl.engineering_code=eng_code
+        for pp in self.env['product.product'].search([('product_tmpl_id','=',product_tmpl.id)]):
+            return pp
     
     def create_document(self, name, eng_code=False):
         if not eng_code:

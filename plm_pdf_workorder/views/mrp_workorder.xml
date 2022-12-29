@@ -1,26 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
     <data>
     
+        <record id="plm_mrp_workorder_view_form_tablet" model="ir.ui.view">
+            <field name="name">plm.mrp.workorder.view.form.tablet</field>
+            <field name="model">mrp.workorder</field>
+            <field name="inherit_id" ref="mrp_workorder.mrp_workorder_view_form_tablet"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='company_id']" position="after">
+                    <field name="view_plm_pdf" invisible="1"/>
+                    <field name="use_plm_pdf" invisible="1"/>
+                </xpath>
+                
+                <xpath expr="//div[@class='o_workorder_bar'][2]/div/span" position="after">
+                     <button name="action_switch_pdf"
+                            attrs="{'invisible': [('use_plm_pdf', '=', False)]}"
+                            class="btn btn-secondary o_workorder_icon_btn fa fa-file-o"
+                            type="object"
+                            aria-label="Show plm pdf related document"
+                            title="Pdf PLM"
+                            string="-PLM"/>
+                </xpath>
+            </field>
+         </record>
+         
+         <record id="plm_pdf_show_document_workorder" model="ir.ui.view">
+            <field name="name">plm.pdf.show.document.workorder</field>
+            <field name="model">mrp.workorder</field>
+            <field name="arch" type="xml">
+                <form string="Plm Worksheet" create="false" edit="false">
+                    <field name="plm_pdf" widget="pdf_viewer" readonly="True"/>
+                </form>
+            </field>
+         </record>
+    </data>
+    <!-- 
         <record id="mrp_workorder_view_form_tablet_pdf_workorder" model="ir.ui.view">
             <field name="name">mrp.workorder.view.form.inherit.quality.tablet.new.pdf.workorder</field>
             <field name="model">mrp.workorder</field>
             <field name="inherit_id" ref="mrp_workorder.mrp_workorder_view_form_tablet"/>
             <field name="arch" type="xml">
             
-            	<xpath expr="//field[@name='component_qty_to_do']" position="after">
+            	<xpath expr="//field[@name='company_id']" position="after">
                     <field name="view_plm_pdf" invisible="1"/>
                     <field name="use_plm_pdf" invisible="1"/>
             	</xpath>
             	
-            	<xpath expr="//button[@name='action_menu']" position="after">
-            		<button name="action_switch_pdf" type="object" attrs="{'invisible': ('use_plm_pdf', '=', False)}" class="btn-secondary o_workorder_icon_btn" string="PLM PDF" icon="fa-camera" aria-label="Dropdown menu" title="Dropdown menu"/>
+            	<xpath expr="//button[@name='openMenuPopup']" position="after">
+            		<button name="action_switch_pdf" 
+            		        type="object"
+            		        attrs="{'invisible': ('use_plm_pdf', '=', False)}"
+            		        class="btn-secondary o_workorder_icon_btn"
+            		        string="PLM PDF"
+            		        icon="fa-camera"
+            		        aria-label="Dropdown menu"
+            		        title="Dropdown menu"/>
             	</xpath>
             	
             	<xpath expr="//div[hasclass('workorder_pdf')]" position="after">
             		<div>
-            			<field name="plm_pdf" widget="mrp_pdf_viewer_no_reload" attrs="{'invisible': ['|', ('view_plm_pdf', '=', False), ('plm_pdf', '=', False)]}"/>
+            			<field name="plm_pdf"
+            			       widget="mrp_pdf_viewer_no_reload"
+            			       attrs="{'invisible': ['|', ('view_plm_pdf', '=', False), ('plm_pdf', '=', False)]}"/>
             		</div>
             	</xpath>
             	
@@ -36,5 +77,5 @@
         </record>  
 
     </data>
-
+ -->
 </odoo>

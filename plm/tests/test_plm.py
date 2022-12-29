@@ -111,9 +111,10 @@ class PlmDateBom(TransactionCase, PlmEntityCreator):
         assert released_version.engineering_code==product_product_code        
         assert released_version.is_released()==True
         #
-        assert len(cls.product_parent_id.product_tmpl_id.get_all_revision())==2
-        assert cls.product_parent_id.product_tmpl_id.is_released()==True
-        assert cls.product_parent_id.product_tmpl_id.engineering_revision_count==1
+        parent_revision = cls.product_parent_id.product_tmpl_id
+        assert len(parent_revision.get_all_revision())==2
+        assert parent_revision.is_released()==True
+        assert parent_revision.engineering_revision_count==2
         #
         #
         #

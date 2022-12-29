@@ -44,6 +44,21 @@ class MrpWorkorder(models.Model):
             workorder_id.view_plm_pdf = not workorder_id.view_plm_pdf
             if workorder_id.operation_id.use_plm_pdf:# and not workorder_id.plm_pdf:
                 workorder_id.plm_pdf = base64.b64encode(self.getPDF(workorder_id))
+        view_id = self.env['ir.model.data']._xmlid_to_res_id('plm_pdf_workorder.plm_pdf_show_document_workorder')
+        ctx = self.env.context.copy()
+        ctx.update({'create': False, 'delete': False})
+        return {
+                'type': 'ir.actions.act_window',
+                'view_type': 'form',
+                'view_mode': 'form',
+                'res_model': 'mrp.workorder',            # name of respective model,
+                'target': 'new',
+                'views': [[view_id, 'form']],
+                'flags': {'initial_mode': 'view'},
+                'context': ctx,
+                'res_id': self.id,
+                'target': 'new',
+                }
 
     @api.model
     def create(self, vals):
