@@ -51,7 +51,9 @@ class PlmComponentDocumentRel(models.Model):
 
 
     _sql_constraints = [
-        ('relation_unique', 'unique(component_id,document_id)', _('Component and Document relation has to be unique !')),
+        ('relation_unique',
+         'unique(component_id, document_id)',
+         _('ProductProduct and Irattachment relation has to be unique !')),
     ]
 
     @api.model
@@ -97,5 +99,8 @@ class PlmComponentDocumentRel(models.Model):
         if not exsist:
             product_product_id.linkeddocuments = [(4, ir_attachment_id.id, False)]
         return True
+    
+    def create(self, vals):
+        return super(PlmComponentDocumentRel, self).create(vals)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -165,6 +165,10 @@ class ProductTemplate(models.Model):
                 'context': {}}
 
     def plm_sanitize(self, vals):
+        if not self.env.context.get('odooPLM'):
+            return vals
+        logging.debug("OdooPLM: Sanitize product template attributes")
+        vals = vals.copy()
         fields_view_get = self._fields
         out = []
         if isinstance(vals, (list, tuple)):

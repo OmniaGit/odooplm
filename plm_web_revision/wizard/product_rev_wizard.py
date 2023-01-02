@@ -84,11 +84,16 @@ class ProductProductExtended(models.TransientModel):
                 logging.warning("ex")
         new_product_id.linkeddocuments = new_ir_attachment_ids
 
-    def common_bom_revision(self, oldProdBrws, new_obj_brw, bomType):
+    def common_bom_revision(self, old_product_tmpl_brw, new_product_tmpl_brw, bomType):
         bomObj = self.env['mrp.bom']
-        for bomBrws in bomObj.search([('product_tmpl_id', '=', oldProdBrws.id), ('type', '=', bomType)]):
+        for bomBrws in bomObj.search([('product_tmpl_id', '=', old_product_tmpl_brw.id),
+                                      ('type', '=', bomType)]):
             newBomBrws = bomBrws.copy()
             source_id = False
-            if new_obj_brw.linkeddocuments.ids:
-                source_id = new_obj_brw.linkeddocuments.ids[0]
-            new_obj_brw.sudo().write({'product_tmpl_id': new_obj_brw.id, 'source_id': source_id})
+            if new_product_tmpl_brw.linkeddocuments.ids:
+                source_id = new_product_tmpl_brw.linkeddocuments.ids[0]
+            for bom_line in newBomBrws.bom_line_ids:
+                bom_line.sudo().write({'source_id': source_id})
+
+
+

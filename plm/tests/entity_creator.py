@@ -49,14 +49,17 @@ class PlmEntityCreator(object):
         default_data.update({
             'name': name,
             })       
-        # if self.env['ir.module.module'].search([('state','=','installed'),
-        #                                         ('name','=','sale')]):
-        default_data['sale_line_warn']='no-message'        
-        return ProductTemplate.create(default_data) 
+        if 'sale_line_warn' in ProductTemplate._fields.keys():
+            default_data['sale_line_warn']='no-message'    
+        try:
+            ret = ProductTemplate.create(default_data)
+        except Exception as ex:
+            raise ex
+        return ret 
     
     def create_product_product(self, name, eng_code=False):
         if not eng_code:
-            eng_code="eng_code_" + name
+            eng_code="eng_code_PP_" + name
         product_tmpl = self.create_product_template(eng_code)
         product_tmpl.engineering_code=eng_code
         for pp in self.env['product.product'].search([('product_tmpl_id','=',product_tmpl.id)]):
