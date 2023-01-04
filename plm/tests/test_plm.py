@@ -48,7 +48,7 @@ from odoo.addons.plm.tests.entity_creator import PlmEntityCreator
 #
 
 #
-@tagged('-standard', 'odoo_plm')
+@tagged('-standard', 'odoo_plm','post_install', '-at_install')
 class PlmDateBom(TransactionCase, PlmEntityCreator):
         
     def test_1_some_wk(cls):

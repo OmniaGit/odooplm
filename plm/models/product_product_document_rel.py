@@ -36,7 +36,7 @@ class PlmComponentDocumentRel(models.Model):
 
 
 
-    component_id = fields.Many2one('product.product',
+    component_id = fields.Many2one('product.template',
                                    _('Linked Component'),
                                    required=True,
                                    #ondelete='cascade'

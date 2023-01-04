@@ -76,7 +76,7 @@ class IrAttachment(models.Model):
     is_checkout = fields.Boolean(_('Is Checked-Out'),
                                  compute='_is_checkout',
                                  store=False)
-    linkedcomponents = fields.Many2many('product.template',
+    linkedcomponents = fields.Many2many('product.product',
                                         'plm_component_document_rel',
                                         'document_id',
                                         'component_id',
