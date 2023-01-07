@@ -41,8 +41,16 @@ class PlmBreakages(models.Model):
     notes = fields.Text("Notes")
     tracking = fields.Selection(related = 'product_id.tracking')
     
-    @api.model
+    @api.model_create_multi
     def create(self, vals):
+        if isinstance(vals, (list,tuple)):
+            out=self.env['plm.breakages']
+            for v in vals:
+                out+=self.o_create(v)
+            return out
+        return self.o_create(vals)
+    
+    def o_create(self, vals):
         if vals.get('name', 'New') == 'New':
             seq_date = None
             if 'date_order' in vals:

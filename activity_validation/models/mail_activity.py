@@ -300,7 +300,3 @@ class MailActivity(models.Model):
             name = '%s | %s' % (activity.summary or activity.activity_type_id.display_name, activity.user_id.display_name or '')
             out.append((activity.id, name))
         return out
-
-    @api.model
-    def create(self, vals):
-        return super(MailActivity, self).create(vals)

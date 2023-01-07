@@ -61,8 +61,16 @@ class PlmComponent(models.Model):
                                          readonly=True,
                                          digits='Stock Weight', default=0)
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals):
+        if isinstance(vals, (list,tuple)):
+            out=self.env['product.product']
+            for v in vals:
+                out+=self.o_create(v)
+            return out
+        return self.o_create(vals)
+    
+    def o_create(self, vals):
         """
             Creating a product weight is set equal to weight_net and vice-versa
         """

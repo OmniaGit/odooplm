@@ -183,9 +183,17 @@ class ProductTemplate(models.Model):
                     del vals[k]
         return vals
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals):
-        vals = self.plm_sanitize(vals)
+        if isinstance(vals, (list,tuple)):
+            out=self.env['product.product']
+            for v in vals:
+                out+=self.o_create(v)
+            return out
+        return self.o_create(vals)
+    
+    def o_create(self, vals):
+        vals=self.plm_sanitize(vals)
         return super(ProductTemplate, self).create(vals)
 
     def write(self, vals):

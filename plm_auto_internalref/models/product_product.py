@@ -34,8 +34,16 @@ class ProductProductExtension(models.Model):
     _name = 'product.product'
     _inherit = 'product.product'
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals):
+        if isinstance(vals, (list,tuple)):
+            out=self.env['product.product']
+            for v in vals:
+                out+=self.o_create(v)
+            return out
+        return self.o_create(vals)
+    
+    def o_create(self, vals):
         new_default_code = self.computeDefaultCode(vals)
         if new_default_code:
             logging.info('OdooPLM: Default Code set to %s ' % (new_default_code))

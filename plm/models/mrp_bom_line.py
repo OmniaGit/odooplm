@@ -42,8 +42,16 @@ class MrpBomLineExtension(models.Model):
         fields = self.plm_sanitize(fields)
         return super(MrpBomLineExtension, self).read(fields=fields, load=load)
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals):
+        if isinstance(vals, (list,tuple)):
+            out=self.env['mrp.bom.line']
+            for v in vals:
+                out+=self.o_create(v)
+            return out
+        return self.o_create(vals)
+        
+    def o_create(self, vals):
         vals = self.plm_sanitize(vals)
         return super(MrpBomLineExtension, self).create(vals)
 

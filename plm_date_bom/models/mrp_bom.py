@@ -117,14 +117,11 @@ class mrp_bom_extension_data(models.Model):
         return self.search([('product_tmpl_id', '=', prodTmplBrws.id), ('type', '=', bomType)])
     
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals):
         '''
             This overload of create is needed to setup obsolete_presents_recursive flag
         '''
-        res = super(mrp_bom_extension_data, self).create(vals)
-        bomType = res.type
-        
         def recursion(bomBrws):
             for lineBrws in bomBrws.bom_line_ids:
                 prodBrws = lineBrws.product_id
@@ -134,11 +131,14 @@ class mrp_bom_extension_data(models.Model):
                             return True
                         if recursion(bomBrwsChild):
                             return True
-        
-        if bomType != 'ebom':
-            if recursion(res):
-                res.obsolete_presents_recursive = True
-            res._obsolete_compute()
+
+        res = super(mrp_bom_extension_data, self).create(vals)
+        for r in res:
+            bomType = r.type
+            if bomType != 'ebom':
+                if recursion(r):
+                    r.obsolete_presents_recursive = True
+                r._obsolete_compute()
         return res
 
     def write(self, vals):

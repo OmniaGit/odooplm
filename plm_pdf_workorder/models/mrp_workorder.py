@@ -60,11 +60,12 @@ class MrpWorkorder(models.Model):
                 'target': 'new',
                 }
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals):
         ret = super(MrpWorkorder, self).create(vals)
-        if ret.operation_id.use_plm_pdf:
-            ret.plm_pdf = base64.b64encode(self.getPDF(ret))
+        for r in ret:
+            if r.operation_id.use_plm_pdf:
+                r.plm_pdf = base64.b64encode(self.getPDF(r))
         return ret
 
     def getPDF(self, workorder_id):

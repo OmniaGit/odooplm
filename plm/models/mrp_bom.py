@@ -662,8 +662,16 @@ class MrpBomExtension(models.Model):
             bom_brws.rebase_bom_weight()
         return ret
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals):
+        if isinstance(vals, (list,tuple)):
+            out=self.env['mrp.bom']
+            for v in vals:
+                out+=self.o_create(v)
+            return out
+        return self.o_create(vals)
+    
+    def o_create(self, vals):
         vals = self.plm_sanitize(vals)
         ret = super(MrpBomExtension, self).create(vals)
         ret.rebase_bom_weight()

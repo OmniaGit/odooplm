@@ -84,8 +84,16 @@ class PlmCheckout(models.Model):
             values = {'userid': userid}
             docRelBrwsList.write(values)
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals):
+        if isinstance(vals, (list,tuple)):
+            out=self.env['plm.checkout']
+            for v in vals:
+                out+=self.o_create(v)
+            return out
+        return self.o_create(vals)
+    
+    def o_create(self, vals):
         docBrws = self.env['ir.attachment'].browse(vals['documentid'])
         values = {'engineering_writable': True}
         if not docBrws.sudo(True).write(values):

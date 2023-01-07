@@ -86,7 +86,7 @@ class MrpBomLineTemplateCuttedParts(models.Model):
             self.recomputeCuttedQty()
         return res
     
-    @api.model
+    @api.model_create_multi
     def create(self, vals):
         res = super(MrpBomLineTemplateCuttedParts, self).create(vals)
         res.recomputeCuttedQty()

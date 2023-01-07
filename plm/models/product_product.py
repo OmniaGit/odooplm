@@ -885,8 +885,16 @@ class ProductProduct(models.Model):
             if not doc.ischecked_in():
                 raise UserError(_('Document %r with revision %r is in check-out, cannot create variant.' % (doc.name, doc.engineering_revision)))
 
-    @api.model
-    def create(self, vals={}):
+    @api.model_create_multi
+    def create(self, vals):
+        if isinstance(vals, (list,tuple)):
+            out=self.env['product.product']
+            for v in vals:
+                out+=self.o_create(v)
+            return out
+        return self.o_create(vals)
+    
+    def o_create(self, vals={}):
         vals = vals.copy()
         copy_context = self.env.context.get('copy_context')
         if copy_context:

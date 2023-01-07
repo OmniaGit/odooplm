@@ -871,10 +871,18 @@ class IrAttachment(models.Model):
                     out.append(k)
             return out
                     
-    @api.model
+    @api.model_create_multi
     def create(self, vals):
         if not self.env.context.get('odooPLM'):
             return super(IrAttachment, self).create(vals)
+        if isinstance(vals, (list,tuple)):
+            out=self.env['ir.attachment']
+            for v in vals:
+                out+=self.o_create(v)
+            return out
+        return self.o_create(vals)
+
+    def o_create(self, vals):
         vals['is_plm'] = True
         vals.update(self.checkMany2oneClient(vals))
         vals = self.plm_sanitize(vals)
