@@ -666,7 +666,7 @@ class MrpBomExtension(models.Model):
     def create(self, vals):
         to_create=[]
         for vals_dict in vals:
-            to_create.appen(self.plm_sanitize(vals))
+            to_create.append(self.plm_sanitize(vals_dict))
         ret = super().create(to_create)
         ret.rebase_bom_weight()
         return ret

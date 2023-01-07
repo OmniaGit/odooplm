@@ -985,7 +985,7 @@ class IrAttachment(models.Model):
     def unlink(self):
         for checkObj in self:
             checkObj.unlinkCheckDocumentRelations()
-            checkObj.linkedcomponents.unlinkCheckBomRelations()
+            checkObj.linkedcomponents.mapped("product_tmpl_id").unlinkCheckBomRelations()
             checkObj.linkedcomponents = False
             checkObj.unlinkRestorePreviousDocument()
             checkObj.unlinkBackUp()
@@ -2756,4 +2756,11 @@ class IrAttachment(models.Model):
         action = self.env.ref('plm.action_report_doc_structure').report_action(self)
         action.update({'close_on_report_download': True})
         return action
+    
+    #client workflow functions
+    @api.model
+    def action_from_draft_to_draf(self):
+        pass
+    
+    
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
