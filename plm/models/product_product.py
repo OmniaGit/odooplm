@@ -887,37 +887,32 @@ class ProductProduct(models.Model):
 
     @api.model_create_multi
     def create(self, vals):
-        if isinstance(vals, (list,tuple)):
-            out=self.env['product.product']
-            for v in vals:
-                out+=self.o_create(v)
-            return out
-        return self.o_create(vals)
+        to_write=[]
+        for vals_dict in vals:
+            vals_dict = vals_dict.copy()
+            copy_context = self.env.context.get('copy_context')
+            if copy_context:
+                vals_dict.update(copy_context)
+            eng_code = vals_dict.get('engineering_code')
+            name = vals_dict.get('name')
+            if not name and eng_code:
+                vals_dict['name'] = eng_code
     
-    def o_create(self, vals={}):
-        vals = vals.copy()
-        copy_context = self.env.context.get('copy_context')
-        if copy_context:
-            vals.update(copy_context)
-        eng_code = vals.get('engineering_code')
-        name = vals.get('name')
-        if not name and eng_code:
-            vals['name'] = eng_code
-
-        eng_rev = vals.get('engineering_revision', 0)
-        eng_code = vals.get('engineering_code')
-        if eng_code:
-            prodBrwsList = self.search_count([('engineering_code', '=', eng_code),
-                                              ('engineering_revision', '=', eng_rev)
-                                              ])
-            if prodBrwsList:
-                raise UserError('Component %r already exists' % (vals['engineering_code']))
+            eng_rev = vals_dict.get('engineering_revision', 0)
+            eng_code = vals_dict.get('engineering_code')
+            if eng_code:
+                prodBrwsList = self.search_count([('engineering_code', '=', eng_code),
+                                                  ('engineering_revision', '=', eng_rev)
+                                                  ])
+                if prodBrwsList:
+                    raise UserError('Component %r already exists' % (vals_dict['engineering_code']))
+            vals_dict['is_engcode_editable'] = False
+            vals_dict.update(self.checkMany2oneClient(vals_dict))
+            vals_dict = self.checkSetupDueToVariants(vals_dict)
+            vals_dict = self.plm_sanitize(vals_dict)
+            to_write.append(vals_dict)
         try:
-            vals['is_engcode_editable'] = False
-            vals.update(self.checkMany2oneClient(vals))
-            vals = self.checkSetupDueToVariants(vals)
-            vals = self.plm_sanitize(vals)
-            res = super(ProductProduct, self).create(vals)
+            res = super().create(vals_dict)
             return res
         except Exception as ex:
             if isinstance(ex, UserError):

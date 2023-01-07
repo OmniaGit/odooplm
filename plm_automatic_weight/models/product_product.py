@@ -63,24 +63,17 @@ class PlmComponent(models.Model):
 
     @api.model_create_multi
     def create(self, vals):
-        if isinstance(vals, (list,tuple)):
-            out=self.env['product.product']
-            for v in vals:
-                out+=self.o_create(v)
-            return out
-        return self.o_create(vals)
-    
-    def o_create(self, vals):
         """
             Creating a product weight is set equal to weight_net and vice-versa
         """
-        weight = vals.get('weight', 0)
-        weight_cad = vals.get('weight_cad', 0)
-        if weight_cad and not weight:
-            vals['weight'] = weight_cad
-        elif weight and not weight_cad:
-            vals['weight_cad'] = weight
-        return super(PlmComponent, self).create(vals)
+        for val_dict in vals:
+            weight = val_dict.get('weight', 0)
+            weight_cad = val_dict.get('weight_cad', 0)
+            if weight_cad and not weight:
+                val_dict['weight'] = weight_cad
+            elif weight and not weight_cad:
+                val_dict['weight_cad'] = weight
+        return super().create(vals)
 
     @api.onchange('automatic_compute_selection','weight_additional')
     def on_change_automatic_compute(self):

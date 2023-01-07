@@ -173,6 +173,4 @@ class Plm_box_document(models.Model):
                 return 'check-in'
         return 'check-out-by-me'
 
-Plm_box_document()
-
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

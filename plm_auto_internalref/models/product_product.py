@@ -36,19 +36,12 @@ class ProductProductExtension(models.Model):
 
     @api.model_create_multi
     def create(self, vals):
-        if isinstance(vals, (list,tuple)):
-            out=self.env['product.product']
-            for v in vals:
-                out+=self.o_create(v)
-            return out
-        return self.o_create(vals)
-    
-    def o_create(self, vals):
-        new_default_code = self.computeDefaultCode(vals)
-        if new_default_code:
-            logging.info('OdooPLM: Default Code set to %s ' % (new_default_code))
-            vals['default_code'] = new_default_code
-        return super(ProductProductExtension, self).create(vals)
+        for val_dict in vals:
+            new_default_code = self.computeDefaultCode(val_dict)
+            if new_default_code:
+                logging.info('OdooPLM: Default Code set to %s ' % (new_default_code))
+                val_dict['default_code'] = new_default_code
+        return super().create(vals)
     
     @property
     def getDefaultCodeTemplate(self):

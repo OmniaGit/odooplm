@@ -43,19 +43,12 @@ class PlmBreakages(models.Model):
     
     @api.model_create_multi
     def create(self, vals):
-        if isinstance(vals, (list,tuple)):
-            out=self.env['plm.breakages']
-            for v in vals:
-                out+=self.o_create(v)
-            return out
-        return self.o_create(vals)
-    
-    def o_create(self, vals):
-        if vals.get('name', 'New') == 'New':
-            seq_date = None
-            if 'date_order' in vals:
-                seq_date = fields.Datetime.context_timestamp(self, fields.Datetime.to_datetime(vals['date_order']))
-            vals['name'] = self.env['ir.sequence'].next_by_code('plm.breakages', sequence_date=seq_date) or '/'
-        return super(PlmBreakages, self).create(vals)
+        for vals_dict in vals:
+            if vals_dict.get('name', 'New') == 'New':
+                seq_date = None
+                if 'date_order' in vals:
+                    seq_date = fields.Datetime.context_timestamp(self, fields.Datetime.to_datetime(vals_dict['date_order']))
+                vals_dict['name'] = self.env['ir.sequence'].next_by_code('plm.breakages', sequence_date=seq_date) or '/'
+        return super().create(vals)
     
     

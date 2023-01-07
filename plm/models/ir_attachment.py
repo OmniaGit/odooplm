@@ -875,20 +875,15 @@ class IrAttachment(models.Model):
     def create(self, vals):
         if not self.env.context.get('odooPLM'):
             return super(IrAttachment, self).create(vals)
-        if isinstance(vals, (list,tuple)):
-            out=self.env['ir.attachment']
-            for v in vals:
-                out+=self.o_create(v)
-            return out
-        return self.o_create(vals)
-
-    def o_create(self, vals):
-        vals['is_plm'] = True
-        vals.update(self.checkMany2oneClient(vals))
-        vals = self.plm_sanitize(vals)
-        vals['engineering_workflow_user'] = self.env.uid
-        vals['engineering_workflow_date'] = datetime.now()
-        res = super(IrAttachment, self).create(vals)
+        to_create_vals=[]
+        for vals_dict in vals:
+            vals_dict['is_plm'] = True
+            vals_dict.update(self.checkMany2oneClient(vals_dict))
+            vals_dict = self.plm_sanitize(vals_dict)
+            vals_dict['engineering_workflow_user'] = self.env.uid
+            vals_dict['engineering_workflow_date'] = datetime.now()
+            to_create_vals.append(vals_dict)
+        res = super(IrAttachment, self).create(to_create_vals)
         res.check_unique()
         return res
 

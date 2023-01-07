@@ -82,17 +82,9 @@ class PlmConvertStack(models.Model):
 
     @api.model_create_multi
     def create(self, vals):
-        if isinstance(vals, (list,tuple)):
-            out=self.env['plm.convert.stack']
-            for v in vals:
-                out+=self.o_create(v)
-            return out
-        return self.o_create(vals)
-            
-    def o_create(self, vals):
-        ret = super(PlmConvertStack, self).create(vals)
-        if not vals.get('sequence'):
-            ret.sequence = ret.id
+        ret = super().create(vals)
+        for r in ret:
+            r.sequence = r.id
         return ret
 
     def convert(self):

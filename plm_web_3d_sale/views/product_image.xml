@@ -22,8 +22,10 @@
         <field name="inherit_id" ref="website_sale.view_product_image_form"/>
         <field name="arch" type="xml">    
 	        <xpath expr="//field[@name='video_url']" position="after">
-	           <label for="ir_attachment_webgl_id" string="WebGl Document"/><br/>
-	           <field name="ir_attachment_webgl_id"></field><br/>
+		        <group>
+		           <label for="ir_attachment_webgl_id" string="WebGl Document"/><br/>
+		           <field name="ir_attachment_webgl_id"></field><br/>
+		         </group>
 	        </xpath>
         </field>
     </record>

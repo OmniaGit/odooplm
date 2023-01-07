@@ -648,7 +648,7 @@ class MrpBomExtension(models.Model):
         weight = 0.0
         for bom_brws in self:
             weight = bom_brws._sum_bom_weight(bom_brws)
-            super(MrpBomExtension, bom_brws).write({'weight_net': weight})
+            super().write({'weight_net': weight})
         return weight
 
     def read(self, fields=[], load='_classic_read'):
@@ -664,16 +664,10 @@ class MrpBomExtension(models.Model):
 
     @api.model_create_multi
     def create(self, vals):
-        if isinstance(vals, (list,tuple)):
-            out=self.env['mrp.bom']
-            for v in vals:
-                out+=self.o_create(v)
-            return out
-        return self.o_create(vals)
-    
-    def o_create(self, vals):
-        vals = self.plm_sanitize(vals)
-        ret = super(MrpBomExtension, self).create(vals)
+        to_create=[]
+        for vals_dict in vals:
+            to_create.appen(self.plm_sanitize(vals))
+        ret = super().create(to_create)
         ret.rebase_bom_weight()
         return ret
 

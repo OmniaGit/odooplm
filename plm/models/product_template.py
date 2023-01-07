@@ -185,16 +185,10 @@ class ProductTemplate(models.Model):
 
     @api.model_create_multi
     def create(self, vals):
-        if isinstance(vals, (list,tuple)):
-            out=self.env['product.product']
-            for v in vals:
-                out+=self.o_create(v)
-            return out
-        return self.o_create(vals)
-    
-    def o_create(self, vals):
-        vals=self.plm_sanitize(vals)
-        return super(ProductTemplate, self).create(vals)
+        to_create=[]
+        for val_dict in vals:
+            to_create.append(self.plm_sanitize(val_dict))
+        return super().create(to_create)
 
     def write(self, vals):
         vals = self.plm_sanitize(vals)

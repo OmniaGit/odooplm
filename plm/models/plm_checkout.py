@@ -86,21 +86,14 @@ class PlmCheckout(models.Model):
 
     @api.model_create_multi
     def create(self, vals):
-        if isinstance(vals, (list,tuple)):
-            out=self.env['plm.checkout']
-            for v in vals:
-                out+=self.o_create(v)
-            return out
-        return self.o_create(vals)
-    
-    def o_create(self, vals):
-        docBrws = self.env['ir.attachment'].browse(vals['documentid'])
-        values = {'engineering_writable': True}
-        if not docBrws.sudo(True).write(values):
-            logging.warning("create : Unable to check-out the required document (" + str(docBrws.engineering_code) + "-" + str(docBrws.engineering_revision) + ").")
-            raise UserError(_("Unable to check-out the required document (" + str(docBrws.engineering_code) + "-" + str(docBrws.engineering_revision) + ")."))
-        self._adjustRelations([docBrws.id])
-        newCheckoutBrws = super(PlmCheckout, self).create(vals)
+        for vals_dict in vals:
+            docBrws = self.env['ir.attachment'].browse(vals_dict['documentid'])
+            values = {'engineering_writable': True}
+            if not docBrws.sudo(True).write(values):
+                logging.warning("create : Unable to check-out the required document (" + str(docBrws.engineering_code) + "-" + str(docBrws.engineering_revision) + ").")
+                raise UserError(_("Unable to check-out the required document (" + str(docBrws.engineering_code) + "-" + str(docBrws.engineering_revision) + ")."))
+            self._adjustRelations([docBrws.id])
+        newCheckoutBrws = super().create(vals)
         docBrws.message_post(body=_('Checked-Out ID %r' % (newCheckoutBrws.id)))
         return newCheckoutBrws
 

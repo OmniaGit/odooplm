@@ -44,16 +44,11 @@ class MrpBomLineExtension(models.Model):
 
     @api.model_create_multi
     def create(self, vals):
-        if isinstance(vals, (list,tuple)):
-            out=self.env['mrp.bom.line']
-            for v in vals:
-                out+=self.o_create(v)
-            return out
-        return self.o_create(vals)
-        
-    def o_create(self, vals):
-        vals = self.plm_sanitize(vals)
-        return super(MrpBomLineExtension, self).create(vals)
+        to_create = []
+        for vals_dict in vals:
+            vals = self.plm_sanitize(vals_dict)
+            to_create.append(vals)
+        return super().create(to_create)
 
     def write(self, vals):
         vals = self.plm_sanitize(vals)

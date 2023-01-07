@@ -1919,9 +1919,8 @@ msgstr "Distinta di Produzione"
 
 #. module: plm
 #: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_document_multi_site
-#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_mrp_bom_update
-msgid "Multi side storege system"
-msgstr "Sistema di archiviazione su più lati"
+msgid "Multi server storage system"
+msgstr "Sistema di archiviazione su più server"
 
 #. module: plm
 #: code:addons/plm/models/product_product_kanban.py:0

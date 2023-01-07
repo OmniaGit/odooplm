@@ -60,16 +60,8 @@ class PlmConvertServers(models.Model):
 
     @api.model_create_multi
     def create(self, vals):
-        if isinstance(vals, (list,tuple)):
-            out=self.env['plm.convert.servers']
-            for v in vals:
-                out+=self.o_create(v)
-            return out
-        return self.o_create(vals)
-    
-    def o_create(self, vals):
-        ret = super(PlmConvertServers, self).create(vals)
-        if not vals.get('sequence'):
+        ret = super().create(vals)
+        for obj in ret:
             ret.sequence = ret.id
         return ret
 
