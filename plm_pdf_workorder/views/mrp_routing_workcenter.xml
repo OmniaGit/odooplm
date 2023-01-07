@@ -1,19 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
     <data>
     
-        <record id="mrp_routing_workcenter_form_view_pdf_workorder" model="ir.ui.view">
-            <field name="name">mrp.routing.workcenter.form.pdf.workorder</field>
+        <record id="plm_mrp_routing_workcenter_form_view" model="ir.ui.view">
+            <field name="name">plm.mrp.routing.workcenter.form.view</field>
             <field name="model">mrp.routing.workcenter</field>
             <field name="inherit_id" ref="mrp.mrp_routing_workcenter_form_view"/>
             <field name="arch" type="xml">
-            	<xpath expr="//field[@name='worksheet_type']" position="after">
-                    <field name="use_plm_pdf"/>
+            	<xpath expr="//field[@name='worksheet_type']" position="before">
+                    <field name="use_plm_pdf" readonly="True"/>
             	</xpath>
             </field>
         </record>  
-
     </data>
-
 </odoo>

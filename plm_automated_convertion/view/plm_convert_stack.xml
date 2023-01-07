@@ -9,12 +9,21 @@
         <field name="priority" eval="1"/>
         <field name="arch" type="xml">
             <search string="Plm Convert Stack">
-                <filter icon="terp-go-month" string="Converted" separator="1" name="done_conversions"
-                         domain="[('conversion_done','=', True)]"/>
-                <filter icon="terp-go-month" string="Not Converted" separator="1" name="not_conversions"
-                         domain="[('conversion_done','=', False)]"/>
-                <filter icon="terp-go-month" string="Errors" separator="1" name="plm_convert_errors"
-                         domain="[('error_string','not in', [False, ''])]"/>
+                <filter icon="terp-go-month"
+                        string="Converted"
+                        separator="1"
+                        name="done_conversions"
+                        domain="[('conversion_done','=', True)]"/>
+                <filter icon="terp-go-month"
+                        string="Not Converted"
+                        separator="1"
+                        name="not_conversions"
+                        domain="[('conversion_done','=', False)]"/>
+                <filter icon="terp-go-month"
+                        string="Errors"
+                        separator="1"
+                        name="plm_convert_errors"
+                        domain="[('error_string','not in', [False, ''])]"/>
             	<field name="product_category"/>
             	<field name="start_document_id"/>
 	            <field name="convrsion_rule"/>
@@ -42,7 +51,10 @@
                         <div>
                             <span>Converted ? </span>
                             <field name="conversion_done"/>
-                            <button name="setToConver" type="object" help="Re-Active Convertion" 
+                            <button name="setToConver"
+                                    type="object"
+                                    help="Re-Active Convertion" 
+                                    string="Convertion Done"
                                     attrs="{'invisible': [('conversion_done', '=', False)]}"
                                     icon="fa-arrow-circle-right"
                                     groups="base.group_no_one"/>
@@ -77,7 +89,11 @@
                 <field name="end_document_id"/>
                 <field name="server_id"/>
                 <field name="conversion_done"/>
-                <button name="setToConver" type="object" attrs="{'invisible': [('conversion_done', '=', False)]}" icon="fa-arrow-circle-right"></button>
+                <button name="setToConver"
+                        string="Set Conversion"
+                        type="object"
+                        attrs="{'invisible': [('conversion_done', '=', False)]}"
+                        icon="fa-arrow-circle-right"></button>
                 <field name="error_string"/>
                 <field name="write_date"/>
             </tree>

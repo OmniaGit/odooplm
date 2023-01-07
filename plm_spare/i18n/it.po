@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 15.0+e\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-02-08 10:57+0000\n"
-"PO-Revision-Date: 2022-02-08 12:05+0100\n"
+"PO-Revision-Date: 2022-12-03 07:04+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: \n"
 "Language: it\n"
-"X-Generator: Poedit 2.0.6\n"
+"X-Generator: Poedit 2.4.2\n"
 
 #. module: plm_spare
 #: model_terms:ir.ui.view,arch_db:plm_spare.bom_spare_header
@@ -78,13 +78,13 @@ msgstr "Scegli una distinta base"
 #: model:ir.actions.act_window,name:plm_spare.act_manage_spare_bom
 #: model_terms:ir.ui.view,arch_db:plm_spare.plm_component_manage_spare_bom
 msgid "Create Spare Bom"
-msgstr "Crea Bom di riserva"
+msgstr "Crea Bom di Ricambio"
 
 #. module: plm_spare
 #: code:addons/plm_spare/models/plm_temporary.py:0
 #, python-format
 msgid "Creating a new Spare Bom Error."
-msgstr "Creazione di un nuovo errore di bom di riserva."
+msgstr "Creazione di un nuovo errore di bom di Ricambio."
 
 #. module: plm_spare
 #: model_terms:ir.ui.view,arch_db:plm_spare.plm_component_manage_spare_bom

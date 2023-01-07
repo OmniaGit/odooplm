@@ -33,6 +33,5 @@ class Plm_checkout_custom(models.Model):
     _inherit = 'plm.checkout'
     write_uid = fields.Integer(_('Write User Id'))
 
-Plm_checkout_custom()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

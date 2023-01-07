@@ -23,7 +23,7 @@
     "version": "16.0.1",
     "author": "OmniaSolutions",
     "license": "AGPL-3",
-    "website": "https://github.com/OmniaGit/odooplm",
+    "website": "https://odooplm.omniasolutions.website",
     "category": "Product Lifecycle Management",
     "sequence": 15,
     "summary": "Allow to compute boms due to date",

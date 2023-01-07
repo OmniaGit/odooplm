@@ -33,6 +33,82 @@ from odoo import _
 from odoo.exceptions import UserError
 from datetime import timedelta
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
+# SaveStructure
+# GetExploseSum
+# GetExplose  
+# GetWhereUsedSum
+# GetWhereUsed
+# ConvertToPlmProduct
+# createOrUpdate
+# getLastTime
+# SaveOrUpdate
+# Clone
+# NewRevision
+# GetUpdated
+# GetLatestIds
+# SaveStructure
+# getLastTime
+# GetNextDocumentName
+# Clone
+# NewRevision
+# GetUpdated
+# GetLatestIds
+# GetRelatedDocs
+# GetLastNamesFromID
+# CheckIn
+# RegMessage 
+# CheckSaveUpdate
+# SaveOrUpdate  
+# CheckedIn
+# UpdateDocuments 
+# CleanUp
+# getCheckedOut
+# SaveStructure
+# checkout
+# search_read
+# getServerTime
+# getServerTime
+# getRelatedLyTree
+# action_confirm
+# action_release
+# wf_message_post_client
+# saveRelationNew
+# CheckAllFiles
+# getPartOfFile
+# isDownloadableFromServer
+# GetSomeFiles
+# CheckIn2
+# CheckInRecursive2
+# isLatestRevision
+# getUserSign
+# QueryLast
+# GetSomeFiles
+# getNewThreadTransaction
+# getErrorMissingDocument
+# GetProductDocumentId
+# getRelated3DFiles
+# 
+#
+# CallCustomFunction
+# cleanZipArchives
+# checkNewer
+# checkUnlinkCadOpen
+#
+# callCustomMethodNoDisplay
+#
+# getCustomProcedure
+# getMacros
+# getMacroUserInfos
+# create_server_syncronize
+# clientCanIUpload
+# notifieDoneToDbThread
+# freezeDbThread
+# saveSingleLevel
+# preCheckInRecursive
+# preCheckOutRecursive
+# 
+
+
 
 class PlmClient(models.TransientModel):
     _name = "plm.client"
@@ -67,8 +143,8 @@ class PlmClient(models.TransientModel):
         if attach_id:
             ir_browse = attach_object.browse(attach_id)
         else:
-            ir_browse = attach_object.search([('engineering_document_name', '=', document_attributes.get('engineering_document_name', '')),
-                                              ('revisionid', '=', document_attributes.get('revisionid', -1))]) 
+            ir_browse = attach_object.search([('engineering_code', '=', document_attributes.get('engineering_code', '')),
+                                              ('engineering_revision', '=', document_attributes.get('engineering_revision', -1))]) 
         return ir_browse
 
     @api.model

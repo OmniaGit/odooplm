@@ -61,10 +61,6 @@ class ProductProductExtension(models.Model):
         bom_type = self.env['mrp.bom']
         bom_l_type = self.env['mrp.bom.line']
         prod_tmpl_obj = self.env['product.template']
-        stock_config_settings = self.env['res.config.settings']
-        variant_is_installed = False
-        if len(stock_config_settings.search([('group_product_variant', '=', 1)])) > 0:
-            variant_is_installed = True
         collect_list = []
 
         def get_previous_normal_bom(bomBrws, exclude_bom_id=False):
@@ -113,8 +109,6 @@ class ProductProductExtension(models.Model):
                           'product_tmpl_id': product_template_id,
                           'type': new_bom_type,
                           'ebom_source_id': e_bom_id, }
-                if not variant_is_installed:
-                    values['product_id'] = False
                 new_bom_brws.write(values)
 
                 if summarize:
@@ -142,7 +136,7 @@ class ProductProductExtension(models.Model):
                                                    evaluated=evaluated)
                         line_brws.type = new_bom_type
                         line_brws.ebom_source_id = e_bom_id
-                obj_product_product_brw.wf_message_post(body=_('Created %r' % new_bom_type))
+                obj_product_product_brw.message_post(body=_('Created %r' % new_bom_type))
                 break
         if new_nbom_id and e_bom_id and migrate_custom_lines:
             # if e_bom_id --> normal BOM was not existing

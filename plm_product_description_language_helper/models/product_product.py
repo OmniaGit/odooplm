@@ -34,134 +34,48 @@ from odoo import _
 
 class ProductProductExtension(models.Model):
     _inherit = 'product.product'
-
-    def copy(self, default={}):
-        '''
-            Set flag to skip translation creation because super copy function makes the trick
-        '''
-        for prodBrws in self:
-            newContext = self.env.context.copy()
-            newContext['skip_translations'] = True
-            return super(ProductProductExtension, prodBrws.with_context(newContext)).copy(default)
-
-    @api.model
+    
+    @api.model_create_multi
     def create(self, vals):
-        '''
-            Force create and/or set up description translations
-        '''
-        productBrws = super(ProductProductExtension, self).create(vals)
-        if self.env.context.get('skip_translations', False):
-            return productBrws
-        if productBrws:
-            templateId = productBrws.product_tmpl_id.id
-            std_description_id = vals.get('std_description', False)
-            ir_translation_obj = self.env['ir.translation']
-            if std_description_id:
-                self.commonTranslationSetUp(templateId, std_description_id)
-                self.commonSpecialDescriptionCompute(vals, productBrws.product_tmpl_id.id, self.env['plm.description'].browse(std_description_id))
-            elif 'name' in vals.keys():
-                prodName = vals['name']
-                if prodName:
-                    userLang = self.env.context.get('lang', 'en_US')
-                    translationObjs = ir_translation_obj.search([('name', '=', 'product.template,name'),
-                                                                 ('value', '=', prodName),
-                                                                 ('lang', '=', userLang),
-                                                                 ('res_id', 'not in', [templateId])
-                                                                 ],
-                                                                limit=1)
-                    for ranslationObj in translationObjs:
-                        oldDescObjs = ir_translation_obj.search([('res_id', '=', ranslationObj.res_id),
-                                                                ('name', '=', ranslationObj.name)])
-                        for oldDescObj in oldDescObjs:
-                            ir_translation_obj.create({'src': oldDescObj.src,
-                                                       'res_id': templateId,
-                                                       'name': 'product.template,name',
-                                                       'type': 'model',
-                                                       'lang': oldDescObj.lang,
-                                                       'value': oldDescObj.value})
-        return productBrws
+        product_product_ids = super(ProductProductExtension, self).create(vals)
+        for product_product_id in product_product_ids:
+            product_product_id.update_name_lang(vals)
+        return product_product_ids
 
     def write(self, vals):
-        '''
-            - Set up translations every time description changes
-        '''
-        ir_translation_obj = self.env['ir.translation']
-        for prodBrws in self:
-            templateId = prodBrws.product_tmpl_id.id
-            if 'std_description' in vals:
-                std_description_id = vals.get('std_description', False)
-                self.commonTranslationSetUp(templateId, std_description_id)
-            if 'name' in vals:
-                name = vals.get('name', '')
-                if not name:
-                    translationObjs = ir_translation_obj.search([('name', '=', 'product.template,name'),
-                                                                 ('res_id', '=', templateId)])
-                    translationObjs.write({'value': ''})
-                    vals['name'] = ' '
-            if 'name' in vals.keys():
-                translationObjs = ir_translation_obj.search([('name', '=', 'product.template,name'),
-                                                             ('res_id', '=', templateId)])
-                translationObjs.write({'value': vals['name']})
-            self.commonSpecialDescriptionCompute(vals, templateId, prodBrws.std_description)
-        return super(ProductProductExtension, self).write(vals)
+        res = super(ProductProductExtension, self).write(vals)
+        self.update_name_lang(vals)
+        return res
+    
+    def update_name_lang(self, vals):
+        update_translation=False
+        for check in ["std_description","umc1","umc2","umc3","std_value1","std_value2", "std_value3"]:
+            if check in vals:
+                update_translation=True
+                break 
+        if update_translation:
+            land_trans = self.get_description_leng()
+            self.update_field_translations('name', land_trans)
+                        
+    def get_description_leng(self):
+        out = {}
+        for product_product in self:
+            if not product_product.std_description:
+                continue
+            to_update = {}
+            for code_leng in self.env['res.lang'].search([('active','=',True)]).mapped("code"):
+                std_description_obj_ctx = product_product.std_description.with_context(lang=code_leng)
 
-    def commonSpecialDescriptionCompute(self, vals, templateId, std_description_obj):
-        ctx = self.env.context.copy()
-        for prodWriteObj in self:
-            ir_translation_obj = self.env['ir.translation']
-            vals_std_value1 = vals.get('std_value1', False)
-            vals_std_value2 = vals.get('std_value2', False)
-            vals_std_value3 = vals.get('std_value3', False)
-            std_value1 = prodWriteObj.std_value1
-            std_value2 = prodWriteObj.std_value2
-            std_value3 = prodWriteObj.std_value3
-            if vals_std_value1 is not False:
-                std_value1 = vals_std_value1
-            if vals_std_value2 is not False:
-                std_value2 = vals_std_value2
-            if vals_std_value3 is not False:
-                std_value3 = vals_std_value3
-            if std_description_obj and (vals_std_value1 is not False or vals_std_value2 is not False or vals_std_value3 is not False):
-                userLang = prodWriteObj.env.context.get('lang', 'en_US')
-                for langBrwsObj in self.env['res.lang'].search([]):
-                    ctx['lang'] = langBrwsObj.code
-                    thisObject = std_description_obj.with_context(ctx)
-                    initVal = thisObject.name
-                    if not initVal:
-                        initVal = thisObject.description
-                    description = prodWriteObj.computeDescription(thisObject, initVal, thisObject.umc1, thisObject.umc2, thisObject.umc3, std_value1, std_value2, std_value3)
-                    translationObjs = ir_translation_obj.search([('name', '=', 'product.template,name'),
-                                                                 ('res_id', '=', templateId),
-                                                                 ('lang', '=', langBrwsObj.code)])
-                    if translationObjs:
-                        translationObjs.write({'value': description})
-                    else:
-                        ir_translation_obj.create({
-                                                  'src': description,
-                                                  'res_id': templateId,
-                                                  'name': 'product.template,name',
-                                                  'type': 'model',
-                                                  'lang': userLang,
-                                                  'value': description})
+                description = product_product.computeDescription(std_description_obj_ctx,
+                                                                 std_description_obj_ctx.umc1,
+                                                                 std_description_obj_ctx.umc2,
+                                                                 std_description_obj_ctx.umc3,
+                                                                 product_product.std_value1,
+                                                                 product_product.std_value2,
+                                                                 product_product.std_value3)
+                out[code_leng] = description
+        return out
+                
 
-    def commonTranslationSetUp(self, templateId, std_description_id):
-        '''
-            Set standard description correctly, called from write and create
-        '''
-        ir_translation_obj = self.env['ir.translation']
-        descTransBrwsList = ir_translation_obj.search([('name', '=', 'plm.description,name'),             # field to translate
-                                                       ('res_id', '=', std_description_id)])
-        for transDescBrws in descTransBrwsList:
-            alreadyPresentTranslations = ir_translation_obj.search([('name', '=', 'product.template,name'),
-                                                                    ('lang', '=', transDescBrws.lang),
-                                                                    ('res_id', '=', templateId)])
-            if alreadyPresentTranslations:
-                alreadyPresentTranslations.write({'value': transDescBrws.value})
-            else:
-                ir_translation_obj.create({
-                                          'src': transDescBrws.src,
-                                          'res_id': templateId,
-                                          'name': 'product.template,name',
-                                          'type': 'model',
-                                          'lang': transDescBrws.lang,
-                                          'value': transDescBrws.value})
+
+

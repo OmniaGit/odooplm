@@ -20,23 +20,23 @@
       <tr>
         <td  colspan="3">
             <b style="color:white">
-                <t t-if="doc.state in ['released', 'confirmed', 'obsoleted']">
-                    <div style="background-color:red"><t t-esc="doc.engineering_document_name"/> - <t t-esc="doc.revisionid"/></div>
-                    <div style="background-color:red"/>Status: <t t-esc="doc.state"/>
+                <t t-if="doc.engineering_state in ['released', 'confirmed', 'obsoleted']">
+                    <div style="background-color:red"><t t-esc="doc.engineering_code"/> - <t t-esc="doc.engineering_revision"/></div>
+                    <div style="background-color:red"/>Status: <t t-esc="doc.engineering_state"/>
                 </t>
                 <t t-else="">
                     <t t-set="checkout_user" t-value="doc.checkoutByMeWithUser()"/>
                     <t t-if="checkout_user[0]">
-                        <div style="background-color:green"><t t-esc="doc.engineering_document_name"/> - <t t-esc="doc.revisionid"/></div>
-                        <div style="background-color:green"/>Status: <t t-esc="doc.state"/>
+                        <div style="background-color:green"><t t-esc="doc.engineering_code"/> - <t t-esc="doc.engineering_revision"/></div>
+                        <div style="background-color:green"/>Status: <t t-esc="doc.engineering_state"/>
                     </t>
                     <t t-if="not checkout_user[0] and checkout_user[1] != ''">
-                        <div style="background-color:red"><t t-esc="doc.engineering_document_name"/> - <t t-esc="doc.revisionid"/></div>
+                        <div style="background-color:red"><t t-esc="doc.engineering_code"/> - <t t-esc="doc.engineering_revision"/></div>
                         <div style="background-color:red"/>CheckOutUser: <t t-esc="checkout_user[1]"/>
                     </t>
                     <t t-if="checkout_user[1] == ''">
-                        <div style="background-color:#ffd800"><t t-esc="doc.engineering_document_name"/> - <t t-esc="doc.revisionid"/></div>
-                        <div style="background-color:#ffd800"/>Status: <t t-esc="doc.state"/>
+                        <div style="background-color:#ffd800"><t t-esc="doc.engineering_code"/> - <t t-esc="doc.engineering_revision"/></div>
+                        <div style="background-color:#ffd800"/>Status: <t t-esc="doc.engineering_state"/>
                     </t>
                 </t>
             </b>
@@ -47,23 +47,23 @@
     <div height="120" width="100" style="text-align:center;background-color: white;">
         <img height="100" t-att-src="doc.basePreview64Img()"/>
         <b style="color:white">
-        <t t-if="doc.state in ['released', 'confirmed', 'obsoleted']">
-            <div style="background-color:red"><t t-esc="doc.engineering_document_name"/> - <t t-esc="doc.revisionid"/></div>
-            <div style="background-color:red"/>Status: <t t-esc="doc.state"/>
+        <t t-if="doc.engineering_state in ['released', 'confirmed', 'obsoleted']">
+            <div style="background-color:red"><t t-esc="doc.engineering_code"/> - <t t-esc="doc.engineering_revision"/></div>
+            <div style="background-color:red"/>Status: <t t-esc="doc.engineering_state"/>
         </t>
         <t t-else="">
             <t t-set="checkout_user" t-value="doc.checkoutByMeWithUser()"/>
             <t t-if="checkout_user[0]">
-                <div style="background-color:green"><t t-esc="doc.engineering_document_name"/> - <t t-esc="doc.revisionid"/></div>
-                <div style="background-color:green"/>Status: <t t-esc="doc.state"/>
+                <div style="background-color:green"><t t-esc="doc.engineering_code"/> - <t t-esc="doc.engineering_revision"/></div>
+                <div style="background-color:green"/>Status: <t t-esc="doc.engineering_state"/>
             </t>
             <t t-if="not checkout_user[0] and checkout_user[1] != ''">
-                <div style="background-color:red"><t t-esc="doc.engineering_document_name"/> - <t t-esc="doc.revisionid"/></div>
+                <div style="background-color:red"><t t-esc="doc.engineering_code"/> - <t t-esc="doc.engineering_revision"/></div>
                 <div style="background-color:red"/>CheckOutUser: <t t-esc="checkout_user[1]"/>
             </t>
             <t t-if="checkout_user[1] == ''">
-                <div style="background-color:#ffd800"><t t-esc="doc.engineering_document_name"/> - <t t-esc="doc.revisionid"/></div>
-                <div style="background-color:#ffd800"/>Status: <t t-esc="doc.state"/>
+                <div style="background-color:#ffd800"><t t-esc="doc.engineering_code"/> - <t t-esc="doc.engineering_revision"/></div>
+                <div style="background-color:#ffd800"/>Status: <t t-esc="doc.engineering_state"/>
             </t>
         </t>
         </b>
@@ -83,7 +83,7 @@
                     <div class="info_header">
                         <b>Document Information</b>
                         <div>
-                        <t t-esc="doc.engineering_document_name"/> - <t t-esc="doc.revisionid"/>
+                        <t t-esc="doc.engineering_code"/> - <t t-esc="doc.engineering_revision"/>
                         </div>
                     </div>
                     <hr class="datacard_line"/>
@@ -93,10 +93,10 @@
                         <li><b>Create User:</b><t t-esc="doc.create_uid.display_name"/></li>
                         <li><b>Crate Date:</b><t t-esc="doc.create_date"/></li>
                         <li><hr/></li>
-                        <li><b>State:</b><t t-esc="doc.state"/></li>
+                        <li><b>State:</b><t t-esc="doc.engineering_state"/></li>
                         <li><hr/></li>
                         <b style="color:white">
-                            <t t-if="doc.state=='released'">
+                            <t t-if="doc.engineering_state=='released'">
                                 <li><div style="background-color:red"/>Document released</li>
                             </t>
                             <t t-else="">

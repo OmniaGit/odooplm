@@ -59,7 +59,7 @@
                     attrs="{'invisible': [('to_update','=', False)]}">
                     <table>
                         <tr>
-                        <td><button type="object" name="update_bom" icon="fa-save"/></td>
+                        <td><button type="object" name="update_bom" icon="fa-save" string="Save"/></td>
                         <td><span title="Attention_some_change"
                           class="fa fa-exclamation-triangle"
                           style="color:red;width:100%;text-align:left;font-size:30px">Attention: there are some change you need to save it !!<br/></span></td>
@@ -95,12 +95,12 @@
                                             class="oe_stat_button"
                                             icon="fa-trash-o"/>
                	                    <field name="itemnum" select="True"/>
-                                    <field name="bom_idrow" groups="base.group_no_one"/>
+                                    <field name="bom_idrow" invisible="1"/>
                                     <field name="part_id" select="True" optional="hide"/>
                                     <field name="revision" select="True"/>
                                     <field name="description" select="True"/>
                                     <field name="itemqty" select="True"/>
-                                    <field name="reason" groups="base.group_no_one"/>
+                                    <field name="reason" invisible="1"/>
                                     <button name="copy_right_left"
                                             type="object"
                                             string="Copy Left"
@@ -131,12 +131,12 @@
                                             class="oe_stat_button"
                                             icon="fa-angle-double-left"/>
                  		        <field name="itemnum" select="True"/>
-                                    <field name="bom_idrow" groups="base.group_no_one"/>
+                                    <field name="bom_idrow" invisible="1"/>
                                     <field name="part_id" select="True" optional="hide"/>
                                     <field name="revision" select="True"/>
                                     <field name="description" select="True"/>
                                     <field name="itemqty" select="True"/>
-                                    <field name="reason" groups="base.group_no_one"/>
+                                    <field name="reason" invisible="1"/>
                                     <button name="delete_bom_line"
                                             type="object"
                                             string="Delete Left"

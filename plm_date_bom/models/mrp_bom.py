@@ -52,7 +52,7 @@ class mrp_bom_extension_data(models.Model):
                 continue
             obsoleteFlag = False
             for bomLine in bomObj.bom_line_ids:
-                if bomLine.product_id.state == 'obsoleted':
+                if bomLine.product_id.engineering_state == 'obsoleted':
                     obsoleteFlag = True
                     break
             bomObj.sudo().obsolete_presents = obsoleteFlag
@@ -104,7 +104,7 @@ class mrp_bom_extension_data(models.Model):
                     if not templateBrws:
                         logging.warning('Product %s is not related to a product template.' % (bomLineBrws.product_id.id))
                         continue
-                    if templateBrws.state == 'obsoleted':
+                    if templateBrws.engineering_state == 'obsoleted':
                         outLines.append(bomBrws.id)
         recursion(self)
         return list(set(outLines))
@@ -117,14 +117,11 @@ class mrp_bom_extension_data(models.Model):
         return self.search([('product_tmpl_id', '=', prodTmplBrws.id), ('type', '=', bomType)])
     
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals):
         '''
             This overload of create is needed to setup obsolete_presents_recursive flag
         '''
-        res = super(mrp_bom_extension_data, self).create(vals)
-        bomType = res.type
-        
         def recursion(bomBrws):
             for lineBrws in bomBrws.bom_line_ids:
                 prodBrws = lineBrws.product_id
@@ -134,11 +131,14 @@ class mrp_bom_extension_data(models.Model):
                             return True
                         if recursion(bomBrwsChild):
                             return True
-        
-        if bomType != 'ebom':
-            if recursion(res):
-                res.obsolete_presents_recursive = True
-            res._obsolete_compute()
+
+        res = super(mrp_bom_extension_data, self).create(vals)
+        for r in res:
+            bomType = r.type
+            if bomType != 'ebom':
+                if recursion(r):
+                    r.obsolete_presents_recursive = True
+                r._obsolete_compute()
         return res
 
     def write(self, vals):

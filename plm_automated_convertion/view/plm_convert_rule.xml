@@ -48,7 +48,7 @@
 	                         	</ol>
 	                      </p>
 	                      <p>
-	                        Default rule is '%s_%s' % (document.name, document.revisionid)
+	                        Default rule is '%s_%s' % (document.name, document.engineering_revision)
 	                      </p>
 	                      <p>
 	                         Example:
@@ -57,7 +57,7 @@
 	                         We have a document with
 	                         	<ol>
 		                         	<li> name	: Abc</li>
-		                         	<li> revisionid : 3</li>
+		                         	<li> engineering_revision : 3</li>
 	                         	</ol>
 	                         We have a component with
 	                         	<ol>
@@ -67,7 +67,7 @@
 	                         Starting from the rule
 	                      </p>
 	                      <p>
-	                         '%s_%s___%s_%s' % (document.name, document.revisionid, component.name, component.engineering_revision)
+	                         '%s_%s___%s_%s' % (document.name, document.engineering_revision, component.name, component.engineering_revision)
 	                      </p>
 	                      <p>
 	                         We will have

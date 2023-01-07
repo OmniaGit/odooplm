@@ -225,7 +225,7 @@ class Plm_box(models.Model):
             Compute if document is readonly
         '''
         docBrws = self.env.get('ir.attachment').browse(docIds)
-        if docBrws.state in ['released', 'undermodify', 'obsoleted']:
+        if docBrws.engineering_state in ['released', 'undermodify', 'obsoleted']:
             return True
         if not docBrws.ischecked_in():
             check_out_by_me = docBrws._is_checkedout_for_me()
@@ -238,7 +238,7 @@ class Plm_box(models.Model):
             Compute if box is readonly
         '''
         for boxBrws in self:
-            if boxBrws.state in ['released', 'undermodify', 'obsoleted']:
+            if boxBrws.engineering_state in ['released', 'undermodify', 'obsoleted']:
                 return True
         return False
 
@@ -297,7 +297,7 @@ class Plm_box(models.Model):
                                                   DEFAULT_SERVER_DATETIME_FORMAT)
             outBoxDict[boxBrws.name] = {'boxVersion': boxBrws.version,
                                         'boxDesc': boxBrws.description,
-                                        'boxState': boxBrws.state,
+                                        'boxState': boxBrws.engineering_state,
                                         'boxReadonly': boxBrws.boxReadonlyCompute(),
                                         'boxWriteDate': correctDate(writeVal, self.env.context),
                                         'boxPrimary': False,
@@ -315,13 +315,13 @@ class Plm_box(models.Model):
         if docState in ['check-out', 'check-out-by-me']:
             getCheckOutUser = docBrws.getCheckOutUser()
         writeVal = datetime.datetime.strptime(docBrws.write_date, DEFAULT_SERVER_DATETIME_FORMAT)
-        return {'revisionid': docBrws.revisionid,
+        return {'engineering_revision': docBrws.engineering_revision,
                 'datas_fname': docBrws.name,
                 'create_date': docBrws.create_date,
                 'write_date': correctDate(writeVal, self.env.context),
                 'description': docBrws.description,
                 'fileName': docBrws.name,
-                'state': docBrws.state,
+                'state': docBrws.engineering_state,
                 'readonly': self.docReadonlyCompute(docBrws.id),
                 'checkoutUser': getCheckOutUser,
                 }
@@ -435,7 +435,7 @@ class Plm_box(models.Model):
             outList.append([boxBrwse.name,
                             boxBrwse.description,
                             boxBrwse.version,
-                            boxBrwse.state,
+                            boxBrwse.engineering_state,
                             ])
         return outList
 
@@ -566,7 +566,7 @@ class Plm_box(models.Model):
                 outDict['documents'][docBrws.name] = self.getDocDictValues(docBrws)
             outDict['entities'] = self.getRelatedEntities(boxBrws)
             outDict['description'] = boxBrws.description
-            outDict['state'] = boxBrws.state
+            outDict['state'] = boxBrws.engineering_state
             outDict['readonly'] = boxBrws.boxReadonlyCompute()
         return outDict
 

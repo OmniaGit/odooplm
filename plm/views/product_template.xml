@@ -19,8 +19,8 @@
                         string="Rev."
                         class="oe_stat_button"
                         icon="fa-tasks"
-                        attrs="{'invisible':[('revision_count','&lt;=','1')]}">
-                        <field name="revision_count"
+                        attrs="{'invisible':[('engineering_revision_count','&lt;=','1')]}">
+                        <field name="engineering_revision_count"
                                string=" "
                                widget="statinfo"/>
                 </button>

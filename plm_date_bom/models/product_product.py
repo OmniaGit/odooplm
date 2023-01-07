@@ -22,7 +22,7 @@
 
 from odoo import models
 from odoo import api
-
+from odoo.addons.plm.models.plm_mixin import OBSOLATED_STATUS
 
 class ProductExtension(models.Model):
     _name = 'product.template'
@@ -47,8 +47,8 @@ class ProductExtension(models.Model):
 
     def write(self, vals):
         res = super(ProductExtension, self).write(vals)
-        statePresent = vals.get('state', None)
-        if statePresent == 'obsoleted':
+        statePresent = vals.get('engineering_state', None)
+        if statePresent == OBSOLATED_STATUS:
             # Here I force compute obsolete presents flag in all boms
             for prodTmplBrws in self:
                 for prodBrws in prodTmplBrws.product_variant_ids:

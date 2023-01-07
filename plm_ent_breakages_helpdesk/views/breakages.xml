@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+<data>
+        <record id="breakages_form_view_hinerith" model="ir.ui.view">
+            <field name="name">breakages.form.view.hinerith</field>
+            <field name="model">plm.breakages</field>
+            <field name="inherit_id" ref="plm_breakages.breakages_form_view"/>
+            <field name="arch" type="xml">
+                   <field name="notes" position="replace">
+                    <notebook>
+                        <page string="Notes">
+                            <field name="notes" nolabel="1" widget="html" />
+                        </page>
+                        <page string="Ticket">
+                            <field name="ticket_ids" nolabel="1"  />
+                        </page>
+                    </notebook>
+                   </field>
+            </field>
+        </record>
+</data>
+</odoo> 

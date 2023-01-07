@@ -10,15 +10,18 @@
 	        	<form string="Convert Form">
 	        		<group colspan="4" col="4">
 		        		<field string = "Document Of Origin" name="document_id" readonly="1"/>
-		        		<field name="extention" groups="base.group_no_one"/>
+		        		<field name="extention" invisible="1"/>
 						<field string = "Convertion Format" name="targetFormat" domain="[('start_format', '=', extention), ('available', '=', True)]"/> 		        		
 	            	</group>
 	        		<separator string=""/>
                     <footer>
-                        <button string="Cancel" special="cancel" />
-                        <button string="Convert" type="object"
+                        <button string="Cancel"
+                                special="cancel" />
+                        <button string="Convert"
+                                type="object"
                                 name="action_create_convert_download" />
-                        <button string="Convert to folder" type="object"
+                        <button string="Convert to folder"
+                                type="object"
                                 name="action_create_coversion" />
                     </footer>    	        		
 				</form>

@@ -13,7 +13,7 @@
             </field>
             <field name="product_id" position="after">
                 <field name="engineering_revision" readonly="True"/>
-                <field name="state"/>
+                <field name="engineering_state"/>
                 <field name="description" select="True"/>
                 <field name="source_id" string="Source Relation" widget="many2one"
                 	   context="{'kanban_view_ref':'plm.document_kanban_view',
@@ -49,16 +49,16 @@
             	<field name="source_id" string="Source Relation"/>
                 <field name="description" select="True"/>
                 <field name="company_id"/>
-                <field name="state" select="True"/>
+                <field name="engineering_state" select="True"/>
                 <field name="weight_net"/>
                 <field name="product_qty"/>
                 <field name="engineering_revision"/>
             </field>
             <xpath expr="//tree" position="attributes">
-            	<attribute name="decoration-info">state == 'confirmed'</attribute>
-            	<attribute name="decoration-success">state == 'released'</attribute>
-            	<attribute name="decoration-warning">state == 'undermodify'</attribute>
-            	<attribute name="decoration-muted">state == 'obsoleted'</attribute>
+            	<attribute name="decoration-info">engineering_state == 'confirmed'</attribute>
+            	<attribute name="decoration-success">engineering_state == 'released'</attribute>
+            	<attribute name="decoration-warning">engineering_state == 'undermodify'</attribute>
+            	<attribute name="decoration-muted">engineering_state == 'obsoleted'</attribute>
             </xpath>
         </field>
     </record>
@@ -112,14 +112,14 @@
             	<separator string="Info:" colspan="2"/>
                 <field name="description" readonly="True"/>
                 <field name="engineering_revision" readonly="True"/>
-                <field name="state" readonly="True"/>
+                <field name="engineering_state" readonly="True"/>
                 <field name="weight_net" readonly="True"/>
             </field>
             <xpath expr="//field[@name='bom_line_ids']/tree" position="attributes">
-            	<attribute name="decoration-info">state == 'confirmed'</attribute>
-            	<attribute name="decoration-success">state == 'released'</attribute>
-            	<attribute name="decoration-warning">state == 'undermodify'</attribute>
-            	<attribute name="decoration-muted">state == 'obsoleted'</attribute>
+            	<attribute name="decoration-info">engineering_state == 'confirmed'</attribute>
+            	<attribute name="decoration-success">engineering_state == 'released'</attribute>
+            	<attribute name="decoration-warning">engineering_state == 'undermodify'</attribute>
+            	<attribute name="decoration-muted">engineering_state == 'obsoleted'</attribute>
             </xpath>
             <xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_id']" position="before">
                 <field name="related_bom_ids" invisible="True"/>
@@ -142,7 +142,7 @@
             <xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_id']" position="after">
                 <field name="description" readonly="True"/>
                 <field name="engineering_revision" readonly="True"/>
-                <field name="state"/>
+                <field name="engineering_state"/>
             </xpath>
             <xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_qty']" position="before">
                 <field name="source_id" string="Source Relation" widget="many2one"

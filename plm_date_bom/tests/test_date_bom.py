@@ -81,7 +81,7 @@ class PlmDateBom(TransactionCase):
         cls.product_parent_id.action_confirm()
         cls.product_parent_id.action_release()
         for bom_line in cls.mrp_bom_id.bom_line_ids:
-            cls.assertEqual(bom_line.product_id.state, 'released')
+            cls.assertEqual(bom_line.product_id.engineering_state, 'released')
         newComponentId, engineering_revision = cls.product_child_id.NewRevision()
         cls.assertFalse(newComponentId==cls.product_child_id.id)
         cls.new_revision_child = Product.browse(newComponentId)

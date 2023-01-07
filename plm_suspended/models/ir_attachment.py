@@ -29,7 +29,7 @@ from odoo import api
 from odoo import models
 from odoo import fields
 
-from odoo.addons.plm.models.ir_attachment import USED_STATES
+from odoo.addons.plm.models.plm_mixin import USED_STATES
 
 USED_STATES.append(('suspended', _('Suspended')))
 
@@ -37,15 +37,12 @@ USED_STATES.append(('suspended', _('Suspended')))
 class PlmDocumentExtension(models.Model):
     _inherit = 'ir.attachment'
 
-    state = fields.Selection(
-        USED_STATES,
-        _('Status'),
-        help=_("The status of the product."),
-        readonly="True",
-        default='draft'
-    )
+    engineering_state = fields.Selection(USED_STATES,
+                                         string='Status',
+                                         help=_("The status of the product."),
+                                         readonly="True",
+                                         default='draft')
     old_state = fields.Char(
-        size=128,
         name=_("Old Status")
     )
 
@@ -60,14 +57,8 @@ class PlmDocumentExtension(models.Model):
             reactivate the object
         """
         if self.ischecked_in():
-            defaults = {'old_state': self.state, 'state': 'suspended'}
-            self.setCheckContextWrite(False)
-            obj_id = self.write(defaults)
-            if obj_id:
-                self.wf_message_post(body=_('Status moved to:{}.'.format(
-                    dict(self._fields.get('state').selection)[defaults['state']]
-                    )))
-            return obj_id
+            defaults = {'old_state': self.engineering_state, 'engineering_state': 'suspended'}
+            return self.with_context(check=False).write(defaults)
         return False
 
     def action_unsuspend(self):
@@ -75,21 +66,15 @@ class PlmDocumentExtension(models.Model):
             reactivate the object
         """
         if self.ischecked_in():
-            defaults = {'old_state': self.state, 'state': self.old_state}
-            self.setCheckContextWrite(False)
-            obj_id = self.write(defaults)
-            if obj_id:
-                self.wf_message_post(body=_('Status moved to:{}.'.format(
-                    dict(self._fields.get('state').selection)[defaults['state']]
-                    )))
-            return obj_id
+            defaults = {'old_state': self.engineering_state, 'engineering_state': self.old_state}
+            return self.with_context(check=False).write(defaults)
         return False
 
     @api.model
     def is_plm_state_writable(self):
         if super(PlmDocumentExtension, self).is_plm_state_writable():
             for customObject in self:
-                if customObject.state in ('suspended',):
+                if customObject.engineering_state in ('suspended',):
                     return False
             return True
         else:

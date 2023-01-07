@@ -49,10 +49,11 @@ from .obj2png import ObjFile
 from stl import mesh
 import matplotlib.pyplot as plt
 from mpl_toolkits import mplot3d
+
 try:
-    import cadquery2 as cq
+    import cadquery as cq
 except Exception as ex:
-    logging.error(ex)
+    logging.warning(ex)        
 #
 #
 from .cad_excenge import convert as exConvert
@@ -365,7 +366,7 @@ class ir_attachment(models.Model):
                     break
         return format_model
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals):
         ret = super(ir_attachment, self).create(vals)
         ret.createPreviewStack()

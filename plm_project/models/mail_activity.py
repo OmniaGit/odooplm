@@ -41,7 +41,7 @@ class MailActivity(models.Model):
         for message in messages:
             if message.model == 'product.product':
                 product = self.env[message.model].browse(message.res_id)
-                if product.state == 'confirmed':
+                if product.engineering_state == 'confirmed':
                     product.action_release()
         return messages, activities
 

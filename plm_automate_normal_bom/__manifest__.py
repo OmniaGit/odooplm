@@ -22,7 +22,7 @@
     "name": "PLM Automate Normal Bom",
     "version": "16.0.1",
     "author": "OmniaSolutions",
-    "website": "https://github.com/OmniaGit/odooplm",
+    "website": "https://odooplm.omniasolutions.website",
     "category": "Product Lifecycle Management",
     "sequence": 15,
     "summary": "Allow to create normal boms if not exists and product are released.",

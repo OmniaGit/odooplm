@@ -40,12 +40,12 @@
 										</div>
 		                           	</td>
 		                     		<td>
-		                            	<t t-esc="record_browse.engineering_document_name"/>
+		                            	<t t-esc="record_browse.engineering_code"/>
 		                        	</td>
 		                        	<td class="text-center">
-		                            	<t t-esc="record_browse.revisionid"/>
+		                            	<t t-esc="record_browse.engineering_revision"/>
 		                        	</td>
-		                        	<t t-set="state" t-value="record_browse.state"/>
+		                        	<t t-set="state" t-value="record_browse.engineering_state"/>
 		                        	<t t-call="plm.docuemnt_state_row"/>
 		                        	<td>
 		                            	<t t-if="record_browse.linkedcomponents">
@@ -69,7 +69,7 @@
 		<t t-foreach="data['children']" t-as="child_dict">
 		    <t t-set="record_child" t-value="child_dict['id']"/>
 		    <t t-set="record_child_level" t-value="child_dict['level']"/>
-		    <t t-set="state" t-value="record_child.state"/>
+		    <t t-set="state" t-value="record_child.engineering_state"/>
 			<!-- <t t-set="space_td" t-value="'margin-left: '+ str(record_child_level * 20) + 'px; display: flex; font-weight:bold; color: #008b8b;'"/> -->
 			<tr class="document_report_line" t-att-data-level="record_child_level">
 				<td class="text-center">
@@ -91,10 +91,10 @@
 					</div>
 				</td>
 				<td>
-					<t t-esc="record_child.engineering_document_name"/>
+					<t t-esc="record_child.engineering_code"/>
 				</td>
 				<td class="text-center">
-					<t t-esc="record_child.revisionid"/>
+					<t t-esc="record_child.engineering_revision"/>
 				</td>
                 <t t-call="plm.docuemnt_state_row"/>
 				<td>

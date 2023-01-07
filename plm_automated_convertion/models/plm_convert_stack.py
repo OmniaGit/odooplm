@@ -80,11 +80,11 @@ class PlmConvertStack(models.Model):
         for convertStack in self:
             convertStack.conversion_done = True
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals):
-        ret = super(PlmConvertStack, self).create(vals)
-        if not vals.get('sequence'):
-            ret.sequence = ret.id
+        ret = super().create(vals)
+        for r in ret:
+            r.sequence = r.id
         return ret
 
     def convert(self):
@@ -174,7 +174,7 @@ class PlmConvertStack(models.Model):
         component = self.env['product.product']
         if components:
             component = components[0]
-        file_name = '%s_%s' % (document.name, document.revisionid)
+        file_name = '%s_%s' % (document.name, document.engineering_revision)
         if self.output_name_rule:
             try:
                 file_name = eval(self.output_name_rule, {'component': component,
@@ -211,9 +211,9 @@ class PlmConvertStack(models.Model):
                     'linkedcomponents': [(6, False, self.start_document_id.linkedcomponents.ids)],
                     'name': os.path.basename(file_name),
                     'datas': encoded_content,
-                    'state': self.start_document_id.state,
+                    'engineering_state': self.start_document_id.engineering_state,
                     'is_plm': True,
-                    'engineering_document_name': file_name,
+                    'engineering_code': file_name,
                     'is_converted_document': True,
                     'source_convert_document': self.start_document_id.id
                     })

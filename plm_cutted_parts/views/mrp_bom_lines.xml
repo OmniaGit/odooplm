@@ -5,7 +5,6 @@
         <field name="name">plm.bom.form.cutted</field>
         <field name="model">mrp.bom</field>
         <field name="inherit_id" ref="plm.plm_bom_form_view"/>
-        <field name="type">form</field>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_qty']" position="after">
                 <field name="x_length" optional="hide"/>

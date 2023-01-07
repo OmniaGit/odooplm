@@ -7,7 +7,6 @@
             <field name="name">plm.mrp.production.form</field>
             <field name="model">mrp.production</field>
             <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
-            <field name="type">form</field>
             <field name="arch" type="xml">
             	<data>
 					  <xpath expr="//form[1]/sheet[1]/div[@name='button_box'][1]" position="after">
@@ -23,7 +22,7 @@
 					    </group>
 					  </xpath>
 					  <xpath expr="//field[@name='user_id']" position="after">
-					    <field name="obsolete_presents" groups="base.group_no_one"/>
+					    <field name="obsolete_presents"/>
 					  </xpath>
 	           	</data>
 			</field>

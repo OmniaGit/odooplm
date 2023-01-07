@@ -22,7 +22,7 @@
     "name": "PLM Automatic Engineering Code",
     "version": "16.0.1",
     "author": "OmniaSolutions",
-    "website": "https://github.com/OmniaGit/odooplm",
+    "website": "https://odooplm.omniasolutions.website",
     "category": "Product Lifecycle Management",
     "sequence": 15,
     "summary": "",
@@ -30,7 +30,8 @@
     "license": "AGPL-3",
     "depends": ["plm"],
     "data": [
-        "views/sequence.xml",
+        "views/ir_sequence.xml",
+        "views/product_category.xml"
     ],
     "demo": [],
     "test": [],

@@ -49,13 +49,13 @@ class PlmBackupDocument(models.Model):
                                size=1024)
     documentid = fields.Many2one('ir.attachment',
                                  _('Related Document'))
-    revisionid = fields.Integer(related="documentid.revisionid",
+    engineering_revision = fields.Integer(related="documentid.engineering_revision",
                                 string=_("Revision"),
                                 store=True)
-    state = fields.Selection(related="documentid.state",
-                             string=_("Status"),
-                             store=True)
-    document_name = fields.Char(related="documentid.engineering_document_name",
+    engineering_state = fields.Selection(related="documentid.engineering_state",
+                                         string=_("Status"),
+                                         store=True)
+    document_name = fields.Char(related="documentid.engineering_code",
                                 string=_("Stored Name"),
                                 store=True)
     printout = fields.Binary(_('Printout Content'))
@@ -65,7 +65,7 @@ class PlmBackupDocument(models.Model):
         result = []
         for r in self:
             if r.documentid and r.userid:
-                name = "%s - R:%s - [%s]" % (r.documentid.engineering_document_name, r.documentid.revisionid, r.userid.display_name)
+                name = "%s - R:%s - [%s]" % (r.documentid.engineering_code, r.documentid.engineering_revision, r.userid.display_name)
             else:
                 name = "Error"
             result.append((r.id, name))
@@ -140,8 +140,8 @@ class BackupDocWizard(models.TransientModel):
             else:
                 # Note that if I don't have a document I can't relate it to it's component
                 # User have to do it hand made
-                values.update({'state': 'draft',
-                               'revisionid': backupDocBrws.revisionid,
+                values.update({'engineering_state': 'draft',
+                               'engineering_revision': backupDocBrws.engineering_revision,
                                'name': backupDocBrws.document_name,
                                }
                               )

@@ -38,7 +38,7 @@ class ProjectExtension(models.Model):
             if project.plm_product_ids:
                 product_ok = 0
                 for product in project.plm_product_ids:
-                    if product.state in ['released']:
+                    if product.engineering_state in ['released']:
                         product_ok = product_ok + 1
                 project.plm_completed = round(100.0 * product_ok / len(project.plm_product_ids), 2)
             else:

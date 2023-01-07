@@ -13,14 +13,14 @@
                 <field name="engineering_writable"/>
                 <field name="engineering_material"/>
                 <field name="engineering_surface"/>
-                <field name="state"/>
+                <field name="engineering_state"/>
                 <field name="linkeddocuments"/>
                 <field name="father_part_ids"/>
                 <field name="kanban_dashboard"/>
                 <templates>
                     <t t-name="kanban-box">
                         <div t-attf-class="#{kanban_color(0)}" style="max-height: 340px;">
-                            <t t-value="record.state.raw_value" t-set="stateToUse"/>
+                            <t t-value="engineering_state" t-set="stateToUse"/>
                             <t t-value="JSON.parse(record.kanban_dashboard.raw_value)" t-set="dashboard"/>
                             <t t-call="component-top"/>
                             <div class="container o_kanban_view o_kanban_card_content o_visible">
@@ -56,35 +56,35 @@
                                         <t t-if="stateToUse == 'draft'">
                                             <div style="color: rgb(110, 51, 197);padding-left: 5px;">
                                                 <b>
-                                                    <field name="state"/>
+                                                    <field name="engineering_state"/>
                                                 </b>
                                             </div>
                                         </t>
                                         <t t-if="stateToUse == 'confirmed'">
                                             <div style="color: blue;padding-left: 5px;">
                                                 <b>
-                                                    <field name="state"/>
+                                                    <field name="engineering_state"/>
                                                 </b>
                                             </div>
                                         </t>
                                         <t t-if="stateToUse == 'released'">
                                             <div style="color: rgba(0, 170, 34, 0.66);padding-left: 5px;">
                                                 <b>
-                                                    <field name="state"/>
+                                                    <field name="engineering_state"/>
                                                 </b>
                                             </div>
                                         </t>
                                         <t t-if="stateToUse == 'undermodify'">
                                             <div style="color: rgb(218, 159, 34);padding-left: 5px;">
                                                 <b>
-                                                    <field name="state"/>
+                                                    <field name="engineering_state"/>
                                                 </b>
                                             </div>
                                         </t>
                                         <t t-if="stateToUse == 'obsoleted'">
                                             <div style="color: rgb(231, 43, 26);padding-left: 5px;">
                                                 <b>
-                                                    <field name="state"/>
+                                                    <field name="engineering_state"/>
                                                 </b>
                                             </div>
                                         </t>

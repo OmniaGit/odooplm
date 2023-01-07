@@ -20,9 +20,9 @@
 ##############################################################################
 {
     'name': 'PLM Sale Only Latest',
-    'version': '15.0.2',
+    'version': '16.0.1',
     'author': 'OmniaSolutions',
-    'website': 'https://www.omniasolutions.website',
+    'website': 'https://odooplm.omniasolutions.website',
     'category': 'Product Lifecycle Management',
     'sequence': 15,
     'license': 'AGPL-3',

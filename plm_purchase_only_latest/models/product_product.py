@@ -29,7 +29,7 @@ from odoo import models
 from odoo import fields
 from odoo import api
 from odoo import _
-
+from odoo.addons.plm.models.plm_mixin import RELEASED_STATUSES
 
 class ProductProduct(models.Model):
     _inherit = 'product.product'
@@ -41,8 +41,13 @@ class ProductProduct(models.Model):
         if self.env.context.get('purchase_latest'):
             for prod_id, val in ret:
                 eng_code = self.browse(prod_id).engineering_code
-                latest_product = self.search([('engineering_code', '=', eng_code)], order='engineering_revision desc', limit=1)
-                if not eng_code or prod_id == latest_product.id:
+                latest_product = None
+                if eng_code:
+                    latest_product = self.search([('engineering_code', '=', eng_code),
+                                                  ('engineering_state','in', RELEASED_STATUSES)],
+                                                 order='engineering_revision desc',
+                                                 limit=1)
+                if not eng_code or (latest_product and prod_id == latest_product.id):
                     out.append((prod_id, val))
         return out or ret
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

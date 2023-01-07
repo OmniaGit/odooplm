@@ -212,7 +212,7 @@ class ReportProductPdf(models.AbstractModel):
         msg_vals = {
             'print_user': 'user_id.name',
             'date_now': localDT.ctime(),
-            'state': 'doc_obj.state',
+            'state': 'doc_obj.engineering_state',
                 }
         mainBookCollector = BookCollector(jumpFirst=False,
                                           customText=(msg, msg_vals),
@@ -224,7 +224,7 @@ class ReportProductPdf(models.AbstractModel):
         out = []
         for doc in product.linkeddocuments:
             if check:
-                if doc.state in ['released', 'undermodify']:
+                if doc.engineering_state in ['released', 'undermodify']:
                     out.append(doc)
                 continue
             out.append(doc)

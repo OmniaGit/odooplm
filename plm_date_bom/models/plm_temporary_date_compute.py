@@ -86,7 +86,7 @@ class mrp_bom_data_compute(models.Model):
                 if not templateBrws:
                     logging.warning('Product %s is not related to a product template.' % (bomLineBrws.product_id.id))
                     continue
-                if templateBrws.state == 'obsoleted':
+                if templateBrws.engineering_state == 'obsoleted':
                     eng_code = templateBrws.engineering_code
                     prodProdBrws = prodProdObj.search([('engineering_code', '=', eng_code)], order='engineering_revision DESC', limit=1)
                     for prodBrws in prodProdBrws:

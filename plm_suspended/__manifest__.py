@@ -22,7 +22,7 @@
     "name": "PLM Suspended State",
     "version": "16.0.1",
     "author": "OmniaSolutions",
-    "website": "https://github.com/OmniaGit/odooplm",
+    "website": "https://odooplm.omniasolutions.website",
     "category": "Product Lifecycle Management",
     "sequence": 15,
     "license": "AGPL-3",
@@ -32,8 +32,8 @@
                 "plm"],
     "data": [
         # views
-        "views/plm_product_view.xml",
-        "views/ir_attachment_view.xml",
+        "views/ir_attachment.xml",
+        "views/product_product.xml",
     ],
     "demo": [],
     "test": [],

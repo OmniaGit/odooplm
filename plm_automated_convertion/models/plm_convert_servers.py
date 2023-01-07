@@ -58,10 +58,10 @@ class PlmConvertServers(models.Model):
     def getMainServer(self):
         return self.search([], order='sequence ASC', limit=1)
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals):
-        ret = super(PlmConvertServers, self).create(vals)
-        if not vals.get('sequence'):
+        ret = super().create(vals)
+        for obj in ret:
             ret.sequence = ret.id
         return ret
 

@@ -44,20 +44,16 @@ class ProductProduct(models.Model):
         """
             reactivate the object
         """
-        defaults = {'old_state': self.state, 'state': 'suspended'}
+        defaults = {'old_state': self.engineering_state, 'engineering_state': 'suspended'}
         obj_id = self.write(defaults)
         self.product_tmpl_id.write(defaults)
-        if obj_id:
-            self.wf_message_post(body=_('Status moved to:{}.'.format(defaults['state'])))
         return obj_id
 
     def action_unsuspend(self):
         """
             reactivate the object
         """
-        defaults = {'old_state': self.state, 'state': self.old_state}
+        defaults = {'old_state': self.engineering_state, 'engineering_state': self.old_state}
         obj_id = self.write(defaults)
         self.product_tmpl_id.write(defaults)
-        if obj_id:
-            self.wf_message_post(body=_('Status moved to:{}.'.format(defaults['state'])))
         return obj_id

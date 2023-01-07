@@ -8,7 +8,7 @@
         <field name="inherit_id" ref="mrp.mrp_bom_form_view"/>
         <field name="arch" type="xml">
         	<xpath expr="//div[@name='button_box']" position="inside">
-        		<button name="open_breakages" type="object" class="oe_stat_button" icon="fa-chain-broken">
+        		<button string="Open Breakages" name="open_breakages" type="object" class="oe_stat_button" icon="fa-chain-broken">
                        	<field string="Breakages" name="breakages_count" widget="statinfo"/>
                 </button>
             </xpath>       
@@ -23,6 +23,8 @@
                 <field name="breakages_count" invisible="True"/>
                 <button name="open_breakages"
                         type="object"
+                        string="Open Brackages"
+                        title="Open Brackages"
                         icon="fa-chain-broken" 
                         class="btn btn-sm oe_stat_button text-danger"
                         attrs="{'invisible':[('breakages_count', '=', 0)]}"/>

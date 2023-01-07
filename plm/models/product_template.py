@@ -38,17 +38,12 @@ USED_STATES = [('draft', _('Draft')),
                ('obsoleted', _('Obsoleted'))]
 
 
-class ProductTemplateExtension(models.Model):
-    _name = 'product.template'
-    _inherit = 'product.template'
+class ProductTemplate(models.Model):
+    _name='product.template'
+    _description = 'Product Template'
+    _inherit = ['revision.plm.mixin', 'product.template']
 
-    state = fields.Selection(USED_STATES,
-                             _('Status'),
-                             default='draft',
-                             help=_("The status of the product in its LifeCycle."),
-                             readonly="True",
-                             index=True)
-    engineering_material = fields.Char(_('Cad Raw Material'),
+    engineering_material = fields.Char('Cad Raw Material',
                                        size=128,
                                        required=False,
                                        help=_("Raw material for current product, only description for titleblock."))
@@ -59,21 +54,11 @@ class ProductTemplateExtension(models.Model):
         help=_("Surface finishing for current product, only description for titleblock.")
     )
 
-    engineering_treatment = fields.Char(_('Cad Termic Treatment'),
+    engineering_treatment = fields.Char('Cad Termic Treatment',
                                         size=128,
                                         required=False,
                                         help=_("Termic treatment for current product, only description for titleblock."))
 
-    engineering_revision = fields.Integer(_('Revision'),
-                                          required=True,
-                                          help=_("The revision of the product."),
-                                          index=True,
-                                          default=0)
-
-    engineering_code = fields.Char(_('Part Number'),
-                                   index=True,
-                                   help=_("This is engineering reference to manage a different P/N from item Name."),
-                                   size=256)
 
     #   ####################################    Overload to set default values    ####################################
     standard_price = fields.Float('Cost',
@@ -89,19 +74,45 @@ class ProductTemplateExtension(models.Model):
                              default=False,
                              help="Specify if the product can be selected in a sales order line.")
 
-    engineering_writable = fields.Boolean('Writable',
-                                          default=True)
     is_engcode_editable = fields.Boolean('Engineering Editable',
                                          default=True,
                                          compute=lambda self: self._compute_eng_code_editable()
                                          )
 
-    revision_count = fields.Integer(compute='_revisions_count')
+    linkeddocuments = fields.Many2many('ir.attachment',
+                                       'plm_component_document_rel',
+                                       'component_id',
+                                       'document_id',
+                                       _('Linked Docs'),
+                                       ondelete='cascade')
+    def unlinkCheckBomRelations(self):
 
-    _sql_constraints = [
-        ('partnumber_uniq', 'unique (engineering_code,engineering_revision)', _('Part Number has to be unique!'))
-    ]
-    
+        def print_where_struct(self, where_struct):
+            print_struct = []
+            prod_struct = []
+            for id1, id2 in where_struct:
+                    if id1 not in print_struct or id1 != False:
+                        print_struct.append(id1)
+            for ids in print_struct:
+                prod_obj = self.env['product.product'].search([('id', '=', ids)])
+                prod_struct.append((prod_obj.engineering_code, prod_obj.engineering_revision, ids))
+            return prod_struct
+
+        for product_id in self:
+            bom_obj = self.env['mrp.bom']
+            field_type_def = bom_obj.fields_get('type').get('type', {})
+            bom_types = []
+            for option in field_type_def.get('selection', []):
+                bom_types.append(option[0])
+            bom_line = bom_obj._get_in_bom(product_id.id, False, bom_types)
+            where_struct = bom_obj._implode_bom(bom_line, False, bom_types)
+            prod_struct = print_where_struct(self, where_struct)
+            if where_struct:
+                msg = _('You cannot unlink a component that is present in a BOM:\n')
+                for prod in prod_struct:
+                    msg += (_('\t Engineering Code = %r   Engineering Revision = %r   Product Id = %r\n' % (prod[0], prod[1], prod[2])))
+                raise UserError(msg)
+            
     def isLastVersion(self):
         for tempate_id in self:
             if tempate_id.id in tempate_id._getlastrev():
@@ -144,33 +155,20 @@ class ProductTemplateExtension(models.Model):
                 'views': [(form_id.id, 'form')],
             }
 
-    @api.model
-    def getAllVersionTemplate(self):
-        """
-        get All version product_tempate based on this one
-        """
-        return self.search([('engineering_code', '=', self.engineering_code)])
-
-    def _revisions_count(self):
-        """
-        get All version product_tempate based on this one
-        """
-        for product_template_id in self:
-            if product_template_id.engineering_code:
-                product_template_id.revision_count = product_template_id.search_count([('engineering_code', '=', product_template_id.engineering_code)])
-            else:
-                product_template_id.revision_count = 0
-
     def open_related_revisions(self):
         return {'name': _('Products'),
                 'res_model': 'product.template',
                 'view_type': 'form',
                 'view_mode': 'tree,form',
                 'type': 'ir.actions.act_window',
-                'domain': [('id', 'in', self.getAllVersionTemplate().ids)],
+                'domain': [('id', 'in', self.get_all_revision().ids)],
                 'context': {}}
 
     def plm_sanitize(self, vals):
+        if not self.env.context.get('odooPLM'):
+            return vals
+        logging.debug("OdooPLM: Sanitize product template attributes")
+        vals = vals.copy()
         fields_view_get = self._fields
         out = []
         if isinstance(vals, (list, tuple)):
@@ -185,50 +183,16 @@ class ProductTemplateExtension(models.Model):
                     del vals[k]
         return vals
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals):
-        vals = self.plm_sanitize(vals)
-        return super(ProductTemplateExtension, self).create(vals)
+        to_create=[]
+        for val_dict in vals:
+            to_create.append(self.plm_sanitize(val_dict))
+        return super().create(to_create)
 
     def write(self, vals):
         vals = self.plm_sanitize(vals)
-        return super(ProductTemplateExtension, self).write(vals)
-
-    def copy(self, default={}):
-        """
-            Overwrite the default copy method
-        """
-        if not self.engineering_code:
-            return super(ProductTemplateExtension, self).copy(default)
-        if not default:
-            default = {}
-
-        def clearBrokenComponents():
-            """
-                Remove broken components before make the copy. So the procedure will not fail
-            """
-            # Do not check also for name because may cause an error in revision procedure
-            # due to translations
-            brokenComponents = self.search([('engineering_code', '=', '-')])
-            for brokenComp in brokenComponents:
-                brokenComp.unlink()
-
-        if not default.get('name', False):
-            default['name'] = '-'                   # If field is required super of clone will fail returning False, this is the case
-            default['engineering_code'] = '-'
-            default['engineering_revision'] = 0
-            clearBrokenComponents()
-        if default.get('engineering_code', '') == '-':
-            clearBrokenComponents()
-        # assign default value
-        default['state'] = 'draft'
-        default['engineering_writable'] = True
-        default['linkeddocuments'] = []
-        default['release_date'] = False
-        objId = super(ProductTemplateExtension, self).copy(default)
-        if objId:
-            objId.is_engcode_editable = True
-        return objId
+        return super(ProductTemplate, self).write(vals)
 
     @api.model
     def init(self):

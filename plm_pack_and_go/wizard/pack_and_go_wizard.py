@@ -67,7 +67,7 @@ class AdvancedPackView(models.TransientModel):
         for row in self:
             row.doc_file_name = row.document_id.name
 
-    component_id = fields.Many2one('product.product', _('Component'))
+    component_id = fields.Many2one('product.template', _('Component'))
     document_id = fields.Many2one('ir.attachment', _('Document'))
     comp_rev = fields.Integer(_('Component Revision'))
     comp_description = fields.Char(compute='_getComponentDescription')
@@ -93,9 +93,16 @@ class PackAndGo(models.TransientModel):
         """
             set the default value from getting the value from the context
         """
-        return self._context.get('active_id', False)
+        obj_id = self._context.get('active_id')
+        obj_model = self._context.get('active_model')
+        if obj_id:
+            if obj_model == 'product.product':
+                return self.env[obj_model].browse(obj_id).product_tmpl_id.id
+            elif obj_model == 'product.template':
+                return obj_id
+        return False
 
-    component_id = fields.Many2one('product.product',
+    component_id = fields.Many2one('product.template',
                                    _('Component'),
                                    default=setComponentFromContext,
                                    required=True)
@@ -140,7 +147,7 @@ class PackAndGo(models.TransientModel):
         export_other = []
         export_pdf = []
         checkedDocumentIds = []  # To know if the same document has been already analyzed
-        objProduct = self.env['product.product']
+        objProduct = self.env['product.template']
         objPackView = self.env['pack_and_go_view']
         plmDocObject = self.env['ir.attachment']
 
@@ -152,7 +159,7 @@ class PackAndGo(models.TransientModel):
                 compRev = comp.engineering_revision
             singleCreateDict = {'component_id': compId,
                                 'comp_rev': compRev,
-                                'doc_rev': doc.revisionid,
+                                'doc_rev': doc.engineering_revision,
                                 'document_id': doc.id,
                                 'preview': doc.preview,
                                 'available_types': False,
@@ -297,7 +304,7 @@ class PackAndGo(models.TransientModel):
                     bomBrwsList = self.getBomFromTemplate(prodTmplBrws)
                     recursion(bomBrwsList)
         compIds.append(self.component_id.id)
-        startingBom = self.getBomFromTemplate(self.component_id.product_tmpl_id)
+        startingBom = self.getBomFromTemplate(self.component_id)
         if startingBom:
             recursion(startingBom)    
         return compIds

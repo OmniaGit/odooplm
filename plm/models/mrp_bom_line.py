@@ -42,10 +42,13 @@ class MrpBomLineExtension(models.Model):
         fields = self.plm_sanitize(fields)
         return super(MrpBomLineExtension, self).read(fields=fields, load=load)
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals):
-        vals = self.plm_sanitize(vals)
-        return super(MrpBomLineExtension, self).create(vals)
+        to_create = []
+        for vals_dict in vals:
+            vals = self.plm_sanitize(vals_dict)
+            to_create.append(vals)
+        return super().create(to_create)
 
     def write(self, vals):
         vals = self.plm_sanitize(vals)
@@ -171,10 +174,10 @@ class MrpBomLineExtension(models.Model):
         for bom_line_brws in self:
             bom_line_brws.related_document_ids = bom_line_brws.product_id.linkeddocuments
 
-    state = fields.Selection(related="product_id.state",
-                             string=_("Status"),
-                             help=_("The status of the product in its LifeCycle."),
-                             store=False)
+    engineering_state = fields.Selection(related="product_id.engineering_state",
+                                         string=_("Status"),
+                                         help=_("The status of the product in its LifeCycle."),
+                                         store=False)
     description = fields.Char(related="product_id.name",
                               string=_("Description"),
                               store=False)
@@ -184,7 +187,7 @@ class MrpBomLineExtension(models.Model):
     create_date = fields.Datetime(_('Creation Date'),
                                   readonly=True)
     source_id = fields.Many2one('ir.attachment',
-                                'engineering_document_name',
+                                'engineering_code',
                                 ondelete='no action',
                                 readonly=True,
                                 index=True,
