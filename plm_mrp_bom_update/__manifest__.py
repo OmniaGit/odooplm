@@ -36,7 +36,7 @@ This module allows you to update your working manufacture order based on the bom
              'stock'],
  'data': ['views/mrp_bom_extension.xml'],
  'license': 'AGPL-3',
- 'installable': True,
+ 'installable': False,
  'application': False,
  'auto_install': False,
 }
