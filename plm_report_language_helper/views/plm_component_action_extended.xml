@@ -14,10 +14,10 @@
         </group>
         	<field name="datas" filename="datas_name"/>
         <field name="datas_name" invisible="1"/>
-            <group colspan="4" col="4">
+	        <footer>
             	<button special="cancel" string="Cancel"/>
             	<button string="Create Spare Report" name="print_report" type="object"/>
-            </group>
+            </footer>
         </form>
         </field>
     </record>	

@@ -78,13 +78,13 @@ msgstr "Scegli una distinta base"
 #: model:ir.actions.act_window,name:plm_spare.act_manage_spare_bom
 #: model_terms:ir.ui.view,arch_db:plm_spare.plm_component_manage_spare_bom
 msgid "Create Spare Bom"
-msgstr "Crea Bom di riserva"
+msgstr "Crea Bom di Ricambio"
 
 #. module: plm_spare
 #: code:addons/plm_spare/models/plm_temporary.py:0
 #, python-format
 msgid "Creating a new Spare Bom Error."
-msgstr "Creazione di un nuovo errore di bom di riserva."
+msgstr "Creazione di un nuovo errore di bom di Ricambio."
 
 #. module: plm_spare
 #: model_terms:ir.ui.view,arch_db:plm_spare.plm_component_manage_spare_bom
