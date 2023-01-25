@@ -210,14 +210,17 @@ class ReportSpareDocumentOne(models.AbstractModel):
                     page_stream.write(pdf)
                     output.addPage((page_stream, ''))
                     if recursion:
-                        for packed_obj in product_ids:
-                            if packed_obj.id not in processed_objs:
-                                processed_objs += self.get_spare_parts_pdf_file(packed_obj,
+                        ln = len(product_ids)
+                        for i, packed_obj in enumerate(product_ids,1):
+                            logging.info("Work on %s/%s - %s %s" % (i, ln, product.name, packed_obj.name))
+                            processed = self.get_spare_parts_pdf_file(packed_obj,
                                                                                 output,
                                                                                 component_template,
                                                                                 bom_template,
                                                                                 recursion,
                                                                                 processed_objs)
+                            processed_objs+=processed
+                            processed_objs=list(set(processed_objs))
         return processed_objs
 
     def get_pdf_component_layout(self, component):
