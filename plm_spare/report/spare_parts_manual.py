@@ -204,8 +204,7 @@ class ReportSpareDocumentOne(models.AbstractModel):
                             logging.error(ex)
                             raise ex
                     report_ref = self.env.ref('plm.report_plm_bom_structure_one')
-                    pdf = report_ref.sudo().with_context(force_report_rendering=True)._render_qweb_pdf(report_ref,
-                                                                                                       res_ids=bom_brws_ids.ids)[0]
+                    pdf = report_ref.sudo().with_context(force_report_rendering=True)._render_qweb_pdf(bom_brws_ids.ids)[0]
                     page_stream = BytesIO()
                     page_stream.write(pdf)
                     output.addPage((page_stream, ''))
