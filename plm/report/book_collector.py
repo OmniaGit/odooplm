@@ -127,7 +127,7 @@ class BookCollector(object):
                                                                                   page_obj=page)
                     except Exception as ex:
                         logging.warning(ex)
-                        logging.warning('advancedPlmReportEngine function not implemented in plm.document object')
+                        logging.warning('advancedPlmReportEngine function not implemented in ir.attachment object')
                     canvas.showPage()
                     canvas.save()
                     numberPageReader=PdfFileReader(numberPagerBuffer,strict=False)  
