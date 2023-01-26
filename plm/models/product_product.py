@@ -164,18 +164,32 @@ class PlmComponent(models.Model):
     revision_date = fields.Datetime(string=_('Datetime Revision'))
     
     show_std_field1 = fields.Boolean(_('Show std field 1'),
-                                 compute='_showStd')
+                                 compute='_computeStd')
     show_std_field2 = fields.Boolean(_('Show std field 2'),
-                                 compute='_showStd')
+                                 compute='_computeStd')
     show_std_field3 = fields.Boolean(_('Show std field 3'),
-                                 compute='_showStd')
+                                 compute='_computeStd')
 
     
     readonly_std_umc1 = fields.Boolean(_("put readOnly the field standard description 1"))
     readonly_std_umc2 = fields.Boolean(_("put readOnly the field standard description 2"))
     readonly_std_umc3 = fields.Boolean(_("put readOnly the field standard description 3"))
     kit_bom = fields.Boolean(_('KIT Bom Type'))
-    
+
+    @api.onchange("std_description")
+    def _computeStd(self):
+        for product_product_id in self:
+            product_product_id.show_std_field1 = False
+            product_product_id.show_std_field2 = False
+            product_product_id.show_std_field3 = False
+            if product_product_id.std_description:
+                if product_product_id.std_description.umc1 or product_product_id.std_description.fmt1:
+                    product_product_id.show_std_field1 = True
+                if product_product_id.std_description.umc2 or product_product_id.std_description.fmt2:
+                    product_product_id.show_std_field2 = True
+                if product_product_id.std_description.umc3 or product_product_id.std_description.fmt3:
+                    product_product_id.show_std_field3 = True
+                        
     @api.onchange("std_description")
     def _showStd(self):
         for product_product_id in self:
