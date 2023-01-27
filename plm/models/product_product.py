@@ -176,7 +176,6 @@ class PlmComponent(models.Model):
     readonly_std_umc3 = fields.Boolean(_("put readOnly the field standard description 3"))
     kit_bom = fields.Boolean(_('KIT Bom Type'))
 
-    @api.onchange("std_description")
     def _computeStd(self):
         for product_product_id in self:
             product_product_id.show_std_field1 = False
