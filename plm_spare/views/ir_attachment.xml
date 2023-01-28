@@ -1,5 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <record id="spare_plm_document_kanban_view" model="ir.ui.view">
+        <field name="name">spare.plm.document.kanban.view</field>
+        <field name="model">ir.attachment</field>
+        <field name="inherit_id" ref="plm.document_kanban_view"/>
+        <field name="arch" type="xml">
+        	<xpath expr="//field[@name='is_linkedcomponents']" position="after">
+        		<field string="Spare Part" name="used_for_spare" invisible="True"/>
+        	</xpath>
+        	<xpath expr="//td[@name='Component']" position="inside">
+        	   <div class="fa fa-gear fa-2x" aria-label="Is A Spare Drawing" style="color: blue;" attrs="{'invisible': [('used_for_spare', 'in', [False])]}"/>
+        	</xpath>
+        </field>
+    </record>
+    
     <record id="ir_attachment_spare_extension" model="ir.ui.view">
         <field name="name">ir.attachment.spare.extension</field>
         <field name="model">ir.attachment</field>
@@ -7,9 +21,11 @@
         <field name="type">form</field>
         <field name="priority" eval="16"/>
         <field name="arch" type="xml">
-        	<xpath expr="//field[@name='is_plm']" position="after">
-        		<field string="Spare Part" name="used_for_spare" widget="boolean_toggle"/>
-        	</xpath>
+            <xpath expr="//field[@name='is_plm']" position="after">
+                <field string="Spare Part" name="used_for_spare" widget="boolean_toggle"/>
+            </xpath>
         </field>
     </record>
+        
+    
 </odoo>

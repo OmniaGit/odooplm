@@ -20,7 +20,7 @@
 ##############################################################################
 {
     "name": "PLM Spare",
-    "version": "15.4",
+    "version": "15.5",
     "author": "OmniaSolutions",
     "website": "https://github.com/OmniaGit/odooplm",
     "category": "Product Lifecycle Management",
