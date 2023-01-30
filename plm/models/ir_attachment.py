@@ -75,7 +75,37 @@ class PlmDocument(models.Model):
                 if lastDocId == docBrws.id:
                     return True
         return False
-
+    
+    @api.model
+    def check(self, mode, values=None):
+        if self.env.context.get('plm_avoid_recursion'):
+            return True
+        if self.env.is_superuser():
+            return True
+        if self:
+            self.env['ir.attachment'].flush(['is_plm','public'])
+            self._cr.execute('SELECT  id, is_plm, public FROM ir_attachment WHERE id IN %s', [tuple(self.ids)])
+            attachment_id_toCheck=[]
+            for attachment_id, is_plm, public in self._cr.fetchall():
+                if public and mode == 'read':
+                    continue
+                if is_plm:
+                    if self.env.user.has_group('plm.group_plm_integration_user'):
+                        continue            
+                    if self.env.user.has_group('plm.group_plm_view_user') and mode =='read':
+                        continue
+                    if self.env.user.has_group('plm.group_plm_readonly_released') and mode =='read':
+                        continue
+                    if self.env.user.has_group('plm.group_plm_admin'):
+                        continue
+                    raise UserError("You are managing a document that dose not belong to any PLM group.")
+                else:
+                    attachment_id_toCheck.append(attachment_id)
+            #
+            if attachment_id_toCheck:
+                super().with_context(plm_avoid_recursion=True).check(mode, values)
+                
+            
     def get_checkout_user(self):
         lastDoc = self._getlastrev(self.ids)
         if lastDoc:
