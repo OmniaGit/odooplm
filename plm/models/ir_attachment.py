@@ -70,7 +70,7 @@ class PlmDocument(models.Model):
 
     def isLatestRevision(self):
         for docBrws in self:
-            lastdocIds = self._getlastrev(docBrws.id)
+            lastdocIds = self.sudo()._getlastrev(docBrws.id)
             for lastDocId in lastdocIds:
                 if lastDocId == docBrws.id:
                     return True
