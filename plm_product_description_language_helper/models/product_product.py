@@ -122,9 +122,9 @@ class ProductProductExtension(models.Model):
             if vals_std_value3 is not False:
                 std_value3 = vals_std_value3
             if std_description_obj and (vals_std_value1 is not False or vals_std_value2 is not False or vals_std_value3 is not False):
-                userLang = prodWriteObj.env.context.get('lang', 'en_US')
                 for langBrwsObj in self.env['res.lang'].search([]):
-                    ctx['lang'] = langBrwsObj.code
+                    loop_lang_code = langBrwsObj.code 
+                    ctx['lang'] = loop_lang_code
                     thisObject = std_description_obj.with_context(ctx)
                     initVal = thisObject.name
                     if not initVal:
@@ -132,7 +132,7 @@ class ProductProductExtension(models.Model):
                     description = prodWriteObj.computeDescription(thisObject, initVal, thisObject.umc1, thisObject.umc2, thisObject.umc3, std_value1, std_value2, std_value3)
                     translationObjs = ir_translation_obj.search([('name', '=', 'product.template,name'),
                                                                  ('res_id', '=', templateId),
-                                                                 ('lang', '=', langBrwsObj.code)])
+                                                                 ('lang', '=', loop_lang_code)])
                     if translationObjs:
                         translationObjs.write({'value': description})
                     else:
@@ -141,7 +141,7 @@ class ProductProductExtension(models.Model):
                                                   'res_id': templateId,
                                                   'name': 'product.template,name',
                                                   'type': 'model',
-                                                  'lang': userLang,
+                                                  'lang': loop_lang_code,
                                                   'value': description})
 
     def commonTranslationSetUp(self, templateId, std_description_id):
