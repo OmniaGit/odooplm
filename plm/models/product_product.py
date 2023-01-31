@@ -834,6 +834,9 @@ class PlmComponent(models.Model):
                             ('engineering_revision', '=', revision)])
 
     def action_release(self):
+        return self._action_release()
+    
+    def _action_release(self):
         """
            action to be executed for Released state
         """
@@ -842,7 +845,7 @@ class PlmComponent(models.Model):
             product_tmpl_ids = []
             defaults = {}
             exclude_statuses = ['released', 'undermodify', 'obsoleted']
-            include_statuses = ['confirmed']
+            include_statuses = self.env.context.get("PLM_STATE_RELEASE" ,['confirmed'])
             errors, product_ids = comp_obj._get_recursive_parts(exclude_statuses, include_statuses)
             children_products = product_ids.copy()
             if len(product_ids) < 1 or len(errors) > 0:
