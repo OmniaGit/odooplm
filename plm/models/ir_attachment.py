@@ -288,20 +288,23 @@ class PlmDocument(models.Model):
             logging.warning('Cannot get links from %r document' % (doc_id))
             return []
         doc_brws = self.browse(doc_id)
-        doc_type = doc_brws.document_type.upper()
+        doc_type = doc_brws.document_type
         to_search = [('link_kind', 'in', ['LyTree']),
                      '|', 
                         ('parent_id', '=', doc_id),
                         ('child_id', '=', doc_id)]
         doc_rel_ids = self.env['ir.attachment.relation'].search(to_search)
         for doc_rel_id in doc_rel_ids:
-            if doc_type == '3D':
-                out.append(doc_rel_id.parent_id.id)
-            elif doc_type == '2D':
-                out.append(doc_rel_id.child_id.id)
-            else:
-                logging.warning('Cannot get related LyTree from doc_type %r' % (doc_type))
-                return []
+            if doc_type=='3d':
+                if doc_rel_id.parent_id.id==doc_id and doc_rel_id.child_id.document_type =='2d':
+                    out.append(doc_rel_id.child_id.id)
+                elif doc_rel_id.child_id.id==doc_id and doc_rel_id.parent_id.document_type =='2d':
+                    out.append(doc_rel_id.parent_id.id)
+            elif doc_type=='2d':
+                if doc_rel_id.parent_id.id==doc_id and doc_rel_id.child_id.document_type =='3d':
+                    out.append(doc_rel_id.child_id.id)
+                elif doc_rel_id.child_id.id==doc_id and doc_rel_id.parent_id.document_type =='3d':
+                    out.append(doc_rel_id.parent_id.id)
         return list(set(out))
     
     @api.model
