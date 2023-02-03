@@ -62,7 +62,6 @@ class ProductProductExtension(models.Model):
         for product_product in self:
             if not product_product.std_description:
                 continue
-            to_update = {}
             for code_leng in self.env['res.lang'].search([('active','=',True)]).mapped("code"):
                 std_description_obj_ctx = product_product.std_description.with_context(lang=code_leng)
 

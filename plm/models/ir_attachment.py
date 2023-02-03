@@ -119,6 +119,35 @@ class IrAttachment(models.Model):
                     return True
         return False
 
+    @api.model
+    def check(self, mode, values=None):
+        if self.env.context.get('plm_avoid_recursion'):
+            return True
+        if self.env.is_superuser():
+            return True
+        if self:
+            self.env['ir.attachment'].flush(['is_plm','public'])
+            self._cr.execute('SELECT  id, is_plm, public FROM ir_attachment WHERE id IN %s', [tuple(self.ids)])
+            attachment_id_toCheck=[]
+            for attachment_id, is_plm, public in self._cr.fetchall():
+                if public and mode == 'read':
+                    continue
+                if is_plm:
+                    if self.env.user.has_group('plm.group_plm_integration_user'):
+                        continue            
+                    if self.env.user.has_group('plm.group_plm_view_user') and mode =='read':
+                        continue
+                    if self.env.user.has_group('plm.group_plm_readonly_released') and mode =='read':
+                        continue
+                    if self.env.user.has_group('plm.group_plm_admin'):
+                        continue
+                    raise UserError("You are managing a document that dose not belong to any PLM group.")
+                else:
+                    attachment_id_toCheck.append(attachment_id)
+            #
+            if attachment_id_toCheck:
+                super().with_context(plm_avoid_recursion=True).check(mode, values)
+                
     def get_checkout_user(self):
         lastDoc = self._getlastrev(self.ids)
         if lastDoc:
@@ -300,20 +329,23 @@ class IrAttachment(models.Model):
             logging.warning('Cannot get links from %r document' % (doc_id))
             return []
         doc_brws = self.browse(doc_id)
-        doc_type = doc_brws.document_type.upper()
+        doc_type = doc_brws.document_type
         to_search = [('link_kind', 'in', ['LyTree']),
                      '|', 
                         ('parent_id', '=', doc_id),
                         ('child_id', '=', doc_id)]
         doc_rel_ids = self.env['ir.attachment.relation'].search(to_search)
         for doc_rel_id in doc_rel_ids:
-            if doc_type == '3D':
-                out.append(doc_rel_id.parent_id.id)
-            elif doc_type == '2D':
-                out.append(doc_rel_id.child_id.id)
-            else:
-                logging.warning('Cannot get related LyTree from doc_type %r' % (doc_type))
-                return []
+            if doc_type=='3d':
+                if doc_rel_id.parent_id.id==doc_id and doc_rel_id.child_id.document_type =='2d':
+                    out.append(doc_rel_id.child_id.id)
+                elif doc_rel_id.child_id.id==doc_id and doc_rel_id.parent_id.document_type =='2d':
+                    out.append(doc_rel_id.parent_id.id)
+            elif doc_type=='2d':
+                if doc_rel_id.parent_id.id==doc_id and doc_rel_id.child_id.document_type =='3d':
+                    out.append(doc_rel_id.child_id.id)
+                elif doc_rel_id.child_id.id==doc_id and doc_rel_id.parent_id.document_type =='3d':
+                    out.append(doc_rel_id.parent_id.id)
         return list(set(out))
     
     @api.model
