@@ -55,7 +55,7 @@ class Plm_box_document(models.Model):
         if self.env.context.get('default_is_plm_box', False):
             vals['is_plm_box'] = True
         if not vals.get('name', False):
-            name = self.getNewSequencedName(vals)
+            name = self.getNewSequencedName()
             vals['name'] = name
         return super(Plm_box_document, self).create(vals)
 
