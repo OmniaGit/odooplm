@@ -229,7 +229,12 @@ class UploadDocument(Controller):
                                                               'link_kind': 'ExtraTree'})    
             if product_id:
                 product_id = request.env['product.product'].browse(product_id)
-                request.env['plm.component.document.rel'].createFromIds(product_id, ir_attachment_id)           
+                request.env['plm.component.document.rel'].createFromIds(product_id, ir_attachment_id)
+            else:
+                if related_attachment_id:
+                    for product_id in request.env['ir.attachment'].browse(related_attachment_id).linkedcomponents:
+                        request.env['plm.component.document.rel'].createFromIds(product_id, ir_attachment_id)
+                        break
             return Response('Extra file Upload succeeded', status=200)
         logging.info('Extra file no upload %r' % (ir_attachment_id))
         return Response('Extra file Failed upload', status=400)

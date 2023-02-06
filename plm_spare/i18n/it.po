@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 15.0+e\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-02-08 10:57+0000\n"
-"PO-Revision-Date: 2022-02-08 12:05+0100\n"
+"PO-Revision-Date: 2023-02-06 23:15+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: \n"
 "Language: it\n"
-"X-Generator: Poedit 2.0.6\n"
+"X-Generator: Poedit 2.4.2\n"
 
 #. module: plm_spare
 #: model_terms:ir.ui.view,arch_db:plm_spare.bom_spare_header
@@ -84,7 +84,7 @@ msgstr "Crea Bom di Ricambio"
 #: code:addons/plm_spare/models/plm_temporary.py:0
 #, python-format
 msgid "Creating a new Spare Bom Error."
-msgstr "Creazione di un nuovo errore di bom di Ricambio."
+msgstr "Creazione di un nuovo errore di Bom di Ricambio."
 
 #. module: plm_spare
 #: model_terms:ir.ui.view,arch_db:plm_spare.plm_component_manage_spare_bom
@@ -132,7 +132,7 @@ msgstr "Stampa il manuale dei pezzi di ricambio"
 #. module: plm_spare
 #: model:ir.actions.report,name:plm_spare.report_product_product_spare_parts_pdf_one
 msgid "Print Spare Parts Manual One Level"
-msgstr "Stampa Manuale Parti di Ricambio 1 Level"
+msgstr "Stampa Manuale Parti di Ricambio Singolo Livello"
 
 #. module: plm_spare
 #: model:ir.model,name:plm_spare.model_product_product
@@ -143,7 +143,7 @@ msgstr "Prodotto"
 #: code:addons/plm_spare/models/product_product.py:0
 #, python-format
 msgid "Related Boms"
-msgstr "Bom correlati"
+msgstr "Distinte Relazionate"
 
 #. module: plm_spare
 #: model:ir.model,name:plm_spare.model_report_plm_spare_bom_spare_header
@@ -153,36 +153,34 @@ msgstr "Segnala le intestazioni dei pezzi di ricambio"
 #. module: plm_spare
 #: model:ir.model,name:plm_spare.model_report_plm_spare_pdf_all
 msgid "Report Spare Pdf All"
-msgstr "Segnala tutti i Pdf di ricambi"
+msgstr "Report ricambi tutti i livelli"
 
 #. module: plm_spare
 #: model:ir.model,name:plm_spare.model_report_plm_spare_pdf_one
 msgid "Report Spare parts Document One"
-msgstr "Report Ricambi Documento Uno"
+msgstr "Report ricambi documento singolo livello"
 
 #. module: plm_spare
 #: model:ir.ui.menu,name:plm_spare.menu_relation_spare
 msgid "Search on Spare Bill of Materials"
-msgstr "Cerca su Distinta materiali di ricambio"
+msgstr "Cerca distinta materiali di ricambio"
 
 #. module: plm_spare
 #: code:addons/plm_spare/models/plm_description.py:0
 #: model:ir.model.fields,help:plm_spare.field_plm_description__bom_tmpl
 #, python-format
 msgid "Select a  BoM as template to drive building Spare BoM."
-msgstr ""
-"Seleziona una distinta base come modello per guidare la creazione di "
-"distinte base."
+msgstr "Seleziona una distinta base come modello generare di distinte base."
 
 #. module: plm_spare
 #: model:ir.model.fields.selection,name:plm_spare.selection__mrp_bom__type__spbom
 msgid "Spare BoM"
-msgstr "BoM di ricambio"
+msgstr "Bom ricambio"
 
 #. module: plm_spare
 #: model:ir.actions.act_window,name:plm_spare.plm_action_spare_form
 msgid "Spare BoMs"
-msgstr "BoMs di ricambio"
+msgstr "Bom di ricambio"
 
 #. module: plm_spare
 #: model_terms:ir.ui.view,arch_db:plm_spare.ir_attachment_spare_extension
