@@ -50,7 +50,7 @@ from stl import mesh
 import matplotlib.pyplot as plt
 from mpl_toolkits import mplot3d
 try:
-    import cadquery2 as cq
+    import cadquery as cq
 except Exception as ex:
     logging.error(ex)
 #

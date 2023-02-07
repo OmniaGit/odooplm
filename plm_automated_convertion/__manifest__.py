@@ -31,7 +31,7 @@
     "depends": ["plm"],
     'external_dependencies': {'python': ['ezdxf',
                                          'matplotlib',
-                                         'cadquery2',
+                                         'cadquery',
                                          'numpy-stl']},
     "data": [  
         #
