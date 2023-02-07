@@ -255,6 +255,19 @@
                             states="draft"
                             string="Confirm Component"
                             class="oe_highlight"/>
+                    <button name="action_un_release"
+                            type="object"
+                            states="released"
+                            string="Un release Component"
+                            groups="plm.group_plm_admin_unrelease"
+                            class="oe_highlight"/>
+                    <button name="action_un_release_release"
+                            type="object"
+                            states="draft"
+                            string="Re release Component"
+                            groups="plm.group_plm_admin_unrelease"
+                            class="oe_highlight"/>
+                            
                     <field name="state"
                            widget="statusbar"
                            statusbar_visible="draft,confirmed,released"

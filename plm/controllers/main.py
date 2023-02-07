@@ -206,7 +206,7 @@ class UploadDocument(Controller):
             ir_attachment_id  = request.env['ir.attachment'].search([('engineering_document_name',  '=', doc_name),
                                                                      ('revisionid', '=', doc_rev)])
             to_write = {'datas': base64.b64encode(value1),
-                        'name': doc_name,
+                        'name': kw.get('filename',doc_name),
                         'engineering_document_name': doc_name,
                         'revisionid': doc_rev}
             link_id =  request.env['ir.attachment.relation']

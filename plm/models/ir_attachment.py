@@ -832,8 +832,25 @@ class PlmDocument(models.Model):
         if to_release:
             to_release.commonWFAction(False, 'released', False)
         return False
-
     
+    def action_un_release(self):
+        for product_product_id in self:
+            body ="""
+                FORCE draft action from super plm admin user !!!
+                data could be not as expected !!!
+            """
+            product_product_id.message_post(body=body)
+            product_product_id.state='draft'
+        
+    def action_un_release_release(self):
+        for product_product_id in self:
+            body ="""
+                FORCE release action from super plm admin user !!!
+                data could be not as expected !!!
+            """
+            product_product_id.message_post(body=body)
+            product_product_id.state='released'
+            
     def action_obsolete(self):
         """
             obsolete the object

@@ -836,6 +836,24 @@ class PlmComponent(models.Model):
     def action_release(self):
         return self._action_release()
     
+    def action_un_release(self):
+        for product_product_id in self:
+            body ="""
+                FORCE draft action from super plm admin user !!!
+                data could be not as expected !!!
+            """
+            product_product_id.message_post(body=body)
+            product_product_id.state='draft'
+        
+    def action_un_release_release(self):
+        for product_product_id in self:
+            body ="""
+                FORCE release action from super plm admin user !!!
+                data could be not as expected !!!
+            """
+            product_product_id.message_post(body=body)
+            product_product_id.state='released'
+                
     def _action_release(self):
         """
            action to be executed for Released state
