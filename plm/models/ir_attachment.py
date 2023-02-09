@@ -2857,4 +2857,22 @@ class PlmDocument(models.Model):
         action = self.env.ref('plm.action_report_doc_structure').report_action(self)
         action.update({'close_on_report_download': True})
         return action
+    
+    def _read_group_allowed_fields(self):
+        ret = super()._read_group_allowed_fields()
+        ret.extend(['state',
+                    'engineering_document_name',
+                    'write_uid',
+                    'revisionid',
+                    'checkout_user',
+                    'description',
+                    'write_date',
+                    'display_name',
+                    'is_linkedcomponents',
+                    'used_for_spare',
+                    '__last_update',
+                    'preview',
+                    'document_type'])
+        return ret
+    
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
