@@ -2560,8 +2560,8 @@ msgstr "Richiesta"
 
 #. module: plm
 #: model:ir.actions.act_window,name:plm.act_restore_document
-msgid "Restore Document"
-msgstr "Ripristina Documento"
+msgid "Restore"
+msgstr "Ripristina"
 
 #. module: plm
 #: code:addons/plm/models/plm_backup_document.py:0
@@ -2572,7 +2572,7 @@ msgstr "Errore nel ripristino del documento"
 #. module: plm
 #: model_terms:ir.ui.view,arch_db:plm.restore_document_button_view
 msgid "Restore Entry"
-msgstr "Ripristina Entrata"
+msgstr "Ripristina Documento"
 
 #. module: plm
 #: model_terms:ir.ui.view,arch_db:plm.restore_document_button_view
