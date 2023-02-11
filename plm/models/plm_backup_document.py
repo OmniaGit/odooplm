@@ -119,21 +119,26 @@ class BackupDocWizard(models.TransientModel):
         ctx = self.env.context.copy()
         ctx['check'] = False
         documentId = False
-        backupDocIds = self.env.context.get('active_ids', [])
-        backupDocObj = self.env['plm.backupdoc']
-        plmDocObj = self.env['ir.attachment']
-        if len(backupDocIds) > 1:
+        plm_backupdoc_ids = self.env.context.get('active_ids', [])
+        plm_backupdoc = self.env['plm.backupdoc']
+        ir_attachment = self.env['ir.attachment']
+        if len(plm_backupdoc_ids) > 1:
             raise UserError(_('Restore Document Error'), _("You can restore only a document at a time."))
-        for backupDocBrws in backupDocObj.browse(backupDocIds):
-            relDocBrws = backupDocBrws.documentid
-            values = {'printout': backupDocBrws.printout,
-                      'store_fname': backupDocBrws.existingfile,
-                      'preview': backupDocBrws.preview,
+        for plm_backupdoc_id in plm_backupdoc.browse(plm_backupdoc_ids):
+            ir_attachment_bck_id = plm_backupdoc_id.documentid
+            if not ir_attachment_bck_id.ischecked_in():
+                raise UserError("""Unable to restore check-out document !!.\nMake check-in with user [ %s ]"""  % (ir_attachment_bck_id.checkout_user))
+            values = {'printout': plm_backupdoc_id.printout,
+                      'preview': plm_backupdoc_id.preview,
                       }
-            if relDocBrws:
-                documentId = relDocBrws.id
-                writeRes = relDocBrws.sudo().with_context(ctx).write(values)
-                if writeRes:
+            if ir_attachment_bck_id:
+                documentId = ir_attachment_bck_id.id
+                write_res = ir_attachment_bck_id.sudo().with_context(ctx).write(values)
+                sql = """
+                UPDATE IR_ATTACHMENT SET store_fname = '%s' where id = %s
+                """ % (plm_backupdoc_id.existingfile, ir_attachment_bck_id.id)
+                self.env.cr.execute(sql)
+                if write_res:
                     logging.info('[action_restore_document] Updated document %r' % (documentId))
                 else:
                     logging.warning('[action_restore_document] Updated document failed for %r' % (documentId))
@@ -141,11 +146,11 @@ class BackupDocWizard(models.TransientModel):
                 # Note that if I don't have a document I can't relate it to it's component
                 # User have to do it hand made
                 values.update({'engineering_state': 'draft',
-                               'engineering_revision': backupDocBrws.engineering_revision,
-                               'name': backupDocBrws.document_name,
+                               'engineering_revision': plm_backupdoc_id.engineering_revision,
+                               'name': plm_backupdoc_id.document_name,
                                }
                               )
-                documentId = plmDocObj.sudo().create(values)
+                documentId = ir_attachment.sudo().create(values)
                 if documentId:
                     logging.info('[action_restore_document] Created document %r' % (documentId))
                 else:
