@@ -20,7 +20,7 @@
 ##############################################################################
 {
     "name": "Product Lifecycle Management",
-    "version": "14.0.2",
+    "version": "14.0.3",
     "author": "OmniaSolutions",
     "website": "https://github.com/OmniaGit/odooplm",
     "category": "Manufacturing/Product Lifecycle Management",
@@ -38,7 +38,6 @@
         "views/ir_attachment_relations.xml",
         "views/plm_dbthread.xml",
         "views/import_stylesheet.xml",
-        "views/mrp_extension.xml",
         "views/plm_backupdoc_view.xml",
         "views/plm_checkout_view.xml",
         "views/plm_config_settings.xml",
@@ -51,11 +50,12 @@
         "views/product_category.xml",
         "views/ir_config_parameter.xml",
         "views/ir_cron.xml",
-        "views/plm_cad_open.xml",
-        "views/plm_cad_open_bck.xml",
         "views/mail_activity_type.xml",
         "views/sequence.xml",
         "views/menu.xml",
+        "views/plm_cad_open.xml",
+        "views/plm_cad_open_bck.xml",
+        "views/mrp_extension.xml",
         # Reports Template
         "report/bom_structure_report_template.xml",
         "report/document_report_templates.xml",
