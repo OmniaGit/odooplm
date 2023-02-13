@@ -1,5 +1,5 @@
 ezdxf
 matplotlib
-cadquery2
+cadquery
 numpy-stl
 --pre cadquery
