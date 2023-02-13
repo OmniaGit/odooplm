@@ -1,3 +1,4 @@
 ezdxf
 matplotlib
 numpy-stl
+cadquery
