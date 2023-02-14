@@ -686,23 +686,27 @@ class MrpBomExtension(models.Model):
             return self.env['mrp.bom.line'].create(copy.deepcopy(relation_attributes))
 
     def open_related_bom_lines(self):
-        for bom_brws in self:
-            def recursion(bom_brws_list):
-                out_bom_lines = []
-                for bom_brws in bom_brws_list:
-                    line_brws_list = bom_brws.bom_line_ids
-                    out_bom_lines.extend(line_brws_list.ids)
-                    for line_brws in line_brws_list:
-                        boms_found = self.search([
+        computed = []
+        def recursion(bom_brws_list):
+            out_bom_lines = []
+            for mrp_bom_id in bom_brws_list:
+                if mrp_bom_id.id in computed:
+                    continue
+                computed.append(mrp_bom_id.id)
+                line_brws_list = mrp_bom_id.bom_line_ids
+                out_bom_lines.extend(line_brws_list.ids)
+                for line_brws in line_brws_list:
+                    boms_found = self.search([
                             ('product_tmpl_id', '=', line_brws.product_id.product_tmpl_id.id),
                             ('type', '=', line_brws.type),
                             ('active', '=', True)
                         ])
-                        bottom_line_ids = recursion(boms_found)
-                        out_bom_lines.extend(bottom_line_ids)
-                return out_bom_lines
+                    bottom_line_ids = recursion(boms_found)
+                    out_bom_lines.extend(bottom_line_ids)
+            return out_bom_lines
 
-            bom_line_ids = recursion(self)
+        for mrp_bom_id in self:
+            bom_line_ids = recursion(mrp_bom_id)
             return {'name': _('B.O.M. Lines'),
                     'res_model': 'mrp.bom.line',
                     'view_type': 'form',
