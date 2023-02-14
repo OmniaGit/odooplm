@@ -162,6 +162,13 @@ class ProductProduct(models.Model):
     readonly_std_umc2 = fields.Boolean(_("put readOnly the field standard description 2"))
     readonly_std_umc3 = fields.Boolean(_("put readOnly the field standard description 3"))
     
+    linkeddocuments = fields.Many2many('ir.attachment',
+                                   'plm_component_document_rel',
+                                   'component_id',
+                                   'document_id',
+                                   _('Linked Docs'),
+                                   ondelete='cascade')
+        
     def _computeStd(self):
         for product_product_id in self:
             product_product_id.show_std_field1 = False
