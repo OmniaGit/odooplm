@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 15.0+e\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-02-08 09:14+0000\n"
-"PO-Revision-Date: 2022-02-08 10:46+0100\n"
+"PO-Revision-Date: 2023-02-21 14:48+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -15,12 +15,12 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: \n"
 "Language: it\n"
-"X-Generator: Poedit 2.0.6\n"
+"X-Generator: Poedit 2.4.2\n"
 
 #. module: plm_report_language_helper
 #: model:ir.model.fields.selection,name:plm_report_language_helper.selection__plm_bomchoselanguage__bom_type__plm_report_plm_bom_structure_flat
 msgid "BOM All Flat Summarized"
-msgstr "Distinta base totale riepilogativa appiattita"
+msgstr "Distinta base piatta sommarizzata"
 
 #. module: plm_report_language_helper
 #: model:ir.model.fields.selection,name:plm_report_language_helper.selection__plm_bomchoselanguage__bom_type__plm_report_plm_bom_structure_all
@@ -30,29 +30,29 @@ msgstr "Distinta base a tutti i livelli"
 #. module: plm_report_language_helper
 #: model:ir.model.fields.selection,name:plm_report_language_helper.selection__plm_bomchoselanguage__bom_type__plm_report_plm_bom_structure_all_sum
 msgid "BOM All Levels Summarized"
-msgstr "Distinta base di tutti i livelli riassunti"
+msgstr "Distinta base di tutti i livelli sommarizzati"
 
 #. module: plm_report_language_helper
 #: model:ir.model.fields.selection,name:plm_report_language_helper.selection__plm_bomchoselanguage__bom_type__plm_report_plm_bom_structure_one
 msgid "BOM One Level"
-msgstr "Distinta base 1 livello"
+msgstr "Distinta base primo livello"
 
 #. module: plm_report_language_helper
 #: model:ir.model.fields.selection,name:plm_report_language_helper.selection__plm_bomchoselanguage__bom_type__plm_report_plm_bom_structure_one_sum
 msgid "BOM One Level Summarized"
-msgstr "Distinta base a un livello riassunto"
+msgstr "Distinta base a un livello sommarizzato"
 
 #. module: plm_report_language_helper
 #: model:ir.model.fields.selection,name:plm_report_language_helper.selection__plm_bomchoselanguage__bom_type__plm_report_plm_bom_structure_leaves
 msgid "BOM Only Leaves Summarized"
-msgstr "Distinta base solo foglie riassunte"
+msgstr "Distinta base solo foglie sommarizzate"
 
 #. module: plm_report_language_helper
 #: code:addons/plm_report_language_helper/wizard/wizard.py:0
 #: model:ir.model.fields,field_description:plm_report_language_helper.field_plm_bomchoselanguage__bom_type
 #, python-format
 msgid "Bom Report Type"
-msgstr "Tipo di rapporto distinta base"
+msgstr "report tipo distinta base"
 
 #. module: plm_report_language_helper
 #: model_terms:ir.ui.view,arch_db:plm_report_language_helper.plm_bomchoselanguage_form
@@ -65,23 +65,23 @@ msgstr "Annulla"
 #: model:ir.model.fields,help:plm_report_language_helper.field_plm_bomchoselanguage__bom_type
 #, python-format
 msgid "Chose the Bom report you would like to print"
-msgstr "Scegli il rapporto sulla distinta base che desideri stampare"
+msgstr "Scegli la stampa della distinta che desideri"
 
 #. module: plm_report_language_helper
 #: model:ir.actions.act_window,name:plm_report_language_helper.act_plm_print_boms
 msgid "Create Boms Report"
-msgstr "Crea rapporto sulle distinte base"
+msgstr "Stampa distinte base"
 
 #. module: plm_report_language_helper
 #: model:ir.actions.act_window,name:plm_report_language_helper.act_plm_print_spare_bom
 msgid "Create Report Spare Bom"
-msgstr "Crea rapporto distinta base di riserva"
+msgstr "Stampa manuale ricambio"
 
 #. module: plm_report_language_helper
 #: model_terms:ir.ui.view,arch_db:plm_report_language_helper.plm_bomchoselanguage_form
 #: model_terms:ir.ui.view,arch_db:plm_report_language_helper.plm_sparechoselanguage_form
 msgid "Create Spare Report"
-msgstr "Crea rapporto di ricambio"
+msgstr "Stampa manuale ricambio"
 
 #. module: plm_report_language_helper
 #: model:ir.model.fields,field_description:plm_report_language_helper.field_plm_bomchoselanguage__create_uid
@@ -99,7 +99,7 @@ msgstr "Creato il"
 #: model_terms:ir.ui.view,arch_db:plm_report_language_helper.plm_bomchoselanguage_form
 #: model_terms:ir.ui.view,arch_db:plm_report_language_helper.plm_sparechoselanguage_form
 msgid "Creation of Spare Bom"
-msgstr "Creazione di Bom di ricambio"
+msgstr "Crea distinta di ricambio"
 
 #. module: plm_report_language_helper
 #: model:ir.model.fields,field_description:plm_report_language_helper.field_plm_bomchoselanguage__display_name
@@ -121,7 +121,7 @@ msgstr "Scarica"
 #: model:ir.model.fields,field_description:plm_report_language_helper.field_plm_sparechoselanguage__datas_name
 #, python-format
 msgid "Download file name "
-msgstr "Scarica il nome del file "
+msgstr "Nome file"
 
 #. module: plm_report_language_helper
 #: model_terms:ir.ui.view,arch_db:plm_report_language_helper.plm_sparechoselanguage_form
@@ -138,7 +138,7 @@ msgstr "ID"
 #: model:ir.model.fields,help:plm_report_language_helper.field_plm_sparechoselanguage__onelevel
 msgid "If you check this box, the report will be made in one level"
 msgstr ""
-"Se si seleziona questa casella, il rapporto verrà creato nel primo livello"
+"Se si seleziona questa casella, verrà stampato il report a primo livello"
 
 #. module: plm_report_language_helper
 #: code:addons/plm_report_language_helper/wizard/wizard.py:0
