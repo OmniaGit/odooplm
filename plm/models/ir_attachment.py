@@ -834,22 +834,26 @@ class PlmDocument(models.Model):
         return False
     
     def action_un_release(self):
+        if not self.env.user.has_group("plm.group_plm_admin_unrelease"):
+            raise UserError("You are not allowed to perform such an action ask to your PLM admin")
         for product_product_id in self:
             body ="""
                 FORCE draft action from super plm admin user !!!
                 data could be not as expected !!!
             """
             product_product_id.message_post(body=body)
-            product_product_id.state='draft'
+            product_product_id.with_context(check=False).state='draft'
         
     def action_un_release_release(self):
+        if not self.env.user.has_group("plm.group_plm_admin_unrelease"):
+            raise UserError("You are not allowed to perform such an action ask to your PLM admin")
         for product_product_id in self:
             body ="""
                 FORCE release action from super plm admin user !!!
                 data could be not as expected !!!
             """
             product_product_id.message_post(body=body)
-            product_product_id.state='released'
+            product_product_id.with_context(check=False).state='draft'
             
     def action_obsolete(self):
         """
