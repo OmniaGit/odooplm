@@ -4,10 +4,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 15.0+e\n"
+"Project-Id-Version: Odoo Server 15.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-22 14:49+0000\n"
-"PO-Revision-Date: 2022-03-22 16:00+0100\n"
+"POT-Creation-Date: 2023-02-21 13:05+0000\n"
+"PO-Revision-Date: 2023-02-21 14:10+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: \n"
 "Language: it\n"
-"X-Generator: Poedit 2.0.6\n"
+"X-Generator: Poedit 2.4.2\n"
 
 #. module: plm_engineering
 #: model_terms:ir.ui.view,arch_db:plm_engineering.plm_component_create_normal_bom
@@ -30,43 +30,35 @@ msgstr "Distinta base"
 #. module: plm_engineering
 #: model:ir.model,name:plm_engineering.model_mrp_bom_line
 msgid "Bill of Material Line"
-msgstr "Riga distinta base"
+msgstr "Righe distinta base"
 
 #. module: plm_engineering
-#: code:addons/plm_engineering/models/mrp_bom_line.py:0
 #: model:ir.model.fields,field_description:plm_engineering.field_mrp_bom__type
-#: model:ir.model.fields,field_description:plm_engineering.field_mrp_bom_line__type
-#, python-format
 msgid "BoM Type"
 msgstr "Tipo di Distinta base"
 
 #. module: plm_engineering
 #: model_terms:ir.ui.view,arch_db:plm_engineering.plm_component_create_normal_bom
 msgid "Cancel"
-msgstr "Annulla"
+msgstr "Cancella"
 
 #. module: plm_engineering
 #: code:addons/plm_engineering/models/product_product.py:0
 #, python-format
 msgid "Could not convert source bom to %r"
-msgstr "Impossibile convertire il codice sorgente in %r"
+msgstr "Distinta base non convertibile a %r"
 
 #. module: plm_engineering
 #: model:ir.actions.act_window,name:plm_engineering.act_create_normalBom
 #: model_terms:ir.ui.view,arch_db:plm_engineering.plm_component_create_normal_bom
 msgid "Create Normal Bom"
-msgstr "Impossibile convertire la distinta base di origine in %r"
-
-#. module: plm_engineering
-#: model_terms:ir.actions.act_window,help:plm_engineering.plm_action_ebom_form
-msgid "Create new document"
-msgstr "Crea nuovo documento"
+msgstr "Crea Bom Normale"
 
 #. module: plm_engineering
 #: code:addons/plm_engineering/models/product_product.py:0
 #, python-format
 msgid "Created %r"
-msgstr "Creato %r"
+msgstr "Creata %r"
 
 #. module: plm_engineering
 #: model_terms:ir.ui.view,arch_db:plm_engineering.plm_temporary_message_form
@@ -76,7 +68,7 @@ msgstr "Relazione sulla creazione"
 #. module: plm_engineering
 #: model_terms:ir.ui.view,arch_db:plm_engineering.plm_component_create_normal_bom
 msgid "Creation of Normal Bom"
-msgstr "Creazione di una Bom normale"
+msgstr "Creazione distinta normale"
 
 #. module: plm_engineering
 #: model:ir.model.fields.selection,name:plm_engineering.selection__mrp_bom__type__ebom
@@ -92,26 +84,12 @@ msgstr "Distinte base di ingegneria"
 #: code:addons/plm_engineering/models/plm_temporary.py:0
 #, python-format
 msgid "Normal BoM for Part '%s' and revision '%s' already exists."
-msgstr ""
-"Esiste già una distinta base normale per la parte '%s' e la revisione '%s'."
+msgstr "Esiste già una distinta base normale per la parte '%s' e la revisione '%s'."
 
 #. module: plm_engineering
 #: model_terms:ir.ui.view,arch_db:plm_engineering.plm_temporary_message_form
 msgid "Ok"
-msgstr "Ok"
-
-#. module: plm_engineering
-#: code:addons/plm_engineering/models/mrp_bom_line.py:0
-#: model:ir.model.fields,help:plm_engineering.field_mrp_bom_line__type
-#, python-format
-msgid ""
-"Phantom BOM: When processing a sales order for this product, the delivery "
-"order will contain the raw materials, instead of the finished product. Ship "
-"this product as a set of components (kit)."
 msgstr ""
-"Distinta base fantasma: durante l'elaborazione di un ordine cliente per "
-"questo prodotto, l'ordine di consegna conterrà le materie prime, anziché il "
-"prodotto finito. Spedire questo prodotto come un set di componenti (kit)."
 
 #. module: plm_engineering
 #: model:ir.model,name:plm_engineering.model_product_product
@@ -127,7 +105,7 @@ msgstr "Ordine di produzione"
 #: code:addons/plm_engineering/models/product_product_kanban.py:0
 #, python-format
 msgid "Related Boms"
-msgstr "Related Boms"
+msgstr "Distinte relazionate"
 
 #. module: plm_engineering
 #: code:addons/plm_engineering/models/plm_temporary.py:0
@@ -138,7 +116,7 @@ msgstr "Risultato"
 #. module: plm_engineering
 #: model:ir.ui.menu,name:plm_engineering.menu_relation_ebom
 msgid "Search on Engineering Bill of Materials"
-msgstr "Cerca su Distinta materiali di ingegneria"
+msgstr "Cerca su distinta di ingegneria"
 
 #. module: plm_engineering
 #: code:addons/plm_engineering/models/plm_temporary.py:0
@@ -154,7 +132,7 @@ msgstr "ID E-Bom di origine"
 #. module: plm_engineering
 #: model:ir.model.fields,field_description:plm_engineering.field_mrp_bom__ebom_source_id
 msgid "Source Ebom ID"
-msgstr "ID Ebom di origine"
+msgstr "ID E-Bom di origine"
 
 #. module: plm_engineering
 #: model:ir.model,name:plm_engineering.model_plm_temporary
@@ -165,5 +143,4 @@ msgstr "Classe Temporanea"
 #: code:addons/plm_engineering/models/plm_temporary.py:0
 #, python-format
 msgid "The creation of the normalBom works only on product_product object"
-msgstr ""
-"La creazione della normale Bom funziona solo su prodotto oggetto prodotto"
+msgstr "La creazione della distinta normale funziona solo dei prodotti variante"

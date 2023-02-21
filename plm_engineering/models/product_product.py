@@ -61,7 +61,7 @@ class ProductProductExtension(models.Model):
         bom_type = self.env['mrp.bom']
         bom_l_type = self.env['mrp.bom.line']
         prod_tmpl_obj = self.env['product.template']
-        stock_config_settings = self.env['res.config.settings']
+        stock_config_settings = self.env['res.config.settings'].sudo()
         variant_is_installed = False
         if len(stock_config_settings.search([('group_product_variant', '=', 1)])) > 0:
             variant_is_installed = True
