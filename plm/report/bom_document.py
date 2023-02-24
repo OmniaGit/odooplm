@@ -21,7 +21,7 @@ class ReportDocStructure(models.AbstractModel):
     @api.model
     def get_doc_bom(self, attachment, level=False, parent=False):
         data = self.singleItem(attachment, level)
-        return self.env.ref('plm.report_doc_bom_line')._render({'data': data})
+        return self.env['ir.ui.view']._render_template('plm.report_doc_bom_line', {'data': data})
 
     def singleItem(self, attachment, level, recursion=True):
         children_list = []

@@ -310,6 +310,7 @@
                 <field name="description"/>
                 <field name="engineering_state"/>
                 <field name="document_type"/>
+                <field name="is_checkout" invisible="True"/>
                 <field name="is_linkedcomponents" invisible="True"/>
                 <templates>
                     <t t-value="record.engineering_state.raw_value" t-set="stateToUse"/>
@@ -328,7 +329,16 @@
                         				<strong attrs="{'invisible': [('document_type', '!=', '2d')]}">2D</strong>
                         				<strong attrs="{'invisible': [('document_type', '!=', '3d')]}">3D</strong>
                         			</td>
+                        			<td name="check-in-out">
+                                         <strong>
+                                             <field name="checkout_user"
+                                                    attrs="{'invisible': ['|',('checkout_user', '=', 'False'),('checkout_user', '=', '')]}"/>
+                                         </strong>
+                        			</td>
                         			<td name="Component" style="text-align: right; width: 100%; padding:1px;">
+                                        <div class="fa fa-lock fa-2x"
+                                             style="color:red;display: inline;"
+                                             attrs="{'invisible': ['|',('checkout_user', '=', 'False'),('checkout_user', '=', '')]}"/>
 	                            		<div class="fa fa-dropbox fa-2x" aria-label="Missing Component" style="color:#ff8300;" attrs="{'invisible': [('is_linkedcomponents', 'not in', [False, []])]}"/>
                             			<div class="fa fa-dropbox fa-2x" aria-label="Founding Component" style="color: green;" attrs="{'invisible': [('is_linkedcomponents', 'in', [False, []])]}"/>
                             		</td>
