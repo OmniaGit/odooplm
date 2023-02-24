@@ -55,6 +55,7 @@
         "views/mail_activity_type.xml",
         "views/sequence.xml",
         "views/menu.xml",
+        "views/product_category.xml",
         # QwebTemplates
         'views/templates.xml',
         # Reports Template

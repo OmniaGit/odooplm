@@ -36,6 +36,7 @@ from . import product_product              # Has to be before "ir_attachment" du
 from . import ir_attachment                # Has to be before "ir_attachment_relations" due to related field
 from . import ir_attachment_relations
 from . import product_product_kanban
+from . import product_category
 from . import plm_backup_document
 from . import plm_checkout
 from . import res_config_settings

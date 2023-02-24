@@ -168,7 +168,9 @@ class ProductProduct(models.Model):
                                        'document_id',
                                        _('Linked Docs'),
                                        ondelete='cascade')
-        
+    
+    kit_bom = fields.Boolean(_('KIT Bom Type'))
+    
     def _computeStd(self):
         for product_product_id in self:
             product_product_id.show_std_field1 = False

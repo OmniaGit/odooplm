@@ -78,7 +78,8 @@ class ProductTemplate(models.Model):
                                          default=True,
                                          compute=lambda self: self._compute_eng_code_editable()
                                          )
-
+    kit_bom = fields.Boolean(_('KIT Bom Type'))
+    
     def unlinkCheckBomRelations(self):
 
         def print_where_struct(self, where_struct):
