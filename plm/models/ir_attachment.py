@@ -126,7 +126,7 @@ class IrAttachment(models.Model):
         if self.env.is_superuser():
             return True
         if self:
-            self.env['ir.attachment'].flush(['is_plm','public'])
+            self.env['ir.attachment'].flush_model()
             self._cr.execute('SELECT  id, is_plm, public FROM ir_attachment WHERE id IN %s', [tuple(self.ids)])
             attachment_id_toCheck=[]
             for attachment_id, is_plm, public in self._cr.fetchall():
@@ -183,7 +183,7 @@ class IrAttachment(models.Model):
     
     def browseLastRev(self):
         self.ensure_one()
-        out = self.search([('engineering_code', '=', objDoc.engineering_code)],
+        out = self.search([('engineering_code', '=', self.engineering_code)],
                           order='engineering_revision DESC',
                           limit=1)
         for obj in out:
@@ -195,7 +195,7 @@ class IrAttachment(models.Model):
             get the last rev
         """
         newIds = self._getlastrev(self.ids)
-        return self.browse(newIds).read(['engineering_code'])
+        return self.browse(newIds).mapped('name')
 
     @api.model
     def _isDownloadableFromServer(self, server_name):
