@@ -203,8 +203,8 @@ class UploadDocument(Controller):
         related_attachment_id = eval(related_attachment_id)
         if doc_name:
             value1 = kw.get('file_stream').stream.read()
-            ir_attachment_id  = request.env['ir.attachment'].search([('engineering_document_name',  '=', doc_name),
-                                                                     ('revisionid', '=', doc_rev)])
+            ir_attachment_id  = request.env['ir.attachment'].sudo().search([('engineering_document_name',  '=', doc_name),
+                                                                             ('revisionid', '=', doc_rev)])
             to_write = {'datas': base64.b64encode(value1),
                         'name': kw.get('filename',doc_name),
                         'engineering_document_name': doc_name,
@@ -213,7 +213,7 @@ class UploadDocument(Controller):
             new_context = request.env.context.copy()
             new_context['backup'] = False
             new_context['check'] = False    # Or zip file will not be updated if in check-in
-            contex_brw = request.env['ir.attachment'].with_context(new_context)
+            contex_brw = request.env['ir.attachment'].with_context(new_context).sudo()
             to_write['is_plm'] = True
             if not ir_attachment_id:
                 ir_attachment_id = contex_brw.create(to_write)
