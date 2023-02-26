@@ -96,7 +96,7 @@
                                 icon="fa-bars"/>
                         <button name="open_related_document_revisions"
                                 type="object"
-                                string="BOM Rev."
+                                string="Rev.S"
                                 class="oe_stat_button"
                                 icon="fa-tasks"
                                 attrs="{'invisible':[('attachment_revision_count','&lt;=','1')]}">
