@@ -154,7 +154,7 @@ class PlmDocument(models.Model):
             get the last rev
         """
         newIds = self._getlastrev(self.ids)
-        return self.browse(newIds).read(['engineering_document_name'])
+        return self.browse(newIds).mapped('name')
 
     @api.model
     def _isDownloadableFromServer(self, server_name):
@@ -804,14 +804,14 @@ class PlmDocument(models.Model):
         """
             action to be executed for Draft state
         """
-        return self.commonWFAction(True, 'draft', False)
+        return self.sudo().commonWFAction(True, 'draft', False)
 
     
     def action_confirm(self):
         """
             action to be executed for Confirm state
         """
-        return self.commonWFAction(False, 'confirmed', False)
+        return self.sudo().commonWFAction(False, 'confirmed', False)
 
     
     def action_release(self):
@@ -826,11 +826,12 @@ class PlmDocument(models.Model):
             if oldObject.ischecked_in():
                 ctx = self.env.context.copy()
                 ctx['check'] = False
-                oldObject.with_context(ctx).attachment_release_user = self.env.uid
-                oldObject.with_context(ctx).attachment_release_date = datetime.utcnow()
+                sudoobject = oldObject.with_context(ctx).sudo()
+                sudoobject.attachment_release_user = self.env.uid
+                sudoobject.attachment_release_date = datetime.utcnow()
                 to_release += oldObject
         if to_release:
-            to_release.commonWFAction(False, 'released', False)
+            to_release.sudo().commonWFAction(False, 'released', False)
         return False
     
     def action_un_release(self):
