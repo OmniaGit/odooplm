@@ -114,6 +114,9 @@
             </form>
         </field>
     </record> 
+    
+    <!-- THIS VIEW IS THE ONE USED TO CUSTOMIZE THE CAD APPLICATION -->
+    
     <record model="ir.ui.view" id="plm_component_base_form">
         <field name="name">plm.base.component</field>
         <field name="model">product.product</field>
@@ -147,20 +150,26 @@
                 </header>
 
                 <sheet>
-                    <group name="plm_fields_area" colspan="6" col="6">
-	                    <field name="name" string="Description" colspan="6"/>
-	                    <!-- attrs="{'readonly':[('is_engcode_editable','=', False)]}" -->
-                        <field name="engineering_code" colspan="4"  select="1"/>
-                        <field name="engineering_revision" colspan="2"
-                                    attrs="{'readonly':[('is_engcode_editable','=', False)]}"/>
-                        <field name="std_description" colspan="6" attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}"/>
-                        <field name="show_std_field1" invisible="1"/>
-                        <field name="show_std_field2" invisible="1"/>
-                        <field name="show_std_field3" invisible="1"/>
-                        <field name="readonly_std_umc1" invisible="1"/>
-                        <field name="readonly_std_umc2" invisible="1"/>
-                        <field name="readonly_std_umc3" invisible="1"/>
-                        <group name="std_desc_attrs" col="4" colspan="4" string="Standard Description Parameters" attrs="{'invisible': [('std_description','=', False)]}">
+                    <group name="plm_fields_area"  colspan="4">
+	                    <field name="name" string="Description" colspan="4"/>
+                        <field name="id" invisible="1"/>
+                        <group name="engineering_group" colspan="4" col="6">
+	                        <field name="engineering_code"  colspan="4" select="1" attrs="{'readonly':[('id','>',0)]}"/>
+	                        <field name="engineering_revision" colspan="2"
+	                                    attrs="{'readonly':[('id','>',0)]}"/>
+                        </group>
+                        <group name="str_description" colspan="4">
+	                        <field name="std_description"
+	                               colspan="4"
+	                               attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}"/>
+	                        <field name="show_std_field1" invisible="1"/>
+	                        <field name="show_std_field2" invisible="1"/>
+	                        <field name="show_std_field3" invisible="1"/>
+	                        <field name="readonly_std_umc1" invisible="1"/>
+	                        <field name="readonly_std_umc2" invisible="1"/>
+	                        <field name="readonly_std_umc3" invisible="1"/>
+                        </group>
+                        <group name="std_desc_attrs" colspan="4" string="Standard Description Parameters" attrs="{'invisible': [('std_description','=', False)]}">
                             <field name="std_umc1"
                                    force_save="1"
                                    attrs="{'readonly':['|',('readonly_std_umc1','=',True),('engineering_state','in',['released','obsoleted'])], 'invisible': [('show_std_field1','=',False)]}"/>
@@ -177,12 +186,13 @@
                             <field name="std_value3"
                                    attrs="{'readonly':[('std_umc3','=',False),('engineering_state','in',['released','obsoleted'])], 'invisible': [('show_std_field3','=', False)]}"/>
                         </group>
-                        <field name="desc_modify" colspan="6" attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])], 'invisible': [('engineering_revision', '=', 0)]}"/>
+                        <field name="desc_modify" colspan="4" attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])], 'invisible': [('engineering_revision', '=', 0)]}"/>
 	                    <field name="detailed_type" invisible="1"/>
 	                    <field name="source_product" invisible="1"/>
 	                    <field name="is_engcode_editable" invisible="1"/>
                     </group>
-                    <notebook colspan="6" col="6">
+                    <group name="notebooks" colspan="4">
+                    <notebook>
                         <page name="technical_infos" string="Technical Information">
                             <group name="group_general">
                                 <field name="categ_id" string="Category"/>
@@ -224,6 +234,7 @@
                             </group>
                         </page>
                     </notebook>
+                    </group>
                 </sheet>
             </form>
         </field>

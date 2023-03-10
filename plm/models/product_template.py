@@ -29,6 +29,7 @@ from odoo import models
 from odoo import fields
 from odoo import api
 from odoo import _
+from odoo.exceptions import UserError
 import logging
 
 USED_STATES = [('draft', _('Draft')),
