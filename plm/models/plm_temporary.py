@@ -87,5 +87,6 @@ class ProductTemporary(models.TransientModel):
         return ir_attachemnt_id, product_id 
 
     
-        
+    def action_create_normalBom(self):
+        pass
         

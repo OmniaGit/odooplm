@@ -32,15 +32,27 @@
             <xpath expr="//group[@name='technical_infos_group']" position="after">
                 <group col="4" colspan="4" string="Raw Material">
 					<a target="new"  href="https://www.omniasolutions.website/blog/developer-and-it-here-you-will-find-post-regarding-very-technical-aspect-of-programming-and-it-those-thinks-are-daily-used-by-omniasolutions-and-we-hope-you-that-will-help-you-3/post/cutted-parts-module-37" title=" BOM line quantity will be computed with this formula&#10; {&#10;  [(X Raw Material length * X Percent Wastage) + X Material Wastage] * &#10;     [(Y Raw Material length * Y Percent Wastage) + Y Material Wastage]&#10; } * Raw Material Conversion Factor&#10; "><i class="fa fa-info-circle"></i></a>
-                    <field name="is_row_material" colspan="4"/>
-                    <field name="row_material" attrs="{'invisible':[('is_row_material', '=', True)]}"/>
-                    <field name="row_material_factor" attrs="{'invisible':[('is_row_material', '=', True)]}"/>
-                    <field name="row_material_x_length"/>
-                    <field name="row_material_y_length"/>
-                    <field name="wastage_percent" attrs="{'invisible':[('is_row_material', '=', True)]}"/>
-                    <field name="wastage_percent_y" attrs="{'invisible':[('is_row_material', '=', True)]}"/>
-                    <field name="material_added" attrs="{'invisible':[('is_row_material', '=', True)]}"/>
-                    <field name="material_added_y" attrs="{'invisible':[('is_row_material', '=', True)]}"/>
+                    <group colspan="4">
+                        <group colspan="4">
+                            <field name="is_row_material" />
+	                    </group>
+	                    <group colspan="4">
+		                    <field name="row_material"
+		                           attrs="{'invisible':[('is_row_material', '=', True)]}"
+		                           domain="[('is_row_material','=',1)]"/>
+		                    <field name="row_material_factor" attrs="{'invisible':[('is_row_material', '=', True)]}"/>
+	                    </group>
+	                    <group colspan="1">
+		                    <field name="row_material_x_length"/>
+		                    <field name="wastage_percent" attrs="{'invisible':[('is_row_material', '=', True)]}"/>
+		                    <field name="material_added" attrs="{'invisible':[('is_row_material', '=', True)]}"/>
+                        </group>
+                        <group colspan="1">
+                            <field name="row_material_y_length"/>
+		                    <field name="wastage_percent_y" attrs="{'invisible':[('is_row_material', '=', True)]}"/>
+		                    <field name="material_added_y" attrs="{'invisible':[('is_row_material', '=', True)]}"/>
+	                    </group>
+                    </group>
                 </group>
             </xpath>
         </field>
@@ -49,7 +61,7 @@
     <record id="plm_cutted_normal_bom" model="ir.ui.view">
         <field name="name">plm.relation.normal</field>
         <field name="model">plm.temporary</field>
-        <field name="inherit_id" ref="plm_engineering.plm_component_create_normal_bom"/>
+        <field name="inherit_id" ref="plm.plm_component_create_normal_bom"/>
         <field name="type">form</field>
         <field name="arch" type="xml">
             <field name="summarize" position="after">

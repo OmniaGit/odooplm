@@ -20,7 +20,7 @@
 ##############################################################################
 {
     "name": "Product Lifecycle Management",
-    "version": "16.0.1",
+    "version": "16.0.2",
     "author": "OmniaSolutions",
     "website": "https://odooplm.omniasolutions.website",
     "category": "Manufacturing/Product Lifecycle Management",
@@ -56,6 +56,7 @@
         "views/sequence.xml",
         "views/menu.xml",
         "views/product_category.xml",
+        "views/plm_temporaty.xml",
         # QwebTemplates
         'views/templates.xml',
         # Reports Template

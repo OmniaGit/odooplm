@@ -20,7 +20,7 @@
 #######################True#######################################################
 {
     "name": "PLM Cutted Parts",
-    "version": "16.0.1",
+    "version": "16.0.2",
     "author": "OmniaSolutions",
     "website": "https://odooplm.omniasolutions.website",
     "category": "Product Lifecycle Management",
@@ -29,8 +29,7 @@
     "images": [],
     "license": "AGPL-3",
     "depends": ["mrp",
-                "plm",
-                "plm_engineering"],
+                "plm"],
     "data": [
         "views/product.xml",
         "views/mrp_bom_lines.xml",

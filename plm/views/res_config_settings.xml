@@ -210,7 +210,7 @@
                                         Add the capability to update the manufacturing order from a revised BOM
                                         <b>
                                         ATTENTION !! This module depends on plm_mrp_bom_update from:
-                                        git clone -b 15.0 https://github.com/OmniaSolutions/odooAddons.git</b>
+                                        git clone -b 16.0 https://github.com/OmniaSolutions/odooAddons.git</b>
                                     </div>
                                 </div>
                             </div>

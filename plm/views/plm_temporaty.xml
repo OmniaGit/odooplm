@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="plm_component_create_normal_bom" model="ir.ui.view">
+        <field name="name">plm.relation.normal</field>
+        <field name="model">plm.temporary</field>
+        <field name="arch" type="xml">
+            <form string="Creation of Normal Bom">
+                <sheet>
+                    <group string="Are you sure you want to create a new Normal Bom?">
+                        <field name="summarize"/>
+                        <field name="migrate_custom_lines"/>
+                    </group>
+                </sheet>
+            <footer>
+                <button special="cancel" string="Cancel"/>
+                <button string="Create Normal Bom" name="action_create_normalBom" type="object"/>
+            </footer>
+            </form>
+        </field>
+    </record>
+</odoo>
