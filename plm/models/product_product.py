@@ -170,7 +170,7 @@ class ProductProduct(models.Model):
                                        ondelete='cascade')
     
     kit_bom = fields.Boolean(_('KIT Bom Type'))
-    
+            
     def _computeStd(self):
         for product_product_id in self:
             product_product_id.show_std_field1 = False
@@ -753,7 +753,7 @@ class ProductProduct(models.Model):
         for checkObj in self:
             checkObj.unlinkCheckFirstLevel()
             checkObj.linkeddocuments.unlinkCheckDocumentRelations()
-            checkObj.unlinkCheckBomRelations()
+            checkObj.product_tmpl_id.unlinkCheckBomRelations()
             checkObj.unlinkRestorePreviousComponent()
         return super(ProductProduct, self).unlink()
 
@@ -954,6 +954,9 @@ class ProductProduct(models.Model):
     
     def write(self, vals):
         for product in self:
+            for document in product.linkeddocuments:
+                vals.update({'image_variant_1920': document.preview})
+                break
             if 'is_engcode_editable' not in vals and product.engineering_code not in ['-',False]:
                 vals['is_engcode_editable'] = False
             vals.update(product.checkMany2oneClient(vals))

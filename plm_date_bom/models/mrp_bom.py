@@ -95,8 +95,8 @@ class mrp_bom_extension_data(models.Model):
 
     def _showAllBomsToCompute(self):
         outLines = []
-        def recursion(bomBrwsList):
-            for bomBrws in bomBrwsList:
+        def recursion(mrp_bom_ids):
+            for bomBrws in mrp_bom_ids:
                 for bomLineBrws in bomBrws.bom_line_ids:
                     templateBrws = bomLineBrws.product_id.product_tmpl_id
                     bomIds = self.getBomFromTemplate(templateBrws, 'normal')

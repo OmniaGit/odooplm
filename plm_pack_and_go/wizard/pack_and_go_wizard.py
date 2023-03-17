@@ -155,7 +155,7 @@ class PackAndGo(models.TransientModel):
             compId = False
             compRev = False
             if comp:
-                compId = comp.id
+                compId = comp.product_tmpl_id.id
                 compRev = comp.engineering_revision
             singleCreateDict = {'component_id': compId,
                                 'comp_rev': compRev,
@@ -182,8 +182,8 @@ class PackAndGo(models.TransientModel):
                 export_other.append(newViewObj.id)
 
         def recursionDocuments(docBrwsList):
-            for docBrws in docBrwsList:          
-                res = plmDocObject.CheckAllFiles([docBrws.id, [],
+            for ir_attachment_id in docBrwsList:          
+                res = plmDocObject.CheckAllFiles([ir_attachment_id.id, [],
                                                   False,
                                                   'localhost',
                                                   'pack_go'])   # Get all related documents to root documents
@@ -192,18 +192,18 @@ class PackAndGo(models.TransientModel):
                     if docId in checkedDocumentIds:
                         continue
                     relDocBrws = plmDocObject.browse(docId)
-                    compBrws = False
+                    product_template_id = False
                     for compBrwsRes in relDocBrws.linkedcomponents:
-                        compBrws = compBrwsRes
+                        product_template_id = compBrwsRes
                         break
-                    docCheckCreate(relDocBrws, compBrws)
+                    docCheckCreate(relDocBrws, product_template_id)
                     checkedDocumentIds.append(docId)
 
         #self.getAllAvailableTypes()   # Setup available types
         compIds = self.getBomCompIds()
-        recursionDocuments(self.component_id.linkeddocuments)     # Check / Create ROOT structure
-        for compBrws in objProduct.browse(compIds):                         # Check / Create BOM structure
-            recursionDocuments(compBrws.linkeddocuments)
+        recursionDocuments(self.component_id.product_variant_id.linkeddocuments)     # Check / Create ROOT structure
+        for product_template_id in objProduct.browse(compIds):                         # Check / Create BOM structure
+            recursionDocuments(product_template_id.product_variant_id.linkeddocuments)
 
         self.export_2d = export_2d
         self.export_3d = export_3d
@@ -292,22 +292,21 @@ class PackAndGo(models.TransientModel):
         '''
             Get all components composing the Bill of Materials
         '''
-        compIds = []
-        def recursion(bomBrwsList):
-            for bomBrws in bomBrwsList:
-                for bomLineBrws in bomBrws.bom_line_ids:
-                    prodId = bomLineBrws.product_id.id
-                    if prodId in compIds:
+        product_template_ids = []
+        def recursion(mrp_bom_ids):
+            for mrp_bom_id in mrp_bom_ids:
+                for mrp_bom_line_id in mrp_bom_id.bom_line_ids:
+                    product_template_id = mrp_bom_line_id.product_id.product_tmpl_id
+                    if product_template_id.id in product_template_ids:
                         continue
-                    compIds.append(prodId)
-                    prodTmplBrws = bomLineBrws.product_id.product_tmpl_id
-                    bomBrwsList = self.getBomFromTemplate(prodTmplBrws)
-                    recursion(bomBrwsList)
-        compIds.append(self.component_id.id)
+                    product_template_ids.append(product_template_id.id)
+                    child_mrp_bom_ids = self.getBomFromTemplate(product_template_id)
+                    recursion(child_mrp_bom_ids)
+        product_template_ids.append(self.component_id.id)
         startingBom = self.getBomFromTemplate(self.component_id)
         if startingBom:
             recursion(startingBom)    
-        return compIds
+        return product_template_ids
 
     def checkPlmConvertionInstalled(self):
         domain = [('state', 'in', ['installed', 'to upgrade', 'to remove']), ('name', '=', 'plm_automated_convertion')]
