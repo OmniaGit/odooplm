@@ -319,7 +319,8 @@
                             <div style="margin-right: 3px;border-left: 1px solid lightgray;border-right: 1px solid lightgray;">
 	                           <field name="preview" 
 	                                  widget="image"
-	                                  options="{'zoom': true, 'zoom_delay': 800, 'width':150,'height':150}"
+	                                  class="oe_avatar"
+	                                  options="{'zoom': true, 'zoom_delay': 800, 'size':[100,100]}"
 	                                  />
                             </div>
                             <table style="width: 100%; line-height: 1;">
