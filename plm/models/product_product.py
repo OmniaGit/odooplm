@@ -954,9 +954,6 @@ class ProductProduct(models.Model):
     
     def write(self, vals):
         for product in self:
-            for document in product.linkeddocuments:
-                vals.update({'image_variant_1920': document.preview})
-                break
             if 'is_engcode_editable' not in vals and product.engineering_code not in ['-',False]:
                 vals['is_engcode_editable'] = False
             vals.update(product.checkMany2oneClient(vals))
