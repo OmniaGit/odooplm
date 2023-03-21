@@ -918,8 +918,15 @@ class IrAttachment(models.Model):
         res = super(IrAttachment, self).create(to_create_vals)
         res.check_unique()
         return res
-
     
+    def update_component_preview(self):
+        if self.document_type=='3d' and self.preview:
+            to_update = {}
+            for product_tmpl in self.linkedcomponents:
+                to_update[product_tmpl.engineering_revision]=product_tmpl                
+            if to_update:
+                to_update[max(to_update)].image_1920=self.preview
+        
     def write(self, vals):
         if not self.env.context.get('odooPLM'):
             return super(IrAttachment, self).write(vals)
@@ -1159,8 +1166,6 @@ class IrAttachment(models.Model):
                                                                                        ('parent_id', '=', ir_a_id),
                                                                                        ('child_id', '=', ir_a_id)])
 
- 
-    
     def _compute_linkedcomponents(self):
         for record in self:
             if record.linkedcomponents:

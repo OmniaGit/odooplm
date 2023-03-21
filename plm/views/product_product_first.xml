@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+<!-- This View is the one used in the advanced bom for the tree -->
     <record model="ir.ui.view" id="plm_component_base_tree">
         <field name="name">plm.base.component.tree</field>
         <field name="model">product.product</field>

@@ -187,11 +187,6 @@ class ProductTemplate(models.Model):
         return super().create(to_create)
 
     def write(self, vals):
-        for product in self:
-            for document in product.product_variant_id.linkeddocuments:
-                if document.document_type=='3d':
-                    vals.update({'image_1920': document.preview})
-                    break
         vals = self.plm_sanitize(vals)
         return super(ProductTemplate, self).write(vals)
 

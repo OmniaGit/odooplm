@@ -74,6 +74,7 @@ class UploadDocument(Controller):
                 to_write['preview'] = val_2
             doc_brws = request.env['ir.attachment'].browse(doc_id)
             doc_brws.write(to_write)
+            doc_brws.sudo().update_component_preview()
             doc_brws.setupCadOpen(kw.get('hostname', ''), kw.get('hostpws', ''), operation_type='save')
             logging.info('upload %r' % (doc_id))
             return Response('Upload succeeded', status=200)
