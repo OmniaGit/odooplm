@@ -52,10 +52,10 @@
         "views/ir_cron.xml",
         "views/mail_activity_type.xml",
         "views/sequence.xml",
-        "views/menu.xml",
         "views/plm_cad_open.xml",
         "views/plm_cad_open_bck.xml",
         "views/mrp_extension.xml",
+        "views/menu.xml",
         # Reports Template
         "report/bom_structure_report_template.xml",
         "report/document_report_templates.xml",
