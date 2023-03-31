@@ -139,7 +139,7 @@ class ProductTemplate(models.Model):
         related_product_brws_list = self.env['product.product'].search([('product_tmpl_id', '=', self.id)])
         for related_product_brws in related_product_brws_list:
             product_id = related_product_brws.id
-        form_id = self.env.ref("plm.plm_component_base_form")
+        form_id = self.env.ref("product.product_normal_form_view")
         if product_id and form_id:
             return {
                 'type': 'ir.actions.act_window',
