@@ -113,7 +113,8 @@ class PlmCheckout(models.Model):
         self._adjustRelations(docids, False)
         dummy = super(PlmCheckout, self).unlink()
         if dummy:
-            documentType.browse(docids).message_post(body=_('Checked-In'))
+            for doc_id in documentType.browse(docids):
+                doc_id.message_post(body=_('Checked-In'))
         return dummy
 
 
