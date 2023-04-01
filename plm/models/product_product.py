@@ -943,14 +943,17 @@ class PlmComponent(models.Model):
             include_statuses = ['obsoleted']
             comp_obj.commonWFAction(status, action, doc_action, defaults, exclude_statuses, include_statuses)
         return True
-
-    def perform_action(self, action):
-        actions = {'reactivate': self.action_reactivate,
+    
+    @property
+    def action_functions(self):
+        return {'reactivate': self.action_reactivate,
                    'obsolete': self.action_obsolete,
                    'release': self.action_release,
                    'confirm': self.action_confirm,
                    'draft': self.action_draft}
-        toCall = actions.get(action)
+        
+    def perform_action(self, action):
+        toCall = self.action_functions.get(action)
         return toCall()
 
     def commonWFAction(self, status, action, doc_action, defaults=[], exclude_statuses=[], include_statuses=[], recursive=True):
@@ -974,9 +977,10 @@ class PlmComponent(models.Model):
             currId.write(defaults)
         if action:
             product_ids = self.browse(product_product_ids)
-            product_ids.perform_action(action)
-            product_ids.workflow_user = self.env.uid
-            product_ids.workflow_date = datetime.now()
+            if product_ids:
+                product_ids.perform_action(action)
+                product_ids.workflow_user = self.env.uid
+                product_ids.workflow_date = datetime.now()
         objIds = self.env['product.template'].browse(product_template_ids)
         for objId in objIds:
             objId.write(defaults)
