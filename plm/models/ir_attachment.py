@@ -2895,7 +2895,8 @@ class PlmDocument(models.Model):
                 content = row[0]
                 if content:
                     attachemnt_id.printout = content
-            
+            if index%1000==0:
+                self._cr.commit()
             
             
         
