@@ -139,7 +139,6 @@
   					attrs="{'invisible':[('related_document_ids', '=', [])]}"/>
             </xpath>
             <xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_id']" position="after">
-                <field name="description" readonly="True"/>
                 <field name="engineering_revision" readonly="True"/>
                 <field name="state"/>
             </xpath>
@@ -152,7 +151,7 @@
             <xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_id']" position="attributes">
             	<attribute name="widget">many2one</attribute>
             </xpath>
-            <xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_uom_id']" position="after">
+            <xpath expr="//field[@name='bom_line_ids']/tree/field[1]" position="before">
             	<field name="itemnum"/>
             	<field name="itemlbl"/>
             </xpath>
@@ -160,9 +159,9 @@
                 <field name="hasChildBoms" invisible="True"/>
             </xpath>
 
-            <tree position="attributes">
-                <attribute name="editable">bottom</attribute>
-            </tree>
+<!--            <tree position="attributes">-->
+<!--                <attribute name="editable">bottom</attribute>-->
+<!--            </tree>-->
         </field>
     </record>
 

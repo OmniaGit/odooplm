@@ -44,6 +44,9 @@ class ProductProductExtension(models.Model):
     
     @property
     def getDefaultCodeTemplate(self):
+        #
+        # overwritable function to customize internal reference
+        #
         return "%s_%s"
     
     def computeDefaultCode(self,
@@ -69,7 +72,7 @@ class ProductProductExtension(models.Model):
         if in_revision and engineering_code and engineering_code != '-':
             out = self.getDefaultCodeTemplate % (engineering_code, engineering_revision)
         if engineering_code and not default_code and engineering_code != '-':
-             out = self.getDefaultCodeTemplate % (engineering_code, engineering_revision)
+            out = self.getDefaultCodeTemplate % (engineering_code, engineering_revision)
         if default_code == out:
             return False
         return out

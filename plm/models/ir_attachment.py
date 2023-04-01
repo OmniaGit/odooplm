@@ -2880,4 +2880,23 @@ class PlmDocument(models.Model):
                     'document_type'])
         return ret
     
+    def convert_printout_attachment(self):
+        #go_on = self.env.context("PLM_FORCE")
+        # if not go_on:
+        #     raise UserError("Operation not permetted")
+        
+        attachment_ids= self.search([('document_type','=','2d'),
+                                     ('printout','=',False)])
+        total_to_update=len(attachment_ids)
+        for index, attachemnt_id in enumerate(attachment_ids):
+            logging.info("%s/%s Updating attachment" % (total_to_update,index))
+            self._cr.execute("select printout from ir_attachment where id=%s" % attachemnt_id.id )
+            for row in self._cr.fetchall():
+                content = row[0]
+                if content:
+                    attachemnt_id.printout = content
+            
+            
+            
+        
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

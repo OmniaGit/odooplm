@@ -190,9 +190,9 @@ class MrpBomLineExtension(models.Model):
                                 index=True,
                                 help=_("This is the document object that declares this BoM."))
     type = fields.Selection(related="bom_id.type")
-    itemnum = fields.Integer(_('CAD Item Position'), help=_(
+    itemnum = fields.Integer(_('P.CAD '), help=_(
         "This is the item reference position into the CAD document that declares this BoM."))
-    itemlbl = fields.Char(_('CAD Item Position Label'), size=64)
+    itemlbl = fields.Char(_('PL.CAD'), size=64)
 
     engineering_revision = fields.Integer(related="product_id.engineering_revision",
                                           string=_("Revision"),

@@ -51,5 +51,30 @@ class ProductTemplateExtension(models.Model):
             vals['default_code'] = new_default_code
         return super(ProductTemplateExtension, self).write(vals)
 
+    def legacy_update_IR(self):
+        #
+        # Use this function in order to update all your db lagacy data 
+        #
+        pt_ids=self.search([])
+        total_updatable = len(pt_ids)
+        updated=0
+        not_updated=0
+        for index, pt in enumerate(pt_ids):
+            ctx_pp = self.env['product.product'].with_context(new_revision=True)
+            pt_new_default_code = ctx_pp.computeDefaultCode({}, pt)
+            pp_new_default_code = ctx_pp.computeDefaultCode({}, pt.product_variant_id)
+            new_default_code = pt_new_default_code or pp_new_default_code
+            if new_default_code:
+                pt.default_code = new_default_code
+                pt.product_variant_id.default_code=new_default_code
+                updated+=1
+            else:
+                not_updated+=1
+            logging.info("%s/%s Updated %s not Updated %s Update product %s" % (index,
+                                                                                total_updatable,
+                                                                                updated,
+                                                                                not_updated,
+                                                                                pt.display_name))    
+        logging.info("Updated product %s not updated %s" % (updated, not_updated))
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
