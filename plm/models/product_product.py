@@ -106,14 +106,17 @@ class PlmComponent(models.Model):
     tmp_material = fields.Many2one('plm.material',
                                    _('Raw Material'),
                                    required=False,
+                                   copy=True,
                                    help=_("Select raw material for current product"))
     tmp_surface = fields.Many2one('plm.finishing',
                                   _('Surface Finishing'),
                                   required=False,
+                                  copy=True,
                                   help=_("Select surface finishing for current product"))
     tmp_treatment = fields.Many2one('plm.treatment',
                                     _('Termic Treatment'),
                                     required=False,
+                                    copy=True,
                                     help=_("Select termic treatment for current product"))
     father_part_ids = fields.Many2many('product.product',
                                        compute=_father_part_compute,
@@ -127,16 +130,20 @@ class PlmComponent(models.Model):
                                       _('Standard Description'),
                                       required=False,
                                       default=False,
+                                      copy=True,
                                       help=_("Select standard description for current product."))
     std_umc1 = fields.Char(_('UM / Feature 1'),
                            size=32,
                            default='',
+                           copy=True,
                            help=_("Allow to specify a unit measure for the first feature."))
     std_value1 = fields.Float(_('Value 1'),
                               default=0,
+                              copy=True,
                               help=_("Assign value to the first characteristic."))
     std_umc2 = fields.Char(_('UM / Feature 2'),
                            size=32,
+                           copy=True,
                            default='',
                            help=_("Allow to specify a unit measure for the second feature."))
     std_value2 = fields.Float(_('Value 2'),
@@ -144,10 +151,12 @@ class PlmComponent(models.Model):
                               help=_("Assign value to the second characteristic."))
     std_umc3 = fields.Char(_('UM / Feature 3'),
                            size=32,
+                           copy=True,
                            default='',
                            help=_("Allow to specifiy a unit measure for the third feature."))
     std_value3 = fields.Float(_('Value 3'),
                               default=0,
+                              copy=True,
                               help=_("Assign value to the second characteristic."))
 
     desc_modify = fields.Text(_('Modification Description'), default='')

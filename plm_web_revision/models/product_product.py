@@ -37,10 +37,16 @@ class ProductProductExtended(models.Model):
     _name = 'product.rev_wizard'
     _description = "Product Revision wizard"
 
-    reviseDocument = fields.Boolean(_('Document Revision'), help=_("""Make new revision of the linked document ?"""))
-    reviseEbom = fields.Boolean(_('Engineering Bom Revision'), help=_("""Make new revision of the linked Engineering BOM ?"""))
-    reviseNbom = fields.Boolean(_('Normal Bom Revision'), help=_("""Make new revision of the linked Normal BOM ?"""))
-    reviseSbom = fields.Boolean(_('Spare Bom Revision'), help=_("""Make new revision of the linked Spare BOM ?"""))
+    reviseDocument = fields.Boolean(_('Document Revision'),
+                                    help=_("""Make new revision of the linked document ?"""))
+    reviseEbom = fields.Boolean(_('Engineering Bom Revision'),
+                                help=_("""Make new revision of the linked Engineering BOM ?"""))
+    reviseNbom = fields.Boolean(_('Normal Bom Revision'),
+                                help=_("""Make new revision of the linked Normal BOM ?"""))
+    reviseSbom = fields.Boolean(_('Spare Bom Revision'),
+                                help=_("""Make new revision of the linked Spare BOM ?"""))
+    revision_description = fields.Char(_('Revision Description'),
+                                       help="""Why you are revisioning ?""")
 
     def action_create_new_revision_by_server(self):
         product_id = self.env.context.get('default_product_id', False)
@@ -52,6 +58,7 @@ class ProductProductExtended(models.Model):
         if self.stateAllows(prodBrws, 'Component'):
             revRes = prodBrws.NewRevision()
             newID, _newIndex = revRes
+            prodProdEnv.browse(newID).desc_modify = self.revision_description
             if not newID:
                 logging.error('[action_create_new_revision_by_server] newID: %r' % (newID))
                 raise UserError(_('Something wrong happens during new component revision process.'))

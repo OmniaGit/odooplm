@@ -357,7 +357,7 @@ class plm_compare_bom(models.TransientModel):
         self.write({'anotinb': [(6, False, bom1NewItems)],
                     'bnotina': [(6, False, bom2NewItems)]})
         data_obj = self.env['ir.model.data']
-        _modelName, id3 = data_obj.check_object_reference(openerpModule, 'plm_visualize_diff_form')
+        _modelName, id3 = data_obj.sudo().check_object_reference(openerpModule, 'plm_visualize_diff_form')
         return {
             'domain': [],
             'name': _('Differences on BoMs'),

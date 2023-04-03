@@ -15,6 +15,8 @@
 	        		<field name="reviseSbom" />	
 	        	</group>	
 	        	<separator string="" colspan="4" />
+	        	<field name="revision_description" colspan="4"/>
+	        	<separator string="" colspan="4" />
 	        	<div>"Are you sure you want to create a new Revision?"</div>
 	            <separator string="" colspan="4" />
 	            <footer>
