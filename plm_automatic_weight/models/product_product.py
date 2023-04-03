@@ -50,7 +50,9 @@ class PlmComponent(models.Model):
     )
     weight_additional = fields.Float(_('Additional Weight'), digits='Stock Weight', default=0)
     weight_cad = fields.Float(_('CAD Weight'), readonly=True, digits='Stock Weight', default=0)
-    weight_n_bom_computed = fields.Float(_('NBOM Weight Computed'), readonly=True,
+    weight_n_bom_computed = fields.Float(_('NBOM Weight Computed'),
+                                         compute="compute_bom_weight",
+                                         readonly=True,
                                          digits='Stock Weight', default=0)
 
     @api.model
@@ -66,7 +68,20 @@ class PlmComponent(models.Model):
             vals['weight_cad'] = weight
         return super(PlmComponent, self).create(vals)
 
-    @api.onchange('automatic_compute_selection')
+    def write(self, vals):
+        for product_product_id in self:
+            if product_product_id.automatic_compute_selection == 'use_cad':
+                if 'weight_cad' in vals:
+                    if 'weight_additional' in vals:
+                        vals['weight'] = vals['weight_cad'] + vals['weight_additional']
+                    else:
+                        vals['weight'] = vals['weight_cad'] + product_product_id.weight_additional
+            elif product_product_id.automatic_compute_selection == 'use_normal_bom':
+                vals['weight'] = self.weight_additional + self.weight_n_bom_computed
+        return super(PlmComponent,self).write(vals)
+        
+        
+    @api.onchange('automatic_compute_selection','weight_cad','weight_additional')
     def on_change_automatic_compute(self):
         """
             Compute weight due to selection choice
@@ -76,15 +91,6 @@ class PlmComponent(models.Model):
         elif self.automatic_compute_selection == 'use_normal_bom':
             self.weight = self.weight_additional + self.weight_n_bom_computed
 
-    @api.onchange('weight_additional')
-    def on_change_weight_additional(self):
-        """
-            Compute weight due to additional weight change
-        """
-        if self.automatic_compute_selection == 'use_normal_bom':
-            self.weight = self.weight_n_bom_computed + self.weight_additional
-        elif self.automatic_compute_selection == 'use_cad':
-            self.weight = self.weight_cad + self.weight_additional
 
     def compute_bom_weight(self):
         """
@@ -92,8 +98,8 @@ class PlmComponent(models.Model):
             - Compute and set weight for all products and boms during computation
         """
         for prod_brws in self:
+            prod_brws.weight_n_bom_computed = 0.0
             bom_obj = self.env['mrp.bom']
-
             def recursion_bom(product_brws):
                 product_tmpl_id = product_brws.product_tmpl_id.id
                 if not product_tmpl_id:
@@ -103,6 +109,7 @@ class PlmComponent(models.Model):
                 if not bom_brws_list:
                     self.common_weight_compute(product_brws, is_user_admin, product_brws.weight_cad)
                 else:
+                    
                     for bom_brws in bom_brws_list:
                         bom_total_weight = 0
                         for bom_line_brws in bom_brws.bom_line_ids:
