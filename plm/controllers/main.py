@@ -247,3 +247,17 @@ class UploadDocument(Controller):
         for record in ir_attachement.search_read([('id','=', id)], ['preview']):
             return base64.b64decode(record.get('preview'))
         
+    @route('/plm/ir_attachment_printout/<int:id>', type='http', auth='user', methods=['GET'], csrf=False)
+    @webservice
+    def get_printout(self, id):
+        try:
+            ir_attachement = request.env['ir.attachment'].sudo()
+            for ir_attachement_id in ir_attachement.search_read([('id','=', id)],
+                                                                ['printout','name']):
+                    data = base64.b64decode(ir_attachement_id.get('printout'))
+                    headers = [('Content-Type', 'application/pdf'),
+                               ('Content-Length', len(data)),
+                               ('Content-Disposition', 'inline; filename="%s"' % ir_attachement_id.get('name','no_name') + '.pdf')]
+                    return request.make_response(data, headers)
+        except Exception as ex:
+            return Response(ex, json.dumps({}),status=500)

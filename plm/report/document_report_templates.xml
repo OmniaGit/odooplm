@@ -3,7 +3,7 @@
 	<template id="plm.ir_attachment_pdf">
 	   <t t-foreach="docs" t-as="o">
 	   		<div class="o_composer_container">
-	   			<embed width="100%" height="100%" t-att-src="get_content(o)"/>
+	   			<iframe width="100%" height="100%" t-att-src="o.getPrintoutUrl()"/>
 	   		</div> 
 	   </t>
 	</template>

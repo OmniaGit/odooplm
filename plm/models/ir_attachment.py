@@ -102,6 +102,10 @@ class IrAttachment(models.Model):
     is_plm = fields.Boolean('Is A Plm Document', help=_("If the flag is set, the document is managed by the plm module, and imply its backup at each save and the visibility on some views."))
     attachment_revision_count = fields.Integer(compute='_attachment_revision_count')
 
+    def getPrintoutUrl(self):
+        self.ensure_one()
+        base_url = self.env['ir.config_parameter'].get_param('web.base.url')
+        return "%s/plm/ir_attachment_printout/%s" % (base_url, self.id) 
 
     @property
     def actions(self):
