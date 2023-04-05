@@ -105,6 +105,10 @@ class PlmDocument(models.Model):
             if attachment_id_toCheck:
                 super().with_context(plm_avoid_recursion=True).check(mode, values)
                 
+    def getPrintoutUrl(self):
+        self.ensure_one()
+        base_url = self.env['ir.config_parameter'].get_param('web.base.url')
+        return "%s/plm/ir_attachment_printout/%s" % (base_url, self.id) 
             
     def get_checkout_user(self):
         lastDoc = self._getlastrev(self.ids)
