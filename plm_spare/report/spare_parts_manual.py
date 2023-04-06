@@ -38,8 +38,8 @@ from odoo import api
 from odoo import models
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
-from odoo.addons.plm.report.book_collector import BookCollector
-from odoo.addons.plm.report.book_collector import getBottomMessage
+from odoo.addons.plm.models.utils import packDocuments
+from odoo.addons.plm.models.utils import BookCollector
 from dateutil import tz
 
 

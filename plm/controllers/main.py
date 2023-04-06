@@ -1,13 +1,19 @@
 # -*- coding: utf-8 -*-
-import functools
-import base64
-import json
-import logging
 import os
+import json
+import base64
+import copy
+import logging
+import functools
+from datetime import datetime
+from dateutil import tz
+
 from odoo import _
 from odoo.http import Controller, route, request, Response
-import copy
 from odoo.tools.misc import DEFAULT_SERVER_DATETIME_FORMAT
+from odoo.addons.plm.models.utils import getEmptyDocument
+from odoo.addons.plm.models.utils import packDocuments
+from odoo.addons.plm.models.utils import BookCollector
 
 def webservice(f):
     @functools.wraps(f)
@@ -260,3 +266,64 @@ class UploadDocument(Controller):
                     return request.make_response(data, headers)
         except Exception as ex:
             return Response(ex, json.dumps({}),status=500)
+
+    def commonInfos(self):
+        docRepository = request.env['ir.attachment']._get_filestore()
+        to_zone = tz.gettz(request.env.context.get('tz', 'Europe/Rome'))
+        from_zone = tz.tzutc()
+        dt = datetime.now()
+        dt = dt.replace(tzinfo=from_zone)
+        localDT = dt.astimezone(to_zone)
+        localDT = localDT.replace(microsecond=0)
+        msg = "Printed by '%(print_user)s' : %(date_now)s State: %(state)s"
+        msg_vals = {
+            'print_user': 'user_id.name',
+            'date_now': localDT.ctime(),
+            'state': 'doc_obj.state',
+                }
+        mainBookCollector = BookCollector(jumpFirst=False,
+                                          customText=(msg, msg_vals),
+                                          bottomHeight=10,
+                                          poolObj=request.env)
+        return docRepository, mainBookCollector
+    
+    def getDocument(self, product, check):
+        out = []
+        for doc in product.linkeddocuments:
+            if check:
+                if doc.state in ['released', 'undermodify']:
+                    out.append(doc)
+                continue
+            out.append(doc)
+        return out
+    
+    @route('/plm/get_production_printout/<string:product>/<int:level>/<int:checkState>', type='http', auth='user', methods=['GET'], csrf=False)
+    @webservice
+    def get_production_printout(self, product, level=0, checkState=False):
+        try:
+            product_product_sudo = request.env['product.product'].sudo()
+            products_ids = product_product_sudo.search([('id','=', product)])
+            docRepository, mainBookCollector = self.commonInfos()
+            documents = []
+            for product in products_ids:
+                documents.extend(self.getDocument(product, checkState))
+                if level > -1:
+                    for childProduct in product._getChildrenBom(product, level):
+                        childProduct = product_product_sudo.browse(childProduct)
+                        documents.extend(self.getDocument(childProduct, checkState))
+                if len(documents) == 0:
+                    content = getEmptyDocument()
+                else:
+                    documentContent = packDocuments(docRepository,
+                                                    documents,
+                                                    mainBookCollector)
+                    content = documentContent[0]
+                headers = [('Content-Type', 'application/pdf'),
+                           ('Content-Length', len(content)),
+                           ('Content-Disposition', 'inline; filename="%s_%s_%s"' % (product.engineering_code,
+                                                                                    product.engineering_revision,
+                                                                                    '.pdf'))]
+                return request.make_response(content, headers)
+        except Exception as ex:
+            return Response(ex, json.dumps({}),status=500)
+ 

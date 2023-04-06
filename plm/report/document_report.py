@@ -19,14 +19,13 @@
 #
 ##############################################################################
 
-from .book_collector import BookCollector
-from .book_collector import packDocuments
 from datetime import datetime
 from dateutil import tz
 import base64
 from odoo import api
 from odoo import models
-
+from odoo.addons.plm.models.utils import packDocuments
+from odoo.addons.plm.models.utils import BookCollector
 
 class ReportDocumentPdf(models.AbstractModel):
     _name = 'report.plm.ir_attachment_pdf'

@@ -24,6 +24,4 @@ from . import bom_document
 from . import product_report_document
 from . import bom_structure
 
-
-
 #import new_reports   # To Delete when reports are working
