@@ -292,6 +292,17 @@ class PlmComponent(models.Model):
                         mrpBomLine.bom_id.get_where_used_structure(filterBomType)))
         return out
 
+    def getParentBom(self, filterBomType='normal'):
+        for product_product_id in self:
+            bom_line_filter = [('product_id', '=', product_product_id.id),
+                               ('type', '=', filterBomType)]
+
+            mrp_bom_line_ids = self.env['mrp.bom.line'].search(bom_line_filter,
+                                                               limit=1)
+            for mrp_bom_line_id in mrp_bom_line_ids:
+                return mrp_bom_line_id.bom_id
+        return self.env['mrp.bom']
+    
     @api.model
     def getLatestReleasedRevision(self):
         for product_id in self.search([('engineering_code', '=', self.engineering_code)], order="engineering_code desc"):
