@@ -904,11 +904,11 @@ class PlmComponent(models.Model):
                     old_revision.write(defaults)
                     status_lable = dict_status.get(defaults.get('state', ''), '')
                     old_revision.wf_message_post(body=_('Status moved to: %s by %s.' % (status_lable, self.env.user.name)))
+                productBrw._action_ondocuments('release', include_statuses)
             defaults['engineering_writable'] = False
             defaults['state'] = 'released'
             defaults['release_user'] = self.env.uid
             defaults['release_date'] = datetime.now()
-            self.browse(product_ids)._action_ondocuments('release', include_statuses)
             for currentProductId in allProdObjs:
                 if not currentProductId.release_date:
                     currentProductId.release_date = datetime.now()
@@ -916,13 +916,13 @@ class PlmComponent(models.Model):
                 if currentProductId.id not in self.ids:
                     children_product_to_emit.append(currentProductId.id)
                 product_tmpl_ids.append(currentProductId.product_tmpl_id.id)
-            self.browse(children_product_to_emit).perform_action('release')
-            self.browse(children_product_to_emit).write(defaults)
-            objIds = self.env['product.template'].browse(product_tmpl_ids)
-            for objId in objIds:
+            if children_product_to_emit:
+                self.browse(children_product_to_emit).perform_action('release')
+                self.browse(children_product_to_emit).write(defaults)
+            for objId in self.env['product.template'].browse(product_tmpl_ids):
                 objId.write(defaults)
                 status_lable = dict_status.get(defaults.get('state', ''), '')
-                self.browse(product_ids).wf_message_post(body=_('Status moved to: %s by %s.' % (status_lable, self.env.user.name)))
+            self.browse(product_ids).wf_message_post(body=_('Status moved to: %s by %s.' % (status_lable, self.env.user.name)))
             comp_obj.write(defaults)
         return True
 
@@ -996,19 +996,18 @@ class PlmComponent(models.Model):
             defaults['workflow_date'] = datetime.now()
             currId.write(defaults)
         if action:
-            product_ids = self.browse(product_product_ids)
-            if product_ids:
-                product_ids.perform_action(action)
-                product_ids.workflow_user = self.env.uid
-                product_ids.workflow_date = datetime.now()
-        objIds = self.env['product.template'].browse(product_template_ids)
-        for objId in objIds:
-            objId.write(defaults)
+            for product_id in self.browse(product_product_ids):
+                product_id.perform_action(action)
+                product_id.workflow_user = self.env.uid
+                product_id.workflow_date = datetime.now()
+        product_template_ids = self.env['product.template'].browse(product_template_ids)
+        for product_template_id in product_template_ids:
+            product_template_id.write(defaults)
             available_status = self._fields.get('state')._description_selection(self.env)
             dict_status = dict(available_status)
             status_lable = dict_status.get(defaults.get('state', ''), '')
-            self.browse(allIDs).wf_message_post(body=_('Status moved to: %s by %s.' % (status_lable, self.env.user.name)))
-        return objIds
+        self.browse(allIDs).wf_message_post(body=_('Status moved to: %s by %s.' % (status_lable, self.env.user.name)))
+        return product_template_ids
 
 #  ######################################################################################################################################33
     def plm_sanitize(self, vals):

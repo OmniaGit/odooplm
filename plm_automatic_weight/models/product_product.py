@@ -66,13 +66,16 @@ class PlmComponent(models.Model):
                 vals['weight'] = vals.get('weight_additional')
         return super(PlmComponent, self).create(vals)
 
+    @property
+    def weight_allowed_state(self):
+        return  ['draft','confirmed']
+
     def write(self, vals):
-        
-        if self.state not in ['draft','confirmed']:
-            if 'weight' in vals:
-                raise UserWarning("Modification in status %s not allowed for the weight" % self.status)
-            
         for product_product_id in self:
+            if product_product_id.state not in self.weight_allowed_state and not self.env.context.get('plm_force_weight',False):
+                if 'weight' in vals:
+                    del vals['weight']
+                    logging.info("Modification in status %s not allowed for the weight" % product_product_id.state)
             weight_additional = product_product_id.weight_additional
             if 'weight_additional' in vals:
                 weight_additional = vals['weight_additional']
@@ -82,9 +85,10 @@ class PlmComponent(models.Model):
                     weight_cad = vals['weight_cad']
                 vals['weight'] = weight_cad + weight_additional
             elif product_product_id.automatic_compute_selection == 'use_normal_bom':
-                vals['weight'] = self.weight_additional + self.weight_n_bom_computed
+                vals['weight'] = product_product_id.weight_additional + product_product_id.weight_n_bom_computed
         res= super(PlmComponent,self).write(vals)
-        self.fix_parent()
+        for product_product_id in self:
+            product_product_id.fix_parent()
         return res
         
     def fix_parent(self):
@@ -112,6 +116,7 @@ class PlmComponent(models.Model):
             for bom_id in bom_obj.search([('type', '=', 'normal'), ('product_tmpl_id', '=', product_tmpl_id)]):
                 product_product_id.weight_n_bom_computed = bom_id.get_bom_child_weight()
 
+        
     def compute_bom_weight_action(self):
         """
             Function called form xml action to compute and set weight for all selected products and boms

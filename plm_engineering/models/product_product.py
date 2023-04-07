@@ -38,12 +38,16 @@ class ProductProductExtension(models.Model):
     @api.model
     def create_bom_from_ebom(self, obj_product_product_brw, new_bom_type, summarize=False, migrate_custom_lines=True):
         evaluated = {'evaluated':[]}
-        return self._create_bom_from_ebom(obj_product_product_brw,
+        ret = self._create_bom_from_ebom(obj_product_product_brw,
                                           new_bom_type,
                                           summarize,
                                           migrate_custom_lines,
                                           evaluated)
-        
+        domain = [('state', 'in', ['installed']), ('name', '=', 'plm_automatic_weight')]
+        if self.env['ir.module.module'].sudo().search_count(domain):
+            obj_product_product_brw.on_change_automatic_compute()
+        return ret
+
     def _create_bom_from_ebom(self,
                               obj_product_product_brw,
                               new_bom_type,
@@ -234,7 +238,7 @@ class ProductProductExtension(models.Model):
         else:
             for objBom in obj_boms:
                 for bom_line in objBom.bom_line_ids:
-                    self._create_normalBom(bom_line.product_id.id, processedIds)
+                    self.with_context(plm_force_weight=True)._create_normalBom(bom_line.product_id.id, processedIds)
         return False
 
 
