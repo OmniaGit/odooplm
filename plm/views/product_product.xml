@@ -195,7 +195,7 @@
                                 <label for="weight"/>
                                 <div class="o_row" name="weight" attrs="{'readonly':[('state','in',['released','obsoleted'])]}">
                                     <field name="weight" attrs="{'readonly':[('state','in',['released','obsoleted'])]}" digits="[14,3]"/>
-                                    <span><field name="weight_uom_name"/></span>
+                                    <!-- <span><field name="weight_uom_name"/></span> -->
                                 </div>
                                 <field name="uom_id"
                                        attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
@@ -355,7 +355,7 @@
                                 <label for="weight"/>
                                 <div class="o_row" name="weight" attrs="{'readonly':[('state','in',['released','obsoleted'])]}">
                                     <field name="weight" attrs="{'readonly':[('state','in',['released','obsoleted'])]}" digits="[14,3]"/>
-                                    <span><field name="weight_uom_name"/></span>
+                                    <!-- <span><field name="weight_uom_name"/></span> -->
                                 </div>
                                 <field name="uom_id"
                                        attrs="{'readonly':[('state','in',['released','obsoleted'])]}"/>
