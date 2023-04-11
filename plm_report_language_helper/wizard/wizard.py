@@ -152,8 +152,7 @@ class plm_bomChoseLanguage(models.TransientModel):
             newContext['lang'] = lang
             newContext['force_report_rendering']=True
             bomId = self.env.context.get('active_id')
-            stream, fileExtention = self.env.ref(reportName).sudo().with_context(newContext)._render_qweb_pdf(reportName,
-                                                                                                              bomId)
+            stream, fileExtention = self.env.ref(reportName).sudo().with_context(newContext)._render_qweb_pdf(res_ids=bomId)
             self.datas = base64.b64encode(stream)
             tMrpBom = self.env['mrp.bom']
             brwProduct = tMrpBom.browse(bomId)
