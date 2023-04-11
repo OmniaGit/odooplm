@@ -1339,7 +1339,12 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         if tmplBrws:
             return tmplBrws.action_view_mos()
         logging.warning('[action_view_mos] product with id %s does not have a related template' % (self.id))
-
+    
+    def before_write_new_version(self, oldProductId, newProductId, defaults):
+        defaults = defaults.copy()
+    
+        return defaults
+    
     def NewRevision(self):
         """
             create a new revision of current component
@@ -1379,6 +1384,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                 defaults['workflow_user'] = False
                 defaults['workflow_date'] = False
                 defaults['product_tmpl_id']=new_tmpl_id.id
+                defaults = self.before_write_new_version(product_product_id, newCompBrws,defaults)
                 newCompBrws.write(defaults)
                 product_product_id.wf_message_post(body=_('Created : New Revision.'))
                 newComponentId = newCompBrws.id
