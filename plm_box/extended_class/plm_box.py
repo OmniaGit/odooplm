@@ -598,10 +598,11 @@ class Plm_box(models.Model):
 
     @api.model
     def search(self, args, offset=0, limit=None, order=None, count=False):
-        search_recursion = self.env.context.get('search_recursion', True)
-        if not self.env.user.has_group('plm_box.group_plm_box_admin') and search_recursion:
-            box_ids = self.with_context(search_recursion=False).getAvaiableBoxIds()
-            args.append(('id', 'in', box_ids))
+        if not self.env.user._is_superuser():
+            search_recursion = self.env.context.get('search_recursion', True)
+            if not self.env.user.has_group('plm_box.group_plm_box_admin') and search_recursion:
+                box_ids = self.with_context(search_recursion=False).getAvaiableBoxIds()
+                args.append(('id', 'in', box_ids))
         ret = super(Plm_box, self).search(args, offset=offset, limit=limit, order=order, count=count)
         return ret
 
