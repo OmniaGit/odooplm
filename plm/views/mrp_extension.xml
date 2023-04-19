@@ -155,7 +155,7 @@
             </xpath>
             <xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_uom_id']" position="after">
             	<field name="itemnum"/>
-            	<field name="itemlbl"/>
+            	<field name="itemlbl" optional="hide"/>
             </xpath>
             <xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_qty']" position="after">
                 <field name="hasChildBoms" invisible="True"/>
@@ -205,10 +205,12 @@
                         domain="[]"
                         context="{'group_by':'code'}"/>
                 <filter name="variant_name"
+                        optional="hide"
                         string="Variant Name"
                         domain="[]"
                         context="{'group_by':'product_id'}"/>
                 <filter name="source_relationship"
+                        optional="hide"
                         string="Source Relationship"
                         domain="[]"
                         context="{'group_by':'source_id'}"/>
