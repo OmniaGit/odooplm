@@ -144,6 +144,7 @@
             </xpath>
             <xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_qty']" position="before">
                 <field name="source_id" string="Source Relation" widget="many2one"
+                       optional="hide"
                 	   context="{'kanban_view_ref':'plm.document_kanban_view',
         						 'tree_view_ref':'plm.ir_attachment_tree',
 								 'form_view_ref':'plm.view_attachment_form_plm_hinerit'}"/>
@@ -153,7 +154,7 @@
             </xpath>
             <xpath expr="//field[@name='bom_line_ids']/tree/field[1]" position="before">
             	<field name="itemnum"/>
-            	<field name="itemlbl"/>
+            	<field name="itemlbl" optional="hide"/>
             </xpath>
             <xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_qty']" position="after">
                 <field name="hasChildBoms" invisible="True"/>

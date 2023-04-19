@@ -146,7 +146,7 @@ class PlmDocument(models.Model):
     
     def browseLastRev(self):
         self.ensure_one()
-        out = self.search([('engineering_document_name', '=', objDoc.engineering_document_name)],
+        out = self.search([('engineering_document_name', '=', self.engineering_document_name)],
                           order='revisionid DESC',
                           limit=1)
         for obj in out:
