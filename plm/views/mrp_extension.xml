@@ -182,7 +182,6 @@
         <field name="name">plm.bom.select</field>
         <field name="model">mrp.bom</field>
         <field name="inherit_id" ref="mrp.view_mrp_bom_filter"/>
-        <field name="type">search</field>
         <field name="arch" type="xml">
             <field name="code" position="before">
                 <filter 
@@ -199,22 +198,23 @@
             		domain="[('create_date','&gt;=',(datetime.date.today() - datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"/>
                 <separator name="separator" orientation="vertical"/>
             </field>
-            <xpath expr="//group" position="after">
-                <filter name="bom_name"
-                        string="Bom Name"
-                        domain="[]"
-                        context="{'group_by':'code'}"/>
-                <filter name="variant_name"
-                        optional="hide"
-                        string="Variant Name"
-                        domain="[]"
-                        context="{'group_by':'product_id'}"/>
-                <filter name="source_relationship"
-                        optional="hide"
-                        string="Source Relationship"
-                        domain="[]"
-                        context="{'group_by':'source_id'}"/>
-            </xpath>
+             <xpath expr="//group" position="after">
+             <field name="code"/>
+             <field name="product_id"/>
+             <field name="source_id"/>
+                 <filter name="bom_name" 
+                         string="Bom Name" 
+                         domain="[]" 
+                         context="{'group_by':'code'}"/> 
+                 <filter name="variant_name" 
+                         string="Variant Name" 
+                         domain="[]" 
+                         context="{'group_by':'product_id'}"/> 
+                 <filter name="source_relationship" 
+                         string="Source Relationship" 
+                         domain="[]" 
+                         context="{'group_by':'source_id'}"/> 
+             </xpath> 
         </field>
     </record>
 
