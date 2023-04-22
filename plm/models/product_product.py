@@ -1680,6 +1680,8 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             out_product_produc_id = self.create(sanitaized_attributes)
         return out_product_produc_id
 
+
+
     def name_get(self):
         result = []
         ret = super(ProductProduct, self).name_get()

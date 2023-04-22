@@ -2803,5 +2803,28 @@ class IrAttachment(models.Model):
     def action_from_draft_to_draf(self):
         pass
     
-    
+    def getDocBom(self,
+                  level=0,
+                  recursion=True,
+                  report_obj=None):
+        for attachment_id in self:
+            children_list = []
+            if recursion and attachment_id.document_type.upper() not in ['2D']:
+                children = attachment_id.getRelatedOneLevelLinks(attachment_id.id, ['RfTree', 'LyTree', 'HiTree'])
+                for child_id in children:
+                    attachment_child = self.browse(child_id)
+                    child_dict = attachment_child.getDocBom(level + 1,
+                                                            recursion=False,
+                                                            report_obj=report_obj)
+                    children_list.append(child_dict)
+            product_product_id=None
+            for product_product_id in attachment_id.linkedcomponents:
+                break
+            vals = {'id': attachment_id,
+                    'product_id': product_product_id,
+                    'level': level, 
+                    'report_obj': report_obj, 
+                    'children': children_list}
+            break
+        return vals
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

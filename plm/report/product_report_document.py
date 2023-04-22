@@ -29,7 +29,7 @@ class ReportProdStructure(models.AbstractModel):
     @api.model
     def get_doc_prod(self, attachment, level=False, items_to_show={}, root_doc=False):
         data = self.singleItem(attachment, level, True, items_to_show, root_doc)
-        return self.env.ref('plm.report_prod_bom_line')._render({'data': data})
+        return self.env['ir.ui.view']._render_template('plm.report_prod_bom_line',{'data': data}) 
     
     def checkVisibleItems(self, parent_doc, parents=[]):
         out = []
