@@ -23,25 +23,28 @@
 	        <t t-set="data_report_margin_top" t-value="12"/>
 	        <t t-set="data_report_header_spacing" t-value="9"/>
 	        <t t-set="data_report_dpi" t-value="110"/>
-
 	        <t t-call="web.internal_layout">
 		        <div class="page" align="center">
 					<t t-set="docBrws" t-value="get_document_brws(compBrws)"/>
-					<div style="position: relative;top: 50mm;">
-					
-						<div>
-							<h1><b>Spare Parts Report</b></h1>
-							<span t-esc="compBrws.product_tmpl_id.engineering_code or compBrws.product_tmpl_id.default_code"/>
-							<span t-esc="compBrws.product_tmpl_id.name"/>
-	                    </div>
-						<t t-if="docBrws">
-						   <div style="position: relative;top: 80px;">
-							<img t-att-src="'/plm/ir_attachment_preview/%s' % docBrws.id"
-							     t-att-alt="docBrws.display_name"
-							     style="height: auto;width: 150mm;box-shadow: 1px 1px 2px 3px lightgrey;"/>
-						   </div>
-					</t>
-				</div>
+					<div id="spare_header_row" style="position: relative;top: 50mm;">
+				        <h1><b>Spare Parts Report</b></h1>
+						<span t-esc="compBrws.product_tmpl_id.engineering_code or compBrws.product_tmpl_id.default_code"/>
+						<span t-esc="compBrws.product_tmpl_id.name"/>
+	                </div>
+					<div id="spare_header_image" style="position: relative;top: 80mm;">
+						<t t-if="compBrws.image_1920">
+    						<img class="image"
+    						     t-att-src="'/plm/product_product_preview/%s' % compBrws.id"
+    						     style="height: auto;width: 150mm;box-shadow: 1px 1px 2px 3px lightgrey;"/>
+						</t>
+						 <t t-else="">  
+                            <t t-if="docBrws">
+							 <img t-att-src="'/plm/ir_attachment_preview/%s' % docBrws.id"
+							      t-att-alt="docBrws.display_name"
+							      style="height: auto;width: 150mm;box-shadow: 1px 1px 2px 3px lightgrey;"/>
+			                 </t>
+					     </t>
+				    </div>
 				</div>
 			</t>
 		</t>

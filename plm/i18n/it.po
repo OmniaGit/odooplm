@@ -2245,8 +2245,8 @@ msgstr "Pos."
 
 #. module: plm
 #: model:ir.model.fields,field_description:plm.field_mrp_bom_line__itemnum
-msgid "Pos. Elemento CAD"
-msgstr "Pos. Elemento CAD"
+msgid "Pos."
+msgstr "Pos."
 
 #. module: plm
 #: model_terms:ir.ui.view,arch_db:plm.plm_bom_tree_structure
