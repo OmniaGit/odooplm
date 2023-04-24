@@ -204,12 +204,27 @@ class RevisionBaseMixin(models.AbstractModel):
                 continue
             obj_previus_version = obj.get_previus_version()
             obj_previus_version._mark_obsolare()
+    
+    def before_move_to_state(self, function_name):
+        """
+        technical function for workflow customizarion
+        """
+        self.ensure_one()
+        
         
     def move_to_state(self, state):
         for obj in self:
             function_name = "action_from_%s_to_%s" % (obj.engineering_state, state)
+            obj.before_move_to_state(function_name)
             f=getattr(obj, function_name)
             f()
+            obj.after_move_to_state(function_name)       
+
+    def after_move_to_state(self, function_name):
+        """
+        technical function for workflow customizarion
+        """
+        self.ensure_one()
         
     def is_released(self):
         self.ensure_one()
