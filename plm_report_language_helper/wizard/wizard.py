@@ -55,6 +55,9 @@ class plm_spareChoseLanguage(models.TransientModel):
             out.append((objBrowse.code, objBrowse.name))
         return out
 
+    def get_report_name(self,brwProduct, lang):
+        return brwProduct.name + "_" + lang + "_manual.pdf"
+        
     def print_report(self):
         self.ensure_one()
         lang = self.lang
@@ -83,6 +86,7 @@ class plm_spareChoseLanguage(models.TransientModel):
             stream = report_context._create_spare_pdf(brwProduct)
             self.datas =  base64.encodebytes(stream)
             fileName = brwProduct.name + "_" + lang + "_manual.pdf"
+            fileName = self.get_report_name(brwProduct, lang)
             self.datas_name = fileName
             return {'context': self.env.context,
                     'view_type': 'form',
@@ -138,7 +142,10 @@ class plm_bomChoseLanguage(models.TransientModel):
         for objBrowse in modobj.search([]):
             out.append((objBrowse.code, objBrowse.name))
         return out
-
+    
+    def get_report_name(self,brwProduct, lang, fileExtention):
+        return brwProduct.product_tmpl_id.name + "_" + lang + "_bom." + fileExtention
+    
     def print_report(self):
         self.ensure_one()
         lang = self.lang
@@ -156,7 +163,7 @@ class plm_bomChoseLanguage(models.TransientModel):
             self.datas = base64.b64encode(stream)
             tMrpBom = self.env['mrp.bom']
             brwProduct = tMrpBom.browse(bomId)
-            fileName = brwProduct.product_tmpl_id.name + "_" + lang + "_bom." + fileExtention
+            fileName = self.get_report_name(brwProduct, lang, fileExtention)
             self.datas_name = fileName
             return {'context': self.env.context,
                     'view_type': 'form',

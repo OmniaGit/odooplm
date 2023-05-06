@@ -7,6 +7,7 @@
             <field name="binding_model_id" ref="model_mrp_bom"/>
             <field name="report_type">qweb-html</field>
             <field name="report_name">plm.bom_structure_all</field>
+            <field name="print_report_name">object.product_id.engineering_code + "_" +  object.product_id.name + "_" + object.env.context.get('lang','')</field>
             <field name="binding_type">report</field>
         </record>
         
@@ -16,6 +17,7 @@
             <field name="binding_model_id" ref="model_mrp_bom"/>
             <field name="report_type">qweb-html</field>
             <field name="report_name">plm.bom_structure_one</field>
+            <field name="print_report_name">object.product_id.engineering_code + "_" +  object.product_id.name + "_" + object.env.context.get('lang','')</field>
             <field name="binding_type">report</field>
         </record>
 
@@ -25,6 +27,7 @@
             <field name="binding_model_id" ref="model_mrp_bom"/>
             <field name="report_type">qweb-html</field>
             <field name="report_name">plm.bom_structure_all_sum</field>
+            <field name="print_report_name">object.product_id.engineering_code + "_" +  object.product_id.name + "_" + object.env.context.get('lang','')</field>
             <field name="binding_type">report</field>
         </record>  
         
@@ -34,6 +37,7 @@
             <field name="binding_model_id" ref="model_mrp_bom"/>
             <field name="report_type">qweb-html</field>
             <field name="report_name">plm.bom_structure_one_sum</field>
+            <field name="print_report_name">object.product_id.engineering_code + "_" +  object.product_id.name + "_" + object.env.context.get('lang','')</field>
             <field name="binding_type">report</field>
         </record>                 	
 
@@ -43,6 +47,7 @@
             <field name="binding_model_id" ref="model_mrp_bom"/>
             <field name="report_type">qweb-html</field>
             <field name="report_name">plm.bom_structure_leaves</field>
+            <field name="print_report_name">object.product_id.engineering_code + "_" +  object.product_id.name + "_" + object.env.context.get('lang','')</field>
             <field name="binding_type">report</field>
         </record>
                  
@@ -52,6 +57,7 @@
             <field name="binding_model_id" ref="model_mrp_bom"/>
             <field name="report_type">qweb-html</field>
             <field name="report_name">plm.bom_structure_flat</field>
+            <field name="print_report_name">object.product_id.engineering_code + "_" +  object.product_id.name + "_" + object.env.context.get('lang','')</field>
             <field name="binding_type">report</field>
         </record>
                 
