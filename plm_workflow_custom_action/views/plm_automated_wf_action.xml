@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record model="ir.ui.view" id="plm_automatedwfaction_form">
+        <field name="name">plm.automatedwfaction.form</field>
+        <field name="model">plm.automatedwfaction</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <form string="Plm Workflow Actions">
+                <sheet> 
+	                <group>
+                        <field name="name"/>
+	                    <field name="from_state"/>
+	                    <field name="to_state"/>
+	                    <field name="apply_to"/>
+	                    <field name="before_after"/>
+	                </group>
+	                <group>
+	                   <field name="child_ids"/>
+	                </group>
+                </sheet>
+            </form>   
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="plm_automatedwfaction_tree">
+        <field name="name">plm.automatedwfaction.tree</field>
+        <field name="model">plm.automatedwfaction</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+          <tree>
+           <field name="name"/>
+           <field name="from_state"/>
+           <field name="to_state"/>
+           <field name="apply_to"/>
+           <field name="before_after"/>               
+          </tree>
+        </field>
+    </record>
+<!-- <field name="view_id" ref="plm_action_plm_dbthread_tree"/> -->        
+    
+    <record id="plm_action_workflow_action" model="ir.actions.act_window">
+        <field name="name">WorkFlow Actions</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">plm.automatedwfaction</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'odooPLM': True}</field>
+    </record>
+        
+    <menuitem
+            id="plm_wf_actions"
+            name="Workflow Actions"
+            parent="plm.plm_menu_dictionaries"
+            action="plm_action_workflow_action"/>
+</odoo>

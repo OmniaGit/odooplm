@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="plm_automatedwfaction_admin" model="ir.model.access">
+        <field name="name">automatedwfaction</field>
+        <field name="model_id" ref="model_plm_automatedwfaction"/>
+        <field name="group_id" ref="plm.group_plm_admin"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="1"/>
+        <field name="perm_create" eval="1"/>
+        <field name="perm_unlink" eval="1"/>
+    </record>
+    
+    <record id="plm_automatedwfaction_admin" model="ir.model.access">
+        <field name="name">automatedwfaction</field>
+        <field name="model_id" ref="model_plm_automatedwfaction"/>
+        <field name="group_id" ref="plm.group_plm_integration_user"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval=""/>
+        <field name="perm_create" eval=""/>
+        <field name="perm_unlink" eval=""/>
+    </record>
+    
+</odoo>
