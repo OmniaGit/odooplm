@@ -29,6 +29,7 @@
     "depends": ["plm",
                 "base_automation"
     ],
+    "images": ["static/img/plm_workflow_custom_action.gif"],
     "license": "AGPL-3",
     "data": [
         # security
