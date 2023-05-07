@@ -23,7 +23,7 @@
     "version": "16.0.2",
     "author": "OmniaSolutions",
     "website": "https://odooplm.omniasolutions.website",
-    "category": "Product Lifecycle Management",
+    "category": "Manufacturing/Product Lifecycle Management (PLM)",
     "sequence": 15,
     "summary": "Manage bom explosion for cutted parts",
     "images": [],

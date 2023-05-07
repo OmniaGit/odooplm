@@ -27,7 +27,7 @@
     "version": "16.0.1",
     "author": "OmniaSolutions",
     "website": "https://www.omniasolutions.website",
-    "category": "Custom",
+    "category": "Manufacturing/Product Lifecycle Management (PLM)",
     "license": "AGPL-3",
     "summary": "PLM Breakages",
     "depends": ["base", "product", "mrp"],

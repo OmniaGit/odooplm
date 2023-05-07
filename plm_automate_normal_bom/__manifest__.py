@@ -23,7 +23,7 @@
     "version": "16.0.1",
     "author": "OmniaSolutions",
     "website": "https://odooplm.omniasolutions.website",
-    "category": "Product Lifecycle Management",
+    "category": "Manufacturing/Product Lifecycle Management (PLM)",
     "sequence": 15,
     "summary": "Allow to create normal boms if not exists and product are released.",
     "license": "AGPL-3",

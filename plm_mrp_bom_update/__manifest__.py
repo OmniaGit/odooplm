@@ -22,7 +22,7 @@
     'name': '[OMNIASOLUTIONS] Production Bom Update',
  'version': '15.2',
  'sequence': 1,
- 'category': 'Manufacturing',
+ 'category': 'Manufacturing/Product Lifecycle Management (PLM)',
  'description': """
 ============================================================================================================================
 This module allows you to update your working manufacture order based on the bom present in the order Taking care of the product revisions.

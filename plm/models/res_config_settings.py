@@ -66,5 +66,5 @@ class PlmConfigSettings(models.TransientModel):
     module_plm_product_only_latest = fields.Boolean("Force last version on Manufacturing")
     module_plm_purchase_only_latest = fields.Boolean("Force last version on purchase")
     module_plm_sale_only_latest = fields.Boolean("Force last version on Sale")
-    
+    module_plm_workflow_custom_action = fields.Boolean("Automatic workFlow actions")
     

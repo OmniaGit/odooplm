@@ -205,24 +205,28 @@ class RevisionBaseMixin(models.AbstractModel):
             obj_previus_version = obj.get_previus_version()
             obj_previus_version._mark_obsolare()
     
-    def before_move_to_state(self, function_name):
+    def before_move_to_state(self, from_state, to_state):
         """
-        technical function for workflow customizarion
+        technical function for workflow customization
+        :from_state state that came from
+        :to_state state to go
         """
         self.ensure_one()
         
-        
     def move_to_state(self, state):
         for obj in self:
-            function_name = "action_from_%s_to_%s" % (obj.engineering_state, state)
-            obj.before_move_to_state(function_name)
+            before_state = obj.engineering_state
+            function_name = "action_from_%s_to_%s" % (before_state, state)
+            obj.before_move_to_state(before_state, state)
             f=getattr(obj, function_name)
             f()
-            obj.after_move_to_state(function_name)       
+            obj.after_move_to_state(before_state, state)       
 
-    def after_move_to_state(self, function_name):
+    def after_move_to_state(self, from_state, to_state):
         """
-        technical function for workflow customizarion
+        technical function for workflow customization
+        :from_state state that came from
+        :to_state state to go
         """
         self.ensure_one()
         

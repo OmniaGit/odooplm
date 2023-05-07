@@ -23,7 +23,7 @@
     "version": "16.0.1",
     "author": "OmniaSolutions",
     "website": "https://odooplm.omniasolutions.website",
-    "category": "Product Lifecycle Management",
+    "category": "Manufacturing/Product Lifecycle Management (PLM)",
     "sequence": 15,
     "summary": "PLM Client Custom Procedure",
     "images": [],

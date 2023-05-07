@@ -20,10 +20,10 @@
 ##############################################################################
 {
     "name": "Product Lifecycle Management",
-    "version": "16.0.2",
+    "version": "16.0.3",
     "author": "OmniaSolutions",
     "website": "https://odooplm.omniasolutions.website",
-    "category": "Manufacturing/Product Lifecycle Management",
+    "category": "Manufacturing/Product Lifecycle Management (PLM)",
     "live_test_url": "https://www.v15.odooplm.cloud/",
     "sequence": 15,
     "license": "LGPL-3",

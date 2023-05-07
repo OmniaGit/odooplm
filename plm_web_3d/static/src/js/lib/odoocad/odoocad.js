@@ -28,6 +28,15 @@ class OdooCAD{
 		 */
 			object.receiveShadow=true;
 			object.castShadow=true;
+			var material = new THREE.MeshPhongMaterial( { color: 0x444444 } );
+		
+
+            object.traverse( function ( child ) {
+                if ( child instanceof THREE.Mesh ) {
+                    child.material = material;
+                    }
+                 });
+        
 			this.scene.add(object);
 			this.items.push(object);
 			// Center the object

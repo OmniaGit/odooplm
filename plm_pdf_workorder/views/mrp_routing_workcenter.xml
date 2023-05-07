@@ -8,7 +8,7 @@
             <field name="inherit_id" ref="mrp.mrp_routing_workcenter_form_view"/>
             <field name="arch" type="xml">
             	<xpath expr="//field[@name='worksheet_type']" position="before">
-                    <field name="use_plm_pdf" readonly="True"/>
+                    <field name="use_plm_pdf"/>
             	</xpath>
             </field>
         </record>  

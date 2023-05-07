@@ -546,8 +546,6 @@ function addCamera(){
 			near,
 			far);
 	camera.position.z = 2;
-	var light = new THREE.PointLight(0xffffff, 1, Infinity);
-	camera.add(light);
 }
 
 function addOrbit(){
@@ -583,26 +581,33 @@ function addLight(){
 	const group = new THREE.Group();
 	scene.add( group );
 
-	light1 = new THREE.PointLight( 0xddffdd, 1.0 );
+	light1 = new THREE.DirectionalLight( 0xf7d962, 2, 45);
+	light1.castShadow = true; // default false
 	light1.position.z = 70;
 	light1.position.y = - 70;
 	light1.position.x = - 70;
 	scene.add( light1 );
 	
-	light2 = new THREE.PointLight( 0xffdddd, 1.0 );
+	light2 = new THREE.DirectionalLight( 0xffdddd, 2, 45 );
+	light2.castShadow = true; // default false
 	light2.position.z = 70;
 	light2.position.x = - 70;
 	light2.position.y = 70;
 	scene.add( light2 );
 	
-	light3 = new THREE.PointLight( 0xddddff, 1.0 );
+	light3 = new THREE.DirectionalLight( 0xf7d962, 2, 45 );
+	light3.castShadow = true; // default false
 	light3.position.z = 70;
 	light3.position.x = 70;
 	light3.position.y = - 70;
 	scene.add( light3 );
 
-	var lightAmbient = new THREE.AmbientLight(0xffffff, 0.6);
-	scene.add(lightAmbient);
+   const ambientLight = new THREE.HemisphereLight('blue', // bright sky color
+                                                  'darkslategrey', // dim ground color
+                                                  1, // intensity
+    );
+    
+    scene.add(ambientLight);
 }
 
 function showSnapPoint(){

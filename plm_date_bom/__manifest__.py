@@ -24,7 +24,7 @@
     "author": "OmniaSolutions",
     "license": "AGPL-3",
     "website": "https://odooplm.omniasolutions.website",
-    "category": "Product Lifecycle Management",
+    "category": "Manufacturing/Product Lifecycle Management (PLM)",
     "sequence": 15,
     "summary": "Allow to compute boms due to date",
     "images": [],

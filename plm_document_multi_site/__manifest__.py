@@ -22,7 +22,7 @@
     "version": "16.0.1",
     "author": "OmniaSolutions",
     "website": "https://odooplm.omniasolutions.website",
-    "category": "Product Lifecycle Management",
+    "category": "Manufacturing/Product Lifecycle Management (PLM)",
     "sequence": 15,
     "license": "AGPL-3",
     "summary": "PLM document server syncronization",
