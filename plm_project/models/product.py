@@ -38,7 +38,7 @@ class ProductExtension(models.Model):
         'project_id',
         string=_('Projects')
     )
-    activity_task_id = fields.Many2one('project.task', _('Task'))
+    activity_task_id = fields.Many2one('project.task', _('Activity Task'))
 
     def createConfirmActivity(self):
         for comp_obj in self:
@@ -75,4 +75,4 @@ class ProductExtension(models.Model):
                 ('res_id', '=', product.id),
                 ('res_model_id', '=', self.env['ir.model'].sudo().search([('model', '=', self._name)]).id),
                 ]).action_done()
-        return super(ProductExtension, self).action_release()
+        return super(ProductExtension, product).action_release()

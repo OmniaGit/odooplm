@@ -216,6 +216,9 @@ class RevisionBaseMixin(models.AbstractModel):
     def move_to_state(self, state):
         for obj in self:
             before_state = obj.engineering_state
+            if before_state==state:
+                logging.warning("[%s] Moving %s to %s nothing to perform" % (obj.engineering_code, state,state))
+                continue
             function_name = "action_from_%s_to_%s" % (before_state, state)
             obj.before_move_to_state(before_state, state)
             f=getattr(obj, function_name)

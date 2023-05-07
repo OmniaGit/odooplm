@@ -28,10 +28,12 @@
         <field name="arch" type="xml">
             <page name="technical_infos" position="after">
                 <page name="project_infos" string="Project">
+                    <group name="task_infos">
+                        <field name="activity_task_id" />
+                    </group>
                     <group name="project_infos">
-                    	<field name="activity_task_id" colspan="4"/>
                     	<label for="project_ids"/>
-                        <field name="project_ids" nolabel="1" colspan="4"/>
+                        <field name="project_ids" nolabel="1" />
                     </group>
                 </page>
             </page>
