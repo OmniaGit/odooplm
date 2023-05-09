@@ -254,10 +254,14 @@ class UploadDocument(Controller):
             ir_attachement = request.env['ir.attachment'].sudo()
             for ir_attachement_id in ir_attachement.search_read([('id','=', id)],
                                                                 ['printout','name']):
-                    data = base64.b64decode(ir_attachement_id.get('printout'))
-                    headers = [('Content-Type', 'application/pdf'),
-                               ('Content-Length', len(data)),
-                               ('Content-Disposition', 'inline; filename="%s"' % ir_attachement_id.get('name','no_name') + '.pdf')]
-                    return request.make_response(data, headers)
+                    print_out_data = ir_attachement_id.get('printout')
+                    if print_out_data: 
+                        data = base64.b64decode(print_out_data)
+                        headers = [('Content-Type', 'application/pdf'),
+                                   ('Content-Length', len(data)),
+                                   ('Content-Disposition', 'inline; filename="%s"' % ir_attachement_id.get('name','no_name') + '.pdf')]
+                        return request.make_response(data, headers)
+                    else:
+                        return request.not_found("Pdf document %s not Available" % ir_attachement_id.get('name','no_name'))
         except Exception as ex:
             return Response(ex, json.dumps({}),status=500)
