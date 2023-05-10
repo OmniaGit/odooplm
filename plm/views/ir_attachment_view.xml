@@ -206,6 +206,8 @@
                   decoration-warning="engineering_state == 'undermodify'"
                   decoration-muted="engineering_state == 'obsoleted'">
 
+                <field name="preview" widget="image" options="{ 'size': [60, 60]}"/>
+                <field name="printout" widget="binary"/>
                 <field name="name" select="True"/>
                 <field name="engineering_revision" select="True"/>
                 <field name="engineering_state" select="True"/>

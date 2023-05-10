@@ -101,6 +101,8 @@ class IrAttachment(models.Model):
     desc_modify = fields.Text(_('Modification Description'), default='')
     is_plm = fields.Boolean('Is A Plm Document', help=_("If the flag is set, the document is managed by the plm module, and imply its backup at each save and the visibility on some views."))
     attachment_revision_count = fields.Integer(compute='_attachment_revision_count')
+    first_source_path = fields.Char("Source path of the first time save")
+    cad_name = fields.Char("Cad Name")
 
     def getPrintoutUrl(self):
         self.ensure_one()
@@ -920,7 +922,7 @@ class IrAttachment(models.Model):
             vals_dict['engineering_workflow_date'] = datetime.now()
             to_create_vals.append(vals_dict)
         res = super(IrAttachment, self).create(to_create_vals)
-        res.check_unique()
+        res.with_context(create=True).check_unique()
         return res
     
     def update_component_preview(self):
@@ -2243,6 +2245,8 @@ class IrAttachment(models.Model):
             else:
                 action = 'jump'
         else:  # create
+            documentAttribute['first_source_path']=documentAttribute.get('INTEGRATION_ORIG_FILE_PATH','')
+            documentAttribute['cad_name']=documentAttribute.get('CAD_NAME','')
             ir_attachemnt_id = ir_attachemnt_id.create(documentAttribute)
             plm_checkout_vals['documentid'] = ir_attachemnt_id.id
             self.env['plm.checkout'].create(plm_checkout_vals)
@@ -2797,8 +2801,9 @@ class IrAttachment(models.Model):
         action = self.env.ref('plm.action_report_doc_structure').report_action(self)
         action.update({'close_on_report_download': True})
         return action
-    
-    #client workflow functions
+    #
+    # client workflow functions
+    #
     @api.model
     def action_from_draft_to_draf(self):
         pass

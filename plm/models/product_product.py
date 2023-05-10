@@ -1756,6 +1756,24 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             out.append((getProductData(product_tmpl_id), computeChildLevel(product_tmpl_id)))
         #
         return (header, out)
+    
+    def get_product_bom_flat_ids(self, bom_type='normal'):
+        """
+        get the product browser flat list
+        """
+        self.ensure_one()
+        out = []
+        #
+        def populate(product_id):
+            if product_id in out:
+                return 
+            out.append(product_id)
+            for bom_id in product_id.product_tmpl_id.bom_ids.filtered(lambda x:x.type==bom_type):
+                for line_id in bom_id.bom_line_ids:
+                    populate(line_id.product_id)
+        #    
+        populate(self)
+        return out
 
 class PlmTemporayMessage(models.TransientModel):
     _name = "plm.temporary.message"
