@@ -1428,7 +1428,7 @@ class IrAttachment(models.Model):
         return action
 
     
-    def GetRelatedDocs(self, default=None):
+    def GetRelatedDocs(self, default=None, getBrowse=False):
         """
             Extract documents related to current one(s) (layouts, referred models, etc.)
         """
@@ -1442,11 +1442,14 @@ class IrAttachment(models.Model):
             #    read_docs.extend(self.getRelatedLyTree(rfModel))
         read_docs = list(set(read_docs))
         for document in self.browse(read_docs).sorted('document_type', reverse=True): # 3d before 2d
-            related_documents.append([document.id,
-                                      document.engineering_code,
-                                      '' if document.preview is None else document.preview,
-                                      document.engineering_revision,
-                                      document.description])
+            if getBrowse:
+                related_documents.append(document)
+            else:
+                related_documents.append([document.id,
+                                          document.engineering_code,
+                                          '' if document.preview is None else document.preview,
+                                          document.engineering_revision,
+                                          document.description])
         return related_documents
 
     @api.model
