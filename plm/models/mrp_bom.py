@@ -765,8 +765,11 @@ class MrpBomExtension(models.Model):
                 'type': 'ir.actions.act_window',
                 'domain': [('id', 'in', bom_ids.ids)],
                 'context': {}}
-        
+    
     def saveRelationNewGetBom(self, product_tmpl_id, bomType, parent_product_product_id):
+        return self._saveRelationNewGetBom(product_tmpl_id, bomType, parent_product_product_id)
+    
+    def _saveRelationNewGetBom(self, product_tmpl_id, bomType, parent_product_product_id):
         prod_template = self.env['product.template'].browse(product_tmpl_id)
         if parent_product_product_id.kit_bom:
             bomType = 'phantom'
@@ -787,6 +790,17 @@ class MrpBomExtension(models.Model):
                                                 'type': bomType})
         return mrp_bom_found_id
     
+    def custom_exclude(self, product_product_id, ir_attachment_id, relationAttributes, mrp_bom_found_id):
+        """
+        this function is very importand for customizing the bom line creation
+        :product_product_id   id of product_product 
+        :ir_attachment_id     id of ir_attachment
+        :relationAttributes   dixt like with all creation attributes
+        :mrp_bom_found_id     browse(mrp.bom) for the current bom 
+        :return: bool True -> create the bom line False -> jump to next
+        """
+        return False
+        
     @api.model
     def saveRelationNew(self,
                         clientArgs):
@@ -815,6 +829,8 @@ class MrpBomExtension(models.Model):
             summarize_bom =  self.env.context.get('SUMMARIZE_BOM', False)
             cache_row = {}
             for product_product_id, ir_attachment_id, relationAttributes in childrenOdooTuple:
+                if self.custom_exclude(product_product_id, ir_attachment_id, relationAttributes, mrp_bom_found_id):
+                    continue
                 if mrp_bom_found_id and not relationAttributes.get('EXCLUDE', False) and product_product_id:
                     key = "%s_%s" % (product_product_id, parent_ir_attachment_id)
                     if summarize_bom and key in cache_row:
@@ -835,7 +851,7 @@ class MrpBomExtension(models.Model):
                 if l_tree_document_id and product_product_id:
                     self.env['plm.component.document.rel'].createFromIds(self.env['product.product'].browse(product_product_id),
                                                                          self.env['ir.attachment'].browse(l_tree_document_id))
-            if not mrp_bom_found_id.bom_line_ids:
+            if mrp_bom_found_id and not mrp_bom_found_id.bom_line_ids:
                 mrp_bom_found_id.unlink()
             return True
         except Exception as ex:

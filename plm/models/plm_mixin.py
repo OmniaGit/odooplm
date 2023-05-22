@@ -220,10 +220,16 @@ class RevisionBaseMixin(models.AbstractModel):
                 logging.warning("[%s] Moving %s to %s nothing to perform" % (obj.engineering_code, state,state))
                 continue
             function_name = "action_from_%s_to_%s" % (before_state, state)
-            obj.before_move_to_state(before_state, state)
+            try:
+                obj.before_move_to_state(before_state, state)
+            except Exception as ex:
+                raise UserError("Error on custom function Before Move to state %s" % ex)
             f=getattr(obj, function_name)
             f()
-            obj.after_move_to_state(before_state, state)       
+            try:
+                obj.after_move_to_state(before_state, state)
+            except Exception as ex:
+                raise UserError("Error on custom function After Move to state %s" % ex)       
 
     def after_move_to_state(self, from_state, to_state):
         """
