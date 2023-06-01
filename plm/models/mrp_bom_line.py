@@ -86,7 +86,7 @@ class MrpBomLineExtension(models.Model):
                     return []
                 return self.env['mrp.bom'].search([
                     ('product_tmpl_id', '=', bom_line.product_id.product_tmpl_id.id),
-                    ('type', '=', bom_line.type),
+                    ('type', '=', [bom_line.type,'subcontract', 'phantom']),
                     ('active', '=', True)
                 ])
 
@@ -98,7 +98,7 @@ class MrpBomLineExtension(models.Model):
             else:
                 num_boms = self.env['mrp.bom'].search_count([
                     ('product_tmpl_id', '=', bom_line.product_id.product_tmpl_id.id),
-                    ('type', '=', bom_line.type),
+                    ('type', 'in', [bom_line.bom_id.type,'subcontract', 'phantom']),
                     ('active', '=', True)
                 ])
                 if num_boms:
@@ -114,7 +114,7 @@ class MrpBomLineExtension(models.Model):
             else:
                 bom_objs = self.env['mrp.bom'].search([
                     ('product_tmpl_id', '=', bom_line.product_id.product_tmpl_id.id),
-                    ('type', '=', bom_line.type),
+                    ('type', 'in', [bom_line.type,'subcontract', 'phantom']),
                     ('active', '=', True)
                 ])
                 if not bom_objs:
@@ -139,18 +139,19 @@ class MrpBomLineExtension(models.Model):
         if len(ids_to_open) == 1:
             out_act_dict['view_mode'] = 'form'
             out_act_dict['res_id'] = ids_to_open[0]
+        
         for line_brws in self:
             if line_brws.type == 'normal':
-                domain.append(('type', '=', 'normal'))
+                domain.append(('type', 'in', ['normal','subcontract', 'phantom']))
             elif line_brws.type == 'ebom':
-                domain.append(('type', '=', 'ebom'))
+                domain.append(('type', 'in', ['normal','subcontract', 'phantom']))
                 out_act_dict['view_ids'] = [
                     (5, 0, 0),
                     (0, 0, {'view_mode': 'tree', 'view_id': self.env.ref('plm.plm_bom_tree_view').id}),
                     (0, 0, {'view_mode': 'form', 'view_id': self.env.ref('plm.plm_bom_form_view').id})
                 ]
             elif line_brws.type == 'spbom':
-                domain.append(('type', '=', 'spbom'))
+                domain.append(('type', 'in', ['normal','subcontract', 'phantom']))
         out_act_dict['domain'] = domain
         return out_act_dict
 
