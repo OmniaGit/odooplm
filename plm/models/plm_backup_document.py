@@ -33,6 +33,7 @@ from odoo import _
 import logging
 import os
 import stat
+import datetime
 
 
 class PlmBackupDocument(models.Model):
@@ -60,6 +61,7 @@ class PlmBackupDocument(models.Model):
                                 store=True)
     printout = fields.Binary(_('Printout Content'))
     preview = fields.Binary(_('Preview Content'))
+    orig_data_fstore = fields.Char(string="Original FStore Name")
 
     @api.multi
     def name_get(self):
@@ -89,7 +91,6 @@ class PlmBackupDocument(models.Model):
                         os.unlink(fullname)
                     else:
                         logging.warning("unlink : Unable to remove the document (" + str(plm_backup_document_id.documentid.name) + "-" + str(plm_backup_document_id.documentid.revisionid) + ") from backup set. You can't change writable flag.")
-                        raise UserError(_("Unable to remove the document (" + str(plm_backup_document_id.documentid.name) + "-" + str(plm_backup_document_id.documentid.revisionid) + ") from backup set.\n It isn't a backup file, it's original current one."))
                 else:
                     logging.warning('Prevent to delete the active File %r' % currentname)
                     continue
@@ -101,9 +102,35 @@ class PlmBackupDocument(models.Model):
             ('documentid', '=', doc_id.id)
             ], order='create_date DESC', limit=1):
             return obj
-        return self
+        return self        
+    
+    def getAllBck(self, doc_id, upToDate):
+        if doc_id.write_date:
+            thatDate=(doc_id.write_date - datetime.timedelta(upToDate)).strftime("%Y-%m-%d")
+            return self.search([('documentid', '=', doc_id.id),
+                                ('create_date', '<', thatDate)], order='create_date DESC')
+        else:
+            return []
 
-
+    def cleanNoFileBck(self):
+        file_store = self.env['ir.attachment']._filestore()
+        for bck in self.search([]):
+            if bck.existingfile != bck.documentid.store_fname:
+                full_name = os.path.join(file_store, bck.existingfile)
+                if not os.path.exists(full_name):
+                    bck.unlink()
+            
+            
+    def AutoCleanup(self):
+        """
+            Cleans automatically copies to be restored
+        """
+        self.cleanNoFileBck()
+        daysTokeepSafe=90
+        for ir_attachment in self.env['ir.attachment'].search([('document_type','in',['3d','2d','other'])]):
+            for plm_backupdoc_id in self.getAllBck(ir_attachment, daysTokeepSafe):
+                plm_backupdoc_id.unlink()
+        
 class BackupDocWizard(osv.osv.osv_memory):
     """
         This class is called from an action in xml located in plm.backupdoc.

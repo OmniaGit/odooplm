@@ -18,6 +18,7 @@
                     <field name="create_date" readonly="True"/>
                     <field name="userid" readonly="True"/>
                 	<field name="state" select="1"/>
+                	<field name="orig_data_fstore"/>
                 	<field name="existingfile" select="1"/>
                 </group>
                 <newline/>
@@ -93,6 +94,7 @@
                 <field name="userid" select="1"/>
                 <field name="create_date" select="1"/>
                 <field name="document_name" select="1"/>
+                <field name="orig_data_fstore"/>
                 <field name="revisionid" select="1"/>
                 <field name="state" select="1"/>
             </tree>
