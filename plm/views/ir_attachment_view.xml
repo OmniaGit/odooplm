@@ -340,6 +340,7 @@
                         			</td>
                         			<td name="Component" style="text-align: right; width: 100%; padding:1px;">
                                         <div class="fa fa-lock fa-2x"
+                                             string="."
                                              style="color:red;display: inline;"
                                              attrs="{'invisible': ['|',('checkout_user', '=', 'False'),('checkout_user', '=', '')]}"/>
 	                            		<div class="fa fa-dropbox fa-2x" aria-label="Missing Component" style="color:#ff8300;" attrs="{'invisible': [('is_linkedcomponents', 'not in', [False, []])]}"/>

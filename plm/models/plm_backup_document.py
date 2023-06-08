@@ -60,6 +60,7 @@ class PlmBackupDocument(models.Model):
                                 store=True)
     printout = fields.Binary(_('Printout Content'))
     preview = fields.Binary(_('Preview Content'))
+    orig_data_fstore = fields.Char(string="Original FStore Name")
 
     def name_get(self):
         result = []
