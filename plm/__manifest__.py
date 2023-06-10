@@ -26,7 +26,7 @@
     "category": "Manufacturing/Product Lifecycle Management",
     "sequence": 15,
     "license": "LGPL-3",
-    "summary": "PLM-PDM Integration with main CAD editors (SolidWorks, SolidEdge, Inventor, Autocad, Thinkdesign, Freecad)",
+    "summary": "PLM-PDM Integration with main CAD editors (SolidWorks, SolidEdge, Inventor, Autocad, DraftSight, Thinkdesign, Freecad)",
     "images": ["static/img/odoo_plm.png"],
     "depends": ["base", "board", "product", "mrp"],
     "data": [
