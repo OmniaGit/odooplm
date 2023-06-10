@@ -207,17 +207,27 @@ class PlmDocument(models.Model):
 
     
     def _inverse_datas(self):
-        super(PlmDocument, self)._inverse_datas()
+        super(IrAttachment, self)._inverse_datas()
         for ir_attachment_id in self:
             try:
-                shutil.copyfile(self._full_path(ir_attachment_id.store_fname),
-                                self._full_path(random_name()))
                 if ir_attachment_id.is_plm and self.env.context.get("backup", True):
-                    self.env['plm.backupdoc'].create({'userid': self.env.uid,
-                                                      'existingfile': ir_attachment_id.store_fname,
-                                                      'documentid': ir_attachment_id.id,
-                                                      'printout': ir_attachment_id.printout,
-                                                      'preview': ir_attachment_id.preview})
+                    if self.env['plm.backupdoc'].search_count([('orig_data_fstore','=', ir_attachment_id.store_fname)])==0:
+                        file_name = random_name() + "OdooPLM_BCK"
+                        folder_name = self._full_path(file_name[0:4])
+                        try:
+                            os.makedirs(folder_name)
+                        except:
+                            logging.warning("Directory %s olready present " % folder_name)
+                            pass
+                        to_file = os.path.join(folder_name,file_name)
+                        shutil.copyfile(self._full_path(ir_attachment_id.store_fname),
+                                        to_file)
+                        self.env['plm.backupdoc'].create({'userid': self.env.uid,
+                                                          'existingfile': os.path.join(file_name[0:4],file_name),
+                                                          'documentid': ir_attachment_id.id,
+                                                          'printout': ir_attachment_id.printout,
+                                                          'orig_data_fstore': ir_attachment_id.store_fname,
+                                                          'preview': ir_attachment_id.preview})
             except Exception as ex:
                 logging.error("Unable to copy file for backup Error: %r" % ex)
 
