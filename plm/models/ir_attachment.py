@@ -702,6 +702,8 @@ class PlmDocument(models.Model):
         self.env['product.product'].canMoveWFByParam()
         out = []
         for ir_attachment_id in self:
+            if not ir_attachment_id.exists():
+                continue
             ir_attachment_id.setCheckContextWrite(check)
             newContext = self.env.context.copy()
             newContext['check'] = False
