@@ -207,7 +207,7 @@ class PlmDocument(models.Model):
 
     
     def _inverse_datas(self):
-        super(IrAttachment, self)._inverse_datas()
+        super(PlmDocument, self)._inverse_datas()
         for ir_attachment_id in self:
             try:
                 if ir_attachment_id.is_plm and self.env.context.get("backup", True):
