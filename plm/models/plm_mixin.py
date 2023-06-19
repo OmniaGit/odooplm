@@ -18,7 +18,6 @@
 #    along with this prograIf not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from lib2to3.pgen2.token import STAREQUAL
 '''
 Created on 28 Sep 2022
 
@@ -407,3 +406,22 @@ class RevisionBaseMixin(models.AbstractModel):
                     'sticky': False,
                     'type': 'info',
                 }}
+        
+        
+    def translate_plm_m2o_name(self, objs, field_name, field_value):
+        if field_value:
+            for obj in objs:
+                field_def = obj.fields_get(field_name)
+                relation = field_def.get(field_name,{}).get('relation', '')
+                if not relation:
+                    logging.warning("PLM Many2one relation on field %s not found" % field_name)
+                    continue
+                object_browse_id = None
+                for object_browse_id in self.env[relation].search([('name','=',field_value)]):
+                    break
+                if not object_browse_id:
+                    object_browse_id = self.env[relation].create({'name': field_value})
+                return object_browse_id.id
+        return field_value
+
+        
