@@ -1661,7 +1661,11 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         for attribute_name in self._fields.keys():
             if attribute_name in productAttribute:
                 sanitaized_attributes[attribute_name] = productAttribute[attribute_name]
-        
+            elif "plm_m2o_" + attribute_name in productAttribute:
+                value = productAttribute["plm_m2o_" + attribute_name]
+                sanitaized_attributes[attribute_name] = self.env['product.template'].translate_plm_m2o_name([self.env['product.template'],
+                                                                                                             self.env['product.product']], attribute_name, value)
+                
         engineering_name = sanitaized_attributes.get('engineering_code', False)
         if not engineering_name:
             return False

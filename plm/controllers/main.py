@@ -69,13 +69,11 @@ class UploadDocument(Controller):
                         'name': filename}
             preview = kw.get('preview', '')
             if preview:
-                #to_write['preview'] = preview.stream.read()
-                val_2 = base64.b64encode(preview.stream.read())
-                to_write['preview'] = val_2
-            doc_brws = request.env['ir.attachment'].browse(doc_id)
-            doc_brws.write(to_write)
-            doc_brws.sudo().update_component_preview()
-            doc_brws.setupCadOpen(kw.get('hostname', ''), kw.get('hostpws', ''), operation_type='save')
+                to_write['preview'] = base64.b64encode(preview.stream.read())
+            ir_attachment_id = request.env['ir.attachment'].browse(doc_id)
+            ir_attachment_id.write(to_write)
+            ir_attachment_id.sudo().update_component_preview()
+            ir_attachment_id.setupCadOpen(kw.get('hostname', ''), kw.get('hostpws', ''), operation_type='save')
             logging.info('upload %r' % (doc_id))
             return Response('Upload succeeded', status=200)
         logging.info('no upload %r' % (doc_id))

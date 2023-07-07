@@ -936,12 +936,13 @@ class IrAttachment(models.Model):
         return res
     
     def update_component_preview(self):
-        if self.document_type=='3d' and self.preview:
-            to_update = {}
-            for product_tmpl in self.linkedcomponents:
-                to_update[product_tmpl.engineering_revision]=product_tmpl                
-            if to_update:
-                to_update[max(to_update)].image_1920=self.preview
+        for ir_attachment_id in self:
+            if ir_attachment_id.document_type=='3d' and ir_attachment_id.preview:
+                to_update = {}
+                for product_tmpl in ir_attachment_id.linkedcomponents:
+                    to_update[product_tmpl.engineering_revision]=product_tmpl                
+                if to_update:
+                    to_update[max(to_update)].image_1920=self.preview
         
     def write(self, vals):
         if not self.env.context.get('odooPLM'):
