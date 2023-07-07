@@ -55,10 +55,10 @@ class ProductTemplate(models.Model):
         help=_("Surface finishing for current product, only description for titleblock.")
     )
 
-    engineering_treatment = fields.Char('Cad Termic Treatment',
+    engineering_treatment = fields.Char('Cad Thermal Treatment',
                                         size=128,
                                         required=False,
-                                        help=_("Termic treatment for current product, only description for titleblock."))
+                                        help=_("Thermal treatment for current product, only description for titleblock."))
 
 
     #   ####################################    Overload to set default values    ####################################

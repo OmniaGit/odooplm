@@ -554,8 +554,8 @@ msgstr "Cad-Oberflächenveredelung"
 #. module: plm
 #: code:addons/plm/models/product_template.py:0
 #, python-format
-msgid "Cad Termic Treatment"
-msgstr "Cad Termic-Behandlung"
+msgid "Cad Thermal Treatment"
+msgstr "Cad Thermal-Behandlung"
 
 #. module: plm
 #: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_automatic_weight
@@ -2740,7 +2740,7 @@ msgstr "Wählen Sie die Oberflächenveredelung für das aktuelle Produkt aus"
 #. module: plm
 #: code:addons/plm/models/product_product.py:0
 #, python-format
-msgid "Select termic treatment for current product"
+msgid "Select thermal treatment for current product"
 msgstr "Thermische Behandlung für aktuelles Produkt auswählen"
 
 #. module: plm
@@ -2984,19 +2984,19 @@ msgstr "Temporäre Klasse"
 #. module: plm
 #: code:addons/plm/models/product_product.py:0 model:ir.model,name:plm.model_plm_treatment
 #, python-format
-msgid "Termic Treatment"
+msgid "Thermal Treatment"
 msgstr "Thermische Behandlung"
 
 #. module: plm
 #: code:addons/plm/models/plm_treatment.py:0 model:ir.model.constraint,message:plm.constraint_plm_treatment_name_uniq
 #, python-format
-msgid "Termic Treatment has to be unique !"
-msgstr "Termic Treatment muss einzigartig sein!"
+msgid "Thermal Treatment has to be unique !"
+msgstr "Thermal Treatment muss einzigartig sein!"
 
 #. module: plm
 #: code:addons/plm/models/product_template.py:0
 #, python-format
-msgid "Termic treatment for current product, only description for titleblock."
+msgid "Thermal treatment for current product, only description for titleblock."
 msgstr "Begriffsbehandlung für aktuelles Produkt, nur Beschreibung für Schriftfeld."
 
 #. module: plm

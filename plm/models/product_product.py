@@ -107,9 +107,9 @@ class ProductProduct(models.Model):
                                   required=False,
                                   help=_("Select surface finishing for current product"))
     tmp_treatment = fields.Many2one('plm.treatment',
-                                    _('Termic Treatment'),
+                                    _('Thermal Treatment'),
                                     required=False,
-                                    help=_("Select termic treatment for current product"))
+                                    help=_("Select thermal treatment for current product"))
     father_part_ids = fields.Many2many('product.product',
                                        compute=_father_part_compute,
                                        string=_("BoM Hierarchy"),

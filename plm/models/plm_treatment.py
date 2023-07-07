@@ -33,7 +33,7 @@ from odoo import _
 
 class PlmTreatment(models.Model):
     _name = "plm.treatment"
-    _description = "Termic Treatment"
+    _description = "Thermal Treatment"
 
     name = fields.Char(_('Specification'),
                        required=True,
@@ -44,7 +44,7 @@ class PlmTreatment(models.Model):
                               help=_("Gives the sequence order when displaying a list of product categories."))
 
     _sql_constraints = [
-        ('name_uniq', 'unique(name)', _('Termic Treatment has to be unique !')),
+        ('name_uniq', 'unique(name)', _('Thermal Treatment has to be unique !')),
     ]
     
     def copy(self, default=None):

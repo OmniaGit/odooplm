@@ -554,7 +554,7 @@ msgstr "CAD表面仕上げ"
 #. module: plm
 #: code:addons/plm/models/product_template.py:0
 #, python-format
-msgid "Cad Termic Treatment"
+msgid "Cad Thermal Treatment"
 msgstr "CadのTermic治療"
 
 #. module: plm
@@ -2733,7 +2733,7 @@ msgstr "現在の製品の表面仕上げを選択してください"
 #. module: plm
 #: code:addons/plm/models/product_product.py:0
 #, python-format
-msgid "Select termic treatment for current product"
+msgid "Select Thermal treatment for current product"
 msgstr "現在の製品の長期治療を選択する"
 
 #. module: plm
@@ -2977,19 +2977,19 @@ msgstr "一時クラス"
 #. module: plm
 #: code:addons/plm/models/product_product.py:0 model:ir.model,name:plm.model_plm_treatment
 #, python-format
-msgid "Termic Treatment"
+msgid "Thermal Treatment"
 msgstr "ターミック治療"
 
 #. module: plm
 #: code:addons/plm/models/plm_treatment.py:0 model:ir.model.constraint,message:plm.constraint_plm_treatment_name_uniq
 #, python-format
-msgid "Termic Treatment has to be unique !"
+msgid "Thermal Treatment has to be unique !"
 msgstr "ターミックトリートメントはユニークでなければなりません！"
 
 #. module: plm
 #: code:addons/plm/models/product_template.py:0
 #, python-format
-msgid "Termic treatment for current product, only description for titleblock."
+msgid "Thermal treatment for current product, only description for titleblock."
 msgstr "ターミック治療 現在の製品の場合、titleblockの説明のみ."
 
 #. module: plm

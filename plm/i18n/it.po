@@ -645,7 +645,7 @@ msgstr "Superficie Finitura CAD"
 #. module: plm
 #: model:ir.model.fields,field_description:plm.field_product_product__engineering_treatment
 #: model:ir.model.fields,field_description:plm.field_product_template__engineering_treatment
-msgid "Cad Termic Treatment"
+msgid "Cad Thermal Treatment"
 msgstr "Trattamento Termico CAD"
 
 #. module: plm
@@ -2986,7 +2986,7 @@ msgstr "Seleziona la superficie di finitura per il prodotto corrente"
 #. odoo-python
 #: code:addons/plm/models/product_product.py:0 model:ir.model.fields,help:plm.field_product_product__tmp_treatment
 #, python-format
-msgid "Select termic treatment for current product"
+msgid "Select thermal treatment for current product"
 msgstr "Seleziona il trattamento termico per il prodotto corrente"
 
 #. module: plm
@@ -3209,14 +3209,14 @@ msgstr "Classe Temporanea"
 #: code:addons/plm/models/product_product.py:0 model:ir.model,name:plm.model_plm_treatment
 #: model:ir.model.fields,field_description:plm.field_product_product__tmp_treatment
 #, python-format
-msgid "Termic Treatment"
+msgid "Thermal Treatment"
 msgstr "Trattamento Termico"
 
 #. module: plm
 #. odoo-python
 #: code:addons/plm/models/plm_treatment.py:0 model:ir.model.constraint,message:plm.constraint_plm_treatment_name_uniq
 #, python-format
-msgid "Termic Treatment has to be unique !"
+msgid "Thermal Treatment has to be unique !"
 msgstr "Il trattamento termico deve essere unico!"
 
 #. module: plm
@@ -3224,7 +3224,7 @@ msgstr "Il trattamento termico deve essere unico!"
 #: code:addons/plm/models/product_template.py:0 model:ir.model.fields,help:plm.field_product_product__engineering_treatment
 #: model:ir.model.fields,help:plm.field_product_template__engineering_treatment
 #, python-format
-msgid "Termic treatment for current product, only description for titleblock."
+msgid "Thermal treatment for current product, only description for titleblock."
 msgstr "Trattamento termico per il prodotto corrente, solo descrizione per il cartiglio."
 
 #. module: plm
