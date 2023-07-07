@@ -46,8 +46,8 @@ class ProductProduct(models.Model):
                 if eng_code:
                     latest_product = self.search([('engineering_code', '=', eng_code),
                                                   ('engineering_state','in', RELEASED_STATUSES)],
-                                                 order='engineering_revision desc',
-                                                 limit=1)
+                                                  order='engineering_revision desc',
+                                                  limit=1)
                 if not eng_code or (latest_product and prod_id == latest_product.id):
                     out.append((prod_id, val))
         return out or ret
