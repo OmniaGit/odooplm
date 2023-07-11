@@ -48,8 +48,48 @@ class ProductCuttedParts(models.Model):
         if not self.row_material_y_length or self.row_material_y_length == 0.0:
             raise UserError(_('"Raw Material y length" cannot have zero value.'))
 
+    def checkCreateBOM(self,
+                       prod,
+                       bom_vals={},
+                       bomType='normal'):
+        err = ''
+        bom_obj = self.env['mrp.bom']
+        bom = bom_obj.search([
+            ('product_tmpl_id', '=', prod.product_tmpl_id.id),
+            ('type', '=', bomType)
+            ])
+        if bom:
+            try:
+                bom.unlink()
+            except Exception as ex:
+                err += 'Cannot create BOM for product %r due to error %r' % (prod, ex)
+        if not err:
+            try:
+                bom_vals['product_tmpl_id'] = prod.product_tmpl_id.id
+                bom_vals['type'] = bomType
+                bom = bom_obj.create(bom_vals)
+            except Exception as ex:
+                err = 'Cannot create BOM for product %r due to error %r' % (prod, ex)
+        return bom, err
+    
+    def checkCreateBOMLine(self,
+                           parent_bom,
+                           vals,
+                           child_prod_id,
+                           bomType='normal'):
+            bom_line = self.env['mrp.bom.line']
+            try:
+                vals['product_id'] = child_prod_id.id
+                vals['bom_id'] = parent_bom.id
+                vals['type'] = bomType
+                new_line = bom_line.create(vals)
+                return new_line, ''
+            except Exception as ex:
+                return None, 'Cannot create BOM line with values %r, error %r' % (vals, ex)
+
     @api.model
-    def createCuttedPartsBOM(self, bom_structure):
+    def createCuttedPartsBOM(self,
+                             bom_structure):
 
         def checkCreateProd(odoo_vals):
             err = ''
@@ -69,39 +109,9 @@ class ProductCuttedParts(models.Model):
                 prod.write(odoo_vals)
             return prod, err
 
-        def checkCreateBOM(prod, bom_vals={}, bomType='normal'):
-            err = ''
-            bom_obj = self.env['mrp.bom']
-            bom = bom_obj.search([
-                ('product_tmpl_id', '=', prod.product_tmpl_id.id),
-                ('type', '=', bomType)
-                ])
-            if bom:
-                try:
-                    bom.unlink()
-                except Exception as ex:
-                    err += 'Cannot create BOM for product %r due to error %r' % (prod, ex)
-            if not err:
-                try:
-                    bom_vals['product_tmpl_id'] = prod.product_tmpl_id.id
-                    bom_vals['type'] = bomType
-                    bom = bom_obj.create(bom_vals)
-                except Exception as ex:
-                    err = 'Cannot create BOM for product %r due to error %r' % (prod, ex)
-            return bom, err
-
-        def checkCreateBOMLine(parent_bom, vals, child_prod_id, bomType):
-            bom_line = self.env['mrp.bom.line']
-            try:
-                vals['product_id'] = child_prod_id.id
-                vals['bom_id'] = parent_bom.id
-                vals['type'] = bomType
-                new_line = bom_line.create(vals)
-                return new_line, ''
-            except Exception as ex:
-                return None, 'Cannot create BOM line with values %r, error %r' % (vals, ex)
-
-        def recursion(vals, parent_bom, bomType):
+        def recursion(vals,
+                      parent_bom,
+                      bomType):
             errors = []
             for odoo_vals, children in vals:
                 bom = None
@@ -109,17 +119,24 @@ class ProductCuttedParts(models.Model):
                 if err:
                     errors.append(err)
                 if children:
-                    bom, err = checkCreateBOM(prod, odoo_vals.get('mrp.bom', {}), bomType)
+                    bom, err = self.checkCreateBOM(prod,
+                                                   odoo_vals.get('mrp.bom', {}),
+                                                   bomType)
                     if err:
                         errors.append(err)
                 else:
                     continue
                 if parent_bom:
-                    _bom_line, err = checkCreateBOMLine(parent_bom, odoo_vals.get('mrp.bom.line', {}), prod, bomType)
+                    _bom_line, err = self.checkCreateBOMLine(parent_bom,
+                                                        odoo_vals.get('mrp.bom.line', {}),
+                                                        prod,
+                                                        bomType)
                     if err:
                         errors.append(err)
                 if prod:
-                    childErrors = recursion(children, bom, bomType)
+                    childErrors = recursion(children,
+                                            bom,
+                                            bomType)
                     errors.extend(childErrors)
             return errors
 
@@ -132,3 +149,8 @@ class ProductCuttedParts(models.Model):
         for err in res:
             logging.info('Error during generating cutted part %s' % (err))
         return res
+    
+    def createBomRow(self):
+        """
+        """
+        pass

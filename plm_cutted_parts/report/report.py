@@ -49,14 +49,14 @@ class ReportDocumentPdf(models.AbstractModel):
                     res['p_code'] = l.product_id.default_code
                     res['p_rev'] = product.engineering_revision
                     res['p_qty'] = l.product_qty * 1 if parent_qty < 1 else parent_qty
-                    res['u_name'] = l.product_uom.name
+                    res['u_name'] = l.product_uom_id.name
                     res['p_weight'] = product.weight
                     res['code'] = eng_code
                     res['level'] = level
                     res['prod_brws'] = l.product_id
                     res['prod_tmpl_brws'] = product
-                    res['x_length'] = l.x_leght
-                    res['y_length'] = l.y_leght
+                    res['x_length'] = l.x_length
+                    res['y_length'] = l.y_length
                     spool_list = result.get(eng_code, [])
                     spool_list.append(res)
                     result[eng_code] = spool_list

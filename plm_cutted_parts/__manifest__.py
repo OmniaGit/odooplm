@@ -20,7 +20,7 @@
 #######################True#######################################################
 {
     "name": "PLM Cutted Parts",
-    "version": "16.0.2",
+    "version": "16.0.4",
     "author": "OmniaSolutions",
     "website": "https://odooplm.omniasolutions.website",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
