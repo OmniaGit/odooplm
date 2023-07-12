@@ -101,6 +101,11 @@ class PlmDocument(models.Model):
                 return True
         return False
 
+    def getPrintoutUrl(self):
+        self.ensure_one()
+        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+        return "%s/plm/ir_attachment_printout/%s" % (base_url, self.id) 
+    
     def getLastRevision(self):
         out = []
         for ir_attachment in self:
