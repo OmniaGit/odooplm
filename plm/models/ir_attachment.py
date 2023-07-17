@@ -1117,7 +1117,37 @@ class PlmDocument(models.Model):
     workflow_date = fields.Datetime(string=_('Datetime Last Wkf'))
     revision_user = fields.Many2one('res.users', string=_("User Revision"))
     revision_date = fields.Datetime(string=_('Datetime Revision'))
+    has_error = fields.Boolean("Has Error",
+                               compute='_checkSavingError',
+                               store=True)
+    #
+    @api.depends("write_date")
+    def _checkSavingError(self):
+        plm_dbthread = self.env['plm.dbthread']
+        for ir_attachment_id in self:
+            ir_attachment_id.has_error = False
+            search_name = "%s_%s" % (ir_attachment_id.engineering_document_name,ir_attachment_id.revisionid)
+            for dbthread_id in plm_dbthread.search([('documement_name_version','=',search_name)], order='id desc'):
+                if dbthread_id.error_message:
+                    ir_attachment_id.has_error = True
+                break
     
+    def open_related_dbthread(self):
+        plm_dbthread = self.env['plm.dbthread']
+        plm_dbthread_ids=[]
+        #
+        for ir_attachment_id in self:
+            search_name = "%s_%s" % (ir_attachment_id.engineering_document_name,ir_attachment_id.revisionid)
+            plm_dbthread_ids = plm_dbthread.search([('documement_name_version','=',search_name)])
+        #
+        return {'name': _('Saving Error'),
+                'res_model': 'plm.dbthread',
+                'view_type': 'form',
+                'view_mode': 'tree',
+                'type': 'ir.actions.act_window',
+                'domain': [('id', 'in', plm_dbthread_ids.ids)],
+                'context': {}}
+          
     def _attachment_revision_count(self):
         """
         get All version product_tempate based on this one
@@ -1279,6 +1309,12 @@ class PlmDocument(models.Model):
         if selection == 2:
             docArray = self._getlastrev(docArray)
         checkoutObj = self.env['plm.checkout']
+        msg=''
+        for x in docArray:
+            if x.has_error:
+                msg+=x.engineering_document_name + "\n"
+        if msg:
+            raise UserError(msg)
         for docId in docArray:
             checkOutBrwsList = checkoutObj.search([('documentid', '=', docId), ('userid', '=', self.env.uid)])
             checkOutBrwsList.unlink()

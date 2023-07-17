@@ -103,6 +103,9 @@ class PlmCheckout(models.Model):
         for checkObj in self:
             if not checkObj.documentid:
                 continue
+            if checkObj.documentid.has_error:
+                raise UserError("Unable to check-in due to an error on saving document [%s rev %s]" %(checkObj.documentid.engineering_document_name,
+                                                                                                      checkObj.documentid.revisionid))
             checkObj.documentid.writable = False
             values = {'writable': False}
             docids.append(checkObj.documentid.id)
