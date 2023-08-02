@@ -258,10 +258,30 @@ class PlmComponent(models.Model):
 
     @api.onchange('std_value1', 'std_value2', 'std_value3', 'std_umc1','std_umc2','std_umc3')
     def on_change_stdvalue(self):
-        if self.std_description:
-            if self.std_description.description:
-                self.name = self.computeDescription(self.std_description, self.std_description.description, self.std_umc1, self.std_umc2, self.std_umc3, self.std_value1, self.std_value2, self.std_value3)
+        for product_product_id in self:
+            if product_product_id.std_description:
+                if product_product_id.std_description.description:
+                    product_product_id.name = product_product_id.get_str_description()
+                
+    def get_str_description(self):
+        for product_id in self:
+            name_out = product_id.product_tmpl_id.name
+            if product_id.std_description:
+                tmp_name_out =  product_id.computeDescription(self.std_description,
+                                        self.std_description.description,
+                                        self.std_umc1,
+                                        self.std_umc2,
+                                        self.std_umc3,
+                                        self.std_value1,
+                                        self.std_value2,
+                                        self.std_value3) 
+                if tmp_name_out and len(str(tmp_name_out).strip())>0:
+                    return tmp_name_out
+                else:
+                    return product_id.std_description.name
+            return name_out
 
+            
     @api.onchange('tmp_material')
     def on_change_tmpmater(self):
         if self.tmp_material:

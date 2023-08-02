@@ -35,6 +35,7 @@
 					<t t-set="i" t-value="1"/>
 						<t t-foreach="get_children(o)" t-as="childDict" name='children_compute'>
 							<t t-set="lineBrws" t-value="childDict.get('lineBrws')"/>
+							<t t-set="prodBrws" t-value="childDict.get('prodBrws')"/>
 							<t t-set="prodTmplBrws" t-value="childDict.get('prodTmplBrws')"/>
 							<tr>
 								<t t-if="i%2 == 1">
@@ -42,7 +43,7 @@
 									<td name="bom_pos_value_b" style="background-color: aliceblue;"><span t-esc="childDict.get('item')"/></td>
 									<td name="bom_level_value_b" style="background-color: aliceblue;"><span t-esc="childDict.get('level')"/></td>
 									<td name="bom_prod_name_value_b" style="background-color: aliceblue; white-space: nowrap;"><span t-esc="childDict.get('engineering_code')"/></td>
-									<td name="bom_description_value_b" style="background-color: aliceblue;"><span t-esc="prodTmplBrws.name"/></td>
+									<td name="bom_description_value_b" style="background-color: aliceblue;"><span t-esc="prodBrws.get_str_description()"/></td>
 									<td name="bom_qty_value_b" style="background-color: aliceblue;"><span t-esc="childDict.get('pqty')"/></td>
 									<td name="bom_uom_value_b" style="background-color: aliceblue;"><span t-esc="lineBrws.product_uom_id.name"/></td>
 									<td name="bom_weight_value_b" style="background-color: aliceblue;"><span t-esc="prodTmplBrws.weight"/></td>
@@ -52,7 +53,7 @@
 									<td name="bom_pos_value"><span t-esc="childDict.get('item')"/></td>
 									<td name="bom_level_value" ><span t-esc="childDict.get('level')"/></td>
 									<td name="bom_prod_name_value" style='white-space: nowrap;'><span t-esc="childDict.get('engineering_code')"/></td>
-									<td name="bom_description_value" ><span t-esc="prodTmplBrws.name"/></td>
+									<td name="bom_description_value" ><span t-esc="prodBrws.get_str_description()"/></td>
 									<td name="bom_qty_value" ><span t-esc="childDict.get('pqty')"/></td>
 									<td name="bom_uom_value" ><span t-esc="lineBrws.product_uom_id.name"/></td>
 									<td name="bom_weight_value" ><span t-esc="prodTmplBrws.weight"/></td>

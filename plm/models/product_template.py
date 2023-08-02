@@ -105,13 +105,12 @@ class ProductTemplateExtension(models.Model):
     _sql_constraints = [
         ('partnumber_uniq', 'unique (engineering_code,engineering_revision)', _('Part Number has to be unique!'))
     ]
-
+        
     def isLastVersion(self):
         for tempate_id in self:
             if tempate_id.id in tempate_id._getlastrev():
                 return True
-            return False
-        
+            return False       
         
     def _getlastrev(self):
         result = []

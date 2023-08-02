@@ -29,7 +29,7 @@
 					<div id="spare_header_row" style="position: relative;top: 50mm;">
 				        <h1><b>Spare Parts Report</b></h1>
 						<span t-esc="compBrws.product_tmpl_id.engineering_code or compBrws.product_tmpl_id.default_code"/>
-						<span t-esc="compBrws.product_tmpl_id.name"/>
+						<span t-esc="compBrws.get_str_description()"/>
 	                </div>
 					<div id="spare_header_image" style="position: relative;top: 80mm;">
 						<t t-if="compBrws.image_1920">
