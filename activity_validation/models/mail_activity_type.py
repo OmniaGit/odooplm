@@ -36,4 +36,8 @@ class MailActivityType(models.Model):
                                         'activity_type_id',
                                         'user_id',
                                         _('Template Documents'))
+
+
+                
+                
     

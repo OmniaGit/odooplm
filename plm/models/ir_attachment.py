@@ -594,6 +594,7 @@ class PlmDocument(models.Model):
                 defaults['revisionid'] = newRevIndex
                 defaults['writable'] = True
                 defaults['state'] = 'draft'
+                defaults['document_type'] = oldObject.document_type
                 res = super(PlmDocument, oldObject).copy(defaults)
                 newID = res.id
                 res.revision_user = self.env.uid

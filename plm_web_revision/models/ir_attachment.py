@@ -44,8 +44,8 @@ class PlmDocumentExtended(models.Model):
             raise UserError(_('Current document cannot be revised!'))
         plmDocEnv = self.env['ir.attachment']
         docBrws = plmDocEnv.browse(document_id)
-        if docBrws.document_type != 'other':
-            raise UserError(_("Document cannot be revised because the document type is a CAD type document!"))
+        #if docBrws.document_type != 'other':
+        #   raise UserError(_("Document cannot be revised because the document type is a CAD type document!"))
         if self.stateAllows(docBrws, 'Document'):
             newID, _newIndex = docBrws.NewRevision(docBrws.id)
             if not newID:

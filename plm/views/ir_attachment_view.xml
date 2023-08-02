@@ -376,7 +376,7 @@
                   decoration-info="state == 'confirmed'"
                   decoration-success="state == 'released'"
                   decoration-warning="state == 'undermodify'"
-                  decoration-muted="state == 'obsoleted'">
+                  decoration-danger="state == 'obsoleted'">
 
                 <field name="name" select="True"/>
                 <field name="revisionid" select="True"/>

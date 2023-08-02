@@ -11,7 +11,7 @@
                   decoration-info="state == 'confirmed'"
                   decoration-success="state == 'released'"
                   decoration-warning="state == 'undermodify'"
-                  decoration-muted="state == 'obsoleted'">
+                  decoration-danger="state == 'obsoleted'">
 
                 <field name="name" select="1"/>
                 <!-- Koo search for "select" attribute to use it as filter, so do not remove it-->
