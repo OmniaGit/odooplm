@@ -266,19 +266,22 @@ class PlmComponent(models.Model):
     def get_str_description(self):
         for product_id in self:
             name_out = product_id.product_tmpl_id.name
-            if product_id.std_description:
-                tmp_name_out =  product_id.computeDescription(self.std_description,
-                                        self.std_description.description,
-                                        self.std_umc1,
-                                        self.std_umc2,
-                                        self.std_umc3,
-                                        self.std_value1,
-                                        self.std_value2,
-                                        self.std_value3) 
-                if tmp_name_out and len(str(tmp_name_out).strip())>0:
-                    return tmp_name_out
-                else:
-                    return product_id.std_description.name
+            try:
+                if product_id.std_description:
+                    tmp_name_out =  product_id.computeDescription(self.std_description,
+                                            self.std_description.description,
+                                            self.std_umc1,
+                                            self.std_umc2,
+                                            self.std_umc3,
+                                            self.std_value1,
+                                            self.std_value2,
+                                            self.std_value3) 
+                    if tmp_name_out and len(str(tmp_name_out).strip())>0:
+                        return tmp_name_out
+                    else:
+                        return product_id.std_description.name
+            except Exception as ex:
+                logging.error(ex)
             return name_out
 
             
