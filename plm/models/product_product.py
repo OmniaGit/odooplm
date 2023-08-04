@@ -1,6 +1,6 @@
 ##############################################################################
 #
-#    OmniaSolutions, Your own solutions
+#    OmnaSolutions, Your own solutions
 #    Copyright (C) 2010 OmniaSolutions (<https://www.omniasolutions.website>). All Rights Reserved
 #    $Id$F
 #

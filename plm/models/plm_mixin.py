@@ -75,7 +75,7 @@ def convert_to_letter(l,n):
 #
 class RevisionBaseMixin(models.AbstractModel):
     _name = 'revision.plm.mixin'
-    _inherit = ['mail.thread']
+    _inherit = ['mail.thread','mail.activity.mixin']
     _description = 'Revision Mixin'
     #
     engineering_code = fields.Char(string="Engineering Code")

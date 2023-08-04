@@ -349,56 +349,43 @@
                </group>
             </xpath>
             <xpath expr="//notebook[last()]" position="inside">
-                <page name="technical_infos" string="Technical Information">
-                            <group col="4" colspan="4" name='uom_weight'>
-                                <label for="weight"/>
-                                <div class="o_row" name="weight" attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}">
-                                    <field name="weight" attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}" digits="[14,3]"/>
-                                    <span><field name="weight_uom_name"/></span>
-                                </div>
-                                <field name="uom_id"
-                                       attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}"/>
-                                <field name="uom_po_id"
-                                       attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}"
-                                       groups="base.group_no_one"/>
-                            </group>
-                            <group colspan="4" col="4" name="technical_infos_group" string="Material / Surface / Treatment">
-                                <field name="tmp_material"
-                                       attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}"/>
-                                <field name="engineering_material"
-                                       attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}" colspan="2" groups='base.group_no_one'/>
-                                <field name="tmp_surface"
-                                       attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}"/>
-                                <field name="engineering_surface"
-                                       attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}" colspan="2" groups='base.group_no_one'/>
-                                <field name="tmp_treatment"
-                                       attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}"/>
-                                <field name="engineering_treatment"
-                                       attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}" colspan="2" groups='base.group_no_one'/>
-                            </group>
-                            <group col="4" colspan="4" name="workflow_section" string="Workflow">
-				                 <field name="engineering_release_user"   readonly="1"/>
-				                 <field name="engineering_release_date"  readonly="1"/>
-				                 <field name="engineering_revision_user"   readonly="1"/>
-				                 <field name="engineering_revision_date"  readonly="1"/>
-				                 <field name="engineering_workflow_user"   readonly="1"/>
-				                 <field name="engineering_workflow_date"  readonly="1"/>
-                            </group>
-                        </page>
-                        <page string="Linked Documents" name="linkeddocuments">
-                            <group colspan="4">
-                                <button class="oe_inline oe_stat_button" type="object" icon="fa-list-alt"
-                                        name="action_rev_docs" string="Revision Rel Docs"/>
-                            </group>
+				<page name="technical_infos" string="Technical Information">
+					<group colspan="4" col="4" name="technical_infos_group" string="Material / Surface / Treatment">
+					    <field name="tmp_material"
+					           attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}"/>
+					    <field name="engineering_material"
+					           attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}" colspan="2" groups='base.group_no_one'/>
+					    <field name="tmp_surface"
+					           attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}"/>
+					    <field name="engineering_surface"
+					           attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}" colspan="2" groups='base.group_no_one'/>
+					    <field name="tmp_treatment"
+					           attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}"/>
+					    <field name="engineering_treatment"
+					           attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}" colspan="2" groups='base.group_no_one'/>
+					</group>
+					<group col="4" colspan="4" name="workflow_section" string="Workflow">
+						<field name="engineering_release_user"   readonly="1"/>
+						<field name="engineering_release_date"  readonly="1"/>
+						<field name="engineering_revision_user"   readonly="1"/>
+						<field name="engineering_revision_date"  readonly="1"/>
+						<field name="engineering_workflow_user"   readonly="1"/>
+						<field name="engineering_workflow_date"  readonly="1"/>
+					</group>
+				</page>
+                <page string="Linked Documents" name="linkeddocuments">
+                    <group colspan="4">
+                        <button class="oe_inline oe_stat_button" type="object" icon="fa-list-alt"
+                                name="action_rev_docs" string="Revision Rel Docs"/>
+                    </group>
 
-                            <field name="linkeddocuments" nolabel="1" mode="kanban" domain="[('is_plm', '=', True)]"
-                                   widget="hierarchy_kanban"
-                            	   context="{	'odooPLM': True,
-                            	   				'kanban_view_ref':'plm.document_kanban_view',
-    						 					'tree_view_ref':'plm.ir_attachment_tree',
-				 					            'form_view_ref':'plm.view_attachment_form_plm_hinerit'}"/>
-
-                        </page>
+                    <field name="linkeddocuments" nolabel="1" mode="kanban" domain="[('is_plm', '=', True)]"
+                           widget="hierarchy_kanban"
+                    	   context="{'odooPLM': True,
+                                     'kanban_view_ref':'plm.document_kanban_view',
+		 					         'tree_view_ref':'plm.ir_attachment_tree',
+		                             'form_view_ref':'plm.view_attachment_form_plm_hinerit'}"/>
+                </page>
             </xpath>
         </field>
     </record>

@@ -99,7 +99,8 @@ class IrAttachment(models.Model):
                                      store=True,
                                      string=_('Document Type'))
     desc_modify = fields.Text(_('Modification Description'), default='')
-    is_plm = fields.Boolean('Is A Plm Document', help=_("If the flag is set, the document is managed by the plm module, and imply its backup at each save and the visibility on some views."))
+    is_plm = fields.Boolean('Is A Plm Document',
+                            help=_("If the flag is set, the document is managed by the plm module, and imply its backup at each save and the visibility on some views."))
     attachment_revision_count = fields.Integer(compute='_attachment_revision_count')
     first_source_path = fields.Char("Source path of the first time save")
     cad_name = fields.Char("Cad Name")
@@ -2811,7 +2812,6 @@ class IrAttachment(models.Model):
         return action
 
     def print_Document_Doc_Structure(self):
-        #<record id="account_invoices" model="ir.actions.report"> 
         action = self.env.ref('plm.action_report_doc_structure').report_action(self)
         action.update({'close_on_report_download': True})
         return action
