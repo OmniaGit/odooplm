@@ -20,7 +20,7 @@
 ##############################################################################
 {
     "name": "Product Lifecycle Management",
-    "version": "16.0.10",
+    "version": "16.0.11",
     "author": "OmniaSolutions",
     "website": "https://odooplm.omniasolutions.website",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",

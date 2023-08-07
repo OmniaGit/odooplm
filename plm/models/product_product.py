@@ -334,6 +334,17 @@ class ProductProduct(models.Model):
                 retvalue = fmt % (svalue)
         return retvalue
 
+    def getParentBom(self, filterBomType='normal'):
+        for product_product_id in self:
+            bom_line_filter = [('product_id', '=', product_product_id.id),
+                               ('type', '=', filterBomType)]
+
+            mrp_bom_line_ids = self.env['mrp.bom.line'].search(bom_line_filter,
+                                                               limit=1)
+            for mrp_bom_line_id in mrp_bom_line_ids:
+                return mrp_bom_line_id.bom_id
+        return self.env['mrp.bom']
+
     def _packvalues(self, fmt, label=False, value=False):
         """
             Pack a string formatting it like specified in fmt
