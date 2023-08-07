@@ -27,7 +27,7 @@
 						<td name="parent_bom_pos"> <b></b></td>
 						<td name="parent_bom_level"> <b></b></td>
 						<td name="parent_bom_prod_name"> <b><span t-esc="o.product_tmpl_id.engineering_code or o.product_tmpl_id.default_code"/> </b></td>
-						<td name="parent_bom_description"> <b><span t-esc="o.product_tmpl_id.name"/> </b></td>
+						<td name="parent_bom_description"> <b><span t-esc="o.product_tmpl_id.product_variant_id.get_str_description()"/> </b></td>
 						<td name="parent_bom_qty"> <b><span t-esc="o.product_qty"/> </b></td>
 						<td name="parent_bom_uom"> <b></b></td>
 						<td name="parent_bom_weight"> <b><span t-esc="o.weight_net"/> </b></td>

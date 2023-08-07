@@ -23,7 +23,7 @@
     "version": "15.0.3",
     "author": "OmniaSolutions",
     "website": "https://github.com/OmniaGit/odooplm",
-    "category": "Product Lifecycle Management",
+    "category": "Manufacturing/Product Lifecycle Management",
     "sequence": 15,
     "summary": "PLM Weight Automatic Calculation",
     "images": [],
