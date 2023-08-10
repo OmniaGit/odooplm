@@ -668,7 +668,7 @@ class ProductProduct(models.Model):
         docIDs = []
         attachment = self.env['ir.attachment']
         for documentBrws in linkeddocuments:
-            if documentBrws.engineering_state == check_state:
+            if documentBrws.engineering_state in check_state:
                 if documentBrws.is_checkout:
                     docInError.append(_("Document %r : %r is checked out by user %r") % (documentBrws.name, documentBrws.engineering_revision, documentBrws.checkout_user))
                     continue
@@ -686,13 +686,12 @@ class ProductProduct(models.Model):
         """
         docIDs = []
         docInError = []
-        documentType = self.env['ir.attachment']
         for oldObject in self:
             if action_name != 'reject' and action_name != 'release':
                 check_state = oldObject.engineering_state
             else:
                 check_state = CONFIRMED_STATUS
-            docIDs.extend(self.checkWorkflow(docInError, oldObject.linkeddocuments, check_state))
+            docIDs.extend(self.checkWorkflow(docInError, oldObject.linkeddocuments, include_statuses+[check_state]))
         if docInError:
             msg = _("Error on workflow operation")
             for e in docInError:
@@ -701,27 +700,38 @@ class ProductProduct(models.Model):
             raise UserError(msg)
         self.moveDocumentWorkflow(docIDs, action_name)
 
-    def moveDocumentWorkflow(self, docIDs, action_name):
+    def moveDocumentWorkflow(self, docIDs, status):
         ir_attachment = self.env['ir.attachment']
         if len(docIDs) > 0:
             ir_attachment_ids = ir_attachment.browse(docIDs)
-            if action_name == CONFIRMED_STATUS:
+            if status == CONFIRMED_STATUS:
                 ir_attachment_ids.action_confirm()
-            elif action_name == START_STATUS:
+            elif status == START_STATUS:
                 ir_attachment_ids.action_draft()
-            elif action_name == 'reject':
+            elif status == 'reject':
                 ir_attachment_ids.action_draft()
-            elif action_name == RELEASED_STATUS:
+            elif status == RELEASED_STATUS:
                 ir_attachment_ids.action_release()
-            elif action_name == UNDER_MODIFY_STATUS:
+            elif status == UNDER_MODIFY_STATUS:
                 ir_attachment_ids.action_cancel()
-            elif action_name == 'suspend':
+            elif status == 'suspend':
                 ir_attachment_ids.action_suspend()
-            elif action_name == 'reactivate':
+            elif status == 'reactivate':
                 ir_attachment_ids.action_reactivate()
-            elif action_name == OBSOLATED_STATUS:
+            elif status == OBSOLATED_STATUS:
                 ir_attachment_ids.action_obsolete()
+            else:
+                self.customMoveDocumentWorkflow(ir_attachment_ids, status)
         return docIDs
+    
+    
+    def customMoveDocumentWorkflow(self,
+                                   ir_attachment_ids,
+                                   status):
+        """
+        Customization use this function for further customizations on product workflow
+        """
+        return
 
     @api.model
     def _iswritable(self, oid):

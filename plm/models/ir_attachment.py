@@ -104,7 +104,9 @@ class IrAttachment(models.Model):
     attachment_revision_count = fields.Integer(compute='_attachment_revision_count')
     first_source_path = fields.Char("Source path of the first time save")
     cad_name = fields.Char("Cad Name")
-
+    is_library = fields.Boolean("Is Library file",
+                                 default=False)
+    
     def getPrintoutUrl(self):
         self.ensure_one()
         base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
@@ -2250,6 +2252,7 @@ class IrAttachment(models.Model):
             ir_attachemnt_id = seached_ir_attachemnt_id
             plm_checkout_vals['documentid'] = ir_attachemnt_id.id
             break
+        documentAttribute['is_library']=documentAttribute.get('IS_LIBRARY','')
         if found:  # write
             if ir_attachemnt_id.engineering_state not in [RELEASED_STATUS, OBSOLATED_STATUS]:
                 if ir_attachemnt_id.needUpdate():

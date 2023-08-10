@@ -136,11 +136,11 @@ class RevisionBaseMixin(models.AbstractModel):
         """
         get All version product_tempate based on this one
         """
-        for obj_id in self:
-            if obj_id.engineering_code:
-                obj_id.engineering_revision_count = self.search_count([('engineering_code', '=', obj_id.engineering_code)])
+        for obj in self:
+            if obj.engineering_code:
+                obj.engineering_revision_count = self.search_count([('engineering_code', '=', obj.engineering_code)])
             else:
-                obj_id.engineering_revision_count = 0
+                obj.engineering_revision_count = 0
                 
     def _mark_workflow_release_now(self):
         """
@@ -163,9 +163,9 @@ class RevisionBaseMixin(models.AbstractModel):
             obj._mark_workflow_release_now()
         
     def action_from_draft_to_confirmed(self):
-        for obj in self:
-            obj.engineering_state = 'confirmed'
+        for obj in self: # self:
             obj._mark_worklow_user_date()
+            obj.engineering_state = CONFIRMED_STATUS
     
     def action_from_confirmed_to_draft(self):
         for obj in self:

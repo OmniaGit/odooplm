@@ -24,20 +24,13 @@ Created on 25 Aug 2016
 
 @author: Daniel Smerghetto
 """
+import logging
 import odoo.addons.decimal_precision as dp
 from odoo import models
 from odoo import fields
 from odoo import api
 from odoo import _
 from odoo.exceptions import UserError
-import logging
-
-USED_STATES = [('draft', _('Draft')),
-               ('confirmed', _('Confirmed')),
-               ('released', _('Released')),
-               ('undermodify', _('UnderModify')),
-               ('obsoleted', _('Obsoleted'))]
-
 
 class ProductTemplate(models.Model):
     _name='product.template'
