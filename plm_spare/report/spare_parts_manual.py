@@ -24,12 +24,13 @@ Created on Apr 15, 2016
 @author: Daniel Smerghetto
 """
 
-from io import BytesIO
-import base64
 import os
-import logging
-from datetime import datetime
 import time
+import base64
+import logging
+from io import BytesIO
+from datetime import datetime
+from dateutil import tz
 
 from operator import itemgetter
 from odoo import _
@@ -40,7 +41,7 @@ from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
 from odoo.addons.plm.models.utils import packDocuments
 from odoo.addons.plm.models.utils import BookCollector
-from dateutil import tz
+
 
 
 def is_pdf(file_name):
@@ -199,7 +200,7 @@ class ReportSpareDocumentOne(models.AbstractModel):
                 if len(bom_line_ids) > 0:
                     for page_stream in self.get_pdf_component_layout(product):
                         try:
-                            output.addPage((page_stream, ''))
+                            output.addPage((page_stream, product))
                         except Exception as ex:
                             logging.error(ex)
                             raise ex
@@ -207,7 +208,7 @@ class ReportSpareDocumentOne(models.AbstractModel):
                     pdf = report_ref.sudo().with_context(force_report_rendering=True)._render_qweb_pdf(bom_brws_ids.ids)[0]
                     page_stream = BytesIO()
                     page_stream.write(pdf)
-                    output.addPage((page_stream, ''))
+                    output.addPage((page_stream, product))
                     if recursion:
                         ln = len(product_ids)
                         for i, packed_obj in enumerate(product_ids,1):

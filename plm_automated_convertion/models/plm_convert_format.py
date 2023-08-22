@@ -47,7 +47,6 @@ class PlmConvertFormat(models.Model):
     server_id = fields.Many2one('plm.convert.servers',
                                 string='Server',
                                 required=True)
-
     def _compute_name(self):
         for plm_convert_format in self:
             plm_convert_format.name = "%s %s %s %s" % (plm_convert_format.server_id.name or "",

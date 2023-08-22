@@ -1237,6 +1237,10 @@ class PlmDocument(models.Model):
                                      string=_('Document Type'))
     desc_modify = fields.Text(_('Modification Description'), default='')
     is_plm = fields.Boolean('Is A Plm Document', help=_("If the flag is set, the document is managed by the plm module, and imply its backup at each save and the visibility on some views."))
+    first_source_path = fields.Char("Source path of the first time save")
+    cad_name = fields.Char("Cad Name")
+    is_library = fields.Boolean("Is Library file",
+                                 default=False)
     attachment_release_user = fields.Many2one('res.users', string=_("User Release"))
     attachment_release_date = fields.Datetime(string=_('Datetime Release'))
     attachment_revision_count = fields.Integer(compute='_attachment_revision_count')
@@ -2303,6 +2307,7 @@ class PlmDocument(models.Model):
             ir_attachemnt_id = seached_ir_attachemnt_id
             plm_checkout_vals['documentid'] = ir_attachemnt_id.id
             break
+        documentAttribute['is_library']=documentAttribute.get('IS_LIBRARY','')
         if found:  # write
             if ir_attachemnt_id.state not in ['released', 'obsoleted']:
                 if ir_attachemnt_id.needUpdate():
@@ -2313,6 +2318,8 @@ class PlmDocument(models.Model):
             else:
                 action = 'jump'
         else:  # create
+            documentAttribute['first_source_path']=documentAttribute.get('INTEGRATION_ORIG_FILE_PATH','')
+            documentAttribute['cad_name']=documentAttribute.get('CAD_NAME','')
             ir_attachemnt_id = ir_attachemnt_id.create(documentAttribute)
             plm_checkout_vals['documentid'] = ir_attachemnt_id.id
             self.env['plm.checkout'].create(plm_checkout_vals)
