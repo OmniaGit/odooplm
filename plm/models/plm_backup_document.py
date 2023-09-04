@@ -101,6 +101,7 @@ class PlmBackupDocument(models.Model):
     def getLastBckDocumentByUser(self, doc_id):
         for obj in self.search([
             ('documentid', '=', doc_id.id),
+            ('create_uid','=',self.env.user.id),
             ], order='create_date DESC', limit=1):
             return obj
         return self

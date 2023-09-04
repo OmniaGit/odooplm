@@ -106,6 +106,7 @@ class IrAttachment(models.Model):
     cad_name = fields.Char("Cad Name")
     is_library = fields.Boolean("Is Library file",
                                  default=False)
+    library_path = fields.Char("File library path")
     
     def getPrintoutUrl(self):
         self.ensure_one()
@@ -1872,7 +1873,7 @@ class IrAttachment(models.Model):
     def canCheckOut(self, showError=False):
         for docBrws in self:
             if docBrws.is_checkout:
-                msg = _("Unable to check-Out a document that is already checked id by user %r" % docBrws.checkout_user)
+                msg = _("Unable to check-Out a document that is already checked IN by user %r" % docBrws.checkout_user)
                 if showError:
                     raise UserError(msg)
                 return False, msg
@@ -2253,6 +2254,7 @@ class IrAttachment(models.Model):
             plm_checkout_vals['documentid'] = ir_attachemnt_id.id
             break
         documentAttribute['is_library']=documentAttribute.get('IS_LIBRARY','')
+        documentAttribute['library_path']=documentAttribute.get('LIBRARY_PATH','')
         if found:  # write
             if ir_attachemnt_id.engineering_state not in [RELEASED_STATUS, OBSOLATED_STATUS]:
                 if ir_attachemnt_id.needUpdate():
@@ -2365,8 +2367,9 @@ class IrAttachment(models.Model):
 
 
     def checkNewer(self):
+        self.ensure_one()
         for document in self:
-            plm_cad_open = self.sudo().env['plm.cad.open'].getLastCadOpenByUser(document, self.env.user)
+            plm_cad_open = self.sudo().env['plm.cad.open'].getLastCadSave(document)
             last_bck = self.env['plm.backupdoc'].getLastBckDocumentByUser(document)
             if plm_cad_open.plm_backup_doc_id.id != last_bck.id:
                 return True
