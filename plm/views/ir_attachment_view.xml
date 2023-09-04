@@ -38,6 +38,14 @@
                  <button class="oe_stat_button" icon="fa-sitemap" type="object" name="action_view_rel_doc">
                    <field name="document_rel_count" string="Documents" widget="statinfo"/>
                  </button>
+                 <field name="has_error" invisible="True"/>
+                    <button name="open_related_dbthread"
+                            type="object"
+                            string="S.ERR"
+                            class="oe_stat_button"
+                            icon="fa-bug"
+                            attrs="{'invisible':[('has_error','=',False)]}">
+                    </button>
                  <field name="is_checkout"
                          invisible="True"/>
                  <button name="toggle_check_out"
@@ -224,6 +232,10 @@
                         string="Today"
                         domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
                         help="Created today"/>
+                <filter name="doc_has_error"
+                            string="Has Error"
+                            domain="[('has_error','=',True)]"
+                            help="Filter on documents with error"/>
                 <separator orientation="vertical"/>
                 <field name="engineering_document_name"/>
                 <field name="create_uid">

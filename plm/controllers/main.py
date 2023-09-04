@@ -237,3 +237,29 @@ class UploadDocument(Controller):
             return Response('Extra file Upload succeeded', status=200)
         logging.info('Extra file no upload %r' % (ir_attachment_id))
         return Response('Extra file Failed upload', status=400)
+
+    @route('/plm/ir_attachment_preview/<int:id>', type='http', auth='user', methods=['GET'], csrf=False)
+    @webservice
+    def get_preview(self, id):
+        ir_attachement = request.env['ir.attachment'].sudo()
+        for record in ir_attachement.search_read([('id','=', id)], ['preview']):
+            return base64.b64decode(record.get('preview'))
+        
+    @route('/plm/ir_attachment_printout/<int:id>', type='http', auth='user', methods=['GET'], csrf=False)
+    @webservice
+    def get_printout(self, id):
+        try:
+            ir_attachement = request.env['ir.attachment'].sudo()
+            for ir_attachement_id in ir_attachement.search_read([('id','=', id)],
+                                                                ['printout','name']):
+                    print_out_data = ir_attachement_id.get('printout')
+                    if print_out_data: 
+                        data = base64.b64decode(print_out_data)
+                        headers = [('Content-Type', 'application/pdf'),
+                                   ('Content-Length', len(data)),
+                                   ('Content-Disposition', 'inline; filename="%s"' % ir_attachement_id.get('name','no_name') + '.pdf')]
+                        return request.make_response(data, headers)
+                    else:
+                        return request.not_found("Pdf document %s not Available" % ir_attachement_id.get('name','no_name'))
+        except Exception as ex:
+            return Response(ex, json.dumps({}),status=500)

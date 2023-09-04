@@ -101,6 +101,11 @@ class PlmDocument(models.Model):
                 return True
         return False
 
+    def getPrintoutUrl(self):
+        self.ensure_one()
+        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+        return "%s/plm/ir_attachment_printout/%s" % (base_url, self.id) 
+    
     def getLastRevision(self):
         out = []
         for ir_attachment in self:
@@ -712,6 +717,8 @@ class PlmDocument(models.Model):
         self.env['product.product'].canMoveWFByParam()
         out = []
         for ir_attachment_id in self:
+            if not ir_attachment_id.exists():
+                continue
             ir_attachment_id.setCheckContextWrite(check)
             newContext = self.env.context.copy()
             newContext['check'] = False
@@ -1115,6 +1122,37 @@ class PlmDocument(models.Model):
     is_library = fields.Boolean("Is Library file",
                                  default=False)
 
+    has_error = fields.Boolean("Has Error",
+                               compute='_checkSavingError',
+                               store=True)
+    #
+    @api.depends("write_date")
+    def _checkSavingError(self):
+        plm_dbthread = self.env['plm.dbthread']
+        for ir_attachment_id in self:
+            ir_attachment_id.has_error = False
+            search_name = "%s_%s" % (ir_attachment_id.engineering_document_name,ir_attachment_id.revisionid)
+            for dbthread_id in plm_dbthread.search([('documement_name_version','=',search_name)], order='id desc'):
+                if dbthread_id.error_message:
+                    ir_attachment_id.has_error = True
+                break
+            
+    def open_related_dbthread(self):
+        plm_dbthread = self.env['plm.dbthread']
+        plm_dbthread_ids=[]
+        #
+        for ir_attachment_id in self:
+            search_name = "%s_%s" % (ir_attachment_id.engineering_document_name,ir_attachment_id.revisionid)
+            plm_dbthread_ids = plm_dbthread.search([('documement_name_version','=',search_name)])
+        #
+        return {'name': _('Saving Error'),
+                'res_model': 'plm.dbthread',
+                'view_type': 'form',
+                'view_mode': 'tree',
+                'type': 'ir.actions.act_window',
+                'domain': [('id', 'in', plm_dbthread_ids.ids)],
+                'context': {}}
+          
     def _attachment_revision_count(self):
         """
         get All version product_tempate based on this one
@@ -1276,6 +1314,12 @@ class PlmDocument(models.Model):
         if selection == 2:
             docArray = self._getlastrev(docArray)
         checkoutObj = self.env['plm.checkout']
+        msg=''
+        for x in docArray:
+            if x.has_error:
+                msg+=x.engineering_document_name + "\n"
+        if msg:
+            raise UserError(msg)
         for docId in docArray:
             checkOutBrwsList = checkoutObj.search([('documentid', '=', docId), ('userid', '=', self.env.uid)])
             checkOutBrwsList.unlink()
