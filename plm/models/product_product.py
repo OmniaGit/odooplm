@@ -834,7 +834,10 @@ class ProductProduct(models.Model):
                        include_statuses=[],
                        recursive=False):
         performed_ids=[]
-        def _commonWFAction(obj, status, include_statuses=[],recursive=False):
+        def _commonWFAction(obj,
+                            status,
+                            include_statuses=[],
+                            recursive=False):
             for product_product_id in obj:
                 #
                 # ansure no recursion loop
@@ -850,8 +853,12 @@ class ProductProduct(models.Model):
                     if len(errors) > 0:
                         raise UserError(errors)
                     for child_product_id in product_ids:
-                        _commonWFAction(child_product_id, status, include_statuses)
-                product_product_id._action_ondocuments(status, include_statuses)
+                        _commonWFAction(child_product_id,
+                                        status,
+                                        include_statuses,
+                                        recursive)
+                product_product_id._action_ondocuments(status,
+                                                       include_statuses)
                 product_product_id.product_tmpl_id.move_to_state(status)
             return True
         return _commonWFAction(self, status, include_statuses, recursive)
