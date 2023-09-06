@@ -2754,7 +2754,7 @@ class IrAttachment(models.Model):
                     out.append(doc_fields)
                 else:
                     doc_fields['checkout'] = False
-                    doc_fields['err_msg'] = 'Document %r is in checkout by another user.' % (doc_fields['name'])
+                    doc_fields['err_msg'] = f"Document {doc_fields['name']} is in checkout by {doc_id.checkout_user}."
                     out.append(doc_fields)
         return json.dumps(out)
 
