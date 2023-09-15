@@ -56,10 +56,10 @@
                 <field name="engineering_revision"/>
             </field>
             <xpath expr="//tree" position="attributes">
-            	<attribute name="decoration-info">state == 'confirmed'</attribute>
-            	<attribute name="decoration-success">state == 'released'</attribute>
-            	<attribute name="decoration-warning">state == 'undermodify'</attribute>
-            	<attribute name="decoration-muted">state == 'obsoleted'</attribute>
+                <attribute name="decoration-info">state == 'confirmed'</attribute>
+                <attribute name="decoration-success">state == 'released'</attribute>
+                <attribute name="decoration-warning">state == 'undermodify'</attribute>
+                <attribute name="decoration-danger">state in ['obsoleted', 'suspended']</attribute>
             </xpath>
         </field>
     </record>
@@ -120,8 +120,7 @@
             	<attribute name="decoration-info">state == 'confirmed'</attribute>
             	<attribute name="decoration-success">state == 'released'</attribute>
             	<attribute name="decoration-warning">state == 'undermodify'</attribute>
-            	<attribute name="decoration-muted">state == 'obsoleted'</attribute>
-            	<attribute name="decoration-danger">state == 'suspended'</attribute>
+            	<attribute name="decoration-danger">state in ['obsoleted', 'suspended']</attribute>
             </xpath>
             <xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_id']" position="before">
                 <field name="related_bom_ids" invisible="True"/>
