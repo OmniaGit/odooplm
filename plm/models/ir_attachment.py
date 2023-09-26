@@ -410,16 +410,15 @@ class IrAttachment(models.Model):
             Get children HiTree documents
         '''
         out = []
-
         def _getRelatedHiTree(doc_id, recursion, getRftree):
             if not doc_id:
                 logging.warning('Cannot get links from %r document' % (doc_id))
                 return []
-            document_rel_ids = self.env['ir.attachment.relation'].search([
+            children_attachment_ids = self.env['ir.attachment.relation'].search([
                 ('link_kind', '=', 'HiTree'), 
                 ('parent_id', '=', doc_id)])
-            for document_rel_id in document_rel_ids:
-                child_id = document_rel_id.child_id.id
+            for child_attachment_id in children_attachment_ids:
+                child_id = child_attachment_id.child_id.id
                 if child_id in out:
                     logging.warning('Document %r document already found' % (doc_id))
                     continue
@@ -1119,7 +1118,7 @@ class IrAttachment(models.Model):
             engineering_code = attrs.get('engineering_code', '')
             engineering_revision = attrs.get('engineering_revision', False)
             docBrwsList = self.search([('engineering_code', '=', engineering_code),
-                                       ('engineering_revision', '=', engineering_code)])
+                                       ('engineering_revision', '=', engineering_revision)])
         for docBrws in docBrwsList:
             docBrws._check_in()
             return docBrws.id
@@ -1384,12 +1383,12 @@ class IrAttachment(models.Model):
         def getDocId(args):
             engineering_code = args.get('engineering_code')
             docRev = args.get('engineering_revision')
-            docBrwsList = self.search([('engineering_code', '=', engineering_code),
-                                       ('engineering_revision', '=', docRev)])
-            if not docBrwsList:
-                logging.warning('Document with engineering_code "%s" and revision "%s" not found' % (engineering_code, docRev))
-                return False
-            return docBrwsList[0].id
+            for docBrwsList in self.search([('engineering_code', '=', engineering_code),
+                                            ('engineering_revision', '=', docRev)]):
+                return docBrwsList.id
+            logging.warning('Document with engineering_code "%s" and revision "%s" not found' % (engineering_code, docRev))
+            return False
+        
 
         oid, _listedFiles, selection = request
         oid = getDocId(oid)
@@ -1848,26 +1847,28 @@ class IrAttachment(models.Model):
         return jsonify
 
     
-    def checkout(self, hostName, hostPws, showError=True):
+    def checkout(self, hostName, hostPws, showError=True, user_id=False):
         """
         check out the current document
         """
-        ir_attachment_id = False
+        if not user_id:
+            user_id=self.env.uid
+        plm_checkout_id = False
         msg = ''
         for document in self:
             checkout_id = document.isCheckedOutByMe()
             if checkout_id:
-                ir_attachment_id = checkout_id
+                plm_checkout_id = checkout_id
             else:
                 res, msg = document.canCheckOut(showError=showError)
                 if res:
-                    values = {'userid': self.env.uid,
+                    values = {'userid': user_id,
                               'hostname': hostName,
                               'hostpws': hostPws,
                               'documentid': document.id}
-                    ir_attachment_id = self.env['plm.checkout'].create(values).id
+                    plm_checkout_id = self.env['plm.checkout'].create(values).id
                     break
-        return ir_attachment_id, msg
+        return plm_checkout_id, msg
 
     
     def canCheckOut(self, showError=False):
@@ -2486,17 +2487,25 @@ class IrAttachment(models.Model):
 
     @api.model
     def getDocId(self, args):
-        docName = args.get('engineering_code')
-        docRev = args.get('engineering_revision')
-        docIds = self.search([('engineering_code', '=', docName), ('engineering_revision', '=', docRev)])
-        if not docIds:
-            logging.warning('Document with name "%s" and revision "%s" not found' % (docName, docRev))
-            return False
-        return docIds[0]
+        docId = args.get('id', False)
+        if not docId:
+            docName = args.get('engineering_code')
+            docRev = args.get('engineering_revision')
+            for attachment_id in self.search([('engineering_code', '=', docName), ('engineering_revision', '=', docRev)]):
+                return attachment_id
+        else:
+            return self.browse(docId)
+        logging.warning('Document with name "%s" and revision "%s" not found' % (docName, docRev))
+        return False
 
     @api.model
     def CheckIn2(self, request, default=None, force=False):
-        return self.CheckInRecursive2(request, default, force, recursive=False)
+        if self.CheckInRecursive2(request[0],
+                                      default=default,
+                                      force=force,
+                                      recursive=False):
+            return [request[0]]
+        return []
 
     @api.model
     def CheckInRecursive2(self, involved_docs_dict, **kargs):
@@ -2505,18 +2514,134 @@ class IrAttachment(models.Model):
         """
         involved_docs_dict = json.loads(involved_docs_dict)
         for doc_vals in involved_docs_dict.get('to_check_in', []):
-            docId = doc_vals.get('id', False)
+            docId = self.getDocId(doc_vals) 
             checked = doc_vals.get('checked', False)
             if not docId:
-                raise UserError('Cannot check-in document with id False. Vals %r' % (doc_vals))
-            if checked:
-                checkoutId = self.env['plm.checkout'].search([('documentid', '=', docId), ('userid', '=', self.env.user.id)])
+                raise UserError(f'Cannot check-in document with id False. Vals {doc_vals}')
+            if checked or kargs.get('force', False):
+                checkoutId = self.env['plm.checkout'].search([('documentid', '=', docId.id), ('userid', '=', self.env.user.id)])
                 if checkoutId:
                     checkoutId.unlink()
         return True
 
+    def getLastCadSave(self):
+        for ir_attachment_id in self:
+            for cad_open in self.env['plm.cad.open'].search([
+                ('document_id','=', ir_attachment_id.id),
+                ('operation_type','=', 'save'),
+                ],
+                order='create_date DESC', limit=1):
+                return cad_open.create_date
+            return ir_attachment_id.write_date
+
+    def getDefaulValueDict(self, docBrws, PLM_DT_DELTA, is_root):
+        tmp_dict={}
+        tmp_dict['id'] = docBrws.id
+        tmp_dict['datas_fname'] = docBrws.name
+        tmp_dict['name'] = docBrws.name
+        tmp_dict['document_type'] = docBrws.document_type.upper()
+        tmp_dict['write_date'] = docBrws.getLastCadSave().strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+        tmp_dict['check_in'] = docBrws.ischecked_in()
+        tmp_dict['check_out_by_me'] = docBrws.isCheckedOutByMe()
+        tmp_dict['is_latest_rev'] = docBrws.isLatestRevision()
+        tmp_dict['PLM_DT_DELTA'] = PLM_DT_DELTA
+        tmp_dict['is_root'] = is_root
+        tmp_dict['msg'] = ''
+        return tmp_dict
+        
+    def fill_up_check_in_status(self, docBrws, PLM_DT_DELTA, is_root):
+        out_status = ''
+        data_info = self.getDefaulValueDict(docBrws, PLM_DT_DELTA, is_root)
+        docBrws._is_checkout()
+        if docBrws.is_checkout:
+            if docBrws.isCheckedOutByMe():
+                data_info['options'] = {'save_and_check_in': _('Save and check-in'),
+                                        'keep_and_go': _('Keep check-out'),
+                                        'discard': _('Dangerous !! Discard and check-in'),
+                                        }
+                data_info['msg']=_('Check-Out by me')
+                out_status = 'to_check'
+            else:
+                data_info['msg']=_(f'Check-Out by {docBrws.checkout_user}')
+                out_status = 'to_info'
+        else:
+            data_info['msg']=_('Checked-IN')
+            out_status = 'already_checkin'
+        return data_info, out_status
+
     @api.model
-    def preCheckInRecursive(self, doc_props, forceCheckInModelByDrawing=True, recursion=True, onlyActiveDoc=False):
+    def preCheckInRecursive_all(self,
+                                doc_props):
+        """
+        this funcition is used from the client application
+        """
+        dict_props = json.loads(doc_props[0])
+        odoo_id = dict_props.get('_id', False)
+        if not odoo_id:
+            root_id = self.getDocId(dict_props)
+            if not root_id:
+                raise UserError(f"Unable to retrieve information from {doc_props}")
+        else:
+            root_id = self.browse(odoo_id)
+        return json.dumps(self._preCheckInRecursive_all(root_id))
+    
+    def _preCheckInRecursive_all(self,
+                                 root_id):
+        out = {'to_check_2d': [],
+               'to_check_3d': [],
+               'info': [],
+               'root_ent': False
+               }
+        PLM_DT_DELTA =  self.getPlmDTDelta()
+        doc_2d_ids=self.env[self._name]
+        doc_3d_ids=self.env[self._name]
+        #
+        for doc_id in self.browse(list(set(self.getRelatedLyTree(root_id.id)))):
+            if doc_id.is3D():
+                doc_3d_ids+=doc_id
+            else:
+                doc_2d_ids+=doc_id        
+        
+        if root_id.is3D():
+            doc_3d_ids+=root_id
+            doc_3d_ids+= self.browse(self.getRelatedHiTree(root_id.id,
+                                                           recursion=True,
+                                                           getRftree=True))
+        else:
+            doc_2d_ids+=root_id
+            for doc_id in doc_3d_ids:
+                doc_3d_ids+= self.browse(self.getRelatedHiTree(doc_id.id,
+                                                               recursion=True,
+                                                               getRftree=True))
+        for doc_3d_id in doc_3d_ids:
+            doc_2d_ids+= self.browse(list(set(self.getRelatedLyTree(doc_3d_id.id))))
+        done = []
+        for s_doc_id in doc_3d_ids+doc_2d_ids:
+            if s_doc_id.id in done:
+                continue
+            done.append(s_doc_id.id)
+            data_info, out_status = self.fill_up_check_in_status(s_doc_id,
+                                                                 PLM_DT_DELTA,
+                                                                 is_root = s_doc_id.id==root_id.id)
+            if out_status =='to_check':
+                if data_info['document_type']=='2D':
+                    out['to_check_2d'].append(data_info)
+                elif data_info['document_type']=='3D':
+                    out['to_check_3d'].append(data_info)
+            else:
+                out['info'].append(data_info)
+          
+        return out
+    
+    @api.model
+    def preCheckInRecursive(self,
+                            doc_props,
+                            forceCheckInModelByDrawing=True,
+                            recursion=True,
+                            onlyActiveDoc=False):
+        """
+        make the check for the check-in operation
+        """
         out = {
             'to_check_in': [],
             'to_ask': [],
@@ -2594,6 +2719,7 @@ class IrAttachment(models.Model):
                     appendItem(out['to_check'], doc_dict_3d)
                     tmp_dict['options'] = {
                                       'discard': 'Discard and check-in',
+                                      'save_and_check_in': 'Save and check-in',
                                       'keep_and_go': 'Keep check-out and check-in children'
                                       }
             if is_root:
@@ -2608,6 +2734,7 @@ class IrAttachment(models.Model):
                     appendItem(out['to_check'], tmp_dict)
                     tmp_dict['options'] = {
                                       'discard': 'Discard and check-in',
+                                      'save_and_check_in': 'Save and check-in',
                                       'keep_and_go': 'Keep check-out and check-in children'
                                       }
                 else:
@@ -2625,6 +2752,7 @@ class IrAttachment(models.Model):
                     appendItem(out['to_check'], tmp_dict)
                     tmp_dict['options'] = {
                                       'discard': 'Discard and check-in',
+                                      'save_and_check_in': 'Save and check-in',
                                       'keep_and_go': 'Keep check-out and check-in children'
                                       }
                 else:

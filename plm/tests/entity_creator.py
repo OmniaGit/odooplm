@@ -65,17 +65,20 @@ class PlmEntityCreator(object):
         for pp in self.env['product.product'].search([('product_tmpl_id','=',product_tmpl.id)]):
             return pp
     
-    def create_document(self, name, eng_code=False):
+    def create_document(self, name, eng_code=False, doc_type='other'):
         if not eng_code:
             eng_code="eng_code_" + name
-        return self.env['ir.attachment'].create({
+        ir_attachment= self.env['ir.attachment'].create({
             'datas': DUMMY_CONTENT,
             'name': name,
             'engineering_code': eng_code,
             'res_model': 'ir.attachment',
             'res_id': 0,
+            'document_type':doc_type,
         })
-    
+        ir_attachment.document_type=doc_type
+        return ir_attachment
+
     def create_bom_2_level(self, name):
         p_product = self.create_product_product("parent" + name)
         p_product1 = self.create_product_product("child_1" + name)
@@ -115,5 +118,15 @@ class PlmEntityCreator(object):
                                          'product_qty': 1})
         return parent_bom
         
-        
+    def create_link_document(self, doc_parent, doc_child, link_kind):
+        """
+        :link_kind 
+            link_kind == 'RfTree'  # Reference tree part and is part 
+            link_kind == 'LyTree'  # Reference 2d with 3d
+            link_kind == 'HiTree'  # Reference 3d with 3d normal tree
+            link_kind == PkgTree'  # Reference package or support link
+        """
+        self.env['ir.attachment.relation'].create({'parent_id': doc_parent.id,
+                                                   'child_id': doc_child.id,
+                                                   'link_kind': link_kind})  
         

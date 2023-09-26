@@ -664,23 +664,32 @@ class ProductProduct(models.Model):
         self.message_post(body=_('Created Normal Bom.'))
         return False
 
-    def checkWorkflow(self, docInError, linkeddocuments, check_state):
+    def checkWorkflow(self, docInError, linkeddocuments, check_state,check_in_check=True):
         docIDs = []
         attachment = self.env['ir.attachment']
         for documentBrws in linkeddocuments:
             if documentBrws.engineering_state in check_state:
-                if documentBrws.is_checkout:
+                if check_in_check and documentBrws.is_checkout:
                     docInError.append(_("Document %r : %r is checked out by user %r") % (documentBrws.name, documentBrws.engineering_revision, documentBrws.checkout_user))
                     continue
                 docIDs.append(documentBrws.id)
                 if documentBrws.is3D():
                     doc_layout_ids = documentBrws.getRelatedLyTree(documentBrws.id)
-                    docIDs.extend(self.checkWorkflow(docInError, attachment.browse(doc_layout_ids), check_state))
+                    docIDs.extend(self.checkWorkflow(docInError,
+                                                     attachment.browse(doc_layout_ids),
+                                                     check_state,
+                                                     check_in_check=check_in_check))
                     raw_doc_ids = documentBrws.getRelatedRfTree(documentBrws.id, recursion=True)
-                    docIDs.extend(self.checkWorkflow(docInError, attachment.browse(raw_doc_ids), check_state))
+                    docIDs.extend(self.checkWorkflow(docInError,
+                                                     attachment.browse(raw_doc_ids),
+                                                     check_state,
+                                                     check_in_check=check_in_check))
         return list(set(docIDs))
 
-    def _action_ondocuments(self, action_name, include_statuses=[]):
+    def _action_ondocuments(self,
+                            action_name, 
+                            include_statuses=[],
+                            check_in_check=True):
         """
             move workflow on documents having the same state of component
         """
@@ -691,10 +700,13 @@ class ProductProduct(models.Model):
                 check_state = oldObject.engineering_state
             else:
                 check_state = CONFIRMED_STATUS
-            docIDs.extend(self.checkWorkflow(docInError, oldObject.linkeddocuments, include_statuses+[check_state]))
+            docIDs.extend(self.checkWorkflow(docInError,
+                                             oldObject.linkeddocuments,
+                                             include_statuses+[check_state],
+                                             check_in_check=check_in_check))
         if docInError:
             msg = _("Error on workflow operation")
-            for e in docInError:
+            for e in list(set(docInError)):
                 msg = msg + "\n" + e
             msg = msg + _("\n\nCheck-In All the document in order to proceed !!")
             raise UserError(msg)
@@ -832,12 +844,14 @@ class ProductProduct(models.Model):
     def commonWFAction(self,
                        status,
                        include_statuses=[],
-                       recursive=False):
+                       recursive=False,
+                       check_in_check=True):
         performed_ids=[]
         def _commonWFAction(obj,
                             status,
                             include_statuses=[],
-                            recursive=False):
+                            recursive=False,
+                            check_in_check=True):
             for product_product_id in obj:
                 #
                 # ansure no recursion loop
@@ -856,12 +870,14 @@ class ProductProduct(models.Model):
                         _commonWFAction(child_product_id,
                                         status,
                                         include_statuses,
-                                        recursive)
+                                        recursive,
+                                        check_in_check=check_in_check)
                 product_product_id._action_ondocuments(status,
-                                                       include_statuses)
+                                                       include_statuses,
+                                                       check_in_check=check_in_check)
                 product_product_id.product_tmpl_id.move_to_state(status)
             return True
-        return _commonWFAction(self, status, include_statuses, recursive)
+        return _commonWFAction(self, status, include_statuses, recursive,check_in_check=check_in_check)
 
 #  ######################################################################################################################################33
     def plm_sanitize(self, vals):

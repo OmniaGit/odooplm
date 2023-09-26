@@ -18,11 +18,11 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from odoo import models
-from odoo import api
-from odoo import fields
-from odoo import _
 import logging
+from odoo import _
+from odoo import api
+from odoo import models
+from odoo import fields
 
 
 class PlmDocumentRelations(models.Model):
