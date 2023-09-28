@@ -5,16 +5,6 @@
         <t t-set="record_browse" t-value="data['id']"/>
 		<div class="container document_report_page">
 			<div class="row">
-				<div class="col-lg-12" style="margin-bottom: 30px;">
-					<h2 style="display:inline;"><strong>Document Structure</strong></h2>
-					<h6>
-						<div href="#" t-att-data-res-id="record_browse.id" t-att-data-model="record_browse._name" class="o_mrp_bom_action" style="color: #008b8b;">
-							<strong><t t-esc="record_browse.display_name"/></strong>
-						</div>
-					</h6>
-				</div>
-			</div>
-			<div class="row">
 				<div class="col-lg-12">
                 	<div class="mt16">
 						<table class="table_style">
@@ -24,34 +14,49 @@
 									<th>Doc Name</th>
 									<th>File Name</th>
 									<th class="text-center">N° Revision</th>
-									<th class="text-center">State</th>
+									<th class="text-center" style="padding-right: 10px;">State</th>
 									<th>Product Name</th>
+									<th>CheckOut By</th>
 									<th class="text-center" style="padding-right: 30px;">Preview</th>
 								</tr>
 							</thead>
 							<tbody>
-								<tr>
+								<tr onmouseover="this.style.backgroundColor='#e1e5f4'" onmouseout="this.style.backgroundColor=''">
 									<td class="text-center">
 		                          		<t t-esc="data['level']"/>
 		                         	</td>
 									<td>
-					                	<div href="#" t-att-data-res-id="record_browse.id" t-att-data-model="record_browse._name" class="o_mrp_bom_action" style="color: #008b8b;">
-											<strong><t t-esc="record_browse.display_name"/></strong>
-										</div>
+				                        <div t-attf-class="d-inline-block">
+				                             <a t-attf-href="/web#id={{record_browse.id}}&amp;model={{record_browse._name}}&amp;view_type=form" t-esc="record_browse.name"
+				                                target="_blank"></a>
+				                        </div>
 		                           	</td>
 		                     		<td>
 		                            	<t t-esc="record_browse.engineering_code"/>
 		                        	</td>
-		                        	<td class="text-center">
-		                            	<t t-esc="record_browse.engineering_revision"/>
+		                        	<td style="padding-right: 10px;">
+		                            	<span t-esc="record_browse.engineering_revision" style="padding-right: 10px;"/>
 		                        	</td>
 		                        	<t t-set="state" t-value="record_browse.engineering_state"/>
 		                        	<t t-call="plm.docuemnt_state_row"/>
 		                        	<td>
 		                            	<t t-if="record_browse.linkedcomponents">
-		                                	<t t-esc="record_browse.linkedcomponents[0].display_name"/>
+		                                	<t t-set="linked_product" t-value="record_browse.linkedcomponents[0]"/>
+	                                        <div t-attf-class="d-inline-block">
+	                                             <a t-attf-href="/web#id={{linked_product.id}}&amp;model={{linked_product._name}}&amp;view_type=form" t-esc="linked_product.engineering_code"
+	                                                target="_blank"></a>
+	                                        </div>
+	                                        <div t-esc="linked_product.name"/>
 		                          		</t>
 		                        	</td>
+                                    <td class="text-center" style="color:red;">
+					                    <t t-if="record_browse.checkout_user">
+					                        <div class="fa fa-lock" t-esc="record_browse.checkout_user"/>
+					                    </t>
+					                    <t t-else="">
+					                       <div class="fa fa-unlock" style="color:green;"/>   
+					                    </t>
+                                    </td>		                        	
 		                         	<td class="text-center" style="padding-top: 5px; padding-bottom: 5px;">
 					                	<img t-att-src="'/plm/ir_attachment_preview/%s' % record_browse.id" t-att-alt="record_browse.display_name" class="image_document_report"/>
 		                         	</td>
@@ -71,7 +76,7 @@
 		    <t t-set="record_child_level" t-value="child_dict['level']"/>
 		    <t t-set="state" t-value="record_child.engineering_state"/>
 			<!-- <t t-set="space_td" t-value="'margin-left: '+ str(record_child_level * 20) + 'px; display: flex; font-weight:bold; color: #008b8b;'"/> -->
-			<tr class="document_report_line" t-att-data-level="record_child_level">
+			<tr class="document_report_line" t-att-data-level="record_child_level" onmouseover="this.style.backgroundColor='#e1e5f4'" onmouseout="this.style.backgroundColor=''">
 				<td class="text-center">
                 	<t t-esc="record_child_level"/>
                 </td>
@@ -87,21 +92,37 @@
 						    	<label class="o_mrp_bom_unfoldable fa fa-fw fa-arrow-right" style="color: #008b8b; padding-top: 4px; position: relative; right: 8px;"/>
 						  	</t>
 						</t>
-                        <t t-esc="record_child.display_name"/>
+		                <div t-attf-class="d-inline-block">
+		                     <a t-attf-href="/web#id={{record_child.id}}&amp;model={{record_child._name}}&amp;view_type=form" t-esc="record_child.name"
+		                        target="_blank"></a>
+		                </div>
 					</div>
 				</td>
 				<td>
 					<t t-esc="record_child.engineering_code"/>
 				</td>
-				<td class="text-center">
-					<t t-esc="record_child.engineering_revision"/>
+				<td >
+					<span t-esc="record_child.engineering_revision" style="text-align:center;padding-right: 10px;"/>
 				</td>
                 <t t-call="plm.docuemnt_state_row"/>
 				<td>
 					<t t-if="record_child.linkedcomponents">
-                 		<t t-esc="record_child.linkedcomponents[0].display_name"/>
+	                    <t t-set="linked_product" t-value="record_child.linkedcomponents[0]"/>
+	                    <div t-attf-class="d-inline-block">
+	                         <a t-attf-href="/web#id={{linked_product.id}}&amp;model={{linked_product._name}}&amp;view_type=form" t-esc="linked_product.engineering_code"
+	                            target="_blank"></a>
+	                    </div>
+	                    <div t-esc="linked_product.name"/>
                  	</t>
 				</td>
+                <td class="text-center" style="color:red;">
+                    <t t-if="record_child.checkout_user">
+                        <div class="fa fa-lock" t-esc="record_child.checkout_user"/>
+                    </t>
+                    <t t-else="">
+                        <div class="fa fa-unlock" style="color:green;"/>   
+                    </t>
+                </td>   
                	<td class="text-center" style="padding-top: 5px; padding-bottom: 5px;">
                		<img t-att-src="'/plm/ir_attachment_preview/%s' % record_child.id" class="image_document_report" loading="lazy"/>	
                	</td>

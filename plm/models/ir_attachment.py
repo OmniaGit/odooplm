@@ -107,7 +107,7 @@ class IrAttachment(models.Model):
     is_library = fields.Boolean("Is Library file",
                                  default=False)
     library_path = fields.Char("File library path")
-    
+            
     def getPrintoutUrl(self):
         self.ensure_one()
         base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
@@ -928,6 +928,8 @@ class IrAttachment(models.Model):
             return super(IrAttachment, self).create(vals)
         to_create_vals=[]
         for vals_dict in vals:
+            if 'engineering_state' not in vals:
+                vals_dict['engineering_state']=START_STATUS
             vals_dict['is_plm'] = True
             vals_dict.update(self.checkMany2oneClient(vals_dict))
             vals_dict = self.plm_sanitize(vals_dict)
@@ -1878,7 +1880,7 @@ class IrAttachment(models.Model):
                 if showError:
                     raise UserError(msg)
                 return False, msg
-            if docBrws.engineering_state != START_STATUS:
+            if docBrws.engineering_state not in [START_STATUS, False]:
                 msg = _("Unable to check-Out a document that is in state %r" % docBrws.engineering_state)
                 if showError:
                     raise UserError(msg)
