@@ -124,7 +124,7 @@ def get_bom_report(myObject, recursion=False, flat=False, leaf=False, level=1, s
             else:
                 prodQty = l.product_qty
                 res = get_out_line_infos(l, productTmplObj, prodQty)
-                res['engineering_code'] = (bomObj.env['ir.config_parameter'].get_param(
+                res['engineering_code'] = (bomObj.env['ir.config_parameter'].sudo().get_param(
                     'REPORT_INDENTATION_KEY') or '') * level + ' ' + (productTmplObj.engineering_code or '')
                 res['children'] = children
                 res['level'] = level
