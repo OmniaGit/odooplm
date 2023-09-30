@@ -217,32 +217,6 @@ class ProductProduct(models.Model):
                     product_product_id.std_value3 = False
                 #
             product_product_id.on_change_stdvalue()
-            
-                
-    # @api.onchange('std_description')
-    # def on_change_stddesc(self):
-    #     if self.std_description:
-    #         if self.std_description.description:
-    #             self.name = self.std_description.description
-    #             if self.std_description.umc1:
-    #                 self.std_umc1 = self.std_description.umc1
-    #             else:
-    #                 self.std_umc1=""
-    #                 self.std_value1=False
-    #             if self.std_description.umc2:
-    #                 self.std_umc2 = self.std_description.umc2
-    #             else:
-    #                 self.std_umc2=""
-    #                 self.std_value2=False
-    #             if self.std_description.umc3:
-    #                 self.std_umc3 = self.std_description.umc3
-    #             else:
-    #                 self.std_umc3=""
-    #                 self.std_value3=False
-    #             if self.std_description.unitab:
-    #                 self.name = self.name + " " + self.std_description.unitab
-
-                
 
     @api.onchange('std_value1', 'std_value2', 'std_value3', 'std_umc1','std_umc2','std_umc3')
     def on_change_stdvalue(self):
@@ -439,20 +413,27 @@ class ProductProduct(models.Model):
                     }
 
     @api.model
-    def _getChildrenBom(self, component, level=0, currlevel=0, bom_type=False):
+    def _getChildrenBom(self,
+                        product_product_id,
+                        level=0,
+                        currlevel=0,
+                        bom_type=False):
         """
-            Return a flat list of each child, listed once, in a Bom ( level = 0 one level only, level = 1 all levels)
+            Return a flat list of each child, listed once, in a Bom 
+            :level = [ 0 one level only, 1 all levels]
+            :currlevel starting level for the bom
+            :bom_type type bom calculation
         """
         result = []
         bufferdata = []
         if level <= currlevel and level > 0:
             return bufferdata
-        for bomid in component.product_tmpl_id.bom_ids:
+        for bomid in product_product_id.product_tmpl_id.bom_ids:
             if bom_type:
                 if bomid.type != bom_type:
                     continue
             for bomline in bomid.bom_line_ids:
-                children = self._getChildrenBom(component=bomline.product_id,
+                children = self._getChildrenBom(product_product_id=bomline.product_id,
                                                 level=level,
                                                 currlevel=currlevel + 1,
                                                 bom_type=bom_type)
