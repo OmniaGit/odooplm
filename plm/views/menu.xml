@@ -128,7 +128,15 @@
             name="Groups"
             parent="plm.plm_menu_dictionaries"
             action="plm_action_res_groups"/>
-            
+    
+    <menuitem
+            id="plm_product_cad_search"
+            name="Product Cad Search"
+            parent="plm.plm_menu_dictionaries"
+            sequence="50"
+            groups="plm.group_plm_admin"
+            action="action_plm_component_base_cad_form"/>
+
     <menuitem
             id="plm_settings"
             name="Settings"
