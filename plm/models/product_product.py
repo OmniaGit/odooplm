@@ -441,7 +441,32 @@ class ProductProduct(models.Model):
                 bufferdata.append(bomline.product_id.id)
         result.extend(bufferdata)
         return list(set(result))
-
+    
+    def getLeafBom(self, bom_type='normal'):
+        """
+        get only the leaf of the bom
+        :product_product_id <product_product>
+        :bom_type ['normal','kit','engineering']
+        :return: [<product_product>,]
+        """
+        out = []
+        computed_bom = []
+        def _getLeafBom(self, bom_type='normal'):
+            for product_product_id in self:
+                has_bom=False
+                for mrp_bom_id in product_product_id.product_tmpl_id.bom_ids.filtered(lambda x : x.bom_type==bom_type):
+                    has_bom=True
+                    if mrp_bom_id in computed_bom:
+                        continue
+                    else:
+                        computed_bom.append(mrp_bom_id)
+                    for product_id in mrp_bom_id.bom_line_ids.mapped("product_id"):
+                        for sub_product_id in product_id._getLeafBom(bom_type=bom_type):
+                            out.append(sub_product_id)
+                if not has_bom and product_product_id not in out:
+                    out.append(product_product_id)
+        return out
+    
     def summarize_level(self, recursion=False, flat=False, level=1, summarize=False, parentQty=1, bom_type=False):
         out = {}
         for product_product_id in self:
@@ -1803,7 +1828,8 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         #    
         populate(self)
         return out
-
+        
+        
 class PlmTemporayMessage(models.TransientModel):
     _name = "plm.temporary.message"
     _description = "Temporary Class"
