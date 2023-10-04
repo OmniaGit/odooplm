@@ -83,7 +83,7 @@ class AdvancedPackView(models.TransientModel):
                                  ], _('Document Type'))
     available_types = fields.Many2one('pack_and_go_types', _('Types'))
     pack_and_go_id = fields.Many2one('pack.and_go', _('Pack and go id'))
-
+                             
 
 class PackAndGo(models.TransientModel):
     _name = 'pack.and_go'
@@ -135,6 +135,122 @@ class PackAndGo(models.TransientModel):
     convertion_server_available = fields.Boolean(_('Conversion server available'), default=False)
     datas = fields.Binary(string="Download")
     datas_fname = fields.Char(string="File Name")
+    create_subfolder_by_category = fields.Boolean(_("Create subfolder by category"),help="""
+    Create inside the zip a folder structure that is equal to the product category assing to each product
+    """)
+    bom_computation = fields.Selection([('ONLY_PRODUCT', 'Selected product'),
+                                        ('FIRST_LEVEL','First Level'),
+                                        ('ALL_LEVEL','All Level'),
+                                        ('LEAF','Leaf')],
+                                       _("Bom computation mode"),
+                                       default='ALL_LEVEL')
+    
+    file_name_computation = fields.Selection([('FILE_NAME', 'File name'),
+                                  ('FILE_NAME_REV', 'File name and revision'),
+                                  ('PRODUCT_ENGINEERING_CODE','Product engineering Code'),
+                                  ('PRODUCT_ENGINEERING_REV','Product engineering name and revision'),
+                                  ('PRODUCT_ENGINEERING_DESCCRIPRION','Product engineering name and description'),
+                                  ('PRODUCT_ENGINEERING_REV_DESCCRIPRION','Product engineering name revision and descriprion'),
+                                  ('INTERNAL_REFERENCE','Product internal reference'),
+                                  ('INTERNAL_REFERENCE_DESCRIPTION','Product internal reference and description')],
+                                  _("File name computation"),
+                                  default='FILE_NAME',
+                                  help="""
+                                  File name inside zip folder
+                                  * File name -> <ir_attachment.name>.exte 
+                                  * File name and revision -> <ir_attachment.name>_<ir_attachment.engineering_revision>.exte
+                                  * Product engineering Code -> <product_product.engineering_code>.exte
+                                  * Product engineering name and revision -> <product_product.engineering_code>_<eproduct_product.engineering_revision>.exte
+                                  * Product engineering name description -> <product_product.engineering_code>_<product_product.name>.exte
+                                  * Product engineering name revision and descriprion - > <product_product.engineering_code>_<product_product.engineering_revision>_<product_product.name>.exte
+                                  * Product internal reference' - > <product_product.default_code>.exte
+                                  * Product internal reference and description' - > <product_product.default_code>_<product_product.name>.exte
+                                  REMARK: This function only work for the non CAD native files [es. it work for (pdf,dxf,stp)]
+                                      Native file must keep the original name in order to be reopened without any problem
+                                  """)
+    bom_version = fields.Selection([('ONLY_RELEASED', _('Released')),
+                                    ('LATEST',_('Latest'))],
+                                    string=_("Product-Document version"),
+                                    default='LATEST',
+                                    help="""Chose the status of the document that you would like to extract""")
+    
+    show_create_zip = fields.Boolean("Service field to show crete zip button",
+                                     compute="compute_show_create_zip")
+    def compute_show_create_zip(self):
+        for item in self:
+            item.show_create_zip=False
+            if item.export_3d:
+                item.show_create_zip=True
+                return
+            if item.export_2d:
+                item.show_create_zip=True
+                return
+            if item.export_pdf:
+                item.show_create_zip=True
+                return
+            if item.export_other:
+                item.show_create_zip=True
+                return          
+            
+    def docCheckCreate(self, ir_attachment_id, product_product_id=False):
+        product_template_id = False
+        product_template_revision = False
+        objPackView = self.env['pack_and_go_view']
+        if product_product_id:
+            product_template_id = product_product_id.product_tmpl_id.id
+            product_template_revision = product_product_id.engineering_revision
+        singleCreateDict = {'component_id': product_template_id,
+                            'comp_rev': product_template_revision,
+                            'doc_rev': ir_attachment_id.engineering_revision,
+                            'document_id': ir_attachment_id.id,
+                            'preview': ir_attachment_id.preview,
+                            'available_types': False,
+                            'doc_type': ir_attachment_id.document_type,
+                            }
+        return objPackView.create(singleCreateDict)
+    
+    def action_compute_attachment_bom(self):
+        """
+        compute the bom and get the attachment
+        """
+        #
+        export_2d = []
+        export_3d = []
+        export_other = []
+        export_pdf = []
+        #
+        self.clearAll()
+        #
+        computed = []
+        for product_product_id, attachment_ids in self.get_attachment(self.component_id.product_variant_id).items():
+            for ir_attachment_id in attachment_ids:
+                if ir_attachment_id in computed:
+                    continue
+                computed.append(ir_attachment_id)
+                newViewObj = self.docCheckCreate(ir_attachment_id, product_product_id)
+                if ir_attachment_id.document_type == '2d':
+                    if self.export_type in ('2dpdf','2d', '3d2d', 'all'):
+                        export_2d.append(newViewObj.id)
+                    if self.export_type in ('2dpdf', 'pdf', '3dpdf', 'all'):
+                        cp_newViewObj = newViewObj.copy()
+                        cp_newViewObj.doc_type='pdf'
+                        export_pdf.append(cp_newViewObj.id)
+                elif ir_attachment_id.document_type == '3d':
+                    if self.export_type in ('3d', '3dpdf', '3d2d', 'all'):
+                        export_3d.append(newViewObj.id)
+                elif ir_attachment_id.document_type == 'other':
+                    if self.export_type in ('all'):
+                        export_other.append(newViewObj.id)
+                else:
+                    logging.error(f"Document {ir_attachment_id.name} of type {ir_attachment_id.document_type} not collexted")
+                    
+        #
+        self.export_2d = list(set(export_2d))
+        self.export_3d = list(set(export_3d))
+        self.export_other = list(set(export_other))
+        self.export_pdf = list(set(export_pdf))
+        #
+        return self.returnWizard()
 
     def computeExportRelField(self, forceType=False):
         '''
@@ -151,21 +267,21 @@ class PackAndGo(models.TransientModel):
         objPackView = self.env['pack_and_go_view']
         plmDocObject = self.env['ir.attachment']
 
-        def docCheckCreate(doc, comp=False):
+        def docCheckCreate(ir_attachment_id, product_product_id=False):
             compId = False
             compRev = False
-            if comp:
-                compId = comp.product_tmpl_id.id
-                compRev = comp.engineering_revision
+            if product_product_id:
+                compId = product_product_id.product_tmpl_id.id
+                compRev = product_product_id.engineering_revision
             singleCreateDict = {'component_id': compId,
                                 'comp_rev': compRev,
-                                'doc_rev': doc.engineering_revision,
-                                'document_id': doc.id,
-                                'preview': doc.preview,
+                                'doc_rev': ir_attachment_id.engineering_revision,
+                                'document_id': ir_attachment_id.id,
+                                'preview': ir_attachment_id.preview,
                                 'available_types': False,
-                                'doc_type': doc.document_type,
+                                'doc_type': ir_attachment_id.document_type,
                                 }
-            if doc.document_type == '2d':
+            if ir_attachment_id.document_type == '2d':
                 if self.export_type in ('2d', '2dpdf', '3d2d', 'all'):
                     newViewObj = objPackView.create(singleCreateDict)
                     export_2d.append(newViewObj.id)
@@ -173,7 +289,7 @@ class PackAndGo(models.TransientModel):
                     singleCreateDict['doc_type'] = 'pdf'
                     newViewObj = objPackView.create(singleCreateDict)
                     export_pdf.append(newViewObj.id)
-            elif doc.document_type == '3d':
+            elif ir_attachment_id.document_type == '3d':
                 if self.export_type in ('3d', '3dpdf', '3d2d', 'all'):
                     newViewObj = objPackView.create(singleCreateDict)
                     export_3d.append(newViewObj.id)
@@ -318,16 +434,16 @@ class PackAndGo(models.TransientModel):
     def export2D(self, convertionModuleInstalled, outZipFile):
         for lineBrws in self.export_2d:
             if lineBrws.available_types and convertionModuleInstalled:
-                exportConverted(lineBrws.document_id, lineBrws.available_types)
+                self.exportConverted(lineBrws)
             else:
-                self.exportSingle(lineBrws.document_id, outZipFile)
+                self.exportSingle(lineBrws, outZipFile)
 
     def export3D(self, convertionModuleInstalled, outZipFile):
         for lineBrws in self.export_3d:
             if lineBrws.available_types and convertionModuleInstalled:
-                exportConverted(lineBrws.document_id, lineBrws.available_types)
+                self.exportConverted(lineBrws)
             else:
-                self.exportSingle(lineBrws.document_id, outZipFile)
+                self.exportSingle(lineBrws, outZipFile)
 
     def getPDF(self, docBws):
         report_model = self.env['report.plm.ir_attachment_pdf']
@@ -335,25 +451,81 @@ class PackAndGo(models.TransientModel):
         return content
 
     def exportPdf(self, outZipFile):
-        for lineBrws in self.export_pdf:
-            docBws = lineBrws.document_id
-            outFilePath = os.path.join(outZipFile, docBws.name + '.' + 'pdf')
-            if docBws.printout:
-                with open(outFilePath, 'wb') as fileObj:
-                    fileObj.write(self.getPDF(docBws))
+        for line_brws in self.export_pdf:
+            ir_attachment_id = line_brws.document_id
+            out_file_path = self.computeDocName(line_brws, outZipFile)
+            if ir_attachment_id.printout:
+                with open(f"{out_file_path}.pdf", 'wb') as fileObj:
+                    fileObj.write(self.getPDF(ir_attachment_id))
 
     def exportOther(self, outZipFile):
         for lineBrws in self.export_other:
-            self.exportSingle(lineBrws.document_id, outZipFile)
+            self.exportSingle(lineBrws, outZipFile)
 
-    def exportSingle(self, docBws, outZipFile):
-        fromFile = docBws._full_path(docBws.store_fname)
+    def getCategoryFolder(self, product_id=None):
+        out='All'
+        if product_id:
+            out = product_id.categ_id.name
+        return out
+
+    def computeDocName(self, lineBrws, outZipFile, compute_file_name=True):
+        ir_attachment_id = lineBrws.document_id
+        product_id = lineBrws.component_id
+        file_name = ir_attachment_id.name
+        if compute_file_name:
+            file_name_no_exte, exte = os.path.splitext(ir_attachment_id.name)
+            if self.file_name_computation =='FILE_NAME_REV':
+                file_name = f"{file_name_no_exte}_{ir_attachment_id.engineering_revision}{exte}"
+            else:
+                if product_id:
+                    if self.file_name_computation=='PRODUCT_ENGINEERING_CODE':
+                        file_name = f"{product_id.engineering_code}{exte}"
+                    elif self.file_name_computation=='PRODUCT_ENGINEERING_REV':
+                        file_name = f"{product_id.engineering_code}_{product_id.engineering_revision}{exte}"
+                    elif self.file_name_computation=='PRODUCT_ENGINEERING_DESCCRIPRION':
+                        file_name = f"{product_id.engineering_code}_{product_id.name}{exte}"
+                    elif self.file_name_computation=='PRODUCT_ENGINEERING_REV_DESCCRIPRION':
+                        file_name = f"{product_id.engineering_code}_{product_id.engineering_revision}_{product_id.name}{exte}"
+                    elif self.file_name_computation=='INTERNAL_REFERENCE':
+                        file_name = f"{product_id.default_code}{exte}"
+                    elif self.file_name_computation=='INTERNAL_REFERENCE_DESCRIPTION':
+                        file_name = f"{product_id.default_code}_{product_id.name}{exte}"
+        if self.create_subfolder_by_category:
+            category_folder = self.getCategoryFolder(product_id)
+            category_folder_path = os.path.join(outZipFile, category_folder)
+            if not os.path.exists(category_folder_path):
+                os.makedirs(category_folder_path)
+            outFilePath = os.path.join(category_folder_path, file_name)
+        else:
+            outFilePath = os.path.join(outZipFile, file_name)
+        return outFilePath
+
+    def exportSingle(self, lineBrws, outZipFile):
+        ir_attachment_id = lineBrws.document_id
+        fromFile = ir_attachment_id._full_path(ir_attachment_id.store_fname)
+        outFilePath = self.computeDocName(lineBrws, outZipFile, compute_file_name=False)
         if os.path.exists(fromFile):
-            outFilePath = os.path.join(outZipFile, docBws.name)
             shutil.copyfile(fromFile, outFilePath)
         else:
-            logging.error('Unable to export file from document ID %r. File %r does not exists.' % (docBws.id, fromFile))
-
+            logging.error('Unable to export file from document ID %r. File %r does not exists.' % (ir_attachment_id.id, fromFile))
+    
+    def exportConverted(self, line_wizard_brows):
+        ir_attachment_id = line_wizard_brows.document_id
+        relStr = self.env['ir.config_parameter'].sudo()._get_param('extension_integration_rel')
+        try:
+            rel = eval(str(relStr).lower())
+        except Exception as ex:
+            logging.error('Unable to get extension_integration_rel parameter. EX: %r' % (ex))
+            rel = {}
+        integration = rel.get(str(self.getFileExtension(ir_attachment_id)).lower(), '')
+        convertObj = self.env['plm.convert']
+        filePath = convertObj.getFileConverted(ir_attachment_id, integration, line_wizard_brows.available_types)
+        if not os.path.exists(filePath):
+            logging.error('Unable to convert correctly file %r, does not exists' % (filePath))
+            return
+        outFilePath = os.path.join(outZipFile, os.path.basename(filePath))
+        shutil.copyfile(filePath, outFilePath)
+            
     def action_export_zip(self):
         """
             action to import the data
@@ -369,29 +541,14 @@ class PackAndGo(models.TransientModel):
         checkCreateFolder(export_zip_folder)
         outZipFile = os.path.join(export_zip_folder, self.component_id.engineering_code)
         checkCreateFolder(outZipFile)
-
-        def exportConverted(docBws, extentionBrws):
-            relStr = self.env['ir.config_parameter']._get_param('extension_integration_rel')
-            try:
-                rel = eval(str(relStr).lower())
-            except Exception as ex:
-                logging.error('Unable to get extension_integration_rel parameter. EX: %r' % (ex))
-                rel = {}
-            integration = rel.get(str(self.getFileExtension(docBws)).lower(), '')
-            convertObj = self.env['plm.convert']
-            filePath = convertObj.getFileConverted(docBws, integration, extentionBrws.name)
-            if not os.path.exists(filePath):
-                logging.error('Unable to convert correctly file %r, does not exists' % (filePath))
-                return
-            outFilePath = os.path.join(outZipFile, os.path.basename(filePath))
-            shutil.copyfile(filePath, outFilePath)
-
+        #
         self.export2D(convertionModuleInstalled, outZipFile)
         self.export3D(convertionModuleInstalled, outZipFile)
         self.exportPdf(outZipFile)
         self.exportOther(outZipFile)
-
+        #
         # Make archive, upload it and clean
+        #
         outZipFile2 = shutil.make_archive(outZipFile, 'zip', outZipFile)
         with open(outZipFile2, 'rb') as f:
             fileContent = f.read()
@@ -442,5 +599,76 @@ class PackAndGo(models.TransientModel):
                 line.available_types = res.ids[0]
         return self.returnWizard()
 
+                                     
+    def get_version(self, obj):
+        if obj._name=='product.product':
+            obj=obj.product_tmpl_id
+        out = None
+        if self.bom_version=='ONLY_RELEASED':
+            out = obj.get_released()
+        elif self.bom_version=='LATEST':
+            out= obj.get_latest_version()
+        if obj._name=='product.template':
+            if out:
+                out=out.product_variant_id
+        return out
+    
+    def get_version_list(self, objs):
+        out = []
+        for obj in objs:
+            out.append(self.get_version(obj))
 
+        return out
+        
+    def get_attachment(self,
+                       product_product_id,
+                       version='latest',
+                       bom_type='normal'):
+        """
+        :product_product_id product_product object to get the attachment from
+        :version ['latest','selected'
+        :bom_type ['normal','engineering']
+        :return: {<product_product_id>:[<ir_attachment_id>]}
+        """
+        out={}
+        ir_attachment = self.env['ir.attachment']
+        product_product_ids = self.get_version(product_product_id)
+        all_attchment_collected = self.env['ir.attachment']
+        bom_level = self.bom_computation
+        if bom_level == 'FIRST_LEVEL':
+            product_product_ids = self.env['product.product']
+            ids = product_product_id._getChildrenBom(product_product_id,
+                                                         level = bom_level=='FIRST_LEVEL',
+                                                         bom_type =bom_type)
+            for child_product_product_id in self.get_version_list(self.env['product.product'].browse(ids)):
+                product_product_ids+=child_product_product_id
+        elif bom_level == 'ALL_LEVEL':
+            ids = product_product_id._getChildrenBom(product_product_id,
+                                                         level = bom_level=='FIRST_LEVEL',
+                                                         bom_type =bom_type)
+            for child_product_product_id in self.get_version_list(self.env['product.product'].browse(ids)):
+                product_product_ids+=child_product_product_id
+        elif bom_level=='LEAF':
+            product_product_ids = self.env['product.product']
+            for leaf_product_id in self.get_version_list(product_product_id.getLeafBom(bom_type=bom_type)):
+                product_product_ids+=leaf_product_id
+        
+        for product_product_id in product_product_ids:
+            for ir_attachment_id in product_product_id.linkeddocuments:
+                if ir_attachment_id not in all_attchment_collected:
+                    all_attchment_collected+=ir_attachment_id
+                    if product_product_id not in out:
+                        out[product_product_id]=[ir_attachment_id]
+                    else:
+                        out[product_product_id].append(ir_attachment_id)
+                    for ref_ir_attachment_id in ir_attachment.browse(ir_attachment.getRelatedHiTree(ir_attachment_id.id,
+                                                                                                    recursion=True,
+                                                                                                    getRftree=True)):
+                        if ref_ir_attachment_id not in all_attchment_collected:
+                            all_attchment_collected+=ref_ir_attachment_id
+                        if product_product_id not in out:
+                            out[product_product_id]=[ref_ir_attachment_id]
+                        else:
+                            out[product_product_id].append(ref_ir_attachment_id)
+        return out
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

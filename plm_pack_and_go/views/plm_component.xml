@@ -8,13 +8,18 @@
         <field name="arch" type="xml">
         <form string="Export Form">
             <field name="convertion_server_available" invisible="1"/>
-        	<group>
-        	   <group>
-                    <field name="component_id" colspan="2"/>
-	        		<field name="export_type" />
+        	<group col="10">
+        	   <group colspan="9">
+                    <field name="component_id"/>
+                    <field name="export_type"/>
+                    <field name="bom_computation"/>
+                    <field name="bom_version"/>
         		</group>
-        		<group>
-                    <button string="Compute Bom" name="computeExportRelField" type="object"/>
+        		<group colspan="1">
+                    <button string="Compute Bom" 
+                            name="action_compute_attachment_bom"
+                            class="oe_highlight"
+                            type="object"/>
         		</group>
 		    </group>
 		    <notebook>
@@ -98,15 +103,24 @@
 						    </group>
                 		</page>
                 </notebook>		
-                
-            <group>
-        		<field name="datas_fname" readonly="1"/>
-	            <field name="datas" readonly="1" filename="datas_fname"/>
+            <group string="File Options">
+                  <field name="file_name_computation"/>
+                  <field name="create_subfolder_by_category"/>
+       		      <field name="datas_fname" invisible="1"/>
+		          <field name="datas"
+		                 readonly="1"
+		                 nolabel="1"
+		                 filename="datas_fname"
+		                 attrs="{'invisible':[('datas_fname','=',False)]}"/>
 			</group>
             <separator string=""/>
             <footer>
+                <field name="show_create_zip" invisible="True"/>
             	<button special="cancel" string="Cancel"/>
-            	<button string="Create zip archive" name="action_export_zip" type="object"/>
+            	<button string="Create zip archive"
+            	        name="action_export_zip"
+            	        attrs="{'invisible': [('show_create_zip','=',False)]}"
+            	        type="object"/>
             </footer>
         </form>
         </field>

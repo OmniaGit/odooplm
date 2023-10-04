@@ -451,20 +451,20 @@ class ProductProduct(models.Model):
         """
         out = []
         computed_bom = []
-        def _getLeafBom(self, bom_type='normal'):
-            for product_product_id in self:
+        def _getLeafBom(parent_product_ids, bom_type='normal'):
+            for product_product_id in parent_product_ids:
                 has_bom=False
-                for mrp_bom_id in product_product_id.product_tmpl_id.bom_ids.filtered(lambda x : x.bom_type==bom_type):
+                for mrp_bom_id in product_product_id.product_tmpl_id.bom_ids.filtered(lambda x : x.type==bom_type):
                     has_bom=True
                     if mrp_bom_id in computed_bom:
                         continue
                     else:
                         computed_bom.append(mrp_bom_id)
                     for product_id in mrp_bom_id.bom_line_ids.mapped("product_id"):
-                        for sub_product_id in product_id._getLeafBom(bom_type=bom_type):
-                            out.append(sub_product_id)
+                        _getLeafBom(product_id,bom_type=bom_type)
                 if not has_bom and product_product_id not in out:
                     out.append(product_product_id)
+        _getLeafBom(self)
         return out
     
     def summarize_level(self, recursion=False, flat=False, level=1, summarize=False, parentQty=1, bom_type=False):

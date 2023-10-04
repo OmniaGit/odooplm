@@ -95,11 +95,33 @@ class PlmEntityCreator(object):
                                          'product_qty': 1})
         return p_product, p_product1, p_product2, parent_bom, child_bom
     
-    def create_product_document(self, name):
+    def create_product_document(self, name, doc_type='3d'):
         product = self.create_product_product("product_" + name)
-        document = self.create_document("attachment_" + name)
-        document.linkedcomponents =[(4, product.product_tmpl_id.id)]
+        document = self.create_document(f"attachment_{doc_type}_{name}", doc_type=doc_type)
+        document.linkedcomponents =[(4, product.id)]
         return product, document
+    
+    def create_product_document_with_layout_rfTree(self, name):
+        product, document3D = self.create_product_document(name, '3d')
+        document2D = self.create_document(f"attachment_2d_{name}" ,doc_type='2d')
+        document2D.linkedcomponents =[(4, product.id)]
+        documentRD = self.create_document(f"attachment_Rd3d_{name}",doc_type='3d')
+        documentRD.linkedcomponents =[(4, product.id),'3d']
+        self.create_link_document(document3D, document2D,'LyTree')
+        self.create_link_document(document3D, documentRD,'RfTree')
+        return product, document3D, document2D, documentRD
+    
+    def create_bom(self, parent, child, qty=1):
+        parent_bom=None
+        for parent_bom in self.env['mrp.bom'].search([('product_id','=', parent.id)]):
+            break
+        if not parent_bom:
+            parent_bom = self.env['mrp.bom'].create({'product_id': parent.id,
+                                                     'product_tmpl_id': parent.product_tmpl_id.id})
+        self.env['mrp.bom.line'].create({'bom_id': parent_bom.id,
+                                         'product_id': child.id,
+                                         'product_qty': qty})
+        return parent_bom
     
     def create_bom_with_document(self, name):
         p_product, p_document = self.create_product_document("parent")
@@ -117,7 +139,7 @@ class PlmEntityCreator(object):
                                          'product_id': c2_product.id,
                                          'product_qty': 1})
         return parent_bom
-        
+    
     def create_link_document(self, doc_parent, doc_child, link_kind):
         """
         :link_kind 
@@ -129,4 +151,28 @@ class PlmEntityCreator(object):
         self.env['ir.attachment.relation'].create({'parent_id': doc_parent.id,
                                                    'child_id': doc_child.id,
                                                    'link_kind': link_kind})  
+    def get_3_level_assembly(self, name=''):
+        #
+        product1, document3D1, document2D1, documentRD1 = self.create_product_document_with_layout_rfTree(f"{name}_Parent")
+        product2, document3D2, document2D2, documentRD2 = self.create_product_document_with_layout_rfTree(f"{name}_Child_level_1")
+        product3, document3D3, document2D3, documentRD3 = self.create_product_document_with_layout_rfTree(f"{name}_Child_level_1.1")
+        product4, document3D4, document2D4, documentRD4 = self.create_product_document_with_layout_rfTree(f"{name}_Child_level_2")
+        product5, document3D5, document2D5, documentRD5 = self.create_product_document_with_layout_rfTree(f"{name}_Child_level_2.1")
+        #
+        # create doc bom
+        #
+        self.create_link_document(document3D1,document3D2,'HiTree')
+        self.create_link_document(document3D1,document3D4,'HiTree')
+        self.create_link_document(document3D2,document3D3,'HiTree')
+        self.create_link_document(document3D4,document3D5,'HiTree')
+        #
+        # create bom
+        #
+        main_bom = self.create_bom(product1,product2)
+        self.create_bom(product1,product4)
+        self.create_bom(product2,product3)
+        self.create_bom(product4,product5)
+        #
+        return product1, main_bom
+        
         
