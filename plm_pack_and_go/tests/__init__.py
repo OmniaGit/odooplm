@@ -1,7 +1,8 @@
+# -*- encoding: utf-8 -*-
 ##############################################################################
 #
-#    OmniaSolutions, Open Source Management Solution
-#    Copyright (C) 2010-2021 OmniaSolutions (<http://www.omniasolutions.eu>).
+#    OmniaSolutions, Open Source Management Solution    
+#    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -18,25 +19,5 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-{
-    "name": "Plm Pack and Go",
-    "version": "16.0.2",
-    "author": "OmniaSolutions",
-    "website": "https://odooplm.omniasolutions.website",
-    "category": "Manufacturing/Product Lifecycle Management (PLM)",
-    "sequence": 15,
-    "summary": "Download BOM structure files from a component",
-    "license": "AGPL-3",
-    "images": [],
-    "depends": ["plm"],
-    "data": [  # security
-        "security/plm_security.xml",
-        'views/plm_component.xml',
-        "views/ir_parameters.xml",
-    ],
-    "demo": [],
-    "test": [],
-    "installable": True,
-    "application": False,
-    "auto_install": False,
-}
+from . import test_pack_and_go
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

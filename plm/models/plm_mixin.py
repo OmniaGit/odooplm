@@ -382,7 +382,7 @@ class RevisionBaseMixin(models.AbstractModel):
     def get_released(self):
         self.ensure_one()
         return self.search([('engineering_code','=', self.engineering_code),
-                            ('engineering_state','in',['undermodify', RELEASED_STATUS])])
+                            ('engineering_state','in',[UNDER_MODIFY_STATUS, RELEASED_STATUS])])
             
     def get_all_revision(self):
         self.ensure_one()
