@@ -106,6 +106,13 @@ class PlmBackupDocument(models.Model):
             return obj
         return self
 
+    @api.model
+    def getLastBckDocument(self, doc_id):
+        for obj in self.search([
+            ('documentid', '=', doc_id.id),
+            ], order='create_date DESC', limit=1):
+            return obj
+        return self
 
 class BackupDocWizard(models.TransientModel):
     """

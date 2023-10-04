@@ -2373,7 +2373,7 @@ class IrAttachment(models.Model):
         self.ensure_one()
         for document in self:
             plm_cad_open = self.sudo().env['plm.cad.open'].getLastCadSave(document)
-            last_bck = self.env['plm.backupdoc'].getLastBckDocumentByUser(document)
+            last_bck = self.env['plm.backupdoc'].getLastBckDocument(document)
             if plm_cad_open.plm_backup_doc_id.id != last_bck.id:
                 return True
         return False
