@@ -84,7 +84,8 @@ class PlmDocumentRelations(models.Model):
     notes = fields.Char(string="Notes: ")
     
     _sql_constraints = [
-        ('relation_uniq', 'unique (parent_id,child_id,link_kind)', _('The Document Relation must be unique !'))
+        ('relation_uniq', 'unique (parent_id,child_id,link_kind)', _('The Document Relation must be unique !')),
+        ('parent_child_check', 'CHECK (parent_id <> child_id)', _('Parent child product must be different !'))
     ]
 
     def copy(self, default=None):

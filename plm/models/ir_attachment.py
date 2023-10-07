@@ -50,10 +50,6 @@ import logging
 _logger = logging.getLogger(__name__)
 
 
-
-
-
-
 def random_name():
     random.seed()
     d = [random.choice(string.ascii_letters) for _x in range(20)]
@@ -66,11 +62,12 @@ class IrAttachment(models.Model):
 
     printout = fields.Binary(_('Printout Content'),
                              help=_("Print PDF content."))
+    printout_name = fields.Char(_('Printout Name'), compute="_getPrintoutName")
     preview = fields.Image(_('Preview Content'),
                            max_width=1920,
                            max_height=1920,
                            attachment=False)
-
+    
     checkout_user = fields.Char(string=_("Checked-Out to"),
                                 compute='_get_checkout_state')
     is_checkout = fields.Boolean(_('Is Checked-Out'),
@@ -107,7 +104,11 @@ class IrAttachment(models.Model):
     is_library = fields.Boolean("Is Library file",
                                  default=False)
     library_path = fields.Char("File library path")
-            
+    
+    def _getPrintoutName(self):
+        for ir_attachment_id in self:
+            ir_attachment_id.printout_name=f"{ir_attachment_id.engineering_code}_{ir_attachment_id.engineering_revision}.pdf"
+
     def getPrintoutUrl(self):
         self.ensure_one()
         base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
@@ -832,15 +833,16 @@ class IrAttachment(models.Model):
         """
             action to be executed for Draft state
         """
-        return self.commonWFAction(True, START_STATUS, False)
+        self.commonWFAction(True, START_STATUS, False)
+        return False
 
     
     def action_confirm(self):
         """
             action to be executed for Confirm state
         """
-        return self.commonWFAction(False, CONFIRMED_STATUS, False)
-
+        self.commonWFAction(False, CONFIRMED_STATUS, False)
+        return False 
     
     def action_release(self):
         """
@@ -859,7 +861,8 @@ class IrAttachment(models.Model):
         """
             obsolete the object
         """
-        return self.commonWFAction(False, OBSOLATED_STATUS, False)
+        self.commonWFAction(False, OBSOLATED_STATUS, False)
+        return False
 
     
     def action_reactivate(self):
@@ -869,7 +872,7 @@ class IrAttachment(models.Model):
         for attachment_id in self:
             if attachment_id.ischecked_in():
                 attachment_id.with_context(check=False).move_to_state(START_STATUS)
-        return True
+        return False
 
     
     def blindwrite(self, vals):
@@ -921,6 +924,13 @@ class IrAttachment(models.Model):
                 if k in all_keys:
                     out.append(k)
             return out
+        
+    def _check_unique_document(self, vals):
+        if self.env.context.get('odooPLM'):
+            if 'name' in vals and 'engineering_code' in vals:
+                if self.search_count([('engineering_code','=', vals['engineering_code']),
+                                      ('name','!=',vals['name'])]):
+                    raise Exception(_(f"You are trying to create a new attachment [{vals['name']}] with the some engineering code [{vals['engineering_code']}]"))
                     
     @api.model_create_multi
     def create(self, vals):
@@ -936,6 +946,7 @@ class IrAttachment(models.Model):
             vals_dict['engineering_workflow_user'] = self.env.uid
             vals_dict['engineering_workflow_date'] = datetime.now()
             to_create_vals.append(vals_dict)
+            self._check_unique_document(vals_dict)
         res = super(IrAttachment, self).create(to_create_vals)
         res.with_context(create=True).check_unique()
         return res
@@ -957,6 +968,7 @@ class IrAttachment(models.Model):
             if not self.is_plm_state_writable() and not (self.env.user._is_admin() or self.env.user._is_superuser()):
                 raise UserError(_("The active state does not allow you to make save action"))
         self.writeCheckDatas(vals)
+        self._check_unique_document(vals)
         vals.update(self.checkMany2oneClient(vals))
         vals = self.plm_sanitize(vals)
         res = super(IrAttachment, self).write(vals)
