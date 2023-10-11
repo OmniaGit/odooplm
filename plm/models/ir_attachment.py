@@ -91,6 +91,7 @@ class IrAttachment(models.Model):
     document_type = fields.Selection([('other', _('Other')),
                                       ('2d', _('2D')),
                                       ('3d', _('3D')),
+                                      ('pr', _('Presentation')),
                                       ],
                                      compute='_compute_document_type',
                                      store=True,
@@ -368,7 +369,44 @@ class IrAttachment(models.Model):
                 elif doc_rel_id.child_id.id==doc_id and doc_rel_id.parent_id.document_type =='3d':
                     out.append(doc_rel_id.parent_id.id)
         return list(set(out))
-    
+
+    @api.model
+    def getRelatedPrTree(self,
+                         root_doc_id,
+                         recursion=False):
+        out = []
+        def _getRelatedPrTree(doc_id):
+            if not doc_id:
+                logging.warning('Cannot get links from %r document' % (doc_id))
+                return []
+            doc_brws = self.browse(doc_id)
+            doc_type = doc_brws.document_type
+            to_search = [('link_kind', 'in', ['LyTree']),
+                         '|', 
+                            ('parent_id', '=', doc_id),
+                            ('child_id', '=', doc_id)]
+            doc_rel_ids = self.env['ir.attachment.relation'].search(to_search)
+            for doc_rel_id in doc_rel_ids:
+                good_id = None
+                if doc_type in ['3d','2d']:
+                    if doc_rel_id.parent_id.id==doc_id and doc_rel_id.child_id.document_type =='pr':
+                        good_id = doc_rel_id.child_id.id
+                    if doc_rel_id.child_id.id==doc_id and doc_rel_id.parent_id.document_type =='pr':
+                        good_id = doc_rel_id.parent_id.id
+                elif doc_type=='pr':
+                    if doc_rel_id.parent_id.id==doc_id and doc_rel_id.child_id.document_type =='3d':
+                        good_id = doc_rel_id.child_id.id
+                    elif doc_rel_id.child_id.id==doc_id and doc_rel_id.parent_id.document_type =='3d':
+                        good_id = doc_rel_id.parent_id.id
+                if good_id and good_id not in out:
+                    out.append(good_id)
+                    if recursion:
+                        for recursion_id in _getRelatedPrTree(good_id):
+                            if recursion_id not in out:
+                                out.append(recursion_id)
+        _getRelatedPrTree(root_doc_id)
+        return list(set(out))
+
     @api.model
     def getRelatedRfTree(self, doc_id, recursion=True, evaluated=[]):
         out = []
@@ -1172,12 +1210,17 @@ class IrAttachment(models.Model):
         configParamObj = self.env['ir.config_parameter'].sudo()
         file_exte_2d_param = configParamObj._get_param('file_exte_type_rel_2D')
         file_exte_3d_param = configParamObj._get_param('file_exte_type_rel_3D')
+        file_exte_pr_param = configParamObj._get_param('file_exte_type_rel_PR')
+        
         extensions2D = []
         extensions3D = []
+        extensionsPR = []
         if file_exte_2d_param:
             extensions2D = eval(file_exte_2d_param)
         if file_exte_3d_param:
             extensions3D = eval(file_exte_3d_param)
+        if file_exte_pr_param:
+            extensionsPR = eval(file_exte_pr_param)
         for docBrws in self:
             try:
                 fileExtension = docBrws.getFileExtension(docBrws)
@@ -1186,6 +1229,8 @@ class IrAttachment(models.Model):
                     docBrws.document_type = '2d'
                 elif fileExtension in [x.upper() for x in extensions3D]:
                     docBrws.document_type = '3d'
+                elif fileExtension in [x.upper() for x in extensionsPR]:
+                    docBrws.document_type = 'pr'
                 else:
                     docBrws.document_type = 'other'
             except Exception as ex:
@@ -1375,6 +1420,7 @@ class IrAttachment(models.Model):
         return self._data_check_files(outIds, listedFiles, forceFlag, False, hostname, hostpws)
 
     def is2D(self):
+        self.ensure_one()
         for docBrws in self:
             if docBrws.document_type.upper() == '2D':
                 return True
@@ -1382,12 +1428,21 @@ class IrAttachment(models.Model):
         return False
 
     def is3D(self):
+        self.ensure_one()
         for docBrws in self:
             if docBrws.document_type.upper() == '3D':
                 return True
             break
         return False
 
+    def isPresentation(self):
+        self.ensure_one()
+        for docBrws in self:
+            if docBrws.document_type.upper() == 'PR':
+                return True
+            break
+        return False
+            
     @api.model
     def CheckInRecursive(self, request, default=None):
         """
@@ -1463,9 +1518,10 @@ class IrAttachment(models.Model):
         related_documents = []
         read_docs = []
         for oid in self.ids:
-            rfTree = self.getRelatedRfTree(oid, recursion=False)
-            read_docs.extend(rfTree)
+            read_docs.extend(self.getRelatedRfTree(oid, recursion=False))
             read_docs.extend(self.getRelatedLyTree(oid))
+            read_docs.extend(self.getRelatedPrTree(oid))
+
             #for rfModel in rfTree:
             #    read_docs.extend(self.getRelatedLyTree(rfModel))
         read_docs = list(set(read_docs))
@@ -2610,7 +2666,7 @@ class IrAttachment(models.Model):
         doc_2d_ids=self.env[self._name]
         doc_3d_ids=self.env[self._name]
         #
-        for doc_id in self.browse(list(set(self.getRelatedLyTree(root_id.id)))):
+        for doc_id in self.browse(list(set(self.getRelatedLyTree(root_id.id)+self.getRelatedPrTree(root_id.id,recursion=True)))):
             if doc_id.is3D():
                 doc_3d_ids+=doc_id
             else:
@@ -2638,7 +2694,7 @@ class IrAttachment(models.Model):
                                                                  PLM_DT_DELTA,
                                                                  is_root = s_doc_id.id==root_id.id)
             if out_status =='to_check':
-                if data_info['document_type']=='2D':
+                if data_info['document_type'] in ['2D','PR']:
                     out['to_check_2d'].append(data_info)
                 elif data_info['document_type']=='3D':
                     out['to_check_3d'].append(data_info)
