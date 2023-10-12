@@ -473,6 +473,7 @@
             </xpath>
         </field>
    </record> 
+
     
     <record model="ir.actions.act_window" id="action_plm_component_base_cad_form">
         <field name="name">Engineering Parts</field>

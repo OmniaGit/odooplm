@@ -50,10 +50,6 @@ import logging
 _logger = logging.getLogger(__name__)
 
 
-
-
-
-
 def random_name():
     random.seed()
     d = [random.choice(string.ascii_letters) for _x in range(20)]
@@ -66,11 +62,12 @@ class IrAttachment(models.Model):
 
     printout = fields.Binary(_('Printout Content'),
                              help=_("Print PDF content."))
+    printout_name = fields.Char(_('Printout Name'), compute="_getPrintoutName")
     preview = fields.Image(_('Preview Content'),
                            max_width=1920,
                            max_height=1920,
                            attachment=False)
-
+    
     checkout_user = fields.Char(string=_("Checked-Out to"),
                                 compute='_get_checkout_state')
     is_checkout = fields.Boolean(_('Is Checked-Out'),
@@ -94,6 +91,7 @@ class IrAttachment(models.Model):
     document_type = fields.Selection([('other', _('Other')),
                                       ('2d', _('2D')),
                                       ('3d', _('3D')),
+                                      ('pr', _('Presentation')),
                                       ],
                                      compute='_compute_document_type',
                                      store=True,
@@ -107,7 +105,11 @@ class IrAttachment(models.Model):
     is_library = fields.Boolean("Is Library file",
                                  default=False)
     library_path = fields.Char("File library path")
-            
+    
+    def _getPrintoutName(self):
+        for ir_attachment_id in self:
+            ir_attachment_id.printout_name=f"{ir_attachment_id.engineering_code}_{ir_attachment_id.engineering_revision}.pdf"
+
     def getPrintoutUrl(self):
         self.ensure_one()
         base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
@@ -367,7 +369,44 @@ class IrAttachment(models.Model):
                 elif doc_rel_id.child_id.id==doc_id and doc_rel_id.parent_id.document_type =='3d':
                     out.append(doc_rel_id.parent_id.id)
         return list(set(out))
-    
+
+    @api.model
+    def getRelatedPrTree(self,
+                         root_doc_id,
+                         recursion=False):
+        out = []
+        def _getRelatedPrTree(doc_id):
+            if not doc_id:
+                logging.warning('Cannot get links from %r document' % (doc_id))
+                return []
+            doc_brws = self.browse(doc_id)
+            doc_type = doc_brws.document_type
+            to_search = [('link_kind', 'in', ['LyTree']),
+                         '|', 
+                            ('parent_id', '=', doc_id),
+                            ('child_id', '=', doc_id)]
+            doc_rel_ids = self.env['ir.attachment.relation'].search(to_search)
+            for doc_rel_id in doc_rel_ids:
+                good_id = None
+                if doc_type in ['3d','2d']:
+                    if doc_rel_id.parent_id.id==doc_id and doc_rel_id.child_id.document_type =='pr':
+                        good_id = doc_rel_id.child_id.id
+                    if doc_rel_id.child_id.id==doc_id and doc_rel_id.parent_id.document_type =='pr':
+                        good_id = doc_rel_id.parent_id.id
+                elif doc_type=='pr':
+                    if doc_rel_id.parent_id.id==doc_id and doc_rel_id.child_id.document_type =='3d':
+                        good_id = doc_rel_id.child_id.id
+                    elif doc_rel_id.child_id.id==doc_id and doc_rel_id.parent_id.document_type =='3d':
+                        good_id = doc_rel_id.parent_id.id
+                if good_id and good_id not in out:
+                    out.append(good_id)
+                    if recursion:
+                        for recursion_id in _getRelatedPrTree(good_id):
+                            if recursion_id not in out:
+                                out.append(recursion_id)
+        _getRelatedPrTree(root_doc_id)
+        return list(set(out))
+
     @api.model
     def getRelatedRfTree(self, doc_id, recursion=True, evaluated=[]):
         out = []
@@ -832,15 +871,16 @@ class IrAttachment(models.Model):
         """
             action to be executed for Draft state
         """
-        return self.commonWFAction(True, START_STATUS, False)
+        self.commonWFAction(True, START_STATUS, False)
+        return False
 
     
     def action_confirm(self):
         """
             action to be executed for Confirm state
         """
-        return self.commonWFAction(False, CONFIRMED_STATUS, False)
-
+        self.commonWFAction(False, CONFIRMED_STATUS, False)
+        return False 
     
     def action_release(self):
         """
@@ -859,7 +899,8 @@ class IrAttachment(models.Model):
         """
             obsolete the object
         """
-        return self.commonWFAction(False, OBSOLATED_STATUS, False)
+        self.commonWFAction(False, OBSOLATED_STATUS, False)
+        return False
 
     
     def action_reactivate(self):
@@ -869,7 +910,7 @@ class IrAttachment(models.Model):
         for attachment_id in self:
             if attachment_id.ischecked_in():
                 attachment_id.with_context(check=False).move_to_state(START_STATUS)
-        return True
+        return False
 
     
     def blindwrite(self, vals):
@@ -921,6 +962,13 @@ class IrAttachment(models.Model):
                 if k in all_keys:
                     out.append(k)
             return out
+        
+    def _check_unique_document(self, vals):
+        if self.env.context.get('odooPLM'):
+            if 'name' in vals and 'engineering_code' in vals:
+                if self.search_count([('engineering_code','=', vals['engineering_code']),
+                                      ('name','!=',vals['name'])]):
+                    raise Exception(_(f"You are trying to create a new attachment [{vals['name']}] with the some engineering code [{vals['engineering_code']}]"))
                     
     @api.model_create_multi
     def create(self, vals):
@@ -936,6 +984,7 @@ class IrAttachment(models.Model):
             vals_dict['engineering_workflow_user'] = self.env.uid
             vals_dict['engineering_workflow_date'] = datetime.now()
             to_create_vals.append(vals_dict)
+            self._check_unique_document(vals_dict)
         res = super(IrAttachment, self).create(to_create_vals)
         res.with_context(create=True).check_unique()
         return res
@@ -957,6 +1006,7 @@ class IrAttachment(models.Model):
             if not self.is_plm_state_writable() and not (self.env.user._is_admin() or self.env.user._is_superuser()):
                 raise UserError(_("The active state does not allow you to make save action"))
         self.writeCheckDatas(vals)
+        self._check_unique_document(vals)
         vals.update(self.checkMany2oneClient(vals))
         vals = self.plm_sanitize(vals)
         res = super(IrAttachment, self).write(vals)
@@ -1160,12 +1210,17 @@ class IrAttachment(models.Model):
         configParamObj = self.env['ir.config_parameter'].sudo()
         file_exte_2d_param = configParamObj._get_param('file_exte_type_rel_2D')
         file_exte_3d_param = configParamObj._get_param('file_exte_type_rel_3D')
+        file_exte_pr_param = configParamObj._get_param('file_exte_type_rel_PR')
+        
         extensions2D = []
         extensions3D = []
+        extensionsPR = []
         if file_exte_2d_param:
             extensions2D = eval(file_exte_2d_param)
         if file_exte_3d_param:
             extensions3D = eval(file_exte_3d_param)
+        if file_exte_pr_param:
+            extensionsPR = eval(file_exte_pr_param)
         for docBrws in self:
             try:
                 fileExtension = docBrws.getFileExtension(docBrws)
@@ -1174,6 +1229,8 @@ class IrAttachment(models.Model):
                     docBrws.document_type = '2d'
                 elif fileExtension in [x.upper() for x in extensions3D]:
                     docBrws.document_type = '3d'
+                elif fileExtension in [x.upper() for x in extensionsPR]:
+                    docBrws.document_type = 'pr'
                 else:
                     docBrws.document_type = 'other'
             except Exception as ex:
@@ -1363,6 +1420,7 @@ class IrAttachment(models.Model):
         return self._data_check_files(outIds, listedFiles, forceFlag, False, hostname, hostpws)
 
     def is2D(self):
+        self.ensure_one()
         for docBrws in self:
             if docBrws.document_type.upper() == '2D':
                 return True
@@ -1370,12 +1428,21 @@ class IrAttachment(models.Model):
         return False
 
     def is3D(self):
+        self.ensure_one()
         for docBrws in self:
             if docBrws.document_type.upper() == '3D':
                 return True
             break
         return False
 
+    def isPresentation(self):
+        self.ensure_one()
+        for docBrws in self:
+            if docBrws.document_type.upper() == 'PR':
+                return True
+            break
+        return False
+            
     @api.model
     def CheckInRecursive(self, request, default=None):
         """
@@ -1451,9 +1518,10 @@ class IrAttachment(models.Model):
         related_documents = []
         read_docs = []
         for oid in self.ids:
-            rfTree = self.getRelatedRfTree(oid, recursion=False)
-            read_docs.extend(rfTree)
+            read_docs.extend(self.getRelatedRfTree(oid, recursion=False))
             read_docs.extend(self.getRelatedLyTree(oid))
+            read_docs.extend(self.getRelatedPrTree(oid))
+
             #for rfModel in rfTree:
             #    read_docs.extend(self.getRelatedLyTree(rfModel))
         read_docs = list(set(read_docs))
@@ -2373,7 +2441,7 @@ class IrAttachment(models.Model):
         self.ensure_one()
         for document in self:
             plm_cad_open = self.sudo().env['plm.cad.open'].getLastCadSave(document)
-            last_bck = self.env['plm.backupdoc'].getLastBckDocumentByUser(document)
+            last_bck = self.env['plm.backupdoc'].getLastBckDocument(document)
             if plm_cad_open.plm_backup_doc_id.id != last_bck.id:
                 return True
         return False
@@ -2598,7 +2666,7 @@ class IrAttachment(models.Model):
         doc_2d_ids=self.env[self._name]
         doc_3d_ids=self.env[self._name]
         #
-        for doc_id in self.browse(list(set(self.getRelatedLyTree(root_id.id)))):
+        for doc_id in self.browse(list(set(self.getRelatedLyTree(root_id.id)+self.getRelatedPrTree(root_id.id,recursion=True)))):
             if doc_id.is3D():
                 doc_3d_ids+=doc_id
             else:
@@ -2626,7 +2694,7 @@ class IrAttachment(models.Model):
                                                                  PLM_DT_DELTA,
                                                                  is_root = s_doc_id.id==root_id.id)
             if out_status =='to_check':
-                if data_info['document_type']=='2D':
+                if data_info['document_type'] in ['2D','PR']:
                     out['to_check_2d'].append(data_info)
                 elif data_info['document_type']=='3D':
                     out['to_check_3d'].append(data_info)

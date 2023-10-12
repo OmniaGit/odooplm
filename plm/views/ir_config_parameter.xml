@@ -31,6 +31,11 @@
             '.psm']</field>
         </record>
 
+        <record id="file_exte_type_rel_PR" model="ir.config_parameter">
+            <field name="key">file_exte_type_rel_PR</field>
+            <field name="value">['.ipn']</field>
+        </record>
+        
         <record id="report_indentation_key" model="ir.config_parameter">
             <field name="key">REPORT_INDENTATION_KEY</field>
             <field name="value">- </field>

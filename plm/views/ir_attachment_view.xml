@@ -207,7 +207,8 @@
                   decoration-muted="engineering_state == 'obsoleted'">
 
                 <field name="preview" widget="image" options="{ 'size': [60, 60]}"/>
-                <field name="printout" widget="binary" filename="name" readonly="True"/>
+                <field name="printout_name" invisible="True"/>
+                <field name="printout" widget="binary" filename="printout_name" readonly="True"/>
                 <field name="name" select="True"/>
                 <field name="engineering_revision" select="True"/>
                 <field name="engineering_state" select="True"/>
