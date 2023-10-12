@@ -188,10 +188,13 @@ class UploadDocument(Controller):
             out = []
             for attachment_id in ir_attachment_ids:
                 attachment_brws = attachment.browse(attachment_id)
-                out.append((attachment_brws.id, attachment_brws.name, attachment_brws.write_date.strftime(DEFAULT_SERVER_DATETIME_FORMAT)))
+                out.append((attachment_brws.id,
+                            attachment_brws.name,
+                            attachment_brws.write_date.strftime(DEFAULT_SERVER_DATETIME_FORMAT)))
             return Response(json.dumps(out))
         except Exception as ex:
-            return Response(ex, json.dumps([]),status=500)
+            logging.error(ex)
+            return Response(ex, json.dumps([]), status=500)
 
     @route('/plm_document_upload/extra_file', type='http', auth='user', methods=['POST'], csrf=False)
     @webservice
