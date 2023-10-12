@@ -177,7 +177,7 @@ class UploadDocument(Controller):
                                 headers={'file_name': pkg_brws.name})
             return Response(status=200)
         except Exception as ex:
-            return Response(ex, json.dumps({}),status=500)
+            return Response(f"{ex}", status=500)
 
     @route('/plm_document_upload/get_files_write_time', type='http', auth='user', methods=['get'], csrf=False)
     @webservice
@@ -194,7 +194,7 @@ class UploadDocument(Controller):
             return Response(json.dumps(out))
         except Exception as ex:
             logging.error(ex)
-            return Response(ex, json.dumps([]), status=500)
+            return Response(f"{ex}", status=500)
 
     @route('/plm_document_upload/extra_file', type='http', auth='user', methods=['POST'], csrf=False)
     @webservice
@@ -265,4 +265,4 @@ class UploadDocument(Controller):
                     else:
                         return request.not_found("Pdf document %s not Available" % ir_attachement_id.get('name','no_name'))
         except Exception as ex:
-            return Response(ex, json.dumps({}),status=500)
+            return Response(f"{ex}", status=500)
