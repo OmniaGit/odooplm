@@ -71,6 +71,7 @@ class ProductProduct(models.Model):
                 'name': _('Document'),
                 'view_type': 'form',
                 'view_mode': 'form',
+                'view_id': self.env.ref("plm.view_attachment_form_plm_hinerit").id,
                 'res_model': 'ir.attachment',
                 'target': 'new',
                 'res_id': ir_attachment_id,

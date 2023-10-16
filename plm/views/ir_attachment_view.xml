@@ -64,6 +64,7 @@
                            readonly="1"/>
                 </header>
                	<sheet>
+               	    
 	                <div class="oe_button_box" name="button_box">
 						<button class="oe_stat_button" icon="fa-sitemap" type="object" name="action_view_rel_doc">
 							<field name="document_rel_count" string="Documents" widget="statinfo"/>
@@ -103,12 +104,21 @@
 						<button name="check_out_user" icon="fa-user" attrs="{'invisible': ['|',('checkout_user', '=', 'False'),('checkout_user', '=', '')]}">
 							<field name="checkout_user"/>
 						</button>
+						<field name="must_update_from_cad" invisible="1"></field>
+                        <button name="related_not_update" 
+                                icon="fa-warning"
+                                type="object"
+                                attrs="{'invisible': [('must_update_from_cad', '=', False)]}">
+                              <div class="o_field_widget o_stat_info o_readonly_modifier">
+                                 <span style="color:orange">Not.Update</span>
+                              </div>
+                        </button>
 	           		</div>
 		           	<group>
 	                	<group string= "PLM Infos:" name="main_doc_info">
-	                    	<field string="Eng. Document Name" name="engineering_code" attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}"/>
+	                    	<field string="Eng. Document Name" name="engineering_code" attrs="{'readonly':[('id','>',0)]}"/>
 	                    	<field string="Enineering revision" name="engineering_revision" readonly="True"/>
-	                    	<field string="Is a Plm Document" name="is_plm" visible="0" widget="boolean_toggle"/>
+	                    	<field string="Is a Plm Document" name="is_plm" visible="0" widget="boolean_toggle" readonly="True"/>
 	                	</group>
 	                 	<group name="doc_preview">
 	                    	<field name="preview"
@@ -189,6 +199,7 @@
           		<div class="oe_chatter">
                 	<field name="message_follower_ids" widget="mail_followers" modifiers="{}"/>
                 	<field name="message_ids" widget="mail_thread" modifiers="{}"/>
+                	<field name="activity_ids"/>
           		</div>
             </form>
     	</field>
@@ -311,8 +322,11 @@
                 <field name="engineering_code"/>
                 <field name="engineering_revision"/>
                 <field name="description"/>
+                <field name="datas"/>
+                <field name="name"/>
                 <field name="engineering_state"/>
                 <field name="document_type"/>
+                <field name="must_update_from_cad" invisible="True"/>
                 <field name="is_checkout" invisible="True"/>
                 <field name="is_linkedcomponents" invisible="True"/>
                 <templates>
@@ -340,6 +354,10 @@
                                          </strong>
                         			</td>
                         			<td name="Component" style="text-align: right; width: 100%; padding:1px;">
+                        			     <div class="fa fa-warning fa-2x"
+                        			          style="color: orange"
+                        			          attrs="{'invisible': [('must_update_from_cad', '=', False)]}"
+                        			     />
                                         <div class="fa fa-lock fa-2x"
                                              string="."
                                              style="color:red;display: inline;"
@@ -378,8 +396,9 @@
 											</tr>
 											<tr>
 												<td>
+												    <field name="datas" filename="name" widget="binary"/>
                                                     <t><strong>Name:</strong></t>
-                                                    <field name="engineering_code"/>
+                                                    <field name="engineering_code" attrs="{'readonly': [('id', 'not in', [False, [], 0])]}"/>
                                                     <field name="display_name" attrs="{'invisible': [('id', 'not in', [False, []])]}"/>
                                                 </td>
                                             </tr>
