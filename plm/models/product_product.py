@@ -1154,7 +1154,11 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                     readDict = translationBrwsList[0].read(['value'])
                     values[fieldName] = readDict.get('value', '')
         return values
-
+    
+    @api.model
+    def get_all_translation(self, object_id, fields):
+        return self.product_tmpl_id.get_all_translation(object_id, fields)
+    
     def action_rev_docs(self):
         """
             This function is called by the button on component view, section LinkedDocuments
@@ -1715,8 +1719,15 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             elif "plm_m2o_" + attribute_name in productAttribute:
                 value = productAttribute["plm_m2o_" + attribute_name]
                 sanitaized_attributes[attribute_name] = self.env['product.template'].translate_plm_m2o_name([self.env['product.template'],
-                                                                                                             self.env['product.product']], attribute_name, value)
-                
+                                                                                                            self.env['product.product']], attribute_name, value)
+        language_attrs = {}
+        for key in list(filter(lambda x: '@-@-@' in x,list(productAttribute.keys()))):
+            field_name, language = key.split('@-@-@')
+            if language not in language_attrs:
+                language_attrs[language] = {field_name: productAttribute[key]}
+            else:
+                language_attrs[language][field_name] = productAttribute[key]
+
         engineering_name = sanitaized_attributes.get('engineering_code', False)
         if not engineering_name:
             return False
@@ -1733,6 +1744,8 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                 out_product_produc_id.write(sanitaized_attributes)
         else:  # write
             out_product_produc_id = self.create(sanitaized_attributes)
+        for lang, translated_values in language_attrs.items():
+            out_product_produc_id.with_context(lang=lang).write(translated_values)
         return out_product_produc_id
 
 

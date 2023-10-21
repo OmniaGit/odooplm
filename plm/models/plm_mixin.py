@@ -423,5 +423,19 @@ class RevisionBaseMixin(models.AbstractModel):
                     object_browse_id = self.env[relation].create({'name': field_value})
                 return object_browse_id.id
         return field_value
-
+    
+    @api.model
+    def get_all_translation(self, object_id, fields):
+        """
+        get all field translated in all available languages
+        """
+        out = {}
+        obj = self.env[self._name].browse([object_id])
+        for field_name in fields:
+            for code in self.env['res.lang'].search([('active','=', True)]).mapped("code"):
+                propKey = f"{field_name}@-@-@{code}"
+                out[propKey] = getattr(obj.with_context(lang=code), field_name)
+        return out
+        
+        
         
