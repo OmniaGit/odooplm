@@ -1882,7 +1882,7 @@ class PlmDocument(models.Model):
                                                   ('engineering_revision', '=', docRev)]):
                 out+=ir_attachment_id
                 break
-        return outev)])
+        return out
 
     def checkStructureDocument(self, docAttrs):
         docName = docAttrs.get('engineering_document_name', '')
