@@ -18,12 +18,12 @@
 #    along with this prograIf not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from tkinter.ttk import _list_from_statespec
 '''
 Created on 24 Apr 2023
 
 @author: mboscolo
 '''
+import json
 import logging
 import datetime
 from odoo import models
@@ -52,6 +52,9 @@ class PlmAutomatedWFAction(models.Model):
                                  ('ir.attachment', 'Attachment')],
                                  string="Apply To",
                                  help="Apply this action to the workflow model")
+    
+    domain = fields.Char("Domain", help="""specifie the domain of the action""")
+
     child_ids = fields.Many2many('ir.actions.server',
                                  'rel_plm_server_actions',
                                  'server_id',
@@ -66,8 +69,18 @@ class PlmAutomatedWFAction(models.Model):
     
     def _run(self):
         res = False
-        for act in self.child_ids.sorted():
-            res = act.run() or res
+        active_id = self.env.context['active_id']
+        active_model = self.env.context['active_model']
+        if active_model ==self.apply_to:
+            base_domain = [('id', '=', active_id)]
+            for act in self.child_ids.sorted():
+                if self.domain:
+                    base_domain = base_domain + json.loads(self.domain.replace("\'",""))
+                    obj_id = self.env[active_model].search(base_domain)
+                else:
+                    obj_id = self.env[active_model].browse(active_id)
+                if obj_id:
+                    res = act.run() or res
         return res
         
     

@@ -13,6 +13,7 @@
 	                    <field name="to_state"/>
 	                    <field name="apply_to"/>
 	                    <field name="before_after"/>
+	                    <field name="domain"/>
 	                </group>
 	                <group>
 	                   <field name="child_ids"/>

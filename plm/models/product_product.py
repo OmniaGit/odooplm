@@ -670,14 +670,34 @@ class ProductProduct(models.Model):
             self._create_normalBom(prodId, processedIds)
         self.message_post(body=_('Created Normal Bom.'))
         return False
+    
+    def _jump_document_wf(self,
+                          documentBrws,
+                          check_state):
+        """
+        this function is here in order to customize the document workflow
+        :documentBrws     <ir_attachment> 
+        :check_in_check   bool shuld I move also the document
+        :return: True will jump the workflow for the current document / False will performe the workflow
+        """
+        return False
 
-    def checkWorkflow(self, docInError, linkeddocuments, check_state,check_in_check=True):
+    def checkWorkflow(self,
+                      docInError,
+                      linkeddocuments,
+                      check_state,
+                      check_in_check=True):
         docIDs = []
         attachment = self.env['ir.attachment']
         for documentBrws in linkeddocuments:
             if documentBrws.engineering_state in check_state:
                 if check_in_check and documentBrws.is_checkout:
-                    docInError.append(_("Document %r : %r is checked out by user %r") % (documentBrws.name, documentBrws.engineering_revision, documentBrws.checkout_user))
+                    if check_in_check:
+                        logging.info(f"{documentBrws.name} workflow jump for custom rule check_in_check")
+                    else:
+                        docInError.append(_(f"Document {documentBrws.name} : {documentBrws.engineering_revision} is checked out by user {documentBrws.checkout_user}") )
+                    continue
+                if self._jump_document_wf(documentBrws,check_state):
                     continue
                 docIDs.append(documentBrws.id)
                 if documentBrws.is3D():
@@ -749,6 +769,10 @@ class ProductProduct(models.Model):
                                    status):
         """
         Customization use this function for further customizations on product workflow
+        :ir_attachment_ids [<ir_attachment>]
+        :status str state to move to
+        REMARK:
+            the current status is on the self object and on the attachment ids
         """
         return
 
