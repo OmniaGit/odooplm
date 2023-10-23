@@ -774,7 +774,7 @@ class IrAttachment(models.Model):
         for document in documents:
             hasSaved = False
             hasUpdated = False
-            if not ('engineering_document_names' in document) or ('engineering_revision' not in document):
+            if not ('engineering_code' in document) or ('engineering_revision' not in document):
                 document['documentID'] = False
                 document['hasSaved'] = hasSaved
                 document['hasUpdated'] = hasUpdated
@@ -1287,14 +1287,27 @@ class IrAttachment(models.Model):
     def getHtmlDocument(self, attachment_id):
         return self.browse(attachment_id)._getHtmlDocument()
     
-    @api.model
-    def getHtmlDocumentCheckOut(self, check_out_ids):
-        out = []
-        for plm_checkout_id in self.env['plm.checkout'].browse(check_out_ids):
-            ir_attachment = plm_checkout_id.documentid
-            html_rendered, html_tooltip = ir_attachment._getHtmlDocument()
-            out.append((ir_attachment.id, html_rendered, html_tooltip))
-        return out
+    has_error = fields.Boolean("Has Error",
+                               compute='_checkSavingError',
+                               store=True)
+    #
+    #
+    #
+    @api.depends("write_date")
+    def _checkSavingError(self):
+        for ir_attachment_id in self:
+            ir_attachment_id.has_error = not ir_attachment_id.is_last_save_ok()
+    
+    def is_last_save_ok(self):
+        """
+        
+        """
+        for ir_attachment_id in self:
+            key = f"{ir_attachment_id.engineering_code}_{ir_attachment_id.engineering_revision}"
+            for dbthread in self.env['plm.dbthread'].get_last_dbthread(key):
+                if dbthread.done==True and dbthread.error_message:
+                    return False
+        return True
     
     @api.model
     def getAttachedHtmlDoucment(self, product_ids):
@@ -1490,6 +1503,12 @@ class IrAttachment(models.Model):
         if selection == 2:
             docArray = self._getlastrev(docArray)
         checkoutObj = self.env['plm.checkout']
+        msg=''
+        for x in docArray:
+            if x.has_error:
+                msg+=x.engineering_code + "\n"
+        if msg:
+            raise UserError(msg)
         for docId in docArray:
             checkOutBrwsList = checkoutObj.search([('documentid', '=', docId), ('userid', '=', self.env.uid)])
             checkOutBrwsList.unlink()
@@ -3144,5 +3163,20 @@ class IrAttachment(models.Model):
                     'type': 'ir.actions.act_window',
                     'domain': [('id', 'in', relation_ids.ids)],
                     'context': {}}
-        
+            
+    def open_related_dbthread(self):
+        plm_dbthread = self.env['plm.dbthread']
+        plm_dbthread_ids=[]
+        #
+        for ir_attachment_id in self:
+            search_name = f"{ir_attachment_id.engineering_code}_{ir_attachment_id.engineering_revision}"
+            plm_dbthread_ids = plm_dbthread.search([('documement_name_version','=',search_name)])
+        #
+        return {'name': _('Saving Error'),
+                'res_model': 'plm.dbthread',
+                'view_type': 'form',
+                'view_mode': 'tree',
+                'type': 'ir.actions.act_window',
+                'domain': [('id', 'in', plm_dbthread_ids.ids)],
+                'context': {}}
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

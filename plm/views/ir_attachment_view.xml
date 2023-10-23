@@ -113,6 +113,14 @@
                                  <span style="color:orange">Not.Update</span>
                               </div>
                         </button>
+		                <field name="has_error" invisible="True"/>
+		                <button name="open_related_dbthread"
+		                        type="object"
+		                        string="S.ERR"
+		                        class="oe_stat_button"
+		                        icon="fa-bug"
+		                        attrs="{'invisible':[('has_error','=',False)]}">
+		                </button>
 	           		</div>
 		           	<group>
 	                	<group string= "PLM Infos:" name="main_doc_info">
@@ -266,6 +274,10 @@
               	<filter name="latest"
                       	string="Latest"
                       	domain="[('engineering_state', 'not in', ['obsoleted','undermodify'])]"/>
+                <filter name="doc_has_error"
+                            string="Has Error"
+                            domain="[('has_error','=',True)]"
+                            help="Filter on documents with error"/>
               	<separator orientation="vertical"/>
           		<group>
 	                <field name="create_uid"/>
@@ -326,6 +338,7 @@
                 <field name="name"/>
                 <field name="engineering_state"/>
                 <field name="document_type"/>
+                <field name="has_error"/>
                 <field name="must_update_from_cad" invisible="True"/>
                 <field name="is_checkout" invisible="True"/>
                 <field name="is_linkedcomponents" invisible="True"/>
@@ -336,6 +349,7 @@
                             <div style="margin-right: 3px;border-left: 1px solid lightgray;border-right: 1px solid lightgray;">
 	                           <field name="preview" 
 	                                  widget="image"
+	                                  style="padding:1px"
 	                                  class="oe_avatar"
 	                                  options="{'zoom': true, 'zoom_delay': 800, 'size':[100,100]}"
 	                                  />
@@ -346,18 +360,25 @@
                         				<strong attrs="{'invisible': [('document_type', '!=', 'other')]}">Other</strong>
                         				<strong attrs="{'invisible': [('document_type', '!=', '2d')]}">2D</strong>
                         				<strong attrs="{'invisible': [('document_type', '!=', '3d')]}">3D</strong>
+                        				<strong attrs="{'invisible': [('document_type', '!=', 'pr')]}">PR</strong>
                         			</td>
                         			<td name="check-in-out">
-                                         <strong>
+                                         <h2>
                                              <field name="checkout_user"
                                                     attrs="{'invisible': ['|',('checkout_user', '=', 'False'),('checkout_user', '=', '')]}"/>
-                                         </strong>
+                                         </h2>
                         			</td>
                         			<td name="Component" style="text-align: right; width: 100%; padding:1px;">
-                        			     <div class="fa fa-warning fa-2x"
-                        			          style="color: orange"
-                        			          attrs="{'invisible': [('must_update_from_cad', '=', False)]}"
-                        			     />
+                                         <button name="open_related_dbthread"
+                                                 type="object"
+                                                 attrs="{'invisible': [('has_error', '=', False)]}"
+                                                 class="fa fa-bug fa-2x btn-danger"       
+                                                 />
+                                         <button name="related_not_update"
+                                                 type="object"
+                                                 attrs="{'invisible': [('must_update_from_cad', '=', False)]}"
+                                                 class="fa fa-warning fa-2x btn-warning"       
+                                                 />
                                         <div class="fa fa-lock fa-2x"
                                              string="."
                                              style="color:red;display: inline;"
