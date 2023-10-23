@@ -270,9 +270,9 @@ class PlmComponent(models.Model):
                 if product_id.std_description:
                     tmp_name_out =  product_id.computeDescription(self.std_description,
                                             self.std_description.description,
-                                            self.std_umc1,
-                                            self.std_umc2,
-                                            self.std_umc3,
+                                            self.std_description.umc1,
+                                            self.std_description.umc2,
+                                            self.std_description.umc3,
                                             self.std_value1,
                                             self.std_value2,
                                             self.std_value3) 
@@ -409,7 +409,15 @@ class PlmComponent(models.Model):
                 retvalue = fmt
         return retvalue
 
-    def computeDescription(self, thisObject, initialVal, std_umc1, std_umc2, std_umc3, std_value1, std_value2, std_value3):
+    def computeDescription(self,
+                           thisObject,
+                           initialVal,
+                           std_umc1,
+                           std_umc2,
+                           std_umc3,
+                           std_value1,
+                           std_value2,
+                           std_value3):
         description1 = False
         description2 = False
         description3 = False
