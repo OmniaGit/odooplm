@@ -25,7 +25,14 @@
         <field name="implied_ids" eval="[(4, ref('group_plm_integration_user'))]"/>
         <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
     </record>
-    
+
+    <!-- Un release user  -->
+    <record id="group_plm_admin_unrelease" model="res.groups">
+        <field name="name">Unrelease User</field>
+        <field name="category_id" ref="odooplm_module_category"/>
+        <field name="implied_ids" eval="[(4, ref('group_plm_admin'))]"/>
+    </record>
+
     <!-- Readonly Released  -->
     <record id="group_plm_readonly_released" model="res.groups">
         <field name="name">PLM Integration Readonly</field>

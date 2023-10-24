@@ -183,10 +183,10 @@ class PlmDocumentRelations(models.Model):
                                             ('link_kind', '=', 'LyTree')
                                         ]):
             if relation_id.parent_id.document_type=='2d' and relation_id.child_id.document_type in ['3d','pr']:
-                if relation_id.parent_id.write_date < relation_id.child_id.write_date:
+                if relation_id.parent_id.getLastCadSave() < relation_id.child_id.getLastCadSave():
                     return False
             if relation_id.child_id.document_type=='2d' and relation_id.parent_id.document_type in ['3d','pr'] :
-                if relation_id.child_id.write_date<relation_id.parent_id.write_date:
+                if relation_id.child_id.getLastCadSave()<relation_id.parent_id.getLastCadSave():
                     return False
         return True                
 

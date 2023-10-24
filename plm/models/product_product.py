@@ -871,7 +871,7 @@ class ProductProduct(models.Model):
             product_product_id.commonWFAction(RELEASED_STATUS,
                                               [OBSOLATED_STATUS])
         return True
-
+        
     def commonWFAction(self,
                        status,
                        include_statuses=[],

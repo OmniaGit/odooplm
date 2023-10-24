@@ -115,9 +115,9 @@ class IrAttachment(models.Model):
         for ir_attachment in self:
             ir_attachment.must_update_from_cad=False
             if ir_attachment.document_type =='2d':
-                ir_attachment.must_update_from_cad=ir_attachment_relation.is_2d_ok(ir_attachment)
-            if ir_attachment.document_type =='pr':
-                ir_attachment.must_update_from_cad=ir_attachment_relation.is_pr_ok(ir_attachment)
+                ir_attachment.must_update_from_cad= not ir_attachment_relation.is_2d_ok(ir_attachment)
+            elif ir_attachment.document_type =='pr':
+                ir_attachment.must_update_from_cad= not ir_attachment_relation.is_pr_ok(ir_attachment)
                 
     def _getPrintoutName(self):
         for ir_attachment_id in self:
@@ -126,7 +126,13 @@ class IrAttachment(models.Model):
     def getPrintoutUrl(self):
         self.ensure_one()
         base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
-        return "%s/plm/ir_attachment_printout/%s" % (base_url, self.id) 
+        return f"{base_url}/plm/ir_attachment_printout/{self.id}" 
+    
+    def download_printout(self):
+        return {'type': 'ir.actions.act_url',
+                'url': self.getPrintoutUrl(),
+                'target': 'new',
+                }
 
     @property
     def actions(self):
