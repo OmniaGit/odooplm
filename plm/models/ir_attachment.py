@@ -2014,12 +2014,26 @@ class PlmDocument(models.Model):
                 linkedBrws.unlink()
 
     def getDocumentBrws(self, docVals):
-        docName = docVals.get('engineering_document_name', '')
-        docRev = docVals.get('revisionid', None)
-        if not docName or docRev is None:
-            return self.browse()
-        return self.search([('engineering_document_name', '=', docName),
-                            ('revisionid', '=', docRev)])
+        """
+        function to convert dict client info into attachment browse record
+        :docVals could be dictionaty or list of dictionaty 
+                    es1. {'engineering_code': '102030', 'engineering_revision': 0}
+                    es2. [{'engineering_code': '102030', 'engineering_revision': 0},{ },..]
+        :return: browse_record(ir_attachment)
+        """
+        if not isinstance(docVals, list):
+            docVals=[docVals]
+        out = self.env[self._name]
+        for doc_dict in docVals:
+            docName = doc_dict.get('engineering_code', '')
+            docRev = doc_dict.get('engineering_revision', None)
+            if not docName or docRev is None:
+                continue
+            for ir_attachment_id in  self.search([('engineering_code', '=', docName),
+                                                  ('engineering_revision', '=', docRev)]):
+                out+=ir_attachment_id
+                break
+        return out
 
     def checkStructureDocument(self, docAttrs):
         docName = docAttrs.get('engineering_document_name', '')
@@ -2164,7 +2178,26 @@ class PlmDocument(models.Model):
 
         recursionUpdate(rootNode, True)
         return json.dumps(rootNode)
+    
+    @api.model
+    def clientCanCheckOut(self, doc_attrs):
+        for attachment_id in self.getDocumentBrws(doc_attrs):
+            return attachment_id.canCheckOut1()
+        return False, 'not_found', f'File Not found from attributes {doc_attrs}'
 
+    def canCheckOut1(self):
+        for docBrws in self:
+            if docBrws.isCheckedOutByMe():
+                msg = _(f"Unable to check-Out a document that is already checked Out By {docBrws.checkout_user}")
+                return docBrws.id, 'check_out_by_me', msg                
+            if docBrws.is_checkout:
+                msg = _(f"Unable to check-Out a document that is already checked IN by user {docBrws.checkout_user}")
+                return docBrws.id, 'check_out_by_user', msg
+            if docBrws.engineering_state not in ['released','undermodify', False]:
+                msg = _(f"Unable to check-Out a document that is in state {docBrws.engineering_state}")
+                return docBrws.id, 'check_out_released', msg
+            return docBrws.id, 'check_in', ''
+        raise Exception()
     @api.model
     def getCheckedOutAttrs(self, vals):
         outDict = {}

@@ -2035,3 +2035,4 @@ class ProductProductDashboard(models.Model):
                     (SELECT count(*) FROM product_template WHERE state = 'obsoleted' and  engineering_code<>'') AS count_component_obsoleted
              )
         """)
+
