@@ -619,31 +619,31 @@ class IrAttachment(models.Model):
         """
             Overwrite the default copy method
         """
-        documentRelation = self.env['ir.attachment.relation']
-        docBrwsList = documentRelation.search([('parent_id', '=', self.id)])
-        previous_name = self.engineering_code
-        if 'engineering_code' not in defaults:
-            new_name = 'Copy of %s' % previous_name
-            documents = self.search([('engineering_code', '=', new_name)], order='engineering_revision')
-            if len(documents) > 0:
-                new_name = '%s (%s)' % (new_name, len(documents) + 1)
-            defaults['engineering_code'] = new_name
-# TODO: verifie if document is renamed ??!!
-#         fname, filesize = self._manageFile()
-#         defaults['store_fname'] = fname
-#         defaults['file_size'] = filesize
         defaults['engineering_state'] = START_STATUS
         defaults['engineering_writable'] = True
-        newDocBrws = super(IrAttachment, self).copy(defaults)
-        if newDocBrws:
-            newDocBrws.message_post(body=_('Copied starting from : %s.' % previous_name))
-        for brwEnt in docBrwsList:
-            documentRelation.create({
-                'parent_id': newDocBrws.id,
-                'child_id': brwEnt.child_id.id,
-                'configuration': brwEnt.configuration,
-                'link_kind': brwEnt.link_kind,
-            })
+        if not self.is_plm:
+            defaults['engineering_code']=False
+            newDocBrws = super(IrAttachment, self).copy(defaults)
+        else:
+            documentRelation = self.env['ir.attachment.relation']
+            docBrwsList = documentRelation.search([('parent_id', '=', self.id)])
+            previous_name = self.engineering_code
+            if 'engineering_code' not in defaults:
+                new_name = 'Copy of %s' % previous_name
+                documents = self.search([('engineering_code', '=', new_name)], order='engineering_revision')
+                if len(documents) > 0:
+                    new_name = '%s (%s)' % (new_name, len(documents) + 1)
+                defaults['engineering_code'] = new_name
+            newDocBrws = super(IrAttachment, self).copy(defaults)
+            if newDocBrws:
+                newDocBrws.message_post(body=_('Copied starting from : %s.' % previous_name))
+            for brwEnt in docBrwsList:
+                documentRelation.create({
+                    'parent_id': newDocBrws.id,
+                    'child_id': brwEnt.child_id.id,
+                    'configuration': brwEnt.configuration,
+                    'link_kind': brwEnt.link_kind,
+                })
         return newDocBrws
 
     @api.model
