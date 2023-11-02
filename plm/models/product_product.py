@@ -317,7 +317,8 @@ class ProductProduct(models.Model):
             mrp_bom_line_ids = self.env['mrp.bom.line'].search(bom_line_filter,
                                                                limit=1)
             for mrp_bom_line_id in mrp_bom_line_ids:
-                return mrp_bom_line_id.bom_id
+                if product_product_id.id!=mrp_bom_line_id.bom_id.product_tmpl_id.product_variant_id.id:
+                    return mrp_bom_line_id.bom_id
         return self.env['mrp.bom']
 
     def _packvalues(self, fmt, label=False, value=False):
