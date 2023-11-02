@@ -20,7 +20,7 @@
 ##############################################################################
 {
     "name": "Plm Box",
-    "version": "16.0.1",
+    "version": "17.0.1",
     "author": "OmniaSolutions",
     "website": "https://odooplm.omniasolutions.website",
     "category": "Productivity/Documents",
