@@ -48,7 +48,7 @@ from odoo.addons.plm.tests.entity_creator import PlmEntityCreator
 #
 
 #
-@tagged('-standard', 'odoo_plm','post_install', '-at_install')
+@tagged('-standard', 'odoo_plm')
 class PlmDateBom(TransactionCase, PlmEntityCreator):
         
     def test_1_some_wk(cls):
@@ -145,6 +145,7 @@ class PlmDateBom(TransactionCase, PlmEntityCreator):
         
     def test_2_attachment_wk(self):
         attachment = self.create_document('document_wk_test')
+        attachment.is_plm=True
         #
         assert attachment.engineering_revision==0
         assert attachment.ischecked_in()==True

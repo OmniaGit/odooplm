@@ -12,14 +12,13 @@
                         type="object"
                         string="Suspend"
                         class="oe_highlight"
-                        attrs="{'invisible': ['|',('is_checkout','=',True), ('engineering_state', 'in', ['suspended'])]}"
+                        invisible="is_checkout==True or engineering_state in ['suspended']"
                 />
                 <button name="action_unsuspend"
-                        states="suspended"
                         type="object"
                         string="Un-Suspend"
                         class="oe_highlight"
-                        attrs="{'invisible': ['|', ('is_checkout','=',True), ('engineering_state', 'not in', ['suspended'])]}"
+                        invisible="is_checkout==True or engineering_state not in ['suspended']"
                 />
             </xpath>
         </field>

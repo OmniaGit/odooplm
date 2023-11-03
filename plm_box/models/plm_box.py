@@ -33,12 +33,11 @@ DEFAULT_SERVER_DATE_FORMAT = "%Y-%m-%d"
 DEFAULT_SERVER_TIME_FORMAT = "%H:%M:%S"
 DEFAULT_SERVER_DATETIME_FORMAT = "%s %s" % (DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_TIME_FORMAT)
 
-USED_STATES = [('draft', _('Draft')),
-               ('confirmed', _('Confirmed')),
-               ('released', _('Released')),
-               ('undermodify', _('UnderModify')),
-               ('obsoleted', _('Obsoleted'))]
-
+from odoo.addons.plm.models.plm_mixin import START_STATUS
+from odoo.addons.plm.models.plm_mixin import CONFIRMED_STATUS
+from odoo.addons.plm.models.plm_mixin import RELEASED_STATUS
+from odoo.addons.plm.models.plm_mixin import PLM_NO_WRITE_STATE
+from odoo.addons.plm.models.plm_mixin import OBSOLATED_STATUS
 
 def correctDate(fromTimeStr, context):
     serverUtcTime = parser.parse(fromTimeStr.strftime(DEFAULT_SERVER_DATETIME_FORMAT))
@@ -49,9 +48,8 @@ def correctDate(fromTimeStr, context):
 class Plm_box(models.Model):
     _name = 'plm.box'
     _description = 'Model to manage a box inside the plm module'
-    _inherit = 'mail.thread'
+    _inherit = 'revision.plm.mixin'
 
-    name = fields.Char(_('Code'))
     box_id = fields.Integer(_('Box ID'))
     version = fields.Integer(_('Version'))
     description = fields.Text(_('Description'))
@@ -67,7 +65,6 @@ class Plm_box(models.Model):
                                    'plm_box_child_id',
                                    _('Children Box')
                                    )
-    state = fields.Char(_('State'))
     groups_rel = fields.Many2many('res.groups',
                                   'plm_box_groups_rel',
                                   'plm_box_id',
@@ -76,7 +73,6 @@ class Plm_box(models.Model):
                                   )
     create_date = fields.Datetime(_('Date Created'), readonly=True)
     write_date = fields.Datetime(_('Date Modified'), readonly=True)
-    state = fields.Selection(USED_STATES, _('Status'), help=_("The status of the box."), readonly="True", required=True, default='draft')
     product_id = fields.Many2many('product.product', 'plm_box_products_rel', 'box_id', 'product_id', _('Product'))
     project_id = fields.Many2many('project.project', 'plm_box_proj_rel', 'box_id', 'project_id', _('Project'))
     task_id = fields.Many2many('project.task', 'plm_box_task_rel', 'box_id', 'task_id', _('Task'))
@@ -86,20 +82,20 @@ class Plm_box(models.Model):
     wc_id = fields.Many2many('mrp.workcenter', 'plm_box_wc_rel', 'box_id', 'wc_id', _('Work Center'))
 
     def unlink(self):
-        for boxBrws in self:
-            if not self.boxUnlinkPossible(boxBrws):
+        for plm_box_id in self:
+            if not self.boxUnlinkPossible(plm_box_id):
                 continue
-            super(Plm_box, boxBrws).unlink()
+            super(Plm_box, plm_box_id).unlink()
         return True
 
     @api.model
-    def boxUnlinkPossible(self, boxBrws):
-        for childBox in boxBrws.plm_box_rel:
-            if not self.boxUnlinkPossible(childBox):
+    def boxUnlinkPossible(self, plm_box_id):
+        for child_plm_box_id in plm_box_id.plm_box_rel:
+            if not self.boxUnlinkPossible(child_plm_box_id):
                 return False
-        for docBrws in boxBrws.document_rel:
-            if not docBrws.ischecked_in():
-                raise UserError(_('Document %r of box %r is in check-in state, so could not delete') % (docBrws.name, boxBrws.name))
+        for ir_attachment_id in plm_box_id.document_rel:
+            if not ir_attachment_id.ischecked_in():
+                raise UserError(_('Document %r of box %r is in check-in state, so could not delete') % (ir_attachment_id.engineering_code, plm_box_id.engineering_code))
         return True
 
     @api.model
@@ -120,16 +116,16 @@ class Plm_box(models.Model):
                 documentID = childDoc.get('documentID')
                 if documentID:
                     docIds.append(documentID)
-            outVals = {'name': boxName,
+            outVals = {'engineering_code': boxName,
                        'description': item.get('description', ''),
                        'plm_box_rel': [],
                        'obj_rel': False,
                        'box_id': box_id,
                        'document_rel': [[6, False, docIds]],
                        }
-            BoxId = self.createBox(outVals)
+            plm_box_id = self.createBox(outVals)
             newContext = self.env.context.copy()
-            newContext['parentId'] = BoxId
+            newContext['parentId'] = plm_box_id
             for childPlm in child_plm_box:
                 self.with_context(newContext).saveStructure(childPlm)
         return True
@@ -143,20 +139,20 @@ class Plm_box(models.Model):
 
     @api.model
     def create(self, vals):
-        if not vals.get('name', False):
+        if not vals.get('engineering_code', False):
             name = self.getNewSequencedName()
-            vals['name'] = name
+            vals['engineering_code'] = name
         return super(Plm_box, self).create(vals)
 
     def write(self, vals):
         '''
             Write a new name if not provided
         '''
-        for brwsObj in self:
-            name = brwsObj.name
+        for plm_box_id in self:
+            name = plm_box_id.engineering_code
             if name in [False, '']:
                 name = self.getNewSequencedName()
-                vals['name'] = name
+                vals['engineering_code'] = name
         return super(Plm_box, self).write(vals)
 
     @api.model
@@ -176,47 +172,40 @@ class Plm_box(models.Model):
     @api.model
     def setRelatedDocs(self, parentBrws):
         docRelList = []
-        for docBrws in parentBrws.document_rel:
-            docRelList.append(docBrws.name)
-            if docBrws.name not in self.docs.keys():
-                if self.isDocAvaibleForUser(docBrws):
-                    self.docs[docBrws.name] = self.getDocDictValues(docBrws)
-        self.box_doc_rel[parentBrws.name] = docRelList
+        for ir_attachment_id in parentBrws.document_rel:
+            docRelList.append(ir_attachment_id.engineering_code)
+            if ir_attachment_id.engineering_code not in self.docs.keys():
+                if self.isDocAvaibleForUser(ir_attachment_id):
+                    self.docs[ir_attachment_id.engineering_code] = self.getDocDictValues(ir_attachment_id)
+        self.box_doc_rel[parentBrws.engineering_code] = docRelList
 
     @api.model
     def getRelatedEntities(self, parentBrws):
         objRelList = []
-        for brws in parentBrws.product_id:
-            outName = brws.name
-            objRelList.append({'obj_name': 'Product', 'obj_type': 'product.product', 'obj_rel_name': outName})
-        for brws in parentBrws.project_id:
-            outName = brws.name
-            objRelList.append({'obj_name': 'Project', 'obj_type': 'project.project', 'obj_rel_name': outName})
-        for brws in parentBrws.task_id:
-            outName = brws.name
-            objRelList.append({'obj_name': 'Task', 'obj_type': 'project.task', 'obj_rel_name': outName})
-        for brws in parentBrws.sale_ord_id:
-            outName = brws.name
-            objRelList.append({'obj_name': 'Sale Order', 'obj_type': 'sale.order', 'obj_rel_name': outName})
-        for brws in parentBrws.user_rel_id:
-            outName = brws.name
-            objRelList.append({'obj_name': 'User', 'obj_type': 'res.users', 'obj_rel_name': outName})
-        for brws in parentBrws.bom_id:
-            outName = brws.name
-            objRelList.append({'obj_name': 'Bill of Material', 'obj_type': 'mrp.bom', 'obj_rel_name': outName})
-        for brws in parentBrws.wc_id:
-            outName = brws.name
-            objRelList.append({'obj_name': 'Work Center', 'obj_type': 'mrp.workcenter', 'obj_rel_name': outName})
+        for product_product_id in parentBrws.product_id:
+            objRelList.append({'obj_name': 'Product', 'obj_type': 'product.product', 'obj_rel_name': product_product_id.name})
+        for project_id in parentBrws.project_id:
+            objRelList.append({'obj_name': 'Project', 'obj_type': 'project.project', 'obj_rel_name': project_id.name})
+        for task_id in parentBrws.task_id:
+            objRelList.append({'obj_name': 'Task', 'obj_type': 'project.task', 'obj_rel_name': task_id.name})
+        for sale_order_id in parentBrws.sale_ord_id:
+            objRelList.append({'obj_name': 'Sale Order', 'obj_type': 'sale.order', 'obj_rel_name': sale_order_id.name})
+        for res_user_id in parentBrws.user_rel_id:
+            objRelList.append({'obj_name': 'User', 'obj_type': 'res.users', 'obj_rel_name': res_user_id.name})
+        for mrp_bom_id in parentBrws.bom_id:
+            objRelList.append({'obj_name': 'Bill of Material', 'obj_type': 'mrp.bom', 'obj_rel_name': mrp_bom_id.name})
+        for mrp_workcenter_id in parentBrws.wc_id:
+            objRelList.append({'obj_name': 'Work Center', 'obj_type': 'mrp.workcenter', 'obj_rel_name': mrp_workcenter_id.name})
         return objRelList
 
     @api.model
     def setRelatedBoxes(self, parentBrws):
         childBoxNames = []
         childBoxes = []
-        for boxBrws in parentBrws.plm_box_rel:
-            childBoxNames.append(boxBrws.name)
-            childBoxes.append(boxBrws)
-        self.box_box_rel[parentBrws.name] = childBoxNames
+        for plm_box_id in parentBrws.plm_box_rel:
+            childBoxNames.append(plm_box_id.engineering_code)
+            childBoxes.append(plm_box_id)
+        self.box_box_rel[parentBrws.engineering_code] = childBoxNames
         return childBoxes
 
     @api.model
@@ -224,11 +213,11 @@ class Plm_box(models.Model):
         '''
             Compute if document is readonly
         '''
-        docBrws = self.env.get('ir.attachment').browse(docIds)
-        if docBrws.engineering_state in ['released', 'undermodify', 'obsoleted']:
+        ir_attachment_id = self.env.get('ir.attachment').browse(docIds)
+        if ir_attachment_id.engineering_state in ['released', 'undermodify', 'obsoleted']:
             return True
-        if not docBrws.ischecked_in():
-            check_out_by_me = docBrws._is_checkedout_for_me()
+        if not ir_attachment_id.ischecked_in():
+            check_out_by_me = ir_attachment_id._is_checkedout_for_me()
             if check_out_by_me:
                 return False
         return True
@@ -237,8 +226,8 @@ class Plm_box(models.Model):
         '''
             Compute if box is readonly
         '''
-        for boxBrws in self:
-            if boxBrws.engineering_state in ['released', 'undermodify', 'obsoleted']:
+        for plm_box_id in self:
+            if plm_box_id.engineering_state in ['released', 'undermodify', 'obsoleted']:
                 return True
         return False
 
@@ -247,24 +236,24 @@ class Plm_box(models.Model):
         '''
             Update avaible boxes due to follower
         '''
-        userBrws = self.env.get('res.users').browse(self.env.uid)
-        if userBrws:
-            if userBrws.partner_id:
-                avaibleIds = self.search([('message_follower_ids.id', '=', userBrws.partner_id.id)]).ids
-                for idd in avaibleIds:
-                    if idd not in avaibleBoxIds:
-                        avaibleBoxIds.append(idd)
+        res_user_id = self.env.get('res.users').browse(self.env.uid)
+        if res_user_id:
+            if res_user_id.partner_id:
+                plm_box_ids = self.search([('message_follower_ids.id', '=', res_user_id.partner_id.id)]).ids
+                for plm_box_id in plm_box_ids:
+                    if plm_box_id not in avaibleBoxIds:
+                        avaibleBoxIds.append(plm_box_id)
         return avaibleBoxIds
 
     @api.model
     def getBoxesByAvaibleParent(self, parents, outList):
         for boxId in parents:
-            childBoxes = self.browse(boxId).plm_box_rel
+            child_plm_box_ids = self.browse(boxId).plm_box_rel
             localList = []
-            for brws in childBoxes:
-                if brws.id in parents or brws.id in outList:
+            for plm_box_id in child_plm_box_ids:
+                if plm_box_id.id in parents or plm_box_id.id in outList:
                     continue
-                localList.append(brws.id)
+                localList.append(plm_box_id.id)
             if not localList:
                 continue
             outList = self.getBoxesByAvaibleParent(localList, outList)
@@ -283,28 +272,28 @@ class Plm_box(models.Model):
             return {}
         if boxes:
             for boxName in boxes.keys():
-                boxBrwsList = self.search([('name', '=', boxName)])
-                avaibleBoxIds.extend(boxBrwsList.ids)
+                plm_box_id = self.search([('engineering_code', '=', boxName)])
+                avaibleBoxIds.extend(plm_box_id.ids)
         for boxId in avaibleBoxIds:
-            boxBrws = self.browse(boxId)
-            self.setRelatedDocs(boxBrws)
-            self.box_ent_rel[boxBrws.name] = self.getRelatedEntities(boxBrws)
-            childList = self.setRelatedBoxes(boxBrws)
+            plm_box_id = self.browse(boxId)
+            self.setRelatedDocs(plm_box_id)
+            self.box_ent_rel[plm_box_id.engineering_code] = self.getRelatedEntities(plm_box_id)
+            childList = self.setRelatedBoxes(plm_box_id)
             for childBrws in childList:
                 if childBrws.id not in avaibleBoxIds:
                     avaibleBoxIds.append(childBrws.id)
-            writeVal = datetime.datetime.strptime(boxBrws.write_date,
+            writeVal = datetime.datetime.strptime(plm_box_id.write_date,
                                                   DEFAULT_SERVER_DATETIME_FORMAT)
-            outBoxDict[boxBrws.name] = {'boxVersion': boxBrws.version,
-                                        'boxDesc': boxBrws.description,
-                                        'boxState': boxBrws.engineering_state,
-                                        'boxReadonly': boxBrws.boxReadonlyCompute(),
+            outBoxDict[plm_box_id.engineering_code] = {'boxVersion': plm_box_id.version,
+                                        'boxDesc': plm_box_id.description,
+                                        'boxState': plm_box_id.engineering_state,
+                                        'boxReadonly': plm_box_id.boxReadonlyCompute(),
                                         'boxWriteDate': correctDate(writeVal, self.env.context),
                                         'boxPrimary': False,
                                         }
-            if boxBrws.name in boxes.keys():
-                boxPrimary = boxes[boxBrws.name][1]
-                outBoxDict[boxBrws.name]['boxPrimary'] = boxPrimary
+            if plm_box_id.engineering_code in boxes.keys():
+                boxPrimary = boxes[plm_box_id.engineering_code][1]
+                outBoxDict[plm_box_id.engineering_code]['boxPrimary'] = boxPrimary
         return outBoxDict
 
     @api.model
@@ -334,7 +323,7 @@ class Plm_box(models.Model):
         userAvaibleBoxIds = self.getAvaibleGroupsByUser()
         if isinstance(docsToUpdate, list):
             for doc in docsToUpdate:
-                docBrwsList = plmDocObj.search([('name', '=', doc[0])])
+                docBrwsList = plmDocObj.search([('engineering_code', '=', doc[0])])
                 if not docBrwsList:
                     outDocDict[doc[0]] = {}
                 else:
@@ -404,20 +393,62 @@ class Plm_box(models.Model):
         return outDict
 
     def action_draft(self):
-        return self.write({'state': 'draft'})
+        self.move_to_state(START_STATUS)
+        return False
 
     def action_confirm(self):
-        return self.write({'state': 'confirmed'})
-
+        """
+            action to be executed for Confirm state
+        """
+        message = self.move_children_object_to_state(CONFIRMED_STATUS,'action_confirm')
+        if not message:
+            self.move_to_state(CONFIRMED_STATUS)
+        else:
+            raise UserError(message)
+        return False 
+    
     def action_release(self):
-        return self.write({'state': 'released'})
+        """
+            release the object
+        """
+        message = self.move_children_object_to_state(RELEASED_STATUS,'action_release')
+        if not message:
+            self.move_to_state(RELEASED_STATUS)
+        else:
+            raise UserError(message)
+        return False
 
+    
     def action_obsolete(self):
-        return self.write({'state': 'obsoleted'})
+        """
+            obsolete the object
+        """
+        self.move_to_state(OBSOLATED_STATUS)
+        return False
 
+    
     def action_reactivate(self):
-        return self.write({'state': 'released'})
+        """
+            reactivate the object
+        """
+        self.move_to_state(START_STATUS)
+        return False
 
+    def move_children_object_to_state(self, state, call_name):
+        message=''
+        for attachment_id in self.document_rel:
+            if attachment_id.ischecked_in():
+                attachment_id.commonWFAction(True,
+                                             state,
+                                             True)
+            else:
+                message+=_(f'\n document {attachment_id.name} not checked-in impossible to move to state {state}')
+        for plm_box_id in self.plm_box_rel:
+            sub_message = getattr(plm_box_id, call_name)()
+            if sub_message:
+                message += sub_message
+        return message
+                        
     @api.model
     def getAvaiableBoxIds(self):
         avaibleBoxIds = []
@@ -431,11 +462,11 @@ class Plm_box(models.Model):
     def getAvaiableBoxes(self, vals={}):
         outList = []
         boxesIds = self.getAvaiableBoxIds()
-        for boxBrwse in self.browse(boxesIds):
-            outList.append([boxBrwse.name,
-                            boxBrwse.description,
-                            boxBrwse.version,
-                            boxBrwse.engineering_state,
+        for plm_box_id in self.browse(boxesIds):
+            outList.append([plm_box_id.engineering_code,
+                            plm_box_id.description,
+                            plm_box_id.version,
+                            plm_box_id.engineering_state,
                             ])
         return outList
 
@@ -468,28 +499,26 @@ class Plm_box(models.Model):
         outList = []
         avaibleNewBoxes = list(set(avaibleBoxes) - set(boxIds))
         for boxId in avaibleNewBoxes:
-            outList.append([self.browse(boxId).name, 'box'])
+            outList.append([self.browse(boxId).engineering_code, 'box'])
         return outList
 
     @api.model
     def checkForNewDocuments(self, docIds, avaibleBoxes, outList):
         for boxId in avaibleBoxes:
-            boxBrws = self.browse(boxId)
-            if boxBrws:
-                docBrwsIds = boxBrws.document_rel
-                for docBrws in docBrwsIds:
-                    if docBrws.id not in docIds:
-                        docIds.append(docBrws.id)
-                        outList.append([docBrws.name, 'document'])
+            plm_box_id = self.browse(boxId)
+            if plm_box_id:
+                for ir_attachment_id in plm_box_id.document_rel:
+                    if ir_attachment_id.id not in docIds:
+                        docIds.append(ir_attachment_id.id)
+                        outList.append([ir_attachment_id.name, 'document'])
         return outList
 
     @api.model
     def checkIfBoxChanged(self, values):
         name, typee, datetimee = values
-        boxBrwsList = self.search([('name', '=', name)])
-        for boxBrws in boxBrwsList:
-            boxId = boxBrws.id
-            wr_date = boxBrws.write_date
+        for plm_box_id in self.search([('engineering_code', '=', name)]):
+            boxId = plm_box_id.id
+            wr_date = plm_box_id.write_date
             if wr_date != 'n/a':
                 wr_date = wr_date.split('.')[0]
                 serverDatetime = datetime.datetime.strptime(wr_date, DEFAULT_SERVER_DATETIME_FORMAT)
@@ -506,11 +535,11 @@ class Plm_box(models.Model):
     @api.model
     def checkIfDocChanged(self, values):
         name, typee, datetimee = values
-        docObj = self.env.get('ir.attachment')
-        docBrwsList = docObj.search([('name', '=', name)])
+        ir_attachment = self.env.get('ir.attachment')
+        docBrwsList = ir_attachment.search([('name', '=', name)])
         for docBrws in docBrwsList:
             docId = docBrws.id
-            if docObj.getDocumentState({'docName': name}) != 'check-in':
+            if ir_attachment.getDocumentState({'docName': name}) != 'check-in':
                 return [], docId
             wr_date = docBrws.write_date
             if wr_date != 'n/a':
@@ -539,9 +568,9 @@ class Plm_box(models.Model):
         if not primaryBoxes:
             return (outDict, notFoundBoxes)
         for boxName in primaryBoxes:
-            boxBrwsList = self.search([('name', '=', boxName)])
-            if boxBrwsList:
-                outDict[boxName] = boxBrwsList[0].getBoxStructure(True)
+            plm_box_id = self.search([('engineering_code', '=', boxName)])
+            if plm_box_id:
+                outDict[boxName] = plm_box_id[0].getBoxStructure(True)
             else:
                 notFoundBoxes.append(boxName)
         return (outDict, notFoundBoxes)
@@ -561,9 +590,9 @@ class Plm_box(models.Model):
                    }
         for boxBrws in self:
             for boxChildBrws in boxBrws.plm_box_rel:
-                outDict['children'][boxChildBrws.name] = boxChildBrws.getBoxStructure(primary)
+                outDict['children'][boxChildBrws.engineering_code] = boxChildBrws.getBoxStructure(primary)
             for docBrws in boxBrws.document_rel:
-                outDict['documents'][docBrws.name] = self.getDocDictValues(docBrws)
+                outDict['documents'][docBrws.engineering_code] = self.getDocDictValues(docBrws)
             outDict['entities'] = self.getRelatedEntities(boxBrws)
             outDict['description'] = boxBrws.description
             outDict['state'] = boxBrws.engineering_state

@@ -30,19 +30,26 @@
 	                	<field name="name" required="True"/>
 	                	<field name="is_internal"/>
                     </group>
-                    <group name="server_spec" attrs="{'invisible':[('is_internal','=', True)]}">
+                    <group name="server_spec" 
+                           invisible="is_internal==True">
                         <field name="folder_to" placeholder="my_shared_folder_path" />	                	
-	                	<field name="address" placeholder="127.0.0.1" attrs="{'required':[('is_internal','=', False)]}"/>
-		                <field name="protocol" placeholder="http" attrs="{'required':[('is_internal','=', False)]}"/>
-		                <field name="port" placeholder="5000" attrs="{'required':[('is_internal','=', False)]}"/>
+	                	<field name="address"
+	                	       placeholder="127.0.0.1"
+	                	       required="is_internal==False"/>
+		                <field name="protocol"
+		                       placeholder="http"
+		                       required="is_internal==False"/>
+		                <field name="port"
+		                       placeholder="5000"
+		                       required="is_internal==False"/>
 		                <field name="timeout"/>
 		                <button name="testConnection" type="object" string="Test"/>
 	                </group>
-	                <group attrs="{'invisible': ['|', ('is_internal','=', True), ('client_processes', 'in', [False, ''])]}">
+	                <group invisible="is_internal==True or client_processes in [False, '']">
 	                	<field name="proc_to_kill" colspan="1" />
 	                	<button name='killProcess' type="object" string="Kill"></button>
 	                </group>
-	                <group attrs="{'invisible':[('is_internal','=', True)]}">
+	                <group invisible="is_internal==True">
 		                <button name='getClientProcesses' type="object" string="Get Client Processes" colspan="4"></button>
 		                <field name="client_processes" readonly="True" colspan="4" nolabel="1"/>
 		            </group>

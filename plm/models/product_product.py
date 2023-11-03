@@ -40,6 +40,7 @@ from odoo.exceptions import ValidationError
 from odoo.exceptions import AccessError
 from odoo.exceptions import UserError
 import odoo.tools as tools
+from odoo.osv import expression
 
 _logger = logging.getLogger(__name__)
 
@@ -1790,11 +1791,17 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         return result
 
     @api.model
-    def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None):
-        if not args:
-            args = []
-        product_ids = list(self._search([('engineering_code', operator, name)] + args, limit=limit, access_rights_uid=name_get_uid))
-        product_ids += list(super(ProductProduct, self)._name_search(name, args, operator, limit, name_get_uid))
+    def _name_search(self, name, domain=None, operator='ilike', limit=None, order=None):
+        if not domain:
+            domain=[('engineering_code', 'ilike', name)]
+        else:
+            domain = expression.OR([domain,
+                                   [('engineering_code', 'ilike', name)]])
+        product_ids = list(super(ProductProduct, self)._name_search(name,
+                                                                    domain,
+                                                                    operator,
+                                                                    limit,
+                                                                    order=None))
         return list(set(product_ids))
     
     @api.model

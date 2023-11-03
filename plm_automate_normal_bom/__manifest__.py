@@ -20,7 +20,7 @@
 ##############################################################################
 {
     "name": "PLM Automate Normal Bom",
-    "version": "17.0.1",
+    "version": "17.0.0.1",
     "author": "OmniaSolutions",
     "website": "https://odooplm.omniasolutions.website",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",

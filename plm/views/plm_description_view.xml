@@ -31,7 +31,7 @@
   	               				<field name="show_help" invisible="True"></field>
 		                    	<div style="display: inline-flex; 
 		                    				width: 100%;
-		                    				text-align=right;" attrs="{'invisible': [('show_help', '=', False)]}">
+		                    				text-align=right;" invisible="show_help==False">
 		                    		<div colspan="4" class="o_group_col_12" style="background-color: aliceblue;
 		                    													   border-left: 5px solid #35979c;
 		                    													   padding: 10px;
@@ -110,7 +110,8 @@
 		            <div style="background-color: aliceblue;
 		                    					border-left: 5px solid #35979c;
 		                    					padding: 10px;
-		                    					width: 100%" attrs="{'invisible': [('show_help', '=', False)]}">
+		                    					width: 100%"
+		                  invisible="show_help==False">
 		            	Example Values:<br></br>
 		            	<ul>
 		            		<li>UM/Feature1 = A and	 Format_Feature1 = %s</li>

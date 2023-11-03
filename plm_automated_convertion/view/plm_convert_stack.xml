@@ -55,18 +55,20 @@
                                     type="object"
                                     help="Re-Active Convertion" 
                                     string="Convertion Done"
-                                    attrs="{'invisible': [('conversion_done', '=', False)]}"
+                                    invisible="conversion_done==False"
                                     icon="fa-arrow-circle-right"
                                     groups="base.group_no_one"/>
                         </div>
                     </group>
-	                <group name="Convert" attrs="{'invisible':[('operation_type','=','UPDATE')]}">
+	                <group name="Convert"
+	                       invisible="operation_type=='UPDATE'">
 		                <field name="convrsion_rule"/>
 		                <field name="product_category"/>
 		                <field name="end_document_id" readonly="True"/>
 		                <field name="output_name_rule"/>
 	                </group>
-	                <div style="background-color: #f49390;color: white;font-weight: bold;" attrs="{'invisible':[('error_string','in',['',False])]}">
+	                <div style="background-color: #f49390;color: white;font-weight: bold;"
+	                     invisible="error_string in ['',False]">
 	                   <field name="error_string" readonly="True"/>
 	                </div>
                	</sheet> 
@@ -92,7 +94,7 @@
                 <button name="setToConver"
                         string="Set Conversion"
                         type="object"
-                        attrs="{'invisible': [('conversion_done', '=', False)]}"
+                        invisible="conversion_done == False"
                         icon="fa-arrow-circle-right"></button>
                 <field name="error_string"/>
                 <field name="write_date"/>

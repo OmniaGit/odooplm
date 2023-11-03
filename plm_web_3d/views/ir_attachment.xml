@@ -12,7 +12,8 @@
 	           <button type="object"
 	                   name="show_releted_3d"
 	                   class="btn btn-primary btn-sm"
-	                   attrs="{'invisible': [('has_web3d', '=', False)]}"><i class="fa fa-cube"></i> WebGl</button>
+	                   invisible="has_web3d==False">
+	                   <i class="fa fa-cube"></i> WebGl</button>
 	        </xpath>
         </field>
     </record>
@@ -24,7 +25,9 @@
         <field name="arch" type="xml">  
             <xpath expr="//button[@name='action_view_rel_doc']" position="after">
                  <field name="has_web3d" invisible="True"/>
-                 <button name="show_releted_3d" class="oe_stat_button" icon="fa-cube" type="object" attrs="{'invisible': [('has_web3d','=', False)]}">
+                 <button name="show_releted_3d"
+                         class="oe_stat_button" icon="fa-cube" type="object" 
+                         invisible="has_web3d==False">
                          <div class="o_field_widget o_stat_info o_readonly_modifier">
                             <span>WebGl</span>
                          </div>                        

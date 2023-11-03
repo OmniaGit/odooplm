@@ -13,13 +13,25 @@
 		                    <field name="custom_procedure" filename="custom_procedure_fname" colspan="5"/>
 		                    <field name="custom_procedure_fname"/>
 		                    <button name="open_custommodule_edit" type="object" string="Show"  class="btn-primary"/>
-		                    <field name="custom_read_content" nolabel="1" colspan="6" widget="ace" options="{'mode': 'python'}" attrs="{'invisible': [('custom_read_content', 'in', [False, ''])]}" style="min-height:1000px;width:100%"/>
+		                    <field name="custom_read_content"
+		                           nolabel="1"
+		                           colspan="6"
+		                           widget="ace" 
+		                           options="{'mode': 'python'}"
+		                           invisible="custom_read_content in [False, '']"
+		                           style="min-height:1000px;width:100%"/>
 		                </group>
 		                <group name="omnia_plm_multicad" string="Multicad" col="6">
 		                    <field name="custom_multicad" filename="custom_multicad_fname" colspan="5"/>
 		                    <field name="custom_multicad_fname"/>
 		                    <button name="open_custom_multicad_edit" type="object" string="Show" class="btn-primary"/>
-		                    <field name="custom_multicad_content" nolabel="1" colspan="6" widget="ace" options="{'mode': 'python'}" attrs="{'invisible': [('custom_multicad_content', 'in', [False, ''])]}" style="min-height:1000px;width:100%"/>
+		                    <field name="custom_multicad_content"
+		                           nolabel="1"
+		                           colspan="6"
+		                           widget="ace"
+		                           options="{'mode': 'python'}"
+		                           invisible="custom_multicad_content in [False, '']"
+		                           style="min-height:1000px;width:100%"/>
 		                </group>
 		            </page>
 			    </notebook>

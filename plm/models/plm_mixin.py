@@ -413,6 +413,9 @@ class RevisionBaseMixin(models.AbstractModel):
     def write(self, vals):
         if 'engineering_code' in vals and vals['engineering_code'] not in [False, '-','']:
             vals['engineering_code_editable']=False
+        else:
+            if self.engineering_code and self.engineering_code_editable==True:
+                vals['engineering_code_editable']=False
         return super(RevisionBaseMixin, self).write(vals)
 
     def create(self, vals):

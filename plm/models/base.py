@@ -57,7 +57,7 @@ class Base(models.AbstractModel):
         def sanitize(dict_from):
             return json.loads(json.dumps(dict_from, default=json_serial).replace("null", "false"))
         f = super(Base, self).fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar, submenu=submenu)
-        for key in ['field_parent', 'name', 'type', 'view_id', 'base_model', 'fields', 'toolbar']:
+        for key in ['name', 'type', 'view_id', 'base_model', 'fields', 'toolbar']:
             if key in f:
                 f[key] = sanitize(f.get(key))    
         return f

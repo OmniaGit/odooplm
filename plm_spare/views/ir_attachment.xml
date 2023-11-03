@@ -9,7 +9,10 @@
         		<field string="Spare Part" name="used_for_spare" invisible="True"/>
         	</xpath>
         	<xpath expr="//td[@name='Component']" position="inside">
-        	   <div class="fa fa-gear fa-2x" aria-label="Is A Spare Drawing" style="color: blue;" attrs="{'invisible': [('used_for_spare', 'in', [False])]}"/>
+        	   <div class="fa fa-gear fa-2x"
+        	        aria-label="Is A Spare Drawing"
+        	        style="color: blue;"
+        	        invisible="used_for_spare in [False]"/>
         	</xpath>
         </field>
     </record>

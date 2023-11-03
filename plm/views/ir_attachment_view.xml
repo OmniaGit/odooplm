@@ -18,16 +18,16 @@
                             class="oe_highlight"
                             type="object"
                             groups="plm.group_plm_release_users"
-                            attrs="{'invisible': ['|',('is_checkout','=',True),('engineering_state','!=','engineering_state')]}"/>
+                            invisible="is_checkout == True or engineering_state != engineering_state"/>
                     <button name="action_draft"
-                            attrs="{'invisible': [('engineering_state','!=','confirmed')]}"
+                            invisible="engineering_state!='confirmed'"
                             type="object"
                             string="Correct Document"/>
                     <button name="action_confirm"
                             type="object"
                             string="Confirm Document"
                             class="oe_highlight"
-                            attrs="{'invisible': ['|',('is_checkout','=',True),('engineering_state','!=','draft')]}"/>
+                            invisible="is_checkout==True or engineering_state!='draft'"/>
                 </header>
               </form>
         </field>
@@ -47,25 +47,25 @@
                             class="oe_highlight"
                             type="object"
                             groups="plm.group_plm_release_users"
-                            attrs="{'invisible': ['|',('is_checkout','=',True),('engineering_state','!=','confirmed')]}"/>
+                            invisible="is_checkout==True or engineering_state!='confirmed'"/>
                     <button name="action_draft"
-                            attrs="{'invisible': ['|',('is_checkout','=',True),('engineering_state','!=','confirmed')]}"
+                            invisible="is_checkout==True or engineering_state!='confirmed'"
                             type="object"
                             string="Correct Document"/>
                     <button name="action_confirm"
                             type="object"
                             string="Confirm Document"
                             class="oe_highlight"
-                            attrs="{'invisible': ['|',('is_checkout','=',True),('engineering_state','!=','draft')]}"/>
+                            invisible="is_checkout==True or engineering_state!='draft'"/>
                     <button name="action_un_release"
                             type="object"
-                            attrs="{'invisible': [('engineering_state','!=','released')]}"
+                            invisible="engineering_state!='released'"
                             string="Un Release"
                             groups="plm.group_plm_admin_unrelease"
                             class="oe_highlight"/>
                     <button name="action_un_release_release"
                             type="object"
-                            attrs="{'invisible': [('engineering_state','!=','draft')]}"
+                            invisible="engineering_state!='draft'"
                             string="Re Release"
                             groups="plm.group_plm_admin_unrelease"
                             class="oe_highlight"/>
@@ -86,7 +86,7 @@
 						        class="oe_stat_button"
 						        icon="fa-lock" 
 						        type="object"
-						        attrs="{'invisible': [('is_checkout','=', True)]}">
+						        invisible="is_checkout==True">
 						        <div class="o_field_widget o_stat_info o_readonly_modifier">
 						           <span>Check-Out</span>
 						        </div>                        
@@ -94,7 +94,7 @@
 						<button name="toggle_check_out"
 						        class="oe_stat_button"
 						        icon="fa-unlock"
-						        attrs="{'invisible': [('is_checkout','=', False)]} "
+						        invisible="is_checkout==False"
 						        type="object">
 						        <div class="o_field_widget o_stat_info o_readonly_modifier">
 						           <span>Check-In</span>
@@ -110,17 +110,19 @@
 						        string="BOM Rev."
 						        class="oe_stat_button"
 						        icon="fa-tasks"
-						        attrs="{'invisible':[('engineering_revision_count','&lt;=','1')]}">
+						        invisible="engineering_revision_count &lt;=1">
 						        <field name="engineering_revision_count" string=" " widget="statinfo"/>
 						</button>
-						<button name="check_out_user" icon="fa-user" attrs="{'invisible': ['|',('checkout_user', '=', 'False'),('checkout_user', '=', '')]}">
+						<button name="check_out_user"
+						        icon="fa-user"
+						        invisible="checkout_user==False or checkout_user==''">
 							<field name="checkout_user"/>
 						</button>
 						<field name="must_update_from_cad" invisible="1"></field>
                         <button name="related_not_update" 
                                 icon="fa-warning"
                                 type="object"
-                                attrs="{'invisible': [('must_update_from_cad', '=', False)]}">
+                                invisible="must_update_from_cad==False">
                               <div class="o_field_widget o_stat_info o_readonly_modifier">
                                  <span style="color:orange">Not.Update</span>
                               </div>
@@ -131,12 +133,14 @@
 		                        string="S.ERR"
 		                        class="oe_stat_button"
 		                        icon="fa-bug"
-		                        attrs="{'invisible':[('has_error','=',False)]}">
+		                        invisible="has_error==False">
 		                </button>
 	           		</div>
 		           	<group>
 	                	<group string= "PLM Infos:" name="main_doc_info">
-	                    	<field string="Eng. Document Name" name="engineering_code" attrs="{'readonly':[('id','>',0)]}"/>
+	                    	<field string="Eng. Document Name"
+	                    	       name="engineering_code"
+	                    	       readonly="id>0"/>
 	                    	<field string="Enineering revision" name="engineering_revision" readonly="True"/>
 	                    	<field string="Is a Plm Document" name="is_plm" visible="0" widget="boolean_toggle" readonly="True"/>
 	                	</group>
@@ -145,20 +149,30 @@
 	                    	       widget="image"
 	                    	       options="{'zoom': true, 'zoom_delay': 800}"
 	                    	       nolabel="1"
-	                    	       attrs="{'readonly':[('is_plm','=', True)]}"/>
+	                    	       readonly="is_plm==True"/>
 	                	</group>
 	               	</group>
                     <notebook>
                     	<page string="Attachment">
                         	<group string="File Data:" name="FileData">
-                            	<group attrs="{'invisible':[('type','=','url')]}" name="group_datas" colspan="4" col="2">
-                                    <field name="datas" filename="name" attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}"/>
-                                    <field name="name" select="1" attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}"/>
-                                    <field name="document_type" attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}"/>
-                                    <field name="type" attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}"/>
+                            	<group invisible="type=='url'" name="group_datas" colspan="4" col="2">
+                                    <field name="datas"
+                                           filename="name"
+                                           readonly="engineering_state in ['released','obsoleted']"/>
+                                    <field name="name"
+                                           select="1"
+                                           readonly="engineering_state in ['released','obsoleted']"/>
+                                    <field name="document_type" 
+                                           readonly="engineering_state in ['released','obsoleted']"/>
+                                    <field name="type"
+                                           readonly="engineering_state in ['released','obsoleted']"/>
                                     <field name="printout" invisible="1"/>
                                 </group>
-                                <group string="Website:" name="group_url" colspan="4" attrs="{'invisible':[('type','=','binary')],'readonly':[('engineering_state','in',['released','obsoleted'])]}">
+                                <group string="Website:"
+                                       name="group_url"
+                                       colspan="4"
+                                       invisible="type=='binary'"
+                                       readonly="engineering_state in ['released','obsoleted']">
                                     <field name="url" widget="url"/>
                                 </group>
                             </group>
@@ -190,7 +204,8 @@
 	                                	<field name="engineering_workflow_user" readonly="1" class="oe_inline"/> on <field name="engineering_workflow_date" readonly="1" class="oe_inline"/>
 	                            	</div>
                         		</group>
-                        		<group string="User" attrs="{'invisible':['|', ('engineering_release_user', '=', False), ('engineering_revision_user', '=', False)]}">
+                        		<group string="User"
+                        		      invisible="engineering_release_user==False or engineering_revision_user==False">
                         			<label for="engineering_release_user"/>
 	                            	<div name="attachment_release_user_div">
 	                                	<field name="engineering_release_user" readonly="1" class="oe_inline"/> on <field name="engineering_release_date" readonly="1" class="oe_inline"/>
@@ -203,16 +218,29 @@
                         	</group>
                         </page>
                         <page string="Linked Parts" name="page_liked_parts">
-                            <field colspan="4" name="linkedcomponents" nolabel="1" attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}"/>
+                            <field colspan="4"
+                                   name="linkedcomponents"
+                                   nolabel="1"
+                                   readonly="engineering_state in ['released','obsoleted']"/>
                         </page>
                         <page string="Indexed Content" name="page_indexed_content">
-                            <field name="index_content" colspan="4" nolabel="1" attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}"/>
+                            <field name="index_content"
+                                   colspan="4"
+                                   nolabel="1"
+                                   readonly="engineering_state in ['released','obsoleted']"/>
                         </page>
                         <page string="Notes" name="page_notes">
                             <label for="description" class="oe_edit_only"/>
-                            <field colspan="4" name="description" nolabel="1" attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}"/>
+                            <field name="description" 
+                                   colspan="4"
+                                   nolabel="1"
+                                   readonly="engineering_state in ['released','obsoleted']"/>
                             <label for="desc_modify" class="oe_edit_only"/>
-                            <field colspan="4" name="desc_modify" nolabel="1" attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])], 'invisible': [('engineering_revision', '=', 0)]}"/>
+                            <field name="desc_modify"
+                                   colspan="4"
+                                   nolabel="1"
+                                   readonly="engineering_state in ['released','obsoleted']"
+                                   invisible="engineering_revision==0"/>
                         </page>
                     </notebook>
                </sheet>
@@ -242,7 +270,7 @@
                     class="fa fa-print"
                     type="object"
                     name="download_printout"
-                    attrs="{'invisible':[('document_type','in',['3d','pr','other'])]}"/>
+                    invisible="document_type in ['3d','pr','other']"/>
                 <field name="name" select="True"/>
                 <field name="engineering_revision" select="True"/>
                 <field name="engineering_state" select="True"/>
@@ -372,34 +400,40 @@
                             <table style="width: 100%; line-height: 1;">
                             	<tr>
                         			<td>
-                        				<strong attrs="{'invisible': [('document_type', '!=', 'other')]}">Other</strong>
-                        				<strong attrs="{'invisible': [('document_type', '!=', '2d')]}">2D</strong>
-                        				<strong attrs="{'invisible': [('document_type', '!=', '3d')]}">3D</strong>
-                        				<strong attrs="{'invisible': [('document_type', '!=', 'pr')]}">PR</strong>
+                        				<strong invisible="document_type!='other'">Other</strong>
+                        				<strong invisible="document_type!='2d'">2D</strong>
+                        				<strong invisible="document_type!='3d'">3D</strong>
+                        				<strong invisible="document_type!='pr'">PR</strong>
                         			</td>
                         			<td name="check-in-out">
                                          <h2>
                                              <field name="checkout_user"
-                                                    attrs="{'invisible': ['|',('checkout_user', '=', 'False'),('checkout_user', '=', '')]}"/>
+                                                    invisible="checkout_user==False or checkout_user==''"/>
                                          </h2>
                         			</td>
                         			<td name="Component" style="text-align: right; width: 100%; padding:1px;">
                                          <button name="open_related_dbthread"
                                                  type="object"
-                                                 attrs="{'invisible': [('has_error', '=', False)]}"
+                                                 invisible="has_error==False"
                                                  class="fa fa-bug fa-2x btn-danger"       
                                                  />
                                          <button name="related_not_update"
                                                  type="object"
-                                                 attrs="{'invisible': [('must_update_from_cad', '=', False)]}"
+                                                 invisible="must_update_from_cad==False"
                                                  class="fa fa-warning fa-2x btn-warning"       
                                                  />
                                         <div class="fa fa-lock fa-2x"
                                              string="."
                                              style="color:red;display: inline;"
-                                             attrs="{'invisible': ['|',('checkout_user', '=', 'False'),('checkout_user', '=', '')]}"/>
-	                            		<div class="fa fa-dropbox fa-2x" aria-label="Missing Component" style="color:#ff8300;" attrs="{'invisible': [('is_linkedcomponents', 'not in', [False, []])]}"/>
-                            			<div class="fa fa-dropbox fa-2x" aria-label="Founding Component" style="color: green;" attrs="{'invisible': [('is_linkedcomponents', 'in', [False, []])]}"/>
+                                             invisible="checkout_user=='False' or checkout_user==''"/>
+	                            		<div class="fa fa-dropbox fa-2x"
+	                            		     aria-label="Missing Component"
+	                            		     style="color:#ff8300;"
+	                            		     invisible="is_linkedcomponents not in [False, []]"/>
+                            			<div class="fa fa-dropbox fa-2x" 
+                            			     aria-label="Founding Component"
+                            			     style="color: green;"
+                            			     invisible="is_linkedcomponents in [False, []]"/>
                             		</td>
                         		</tr>
                             	<tr>
@@ -434,8 +468,10 @@
 												<td>
 												    <field name="datas" filename="name" widget="binary"/>
                                                     <t><strong>Name:</strong></t>
-                                                    <field name="engineering_code" attrs="{'readonly': [('id', 'not in', [False, [], 0])]}"/>
-                                                    <field name="display_name" attrs="{'invisible': [('id', 'not in', [False, []])]}"/>
+                                                    <field name="engineering_code"
+                                                           readonly="id not in [False, [], 0]"/>
+                                                    <field name="display_name"
+                                                           invisible="id not in [False, []]"/>
                                                 </td>
                                             </tr>
                                             <tr>

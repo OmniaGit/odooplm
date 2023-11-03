@@ -20,7 +20,7 @@
 ##############################################################################
 {
     'name': '[OMNIASOLUTIONS] Production Bom Update',
- 'version': '17.0.1',
+ 'version': '17.0.0.1',
  'sequence': 1,
  'category': 'Manufacturing/Product Lifecycle Management (PLM)',
  'description': """

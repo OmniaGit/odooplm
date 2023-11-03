@@ -37,7 +37,8 @@ class IrUiView(models.Model):
     _inherit = 'ir.ui.view'
 
     @api.model
-    def search(self, args, offset=0, limit=None, order=None, count=False):
+    @api.returns('self')
+    def search(self, args, offset=0, limit=None, order=None):
         if self.env.context.get('odooPLM'):
             self = self.sudo()
-        return super(IrUiView, self).search(args, offset, limit, order, count)
+        return super(IrUiView, self).search(args, offset, limit, order)

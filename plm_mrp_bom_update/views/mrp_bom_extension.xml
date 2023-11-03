@@ -10,7 +10,8 @@
               
                 <xpath expr="//div[hasclass('oe_title')]" position="before">
                     <field name="show_new_version" invisible="True"/>
-                    <div attrs="{'invisible': [('show_new_version','=', False)]}" style="background-color:LightGoldenRodYellow">
+                    <div invisible="show_new_version==False"
+                         style="background-color:LightGoldenRodYellow">
                         <p>
                             New product version available for this production !!
                         </p>
