@@ -27,7 +27,7 @@
     "author": "OmniaSolutions",
     "website": "https://www.omniasolutions.website",
     "category": "Helpdesk",
-    "license": "OEEL-1",
+    "license": "OPL-1",
     "summary": "PLM Breakages",
     "depends": ["plm_breakages","helpdesk"],
     "data": [
