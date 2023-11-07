@@ -27,7 +27,7 @@
     "author": "OmniaSolutions",
     "website": "https://www.omniasolutions.website",
     "category": "Helpdesk",
-    "license": "OPL-1",
+    "license": "LGPL-3",
     "summary": "PLM Breakages",
     "depends": ["plm_breakages","helpdesk"],
     "data": [
