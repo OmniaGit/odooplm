@@ -24,4 +24,27 @@
             </xpath>
         </field>
     </record>
+    <record id="ir_attachment_spare_extension" model="ir.ui.view">
+        <field name="name">ir.attachment.spare.extension</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="plm.plm_component_base_form"/>
+        <field name="type">form</field>
+        <field name="priority" eval="16"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_suspend"
+                        type="object"
+                        string="Suspend"
+                        class="oe_highlight"
+                        invisible="engineering_state=='suspended'"
+                />
+                <button name="action_unsuspend"
+                        type="object"
+                        string="Un-Suspend"
+                        class="oe_highlight"
+                        invisible="engineering_state not in ['suspended']"
+                />
+            </xpath>
+        </field>
+    </record>
 </odoo>
