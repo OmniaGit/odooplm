@@ -57,7 +57,7 @@ class ProductProduct(models.Model):
     _name='product.product'
     _inherit = ['product.product']
     _description ="Product Product"
-    
+
     def onchange(self, values, field_name, field_onchange):
         values = self.plm_sanitize(values)
         if 'product_tmpl_id' in values:
@@ -151,7 +151,7 @@ class ProductProduct(models.Model):
     # Don't overload std_umc1, std_umc2, std_umc3 setting them related to std_description because odoo try to set value
     # of related fields and integration users doesn't have write permissions in std_description. The result is that
     # integration users can't create products if in changed values there is std_description
-    
+
     show_std_field1 = fields.Boolean(_('Show std field 1'),
                                  compute='_computeStd')
     show_std_field2 = fields.Boolean(_('Show std field 2'),
@@ -162,16 +162,16 @@ class ProductProduct(models.Model):
     readonly_std_umc1 = fields.Boolean(_("put readOnly the field standard description 1"))
     readonly_std_umc2 = fields.Boolean(_("put readOnly the field standard description 2"))
     readonly_std_umc3 = fields.Boolean(_("put readOnly the field standard description 3"))
-    
+
     linkeddocuments = fields.Many2many('ir.attachment',
                                        'plm_component_document_rel',
                                        'component_id',
                                        'document_id',
                                        _('Linked Docs'),
                                        ondelete='cascade')
-    
+
     kit_bom = fields.Boolean(_('KIT Bom Type'))
-            
+
     def _computeStd(self):
         for product_product_id in self:
             product_product_id.show_std_field1 = False
@@ -184,7 +184,7 @@ class ProductProduct(models.Model):
                     product_product_id.show_std_field2 = True
                 if product_product_id.std_description.umc3 or product_product_id.std_description.fmt3:
                     product_product_id.show_std_field3 = True
-                    
+
     @api.onchange("std_description")
     def _showStd(self):
         for product_product_id in self:
@@ -205,7 +205,7 @@ class ProductProduct(models.Model):
                     product_product_id.show_std_field1 = True
                 else:
                     product_product_id.std_value1 = False
-                        
+
                 if product_product_id.std_umc2:
                     product_product_id.readonly_std_umc2=True
                     product_product_id.show_std_field2 = True
@@ -267,7 +267,7 @@ class ProductProduct(models.Model):
                 if product_id.engineering_state in [RELEASED_STATUS, 'undermodifie']:
                     return product_id
         return self
-    
+
 #   Internal methods
     def _packfinalvalues(self, fmt, value=False, value2=False, value3=False):
         """
@@ -394,7 +394,7 @@ class ProductProduct(models.Model):
                 'res_id': product_id,
                 'views': [(form_id, 'form')],
             }
-    
+
     #def open_report_component(self):
     #    action = self.env.ref('plm.action_report_prod_structure').report_action(self)
     #    action.update({'close_on_report_download': True})
@@ -421,7 +421,7 @@ class ProductProduct(models.Model):
                         currlevel=0,
                         bom_type=False):
         """
-            Return a flat list of each child, listed once, in a Bom 
+            Return a flat list of each child, listed once, in a Bom
             :level = [ 0 one level only, 1 all levels]
             :currlevel starting level for the bom
             :bom_type type bom calculation
@@ -443,7 +443,7 @@ class ProductProduct(models.Model):
                 bufferdata.append(bomline.product_id.id)
         result.extend(bufferdata)
         return list(set(result))
-    
+
     def getLeafBom(self, bom_type='normal'):
         """
         get only the leaf of the bom
@@ -468,7 +468,7 @@ class ProductProduct(models.Model):
                     out.append(product_product_id)
         _getLeafBom(self)
         return out
-    
+
     def summarize_level(self, recursion=False, flat=False, level=1, summarize=False, parentQty=1, bom_type=False):
         out = {}
         for product_product_id in self:
@@ -671,13 +671,13 @@ class ProductProduct(models.Model):
             self._create_normalBom(prodId, processedIds)
         self.message_post(body=_('Created Normal Bom.'))
         return False
-    
+
     def _jump_document_wf(self,
                           documentBrws,
                           check_state):
         """
         this function is here in order to customize the document workflow
-        :documentBrws     <ir_attachment> 
+        :documentBrws     <ir_attachment>
         :check_in_check   bool shuld I move also the document
         :return: True will jump the workflow for the current document / False will performe the workflow
         """
@@ -715,7 +715,7 @@ class ProductProduct(models.Model):
         return list(set(docIDs))
 
     def _action_ondocuments(self,
-                            action_name, 
+                            action_name,
                             include_statuses=[],
                             check_in_check=True):
         """
@@ -763,8 +763,8 @@ class ProductProduct(models.Model):
             else:
                 self.customMoveDocumentWorkflow(ir_attachment_ids, status)
         return docIDs
-    
-    
+
+
     def customMoveDocumentWorkflow(self,
                                    ir_attachment_ids,
                                    status):
@@ -844,7 +844,7 @@ class ProductProduct(models.Model):
         for product_product_id in self:
             product_product_id.commonWFAction(CONFIRMED_STATUS, [START_STATUS], recursive=True)
         return True
-    
+
     def action_release(self):
         for product_product_id in self:
             product_product_id.commonWFAction(RELEASED_STATUS,
@@ -872,7 +872,7 @@ class ProductProduct(models.Model):
             product_product_id.commonWFAction(RELEASED_STATUS,
                                               [OBSOLATED_STATUS])
         return True
-        
+
     def commonWFAction(self,
                        status,
                        include_statuses=[],
@@ -994,7 +994,7 @@ class ProductProduct(models.Model):
             name = vals_dict.get('name')
             if not name and eng_code:
                 vals_dict['name'] = eng_code
-    
+
             eng_rev = vals_dict.get('engineering_revision', 0)
             eng_code = vals_dict.get('engineering_code')
             if eng_code:
@@ -1009,7 +1009,7 @@ class ProductProduct(models.Model):
             vals_dict = self.plm_sanitize(vals_dict)
             to_write.append(vals_dict)
         try:
-            res = super().create(vals_dict)
+            res = super().create(vals)
             return res
         except Exception as ex:
             if isinstance(ex, UserError):
@@ -1027,7 +1027,7 @@ class ProductProduct(models.Model):
                 raise Exception(msg)
             logging.error("(%s). It has tried to create with values : (%s)." % (str(ex), str(vals)))
             raise Exception(_(" (%r). It has tried to create with values : (%r).") % (ex, vals))
-    
+
     def write(self, vals):
         for product in self:
             if 'is_engcode_editable' not in vals and product.engineering_code not in ['-',False]:
@@ -1046,7 +1046,7 @@ class ProductProduct(models.Model):
                 product.with_context(ctx).on_change_tmpsurface()
                 product.with_context(ctx).on_change_tmptreatment()
         for product_id in self:
-            if product_id._origin.id: 
+            if product_id._origin.id:
                 product_id.checkFromOdooPlm()
         return res
 
@@ -1071,7 +1071,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         for vals in self.read(to_write):
             return vals
         return {}
-        
+
     def readMany2oneFields(self, readVals, fields):
         return self._readMany2oneFields(self.env['product.product'], readVals, fields)
 
@@ -1103,13 +1103,13 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         new_revision = self.env.context.get('new_revision', False)
         if self.env.context.get('odooPLM', False) and not new_revision:
             for product_product_id in self:
-                if not product_product_id.engineering_code:  
+                if not product_product_id.engineering_code:
                     raise UserError("Missing engineering code for plm data")
         return True
 
     def checkMany2oneClient(self, vals, force_create=False):
         return self._checkMany2oneClient(self.env['product.product'], vals, force_create)
-        
+
     @api.model
     def _checkMany2oneClient(self, obj, vals, force_create=False):
         out = {}
@@ -1179,11 +1179,11 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                     readDict = translationBrwsList[0].read(['value'])
                     values[fieldName] = readDict.get('value', '')
         return values
-    
+
     @api.model
     def get_all_translation(self, object_id, fields):
         return self.product_tmpl_id.get_all_translation(object_id, fields)
-    
+
     def action_rev_docs(self):
         """
             This function is called by the button on component view, section LinkedDocuments
@@ -1796,11 +1796,11 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         product_ids = list(self._search([('engineering_code', operator, name)] + args, limit=limit, access_rights_uid=name_get_uid))
         product_ids += list(super(ProductProduct, self)._name_search(name, args, operator, limit, name_get_uid))
         return list(set(product_ids))
-    
+
     @api.model
     def getExpodedBom(self, ids):
         """
-        function used in the client to retrieve the exploded bom 
+        function used in the client to retrieve the exploded bom
         """
         mrp_bom = self.env['mrp.bom']
         out = []
@@ -1819,13 +1819,13 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                 'engineering_revision': product_tmpl_id.engineering_revision,
                 'name': product_tmpl_id.name,
                 }
-        #               
+        #
         def getBomLineData(mrpBomLine):
             return {
-                'qty':  mrpBomLine.product_qty, 
+                'qty':  mrpBomLine.product_qty,
                 'source_name': mrpBomLine.source_id.name
                 }
-        #    
+        #
         def getDictData(mrpBomLine):
             out = getProductData(mrpBomLine.product_id.product_tmpl_id)
             out.update(getBomLineData(mrpBomLine))
@@ -1842,14 +1842,14 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                 for mrp_bom_line_id in mrp_bom_id.bom_line_ids:
                     children.append((getDictData(mrp_bom_line_id),
                                      computeChildLevel(mrp_bom_line_id.product_id.product_tmpl_id)))
-            return children 
-        #   
+            return children
+        #
         for product_id in self.browse(ids):
             product_tmpl_id = product_id.product_tmpl_id
             out.append((getProductData(product_tmpl_id), computeChildLevel(product_tmpl_id)))
         #
         return (header, out)
-    
+
     def get_product_bom_flat_ids(self, bom_type='normal'):
         """
         get the product browser flat list
@@ -1859,16 +1859,16 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         #
         def populate(product_id):
             if product_id in out:
-                return 
+                return
             out.append(product_id)
             for bom_id in product_id.product_tmpl_id.bom_ids.filtered(lambda x:x.type==bom_type):
                 for line_id in bom_id.bom_line_ids:
                     populate(line_id.product_id)
-        #    
+        #
         populate(self)
         return out
-        
-        
+
+
 class PlmTemporayMessage(models.TransientModel):
     _name = "plm.temporary.message"
     _description = "Temporary Class"
