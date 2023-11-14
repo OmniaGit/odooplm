@@ -1009,7 +1009,7 @@ class ProductProduct(models.Model):
             vals_dict = self.plm_sanitize(vals_dict)
             to_write.append(vals_dict)
         try:
-            res = super().create(vals_dict)
+            res = super().create(to_write)
             return res
         except Exception as ex:
             if isinstance(ex, UserError):
