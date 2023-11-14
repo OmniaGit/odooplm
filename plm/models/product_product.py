@@ -1010,7 +1010,7 @@ class ProductProduct(models.Model):
             vals_dict = self.plm_sanitize(vals_dict)
             to_write.append(vals_dict)
         try:
-            res = super().create(vals_dict)
+            res = super().create(to_write)
             return res
         except Exception as ex:
             if isinstance(ex, UserError):
@@ -1053,13 +1053,21 @@ class ProductProduct(models.Model):
 
     def read(self, fields=[], load='_classic_read'):
         try:
-            customFields = [field.replace('plm_m2o_', '') for field in fields if field.startswith('plm_m2o_')]
-            fields.extend(customFields)
-            fields = list(set(fields))
-            fields = self.plm_sanitize(fields)
-            res = super(ProductProduct, self).read(fields=fields, load=load)
-            res = self.readMany2oneFields(res, fields)
-            return res
+            if self.env.context.get('odooPLM'):
+                if not fields:
+                    fields = list(self._fields.keys())
+                cleaned_up_fields = [] 
+                for field_name, field_attrs in self.fields_get(fields).items():
+                    if field_attrs['type']=='properties':
+                        continue
+                    cleaned_up_fields.append(field_name)
+                customFields = [field.replace('plm_m2o_', '') for field in cleaned_up_fields if field.startswith('plm_m2o_')]
+                fields.extend(customFields)
+                fields = list(set(cleaned_up_fields))
+                fields = self.plm_sanitize(fields)
+                res = super(ProductProduct, self).read(fields=fields, load=load)
+                return self.readMany2oneFields(res, fields)
+            return super(ProductProduct, self).read(fields=fields, load=load)
         except Exception as ex:
             if isinstance(ex, AccessError) and 'sale.report' in ex.name:
                 return """
