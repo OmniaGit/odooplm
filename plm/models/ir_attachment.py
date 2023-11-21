@@ -761,7 +761,7 @@ class IrAttachment(models.Model):
         for document in documents:
             hasSaved = False
             hasUpdated = False
-            if not ('engineering_document_names' in document) or ('engineering_revision' not in document):
+            if not ('engineering_code' in document) or ('engineering_revision' not in document):
                 document['documentID'] = False
                 document['hasSaved'] = hasSaved
                 document['hasUpdated'] = hasUpdated

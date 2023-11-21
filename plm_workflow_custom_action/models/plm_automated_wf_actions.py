@@ -52,6 +52,9 @@ class PlmAutomatedWFAction(models.Model):
                                  ('ir.attachment', 'Attachment')],
                                  string="Apply To",
                                  help="Apply this action to the workflow model")
+    
+    domain = fields.Char("Domain", help="""specifie the domain of the action""")
+    
     child_ids = fields.Many2many('ir.actions.server',
                                  'rel_plm_server_actions',
                                  'server_id',
@@ -67,6 +70,7 @@ class PlmAutomatedWFAction(models.Model):
     def _run(self):
         res = False
         for act in self.child_ids.sorted():
+            
             res = act.run() or res
         return res
         
