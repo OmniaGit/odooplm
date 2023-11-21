@@ -177,4 +177,31 @@ class PlmDocumentRelations(models.Model):
         self.search([('parent_id', '=', parent_ir_attachment_id),
                      ('link_kind', '=', linkType)]).unlink()
 
+    def is_2d_ok(self, from_ir_attachment_id):
+        for relation_id in self.search(["|",('parent_id','=',from_ir_attachment_id.id),
+                                            ('child_id','=',from_ir_attachment_id.id),
+                                            ('link_kind', '=', 'LyTree')
+                                        ]):
+            if relation_id.parent_id.document_type=='2d' and relation_id.child_id.document_type in ['3d','pr']:
+                if relation_id.parent_id.getLastCadSave() < relation_id.child_id.getLastCadSave():
+                    return False
+            if relation_id.child_id.document_type=='2d' and relation_id.parent_id.document_type in ['3d','pr'] :
+                if relation_id.child_id.getLastCadSave()<relation_id.parent_id.getLastCadSave():
+                    return False
+        return True                
+
+    def is_pr_ok(self, from_ir_attachment_id):
+        for relation_id in self.search(["|",('parent_id','=',from_ir_attachment_id.id),
+                                            ('child_id','=',from_ir_attachment_id.id),
+                                            ('link_kind', '=', 'LyTree')
+                                        ]):
+            if relation_id.parent_id.document_type=='pr' and relation_id.child_id.document_type in ['2d','3d']:
+                if relation_id.parent_id.write_date < relation_id.child_id.write_date:
+                    return False
+            if relation_id.child_id.document_type=='pr' and relation_id.parent_id.document_type==['2d','3d']:
+                if relation_id.child_id.write_date < relation_id.parent_id.write_date:
+                    return False
+        return True  
+            
+            
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

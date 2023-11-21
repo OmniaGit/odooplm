@@ -266,20 +266,30 @@ class UploadDocument(Controller):
         ir_attachement = request.env['ir.attachment'].sudo()
         for record in ir_attachement.search_read([('id','=', id)], ['preview']):
             return base64.b64decode(record.get('preview'))
-        
+
+    @route('/plm/product_product_preview/<int:product_id>', type='http', auth='user', methods=['GET'], csrf=False)
+    @webservice
+    def get_pp_preview(self, product_id):
+        product_product_sudo = request.env['product.product'].sudo()
+        for product_product_id in product_product_sudo.search([('id','=', product_id)]):
+            return base64.b64decode(product_product_id.image_1920)
+
     @route('/plm/ir_attachment_printout/<int:id>', type='http', auth='user', methods=['GET'], csrf=False)
     @webservice
     def get_printout(self, id):
-        ir_attachement = request.env['ir.attachment'].sudo()
-        for ir_attachement_id in ir_attachement.search_read([('id','=', id)],
-                                                            ['printout','name']):
-                print_out_data = ir_attachement_id.get('printout')
-                if print_out_data: 
-                    data = base64.b64decode(print_out_data)
-                    headers = [('Content-Type', 'application/pdf'),
-                               ('Content-Length', len(data)),
-                               ('Content-Disposition', 'inline; filename="%s"' % ir_attachement_id.get('name','no_name') + '.pdf')]
-                    return request.make_response(data, headers)
+        try:
+            for ir_attachement_id in request.env['ir.attachment'].sudo().browse(id):
+                if ir_attachement_id.printout:
+                    print_out_data = request.env['report.plm.ir_attachment_pdf']._render_qweb_pdf(ir_attachement_id)
+                    print_out_data = print_out_data[0]
+                    if print_out_data: 
+                        headers = [('Content-Type', 'application/pdf'),
+                                   ('Content-Length', len(print_out_data)),
+                                   ('Content-Disposition', f'inline; filename="{ir_attachement_id.engineering_code}_{ir_attachement_id.engineering_revision}.pdf"')]
+                        return request.make_response(print_out_data, headers)
+                    else:
+                        return request.not_found(f"Pdf document {ir_attachement_id.engineering_code} not Available")
                 else:
-                    return request.not_found("Pdf document %s not Available" % ir_attachement_id.get('name','no_name'))
-
+                    return request.not_found(f"Pdf document {ir_attachement_id.engineering_code} not Available")
+        except Exception as ex:
+            return Response(f"{ex}", status=500)

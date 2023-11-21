@@ -56,7 +56,8 @@ class ProductProduct(models.Model):
     def get_user_activities(self, ids_to_read=[]):
         activity = self.env['mail.activity']
         act_filter = [
-            ('activity_type_id', '=', self.env.ref('plm.mail_activity_plm_activity').id),
+            ('activity_type_id', 'in', [self.env.ref('plm.mail_activity_plm_activity').id,
+                                        self.env.ref('plm.mail_activity_check_out_request').id]),
             ('user_id', '=', self.env.uid),
             ('plm_state', 'not in', [False, 'done', 'cancel'])
             ]

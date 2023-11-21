@@ -46,14 +46,15 @@ class ReportDocumentPdf(models.AbstractModel):
             'state': 'doc_obj.engineering_state',
                 }
         return (msg, msg_vals)
-
+    
     @api.model
     def _render_qweb_pdf(self, documents=None, data=None):
         docType = self.env['ir.attachment']
         docRepository = docType._get_filestore()
         output = BookCollector(jumpFirst=False,
                                customText=self.get_custom_text(),
-                               bottomHeight=10, poolObj=self.env)
+                               bottomHeight=10,
+                               poolObj=self.env)
         return packDocuments(docRepository, documents, output)
         
     @api.model

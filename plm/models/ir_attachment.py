@@ -106,6 +106,19 @@ class IrAttachment(models.Model):
                                  default=False)
     library_path = fields.Char("File library path")
     
+    must_update_from_cad = fields.Boolean("Must Update form CAD",
+                                          compute="_compute_must_update_from_cad",
+                                          help="""When this flag is enabled the 2d document must be updated in order to guaranteey the update betwin 2d and 3d document""")
+    
+    def _compute_must_update_from_cad(self):
+        ir_attachment_relation = self.env['ir.attachment.relation']
+        for ir_attachment in self:
+            ir_attachment.must_update_from_cad=False
+            if ir_attachment.document_type =='2d':
+                ir_attachment.must_update_from_cad= not ir_attachment_relation.is_2d_ok(ir_attachment)
+            elif ir_attachment.document_type =='pr':
+                ir_attachment.must_update_from_cad= not ir_attachment_relation.is_pr_ok(ir_attachment)
+                
     def _getPrintoutName(self):
         for ir_attachment_id in self:
             ir_attachment_id.printout_name=f"{ir_attachment_id.engineering_code}_{ir_attachment_id.engineering_revision}.pdf"
@@ -113,7 +126,13 @@ class IrAttachment(models.Model):
     def getPrintoutUrl(self):
         self.ensure_one()
         base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
-        return "%s/plm/ir_attachment_printout/%s" % (base_url, self.id) 
+        return f"{base_url}/plm/ir_attachment_printout/{self.id}" 
+    
+    def download_printout(self):
+        return {'type': 'ir.actions.act_url',
+                'url': self.getPrintoutUrl(),
+                'target': 'new',
+                }
 
     @property
     def actions(self):
@@ -600,31 +619,31 @@ class IrAttachment(models.Model):
         """
             Overwrite the default copy method
         """
-        documentRelation = self.env['ir.attachment.relation']
-        docBrwsList = documentRelation.search([('parent_id', '=', self.id)])
-        previous_name = self.engineering_code
-        if 'engineering_code' not in defaults:
-            new_name = 'Copy of %s' % previous_name
-            documents = self.search([('engineering_code', '=', new_name)], order='engineering_revision')
-            if len(documents) > 0:
-                new_name = '%s (%s)' % (new_name, len(documents) + 1)
-            defaults['engineering_code'] = new_name
-# TODO: verifie if document is renamed ??!!
-#         fname, filesize = self._manageFile()
-#         defaults['store_fname'] = fname
-#         defaults['file_size'] = filesize
         defaults['engineering_state'] = START_STATUS
         defaults['engineering_writable'] = True
-        newDocBrws = super(IrAttachment, self).copy(defaults)
-        if newDocBrws:
-            newDocBrws.message_post(body=_('Copied starting from : %s.' % previous_name))
-        for brwEnt in docBrwsList:
-            documentRelation.create({
-                'parent_id': newDocBrws.id,
-                'child_id': brwEnt.child_id.id,
-                'configuration': brwEnt.configuration,
-                'link_kind': brwEnt.link_kind,
-            })
+        if not self.is_plm:
+            defaults['engineering_code']=False
+            newDocBrws = super(IrAttachment, self).copy(defaults)
+        else:
+            documentRelation = self.env['ir.attachment.relation']
+            docBrwsList = documentRelation.search([('parent_id', '=', self.id)])
+            previous_name = self.engineering_code
+            if 'engineering_code' not in defaults:
+                new_name = 'Copy of %s' % previous_name
+                documents = self.search([('engineering_code', '=', new_name)], order='engineering_revision')
+                if len(documents) > 0:
+                    new_name = '%s (%s)' % (new_name, len(documents) + 1)
+                defaults['engineering_code'] = new_name
+            newDocBrws = super(IrAttachment, self).copy(defaults)
+            if newDocBrws:
+                newDocBrws.message_post(body=_('Copied starting from : %s.' % previous_name))
+            for brwEnt in docBrwsList:
+                documentRelation.create({
+                    'parent_id': newDocBrws.id,
+                    'child_id': brwEnt.child_id.id,
+                    'configuration': brwEnt.configuration,
+                    'link_kind': brwEnt.link_kind,
+                })
         return newDocBrws
 
     @api.model
@@ -967,7 +986,7 @@ class IrAttachment(models.Model):
         if self.env.context.get('odooPLM'):
             if 'name' in vals and 'engineering_code' in vals:
                 if self.search_count([('engineering_code','=', vals['engineering_code']),
-                                      ('name','!=',vals['name'])]):
+                                      ('name','not ilike',vals['name'])]):
                     raise Exception(_(f"You are trying to create a new attachment [{vals['name']}] with the some engineering code [{vals['engineering_code']}]"))
                     
     @api.model_create_multi
@@ -1274,14 +1293,27 @@ class IrAttachment(models.Model):
     def getHtmlDocument(self, attachment_id):
         return self.browse(attachment_id)._getHtmlDocument()
     
-    @api.model
-    def getHtmlDocumentCheckOut(self, check_out_ids):
-        out = []
-        for plm_checkout_id in self.env['plm.checkout'].browse(check_out_ids):
-            ir_attachment = plm_checkout_id.documentid
-            html_rendered, html_tooltip = ir_attachment._getHtmlDocument()
-            out.append((ir_attachment.id, html_rendered, html_tooltip))
-        return out
+    has_error = fields.Boolean("Has Error",
+                               compute='_checkSavingError',
+                               store=True)
+    #
+    #
+    #
+    @api.depends("write_date")
+    def _checkSavingError(self):
+        for ir_attachment_id in self:
+            ir_attachment_id.has_error = not ir_attachment_id.is_last_save_ok()
+    
+    def is_last_save_ok(self):
+        """
+        
+        """
+        for ir_attachment_id in self:
+            key = f"{ir_attachment_id.engineering_code}_{ir_attachment_id.engineering_revision}"
+            for dbthread in self.env['plm.dbthread'].get_last_dbthread(key):
+                if dbthread.done==True and dbthread.error_message:
+                    return False
+        return True
     
     @api.model
     def getAttachedHtmlDoucment(self, product_ids):
@@ -1477,6 +1509,12 @@ class IrAttachment(models.Model):
         if selection == 2:
             docArray = self._getlastrev(docArray)
         checkoutObj = self.env['plm.checkout']
+        msg=''
+        for x in docArray:
+            if x.has_error:
+                msg+=x.engineering_code + "\n"
+        if msg:
+            raise UserError(msg)
         for docId in docArray:
             checkOutBrwsList = checkoutObj.search([('documentid', '=', docId), ('userid', '=', self.env.uid)])
             checkOutBrwsList.unlink()
@@ -1603,7 +1641,15 @@ class IrAttachment(models.Model):
                     self.getUserSign(checkOutBrws.userid.id),
                     checkOutBrws.hostname)
         return ('', False, '', '')
-
+    
+    def _getCheckOutUser(self):
+        for ir_attachment_id in self:
+            checkoutType = self.env['plm.checkout']
+            checkoutBrwsList = checkoutType.search([('documentid', '=', ir_attachment_id.id)])
+            for checkOutBrws in checkoutBrwsList:
+                return checkOutBrws.userid
+        return self.env['res.users']
+    
     @api.model
     def _file_delete(self, fname):
         """
@@ -1940,9 +1986,28 @@ class IrAttachment(models.Model):
                     break
         return plm_checkout_id, msg
 
+    @api.model
+    def clientCanCheckOut(self, doc_attrs):
+        for attachment_id in self.getDocumentBrws(doc_attrs):
+            return attachment_id.canCheckOut1()
+        return False, 'not_found', f'File Not found from attributes {doc_attrs}'
     
-    def canCheckOut(self, showError=False):
+    def canCheckOut1(self):
         for docBrws in self:
+            if docBrws.isCheckedOutByMe():
+                msg = _(f"Unable to check-Out a document that is already checked Out By {docBrws.checkout_user}")
+                return docBrws.id, 'check_out_by_me', msg                
+            if docBrws.is_checkout:
+                msg = _(f"Unable to check-Out a document that is already checked IN by user {docBrws.checkout_user}")
+                return docBrws.id, 'check_out_by_user', msg
+            if docBrws.engineering_state not in [START_STATUS, False]:
+                msg = _(f"Unable to check-Out a document that is in state {docBrws.engineering_state}")
+                return docBrws.id, 'check_out_released', msg
+            return docBrws.id, 'check_in', ''
+        raise Exception()
+        
+    def canCheckOut(self, showError=False):
+        for docBrws in self:          
             if docBrws.is_checkout:
                 msg = _("Unable to check-Out a document that is already checked IN by user %r" % docBrws.checkout_user)
                 if showError:
@@ -2029,14 +2094,34 @@ class IrAttachment(models.Model):
         for docBrws in self:
             for linkedBrws in linkedDocEnv.search([('child_id', '=', docBrws.id), ('parent_id', '=', docBrws.id)]):
                 linkedBrws.unlink()
+    
+    @api.model
+    def getIdFromAttrs(self, attrs):
+        for ir_attachment in self.getDocumentBrws(json.loads(attrs)):
+            return ir_attachment.id
+        return False
 
     def getDocumentBrws(self, docVals):
-        docName = docVals.get('engineering_code', '')
-        docRev = docVals.get('engineering_revision', None)
-        if not docName or docRev is None:
-            return self.browse()
-        return self.search([('engineering_code', '=', docName),
-                            ('engineering_revision', '=', docRev)])
+        """
+        function to convert dict client info into attachment browse record
+        :docVals could be dictionaty or list of dictionaty 
+                    es1. {'engineering_code': '102030', 'engineering_revision': 0}
+                    es2. [{'engineering_code': '102030', 'engineering_revision': 0},{ },..]
+        :return: browse_record(ir_attachment)
+        """
+        if not isinstance(docVals, list):
+            docVals=[docVals]
+        out = self.env[self._name]
+        for doc_dict in docVals:
+            docName = doc_dict.get('engineering_code', '')
+            docRev = doc_dict.get('engineering_revision', None)
+            if not docName or docRev is None:
+                continue
+            for ir_attachment_id in  self.search([('engineering_code', '=', docName),
+                                                  ('engineering_revision', '=', docRev)]):
+                out+=ir_attachment_id
+                break
+        return out
 
     def checkStructureDocument(self, docAttrs):
         docName = docAttrs.get('engineering_code', '')
@@ -2616,6 +2701,7 @@ class IrAttachment(models.Model):
         tmp_dict['is_latest_rev'] = docBrws.isLatestRevision()
         tmp_dict['PLM_DT_DELTA'] = PLM_DT_DELTA
         tmp_dict['is_root'] = is_root
+        tmp_dict['must_update_from_cad'] = docBrws.must_update_from_cad
         tmp_dict['msg'] = ''
         return tmp_dict
         
@@ -2666,7 +2752,7 @@ class IrAttachment(models.Model):
         doc_2d_ids=self.env[self._name]
         doc_3d_ids=self.env[self._name]
         #
-        for doc_id in self.browse(list(set(self.getRelatedLyTree(root_id.id)+self.getRelatedPrTree(root_id.id,recursion=True)))):
+        for doc_id in self.browse(list(set(self.getRelatedLyTree(root_id.id) + self.getRelatedPrTree(root_id.id,recursion=True)))):
             if doc_id.is3D():
                 doc_3d_ids+=doc_id
             else:
@@ -2700,7 +2786,6 @@ class IrAttachment(models.Model):
                     out['to_check_3d'].append(data_info)
             else:
                 out['info'].append(data_info)
-          
         return out
     
     @api.model
@@ -3050,4 +3135,54 @@ class IrAttachment(models.Model):
                     'children': children_list}
             break
         return vals
+
+    @api.model
+    def sent_check_out_requests(self, document_id):
+        """
+        create an activity on document asking to check-out the document
+        """
+        for ir_attachment_id in self.browse([document_id]):
+            _id, action, _message = ir_attachment_id.canCheckOut1()
+            if action=='check_out_by_user':
+                res_user_id = ir_attachment_id._getCheckOutUser()
+                message = _(f"User {self.env.user.display_name} request this document for make some modification")
+                todos = {'res_id': ir_attachment_id.id,
+                         'res_model_id': self.env['ir.model'].search([('model', '=', self._name)]).id,
+                         'user_id': res_user_id.id,
+                         'summary': _("Check-In request"),
+                         'note': message,
+                         'activity_type_id': self.env.ref("plm.mail_activity_check_out_request").id,
+                         'date_deadline': datetime.today().date(),
+                         }
+                self.env['mail.activity'].create(todos)
+        return True
+    
+    def related_not_update(self):
+        for attachment_id in self:
+            relation_ids = self.env['ir.attachment.relation'].search(["|",('parent_id','=',attachment_id.id),
+                                                                      ('child_id','=',attachment_id.id),
+                                                                      ('link_kind', '=', 'LyTree')])
+            return {'name': _('Attachment Relations.'),
+                    'res_model': 'ir.attachment.relation',
+                    'view_type': 'form',
+                    'view_mode': 'kanban,tree,form',
+                    'type': 'ir.actions.act_window',
+                    'domain': [('id', 'in', relation_ids.ids)],
+                    'context': {}}
+            
+    def open_related_dbthread(self):
+        plm_dbthread = self.env['plm.dbthread']
+        plm_dbthread_ids=[]
+        #
+        for ir_attachment_id in self:
+            search_name = f"{ir_attachment_id.engineering_code}_{ir_attachment_id.engineering_revision}"
+            plm_dbthread_ids = plm_dbthread.search([('documement_name_version','=',search_name)])
+        #
+        return {'name': _('Saving Error'),
+                'res_model': 'plm.dbthread',
+                'view_type': 'form',
+                'view_mode': 'tree',
+                'type': 'ir.actions.act_window',
+                'domain': [('id', 'in', plm_dbthread_ids.ids)],
+                'context': {}}
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

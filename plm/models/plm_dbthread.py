@@ -109,4 +109,7 @@ class PlmDbthread(models.Model):
             out.append(plm_dbthread_id.documement_name_version)
         return out
     
-    
+    def get_last_dbthread(self, document_key):
+        for dbthread in self.search([('documement_name_version','=',document_key)], order='write_date desc'):
+            return dbthread
+        return self.env["plm.dbthread"]

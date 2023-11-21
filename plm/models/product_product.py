@@ -71,6 +71,7 @@ class ProductProduct(models.Model):
                 'name': _('Document'),
                 'view_type': 'form',
                 'view_mode': 'form',
+                'view_id': self.env.ref("plm.view_attachment_form_plm_hinerit").id,
                 'res_model': 'ir.attachment',
                 'target': 'new',
                 'res_id': ir_attachment_id,
@@ -316,7 +317,8 @@ class ProductProduct(models.Model):
             mrp_bom_line_ids = self.env['mrp.bom.line'].search(bom_line_filter,
                                                                limit=1)
             for mrp_bom_line_id in mrp_bom_line_ids:
-                return mrp_bom_line_id.bom_id
+                if product_product_id.id!=mrp_bom_line_id.bom_id.product_tmpl_id.product_variant_id.id:
+                    return mrp_bom_line_id.bom_id
         return self.env['mrp.bom']
 
     def _packvalues(self, fmt, label=False, value=False):
@@ -669,14 +671,34 @@ class ProductProduct(models.Model):
             self._create_normalBom(prodId, processedIds)
         self.message_post(body=_('Created Normal Bom.'))
         return False
+    
+    def _jump_document_wf(self,
+                          documentBrws,
+                          check_state):
+        """
+        this function is here in order to customize the document workflow
+        :documentBrws     <ir_attachment> 
+        :check_in_check   bool shuld I move also the document
+        :return: True will jump the workflow for the current document / False will performe the workflow
+        """
+        return False
 
-    def checkWorkflow(self, docInError, linkeddocuments, check_state,check_in_check=True):
+    def checkWorkflow(self,
+                      docInError,
+                      linkeddocuments,
+                      check_state,
+                      check_in_check=True):
         docIDs = []
         attachment = self.env['ir.attachment']
         for documentBrws in linkeddocuments:
             if documentBrws.engineering_state in check_state:
                 if check_in_check and documentBrws.is_checkout:
-                    docInError.append(_("Document %r : %r is checked out by user %r") % (documentBrws.name, documentBrws.engineering_revision, documentBrws.checkout_user))
+                    if check_in_check:
+                        logging.info(f"{documentBrws.name} workflow jump for custom rule check_in_check")
+                    else:
+                        docInError.append(_(f"Document {documentBrws.name} : {documentBrws.engineering_revision} is checked out by user {documentBrws.checkout_user}") )
+                    continue
+                if self._jump_document_wf(documentBrws,check_state):
                     continue
                 docIDs.append(documentBrws.id)
                 if documentBrws.is3D():
@@ -748,6 +770,10 @@ class ProductProduct(models.Model):
                                    status):
         """
         Customization use this function for further customizations on product workflow
+        :ir_attachment_ids [<ir_attachment>]
+        :status str state to move to
+        REMARK:
+            the current status is on the self object and on the attachment ids
         """
         return
 
@@ -846,7 +872,7 @@ class ProductProduct(models.Model):
             product_product_id.commonWFAction(RELEASED_STATUS,
                                               [OBSOLATED_STATUS])
         return True
-
+        
     def commonWFAction(self,
                        status,
                        include_statuses=[],
@@ -983,7 +1009,7 @@ class ProductProduct(models.Model):
             vals_dict = self.plm_sanitize(vals_dict)
             to_write.append(vals_dict)
         try:
-            res = super().create(vals_dict)
+            res = super().create(to_write)
             return res
         except Exception as ex:
             if isinstance(ex, UserError):
@@ -1153,7 +1179,11 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                     readDict = translationBrwsList[0].read(['value'])
                     values[fieldName] = readDict.get('value', '')
         return values
-
+    
+    @api.model
+    def get_all_translation(self, object_id, fields):
+        return self.product_tmpl_id.get_all_translation(object_id, fields)
+    
     def action_rev_docs(self):
         """
             This function is called by the button on component view, section LinkedDocuments
@@ -1714,8 +1744,15 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             elif "plm_m2o_" + attribute_name in productAttribute:
                 value = productAttribute["plm_m2o_" + attribute_name]
                 sanitaized_attributes[attribute_name] = self.env['product.template'].translate_plm_m2o_name([self.env['product.template'],
-                                                                                                             self.env['product.product']], attribute_name, value)
-                
+                                                                                                            self.env['product.product']], attribute_name, value)
+        language_attrs = {}
+        for key in list(filter(lambda x: '@-@-@' in x,list(productAttribute.keys()))):
+            field_name, language = key.split('@-@-@')
+            if language not in language_attrs:
+                language_attrs[language] = {field_name: productAttribute[key]}
+            else:
+                language_attrs[language][field_name] = productAttribute[key]
+
         engineering_name = sanitaized_attributes.get('engineering_code', False)
         if not engineering_name:
             return False
@@ -1732,6 +1769,8 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                 out_product_produc_id.write(sanitaized_attributes)
         else:  # write
             out_product_produc_id = self.create(sanitaized_attributes)
+        for lang, translated_values in language_attrs.items():
+            out_product_produc_id.with_context(lang=lang).write(translated_values)
         return out_product_produc_id
 
 

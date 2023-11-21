@@ -13,6 +13,7 @@
 	                    <field name="to_state"/>
 	                    <field name="apply_to"/>
 	                    <field name="before_after"/>
+	                    <field name="domain"/>
 	                </group>
 	                <group>
 	                   <field name="child_ids"/>
@@ -35,8 +36,7 @@
            <field name="before_after"/>               
           </tree>
         </field>
-    </record>
-<!-- <field name="view_id" ref="plm_action_plm_dbthread_tree"/> -->        
+    </record>   
     
     <record id="plm_action_workflow_action" model="ir.actions.act_window">
         <field name="name">WorkFlow Actions</field>

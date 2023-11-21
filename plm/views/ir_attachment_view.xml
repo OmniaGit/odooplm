@@ -57,6 +57,18 @@
                             string="Confirm Document"
                             class="oe_highlight"
                             attrs="{'invisible': ['|',('is_checkout','=',True),('engineering_state','!=','draft')]}"/>
+                    <button name="action_un_release"
+                            type="object"
+                            attrs="{'invisible': [('engineering_state','!=','released')]}"
+                            string="Un Release"
+                            groups="plm.group_plm_admin_unrelease"
+                            class="oe_highlight"/>
+                    <button name="action_un_release_release"
+                            type="object"
+                            attrs="{'invisible': [('engineering_state','!=','draft')]}"
+                            string="Re Release"
+                            groups="plm.group_plm_admin_unrelease"
+                            class="oe_highlight"/>
                     <field name="engineering_state"
                            widget="statusbar"
                            statusbar_visible="draft,confirmed,released"
@@ -64,6 +76,7 @@
                            readonly="1"/>
                 </header>
                	<sheet>
+               	    
 	                <div class="oe_button_box" name="button_box">
 						<button class="oe_stat_button" icon="fa-sitemap" type="object" name="action_view_rel_doc">
 							<field name="document_rel_count" string="Documents" widget="statinfo"/>
@@ -103,10 +116,27 @@
 						<button name="check_out_user" icon="fa-user" attrs="{'invisible': ['|',('checkout_user', '=', 'False'),('checkout_user', '=', '')]}">
 							<field name="checkout_user"/>
 						</button>
+						<field name="must_update_from_cad" invisible="1"></field>
+                        <button name="related_not_update" 
+                                icon="fa-warning"
+                                type="object"
+                                attrs="{'invisible': [('must_update_from_cad', '=', False)]}">
+                              <div class="o_field_widget o_stat_info o_readonly_modifier">
+                                 <span style="color:orange">Not.Update</span>
+                              </div>
+                        </button>
+		                <field name="has_error" invisible="True"/>
+		                <button name="open_related_dbthread"
+		                        type="object"
+		                        string="S.ERR"
+		                        class="oe_stat_button"
+		                        icon="fa-bug"
+		                        attrs="{'invisible':[('has_error','=',False)]}">
+		                </button>
 	           		</div>
 		           	<group>
 	                	<group string= "PLM Infos:" name="main_doc_info">
-	                    	<field string="Eng. Document Name" name="engineering_code" attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}"/>
+	                    	<field string="Eng. Document Name" name="engineering_code" attrs="{'readonly':[('id','>',0)]}"/>
 	                    	<field string="Enineering revision" name="engineering_revision" readonly="True"/>
 	                    	<field string="Is a Plm Document" name="is_plm" visible="0" widget="boolean_toggle" readonly="True"/>
 	                	</group>
@@ -189,6 +219,7 @@
           		<div class="oe_chatter">
                 	<field name="message_follower_ids" widget="mail_followers" modifiers="{}"/>
                 	<field name="message_ids" widget="mail_thread" modifiers="{}"/>
+                	<field name="activity_ids"/>
           		</div>
             </form>
     	</field>
@@ -205,10 +236,13 @@
                   decoration-success="engineering_state == 'released'"
                   decoration-warning="engineering_state == 'undermodify'"
                   decoration-muted="engineering_state == 'obsoleted'">
-
-                <field name="preview" widget="image" options="{ 'size': [60, 60]}"/>
-                <field name="printout_name" invisible="True"/>
-                <field name="printout" widget="binary" filename="printout_name" readonly="True"/>
+                <field name="document_type" invisible="True"/>
+                <field name="preview" widget="image" options="{ 'size': [60, 60]}"/>                
+                <button
+                    class="fa fa-print"
+                    type="object"
+                    name="download_printout"
+                    attrs="{'invisible':[('document_type','in',['3d','pr','other'])]}"/>
                 <field name="name" select="True"/>
                 <field name="engineering_revision" select="True"/>
                 <field name="engineering_state" select="True"/>
@@ -255,6 +289,10 @@
               	<filter name="latest"
                       	string="Latest"
                       	domain="[('engineering_state', 'not in', ['obsoleted','undermodify'])]"/>
+                <filter name="doc_has_error"
+                            string="Has Error"
+                            domain="[('has_error','=',True)]"
+                            help="Filter on documents with error"/>
               	<separator orientation="vertical"/>
           		<group>
 	                <field name="create_uid"/>
@@ -311,8 +349,12 @@
                 <field name="engineering_code"/>
                 <field name="engineering_revision"/>
                 <field name="description"/>
+                <field name="datas"/>
+                <field name="name"/>
                 <field name="engineering_state"/>
                 <field name="document_type"/>
+                <field name="has_error"/>
+                <field name="must_update_from_cad" invisible="True"/>
                 <field name="is_checkout" invisible="True"/>
                 <field name="is_linkedcomponents" invisible="True"/>
                 <templates>
@@ -322,6 +364,7 @@
                             <div style="margin-right: 3px;border-left: 1px solid lightgray;border-right: 1px solid lightgray;">
 	                           <field name="preview" 
 	                                  widget="image"
+	                                  style="padding:1px"
 	                                  class="oe_avatar"
 	                                  options="{'zoom': true, 'zoom_delay': 800, 'size':[100,100]}"
 	                                  />
@@ -332,14 +375,25 @@
                         				<strong attrs="{'invisible': [('document_type', '!=', 'other')]}">Other</strong>
                         				<strong attrs="{'invisible': [('document_type', '!=', '2d')]}">2D</strong>
                         				<strong attrs="{'invisible': [('document_type', '!=', '3d')]}">3D</strong>
+                        				<strong attrs="{'invisible': [('document_type', '!=', 'pr')]}">PR</strong>
                         			</td>
                         			<td name="check-in-out">
-                                         <strong>
+                                         <h2>
                                              <field name="checkout_user"
                                                     attrs="{'invisible': ['|',('checkout_user', '=', 'False'),('checkout_user', '=', '')]}"/>
-                                         </strong>
+                                         </h2>
                         			</td>
                         			<td name="Component" style="text-align: right; width: 100%; padding:1px;">
+                                         <button name="open_related_dbthread"
+                                                 type="object"
+                                                 attrs="{'invisible': [('has_error', '=', False)]}"
+                                                 class="fa fa-bug fa-2x btn-danger"       
+                                                 />
+                                         <button name="related_not_update"
+                                                 type="object"
+                                                 attrs="{'invisible': [('must_update_from_cad', '=', False)]}"
+                                                 class="fa fa-warning fa-2x btn-warning"       
+                                                 />
                                         <div class="fa fa-lock fa-2x"
                                              string="."
                                              style="color:red;display: inline;"
@@ -378,8 +432,9 @@
 											</tr>
 											<tr>
 												<td>
+												    <field name="datas" filename="name" widget="binary"/>
                                                     <t><strong>Name:</strong></t>
-                                                    <field name="engineering_code"/>
+                                                    <field name="engineering_code" attrs="{'readonly': [('id', 'not in', [False, [], 0])]}"/>
                                                     <field name="display_name" attrs="{'invisible': [('id', 'not in', [False, []])]}"/>
                                                 </td>
                                             </tr>

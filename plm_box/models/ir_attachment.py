@@ -55,14 +55,11 @@ class Plm_box_document(models.Model):
             name = self.getNewSequencedName(vals)
             vals['name'] = name
         return super(Plm_box_document, self).create(vals)
-
+            
     def getCheckOutUser(self):
-        for docBrws in self:
-            checkOutObj = self.env.get('plm.checkout')
-            checkOutBrwsList = checkOutObj.search([('documentid', '=', docBrws.id)])
-            for checkOutBrws in checkOutBrwsList:
-                if checkOutBrws:
-                    return self.getUserNameFromId(checkOutBrws.write_uid)
+        for checkOutBrws in self._getCheckOutUser():
+            if checkOutBrws:
+                return checkOutBrws.name
         return ''
 
     @api.model

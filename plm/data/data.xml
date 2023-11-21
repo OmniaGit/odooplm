@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="mail_activity_check_out_request" model="mail.activity.type">
+            <field name="name">Check-Out Request</field>
+            <field name="icon">fa-mail-reply</field>
+            <field name="sequence">3</field>
+            <field name="res_model">ir.attachment</field>
+            <field name="sequence">200</field>
+            <field name="change_activity_type">request</field>
+        </record>
+
+    </data>
+</odoo>

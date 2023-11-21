@@ -8,17 +8,13 @@
         <field name="type">tree</field>
         <field name="priority" eval="1"/>
         <field name="arch" type="xml">
-            <tree string="Actions" create="false" edit="false" decoration-danger="error_message != False"
-            												   decoration-warning="done == False"
-            												   decoration-success="done == True">
-            										<!-- 	   decoration-bf="error_message == False"
-            												   decoration-it="error_message == False"
-            												   decoration-muted="error_message == False"
-            												   decoration-success="error_message == False"
-            												   decoration-primary="error_message == False"
-            												   decoration-info="error_message == False"
-            												   decoration-danger="error_message == False"
-            												   decoration-warning="error_message == False" 		-->
+            <tree string="Actions"
+                  create="false"
+                  edit="false"
+                  default_order="write_date desc"
+                  decoration-danger="error_message != False"
+            	  decoration-warning="done == False"
+            	  decoration-success="done == True">
 	            <field name="create_uid"  readonly="1"/>
 	            <field name="create_date" readonly="1" />
 	            <field name="write_date"  readonly="1"/>

@@ -177,7 +177,29 @@ class RevisionBaseMixin(models.AbstractModel):
             obj.engineering_state = RELEASED_STATUS
             obj._mark_worklow_user_date()
             obj._mark_obsolete_previous()
-    
+
+    def action_un_release(self):
+        if not self.env.user.has_group("plm.group_plm_admin_unrelease"):
+            raise UserError("You are not allowed to perform such an action ask to your PLM admin")
+        for obj in self:
+            body ="""
+                FORCE draft action from super plm admin user !!!
+                data could be not as expected !!!
+            """
+            obj.message_post(body=body)
+            obj.with_context(check=False).engineering_state=START_STATUS
+        
+    def action_un_release_release(self):
+        if not self.env.user.has_group("plm.group_plm_admin_unrelease"):
+            raise UserError("You are not allowed to perform such an action ask to your PLM admin")
+        for obj in self:
+            body ="""
+                FORCE release action from super plm admin user !!!
+                data could be not as expected !!!
+            """
+            obj.message_post(body=body)
+            obj.with_context(check=False).engineering_state=RELEASED_STATUS
+            
     def _mark_obsolare(self):
         for obj in self:
             obj.engineering_state = OBSOLATED_STATUS
@@ -187,7 +209,7 @@ class RevisionBaseMixin(models.AbstractModel):
         for obj in self:
             obj.engineering_state = UNDER_MODIFY_STATUS
             obj._mark_worklow_user_date()
-                
+            
     def _mark_under_modifie_previous(self):
         for obj in self:
             if obj.engineering_revision in [False, 0]:
@@ -423,5 +445,19 @@ class RevisionBaseMixin(models.AbstractModel):
                     object_browse_id = self.env[relation].create({'name': field_value})
                 return object_browse_id.id
         return field_value
-
+    
+    @api.model
+    def get_all_translation(self, object_id, fields):
+        """
+        get all field translated in all available languages
+        """
+        out = {}
+        obj = self.env[self._name].browse([object_id])
+        for field_name in fields:
+            for code in self.env['res.lang'].search([('active','=', True)]).mapped("code"):
+                propKey = f"{field_name}@-@-@{code}"
+                out[propKey] = getattr(obj.with_context(lang=code), field_name)
+        return out
+        
+        
         

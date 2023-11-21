@@ -20,7 +20,7 @@
 ##############################################################################
 {
     "name": "Workflow Custom Actions",
-    "version": "16.0.1",
+    "version": "16.0.2",
     "author": "OmniaSolutions",
     "website": "https://odooplm.omniasolutions.website",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",

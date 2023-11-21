@@ -8,6 +8,7 @@
         <field name="priority" eval="5"/>
         <field name="arch" type="xml">
             <tree string="Engineering Parts"
+                  default_order="write_date desc"
                   decoration-bf="engineering_state != ''"
                   decoration-info="engineering_state == 'confirmed'"
                   decoration-success="engineering_state == 'released'"
