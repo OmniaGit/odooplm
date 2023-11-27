@@ -87,6 +87,14 @@ class PlmDbthread(models.Model):
                 plm_dbthread_id.error_message = clientException
             self.cleadUpPrevious(document_key, plm_dbthread_id.id)
             return True
+        if clientException:
+            for plm_dbthread_id in self.search([('threadCode', '=', dbThread),
+                                                ('done', '=', False)]):
+                plm_dbthread_id.done = True
+                if clientException:
+                    plm_dbthread_id.error_message = clientException
+                self.cleadUpPrevious(document_key, plm_dbthread_id.id)
+                return True
         logging.warning("Try to update %s but not found in the db" % clientArgs[0])
         return False
 
@@ -108,3 +116,9 @@ class PlmDbthread(models.Model):
                                             ('error_message', '!=', False)]):
             out.append(plm_dbthread_id.documement_name_version)
         return out
+    
+    def get_last_dbthread(self, document_key):
+        for dbthread in self.search([('documement_name_version','=',document_key)], order='write_date desc'):
+            return dbthread
+        return self.env["plm.dbthread"]
+             

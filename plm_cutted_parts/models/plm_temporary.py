@@ -139,7 +139,7 @@ class PlmTemporaryCutted(osv.osv.osv_memory):
         for plmTmpObj in self:
             explosion_action = plmTmpObj.cutted_part_explosion
             ctx['cutted_part_explosion'] = explosion_action
-            response = super(PlmTemporaryCutted, self.with_context(ctx)).action_create_normalBom()
+            response = super(PlmTemporaryCutted, self.with_context(ctx).sudo()).action_create_normalBom()
             if explosion_action != 'none':
                 self.action_on_bom(selected_ids, explosion_action)
             return response

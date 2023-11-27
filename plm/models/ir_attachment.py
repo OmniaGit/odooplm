@@ -1126,17 +1126,24 @@ class PlmDocument(models.Model):
                                compute='_checkSavingError',
                                store=True)
     #
+    #
+    #
     @api.depends("write_date")
     def _checkSavingError(self):
-        plm_dbthread = self.env['plm.dbthread']
         for ir_attachment_id in self:
-            ir_attachment_id.has_error = False
-            search_name = "%s_%s" % (ir_attachment_id.engineering_document_name,ir_attachment_id.revisionid)
-            for dbthread_id in plm_dbthread.search([('documement_name_version','=',search_name)], order='id desc'):
-                if dbthread_id.error_message:
-                    ir_attachment_id.has_error = True
-                break
-            
+            ir_attachment_id.has_error = not ir_attachment_id.is_last_save_ok()
+
+    def is_last_save_ok(self):
+        """
+        
+        """
+        for ir_attachment_id in self:
+            key = f"{ir_attachment_id.engineering_document_name}_{ir_attachment_id.revisionid}"
+            for dbthread in self.env['plm.dbthread'].get_last_dbthread(key):
+                if dbthread.done==True and dbthread.error_message:
+                    return False
+        return True
+    
     def open_related_dbthread(self):
         plm_dbthread = self.env['plm.dbthread']
         plm_dbthread_ids=[]
@@ -2166,6 +2173,7 @@ class PlmDocument(models.Model):
                 product_product_id.id if product_product_id else False,
                 ir_attachment_id.id if ir_attachment_id else False)
 
+
     @api.model
     def createFromProps(self,
                         documentAttribute={},
@@ -2741,5 +2749,5 @@ class PlmDocument(models.Model):
             if self.getRelatedPkgTreeCount(doc_id)>0:
                 out.append(doc_id)
         return json.dumps(out)
-
+    
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

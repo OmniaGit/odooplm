@@ -39,13 +39,13 @@
                    <field name="document_rel_count" string="Documents" widget="statinfo"/>
                  </button>
                  <field name="has_error" invisible="True"/>
-                    <button name="open_related_dbthread"
-                            type="object"
-                            string="S.ERR"
-                            class="oe_stat_button"
-                            icon="fa-bug"
-                            attrs="{'invisible':[('has_error','=',False)]}">
-                    </button>
+                 <button name="open_related_dbthread"
+                         type="object"
+                         string="S.ERR"
+                         class="oe_stat_button"
+                         icon="fa-bug"
+                         attrs="{'invisible':[('has_error','=',False)]}">
+                 </button>
                  <field name="is_checkout"
                          invisible="True"/>
                  <button name="toggle_check_out"
@@ -66,7 +66,7 @@
                             <span>Check-In</span>
                          </div>
                   </button>
-	                <button name="open_related_document_revisions"
+	              <button name="open_related_document_revisions"
 	                        type="object"
 	                        string="BOM Rev."
 	                        class="oe_stat_button"
