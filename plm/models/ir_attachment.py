@@ -37,6 +37,13 @@ from collections import defaultdict
 import itertools
 import logging
 
+
+def all_equal_and_true(iterable):
+    for item in iterable:
+        if not item[0]:
+            return False
+    return True
+
 _logger = logging.getLogger(__name__)
 
 # To be adequated to plm.component class states
@@ -889,7 +896,17 @@ class PlmDocument(models.Model):
             return res
         except Exception as ex:
             raise ex
-
+    
+    @api.model
+    def check(self, mode, values=None):
+        if self.env.user.has_group('plm.group_plm_integration_user'):
+            if self.ids:
+                self._cr.execute('SELECT is_plm FROM ir_attachment WHERE id IN %s', [tuple(self.ids)])
+                if all_equal_and_true(self._cr.fetchall()):
+                    return True
+            else:
+                return True
+        return super(PlmDocument, self).check(mode, values)
     
     def readMany2oneFields(self, readVals, fields):
         return self.env['product.product']._readMany2oneFields(self.env['ir.attachment'], readVals, fields)
@@ -1873,20 +1890,20 @@ class PlmDocument(models.Model):
         """
         function to convert dict client info into attachment browse record
         :docVals could be dictionaty or list of dictionaty 
-                    es1. {'engineering_code': '102030', 'engineering_revision': 0}
-                    es2. [{'engineering_code': '102030', 'engineering_revision': 0},{ },..]
+                    es1. {'engineering_document_name': '102030', 'revisionid': 0}
+                    es2. [{'engineering_document_name': '102030', 'revisionid': 0},{ },..]
         :return: browse_record(ir_attachment)
         """
         if not isinstance(docVals, list):
             docVals=[docVals]
         out = self.env[self._name]
         for doc_dict in docVals:
-            docName = doc_dict.get('engineering_code', '')
-            docRev = doc_dict.get('engineering_revision', None)
+            docName = doc_dict.get('engineering_document_name', '')
+            docRev = doc_dict.get('revisionid', None)
             if not docName or docRev is None:
                 continue
-            for ir_attachment_id in  self.search([('engineering_code', '=', docName),
-                                                  ('engineering_revision', '=', docRev)]):
+            for ir_attachment_id in  self.search([('engineering_document_name', '=', docName),
+                                                  ('revisionid', '=', docRev)]):
                 out+=ir_attachment_id
                 break
         return out
@@ -2044,13 +2061,13 @@ class PlmDocument(models.Model):
     def canCheckOut1(self):
         for docBrws in self:
             if docBrws.isCheckedOutByMe():
-                msg = _(f"Unable to check-Out a document that is already checked Out By {docBrws.checkout_user}")
+                msg = _(f"Unable to check-Out {docBrws.id}:{docBrws.name} that is already checked Out By {docBrws.checkout_user}")
                 return docBrws.id, 'check_out_by_me', msg                
             if docBrws.is_checkout:
-                msg = _(f"Unable to check-Out a document that is already checked IN by user {docBrws.checkout_user}")
+                msg = _(f"Unable to check-Out {docBrws.id}:{docBrws.name} that is already checked IN by user {docBrws.checkout_user}")
                 return docBrws.id, 'check_out_by_user', msg
-            if docBrws.engineering_state not in ['released','undermodify', False]:
-                msg = _(f"Unable to check-Out a document that is in state {docBrws.engineering_state}")
+            if docBrws.state not in ['draft', False]:
+                msg = _(f"Unable to check-Out {docBrws.id}:{docBrws.name} that is in state {docBrws.state}")
                 return docBrws.id, 'check_out_released', msg
             return docBrws.id, 'check_in', ''
         raise Exception()
