@@ -726,23 +726,24 @@ class PlmDocument(models.Model):
         for ir_attachment_id in self:
             if not ir_attachment_id.exists():
                 continue
-            ir_attachment_id.setCheckContextWrite(check)
-            newContext = self.env.context.copy()
-            newContext['check'] = False
-            objId = ir_attachment_id.with_context(newContext).write({'writable': writable,
-                                                                     'state': state,
-                                                                     'workflow_user': self.env.uid,
-                                                                     'workflow_date': datetime.now()
-                                                                     })
-            if objId:
-                available_status = self._fields.get('state')._description_selection(self.env)
-                dict_status = dict(available_status)
-                status_lable = dict_status.get(state, '')
-                ir_attachment_id.wf_message_post(body=_('Status moved to: %s by %s.' % (status_lable, self.env.user.name)))
-                out.append(objId)
+            if not ir_attachment_id.state==state:
+                ir_attachment_id.setCheckContextWrite(check)
+                newContext = self.env.context.copy()
+                newContext['check'] = False
+                objId = ir_attachment_id.with_context(newContext).write({'writable': writable,
+                                                                         'state': state,
+                                                                         'workflow_user': self.env.uid,
+                                                                         'workflow_date': datetime.now()
+                                                                         })
+                if objId:
+                    available_status = self._fields.get('state')._description_selection(self.env)
+                    dict_status = dict(available_status)
+                    status_lable = dict_status.get(state, '')
+                    ir_attachment_id.wf_message_post(body=_('Status moved to: %s by %s.' % (status_lable, self.env.user.name)))
+                    out.append(objId)
             if ir_attachment_id.is3D():
                 pkg_doc_ids = self.getRelatedPkgTree(ir_attachment_id.id)
-                self.browse(pkg_doc_ids).commonWFAction(writable, state, check)
+                out+=self.browse(pkg_doc_ids).commonWFAction(writable, state, check)
         return out
 
     
