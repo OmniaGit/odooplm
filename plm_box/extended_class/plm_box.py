@@ -456,13 +456,19 @@ class Plm_box(models.Model):
             return outDict
         all_boxes = {}
         for box_obj in self.browse(box_ids):
-            outDict[str(box_obj.id)], all_boxes_children = box_obj.getBoxStructure0(available_box_ids=available_box_ids, all_boxes=all_boxes, primary_box_ids=primary_box_ids)
+            outDict[str(box_obj.id)], all_boxes_children = box_obj.getBoxStructure0(primary=True,
+                                                                                    available_box_ids=available_box_ids,
+                                                                                    all_boxes=all_boxes,
+                                                                                    primary_box_ids=primary_box_ids)
             all_boxes.update(all_boxes_children)
         if download_all:
             for available_box_id in available_box_ids:
                 if available_box_id not in all_boxes.keys():
                     box_obj = self.browse(available_box_id)
-                    outDict[str(box_obj.id)], _ = box_obj.getBoxStructure0(primary=True, available_box_ids=available_box_ids, all_boxes=all_boxes, primary_box_ids=primary_box_ids)
+                    outDict[str(box_obj.id)], _ = box_obj.getBoxStructure0(primary=True,
+                                                                           available_box_ids=available_box_ids,
+                                                                           all_boxes=all_boxes,
+                                                                           primary_box_ids=primary_box_ids)
         return outDict
 
     @api.multi

@@ -198,33 +198,32 @@ class Plm_box_document(models.Model):
         for str_box_id, vals in doc_dict.items():
             box_id = int(str_box_id)
             box_brws = self.env['plm.box'].browse(box_id)
-            evaluated = []
             for str_doc_id, doc_vals in vals.items():
                 doc_id = int(str_doc_id)
-                doc_brws = self.browse(doc_id)
-                checksum = doc_vals.get('checksum', '')
-                doc_dict[str_box_id][str_doc_id]['check_mode'] = doc_brws.getDocumentState()
-                if doc_id in box_brws.document_rel.ids:
-                    if not checksum:
-                        doc_dict[str_box_id][str_doc_id]['update'] = 'download'
-                    elif doc_brws.checksum != checksum:
-                        doc_condition = doc_brws.getDocumentState()
-                        if doc_condition == 'check-out-by-me':
-                            doc_dict[str_box_id][str_doc_id]['update'] = 'upload'
-                        else:
+                for doc_brws in self.search([('id','=', doc_id)]):
+                    checksum = doc_vals.get('checksum', '')
+                    doc_dict[str_box_id][str_doc_id]['check_mode'] = doc_brws.getDocumentState()
+                    if doc_id in box_brws.document_rel.ids:
+                        if not checksum:
                             doc_dict[str_box_id][str_doc_id]['update'] = 'download'
+                        elif doc_brws.checksum != checksum:
+                            doc_condition = doc_brws.getDocumentState()
+                            if doc_condition == 'check-out-by-me':
+                                doc_dict[str_box_id][str_doc_id]['update'] = 'upload'
+                            else:
+                                doc_dict[str_box_id][str_doc_id]['update'] = 'download'
+                        else:
+                            doc_dict[str_box_id][str_doc_id]['update'] = 'none'
                     else:
-                        doc_dict[str_box_id][str_doc_id]['update'] = 'none'
-                else:
-                    cad_opens = self.env['plm.cad.open'].search([
-                        ('document_id', '=', doc_id)
-                        ])
-                    if len(cad_opens.ids) > 1:
-                        doc_dict[str_box_id][str_doc_id]['update'] = 'delete'
-                    elif doc_brws:
-                        doc_dict[str_box_id][str_doc_id]['update'] = 'delete'
-                    else:
-                        doc_dict[str_box_id][str_doc_id]['update'] = 'upload'
+                        cad_opens = self.env['plm.cad.open'].search([
+                            ('document_id', '=', doc_id)
+                            ])
+                        if len(cad_opens.ids) > 1:
+                            doc_dict[str_box_id][str_doc_id]['update'] = 'delete'
+                        elif doc_brws:
+                            doc_dict[str_box_id][str_doc_id]['update'] = 'delete'
+                        else:
+                            doc_dict[str_box_id][str_doc_id]['update'] = 'upload'
         logging.info('Box sincronize res %r' % (doc_dict))
         return doc_dict
                 

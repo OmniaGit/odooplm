@@ -1119,6 +1119,8 @@ class PlmDocument(models.Model):
                                      string=_('Document Type'))
     desc_modify = fields.Text(_('Modification Description'), default='')
     is_plm = fields.Boolean('Is a plm Document', help=_("If the flag is set, the document is managed by the plm module, and imply its backup at each save and the visibility on some views."))
+    first_source_path = fields.Char("Source path of the first time save")
+    cad_name = fields.Char("Cad Name")
     attachment_release_user = fields.Many2one('res.users', string=_("Release User"))
     attachment_release_date = fields.Datetime(string=_('Release Datetime'))
     attachment_revision_count = fields.Integer(compute='_attachment_revision_count')
@@ -1126,7 +1128,8 @@ class PlmDocument(models.Model):
     workflow_date = fields.Datetime(string=_('Datetime Last Wkf'))
     revision_user = fields.Many2one('res.users', string=_("User Revision"))
     revision_date = fields.Datetime(string=_('Datetime Revision'))
-
+    is_library = fields.Boolean("Is Library file",
+                                 default=False)
     @api.multi
     def _attachment_revision_count(self):
         """
@@ -1832,12 +1835,26 @@ class PlmDocument(models.Model):
                 linkedBrws.unlink()
 
     def getDocumentBrws(self, docVals):
-        docName = docVals.get('name', '')
-        docRev = docVals.get('revisionid', None)
-        if not docName or docRev is None:
-            return self.browse()
-        return self.search([('name', '=', docName),
-                            ('revisionid', '=', docRev)])
+        """
+        function to convert dict client info into attachment browse record
+        :docVals could be dictionaty or list of dictionaty 
+                    es1. {'engineering_code': '102030', 'engineering_revision': 0}
+                    es2. [{'engineering_code': '102030', 'engineering_revision': 0},{ },..]
+        :return: browse_record(ir_attachment)
+        """
+        if not isinstance(docVals, list):
+            docVals=[docVals]
+        out = self.env[self._name]
+        for doc_dict in docVals:
+            docName = doc_dict.get('engineering_code', '')
+            docRev = doc_dict.get('engineering_revision', None)
+            if not docName or docRev is None:
+                continue
+            for ir_attachment_id in  self.search([('engineering_code', '=', docName),
+                                                  ('engineering_revision', '=', docRev)]):
+                out+=ir_attachment_id
+                break
+        return out
 
     def checkStructureDocument(self, docAttrs):
         docName = docAttrs.get('name', '')
@@ -1982,7 +1999,27 @@ class PlmDocument(models.Model):
 
         recursionUpdate(rootNode, True)
         return json.dumps(rootNode)
+    
+    @api.model
+    def clientCanCheckOut(self, doc_attrs):
+        for attachment_id in self.getDocumentBrws(doc_attrs):
+            return attachment_id.canCheckOut1()
+        return False, 'not_found', f'File Not found from attributes {doc_attrs}'
 
+    def canCheckOut1(self):
+        for docBrws in self:
+            if docBrws.isCheckedOutByMe():
+                msg = _(f"Unable to check-Out a document that is already checked Out By {docBrws.checkout_user}")
+                return docBrws.id, 'check_out_by_me', msg                
+            if docBrws.is_checkout:
+                msg = _(f"Unable to check-Out a document that is already checked IN by user {docBrws.checkout_user}")
+                return docBrws.id, 'check_out_by_user', msg
+            if docBrws.engineering_state not in ['released','undermodify', False]:
+                msg = _(f"Unable to check-Out a document that is in state {docBrws.engineering_state}")
+                return docBrws.id, 'check_out_released', msg
+            return docBrws.id, 'check_in', ''
+        raise Exception()
+    
     @api.model
     def getCheckedOutAttrs(self, vals):
         outDict = {}
@@ -2128,6 +2165,7 @@ class PlmDocument(models.Model):
             ir_attachemnt_id = seached_ir_attachemnt_id
             plm_checkout_vals['documentid'] = ir_attachemnt_id.id
             break
+        documentAttribute['is_library']=documentAttribute.get('IS_LIBRARY','')
         if found:  # write
             if ir_attachemnt_id.state in self.allowedStateForWrite():
                 if ir_attachemnt_id.needUpdate():
@@ -2138,6 +2176,8 @@ class PlmDocument(models.Model):
             else:
                 action = 'jump'
         else:  # create
+            documentAttribute['first_source_path']=documentAttribute.get('INTEGRATION_ORIG_FILE_PATH','')
+            documentAttribute['cad_name']=documentAttribute.get('CAD_NAME','')
             ir_attachemnt_id = ir_attachemnt_id.create(documentAttribute)
             plm_checkout_vals['documentid'] = ir_attachemnt_id.id
             self.env['plm.checkout'].create(plm_checkout_vals)
