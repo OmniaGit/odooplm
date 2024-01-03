@@ -2549,10 +2549,9 @@ class PlmDocument(models.Model):
                     return
                 else:
                     appendItem(out['to_check'], doc_dict_3d)
-                    tmp_dict['options'] = {
-                                      'discard': 'Discard and check-in',
-                                      'keep_and_go': 'Keep check-out and check-in children'
-                                      }
+                    tmp_dict['options'] = {'keep_and_go': 'Keep check-out and check-in children',
+                                           'discard': 'Discard and check-in'
+                                           }    
             if is_root:
                 if tmp_dict['check_in']:
                     if tmp_dict['plm_cad_open_newer']:
@@ -2563,9 +2562,8 @@ class PlmDocument(models.Model):
                         appendItem(out['already_checkin'], tmp_dict)
                 elif tmp_dict['check_out_by_me']:
                     appendItem(out['to_check'], tmp_dict)
-                    tmp_dict['options'] = {
-                                      'discard': 'Discard and check-in',
-                                      'keep_and_go': 'Keep check-out and check-in children'
+                    tmp_dict['options'] = {'keep_and_go': 'Keep check-out and check-in children',
+                                           'discard': 'Discard and check-in',
                                       }
                 else:
                     tmp_dict['msg'] = 'Document %r is in check-out by another user. Cannot check-in.' % (tmp_dict['name'])
@@ -2580,9 +2578,8 @@ class PlmDocument(models.Model):
                         appendItem(out['already_checkin'], tmp_dict)
                 elif tmp_dict['check_out_by_me']:
                     appendItem(out['to_check'], tmp_dict)
-                    tmp_dict['options'] = {
-                                      'discard': 'Discard and check-in',
-                                      'keep_and_go': 'Keep check-out and check-in children'
+                    tmp_dict['options'] = {'keep_and_go': 'Keep check-out and check-in children',
+                                           'discard': 'Discard and check-in'
                                       }
                 else:
                     tmp_dict['msg'] = 'Document %r is in check-out by another user. Cannot check-in, skipped.' % (tmp_dict['name'])
