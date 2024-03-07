@@ -656,13 +656,14 @@ class PlmComponent(models.Model):
                             docIDs.extend(self.checkWorkflow(docInError, attachment.browse(raw_doc_ids), check_state, docIDs))
         return list(set(docIDs))
 
-    def _action_ondocuments(self, action_name, include_statuses=[]):
+    def _action_ondocuments(self,
+                            action_name,
+                            include_statuses=[]):
         """
             move workflow on documents having the same state of component
         """
         docIDs = []
         docInError = []
-        documentType = self.env['ir.attachment']
         for oldObject in self:
             if (action_name != 'transmit') and (action_name != 'reject') and (action_name != 'release'):
                 check_state = oldObject.state
@@ -675,32 +676,32 @@ class PlmComponent(models.Model):
                 msg = msg + "\n" + e
             msg = msg + _("\n\nCheck-In All the document in order to proceed !!")
             raise UserError(msg)
-        self.moveDocumentWorkflow(docIDs, action_name)
+        self.moveDocumentWorkflow(list(set(docIDs)), action_name)
 
     def moveDocumentWorkflow(self, docIDs, action_name):
-        documentType = self.env['ir.attachment']
+        ir_attachment = self.env['ir.attachment']
         if len(docIDs) > 0:
-            docBrws = documentType.browse(docIDs)
+            ir_attachment_id = ir_attachment.browse(docIDs)
             if action_name == 'confirm':
-                docBrws.action_confirm()
+                ir_attachment_id.action_confirm()
             elif action_name == 'transmit':  # TODO: Why is used? Is correct?
-                docBrws.action_confirm()
+                ir_attachment_id.action_confirm()
             elif action_name == 'draft':
-                docBrws.action_draft()
+                ir_attachment_id.action_draft()
             elif action_name == 'correct':  # TODO: Why is used? Is correct?
-                docBrws.action_draft()
+                ir_attachment_id.action_draft()
             elif action_name == 'reject':
-                docBrws.action_draft()
+                ir_attachment_id.action_draft()
             elif action_name == 'release':
-                docBrws.action_release()
+                ir_attachment_id.action_release()
             elif action_name == 'undermodify':
-                docBrws.action_cancel()
+                ir_attachment_id.action_cancel()
             elif action_name == 'suspend':
-                docBrws.action_suspend()
+                ir_attachment_id.action_suspend()
             elif action_name == 'reactivate':
-                docBrws.action_reactivate()
+                ir_attachment_id.action_reactivate()
             elif action_name == 'obsolete':
-                docBrws.action_obsolete()
+                ir_attachment_id.action_obsolete()
         return docIDs
 
     @api.model
@@ -891,7 +892,14 @@ class PlmComponent(models.Model):
         if WORKFLOW_ONLY_CLIENT and is_odooplm and odoo_side_call:
             raise UserError('You can move workflow only by the client side')
 
-    def commonWFAction(self, status, action, doc_action, defaults=[], exclude_statuses=[], include_statuses=[], recursive=True):
+    def commonWFAction(self,
+                       status,
+                       action,
+                       doc_action,
+                       defaults=[],
+                       exclude_statuses=[],
+                       include_statuses=[],
+                       recursive=True):
         self.canMoveWFByParam()
         product_product_ids = []
         product_template_ids = []
@@ -904,25 +912,30 @@ class PlmComponent(models.Model):
         allIdsBrwsList = self.browse(allIDs)
         allIdsBrwsList = allIdsBrwsList.filtered(lambda x: x.engineering_code not in [False, ''])
         allIdsBrwsList._action_ondocuments(doc_action, include_statuses)
+        to_state = defaults.get('state', '')
         for currId in allIdsBrwsList:
-            if not(currId.id in self.ids):
-                product_product_ids.append(currId.id)
-            product_template_ids.append(currId.product_tmpl_id.id)
-            defaults['workflow_user'] = self.env.uid
-            defaults['workflow_date'] = datetime.now()
-            currId.write(defaults)
+            if to_state!=currId.state:
+                if not(currId.id in self.ids):
+                    product_product_ids.append(currId.id)
+                product_template_ids.append(currId.product_tmpl_id.id)
+                defaults['workflow_user'] = self.env.uid
+                defaults['workflow_date'] = datetime.now()
+                currId.write(defaults)
+                currId.wf_message_post(body=_('Status moved to: %s by %s.' % (to_state, self.env.user.name)))
         if action:
             product_ids = self.browse(product_product_ids)
             product_ids.perform_action(action)
             product_ids.workflow_user = self.env.uid
             product_ids.workflow_date = datetime.now()
-        objId = self.env['product.template'].browse(product_template_ids).write(defaults)
-        if objId:
-            available_status = self._fields.get('state')._description_selection(self.env)
-            dict_status = dict(available_status)
-            status_lable = dict_status.get(defaults.get('state', ''), '')
-            self.browse(allIDs).wf_message_post(body=_('Status moved to: %s by %s.' % (status_lable, self.env.user.name)))
-        return objId
+        product_tmpl_ids = self.env['product.template'].browse(product_template_ids)
+        for product_tmpl_id in  product_tmpl_ids:
+            if product_tmpl_id and to_state!=product_tmpl_id.state:
+                product_tmpl_id.write(defaults)
+                available_status = self._fields.get('state')._description_selection(self.env)
+                dict_status = dict(available_status)
+                status_lable = dict_status.get(defaults.get('state', ''), '')
+                product_tmpl_id.wf_message_post(body=_('Status moved to: %s by %s.' % (status_lable, self.env.user.name)))
+        return product_tmpl_ids
 
 #  ######################################################################################################################################33
     def plm_sanitize(self, vals):

@@ -37,6 +37,13 @@ from collections import defaultdict
 import itertools
 import logging
 
+
+def all_equal_and_true(iterable):
+    for item in iterable:
+        if not item[0]:
+            return False
+    return True
+
 _logger = logging.getLogger(__name__)
 
 # To be adequated to plm.component class states
@@ -719,23 +726,24 @@ class PlmDocument(models.Model):
         for ir_attachment_id in self:
             if not ir_attachment_id.exists():
                 continue
-            ir_attachment_id.setCheckContextWrite(check)
-            newContext = self.env.context.copy()
-            newContext['check'] = False
-            objId = ir_attachment_id.with_context(newContext).write({'writable': writable,
-                                                                     'state': state,
-                                                                     'workflow_user': self.env.uid,
-                                                                     'workflow_date': datetime.now()
-                                                                     })
-            if objId:
-                available_status = self._fields.get('state')._description_selection(self.env)
-                dict_status = dict(available_status)
-                status_lable = dict_status.get(state, '')
-                ir_attachment_id.wf_message_post(body=_('Status moved to: %s by %s.' % (status_lable, self.env.user.name)))
-                out.append(objId)
+            if not ir_attachment_id.state==state:
+                ir_attachment_id.setCheckContextWrite(check)
+                newContext = self.env.context.copy()
+                newContext['check'] = False
+                objId = ir_attachment_id.with_context(newContext).write({'writable': writable,
+                                                                         'state': state,
+                                                                         'workflow_user': self.env.uid,
+                                                                         'workflow_date': datetime.now()
+                                                                         })
+                if objId:
+                    available_status = self._fields.get('state')._description_selection(self.env)
+                    dict_status = dict(available_status)
+                    status_lable = dict_status.get(state, '')
+                    ir_attachment_id.wf_message_post(body=_('Status moved to: %s by %s.' % (status_lable, self.env.user.name)))
+                    out.append(objId)
             if ir_attachment_id.is3D():
                 pkg_doc_ids = self.getRelatedPkgTree(ir_attachment_id.id)
-                self.browse(pkg_doc_ids).commonWFAction(writable, state, check)
+                out+=self.browse(pkg_doc_ids).commonWFAction(writable, state, check)
         return out
 
     
@@ -889,7 +897,17 @@ class PlmDocument(models.Model):
             return res
         except Exception as ex:
             raise ex
-
+    
+    @api.model
+    def check(self, mode, values=None):
+        if self.env.user.has_group('plm.group_plm_integration_user'):
+            if self.ids:
+                self._cr.execute('SELECT is_plm FROM ir_attachment WHERE id IN %s', [tuple(self.ids)])
+                if all_equal_and_true(self._cr.fetchall()):
+                    return True
+            else:
+                return True
+        return super(PlmDocument, self).check(mode, values)
     
     def readMany2oneFields(self, readVals, fields):
         return self.env['product.product']._readMany2oneFields(self.env['ir.attachment'], readVals, fields)
@@ -2044,13 +2062,13 @@ class PlmDocument(models.Model):
     def canCheckOut1(self):
         for docBrws in self:
             if docBrws.isCheckedOutByMe():
-                msg = _(f"Unable to check-Out a document that is already checked Out By {docBrws.checkout_user}")
+                msg = _(f"Unable to check-Out {docBrws.id}:{docBrws.name} that is already checked Out By {docBrws.checkout_user}")
                 return docBrws.id, 'check_out_by_me', msg                
             if docBrws.is_checkout:
-                msg = _(f"Unable to check-Out a document that is already checked IN by user {docBrws.checkout_user}")
+                msg = _(f"Unable to check-Out {docBrws.id}:{docBrws.name} that is already checked IN by user {docBrws.checkout_user}")
                 return docBrws.id, 'check_out_by_user', msg
             if docBrws.state not in ['draft', False]:
-                msg = _(f"Unable to check-Out a document that is in state {docBrws.state}")
+                msg = _(f"Unable to check-Out {docBrws.id}:{docBrws.name} that is in state {docBrws.state}")
                 return docBrws.id, 'check_out_released', msg
             return docBrws.id, 'check_in', ''
         raise Exception()
@@ -2531,10 +2549,9 @@ class PlmDocument(models.Model):
                     return
                 else:
                     appendItem(out['to_check'], doc_dict_3d)
-                    tmp_dict['options'] = {
-                                      'discard': 'Discard and check-in',
-                                      'keep_and_go': 'Keep check-out and check-in children'
-                                      }
+                    tmp_dict['options'] = {'keep_and_go': 'Keep check-out and check-in children',
+                                           'discard': 'Discard and check-in'
+                                           }    
             if is_root:
                 if tmp_dict['check_in']:
                     if tmp_dict['plm_cad_open_newer']:
@@ -2545,9 +2562,8 @@ class PlmDocument(models.Model):
                         appendItem(out['already_checkin'], tmp_dict)
                 elif tmp_dict['check_out_by_me']:
                     appendItem(out['to_check'], tmp_dict)
-                    tmp_dict['options'] = {
-                                      'discard': 'Discard and check-in',
-                                      'keep_and_go': 'Keep check-out and check-in children'
+                    tmp_dict['options'] = {'keep_and_go': 'Keep check-out and check-in children',
+                                           'discard': 'Discard and check-in',
                                       }
                 else:
                     tmp_dict['msg'] = 'Document %r is in check-out by another user. Cannot check-in.' % (tmp_dict['name'])
@@ -2562,9 +2578,8 @@ class PlmDocument(models.Model):
                         appendItem(out['already_checkin'], tmp_dict)
                 elif tmp_dict['check_out_by_me']:
                     appendItem(out['to_check'], tmp_dict)
-                    tmp_dict['options'] = {
-                                      'discard': 'Discard and check-in',
-                                      'keep_and_go': 'Keep check-out and check-in children'
+                    tmp_dict['options'] = {'keep_and_go': 'Keep check-out and check-in children',
+                                           'discard': 'Discard and check-in'
                                       }
                 else:
                     tmp_dict['msg'] = 'Document %r is in check-out by another user. Cannot check-in, skipped.' % (tmp_dict['name'])
