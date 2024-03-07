@@ -1873,20 +1873,20 @@ class PlmDocument(models.Model):
         """
         function to convert dict client info into attachment browse record
         :docVals could be dictionaty or list of dictionaty 
-                    es1. {'engineering_code': '102030', 'engineering_revision': 0}
-                    es2. [{'engineering_code': '102030', 'engineering_revision': 0},{ },..]
+                    es1. {'engineering_document_name': '102030', 'revisionid': 0}
+                    es2. [{'engineering_document_name': '102030', 'revisionid': 0},{ },..]
         :return: browse_record(ir_attachment)
         """
         if not isinstance(docVals, list):
             docVals=[docVals]
         out = self.env[self._name]
         for doc_dict in docVals:
-            docName = doc_dict.get('engineering_code', '')
-            docRev = doc_dict.get('engineering_revision', None)
+            docName = doc_dict.get('engineering_document_name', '')
+            docRev = doc_dict.get('revisionid', None)
             if not docName or docRev is None:
                 continue
-            for ir_attachment_id in  self.search([('engineering_code', '=', docName),
-                                                  ('engineering_revision', '=', docRev)]):
+            for ir_attachment_id in  self.search([('engineering_document_name', '=', docName),
+                                                  ('revisionid', '=', docRev)]):
                 out+=ir_attachment_id
                 break
         return out
@@ -2049,8 +2049,8 @@ class PlmDocument(models.Model):
             if docBrws.is_checkout:
                 msg = _(f"Unable to check-Out a document that is already checked IN by user {docBrws.checkout_user}")
                 return docBrws.id, 'check_out_by_user', msg
-            if docBrws.engineering_state not in ['released','undermodify', False]:
-                msg = _(f"Unable to check-Out a document that is in state {docBrws.engineering_state}")
+            if docBrws.state not in ['draft', False]:
+                msg = _(f"Unable to check-Out a document that is in state {docBrws.state}")
                 return docBrws.id, 'check_out_released', msg
             return docBrws.id, 'check_in', ''
         raise Exception()
