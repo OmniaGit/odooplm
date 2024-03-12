@@ -17,9 +17,8 @@ def webservice(f):
         except Exception as e:
             logging.error(e)
             return Response(response=f"{e}", status=500)
-    return wrap
-
-
+    return wrap   
+    
 class UploadDocument(Controller):
 
     @route('/plm_document_upload/isalive', type='http', auth='none', methods=['GET'], csrf=False)

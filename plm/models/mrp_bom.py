@@ -750,10 +750,12 @@ class MrpBomExtension(models.Model):
             return {'name': _('B.O.M. Lines'),
                     'res_model': 'mrp.bom.line',
                     'view_type': 'form',
-                    'view_mode': 'pivot,tree',
+                    'view_mode': 'tree',
+                    'view_id': self.env.ref("plm.plm_mrp_bom_line_summarize_tree").id,
+                    'search_view_id': self.env.ref("plm.plm_grp_by_parent").id,
                     'type': 'ir.actions.act_window',
                     'domain': [('id', 'in', bom_line_ids)],
-                    'context': {"group_by": ['bom_id']},
+                    'context': {},
                     }
 
     

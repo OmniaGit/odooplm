@@ -218,6 +218,18 @@ class MrpBomLineExtension(models.Model):
         _('Cutted Compute Type'),
         default='none')
 
+    product_tag_ids = fields.Many2many(related='product_tmpl_id.product_tag_ids')
+
+    def go_to_product(self):
+        return {'name': _('Product'),
+                    'res_model': 'product.product',
+                    'res_id':self.product_id.id,
+                    'view_type': 'form',
+                    'view_mode': 'form',
+                    'type': 'ir.actions.act_window',
+                    'domain': [('id', 'in', self.product_id.ids)],
+                    }
+        
     def plm_sanitize(self, vals):
         all_keys = self._fields
         if isinstance(vals, dict):
