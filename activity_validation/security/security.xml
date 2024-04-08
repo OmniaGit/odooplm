@@ -52,6 +52,24 @@
         <field name="perm_unlink" eval="1"/>
     </record>
 
+    <record id="mail_activity_children_rel_shedule" model="ir.model.access">
+        <field name="name">Mail activity validation admin</field>
+        <field name="model_id" ref="model_mail_activity_children_rel_shedule"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_create" eval="0"/>
+        <field name="perm_write" eval="0"/>
+        <field name="perm_unlink" eval="0"/>
+    </record>
+    
+    <record id="mail_activity_children_rel_shedule" model="ir.model.access">
+        <field name="name">Mail activity validation admin</field>
+        <field name="model_id" ref="model_mail_activity_children_rel_shedule"/>
+        <field name="group_id" ref="activity_validation.group_force_activity_validation_user"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_create" eval="1"/>
+        <field name="perm_write" eval="1"/>
+        <field name="perm_unlink" eval="1"/>
+    </record>
 </data>    
   
 </odoo>

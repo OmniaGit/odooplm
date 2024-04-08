@@ -1882,6 +1882,28 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         #    
         populate(self)
         return out
+
+    @api.model
+    def get_all_document_source_path(self, attributes, *k, **kw):
+        out_src = []
+        #
+        def fillUpSrvPath(p_p_id):
+            for ir_attachment_id in p_p_id.linkeddocuments.filtered(lambda x:x.document_type=='3d'):
+                is_brake=False
+                for sub_ir_attachment_id in ir_attachment_id.GetRelatedDocs(getBrowse=True):
+                    if sub_ir_attachment_id.document_type=='2d':
+                        is_brake=True
+                        break
+                if is_brake:
+                    continue
+                out_src.append((ir_attachment_id.first_source_path,
+                                ir_attachment_id.id))
+        #
+        product_product_id = attributes.get('_id')
+        brw_product_product_id = self.browse(product_product_id)
+        for product_id in brw_product_product_id.get_product_bom_flat_ids():
+            fillUpSrvPath(product_id)
+        return list(set(out_src))
         
         
 class PlmTemporayMessage(models.TransientModel):

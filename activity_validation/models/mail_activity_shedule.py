@@ -24,16 +24,20 @@ Created on Nov 16, 2019
 @author: mboscolo
 '''
 import logging
+import datetime
 from odoo import models
 from odoo import fields
 from odoo import api
 from odoo import _
 from odoo.exceptions import UserError
+from datetime import timedelta
+from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
 
-class MailActivity(models.Model):
-    _inherit = 'mail.activity'
-
+class MailActivitySchedule(models.TransientModel):
+    _inherit = 'mail.activity.schedule'
+    
+    
     plm_state = fields.Selection([
         ('draft', _('draft')),
         ('in_progress', _('In Progress')),
@@ -44,17 +48,17 @@ class MailActivity(models.Model):
         ],
         default='draft',
         string=_('Plm State'))
-    children_ids = fields.One2many('mail.activity.children.rel',
+    children_ids = fields.One2many('mail.activity.children.rel.shedule',
                                    'mail_parent_activity_id',
                                    _('ECR Activities'))
     name = fields.Char('Name')
     change_activity_type = fields.Selection(related='activity_type_id.change_activity_type')
     has_parent = fields.Boolean(_('Has parent ECR'), compute="_compute_has_parent_ecr", store=True)
     has_parent_eco = fields.Boolean(_('Has parent ECO'), compute="_compute_has_parent_eco", store=True)
-    eco_child_ids = fields.One2many('mail.activity',
+    eco_child_ids = fields.One2many('mail.activity.schedule',
                                    'mail_parent_eco_activity_id',
                                    _('ECO Activities'))
-    mail_parent_eco_activity_id = fields.Many2one('mail.activity', _('ECO Parent Activity'))
+    mail_parent_eco_activity_id = fields.Many2one('mail.activity.schedule', _('ECO Parent Activity'))
     default_plm_activity = fields.Many2one('mail.activity.type', compute='_compute_mail_activity_type')
     is_eco = fields.Boolean(_('Is ECO'))
 
@@ -63,7 +67,7 @@ class MailActivity(models.Model):
             activity_id.default_plm_activity = self.env.ref('plm.mail_activity_plm_activity')
         
     def getParentECRActivity(self, activity_id):
-        parent_activity = self.env['mail.activity.children.rel'].search([('mail_children_activity_id', '=', activity_id.id)])
+        parent_activity = self.env['mail.activity.children.rel.shedule'].search([('mail_children_activity_id', '=', activity_id.id)])
         return parent_activity.mapped('mail_parent_activity_id')
 
     def getParentECOActivity(self, activity_id):
@@ -98,14 +102,14 @@ class MailActivity(models.Model):
                         'user_id': user_id.id,
                         'mail_children_activity_id': False,
                         }
-                    rel_id = self.env['mail.activity.children.rel'].create(vals)
+                    rel_id = self.env['mail.activity.children.rel.shedule'].create(vals)
                     activity_ids.append(rel_id.id)
             activity_id.write({
                 'children_ids': [(6, False, activity_ids)]
                 })
 
     def write(self, vals):
-        ret = super(MailActivity, self).write(vals)
+        ret = super(MailActivitySchedule, self).write(vals)
         for activity_id in self:
             if self.env.user.has_group('activity_validation.group_force_activity_validation_admin'):
                 return ret
@@ -123,14 +127,14 @@ class MailActivity(models.Model):
                 child.mail_children_activity_id.checkConfirmed(True)
 
     def action_done(self):
-        ret = super(MailActivity, self).action_done()
+        ret = super(MailActivitySchedule, self).action_done()
         if self.exists():
             self.checkConfirmed()
             self.plm_state = 'done'
         return ret
 
     def action_done_schedule_next(self):
-        ret = super(MailActivity, self).action_done_schedule_next()
+        ret = super(MailActivitySchedule, self).action_done_schedule_next()
         if self.exists():
             self.checkConfirmed()
             self.plm_state = 'done'
@@ -147,12 +151,12 @@ class MailActivity(models.Model):
                             close = False
                     if close:
                         activity_id.mail_parent_eco_activity_id.action_to_eco()
-        ret = super(MailActivity, self).action_feedback(feedback, attachment_ids)
+        ret = super(MailActivitySchedule, self).action_feedback(feedback, attachment_ids)
         return ret
 
     def activity_format(self):
         out = []
-        for res_dict in super(MailActivity, self).activity_format():
+        for res_dict in super(MailActivitySchedule, self).activity_format():
             if res_dict.get('plm_state', 'draft') not in ['done', 'cancel']:
                 out.append(res_dict)
         return out
@@ -168,7 +172,7 @@ class MailActivity(models.Model):
             if activity_id.isCustomType():
                 if not self.env.su:
                     return
-        return super(MailActivity, self).unlink()
+        return super(MailActivitySchedule, self).unlink()
 
     def clearChildrenActivities(self):
         for child_id in self.children_ids:
