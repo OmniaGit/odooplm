@@ -78,7 +78,7 @@ class PlmComponent(models.Model):
             if product_product_id.state not in self.weight_allowed_state and not self.env.context.get('plm_force_weight',False):
                 if 'weight' in vals:
                     del vals['weight']
-                    logging.info("Modification in status %s not allowed for the weight" % product_product_id.state)
+                    logging.info(f"Modification of field weight not allowed for product {product_product_id.display_name} in status {product_product_id.state}")
             weight_additional = product_product_id.weight_additional
             if 'weight_additional' in vals:
                 weight_additional = vals['weight_additional']

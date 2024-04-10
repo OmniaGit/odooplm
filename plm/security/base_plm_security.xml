@@ -29,7 +29,7 @@
     <record id="group_plm_admin_unrelease" model="res.groups">
         <field name="name">Unrelease User</field>
         <field name="category_id" ref="odooplm_module_category"/>
-        <field name="implied_ids" eval="[(4, ref('group_plm_admin'))]"/>
+        <field name="implied_ids" eval="[(4, ref('group_plm_integration_user'))]"/>
     </record>
         
 <!-- readonly_released  -->

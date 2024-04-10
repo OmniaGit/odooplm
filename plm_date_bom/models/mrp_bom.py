@@ -61,11 +61,13 @@ class mrp_bom_extension_data(models.Model):
 
     # If store = True is set you need to provide @api.depends because odoo has to know when to compute that field.
     # If you decide to compute that field each time without store you have always to put it in the view or the field will not be computed
-    obsolete_presents_computed = fields.Boolean(string=_("Obsolete presents computed"), compute='_obsolete_compute')
+    obsolete_presents_computed = fields.Boolean(string=_("Obsolete presents computed"),
+                                                compute='_obsolete_compute')
     obsolete_presents = fields.Boolean(_("Obsolete presents"))
     
     # This fields has not to be computed fields because bom may be very big and the time too
-    obsolete_presents_recursive = fields.Boolean(_("Obsolete presents Recursive"), default=False)
+    obsolete_presents_recursive = fields.Boolean(_("Obsolete presents Recursive"),
+                                                 default=False)
 
     @api.onchange('bom_line_ids')
     def onchangeBomLine(self):

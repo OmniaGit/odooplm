@@ -304,13 +304,13 @@ class PlmComponent(models.Model):
                 self.engineering_treatment = str(self.tmp_treatment.name)
 
     @api.model
-    def getParentBomStructure(self, filterBomType=''):
+    def getParentBomStructure(self,
+                              filterBomType=''):
         bom_line_filter = [('product_id', '=', self.id)]
         if filterBomType:
             bom_line_filter.append(('type', '=', filterBomType))
-        mrpBomLines = self.env['mrp.bom.line'].search(bom_line_filter)
         out = []
-        for mrpBomLine in mrpBomLines:
+        for mrpBomLine in self.env['mrp.bom.line'].search(bom_line_filter):
             out.append((self.env['mrp.bom'].where_used_header(mrpBomLine),
                         mrpBomLine.bom_id.get_where_used_structure(filterBomType)))
         return out
@@ -910,51 +910,62 @@ class PlmComponent(models.Model):
            action to be executed for Released state
         """
         for comp_obj in self:
-            children_product_to_emit = []
-            product_tmpl_ids = []
-            defaults = {}
+            allProdObjs = comp_obj
             exclude_statuses = ['released', 'undermodify', 'obsoleted']
             include_statuses = self.env.context.get("PLM_STATE_RELEASE" ,['confirmed'])
             errors, product_ids = comp_obj._get_recursive_parts(exclude_statuses, include_statuses)
-            children_products = product_ids.copy()
+            children_products_ids = product_ids.copy()
             if len(product_ids) < 1 or len(errors) > 0:
                 raise UserError(errors)
-            children_products.remove(comp_obj.id)
-            if children_products:
-                self.browse(children_products).action_release()
+            children_products_ids.remove(comp_obj.id)
             available_status = self._fields.get('state')._description_selection(self.env)
             dict_status = dict(available_status)
-            allProdObjs = self.browse(product_ids)
+            if children_products_ids:
+                children_products= self.browse(children_products_ids)
+                children_products.action_release()
+                allProdObjs+=children_products
             allProdObjs = allProdObjs.filtered(lambda x: x.engineering_code not in [False, ''])
-            for productBrw in allProdObjs:
-                old_revision = self._getbyrevision(productBrw.engineering_code, productBrw.engineering_revision - 1)
-                if old_revision:
-                    defaults['engineering_writable'] = False
-                    defaults['state'] = 'obsoleted'
-                    old_revision.product_tmpl_id.write(defaults)
-                    old_revision.write(defaults)
-                    status_lable = dict_status.get(defaults.get('state', ''), '')
-                    old_revision.wf_message_post(body=_('Status moved to: %s by %s.' % (status_lable, self.env.user.name)))
-                productBrw._action_ondocuments('release', include_statuses)
-            defaults['engineering_writable'] = False
-            defaults['state'] = 'released'
-            defaults['release_user'] = self.env.uid
-            defaults['release_date'] = datetime.now()
-            for currentProductId in allProdObjs:
-                if not currentProductId.release_date:
-                    currentProductId.release_date = datetime.now()
-                    currentProductId.release_user = self.env.uid
-                if currentProductId.id not in self.ids:
-                    children_product_to_emit.append(currentProductId.id)
-                product_tmpl_ids.append(currentProductId.product_tmpl_id.id)
-            if children_product_to_emit:
-                self.browse(children_product_to_emit).perform_action('release')
-                self.browse(children_product_to_emit).write(defaults)
-            for objId in self.env['product.template'].browse(product_tmpl_ids):
-                objId.write(defaults)
+            for product_product_id in allProdObjs:
+                if product_product_id.engineering_revision>0:
+                    old_revision = self._getbyrevision(product_product_id.engineering_code,
+                                                       product_product_id.engineering_revision - 1)
+                    #
+                    # Set all revision status
+                    #
+                    if old_revision:
+                        old_revision.product_tmpl_id.engineering_writable = False
+                        old_revision.product_tmpl_id.state = 'obsoleted'
+                        old_revision.engineering_writable = False
+                        old_revision.state = 'obsoleted'
+                        status_lable = dict_status.get('obsoleted')
+                        old_revision.wf_message_post(body=_('Status moved to: %s by %s.' % (status_lable,
+                                                                                            self.env.user.name)))
+                    else:
+                        logging.error(f"Missing previews version for {product_product_id.engineering_code}")
+                #
+                # Move the related document
+                #
+                product_product_id._action_ondocuments('release', include_statuses)
+                #
+                # Work on active product product
+                #
+                defaults = {}
+                defaults['engineering_writable'] = False
+                defaults['state'] = 'released'
+                defaults['release_user'] = self.env.uid
+                defaults['release_date'] = datetime.now()
+                product_product_id.write(defaults)
+                #
+                # wotk on product.template
+                #
+                product_template_id = product_product_id.product_tmpl_id
+                product_template_id.write(defaults)
+                #
+                # Notifie on chatter
+                #
                 status_lable = dict_status.get(defaults.get('state', ''), '')
-            self.browse(product_ids).wf_message_post(body=_('Status moved to: %s by %s.' % (status_lable, self.env.user.name)))
-            comp_obj.write(defaults)
+                product_product_id.wf_message_post(body=_('Status moved to: %s by %s.' % (status_lable,
+                                                                                          self.env.user.name)))           
         return True
 
     def action_obsolete(self):

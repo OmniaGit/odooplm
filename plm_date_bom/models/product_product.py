@@ -29,15 +29,17 @@ class ProductExtension(models.Model):
     _inherit = 'product.template'
     
     @api.model
-    def updateObsoleteRecursive(self, prodBrws, presentsFlag=True):
-        bomTmpl = self.env['mrp.bom']
-        struct = prodBrws.getParentBomStructure()
+    def updateObsoleteRecursive(self,
+                                product_product_id,
+                                presentsFlag=True):
+        mrp_bom_id = self.env['mrp.bom']
+        struct = product_product_id.getParentBomStructure()
         
         def recursion(struct2, isRoot=False):
             for vals, parentsList in struct2:
                 bom_id = vals.get('bom_id', False)
                 if bom_id:
-                    bomBrws = bomTmpl.browse(bom_id)
+                    bomBrws = mrp_bom_id.browse(bom_id)
                     bomBrws._obsolete_compute()
                     if not isRoot:
                         bomBrws.obsolete_presents_recursive = presentsFlag
@@ -45,13 +47,34 @@ class ProductExtension(models.Model):
 
         recursion(struct, isRoot=True)
 
+    def update_used_bom(self, product_product_id):
+        mrp_bom_line = self.env['mrp.bom.line']
+        product_computed = []
+        #
+        def _update_used_bom(product_product_id):
+            if product_product_id.id in product_computed:
+                return
+            product_computed.append(product_product_id.id)
+            #
+            for mrp_bom_line_id in mrp_bom_line.search([('product_id','=',product_product_id.id),
+                                                        ('bom_id.type','not in',['ebom'])]):
+                bom_id = mrp_bom_line_id.bom_id
+                bom_id.sudo().obsolete_presents_recursive=True
+                bom_id.sudo().obsolete_presents = True
+                bom_id.sudo().obsolete_presents_computed = True
+                for product_product_id in bom_id.product_tmpl_id.product_variant_ids:
+                    _update_used_bom(product_product_id)
+        #
+        _update_used_bom(product_product_id)
+        
     def write(self, vals):
         res = super(ProductExtension, self).write(vals)
         statePresent = vals.get('state', None)
         if statePresent == 'obsoleted':
             # Here I force compute obsolete presents flag in all boms
-            for prodTmplBrws in self:
-                for prodBrws in prodTmplBrws.product_variant_ids:
-                    self.updateObsoleteRecursive(prodBrws)
+            for product_template_id in self:
+                for product_product_id in product_template_id.product_variant_ids:
+                    #self.updateObsoleteRecursive(product_product_id)
+                    self.update_used_bom(product_product_id)
         return res
 
