@@ -671,29 +671,31 @@ class PlmComponent(models.Model):
         retd = list(dic.values())
         return retd
 
-    def _get_recursive_parts(self, exclude_statuses, include_statuses):
+    def _get_recursive_parts(self,
+                             exclude_statuses,
+                             include_statuses):
         """
            Get all ids related to current one as children
         """
         errors = []
-        tobeReleasedIDs = []
+        product_product_ids_out = []
         if not isinstance(self.ids, (list, tuple)):
             self.ids = [self.ids]
-        tobeReleasedIDs.extend(self.ids)
+        product_product_ids_out.extend(self.ids)
         for prodBrws in self:
             for childProdBrws in self.browse(self._getChildrenBom(prodBrws, 1)).filtered(lambda x: x.engineering_code not in [False, '']):
                 if (childProdBrws.state not in exclude_statuses) and (childProdBrws.state not in include_statuses):
                     errors.append(_("Product code: %r revision %r status %r") % (childProdBrws.engineering_code, childProdBrws.engineering_revision, childProdBrws.state))
                     continue
                 if childProdBrws.state in include_statuses:
-                    if childProdBrws.id not in tobeReleasedIDs:
-                        tobeReleasedIDs.append(childProdBrws.id)
+                    if childProdBrws.id not in product_product_ids_out:
+                        product_product_ids_out.append(childProdBrws.id)
         msg = ''
         if errors:
             msg = _("Unable to perform workFlow action due")
             for subMsg in errors:
                 msg = msg + "\n" + subMsg
-        return (msg, list(set(tobeReleasedIDs)))
+        return (msg, list(set(product_product_ids_out)))
 
     def action_create_normalBom_WF(self):
         """
@@ -860,7 +862,13 @@ class PlmComponent(models.Model):
             defaults['state'] = status
             exclude_statuses = ['draft', 'released', 'undermodify', 'obsoleted']
             include_statuses = ['confirmed']
-            comp_obj.commonWFAction(status, action, doc_action, defaults, exclude_statuses, include_statuses, recursive=False)
+            comp_obj.commonWFAction(status,
+                                    action,
+                                    doc_action,
+                                    defaults,
+                                    exclude_statuses,
+                                    include_statuses,
+                                    recursive=False)
         return True
 
     def action_confirm(self):
@@ -876,7 +884,12 @@ class PlmComponent(models.Model):
             defaults['state'] = status
             exclude_statuses = ['confirmed', 'released', 'undermodify', 'obsoleted']
             include_statuses = ['draft']
-            comp_obj.commonWFAction(status, action, doc_action, defaults, exclude_statuses, include_statuses)
+            comp_obj.commonWFAction(status,
+                                    action,
+                                    doc_action,
+                                    defaults,
+                                    exclude_statuses,
+                                    include_statuses)
         return True
 
     @api.model
@@ -1003,53 +1016,85 @@ class PlmComponent(models.Model):
             defaults['state'] = status
             exclude_statuses = ['draft', 'confirmed', 'released', 'undermodify', 'obsoleted']
             include_statuses = ['obsoleted']
-            comp_obj.commonWFAction(status, action, doc_action, defaults, exclude_statuses, include_statuses)
+            comp_obj.commonWFAction(status,
+                                    action,
+                                    doc_action,
+                                    defaults,
+                                    exclude_statuses,
+                                    include_statuses)
         return True
     
     @property
     def action_functions(self):
         return {'reactivate': self.action_reactivate,
-                   'obsolete': self.action_obsolete,
-                   'release': self.action_release,
-                   'confirm': self.action_confirm,
-                   'draft': self.action_draft}
+                'obsolete': self.action_obsolete,
+                'release': self.action_release,
+                'confirm': self.action_confirm,
+                'draft': self.action_draft}
         
     def perform_action(self, action):
         toCall = self.action_functions.get(action)
         return toCall()
 
-    def commonWFAction(self, status, action, doc_action, defaults=[], exclude_statuses=[], include_statuses=[], recursive=True):
-        product_product_ids = []
-        product_template_ids = []
+    def _get_recursive_parts_new(self,
+                                 exclude_statuses,
+                                 include_statuses):
+        mrp_bom = self.env['mrp.bom']
+        out_product_product_ids = []
+
+        def _get_product_bom(product_product_id, ):
+            if product_product_id.id in out_product_product_ids or \
+                product_product_id.state in exclude_statuses or \
+                product_product_id.engineering_code in [False, '']:
+                return
+            else:
+                out_product_product_ids.append(product_product_id.id)
+            #
+            for mrp_bom_id in mrp_bom.search([('product_tmpl_id','=', product_product_id.product_tmpl_id.id)]):
+                for mrp_bom_line_id in mrp_bom_id.bom_line_ids:
+                    _get_product_bom(mrp_bom_line_id.product_id)
+        #
+        _get_product_bom(self)
+        #
+        out_product_product_ids.reverse()
+        return out_product_product_ids           
+            
+    def commonWFAction(self,
+                       status,
+                       action,
+                       doc_action,
+                       defaults=[],
+                       exclude_statuses=[],
+                       include_statuses=[],
+                       recursive=True):
         if recursive:
-            userErrors, allIDs = self._get_recursive_parts(exclude_statuses, include_statuses)
-            if userErrors:
-                raise UserError(userErrors)
+            allIDs = self._get_recursive_parts_new(exclude_statuses,
+                                                   include_statuses)
+
         else:
             allIDs = self.id
-        allIdsBrwsList = self.browse(allIDs)
-        allIdsBrwsList = allIdsBrwsList.filtered(lambda x: x.engineering_code not in [False, ''])
-        allIdsBrwsList._action_ondocuments(doc_action, include_statuses)
-        for currId in allIdsBrwsList:
-            if not(currId.id in self.ids):
-                product_product_ids.append(currId.id)
-            product_template_ids.append(currId.product_tmpl_id.id)
-            defaults['workflow_user'] = self.env.uid
-            defaults['workflow_date'] = datetime.now()
-            currId.write(defaults)
-        if action:
-            for product_id in self.browse(product_product_ids):
-                product_id.perform_action(action)
-                product_id.workflow_user = self.env.uid
-                product_id.workflow_date = datetime.now()
-        product_template_ids = self.env['product.template'].browse(product_template_ids)
-        for product_template_id in product_template_ids:
+        #
+        # work on product product
+        #
+        for product_product_id in self.browse(allIDs):
+            product_template_id = product_product_id.product_tmpl_id
+            product_product_id.write(defaults)
+            product_product_id.workflow_user = self.env.uid
+            product_product_id.workflow_date = datetime.now()
+            product_product_id._action_ondocuments(doc_action,
+                                                   include_statuses)
+            #
+            # work on product template
+            #
             product_template_id.write(defaults)
             available_status = self._fields.get('state')._description_selection(self.env)
             dict_status = dict(available_status)
             status_lable = dict_status.get(defaults.get('state', ''), '')
-        self.browse(allIDs).wf_message_post(body=_('Status moved to: %s by %s.' % (status_lable, self.env.user.name)))
-        return product_template_ids
+            #
+            # write to chatter
+            #
+            product_product_id.wf_message_post(body=_('Status moved to: %s by %s.' % (status_lable,
+                                                                                      self.env.user.name)))
 
 #  ######################################################################################################################################33
     def plm_sanitize(self, vals):
