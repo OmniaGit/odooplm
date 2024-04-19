@@ -8,4 +8,17 @@
         <field name="binding_model_id" ref="mrp.model_mrp_bom"/>
         <field name="code">env['mrp.bom'].browse(env.context.get('active_ids', [])).force_compute_bom_weight()</field>
     </record>
+
+    <record id="plm_aw_mrp_bom_form_view" model="ir.ui.view">
+        <field name="name">plm.aw.mrp.bom.form.view</field>
+        <field name="model">mrp.bom</field>
+        <field name="inherit_id" ref="mrp.mrp_bom_form_view"/>
+        <field name="type">form</field>
+        <field name="priority" eval="16"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='bom_line_ids']/tree/field[last()]" position="after">
+                <field name="product_automatic_compute_selection" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
 </odoo>

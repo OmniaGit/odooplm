@@ -26,3 +26,4 @@ Created on May 25, 2016
 """
 from . import product_product
 from . import mrp_bom
+from . import mrp_bom_line
