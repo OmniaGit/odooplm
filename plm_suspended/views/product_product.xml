@@ -36,13 +36,13 @@
                         type="object"
                         string="Suspend"
                         class="oe_highlight"
-                        invisible="engineering_state=='suspended'"
+                        attrs="{'invisible':[('engineering_state','=','suspended')]}"
                 />
                 <button name="action_unsuspend"
                         type="object"
                         string="Un-Suspend"
                         class="oe_highlight"
-                        invisible="engineering_state not in ['suspended']"
+                        attrs="{'invisible':[('engineering_state','not in','suspended')]}"
                 />
             </xpath>
         </field>

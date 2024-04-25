@@ -1867,7 +1867,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         #    
         populate(self)
         return out
-        
+
         
 class PlmTemporayMessage(models.TransientModel):
     _name = "plm.temporary.message"
