@@ -743,7 +743,8 @@ class PlmDocument(models.Model):
                     out.append(objId)
             if ir_attachment_id.is3D():
                 pkg_doc_ids = self.getRelatedPkgTree(ir_attachment_id.id)
-                out+=self.browse(pkg_doc_ids).commonWFAction(writable, state, check)
+                if pkg_doc_ids:
+                    out+=self.browse(pkg_doc_ids).commonWFAction(writable, state, check)
         return out
 
     
