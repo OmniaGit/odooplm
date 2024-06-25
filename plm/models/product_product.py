@@ -664,18 +664,12 @@ class PlmComponent(models.Model):
                 if ir_attachment_id.is3D():
                     for lay_attachment_id in ir_attachment_id.getRelatedLyTree(ir_attachment_id.id):
                         if lay_attachment_id not in docIDs:
-                            self._checkWorkflow(attachment.browse(lay_attachment_id),
-                                                to_state,
-                                                allowed_state
-                                                )
+                            _checkWorkflow(attachment.browse(lay_attachment_id))
                             #
                             raw_doc_ids = ir_attachment_id.getRelatedRfTree(ir_attachment_id.id,
                                                                             recursion=True)
                             #
-                            self._checkWorkflow(attachment.browse(raw_doc_ids),
-                                                to_state,
-                                                allowed_state
-                                                )
+                            _checkWorkflow(attachment.browse(raw_doc_ids))
         _checkWorkflow(linkeddocuments)
         return list(set(docIDs)), docInError
 
