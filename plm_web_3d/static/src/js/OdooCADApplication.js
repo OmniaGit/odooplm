@@ -262,7 +262,22 @@ function init() {
  * inizialize OdooCAD
  */
 	OdooCad = new ODOOCAD.OdooCAD(scene);
-	OdooCad.load_document(document_id, document_name);
+	var xmlhttp = new XMLHttpRequest();
+    xmlhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            var documents_dict = JSON.parse(this.responseText);
+            for (var prop in documents_dict)
+            {
+                var name = documents_dict[prop];
+                OdooCad.load_document(prop, name);
+                console.log("Loading document " + name);
+            }
+        }
+    };
+    xmlhttp.open("GET", "../plm/get_document_relation/"+ document_id + "/" + document_name, true);
+    xmlhttp.send();
+       
+    
 }
 
 function getCameraCSSMatrix(matrix) {

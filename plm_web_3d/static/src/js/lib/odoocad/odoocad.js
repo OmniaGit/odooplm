@@ -28,7 +28,8 @@ class OdooCAD{
 		 */
 			object.receiveShadow=true;
 			object.castShadow=true;
-			var material = new THREE.MeshPhongMaterial( { color: 0x444444 } );
+			var randomColor = "#000000".replace(/0/g,function(){return (~~(Math.random()*16)).toString(16);});
+			var material = new THREE.MeshPhongMaterial( { color:randomColor } );
 		
 
             object.traverse( function ( child ) {

@@ -7,6 +7,7 @@ import { OBJLoader } from '../three.js/examples/jsm/loaders/OBJLoader.js';
 import { VRMLLoader } from '../three.js/examples/jsm/loaders/VRMLLoader.js';
 import { STLLoader } from '../three.js/examples/jsm/loaders/STLLoader.js';
 import { SVGLoader } from '../three.js/examples/jsm/loaders/SVGLoader.js';
+import { ThreeMFLoader } from '../three.js/examples/jsm/loaders/3MFLoader.js';
 import { DXFLoader } from "./DXFLoader.js"
 
 
@@ -17,6 +18,7 @@ const vRMLLoader = new VRMLLoader();
 const stlLoader = new STLLoader();
 const svgloader = new SVGLoader();
 const dxfLoader = new DXFLoader();
+const threeMFLoader = new ThreeMFLoader();
 const loader = new THREE.ObjectLoader();
 
 
@@ -76,7 +78,10 @@ class Loader {
         }   
         if (['dxf'].includes(exte)){
             this.loadDxf(document_name, url);
-        }   
+        }
+        if (['3mf'].includes(exte)){
+            this.load3mf(document_name, url);
+        }
 	}
 	loadDxf(document_name, url){
         var self=this;
@@ -114,6 +119,47 @@ class Loader {
 			alert("Unable to load the " + document_name + " err: " + err);
 		});		
 	}
+	
+	load3mf(document_name, url){
+        
+        var load3emfObj = function(args){
+            if(args.type=="Group"){
+                var i;
+                var children = args.children;
+                for (i = 0; i < children.length; i++) {
+                    if(children[i].type=="Mesh"){
+                        self.odooCad.addItemToScene(children[i]);
+                    } 
+                    else {
+                        load3emfObj(children[i]);
+                    }
+                }
+            }
+        }
+        
+        var self=this;
+        threeMFLoader.load( url, function ( mfArgs ) {
+            var children = mfArgs.children; 
+            var i;
+            
+            for (i = 0; i < children.length; i++) {
+                load3emfObj(children[i]);
+            }
+            
+            
+                
+        },
+        function ( xhr ) {
+            var percentage = (xhr.loaded / xhr.total) * 100;
+            self.progress_bar.style.width = percentage + '%';
+            console.log(self.progress_bar.style.width + ' loaded')
+        },
+
+        function ( err ) {
+            alert("Unable to load the " + document_name + " err: " + err);
+        });     
+    }
+	
 	loadfBXLoader(document_name, url){
 	   var self=this;
 		fBXLoader.load( url, function ( gltf ) {
@@ -136,8 +182,8 @@ class Loader {
 	
 	loadoBJLoader(document_name, file_path){
 	   var self=this;
-		oBJLoader.load( file_path, function ( gltf ) {
-			var children = gltf.children; 
+		oBJLoader.load(file_path, function ( objArgs ) {
+			var children = objArgs.children; 
 			var i;
 			for (i = 0; i < children.length; i++) {
 				self.odooCad.addItemToScene(children[i]);

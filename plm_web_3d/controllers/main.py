@@ -39,6 +39,11 @@ class Web3DView(Controller):
                 return response
         return Response(response="Document Not Found %r " % document_id, status=500)
 
+    @route('/plm/get_document_relation/<int:document_id>/<string:document_name>', type='http', auth='public')
+    def get_document_relation(self, document_id, document_name):
+        return request.env['ir.attachment'].sudo().get_document_relation_dict(document_id, document_name)
+    
+    
     def document_extra(self, document):
         """
             this function id for customising the documents attributes
