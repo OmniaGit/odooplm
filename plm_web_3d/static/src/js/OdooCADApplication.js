@@ -79,6 +79,7 @@ function fitCameraToSelection(selection, fitOffset = 1.2 ) {
 	  camera.updateProjectionMatrix();
 	  camera.position.copy( controls.target ).sub(direction);
 	  resetLight(box, maxSize);
+	  sphereHelper.scale.set(maxSize/100,maxSize/100,maxSize/100)
 	  controls.update();
 	  render();
 };
@@ -262,22 +263,7 @@ function init() {
  * inizialize OdooCAD
  */
 	OdooCad = new ODOOCAD.OdooCAD(scene);
-	var xmlhttp = new XMLHttpRequest();
-    xmlhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            var documents_dict = JSON.parse(this.responseText);
-            for (var prop in documents_dict)
-            {
-                var name = documents_dict[prop];
-                OdooCad.load_document(prop, name);
-                console.log("Loading document " + name);
-            }
-        }
-    };
-    xmlhttp.open("GET", "../plm/get_document_relation/"+ document_id + "/" + document_name, true);
-    xmlhttp.send();
-       
-    
+	OdooCad.load_document(document_id, document_name);
 }
 
 function getCameraCSSMatrix(matrix) {

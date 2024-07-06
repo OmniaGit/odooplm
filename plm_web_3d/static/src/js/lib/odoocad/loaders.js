@@ -128,7 +128,8 @@ class Loader {
                 var children = args.children;
                 for (i = 0; i < children.length; i++) {
                     if(children[i].type=="Mesh"){
-                        self.odooCad.addItemToScene(children[i]);
+                        self.odooCad.addItemToScene(args);
+                        break;
                     } 
                     else {
                         load3emfObj(children[i]);
@@ -138,26 +139,25 @@ class Loader {
         }
         
         var self=this;
-        threeMFLoader.load( url, function ( mfArgs ) {
-            var children = mfArgs.children; 
-            var i;
-            
-            for (i = 0; i < children.length; i++) {
-                load3emfObj(children[i]);
+        threeMFLoader.load( url,
+            //load
+            function ( mfArgs ) {
+                mfArgs.traverse( function ( child ) {
+                    child.castShadow = true;
+                } );
+                self.odooCad.addItemToScene(mfArgs, false);
+            },
+            //progress
+            function ( xhr ) {
+                var percentage = (xhr.loaded / xhr.total) * 100;
+                self.progress_bar.style.width = percentage + '%';
+                console.log(self.progress_bar.style.width + ' loaded')
+            },
+            //error
+            function ( err ) {
+                alert("Unable to load the " + document_name + " err: " + err);
             }
-            
-            
-                
-        },
-        function ( xhr ) {
-            var percentage = (xhr.loaded / xhr.total) * 100;
-            self.progress_bar.style.width = percentage + '%';
-            console.log(self.progress_bar.style.width + ' loaded')
-        },
-
-        function ( err ) {
-            alert("Unable to load the " + document_name + " err: " + err);
-        });     
+        );     
     }
 	
 	loadfBXLoader(document_name, url){

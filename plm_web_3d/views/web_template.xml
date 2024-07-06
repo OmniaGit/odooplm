@@ -91,6 +91,13 @@
                             <hr class="datacard_line"/>
                             <lu id="document_info">
                             </lu>
+                            <br/>
+                            <div class="info_header">
+                                <b>Document Structure</b>
+                            </div>
+                            <hr class="datacard_line"/>
+                            <lu id="document_tree">
+                            </lu>
                         </div>
                     </div>
                </div>
