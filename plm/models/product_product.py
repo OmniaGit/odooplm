@@ -707,11 +707,14 @@ class PlmComponent(models.Model):
         self.wf_message_post(body=_('Created Normal Bom.'))
         return False
 
-    def checkWorkflow(self, docInError, linkeddocuments, check_state):
+    def checkWorkflow(self,
+                      docInError,
+                      linkeddocuments,
+                      check_state):
         docIDs = []
         attachment = self.env['ir.attachment']
         for documentBrws in linkeddocuments:
-            if documentBrws.state == check_state:
+            if documentBrws.state in check_state:
                 if documentBrws.is_checkout:
                     docInError.append(_("Document %r : %r is checked out by user %r") % (documentBrws.name, documentBrws.revisionid, documentBrws.checkout_user))
                     continue
@@ -729,13 +732,10 @@ class PlmComponent(models.Model):
         """
         docIDs = []
         docInError = []
-        documentType = self.env['ir.attachment']
         for oldObject in self:
-            if (action_name != 'transmit') and (action_name != 'reject') and (action_name != 'release'):
-                check_state = oldObject.state
-            else:
-                check_state = 'confirmed'
-            docIDs.extend(self.checkWorkflow(docInError, oldObject.linkeddocuments, check_state))
+            docIDs.extend(self.checkWorkflow(docInError,
+                                             oldObject.linkeddocuments,
+                                             include_statuses))
         if docInError:
             msg = _("Error on workflow operation")
             for e in docInError:
