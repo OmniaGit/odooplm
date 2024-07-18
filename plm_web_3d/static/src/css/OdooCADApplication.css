@@ -382,8 +382,9 @@ ul, #myUL {
 .document_tree_line>span:hover {
   background-color: #eda3da;
 }
-
-
+.document_tree_line>i{
+    padding: 8px;
+}
 .document_tree_line>i:hover{
 	background-color: #eda3da;
 }

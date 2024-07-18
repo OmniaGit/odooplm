@@ -322,7 +322,10 @@ function initcommand(){
 	html_canvas.addEventListener("OdooCAD_fit_items", fitCameraToSelectionEvent, false);
 	var object_transparency = document.getElementById("object_transparency");
 	object_transparency.oninput = change_object_transparency;
-	
+    
+    var object_explosion = document.getElementById("object_explosion");
+    object_explosion.oninput = change_object_explosion;
+    	
 	var colorPicker = document.getElementById("object_color");
 	colorPicker.oninput = change_object_color;
 	/*
@@ -403,24 +406,42 @@ var change_object_color = function(event){
 	}
 }
 
+var apply_transparency = function(item, value){
+        var material = item.material;
+             
+        if(value){
+            if (value>99.9){
+                material.transparent=false;
+                material.alphaTest = false;
+                //material.depthWrite = true; 
+            } else{
+                material.side=THREE.DoubleSide;
+                material.transparent=true;
+                material.opacity = value/100;
+                material.alphaTest = 0.1;
+                //material.depthWrite = false; 
+            }
+        }
+        else{
+            material.transparent=true;
+            material.opacity=0;
+        }   
+}
 var change_object_transparency = function(event) {
 	var items = OdooCad.items;
+	var value = this.value;
 	for (let i = 0; i < items.length; i=i+1) {
-		var material = items[i].material;
-		if(this.value>0){
-			if (this.value>99.9){
-				material.transparent=false;	
-			} else{
-				material.transparent=true;
-				material.opacity = this.value/100;
-			}
-		}
-		else{
-			material.transparent=true;
-			material.opacity=0;
-			
-		}
+        var loop_item = items[0];
+        loop_item.traverse( function ( child_mesh ) {
+            if (child_mesh.type=="Mesh"){
+                apply_transparency(child_mesh, value);
+                }
+        });
 	}
+}
+
+var change_object_explosion = function(event){
+        
 }
 
 var fitCameraToSelectionEvent = function(e){
@@ -736,6 +757,108 @@ function getElementByXpath(path, document_env) {
 	  return document_env.evaluate(path, document_env, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
 }
 
+// explode
+/**
+ * obj : the current node on the scene graph
+ * box_ct_world : a vec3 center of the bounding box
+ * Thank to https://stackoverflow.com/questions/46101726/how-to-explode-a-3d-model-group-in-threejs
+ */
+/**
+ * obj : the current node on the scene graph
+ * box_ct_world : a vec3 center of the bounding box
+ * 
+ */
+function explode(obj , parent ,  box_ct_world , dif){
+    var scene = this.el.sceneEl.object3D ; //I am using Aframe , so this is how I retrieve the whole scene . 
+    var object = this.el.object3D ; //same here , this for retrieving the whole 3D model .  
+    var speed = 1 ; 
+
+    if(obj instanceof THREE.Mesh){
+      var box_center = box_ct_world ; 
+      var position = obj.position ; 
+      /**
+       * so this is the beginning of my troubles : I am considering retrieving a world position instead of a local position... 
+       * I have to translate the nodes without the parent matrices interfering . 
+       * The current ligne works the same way as if I retrieved local transformations ... exploding on XYZ , but glitching on the other cases . 
+       */ 
+     position.setFromMatrixPosition(scene.matrixWorld) ; 
+
+     var addx =0 ;
+     var addy =0 ;
+     var addz =0 ; 
+
+     /**
+      * This is the vector from the center of the box to the node . we use that to translate every meshes away from the center
+      */
+      if(this.data.X === true){
+      var addx =(position.x - box_center.x)*this.data.factor *speed ; 
+
+      }
+      if(this.data.Y === true){
+      var addy =(position.y - box_center.y)*this.data.factor *speed;
+      }
+      if(this.data.Z === true){
+      var addz =(position.z - box_center.z)*this.data.factor *speed; 
+      }
+
+      var explode_vectorx=  addx;
+            var explode_vectory=  addy;
+      var explode_vectorz=  addz;
+
+      /**
+       * this is for making the nodes translate back to their original locations
+       */
+      if(diff < 0 ){
+        if(explode_vectorx > 0)
+          explode_vectorx = -explode_vectorx ; 
+        if(explode_vectory > 0)
+          explode_vectory = -explode_vectory; 
+        if(explode_vectorz > 0)
+          explode_vectorz = -explode_vectorz;
+
+
+      }
+      if(diff > 0 ){
+        if(explode_vectorx < 0)
+          explode_vectorx = -explode_vectorx ; 
+        if(explode_vectory < 0)
+          explode_vectory = -explode_vectory; 
+        if(explode_vectorz < 0)
+          explode_vectorz = -explode_vectorz;
+      }
+
+
+      var vector = new THREE.Vector3(explode_vectorx , explode_vectory, explode_vectorz) ; 
+      console.log(vector.x+"    " + vector.y+ "    " + vector.z ); 
+      /**
+       * and here is my biggest problem :
+       * this function seems to use ancestors matrices 
+       * I need the nodes to move without calling the ancestors matrices , but still keep their original rotation and scale . 
+       */
+      obj.position.set(vector.x , vector.y , vector.z ) ;
+
+      if(obj.children.length != 0 ){
+        for(var i = 0 ; i < obj.children.length ; i++){
+          this.explode(obj.children[i] ,obj,  box_ct_world , dif); 
+        }
+      }
+
+      }
+
+        else{
+            if(obj.children.length != 0 )
+                {
+                    for(var i = 0 ; i < obj.children.length ; i++){
+
+                        this.explode(obj.children[i] ,obj,  box_ct_world , dif); 
+
+       }            
+                }
+    }
+};
+
+
+
 document.addEventListener('DOMContentLoaded', function() {
 	init();
 	initcommand();
@@ -846,5 +969,6 @@ const defined_orientation = {
     }
     };
 
-export {camera}
-export {tweenCamera}
+
+export {camera};
+export {tweenCamera};

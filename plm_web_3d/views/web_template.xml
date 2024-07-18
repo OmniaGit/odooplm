@@ -59,8 +59,12 @@
                         </li>
                         <li  class="plm_web_button">
                            <label for="transparency_slider">Transparency:</label>
-            	           <input name="transparency_slider" id="object_transparency" type="range" min="0" max="100" value="50"/>
+            	           <input name="transparency_slider" id="object_transparency" type="range" min="0" max="100" value="90"/>
         	           </li>
+                        <li  class="plm_web_button">
+                           <label for="explosion_slider">Explosion:</label>
+                           <input name="explosion_slider" id="object_explosion" type="range" min="0" max="100" value="0"/>
+                       </li>
         	           <li  class="plm_web_button">
             	           <div id="color_object_grp">
             	               <label for="object_color">Color:</label>
