@@ -15,6 +15,7 @@ class OdooCAD{
 	constructor(scene){
 		this.scene = scene;
 		this.items = [];
+		this.active_bbox=undefined;
 		this.loader = new ODOOLOADER.Loader(this);
 	}
 	/*
@@ -23,6 +24,22 @@ class OdooCAD{
 	load_document(document_id, document_name){
 		this.loader.load_document(document_id, document_name);
 	}
+    /*
+     * Get the bounding box of all the added mesh items
+     */
+    getBBox(){
+        
+        const box = new THREE.Box3();
+        var items = this.items;
+        for (let i = 0; i < items.length; i=i+1) {
+            items[i].traverse( function ( child ) {
+                if ( child instanceof THREE.Mesh ) {
+                    box.expandByObject(child)
+                        }
+                     });
+                     };
+        return box;
+    }
     
 	addItemToScene(object, force_material=true){
 		/*
@@ -44,26 +61,12 @@ class OdooCAD{
 			this.items.push(object);
 			this.create_relation_structure(object);
 			// Center the object
-/*
-			var bbox = new THREE.Box3().setFromObject(object);
-			var center = new THREE.Vector3();
-			bbox.getCenter(center);
-			var xpos = center.x;
-			xpos = xpos * -1;
-			var ypos = bbox.min.y;
-			ypos = ypos * -1;
-			var zpos = center.z;
-			zpos = zpos * -1;
-			object.position.set(xpos,
-								ypos,
-								zpos);
-*/
-            // populate tree view
-            
             // fit item
 			progress.display = 'none';
 			var fitItem = new CustomEvent("OdooCAD_fit_items");
 			html_canvas.dispatchEvent(fitItem);
+			// recompute the bounding box
+			this.active_bbox=this.getBBox();
 		}
 		//
 		
