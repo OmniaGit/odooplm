@@ -2,6 +2,42 @@
 <odoo>
     <!-- View customization on MRP -->
 
+    <record id="plm_mrp_bom_line_summarize_tree" model="ir.ui.view">
+        <field name="name">plm.mrp.bom.line.summarize.tree</field>
+        <field name="model">mrp.bom.line</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="product_tumbnail" widget="image" options="{ 'size': [60, 60]}"/>
+                <field name="product_id"/>
+                <button name="go_to_product"
+                        icon="fa-external-link"
+                        type="object"
+                        title="Compute Cost"/>
+                <field name="description"/>
+                <field name="engineering_revision"/>
+                <field name="engineering_state"/>
+                <field name="product_qty"/>
+                <field name="product_uom_id"/>
+                <field name="product_tag_ids" widget="many2many_tags" options="{'color_field': 'color'}" />
+                <field name="source_id" optional="hide"/>
+            </tree>
+        </field>
+   </record>
+        
+    <record id="plm_grp_by_parent" model="ir.ui.view">
+        <field name="name">plm.grp.by.parente</field>
+        <field name="model">mrp.bom.line</field>
+        <field eval="100" name="priority" />
+        <field name="arch" type="xml">
+            <search string="Product line search">
+                <filter string="Group By Parent" name="grp_by_parent" context="{'group_by':'bom_id'}"/>
+                <field string="Product" name="product_id"/>
+                <field string="Description" name="description"/>
+                <field string="Tags" name="product_tag_ids"/>
+            </search>
+        </field>
+    </record>        
+    
     <record id="plm_mrp_bom_line_view_form" model="ir.ui.view">
         <field name="name">plm.mrp.bom.line.view.form</field>
         <field name="model">mrp.bom.line</field>
@@ -10,6 +46,7 @@
         <field name="arch" type="xml">
             <field name="product_id" position="before">
                 <field name="itemnum"/>
+                <field name="product_tumbnail" widget="image" options="{ 'size': [60, 60]}"/>
             </field>
             <field name="product_id" position="after">
                 <field name="engineering_revision" readonly="True"/>
@@ -124,6 +161,7 @@
             <xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_id']" position="before">
                 <field name="related_bom_ids" invisible="True"/>
                 <field name="hasChildBoms" invisible="True"/>
+                <field name="product_tumbnail" widget="image" options="{ 'size': [60, 60]}"/>
                 <button name="openRelatedBoms"
                         type="object"
                         icon="fa-level-down" 

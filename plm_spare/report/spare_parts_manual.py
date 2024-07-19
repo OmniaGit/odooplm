@@ -32,8 +32,8 @@ from datetime import datetime
 import time
 
 from operator import itemgetter
-from odoo import _
 import odoo
+from odoo import _
 from odoo import api
 from odoo import models
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
@@ -47,7 +47,6 @@ def is_pdf(file_name):
     if os.path.splitext(file_name)[1].lower() == '.pdf':
         return True
     return False
-
 
 def get_document_stream(doc_repository, obj_doc):
     """
@@ -125,15 +124,7 @@ class ReportSpareDocumentOne(models.AbstractModel):
     """
     Calculates the bom structure spare parts manual
     """
-
-    @api.model
-    def _create_spare_pdf(self, components):
-        recursion = True
-        if self._name == 'report.plm_spare.pdf_one':
-            recursion = False
-
-        component_type = self.env['product.product']
-        bom_type = self.env['mrp.bom']
+    def get_custom_text(self):
         to_zone = tz.gettz(self.env.context.get('tz', 'Europe/Rome'))
         from_zone = tz.tzutc()
         dt = datetime.now()
@@ -146,7 +137,16 @@ class ReportSpareDocumentOne(models.AbstractModel):
             'date_now': localDT.ctime(),
             'state': 'doc_obj.engineering_state',
                 }
-        main_book_collector = BookCollector(customText=(msg, msg_vals),
+        return (msg, msg_vals)
+
+    @api.model
+    def _create_spare_pdf(self, components):
+        recursion = True
+        if self._name == 'report.plm_spare.pdf_one':
+            recursion = False
+        component_type = self.env['product.product']
+        bom_type = self.env['mrp.bom']
+        main_book_collector = BookCollector(customText=self.get_custom_text(),
                                             bottomHeight=10,
                                             poolObj=self.sudo().env)
         for component in components:

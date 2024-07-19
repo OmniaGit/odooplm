@@ -1883,6 +1883,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         populate(self)
         return out
 
+
     @api.model
     def get_all_document_source_path(self, attributes, *k, **kw):
         out_src = []

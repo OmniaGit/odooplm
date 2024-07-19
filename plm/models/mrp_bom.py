@@ -687,12 +687,14 @@ class MrpBomExtension(models.Model):
                      False,
                      False)
                 ])  # Get Latest revision of each Part
-                bom_line.sudo().write({
-                    'engineering_state': 'draft',
-                    'source_id': False,
-                    'name': bom_line.product_id.product_tmpl_id.name,
-                    'product_id': late_rev_id_c[0]
-                })
+                for late_rev_id in late_rev_id_c:
+                    bom_line.sudo().write({
+                        'engineering_state': 'draft',
+                        'source_id': False,
+                        'name': bom_line.product_id.product_tmpl_id.name,
+                        'product_id': late_rev_id
+                    })
+                    break
             new_bom_brws.sudo().with_context({'check': False}).write({
                 'source_id': False,
                 'name': new_bom_brws.product_tmpl_id.name
@@ -748,10 +750,12 @@ class MrpBomExtension(models.Model):
             return {'name': _('B.O.M. Lines'),
                     'res_model': 'mrp.bom.line',
                     'view_type': 'form',
-                    'view_mode': 'pivot,tree',
+                    'view_mode': 'tree',
+                    'view_id': self.env.ref("plm.plm_mrp_bom_line_summarize_tree").id,
+                    'search_view_id': self.env.ref("plm.plm_grp_by_parent").id,
                     'type': 'ir.actions.act_window',
                     'domain': [('id', 'in', bom_line_ids)],
-                    'context': {"group_by": ['bom_id']},
+                    'context': {},
                     }
 
     

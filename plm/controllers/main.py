@@ -9,17 +9,16 @@ from odoo.http import Controller, route, request, Response
 import copy
 from odoo.tools.misc import DEFAULT_SERVER_DATETIME_FORMAT
 
-
 def webservice(f):
     @functools.wraps(f)
     def wrap(*args, **kw):
         try:
             return f(*args, **kw)
         except Exception as e:
-            return Response(response=str(e), status=500)
-    return wrap
-
-
+            logging.error(e)
+            return Response(response=f"{e}", status=500)
+    return wrap   
+    
 class UploadDocument(Controller):
 
     @route('/plm_document_upload/isalive', type='http', auth='none', methods=['GET'], csrf=False)
@@ -29,7 +28,10 @@ class UploadDocument(Controller):
 
     @route('/plm_document_upload/login', type='http', auth='none', methods=['POST'], csrf=False)
     @webservice
-    def login(self, login, password, db=None):
+    def login(self,
+              login,
+              password,
+              db=None):
         if db and db != request.db:
             raise Exception(_("Could not select database '%s'") % db)
         uid = request.session.authenticate(request.db, login, password)
@@ -41,7 +43,10 @@ class UploadDocument(Controller):
 
     @route('/plm_document_upload/upload_pdf', type='http', auth='user', methods=['POST'], csrf=False)
     @webservice
-    def upload_pdf(self, file_stream=None, doc_id=False, **kw):
+    def upload_pdf(self,
+                   file_stream=None,
+                   doc_id=False,
+                   **kw):
         logging.info('start upload PDF %r' % (doc_id))
         if doc_id:
             logging.info('start json %r' % (doc_id))
@@ -58,7 +63,11 @@ class UploadDocument(Controller):
 
     @route('/plm_document_upload/upload', type='http', auth='user', methods=['POST'], csrf=False)
     @webservice
-    def upload(self, mod_file=None, doc_id=False, filename='', **kw):
+    def upload(self,
+               mod_file=None,
+               doc_id=False,
+               filename='',
+               **kw):
         logging.info('start upload %r' % (doc_id))
         if doc_id:
             logging.info('start json %r' % (doc_id))
@@ -81,7 +90,9 @@ class UploadDocument(Controller):
         
     @route('/plm_document_upload/download', type='http', auth='user', methods=['GET'])
     @webservice
-    def download(self, requestvals='[[],[],-1]', **kw):
+    def download(self,
+                 requestvals='[[],[],-1]',
+                 **kw):
         logging.info('Download with arguments %r kw %r' % (requestvals, kw))
         if not requestvals:
             logging.info('No file requests to download')
@@ -105,7 +116,10 @@ class UploadDocument(Controller):
 
     @route('/plm_document_upload/upload_preview', type='http', auth='user', methods=['POST'], csrf=False)
     @webservice
-    def upload_preview(self, mod_file=None, doc_id=False, **kw):
+    def upload_preview(self,
+                       mod_file=None,
+                       doc_id=False,
+                       **kw):
         logging.info('start upload preview %r' % (doc_id))
         if doc_id:
             logging.info('start json %r' % (doc_id))
@@ -122,7 +136,9 @@ class UploadDocument(Controller):
 
     @route('/plm_document_upload/zip_archive', type='http', auth='user', methods=['POST'], csrf=False)
     @webservice
-    def upload_zip(self, attachment_id=None, filename='', **kw):
+    def upload_zip(self, 
+                   attachment_id=None,
+                   filename='', **kw):
         logging.info('start upload zip %r' % (attachment_id))
         if attachment_id:
             attachment_id = json.loads(attachment_id)
@@ -167,38 +183,40 @@ class UploadDocument(Controller):
     @route('/plm_document_upload/get_zip_archive', type='http', auth='user', methods=['get'], csrf=False)
     @webservice
     def download_zip(self, ir_attachment_id=None, **kw):
-        try:
-            ir_attachment_id = json.loads(ir_attachment_id)
-            attachment = request.env['ir.attachment']
-            pkg_ids = attachment.getRelatedPkgTree(ir_attachment_id)
-            for pkg_id in pkg_ids:
-                pkg_brws = attachment.browse(pkg_id)
-                return Response(pkg_brws.datas,
-                                headers={'file_name': pkg_brws.name})
-            return Response(status=200)
-        except Exception as ex:
-            return Response(f"{ex}", status=500)
+        ir_attachment_id = json.loads(ir_attachment_id)
+        attachment = request.env['ir.attachment']
+        pkg_ids = attachment.getRelatedPkgTree(ir_attachment_id)
+        for pkg_id in pkg_ids:
+            pkg_brws = attachment.browse(pkg_id)
+            return Response(pkg_brws.datas,
+                            headers={'file_name': pkg_brws.name})
+        return Response(status=200)
+
 
     @route('/plm_document_upload/get_files_write_time', type='http', auth='user', methods=['get'], csrf=False)
     @webservice
-    def get_files_write_time(self, ir_attachment_ids=None, **kw):
-        try:
-            ir_attachment_ids = json.loads(ir_attachment_ids)
-            attachment = request.env['ir.attachment']
-            out = []
-            for attachment_id in ir_attachment_ids:
-                attachment_brws = attachment.browse(attachment_id)
-                out.append((attachment_brws.id,
-                            attachment_brws.name,
-                            attachment_brws.write_date.strftime(DEFAULT_SERVER_DATETIME_FORMAT)))
-            return Response(json.dumps(out))
-        except Exception as ex:
-            logging.error(ex)
-            return Response(f"{ex}", status=500)
+    def get_files_write_time(self,
+                             ir_attachment_ids=None,
+                             **kw):
+        ir_attachment_ids = json.loads(ir_attachment_ids)
+        attachment = request.env['ir.attachment']
+        out = []
+        for attachment_id in ir_attachment_ids:
+            attachment_brws = attachment.browse(attachment_id)
+            out.append((attachment_brws.id,
+                        attachment_brws.name,
+                        attachment_brws.write_date.strftime(DEFAULT_SERVER_DATETIME_FORMAT)))
+        return Response(json.dumps(out))
+        
 
     @route('/plm_document_upload/extra_file', type='http', auth='user', methods=['POST'], csrf=False)
     @webservice
-    def upload_extra_file(self, product_id='', doc_name='', doc_rev='0', related_attachment_id='', **kw):
+    def upload_extra_file(self,
+                          product_id='',
+                          doc_name='',
+                          doc_rev='0',
+                          related_attachment_id='',
+                          **kw):
         logging.info('Start upload extra file %r' % (product_id))
         product_id = eval(product_id)
         doc_rev = eval(doc_rev)

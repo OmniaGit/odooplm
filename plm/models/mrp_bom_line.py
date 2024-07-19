@@ -30,7 +30,6 @@ from odoo import models
 from odoo import fields
 from odoo import api
 from odoo import _
-import logging
 
 
 class MrpBomLineExtension(models.Model):
@@ -193,6 +192,7 @@ class MrpBomLineExtension(models.Model):
                                 readonly=True,
                                 index=True,
                                 help=_("This is the document object that declares this BoM."))
+    
     type = fields.Selection(related="bom_id.type")
     itemnum = fields.Integer(_('CAD Item Position'), help=_(
         "This is the item reference position into the CAD document that declares this BoM."))
@@ -218,6 +218,20 @@ class MrpBomLineExtension(models.Model):
         _('Cutted Compute Type'),
         default='none')
 
+    product_tag_ids = fields.Many2many(related='product_tmpl_id.product_tag_ids')
+    
+    product_tumbnail = fields.Image(related="product_id.product_tmpl_id.image_1920")
+    
+    def go_to_product(self):
+        return {'name': _('Product'),
+                    'res_model': 'product.product',
+                    'res_id':self.product_id.id,
+                    'view_type': 'form',
+                    'view_mode': 'form',
+                    'type': 'ir.actions.act_window',
+                    'domain': [('id', 'in', self.product_id.ids)],
+                    }
+        
     def plm_sanitize(self, vals):
         all_keys = self._fields
         if isinstance(vals, dict):
