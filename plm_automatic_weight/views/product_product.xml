@@ -12,12 +12,13 @@
             <xpath expr="//group[@name='technical_infos_group']" position="after">
                 <group name="weight" string="Weight" colspan="4" col="4">
                     <field name="automatic_compute_selection" widget='radio'/>
-                    <field name="weight" attrs="{'readonly':[('engineering_state', 'in', ['released', 'obsoleted'])]}"/>
+                    <field name="weight"
+                           readonly="engineering_state in ['released', 'obsoleted']"/>
                     <field name="weight_additional"
-                           attrs="{'readonly':['|', ('engineering_state', 'in', ['released', 'obsoleted']),
-                           ('automatic_compute_selection', 'not in', ['use_normal_bom', 'use_cad'])]}"/>
-                    <field name="weight_cad" attrs="{'invisible':[('automatic_compute_selection','in',['use_normal_bom'])]}"/>
-                    <field name="weight_n_bom_computed" attrs="{'invisible':[('automatic_compute_selection','!=','use_normal_bom')]}"/>
+                           readonly="engineering_state in ['released', 'obsoleted'] or automatic_compute_selection not in ['use_normal_bom', 'use_cad']"/>
+                    <field name="weight_cad"
+                           invisible="automatic_compute_selection in ['use_normal_bom']"/>
+                    <field name="weight_n_bom_computed" invisible="automatic_compute_selection != 'use_normal_bom'"/>
                 </group>
             </xpath>
         </field>
@@ -33,10 +34,11 @@
                 <group name="weight" string="Weight" colspan="4" col="4">
                     <field name="automatic_compute_selection" widget='radio'/>
                     <field name="weight_additional"
-                           attrs="{'readonly':['|', ('engineering_state', 'in', ['released', 'obsoleted']),
-                           ('automatic_compute_selection', 'not in', ['use_normal_bom', 'use_cad'])]}"/>
-                    <field name="weight_cad" attrs="{'invisible':[('automatic_compute_selection','in',['use_normal_bom'])]}"/>
-                    <field name="weight_n_bom_computed" attrs="{'invisible':[('automatic_compute_selection','!=','use_normal_bom')]}"/>
+                           readonly="engineering_state in ['released', 'obsoleted'] or automatic_compute_selection not in ['use_normal_bom', 'use_cad']"/>
+                    <field name="weight_cad"
+                           invisible="automatic_compute_selection in ['use_normal_bom']"/>
+                    <field name="weight_n_bom_computed"
+                           invisible="automatic_compute_selection!='use_normal_bom'"/>
                 </group>
             </xpath>
         </field>

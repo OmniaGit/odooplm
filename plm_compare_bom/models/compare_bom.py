@@ -70,11 +70,13 @@ class plm_missing_bom(models.TransientModel):
     reason = fields.Char(string=_("Difference"), size=32)
 
     def delete_bom_line(self):
+        self.bom_id.to_update=True
         for plm_missign_bom_id in self:
             plm_missign_bom_id.bom_id.bom_line_id_to_delete = [(6, True, plm_missign_bom_id.bom_idrow.ids)]
             plm_missign_bom_id.unlink()
 
     def copy_left_right(self):
+        self.bom_id.to_update=True
         obj_adding_bom = self.env['plm.adding.bom']
         for plm_missign_bom_id in self:
             obj_adding_bom.create({
@@ -88,6 +90,7 @@ class plm_missing_bom(models.TransientModel):
                 'reason': 'new'})
 
     def move_left_left(self):
+        self.bom_id.to_update=True
         for plm_missign_bom_id in self:
             plm_missign_bom_id.copy_left_right()
             plm_missign_bom_id.delete_bom_line()
@@ -107,11 +110,13 @@ class plm_adding_bom(models.TransientModel):
     reason = fields.Char(string=_("Difference"), size=32)
 
     def delete_bom_line(self):
+        self.bom_id.to_update=True
         for plm_missign_bom_id in self:
             plm_missign_bom_id.bom_id.bom_line_id_to_delete = [(6, True, plm_missign_bom_id.bom_idrow.ids)]
             plm_missign_bom_id.unlink()
 
     def copy_right_left(self):
+        self.bom_id.to_update=True
         obj_missing_bom = self.env['plm.missing.bom']
         for plm_missign_bom_id in self:
             obj_missing_bom.create({
@@ -125,6 +130,7 @@ class plm_adding_bom(models.TransientModel):
                 'reason': 'new'})
 
     def move_right_left(self):
+        self.bom_id.to_update=True
         for plm_missign_bom_id in self:
             plm_missign_bom_id.copy_right_left()
             plm_missign_bom_id.delete_bom_line()
@@ -181,16 +187,12 @@ class plm_compare_bom(models.TransientModel):
 
     bom_line_id_to_delete = fields.Many2many('mrp.bom.line', string=_('BoM Line to Delete'))
 
-    def _to_update(self):
-        for plm_compare_bom_id in self:
-            rule = len(plm_compare_bom_id.bom_line_id_to_delete) or len(plm_compare_bom_id.anotinb.filtered(lambda x: x.reason == 'new')) or len(plm_compare_bom_id.bnotina.filtered(lambda x: x.reason == 'new'))
-            plm_compare_bom_id.to_update = True if rule else False
-
-    to_update = fields.Boolean(compute='_to_update')
+    to_update = fields.Boolean("Bom need to be updated", default=False)       
 
     def _are_equal(self):
         for plm_compare_bom_id in self:
             plm_compare_bom_id.bom_are_equal = len(plm_compare_bom_id.anotinb) == 0 and len(plm_compare_bom_id.bnotina) == 0
+    
     bom_are_equal = fields.Boolean(compute='_are_equal')
 
     def name_get(self):
@@ -201,6 +203,7 @@ class plm_compare_bom(models.TransientModel):
         return result
 
     def update_bom(self):
+        self.to_update=False
         mrp_bom_line = self.env['mrp.bom.line']
         for plm_compare_bom_id in self:
             for plm_missing_id in plm_compare_bom_id.anotinb.filtered(lambda x: x.reason == 'new'):

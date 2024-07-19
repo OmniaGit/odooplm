@@ -10,14 +10,29 @@
             <field name="arch" type="xml">
                 <form string="Show Non CAD Document Relation">
 	               <header>
-	                    <button name="release" states="confirmed" string="Release Box" class="oe_highlight"/>
-	                    <button name="correct" states="confirmed" string="Correct Box" />
-	                    <button name="confirm" states="draft" string="Confirm Box" class="oe_highlight"/>
-	                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,released" statusbar_colors='{"undermodify":"red","obsoleted":"red"}' readonly="0"/>
+	                    <button name="action_release"
+	                            string="Release Box"
+	                            type="object"
+	                            invisible="engineering_state!='confirmed'"  
+	                            class="oe_highlight"/>
+	                    <button name="action_reactivate"
+	                            string="Correct Box"
+	                            type="object"
+	                            invisible="engineering_state!='confirmed'"/>
+	                    <button name="action_confirm"
+	                            string="Confirm Box"
+	                            type="object"
+	                            invisible="engineering_state!='draft'"
+	                            class="oe_highlight"/>
+	                    <field name="engineering_state"
+	                           widget="statusbar"
+	                           statusbar_visible="draft,confirmed,released"
+	                           statusbar_colors='{"undermodify":"red","obsoleted":"red"}'
+	                           readonly="0"/>
 	               </header>
                 <sheet>
                 <group>
-	                	<field name="name" readonly="1"/>
+	                	<field name="engineering_code" readonly="1"/>
 	                	<field name="write_date" readonly="1"/>
 	                	<field name="create_date" readonly="1"/>
 	                    <field name="description" widget="link"/>
@@ -73,7 +88,7 @@
         	<field name="priority" eval="10"/>
             <field name="arch" type="xml">
                 <tree string="Non CAD Document Relations">
-                	<field name="name" />
+                	<field name="engineering_code" />
                     <field name="description" />
                     <field name="document_rel" />
                     <field name="plm_box_rel" />

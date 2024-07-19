@@ -49,20 +49,20 @@
             <form string="Visualize BoM">
                 <field name="bom_are_equal" invisible="True"/>
                 <div style="text-align: left; font-size: 15px;background-color: lightgreen;"
-                     attrs="{'invisible': [('bom_are_equal','=', False)]}">
+                     invisible="bom_are_equal==False">
                     <span title="Attentio_bom_equal"
                           class="fa fa-exclamation-triangle" 
                           style="color:blu;width:100%;text-align:left;font-size:30px">Attention: The two bom are equal  !!<br/></span>
                 </div>
                 <field name="to_update" invisible="True"/>
                 <div style="text-align: left; font-size: 15px;background-color: lightpink;"
-                    attrs="{'invisible': [('to_update','=', False)]}">
+                    invisible="to_update==False">
                     <table>
                         <tr>
                         <td><button type="object" name="update_bom" icon="fa-save" string="Save"/></td>
                         <td><span title="Attention_some_change"
                           class="fa fa-exclamation-triangle"
-                          style="color:red;width:100%;text-align:left;font-size:30px">Attention: there are some change you need to save it !!<br/></span></td>
+                          style="color:red;width:100%;text-align:left;font-size:30px">Attention: Press this Button in order to save your change !!<br/></span></td>
                         </tr>
                     </table>
                 </div>                
@@ -146,7 +146,6 @@
                         </field>
              		</group>
          		</group>
-
             </form>
         </field>
      </record>

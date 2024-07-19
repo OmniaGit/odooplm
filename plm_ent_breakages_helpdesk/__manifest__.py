@@ -21,14 +21,13 @@
 # Leonardo Cazziolati
 # leonardo.cazziolati@omniasolutions.eu
 # 23-06-2020
-
 {
     "name": "PLM Breakages Helpdesk",
-    "version": "16.0.1",
+    "version": "17.0.0.1",
     "author": "OmniaSolutions",
     "website": "https://www.omniasolutions.website",
     "category": "Helpdesk",
-    "license": "AGPL-3",
+    "license": "LGPL-3",
     "summary": "PLM Breakages",
     "depends": ["plm_breakages","helpdesk"],
     "data": [

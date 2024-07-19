@@ -18,6 +18,7 @@
         <field name="res_model">mrp.bom</field>
         <field name="view_mode">tree,form</field>
         <field name="domain">[('type','=','ebom'),]</field>
+        <field name="context">{'default_type':'ebom'}</field>
         <field name="filter" eval="True"/>
         <field name="view_ids" eval="[(5, 0, 0),
             (0, 0, {'view_mode': 'tree', 'view_id': ref('plm.plm_bom_tree_view')}),

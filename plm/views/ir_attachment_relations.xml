@@ -14,35 +14,44 @@
                 	<field name="link_kind" readonly="True"/>
                 </group>
                 <group colspan="4" col="4">
-                   	<span colspan="4" style="color: rgb(110, 51, 197);" attrs="{'invisible': [('parent_state', '!=', 'draft')]}">
+                   	<span colspan="4"
+                   	      style="color: rgb(110, 51, 197);"
+                   	      invisible="parent_state != 'draft'">
                 		<hr style="background-color: rgb(110, 51, 197);height: 1px;"></hr>
                		</span>
-               		<span colspan="4" style="color: rgb(0, 0, 255);" attrs="{'invisible': [('parent_state', '!=', 'confirmed')]}">
+               		<span colspan="4"
+               		      style="color: rgb(0, 0, 255);"
+               		      invisible="parent_state !=  'confirmed'">
                 		<hr style="background-color: blue;height: 1px;"></hr>
                		</span>
-               		<span colspan="4" style="color: rgba(0, 170, 34, 0.66);" attrs="{'invisible': [('parent_state', '!=', 'released')]}">
+               		<span colspan="4"
+               		      style="color: rgba(0, 170, 34, 0.66);"
+               		      invisible="parent_state != 'released'">
                 		<hr style="background-color: rgba(0, 170, 34, 0.66);height: 1px;"></hr>
                		</span>
-               		<span colspan="4" style="color: rgb(218, 159, 34);" attrs="{'invisible': [('parent_state', '!=', 'undermodify')]}">
+               		<span colspan="4"
+               		      style="color: rgb(218, 159, 34);" 
+               		      invisible="parent_state != 'undermodify'">
                 		<hr style="background-color: rgb(218, 159, 34);height: 1px;"></hr>
                		</span>
-               		<span colspan="4" style="color: rgb(231, 43, 26);" attrs="{'invisible': [('parent_state', '!=', 'obsoleted')]}">
+               		<span colspan="4" style="color: rgb(231, 43, 26);"
+               		      invisible="parent_state != 'obsoleted'">
                 		<hr style="background-color: rgb(231, 43, 26);height: 1px;"></hr>
                		</span>
-	               	<separator colspan="4" string="Parent Preview" style="color: rgb(110, 51, 197);" attrs="{'invisible': [('parent_state', '!=', 'draft')]}"/>
-	                <separator colspan="4" string="Parent Preview" style="color: blue;" attrs="{'invisible': [('parent_state', '!=', 'confirmed')]}"/>
-	                <separator colspan="4" string="Parent Preview" style="color: rgba(0, 170, 34, 0.66);" attrs="{'invisible': [('parent_state', '!=', 'released')]}"/>
-	                <separator colspan="4" string="Parent Preview" style="color: rgb(218, 159, 34);" attrs="{'invisible': [('parent_state', '!=', 'undermodify')]}"/>
-	                <separator colspan="4" string="Parent Preview" style="color: rgb(231, 43, 26);" attrs="{'invisible': [('parent_state', '!=', 'obsoleted')]}"/>
+	               	<separator string="Parent Preview" colspan="4"  style="color: rgb(110, 51, 197);"      invisible="parent_state != 'draft'"/>
+	                <separator string="Parent Preview" colspan="4"  style="color: blue;"                   invisible="parent_state != 'confirmed'"/>
+	                <separator string="Parent Preview" colspan="4"  style="color: rgba(0, 170, 34, 0.66);" invisible="parent_state != 'released'"/>
+	                <separator string="Parent Preview" colspan="4"  style="color: rgb(218, 159, 34);"      invisible="parent_state != 'undermodify'"/>
+	                <separator string="Parent Preview" colspan="4"  style="color: rgb(231, 43, 26);"       invisible="parent_state != 'obsoleted'"/>
 	                <group colspan="2" col="2">
 	                    <field name="parent_id" readonly="True" domain="[('is_plm', '=', True)]"/>
 	                    <field name="parent_revision" readonly="True"/>
 	                    <field name="parent_type" readonly="True"/>
-                        <field name="parent_state" readonly="True" style="color: rgb(110, 51, 197);" attrs="{'invisible': [('parent_state', '!=', 'draft')]}"/>
-                        <field name="parent_state" readonly="True" style="color: blue;" attrs="{'invisible': [('parent_state', '!=', 'confirmed')]}"/>
-                        <field name="parent_state" readonly="True" style="color: rgba(0, 170, 34, 0.66);" attrs="{'invisible': [('parent_state', '!=', 'released')]}"/>
-                        <field name="parent_state" readonly="True" style="color: rgb(218, 159, 34);" attrs="{'invisible': [('parent_state', '!=', 'undermodify')]}"/>
-                        <field name="parent_state" readonly="True" style="color: rgb(231, 43, 26);" attrs="{'invisible': [('parent_state', '!=', 'obsoleted')]}"/>
+                        <field name="parent_state" readonly="True" style="color: rgb(110, 51, 197);"        invisible="parent_state != 'draft'"/>
+                        <field name="parent_state" readonly="True" style="color: blue;"                     invisible="parent_state != 'confirmed'"/>
+                        <field name="parent_state" readonly="True" style="color: rgba(0, 170, 34, 0.66);"   invisible="parent_state != 'released'"/>
+                        <field name="parent_state" readonly="True" style="color: rgb(218, 159, 34);"        invisible="parent_state != 'undermodify'"/>
+                        <field name="parent_state" readonly="True" style="color: rgb(231, 43, 26);"         invisible="parent_state != 'obsoleted'"/>
 	                </group>
 	                 <group colspan="1" col="1">
 	                 	<field name="parent_preview" colspan="2" widget="image" readonly="1" nolabel="1" options="{'zoom': true, 'zoom_delay': 800,'size':[400,400]}"/>
@@ -53,58 +62,78 @@
                 			class="fa fa-dropbox fa-2x"
                 			aria-label="Missing Component"
                 			style="text-align: right; width: 150%; color:#ff8300;"
-                			attrs="{'invisible': [('parent_linked', 'not in', [False, []])]}"/>
+                			invisible="parent_linked not in [False, []]"/>
                			<div
                 			class="fa fa-dropbox fa-2x"
                 			aria-label="Founding Component"
                 			style="text-align: right; width: 150%; color: green;"
-                			attrs="{'invisible': [('parent_linked', 'in', [False, []])]}"/>
+                			invisible="parent_linked in [False, []]"/>
 	                </group>
-	                <span colspan="4" style="color: rgb(110, 51, 197);" attrs="{'invisible': [('parent_state', '!=', 'draft')]}">
+	                <span colspan="4"
+	                      style="color: rgb(110, 51, 197);" 
+	                      invisible="parent_state != 'draft'">
                 		<hr style="background-color: rgb(110, 51, 197);height: 1px;"></hr>
                		</span>
-               		<span colspan="4" style="color: rgb(0, 0, 255);" attrs="{'invisible': [('parent_state', '!=', 'confirmed')]}">
+               		<span colspan="4"
+               		      style="color: rgb(0, 0, 255);"
+               		      invisible="parent_state != 'confirmed'">
                 		<hr style="background-color: blue;height: 1px;"></hr>
                		</span>
-               		<span colspan="4" style="color: rgba(0, 170, 34, 0.66);" attrs="{'invisible': [('parent_state', '!=', 'released')]}">
+               		<span colspan="4"
+               		      style="color: rgba(0, 170, 34, 0.66);"
+               		      invisible="parent_state != 'released'">
                 		<hr style="background-color: rgba(0, 170, 34, 0.66);height: 1px;"></hr>
                		</span>
-               		<span colspan="4" style="color: rgb(218, 159, 34);" attrs="{'invisible': [('parent_state', '!=', 'undermodify')]}">
+               		<span colspan="4"
+               		      style="color: rgb(218, 159, 34);" 
+               		      invisible="parent_state != 'undermodify'">
                 		<hr style="background-color: rgb(218, 159, 34);height: 1px;"></hr>
                		</span>
-               		<span colspan="4" style="color: rgb(231, 43, 26);" attrs="{'invisible': [('parent_state', '!=', 'obsoleted')]}">
+               		<span colspan="4"
+               		      style="color: rgb(231, 43, 26);"
+               		      invisible="parent_state != 'obsoleted'">
                 		<hr style="background-color: rgb(231, 43, 26);height: 1px;"></hr>
                		</span>
   					<newline/>
-  					<span colspan="4" style="color: rgb(110, 51, 197);" attrs="{'invisible': [('child_state', '!=', 'draft')]}">
+  					<span colspan="4"
+  					      style="color: rgb(110, 51, 197);"
+  					      invisible="child_state != 'draft'">
                 		<hr style="background-color: rgb(110, 51, 197);height: 1px;"></hr>
                		</span>
-               		<span colspan="4" style="color: rgb(0, 0, 255);" attrs="{'invisible': [('child_state', '!=', 'confirmed')]}">
+               		<span colspan="4"
+               		      style="color: rgb(0, 0, 255);"
+               		      invisible="child_state != 'confirmed'">
                 		<hr style="background-color: blue;height: 1px;"></hr>
                		</span>
-               		<span colspan="4" style="color: rgba(0, 170, 34, 0.66);" attrs="{'invisible': [('child_state', '!=', 'released')]}">
+               		<span colspan="4"
+               		      style="color: rgba(0, 170, 34, 0.66);"
+               		      invisible="child_state != 'released'">
                 		<hr style="background-color: rgba(0, 170, 34, 0.66);height: 1px;"></hr>
                		</span>
-               		<span colspan="4" style="color: rgb(218, 159, 34);" attrs="{'invisible': [('child_state', '!=', 'undermodify')]}">
+               		<span colspan="4"
+               		      style="color: rgb(218, 159, 34);"
+               		      invisible="child_state != 'undermodify'">
                 		<hr style="background-color: rgb(218, 159, 34);height: 1px;"></hr>
                		</span>
-               		<span colspan="4" style="color: rgb(231, 43, 26);" attrs="{'invisible': [('child_state', '!=', 'obsoleted')]}">
+               		<span colspan="4"
+               		      style="color: rgb(231, 43, 26);"
+               		      invisible="child_state != 'obsoleted'">
                 		<hr style="background-color: rgb(231, 43, 26);height: 1px;"></hr>
                		</span>
-	            	<separator colspan="4" string="Child Preview" style="color: rgb(110, 51, 197);" attrs="{'invisible': [('child_state', '!=', 'draft')]}"/>
-                    <separator colspan="4" string="Child Preview" style="color: blue;" attrs="{'invisible': [('child_state', '!=', 'confirmed')]}"/>
-                    <separator colspan="4" string="Child Preview" style="color: rgba(0, 170, 34, 0.66);" attrs="{'invisible': [('child_state', '!=', 'released')]}"/>
-                    <separator colspan="4" string="Child Preview" style="color: rgb(218, 159, 34);" attrs="{'invisible': [('child_state', '!=', 'undermodify')]}"/>
-                    <separator colspan="4" string="Child Preview" style="color: rgb(231, 43, 26);" attrs="{'invisible': [('child_state', '!=', 'obsoleted')]}"/>
+	            	<separator colspan="4" string="Child Preview" style="color: rgb(110, 51, 197);"       invisible="child_state != 'draft'"/>
+                    <separator colspan="4" string="Child Preview" style="color: blue;"                    invisible="child_state != 'confirmed'"/>
+                    <separator colspan="4" string="Child Preview" style="color: rgba(0, 170, 34, 0.66);"  invisible="child_state != 'released'"/>
+                    <separator colspan="4" string="Child Preview" style="color: rgb(218, 159, 34);"       invisible="child_state != 'undermodify'"/>
+                    <separator colspan="4" string="Child Preview" style="color: rgb(231, 43, 26);"        invisible="child_state != 'obsoleted'"/>
 	                <group colspan="2" col="2">
 	                    <field name="child_id" readonly="True" domain="[('is_plm', '=', True)]"/>
 	                    <field name="child_revision" readonly="True"/>
 	                    <field name="child_type" readonly="True"/>
-	                    <field name="child_state" readonly="True" style="color: rgb(110, 51, 197);" attrs="{'invisible': [('child_state', '!=', 'draft')]}"/>
-                        <field name="child_state" readonly="True" style="color: blue;" attrs="{'invisible': [('child_state', '!=', 'confirmed')]}"/>
-                        <field name="child_state" readonly="True" style="color: rgba(0, 170, 34, 0.66);" attrs="{'invisible': [('child_state', '!=', 'released')]}"/>
-                        <field name="child_state" readonly="True" style="color: rgb(218, 159, 34);" attrs="{'invisible': [('child_state', '!=', 'undermodify')]}"/>
-                        <field name="child_state" readonly="True" style="color: rgb(231, 43, 26);" attrs="{'invisible': [('child_state', '!=', 'obsoleted')]}"/>
+	                    <field name="child_state" readonly="True" style="color: rgb(110, 51, 197);"            invisible="child_state != 'draft'"/>
+                        <field name="child_state" readonly="True" style="color: blue;"                         invisible="child_state != 'confirmed'"/>
+                        <field name="child_state" readonly="True" style="color: rgba(0, 170, 34, 0.66);"       invisible="child_state != 'released'"/>
+                        <field name="child_state" readonly="True" style="color: rgb(218, 159, 34);"            invisible="child_state != 'undermodify'"/>
+                        <field name="child_state" readonly="True" style="color: rgb(231, 43, 26);"             invisible="child_state != 'obsoleted'"/>
 	                </group>
 	                <group colspan="1" col="1">
 	                    <field name="child_preview" colspan="2" widget="image" readonly="1" nolabel="1" options="{'size':[400,400],'zoom': true, 'zoom_delay': 800}"/>
@@ -115,26 +144,36 @@
                 			class="fa fa-dropbox fa-2x"
                 			aria-label="Missing Component"
                 			style="text-align: right; width: 150%; color:#ff8300;"
-                			attrs="{'invisible': [('child_linked', 'not in', [False, []])]}"/>
+                			invisible="child_linked not in [False, []]"/>
                			<div
                 			class="fa fa-dropbox fa-2x"
                 			aria-label="Founding Component"
                 			style="text-align: right; width: 150%; color: green;"
-                			attrs="{'invisible': [('child_linked', 'in', [False, []])]}"/>
+                			invisible="child_linked in [False, []]"/>
 	                </group>
-	            <span colspan="4" style="color: rgb(110, 51, 197);" attrs="{'invisible': [('child_state', '!=', 'draft')]}">
+	            <span colspan="4"
+	                  style="color: rgb(110, 51, 197);"
+	                  invisible="child_state != 'draft'">
             		<hr style="background-color: rgb(110, 51, 197);height: 1px;"></hr>
            		</span>
-           		<span colspan="4" style="color: rgb(0, 0, 255);" attrs="{'invisible': [('child_state', '!=', 'confirmed')]}">
+           		<span colspan="4"
+           		      style="color: rgb(0, 0, 255);"
+           		      invisible="child_state != 'confirmed'">
             		<hr style="background-color: blue;height: 1px;"></hr>
            		</span>
-           		<span colspan="4" style="color: rgba(0, 170, 34, 0.66);" attrs="{'invisible': [('child_state', '!=', 'released')]}">
+           		<span colspan="4"
+           		      style="color: rgba(0, 170, 34, 0.66);"
+           		      invisible="child_state != 'released'">
             		<hr style="background-color: rgba(0, 170, 34, 0.66);height: 1px;"></hr>
            		</span>
-           		<span colspan="4" style="color: rgb(218, 159, 34);" attrs="{'invisible': [('child_state', '!=', 'undermodify')]}">
+           		<span colspan="4"
+           		      style="color: rgb(218, 159, 34);"
+           		      invisible="child_state != 'undermodify'">
             		<hr style="background-color: rgb(218, 159, 34);height: 1px;"></hr>
            		</span>
-           		<span colspan="4" style="color: rgb(231, 43, 26);" attrs="{'invisible': [('child_state', '!=', 'obsoleted')]}">
+           		<span colspan="4"
+           		      style="color: rgb(231, 43, 26);"
+           		      invisible="child_state != 'obsoleted'">
             		<hr style="background-color: rgb(231, 43, 26);height: 1px;"></hr>
            		</span>
                 </group>
@@ -321,13 +360,13 @@
                         				<strong>Parent</strong>
                         			</td>
                         			<td>
-                        				<strong attrs="{'invisible': [('parent_type', '!=', 'other')]}">Other</strong>
-                        				<strong attrs="{'invisible': [('parent_type', '!=', '2d')]}">2D</strong>
-                        				<strong attrs="{'invisible': [('parent_type', '!=', '3d')]}">3D</strong>
+                        				<strong invisible="parent_type != 'other'">Other</strong>
+                        				<strong invisible="parent_type != '2d'">2D</strong>
+                        				<strong invisible="parent_type != '3d'">3D</strong>
                         			</td>
                         			<td>
-	                            		<div class="fa fa-dropbox fa-2x" aria-label="Missing Component" style="color:#ff8300;" attrs="{'invisible': [('parent_linked', 'not in', [False, []])]}"/>
-                            			<div class="fa fa-dropbox fa-2x" aria-label="Founding Component" style="color: green;" attrs="{'invisible': [('parent_linked', 'in', [False, []])]}"/>
+	                            		<div class="fa fa-dropbox fa-2x" aria-label="Missing Component" style="color:#ff8300;" invisible="parent_linked not in [False, []]"/>
+                            			<div class="fa fa-dropbox fa-2x" aria-label="Founding Component" style="color: green;" invisible="parent_linked in [False, []]"/>
                             		</td>
                         		</tr>
                             	<tr>
@@ -362,7 +401,8 @@
 												<td>
                                                     <t><strong>Name:</strong></t>
                                                     <field name="parent_id"/>
-                                                    <field name="display_name" attrs="{'invisible': [('parent_id', 'not in', [False, []])]}"/>
+                                                    <field name="display_name"
+                                                           invisible="parent_id not in [False, []]"/>
                                                 </td>
                                             </tr>
                                             <tr>
@@ -436,13 +476,13 @@
                         				<strong>Child</strong>
                         			</td>
                         			<td style="text-align: right; width: 100%;padding:1px;">
-                        				<strong attrs="{'invisible': [('child_type', '!=', 'other')]}">Other</strong>
-                        				<strong attrs="{'invisible': [('child_type', '!=', '2d')]}">2D</strong>
-                        				<strong attrs="{'invisible': [('child_type', '!=', '3d')]}">3D</strong>
+                        				<strong invisible="child_type !='other'">Other</strong>
+                        				<strong invisible="child_type !='2d'">2D</strong>
+                        				<strong invisible="child_type !='3d'">3D</strong>
                         			</td>
                         			<td>
-	                            		<div class="fa fa-dropbox fa-2x" aria-label="Missing Component" style="color:#ff8300;" attrs="{'invisible': [('child_linked', 'not in', [False, []])]}"/>
-                            			<div class="fa fa-dropbox fa-2x" aria-label="Founding Component" style="color: green;" attrs="{'invisible': [('child_linked', 'in', [False, []])]}"/>
+	                            		<div class="fa fa-dropbox fa-2x" aria-label="Missing Component" style="color:#ff8300;" invisible="child_linked not in [False, []]"/>
+                            			<div class="fa fa-dropbox fa-2x" aria-label="Founding Component" style="color: green;" invisible="child_linked in [False, []]"/>
                             		</td>
                         		</tr>
                             	<tr>
@@ -477,7 +517,8 @@
 												<td>
                                                     <t><strong>Name:</strong></t>
                                                     <field name="child_id"/>
-                                                    <field name="display_name" attrs="{'invisible': [('child_id', 'not in', [False, []])]}"/>
+                                                    <field name="display_name" 
+                                                           invisible="child_id not in [False, []]"/>
                                                 </td>
                                             </tr>
                                             <tr>

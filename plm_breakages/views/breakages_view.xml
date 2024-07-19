@@ -35,7 +35,8 @@
                             	<field name="partner_id"/>
                         	</group>
                         	<group>
-                        		<field name="lot_number" attrs="{'invisible':['|',('tracking','in',['none']),('product_id','=',False)]}"/>
+                        		<field name="lot_number"
+                        		       invisible="tracking in ['none'] or product_id==False"/>
                         		<field name="date"/>
                         		<field name="tracking" invisible="1"/>
                         	</group>

@@ -20,7 +20,7 @@
 ##############################################################################
 {
     "name": "PLM Automatic Weight",
-    "version": "16.0.2",
+    "version": "17.0.0.1",
     "author": "OmniaSolutions",
     "website": "https://odooplm.omniasolutions.website",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",

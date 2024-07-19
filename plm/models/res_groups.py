@@ -36,7 +36,8 @@ class ResGroups(models.Model):
     _inherit = 'res.groups'
 
     @api.model
-    def search(self, args, offset=0, limit=None, order=None, count=False):
+    @api.returns('self')
+    def search(self, args, offset=0, limit=None, order=None):
         if self.env.context.get('odooPLM'):
             available_types = [
                 self.env.ref('plm.group_plm_view_user').id,
@@ -56,6 +57,6 @@ class ResGroups(models.Model):
                 if additional_obj:
                     available_types.append(additional_obj.id)
             args = AND([args, [('id', 'in', available_types)]])
-        return super(ResGroups, self).search(args, offset, limit, order, count)
+        return super(ResGroups, self).search(args, offset, limit, order)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

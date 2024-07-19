@@ -27,9 +27,9 @@
                     <group colspan="4" >
 			            <field name="force_types_2d"
 			        			options="{'no_open':True,'no_create':True}"
-			        			attrs="{'invisible': [('convertion_server_available', '=', False)]}"/>
+			        			invisible="convertion_server_available==False"/>
 			        	<button string="Force Types" name="forceTypes2d" type="object"
-			        			attrs="{'invisible': [('convertion_server_available', '=', False)]}"/>
+			        			invisible="convertion_server_available==False"/>
 			        	<button string="Clear" name="clear2d" type="object"/>
 			        </group>
 			        <group colspan="4">
@@ -66,9 +66,9 @@
                 <page string="3D" id="3d_page">
                     <group>
                         <field name="force_types_3d" options="{'no_open':True,'no_create':True}"
-			        			attrs="{'invisible': [('convertion_server_available', '=', False)]}"/>
+			        			invisible="convertion_server_available==False"/>
 			        	<button string="Force Types" name="forceTypes3d" type="object"
-			        			attrs="{'invisible': [('convertion_server_available', '=', False)]}"/>
+			        			invisible="convertion_server_available==False"/>
 			        	<button string="Clear" name="clear3d" type="object"/>
 			        </group>
                     <group>
@@ -111,7 +111,7 @@
 		                 readonly="1"
 		                 nolabel="1"
 		                 filename="datas_fname"
-		                 attrs="{'invisible':[('datas_fname','=',False)]}"/>
+		                 invisible="datas_fname==False"/>
 			</group>
             <separator string=""/>
             <footer>
@@ -119,7 +119,7 @@
             	<button special="cancel" string="Cancel"/>
             	<button string="Create zip archive"
             	        name="action_export_zip"
-            	        attrs="{'invisible': [('show_create_zip','=',False)]}"
+            	        invisible="show_create_zip==False"
             	        type="object"/>
             </footer>
         </form>

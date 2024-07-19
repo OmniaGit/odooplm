@@ -40,6 +40,7 @@ from odoo.exceptions import ValidationError
 from odoo.exceptions import AccessError
 from odoo.exceptions import UserError
 import odoo.tools as tools
+from odoo.osv import expression
 
 _logger = logging.getLogger(__name__)
 
@@ -1052,13 +1053,21 @@ class ProductProduct(models.Model):
 
     def read(self, fields=[], load='_classic_read'):
         try:
-            customFields = [field.replace('plm_m2o_', '') for field in fields if field.startswith('plm_m2o_')]
-            fields.extend(customFields)
-            fields = list(set(fields))
-            fields = self.plm_sanitize(fields)
-            res = super(ProductProduct, self).read(fields=fields, load=load)
-            res = self.readMany2oneFields(res, fields)
-            return res
+            if self.env.context.get('odooPLM'):
+                if not fields:
+                    fields = list(self._fields.keys())
+                cleaned_up_fields = [] 
+                for field_name, field_attrs in self.fields_get(fields).items():
+                    if field_attrs['type']=='properties':
+                        continue
+                    cleaned_up_fields.append(field_name)
+                customFields = [field.replace('plm_m2o_', '') for field in cleaned_up_fields if field.startswith('plm_m2o_')]
+                fields.extend(customFields)
+                fields = list(set(cleaned_up_fields))
+                fields = self.plm_sanitize(fields)
+                res = super(ProductProduct, self).read(fields=fields, load=load)
+                return self.readMany2oneFields(res, fields)
+            return super(ProductProduct, self).read(fields=fields, load=load)
         except Exception as ex:
             if isinstance(ex, AccessError) and 'sale.report' in ex.name:
                 return """
@@ -1790,11 +1799,17 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         return result
 
     @api.model
-    def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None):
-        if not args:
-            args = []
-        product_ids = list(self._search([('engineering_code', operator, name)] + args, limit=limit, access_rights_uid=name_get_uid))
-        product_ids += list(super(ProductProduct, self)._name_search(name, args, operator, limit, name_get_uid))
+    def _name_search(self, name, domain=None, operator='ilike', limit=None, order=None):
+        if not domain:
+            domain=[('engineering_code', 'ilike', name)]
+        else:
+            domain = expression.OR([domain,
+                                   [('engineering_code', 'ilike', name)]])
+        product_ids = list(super(ProductProduct, self)._name_search(name,
+                                                                    domain,
+                                                                    operator,
+                                                                    limit,
+                                                                    order=None))
         return list(set(product_ids))
     
     @api.model
@@ -1868,6 +1883,29 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         populate(self)
         return out
 
+
+    @api.model
+    def get_all_document_source_path(self, attributes, *k, **kw):
+        out_src = []
+        #
+        def fillUpSrvPath(p_p_id):
+            for ir_attachment_id in p_p_id.linkeddocuments.filtered(lambda x:x.document_type=='3d'):
+                is_brake=False
+                for sub_ir_attachment_id in ir_attachment_id.GetRelatedDocs(getBrowse=True):
+                    if sub_ir_attachment_id.document_type=='2d':
+                        is_brake=True
+                        break
+                if is_brake:
+                    continue
+                out_src.append((ir_attachment_id.first_source_path,
+                                ir_attachment_id.id))
+        #
+        product_product_id = attributes.get('_id')
+        brw_product_product_id = self.browse(product_product_id)
+        for product_id in brw_product_product_id.get_product_bom_flat_ids():
+            fillUpSrvPath(product_id)
+        return list(set(out_src))
+        
         
 class PlmTemporayMessage(models.TransientModel):
     _name = "plm.temporary.message"

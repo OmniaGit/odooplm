@@ -11,7 +11,7 @@
                         name="engineering_products_open"
                         type="object"
                         string="Engineering Information"
-                        attrs="{'invisible': [('type', '=', 'service')]}"
+                        invisible="type=='service'"
                         icon="fa-gears">
                 </button>
                 <button name="open_related_revisions"
@@ -19,7 +19,7 @@
                         string="Rev."
                         class="oe_stat_button"
                         icon="fa-tasks"
-                        attrs="{'invisible':[('engineering_revision_count','&lt;=','1')]}">
+                        invisible="engineering_revision_count &lt;=1">
                         <field name="engineering_revision_count"
                                string=" "
                                widget="statinfo"/>
@@ -28,8 +28,10 @@
             <div name="options" position="before">
                 <field name="is_engcode_editable" invisible="1"/>
                 <group>
-                    <field name="engineering_code" attrs="{'readonly':[('is_engcode_editable','=', False)]}"/>
-                    <field name="engineering_revision" attrs="{'readonly':[('is_engcode_editable','=', False)]}"/>
+                    <field name="engineering_code"
+                           readonly="is_engcode_editable==False"/>
+                    <field name="engineering_revision"
+                           readonly="is_engcode_editable==False"/>
                 </group>
             </div>
         </field>

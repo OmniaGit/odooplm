@@ -19,7 +19,7 @@
 ##############################################################################
 {
     "name": "Activity Validation",
-    "version": "16.0.2",
+    "version": "17.0.0.1",
     "author": "OmniaSolutions",
     "website": "https://github.com/OmniaGit/odooplm",
     "category": "Custom",
@@ -45,7 +45,7 @@
     "qweb": ["static/src/xml/*.xml"],
     'assets': {
         'web.assets_backend': [
-            "activity_validation/static/src/js/systray_activity_menu.js",
+            #"activity_validation/static/src/js/systray_activity_menu.js",
             ]
         },
     "installable": True,

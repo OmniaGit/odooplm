@@ -42,7 +42,7 @@
         <field name="name">plm.mrp.bom.line.view.form</field>
         <field name="model">mrp.bom.line</field>
         <field name="inherit_id" ref="mrp.mrp_bom_line_view_form"/>
-        <field name="type">tree</field>
+        <field name="type">form</field>
         <field name="arch" type="xml">
             <field name="product_id" position="before">
                 <field name="itemnum"/>
@@ -78,7 +78,7 @@
         			icon="plm/static/description/odoo_icon_small.png"
         			string="."
         			class="float-right"
-        			attrs="{'invisible': ['|',('att_count', '=', False), ('att_count', '=', 0)]}"/>
+        			invisible="att_count in [False,0]"/>
         	</field>
             <field name="product_id" position="after">
             	<field name="product_id" widget="many2one"/>
@@ -115,7 +115,7 @@
                         string="BOM Rev."
                         class="oe_stat_button"
                         icon="fa-tasks"
-                        attrs="{'invisible':[('bom_revision_count','&lt;=','1')]}">
+                        invisible="bom_revision_count>=1">
                 <field name="bom_revision_count" string=" " widget="statinfo"/>
                 </button>
             </div>
@@ -135,7 +135,7 @@
 	        			aria-label="Product Attachments"
 	        			string="."
 	        			class="float-right"
-	        			attrs="{'invisible': ['|',('att_count', '=', False), ('att_count', '=', 0)]}"/>
+	        			invisible="att_count in [False,0]"/>
 				</div>
 		    </field>
 		    <field name="code" position="replace">
@@ -167,7 +167,7 @@
                         icon="fa-level-down" 
                         title="Open Related Boms"
                         class="btn btn-sm oe_stat_button"
-                        attrs="{'invisible':[('hasChildBoms', '=', False)]}"/>
+                        invisible="hasChildBoms==False"/>
             	<field name="related_document_ids" invisible="True"/>
             	<button 
   					name="openRelatedDocuments"
@@ -175,7 +175,7 @@
   					icon="plm/static/description/odoo_icon_small.png"
   					string="."
   					class="float-right btn"
-  					attrs="{'invisible':[('related_document_ids', '=', [])]}"/>
+  					invisible="related_document_ids == []"/>
             </xpath>
             <xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_id']" position="after">
                 <field name="description" readonly="True"/>
@@ -260,7 +260,7 @@
     <record id="mrp_bom_tree_view_where" model="ir.ui.view">
         <field name="name">mrp.bom.tree.where</field>
         <field name="model">mrp.bom</field>
-        <field name="field_parent">father_complete_ids</field>
+        <!-- not more supported on v17 <field name="field_parent">father_complete_ids</field> -->
         <field name="arch" type="xml">
             <tree string="Where Used Bill of Materials">
                 <field name="product_id" string="Component Name"/>
@@ -283,7 +283,7 @@
     <record id="plm_bom_tree_structure" model="ir.ui.view">
         <field name="name">plm.bom.tree</field>
         <field name="model">mrp.bom.line</field>
-        <field name="field_parent">child_line_ids</field>
+        <!-- not more supported on v17 <field name="field_parent">child_line_ids</field> -->
         <field name="arch" type="xml">
             <tree string="Bill of Materials">
                 <field name="itemnum" string="Position"/>

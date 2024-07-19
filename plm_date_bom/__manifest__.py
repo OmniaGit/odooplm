@@ -20,7 +20,7 @@
 ##############################################################################
 {
     "name": "PLM Date Bom",
-    "version": "16.0.1",
+    "version": "17.0.0.1",
     "author": "OmniaSolutions",
     "license": "AGPL-3",
     "website": "https://odooplm.omniasolutions.website",
