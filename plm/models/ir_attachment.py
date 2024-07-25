@@ -2009,13 +2009,13 @@ class PlmDocument(models.Model):
     def canCheckOut1(self):
         for docBrws in self:
             if docBrws.isCheckedOutByMe():
-                msg = _(f"Unable to check-Out a document that is already checked Out By %s" % docBrws.checkout_user)
+                msg = _("Unable to check-Out a document that is already checked Out By %s" % docBrws.checkout_user)
                 return docBrws.id, 'check_out_by_me', msg                
             if docBrws.is_checkout:
-                msg = _(f"Unable to check-Out a document that is already checked IN by user %s" % docBrws.checkout_user)
+                msg = _("Unable to check-Out a document that is already checked IN by user %s" % docBrws.checkout_user)
                 return docBrws.id, 'check_out_by_user', msg
             if docBrws.engineering_state not in ['released','undermodify', False]:
-                msg = _(f"Unable to check-Out a document that is in state %s" % docBrws.engineering_state)
+                msg = _("Unable to check-Out a document that is in state %s" % docBrws.engineering_state)
                 return docBrws.id, 'check_out_released', msg
             return docBrws.id, 'check_in', ''
         raise Exception()
