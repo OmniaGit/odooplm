@@ -20,7 +20,7 @@
 ##############################################################################
 {
     'name': 'Product Lifecycle Management',
-    'version': '12.0.2',
+    'version': '12.0.3',
     'author': 'OmniaSolutions',
     'website': 'https://www.omniasolutions.website',
     'category': 'Product Lifecycle Management',
