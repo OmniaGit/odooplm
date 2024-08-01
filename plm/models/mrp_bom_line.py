@@ -30,6 +30,7 @@ from odoo import models
 from odoo import fields
 from odoo import api
 from odoo import _
+import logging
 
 
 class MrpBomLineExtension(models.Model):
@@ -192,7 +193,6 @@ class MrpBomLineExtension(models.Model):
                                 readonly=True,
                                 index=True,
                                 help=_("This is the document object that declares this BoM."))
-    
     type = fields.Selection(related="bom_id.type")
     itemnum = fields.Integer(_('CAD Item Position'), help=_(
         "This is the item reference position into the CAD document that declares this BoM."))
@@ -219,9 +219,7 @@ class MrpBomLineExtension(models.Model):
         default='none')
 
     product_tag_ids = fields.Many2many(related='product_tmpl_id.product_tag_ids')
-    
-    product_tumbnail = fields.Image(related="product_id.product_tmpl_id.image_1920")
-    
+
     def go_to_product(self):
         return {'name': _('Product'),
                     'res_model': 'product.product',
