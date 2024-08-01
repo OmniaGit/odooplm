@@ -639,46 +639,65 @@ class PlmComponent(models.Model):
         self.wf_message_post(body=_('Created Normal Bom.'))
         return False
 
-    def checkWorkflow(self, docInError, linkeddocuments, check_state, docIDs=[]):
+    def checkWorkflow(self,
+                      linkeddocuments,
+                      to_state,
+                      allowed_state):
+        docIDs = []
+        docInError = []
         attachment = self.env['ir.attachment']
-        for documentBrws in linkeddocuments:
-            if documentBrws.state == check_state:
-                if documentBrws.is_checkout:
-                    docInError.append(_("Document %r : %r is checked out by user %r") % (documentBrws.name, documentBrws.revisionid, documentBrws.checkout_user))
+        #
+        def _checkWorkflow(attachment_ids):
+            for ir_attachment_id in attachment_ids:
+                if ir_attachment_id.id in docIDs:
                     continue
-                docIDs.append(documentBrws.id)
-                if documentBrws.is3D():
-                    doc_layout_ids = documentBrws.getRelatedLyTree(documentBrws.id)
-                    for child_doc_id in doc_layout_ids:
-                        if child_doc_id not in docIDs:
-                            docIDs.extend(self.checkWorkflow(docInError, attachment.browse(child_doc_id), check_state, docIDs))
-                            raw_doc_ids = documentBrws.getRelatedRfTree(documentBrws.id, recursion=True)
-                            docIDs.extend(self.checkWorkflow(docInError, attachment.browse(raw_doc_ids), check_state, docIDs))
-        return list(set(docIDs))
+                if ir_attachment_id.state not in allowed_state:
+                    continue
+                if ir_attachment_id.is_checkout:
+                    docInError.append(_("Document %r : %r is checked out by user %r") % (ir_attachment_id.name,
+                                                                                         ir_attachment_id.revisionid,
+                                                                                         ir_attachment_id.checkout_user))
+                    continue
+                #
+                docIDs.append(ir_attachment_id.id)
+                #
+                if ir_attachment_id.is3D():
+                    for lay_attachment_id in ir_attachment_id.getRelatedLyTree(ir_attachment_id.id):
+                        if lay_attachment_id not in docIDs:
+                            _checkWorkflow(attachment.browse(lay_attachment_id))
+                            #
+                            raw_doc_ids = ir_attachment_id.getRelatedRfTree(ir_attachment_id.id,
+                                                                            recursion=True)
+                            #
+                            _checkWorkflow(attachment.browse(raw_doc_ids))
+        _checkWorkflow(linkeddocuments)
+        return list(set(docIDs)), docInError
 
     def _action_ondocuments(self,
-                            action_name,
+                            to_state,
                             include_statuses=[]):
         """
             move workflow on documents having the same state of component
         """
-        docIDs = []
-        docInError = []
-        for oldObject in self:
-            if (action_name != 'transmit') and (action_name != 'reject') and (action_name != 'release'):
-                check_state = oldObject.state
-            else:
-                check_state = 'confirmed'
-            docIDs.extend(self.checkWorkflow(docInError, oldObject.linkeddocuments, check_state))
-        if docInError:
+        res_attachment_id = []
+        res_errors = []
+        for product_product_id in self:
+            res_attachment_id, res_errors = self.checkWorkflow(product_product_id.linkeddocuments,
+                                                               to_state,         
+                                                               include_statuses)
+            
+        if res_errors:
             msg = _("Error on workflow operation")
-            for e in docInError:
+            for e in res_errors:
                 msg = msg + "\n" + e
             msg = msg + _("\n\nCheck-In All the document in order to proceed !!")
             raise UserError(msg)
-        self.moveDocumentWorkflow(list(set(docIDs)), action_name)
+        self.moveDocumentWorkflow(res_attachment_id,
+                                  to_state)
 
-    def moveDocumentWorkflow(self, docIDs, action_name):
+    def moveDocumentWorkflow(self,
+                             docIDs,
+                             action_name):
         ir_attachment = self.env['ir.attachment']
         if len(docIDs) > 0:
             ir_attachment_id = ir_attachment.browse(docIDs)
@@ -753,6 +772,7 @@ class PlmComponent(models.Model):
         """
             release the object
         """
+        bom_to_draft = self.env['ir.config_parameter'].sudo()._get_param('plm_all_bom_to_draft') or False
         for comp_obj in self:
             defaults = {}
             status = 'draft'
@@ -762,7 +782,13 @@ class PlmComponent(models.Model):
             defaults['state'] = status
             exclude_statuses = ['draft', 'released', 'undermodify', 'obsoleted']
             include_statuses = ['confirmed']
-            comp_obj.commonWFAction(status, action, doc_action, defaults, exclude_statuses, include_statuses)
+            comp_obj.commonWFAction(status,
+                                    action,
+                                    doc_action,
+                                    defaults, 
+                                    exclude_statuses,
+                                    include_statuses,
+                                    recursive=bom_to_draft)
         return True
 
     def action_confirm(self):
@@ -778,7 +804,12 @@ class PlmComponent(models.Model):
             defaults['state'] = status
             exclude_statuses = ['confirmed', 'released', 'undermodify', 'obsoleted']
             include_statuses = ['draft']
-            comp_obj.commonWFAction(status, action, doc_action, defaults, exclude_statuses, include_statuses)
+            comp_obj.commonWFAction(status,
+                                    action,
+                                    doc_action,
+                                    defaults,
+                                    exclude_statuses,
+                                    include_statuses)
         return True
 
     @api.model
@@ -787,56 +818,140 @@ class PlmComponent(models.Model):
                             ('engineering_revision', '=', revision)])
 
     def action_release(self):
+        return self._action_release()
+
+    def action_un_release(self):
+        for product_product_id in self:
+            body ="""
+                FORCE draft action from super plm admin user !!!
+                data could be not as expected !!!
+            """
+            product_product_id.message_post(body=body)
+            product_product_id.state='draft'
+        
+    def action_un_release_release(self):
+        for product_product_id in self:
+            body ="""
+                FORCE release action from super plm admin user !!!
+                data could be not as expected !!!
+            """
+            product_product_id.message_post(body=body)
+            product_product_id.state='released'
+                
+    def _action_release(self):
         """
            action to be executed for Released state
         """
         for comp_obj in self:
-            children_product_to_emit = []
-            product_tmpl_ids = []
-            defaults = {}
+            allProdObjs = comp_obj
             exclude_statuses = ['released', 'undermodify', 'obsoleted']
-            include_statuses = ['confirmed']
+            include_statuses = self.env.context.get("PLM_STATE_RELEASE" ,['confirmed'])
             errors, product_ids = comp_obj._get_recursive_parts(exclude_statuses, include_statuses)
-            children_products = product_ids.copy()
+            children_products_ids = product_ids.copy()
             if len(product_ids) < 1 or len(errors) > 0:
                 raise UserError(errors)
-            children_products.remove(comp_obj.id)
-            if children_products:
-                self.browse(children_products).action_release()
+            children_products_ids.remove(comp_obj.id)
             available_status = self._fields.get('state')._description_selection(self.env)
             dict_status = dict(available_status)
-            allProdObjs = self.browse(product_ids)
+            if children_products_ids:
+                children_products= self.browse(children_products_ids)
+                children_products.action_release()
+                allProdObjs+=children_products
             allProdObjs = allProdObjs.filtered(lambda x: x.engineering_code not in [False, ''])
-            for productBrw in allProdObjs:
-                old_revision = self._getbyrevision(productBrw.engineering_code, productBrw.engineering_revision - 1)
-                if old_revision:
-                    defaults['engineering_writable'] = False
-                    defaults['state'] = 'obsoleted'
-                    old_revision.product_tmpl_id.write(defaults)
-                    old_revision.write(defaults)
-                    status_lable = dict_status.get(defaults.get('state', ''), '')
-                    old_revision.wf_message_post(body=_('Status moved to: %s by %s.' % (status_lable, self.env.user.name)))
-            defaults['engineering_writable'] = False
-            defaults['state'] = 'released'
-            defaults['release_user'] = self.env.uid
-            defaults['release_date'] = datetime.now()
-            self.browse(product_ids)._action_ondocuments('release', include_statuses)
-            for currentProductId in allProdObjs:
-                if not currentProductId.release_date:
-                    currentProductId.release_date = datetime.now()
-                    currentProductId.release_user = self.env.uid
-                if currentProductId.id not in self.ids:
-                    children_product_to_emit.append(currentProductId.id)
-                product_tmpl_ids.append(currentProductId.product_tmpl_id.id)
-            self.browse(children_product_to_emit).perform_action('release')
-            self.browse(children_product_to_emit).write(defaults)
-            objId = self.env['product.template'].browse(product_tmpl_ids).write(defaults)
-            comp_obj.write(defaults)
-            if (objId):
+            for product_product_id in allProdObjs:
+                if product_product_id.engineering_revision>0:
+                    old_revision = self._getbyrevision(product_product_id.engineering_code,
+                                                       product_product_id.engineering_revision - 1)
+                    #
+                    # Set all revision status
+                    #
+                    if old_revision:
+                        old_revision.product_tmpl_id.engineering_writable = False
+                        old_revision.product_tmpl_id.state = 'obsoleted'
+                        old_revision.engineering_writable = False
+                        old_revision.state = 'obsoleted'
+                        status_lable = dict_status.get('obsoleted')
+                        old_revision.wf_message_post(body=_('Status moved to: %s by %s.' % (status_lable,
+                                                                                            self.env.user.name)))
+                    else:
+                        logging.error(f"Missing previews version for {product_product_id.engineering_code}")
+                #
+                # Move the related document
+                #
+                product_product_id._action_ondocuments('release', include_statuses)
+                #
+                # Work on active product product
+                #
+                defaults = {}
+                defaults['engineering_writable'] = False
+                defaults['state'] = 'released'
+                defaults['release_user'] = self.env.uid
+                defaults['release_date'] = datetime.now()
+                product_product_id.write(defaults)
+                #
+                # wotk on product.template
+                #
+                product_template_id = product_product_id.product_tmpl_id
+                product_template_id.write(defaults)
+                #
+                # Notifie on chatter
+                #
                 status_lable = dict_status.get(defaults.get('state', ''), '')
-                self.browse(product_ids).wf_message_post(body=_('Status moved to: %s by %s.' % (status_lable, self.env.user.name)))
-            return objId
-        return False
+                product_product_id.wf_message_post(body=_('Status moved to: %s by %s.' % (status_lable,
+                                                                                          self.env.user.name)))           
+        return True
+
+    # def action_release(self):
+    #     """
+    #        action to be executed for Released state
+    #     """
+    #     for comp_obj in self:
+    #         children_product_to_emit = []
+    #         product_tmpl_ids = []
+    #         defaults = {}
+    #         exclude_statuses = ['released', 'undermodify', 'obsoleted']
+    #         include_statuses = ['confirmed']
+    #         errors, product_ids = comp_obj._get_recursive_parts(exclude_statuses, include_statuses)
+    #         children_products = product_ids.copy()
+    #         if len(product_ids) < 1 or len(errors) > 0:
+    #             raise UserError(errors)
+    #         children_products.remove(comp_obj.id)
+    #         if children_products:
+    #             self.browse(children_products).action_release()
+    #         available_status = self._fields.get('state')._description_selection(self.env)
+    #         dict_status = dict(available_status)
+    #         allProdObjs = self.browse(product_ids)
+    #         allProdObjs = allProdObjs.filtered(lambda x: x.engineering_code not in [False, ''])
+    #         for productBrw in allProdObjs:
+    #             old_revision = self._getbyrevision(productBrw.engineering_code, productBrw.engineering_revision - 1)
+    #             if old_revision:
+    #                 defaults['engineering_writable'] = False
+    #                 defaults['state'] = 'obsoleted'
+    #                 old_revision.product_tmpl_id.write(defaults)
+    #                 old_revision.write(defaults)
+    #                 status_lable = dict_status.get(defaults.get('state', ''), '')
+    #                 old_revision.wf_message_post(body=_('Status moved to: %s by %s.' % (status_lable, self.env.user.name)))
+    #         defaults['engineering_writable'] = False
+    #         defaults['state'] = 'released'
+    #         defaults['release_user'] = self.env.uid
+    #         defaults['release_date'] = datetime.now()
+    #         self.browse(product_ids)._action_ondocuments('release', include_statuses)
+    #         for currentProductId in allProdObjs:
+    #             if not currentProductId.release_date:
+    #                 currentProductId.release_date = datetime.now()
+    #                 currentProductId.release_user = self.env.uid
+    #             if currentProductId.id not in self.ids:
+    #                 children_product_to_emit.append(currentProductId.id)
+    #             product_tmpl_ids.append(currentProductId.product_tmpl_id.id)
+    #         self.browse(children_product_to_emit).perform_action('release')
+    #         self.browse(children_product_to_emit).write(defaults)
+    #         objId = self.env['product.template'].browse(product_tmpl_ids).write(defaults)
+    #         comp_obj.write(defaults)
+    #         if (objId):
+    #             status_lable = dict_status.get(defaults.get('state', ''), '')
+    #             self.browse(product_ids).wf_message_post(body=_('Status moved to: %s by %s.' % (status_lable, self.env.user.name)))
+    #         return objId
+    #     return False
 
     def action_obsolete(self):
         """
@@ -892,6 +1007,29 @@ class PlmComponent(models.Model):
         if WORKFLOW_ONLY_CLIENT and is_odooplm and odoo_side_call:
             raise UserError('You can move workflow only by the client side')
 
+    def _get_recursive_parts_new(self,
+                                 exclude_statuses,
+                                 include_statuses):
+        mrp_bom = self.env['mrp.bom']
+        out_product_product_ids = []
+
+        def _get_product_bom(product_product_id, ):
+            if product_product_id.id in out_product_product_ids or \
+                product_product_id.state in exclude_statuses or \
+                product_product_id.engineering_code in [False, '']:
+                return
+            else:
+                out_product_product_ids.append(product_product_id.id)
+            #
+            for mrp_bom_id in mrp_bom.search([('product_tmpl_id','=', product_product_id.product_tmpl_id.id)]):
+                for mrp_bom_line_id in mrp_bom_id.bom_line_ids:
+                    _get_product_bom(mrp_bom_line_id.product_id)
+        #
+        _get_product_bom(self)
+        #
+        out_product_product_ids.reverse()
+        return out_product_product_ids
+ 
     def commonWFAction(self,
                        status,
                        action,
@@ -900,42 +1038,34 @@ class PlmComponent(models.Model):
                        exclude_statuses=[],
                        include_statuses=[],
                        recursive=True):
-        self.canMoveWFByParam()
-        product_product_ids = []
-        product_template_ids = []
         if recursive:
-            userErrors, allIDs = self._get_recursive_parts(exclude_statuses, include_statuses)
-            if userErrors:
-                raise UserError(userErrors)
+            allIDs = self._get_recursive_parts_new(exclude_statuses,
+                                                   include_statuses)
+
         else:
             allIDs = self.id
-        allIdsBrwsList = self.browse(allIDs)
-        allIdsBrwsList = allIdsBrwsList.filtered(lambda x: x.engineering_code not in [False, ''])
-        allIdsBrwsList._action_ondocuments(doc_action, include_statuses)
-        to_state = defaults.get('state', '')
-        for currId in allIdsBrwsList:
-            if to_state!=currId.state:
-                if not(currId.id in self.ids):
-                    product_product_ids.append(currId.id)
-                product_template_ids.append(currId.product_tmpl_id.id)
-                defaults['workflow_user'] = self.env.uid
-                defaults['workflow_date'] = datetime.now()
-                currId.write(defaults)
-                currId.wf_message_post(body=_('Status moved to: %s by %s.' % (to_state, self.env.user.name)))
-        if action:
-            product_ids = self.browse(product_product_ids)
-            product_ids.perform_action(action)
-            product_ids.workflow_user = self.env.uid
-            product_ids.workflow_date = datetime.now()
-        product_tmpl_ids = self.env['product.template'].browse(product_template_ids)
-        for product_tmpl_id in  product_tmpl_ids:
-            if product_tmpl_id and to_state!=product_tmpl_id.state:
-                product_tmpl_id.write(defaults)
-                available_status = self._fields.get('state')._description_selection(self.env)
-                dict_status = dict(available_status)
-                status_lable = dict_status.get(defaults.get('state', ''), '')
-                product_tmpl_id.wf_message_post(body=_('Status moved to: %s by %s.' % (status_lable, self.env.user.name)))
-        return product_tmpl_ids
+        #
+        # work on product product
+        #
+        for product_product_id in self.browse(allIDs):
+            product_template_id = product_product_id.product_tmpl_id
+            product_product_id.write(defaults)
+            product_product_id.workflow_user = self.env.uid
+            product_product_id.workflow_date = datetime.now()
+            product_product_id._action_ondocuments(doc_action,
+                                                   include_statuses)
+            #
+            # work on product template
+            #
+            product_template_id.write(defaults)
+            available_status = self._fields.get('state')._description_selection(self.env)
+            dict_status = dict(available_status)
+            status_lable = dict_status.get(defaults.get('state', ''), '')
+            #
+            # write to chatter
+            #
+            product_product_id.wf_message_post(body=_('Status moved to: %s by %s.' % (status_lable,
+                                                                                      self.env.user.name)))
 
 #  ######################################################################################################################################33
     def plm_sanitize(self, vals):
@@ -1071,7 +1201,9 @@ class PlmComponent(models.Model):
                 product.with_context(ctx).on_change_tmpmater()
                 product.with_context(ctx).on_change_tmpsurface()
                 product.with_context(ctx).on_change_tmptreatment()
-        self.checkFromOdooPlm()
+        for product_id in self:
+            if product_id._origin.id: 
+                product_id.checkFromOdooPlm()
         return res
 
     def read(self, fields=[], load='_classic_read'):

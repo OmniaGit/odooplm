@@ -272,7 +272,7 @@ class MrpBomExtension(models.Model):
                 output.append([prod_id, inner_ids])
         return output
 
-    
+
     def get_last_comp_id(self, comp_id):
         prod_prod_obj = self.env['product.product']
         comp_brws = prod_prod_obj.browse(comp_id)
@@ -367,7 +367,7 @@ class MrpBomExtension(models.Model):
         prt_datas = self._get_pack_datas(rel_datas)
         return rel_datas, prt_datas, self._get_pack_rel_datas(rel_datas, prt_datas)
 
-    
+
     def get_exploded_bom(self, level=0, curr_level=0):
         """
             Return a list of all children in a Bom ( level = 0 one level only, level = 1 all levels)
@@ -601,7 +601,7 @@ class MrpBomExtension(models.Model):
     def read(self, fields=[], load='_classic_read'):
         fields = self.plm_sanitize(fields)
         return super(MrpBomExtension, self).read(fields=fields, load=load)
-    
+
     def write(self, vals, check=True):
         vals = self.plm_sanitize(vals)
         ret = super(MrpBomExtension, self).write(vals)
@@ -616,7 +616,7 @@ class MrpBomExtension(models.Model):
         ret.rebase_bom_weight()
         return ret
 
-    
+
     def copy(self, default={}):
         """
             Return new object copied (removing source_id)
@@ -624,19 +624,23 @@ class MrpBomExtension(models.Model):
         new_bom_brws = super(MrpBomExtension, self).copy(default)
         if new_bom_brws:
             for bom_line in new_bom_brws.bom_line_ids:
+                if not bom_line.product_id.product_tmpl_id.engineering_code:
+                    bom_line.sudo().write({'state': 'draft',
+                                           'source_id': False,})
+                    continue
                 late_rev_id_c = self.env['product.product'].GetLatestIds([
                     (bom_line.product_id.product_tmpl_id.engineering_code,
                      False,
                      False)
                 ])  # Get Latest revision of each Part
-                bom_line.sudo().write({'state': 'draft'})
                 write_vals = {
+                    'state': 'draft',
                     'source_id': False,
                     'name': bom_line.product_id.product_tmpl_id.name,
                 }
                 if late_rev_id_c:
                     write_vals['product_id'] = late_rev_id_c[0]
-                bom_line.write(write_vals)
+                bom_line.sudo().write(write_vals)
             new_bom_brws.sudo().with_context({'check': False}).write({
                 'source_id': False,
                 'name': new_bom_brws.product_tmpl_id.name
@@ -698,7 +702,7 @@ class MrpBomExtension(models.Model):
                     'context': {"group_by": ['bom_id']},
                     }
 
-    
+
     def open_related_bom_revisions(self):
         bom_ids = self.search([('product_tmpl_id', 'in', self.product_tmpl_id.getAllVersionTemplate().ids)])
         return {'name': _('B.O.M.S'),
@@ -749,7 +753,7 @@ class MrpBomExtension(models.Model):
             product_tmpl_id = parent_product_product_id.product_tmpl_id.id
             ir_attachment_relation.removeChildRelation(parent_ir_attachment_id)  # perform default unlink to HiTree, need to perform RfTree also
             ir_attachment_relation.removeChildRelation(parent_ir_attachment_id, linkType='RfTree')
-            
+
             mrp_bom_found_id = self.saveRelationNewGetBom(product_tmpl_id, bomType, parent_product_product_id)
             if mrp_bom_found_id:
                 mrp_bom_found_id.delete_child_row(parent_ir_attachment_id)
@@ -804,7 +808,7 @@ class MrpBomExtension(models.Model):
     @api.model
     def _bom_find_domain(self, product_tmpl=None, product=None, picking_type=None, company_id=False, bom_type=False):
         domain = super(MrpBomExtension, self)._bom_find_domain(product_tmpl=product_tmpl,
-                                                               product=product, 
+                                                               product=product,
                                                                picking_type=picking_type,
                                                                company_id=company_id,
                                                                bom_type=bom_type)

@@ -1,6 +1,8 @@
 Manage Product Lifecycle Management in Odoo
 ==============================================
 
+Configure the plm_all_bom_to_draft systema parameter to True if you what thet when you move the workflow from confirmed to draft all the bom gose to draft
+
 This application enables a group of people to intelligently and efficiently manage 3D Models and 2D Drawings, directly from CAD editors.
 
 It manages fundamental revisions of Products and Documents, helps to work in Concurrent Engineering with access policies to documents.
