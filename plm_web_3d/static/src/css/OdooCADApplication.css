@@ -286,7 +286,14 @@ div.info_header{
 #click_show:hover{
   background-color:gray;
 }
-
+#tree_structure{
+  margin-left: auto;
+  margin-right: auto;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  width: 100%;
+  height: 500px;
+}
 li.attribute_info{
     text-align: left;
 }

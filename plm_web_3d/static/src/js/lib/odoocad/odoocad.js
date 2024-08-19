@@ -101,7 +101,7 @@ class OdooCAD{
         //
 		create_relation_structure(object){
             var self = this;
-            var html_out = "<div class='tree_structure'>";
+            var html_out = "<div class='tree_structure' style='overflow-y: scroll;min-height: 1px;max-height: 400px;'>";
             for (let i = 0; i < object.children.length; i++) {
                   if (object.children[i].type=='Group'){
                     const [inner_html, _children] = self.get_li_structure(object.children[i]);
