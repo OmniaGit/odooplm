@@ -268,7 +268,7 @@
 								icon="fa-bars"/>
 						<button name="open_related_document_revisions"
 						        type="object"
-						        string="BOM Rev."
+						        string="N.Rev."
 						        class="oe_stat_button"
 						        icon="fa-tasks"
 						        attrs="{'invisible':[('attachment_revision_count','&lt;=','1')]}">
@@ -277,6 +277,16 @@
 						<button name="check_out_user" icon="fa-user" attrs="{'invisible': ['|',('checkout_user', '=', 'False'),('checkout_user', '=', '')]}">
 							<field name="checkout_user"/>
 						</button>
+						<field name="must_update_from_cad" invisible="1"></field>
+                        <button name="related_not_update" 
+                                icon="fa-warning"
+                                type="object"
+                                attrs="{'invisible':[('must_update_from_cad','=',False)]}"
+                                >
+                              <div class="o_field_widget o_stat_info o_readonly_modifier">
+                                 <span style="color:orange">Not.Update</span>
+                              </div>
+                        </button>
 	           		</div>
 		           	<group>
 	                	<group string= "PLM Infos:" name="main_doc_info">
@@ -482,6 +492,7 @@
                 <field name="description"/>
                 <field name="state"/>
                 <field name="document_type"/>
+                <field name="must_update_from_cad" invisible="True"/>
                 <field name="is_checkout" invisible="True"/>
                 <field name="is_linkedcomponents" invisible="True"/>
                 <templates>
@@ -502,6 +513,12 @@
                                          </strong>
                         			</td>
                         			<td name="Component" style="text-align: right; width: 100%; padding:1px;">
+                                       <button name="related_not_update"
+                                                 type="object"
+                                                 attrs="{'invisible':[('must_update_from_cad','=',False)]}"
+                                                 class="fa fa-warning fa-2x btn-warning"       
+                                                 /> 
+                                                 <!--invisible="must_update_from_cad==False"-->
                                         <div class="fa fa-lock fa-2x"
                                              style="color:red;display: inline;"
                                              attrs="{'invisible': ['|',('checkout_user', '=', 'False'),('checkout_user', '=', '')]}"/>

@@ -1249,6 +1249,19 @@ class PlmDocument(models.Model):
     revision_user = fields.Many2one('res.users', string=_("User Revision"))
     revision_date = fields.Datetime(string=_('Datetime Revision'))
     
+    must_update_from_cad = fields.Boolean("Must Update form CAD",
+                                          compute="_compute_must_update_from_cad",
+                                          help="""When this flag is enabled the 2d document must be updated in order to guaranteey the update betwin 2d and 3d document""")    
+    
+    def _compute_must_update_from_cad(self):
+        for source_attachment_id in self:
+            source_attachment_id.must_update_from_cad=False
+            if source_attachment_id.is2D():
+                for referenced_attached_id in self.browse(list(set(self.getRelatedLyTree(source_attachment_id.id)))):
+                    if referenced_attached_id.lastSavedDate() > source_attachment_id.lastSavedDate():
+                        source_attachment_id.must_update_from_cad=True
+                
+    
     def _compute_linkedcomponents(self):
         for record in self:
             if record.linkedcomponents:
@@ -2601,7 +2614,11 @@ class PlmDocument(models.Model):
         return True
 
     @api.model
-    def preCheckInRecursive(self, doc_props, forceCheckInModelByDrawing=True, recursion=True, onlyActiveDoc=False):
+    def preCheckInRecursive(self,
+                            doc_props,
+                            forceCheckInModelByDrawing=True,
+                            recursion=True,
+                            onlyActiveDoc=False):
         out = {
             'to_check_in': [],
             'to_ask': [],
@@ -2741,7 +2758,12 @@ class PlmDocument(models.Model):
                 if onlyActiveDoc:
                     return 
                 is_root = False
-                docs3D = self.browse(list(set(self.getRelatedLyTree(docs3D.id))))
+                referenced_attachment_ids = self.browse(list(set(self.getRelatedLyTree(docs3D.id))))
+                for referenced_attached in referenced_attachment_ids:
+                    if referenced_attached.must_update_from_cad:
+                        raise Exception(_(f"3D model {referenced_attached}:{referenced_attached.name} must be saved before the 2d Layout {docs3D.id}:{docs3D.name}"))
+                docs3D=referenced_attachment_ids
+                
             for doc3D in docs3D:
                 doc_id_3d = doc3D.id
                 if doc_id_3d in evaluated:
@@ -2801,6 +2823,17 @@ class PlmDocument(models.Model):
                    recursion)
         return json.dumps(out)
 
+    def lastSavedDate(self):
+        """
+        check the last saved date for the document
+        """
+        self.ensure_one()
+        cad_open = self.sudo().env['plm.cad.open']
+        for cad_open_id in cad_open.search([('document_id','=', self.id),
+                                            ('operation_type','=','save')], limit=1,order='write_date DESC'):
+            return cad_open_id.create_date
+        raise Exception("Attacment not saved")       
+        
     @api.model
     def preCheckOutRecursive(self, comp_vals):
         comp_vals = json.loads(comp_vals)
@@ -2943,6 +2976,17 @@ class PlmDocument(models.Model):
             if index%1000==0:
                 self._cr.commit()
             
-            
+    def related_not_update(self):
+        for attachment_id in self:
+            relation_ids = self.env['ir.attachment.relation'].search(["|",('parent_id','=',attachment_id.id),
+                                                                      ('child_id','=',attachment_id.id),
+                                                                      ('link_kind', '=', 'LyTree')])
+            return {'name': _('Attachment Relations.'),
+                    'res_model': 'ir.attachment.relation',
+                    'view_type': 'form',
+                    'view_mode': 'kanban,tree,form',
+                    'type': 'ir.actions.act_window',
+                    'domain': [('id', 'in', relation_ids.ids)],
+                    'context': {}}     
         
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
