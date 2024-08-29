@@ -2832,7 +2832,7 @@ class PlmDocument(models.Model):
         for cad_open_id in cad_open.search([('document_id','=', self.id),
                                             ('operation_type','=','save')], limit=1,order='write_date DESC'):
             return cad_open_id.create_date
-        raise Exception("Attacment not saved")       
+        return datetime(1970,1,1)
         
     @api.model
     def preCheckOutRecursive(self, comp_vals):
