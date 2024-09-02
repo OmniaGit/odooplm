@@ -83,7 +83,7 @@ class PlmComponent(models.Model):
             if product_product_id.engineering_state not in self.weight_allowed_state and not self.env.context.get('plm_force_weight',False):
                 if 'weight' in vals:
                     del vals['weight']
-                    logging.info("Modification in status %s not allowed for the weight" % product_product_id.engineering_state)
+                    logging.info(f"Modification of {product_product_id.engineering_code} - {product_product_id.name} in status {product_product_id.engineering_state} not allowed for the weight")
             weight_additional = product_product_id.weight_additional
             if 'weight_additional' in vals:
                 weight_additional = vals['weight_additional']
@@ -95,15 +95,25 @@ class PlmComponent(models.Model):
             elif product_product_id.automatic_compute_selection == 'use_normal_bom':
                 vals['weight'] = product_product_id.weight_additional + product_product_id.weight_n_bom_computed
         res= super(PlmComponent,self).write(vals)
-        for product_product_id in self:
-            product_product_id.fix_parent()
+        if [i for i in ['weight','weight_cad','weight_additional'] if i in vals.keys()]:
+            for product_product_id in self:
+                product_product_id.fix_parent()
         return res
         
     def fix_parent(self):
+        if 'update_parent_context' not in self.env.context:
+            new_context = self.env.context.copy()
+            new_context['update_parent_context']=[]
+        else:
+            new_context = self.env.context
+        #
         for product_product_id in self:
+            if product_product_id.id in new_context['update_parent_context']:
+                continue
+            new_context['update_parent_context'].append(product_product_id.id)
             bom_id = product_product_id.getParentBom()
             if bom_id:
-                bom_id.product_tmpl_id.product_variant_id.on_change_automatic_compute()   
+                bom_id.product_tmpl_id.product_variant_id.with_context(new_context).on_change_automatic_compute()   
 
     @api.onchange('automatic_compute_selection','weight_cad','weight_additional','weight_n_bom_computed')
     def on_change_automatic_compute(self):
