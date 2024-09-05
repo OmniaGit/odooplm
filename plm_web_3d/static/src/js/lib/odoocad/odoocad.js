@@ -83,6 +83,7 @@ class OdooCAD{
             xmlhttp.open("GET", url, true);
             xmlhttp.send();
         }
+        
 		get_li_structure(object, nested=false){
             var self = this;
             var found=false;
@@ -112,6 +113,55 @@ class OdooCAD{
             return  [out_lis + "</ul>", found];
         }
         //
+        hide_all(){
+            var i;
+            var tree_item_visibility = document.getElementsByClassName("tree_item_visibility");
+            for (i = 0; i < tree_item_visibility.length; i++) {
+                var icon = tree_item_visibility[i]
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+
+                var groupObj = tree_ref_elements[icon.parentElement.attributes['webgl_ref_name'].value];
+                if (groupObj){
+                    groupObj.visible=false;
+                }
+            }
+            
+            /*
+                var icon = this;
+                      if (icon.classList.contains('fa-eye')) {
+
+              */  
+        }
+        show_all(){
+            var i;
+            var tree_item_visibility = document.getElementsByClassName("tree_item_visibility");
+            for (i = 0; i < tree_item_visibility.length; i++) {
+                var icon = tree_item_visibility[i]
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+                var groupObj = tree_ref_elements[icon.parentElement.attributes['webgl_ref_name'].value];
+                if (groupObj){
+                    groupObj.visible=true;
+                }
+            }            
+        }
+        search_document_tree(element) { 
+            var input, filter, ul, li, a, i, txtValue;
+            input = document.getElementById("input_search_document_tree");
+            filter = input.value.toUpperCase();
+            ul = document.getElementById("document_tree");
+            li = ul.getElementsByTagName("li");
+            for (i = 0; i < li.length; i++) {
+                a = li[i].getElementsByTagName("span")[0];
+                txtValue = a.textContent || a.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    li[i].style.display = "";
+                } else {
+                    li[i].style.display = "none";
+                }
+            }
+        }
 		create_relation_structure(object){
             var self = this;
             var html_out = "<div class='tree_structure' style='overflow-y: scroll;min-height: 1px;max-height: 400px;'>";

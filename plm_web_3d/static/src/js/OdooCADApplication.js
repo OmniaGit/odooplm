@@ -209,22 +209,6 @@ function createMarker(){
 	return new_point
 }
 
-function search_document_tree(element) { 
-    var input, filter, ul, li, a, i, txtValue;
-    input = document.getElementById("input_search_document_tree");
-    filter = input.value.toUpperCase();
-    ul = document.getElementById("document_tree");
-    li = ul.getElementsByTagName("li");
-    for (i = 0; i < li.length; i++) {
-        a = li[i].getElementsByTagName("span")[0];
-        txtValue = a.textContent || a.innerText;
-        if (txtValue.toUpperCase().indexOf(filter) > -1) {
-            li[i].style.display = "";
-        } else {
-            li[i].style.display = "none";
-        }
-    }
-}
 
 function init() {
 /*
@@ -284,7 +268,16 @@ function init() {
  * Inizialize tree view search
  */
   var input_document_tree = document.getElementById('input_search_document_tree');
-  input_document_tree.addEventListener("keyup", search_document_tree);
+  input_document_tree.addEventListener("keyup", OdooCad.search_document_tree);
+/*
+ * function to hide show all components
+ */
+  var bnt_hide_all_parts = document.getElementById('hide_all_parts');
+  bnt_hide_all_parts.addEventListener("click", OdooCad.hide_all);
+  
+  var bnt_show_all_parts = document.getElementById('show_all_parts');
+  bnt_show_all_parts.addEventListener("click", OdooCad.show_all);
+
 }
 
 
