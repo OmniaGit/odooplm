@@ -100,6 +100,9 @@
                                 <b>Document Structure</b>
                             </div>
                             <hr class="datacard_line"/>
+                            <div class="search_document_tree">
+                                <input type="text" id="input_search_document_tree" placeholder="Search Here !!"/>
+                            </div>
                             <lu id="document_tree">
                             </lu>
                         </div>

@@ -71,6 +71,18 @@ class OdooCAD{
 		//
 		
 		///
+		set_str_name(span_element){
+            var file_name = span_element.parentElement.attributes['webgl_ref_name'].value;
+            var xmlhttp = new XMLHttpRequest();
+            var url = "../plm/get_3d_web_document_info/?src_name=" + file_name;
+            xmlhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    span_element.innerHTML = this.responseText;
+                }
+            };
+            xmlhttp.open("GET", url, true);
+            xmlhttp.send();
+        }
 		get_li_structure(object, nested=false){
             var self = this;
             var found=false;
@@ -86,14 +98,15 @@ class OdooCAD{
                   if (object.children[i].type=='Group' ||object.children[i].name!=''){
                      const [inner_html, children_found] = self.get_li_structure(object.children[i], true);
                      var obj_name=object.children[i].name;
+                     var span_lable = "<span class='document_tree_span' webgl_ref_name='" + obj_name + "'>" + obj_name + "</span>";
                      if(children_found || object.children[i].name!=''){
                          tree_ref_elements[obj_name]=object.children[i]
-                         out_lis += "<li class='document_tree_line'><i class='tree_item_visibility fa fa-eye' aria-hidden='true'></i><span class='caret'>" + obj_name + "</span>"+inner_html+"</li>";
+                         out_lis += "<li class='document_tree_line' webgl_ref_name="+ obj_name +"><i class='tree_item_visibility fa fa-eye' aria-hidden='true'></i><span class='caret'>" + span_lable + "</span>" + inner_html + "</li>";
                      }
                      else{
-                        out_lis += "<li class='document_tree_line'>" + obj_name + "</li>";
+                        out_lis += "<li class='document_tree_line' webgl_ref_name="+ obj_name +">" + span_lable + "</li>";
                      }
-                     found=true;         
+                     found=true;
                   }
             }
             return  [out_lis + "</ul>", found];
@@ -142,16 +155,16 @@ class OdooCAD{
                 this.classList.toggle("caret-down");
               });
             }
-            
+            //
             var tree_item_visibility = document.getElementsByClassName("tree_item_visibility");
             for (i = 0; i < tree_item_visibility.length; i++) {
                 tree_item_visibility[i].addEventListener("click", function() {
-                    var groupObj = tree_ref_elements[this.nextElementSibling.innerText];
+                    var groupObj = tree_ref_elements[this.parentElement.attributes['webgl_ref_name'].value];
                     var icon = this;
                       if (icon.classList.contains('fa-eye')) {
-                        icon.classList.remove('fa-eye');
-                        icon.classList.add('fa-eye-slash');
-                        groupObj.visible=false;
+                            icon.classList.remove('fa-eye');
+                            icon.classList.add('fa-eye-slash');
+                            groupObj.visible=false;
                       } 
                       else {
                         icon.classList.remove('fa-eye-slash');
@@ -159,6 +172,11 @@ class OdooCAD{
                         groupObj.visible=true;
                       }
                     });
+                }
+            //
+            var span_tree_documents = document.getElementsByClassName("document_tree_span");
+            for (i = 0; i < span_tree_documents.length; i++) {
+                    this.set_str_name(tree_item_visibility[i])
                 }
         }
 		
