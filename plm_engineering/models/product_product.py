@@ -74,7 +74,7 @@ class ProductProductExtension(models.Model):
                                          ('type', '=', 'phantom')], order='engineering_revision DESC', limit=1):
             return []
         bom_brws_list = bom_type.search([('product_tmpl_id', '=', product_template_id),
-                                         ('type', '=', new_bom_type)], order='engineering_revision DESC', limit=1)
+                                         ('type', '=', new_bom_type)])
         if bom_brws_list:
             for bom_brws in bom_brws_list:
                 for bom_line in bom_brws.bom_line_ids:
