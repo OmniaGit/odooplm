@@ -70,6 +70,9 @@ class ProductProductExtension(models.Model):
         if new_bom_type not in ['normal', 'phantom']:
             raise UserError(_("Could not convert source bom to %r" % new_bom_type))
         product_template_id = obj_product_product_brw.product_tmpl_id.id
+        if bom_type.search_count([('product_tmpl_id', '=', product_template_id),
+                                         ('type', '=', 'phantom')], order='engineering_revision DESC', limit=1):
+            return []
         bom_brws_list = bom_type.search([('product_tmpl_id', '=', product_template_id),
                                          ('type', '=', new_bom_type)], order='engineering_revision DESC', limit=1)
         if bom_brws_list:

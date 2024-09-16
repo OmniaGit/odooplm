@@ -20,7 +20,7 @@
 ##############################################################################
 {
     "name": "PLM Engineering",
-    "version": "14.0.1.0.0",
+    "version": "14.0.1.0.1",
     "author": "OmniaSolutions",
     "website": "https://github.com/OmniaGit/odooplm",
     "category": "Product Lifecycle Management",
