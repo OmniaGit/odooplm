@@ -234,6 +234,12 @@ class ProductTemporaryNormalBom(osv.osv.osv_memory):
                                                            ('type', '=', 'normal')])
                 if obj_boms:
                     raise UserError(_("Normal BoM for Part '%s' and revision '%s' already exists." % (obj_boms.product_tmpl_id.engineering_code, obj_boms.product_tmpl_id.engineering_revision)))
+                
+                if obj_brws.env['mrp.bom'].search_count([('product_tmpl_id', '=', id_template),
+                                                                 ('type', '=', 'phantom')]):
+                    raise UserError(_("""Normal BoM for Part '%s' and revision '%s' have a kit bom present.\n"""
+                                      """If you whant to create the normal bom please delete the kit bom first !
+                                        """ % (product_browse.engineering_code, obj_boms.product_tmpl_id.engineering_revision)))
                 line_messages_list = product_product_type_object.create_bom_from_ebom(
                     product_browse, 'normal',
                     obj_brws.summarize,
