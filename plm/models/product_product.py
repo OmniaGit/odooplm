@@ -1800,17 +1800,13 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
 
     @api.model
     def _name_search(self, name, domain=None, operator='ilike', limit=None, order=None):
-        if not domain:
-            domain=[('engineering_code', 'ilike', name)]
-        else:
-            domain = expression.OR([domain,
-                                   [('engineering_code', 'ilike', name)]])
+        engineering_code_products = self.search([('engineering_code', 'ilike', name)])
         product_ids = list(super(ProductProduct, self)._name_search(name,
                                                                     domain,
                                                                     operator,
                                                                     limit,
                                                                     order=None))
-        return list(set(product_ids))
+        return list(set(product_ids + engineering_code_products.ids))
     
     @api.model
     def getExpodedBom(self, ids):

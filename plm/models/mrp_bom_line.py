@@ -217,6 +217,8 @@ class MrpBomLineExtension(models.Model):
          ('server', 'Server')],
         _('Cutted Compute Type'),
         default='none')
+    
+    product_tag_ids = fields.Many2many(related='product_tmpl_id.product_tag_ids')
 
     product_tag_ids = fields.Many2many(related='product_tmpl_id.product_tag_ids')
     

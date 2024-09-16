@@ -52,6 +52,7 @@
                 <field name="engineering_revision" readonly="True"/>
                 <field name="engineering_state"/>
                 <field name="description" select="True"/>
+                <field name="product_tag_ids" widget="many2many_tags" options="{'color_field': 'color'}" />
                 <field name="source_id" string="Source Relation" widget="many2one"
                 	   context="{'kanban_view_ref':'plm.document_kanban_view',
         						 'tree_view_ref':'plm.ir_attachment_tree',
@@ -290,6 +291,7 @@
                 <field name="product_id" string="Component Name"/>
                 <field name="engineering_revision" string="Revision"/>
                 <field name="description"/>
+                <field string="Tags" name="product_tag_ids"/>
                 <field name="source_id" string="Source Relation" widget="many2one"
                 	   context="{'kanban_view_ref':'plm.document_kanban_view',
         						 'tree_view_ref':'plm.ir_attachment_tree',

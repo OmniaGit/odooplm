@@ -59,8 +59,12 @@
                         </li>
                         <li  class="plm_web_button">
                            <label for="transparency_slider">Transparency:</label>
-            	           <input name="transparency_slider" id="object_transparency" type="range" min="0" max="100" value="50"/>
+            	           <input name="transparency_slider" id="object_transparency" type="range" min="0" max="100" value="90"/>
         	           </li>
+                        <li  class="plm_web_button">
+                           <label for="explosion_slider">Explosion:</label>
+                           <input name="explosion_slider" id="object_explosion" type="range" min="0" max="100" value="0"/>
+                       </li>
         	           <li  class="plm_web_button">
             	           <div id="color_object_grp">
             	               <label for="object_color">Color:</label>
@@ -90,6 +94,18 @@
                             </div>
                             <hr class="datacard_line"/>
                             <lu id="document_info">
+                            </lu>
+                            <br/>
+                            <div class="info_header">
+                                <b>Document Structure</b>
+                            </div>
+                            <hr class="datacard_line"/>
+                            <div class="search_document_tree">
+                                <input type="text" id="input_search_document_tree" placeholder="Search Here !!"/>
+                                <button type="button"  id="hide_all_parts" title="Hide"    class="fa fa-moon-o"></button>
+                                <button type="button"  id="show_all_parts" title="Un-Hide" class="fa fa-lightbulb-o"></button>
+                            </div>
+                            <lu id="document_tree">
                             </lu>
                         </div>
                     </div>

@@ -24,6 +24,7 @@ Created on 13 Nov 2020
 @author: mboscolo
 '''
 import os
+import json
 import logging
 import datetime
 from odoo import models
@@ -34,7 +35,7 @@ from odoo.exceptions import UserError
 from datetime import timedelta
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 import urllib.parse
-SUPPORTED_WEBGL_EXTENTION = ['.gltf','.glb','.fbx','.obj','.wrl','.json', '.stl','.svg', '.dxf']
+SUPPORTED_WEBGL_EXTENTION = ['.3mf','.gltf','.glb','.fbx','.obj','.wrl','.json', '.stl','.svg', '.dxf']
 #
 #
 class IrAttachment(models.Model):
@@ -77,7 +78,7 @@ class IrAttachment(models.Model):
                     url_params = urllib.parse.urlencode({'document_id': rel.child_id.id,
                                                          'document_name': rel.child_id.name})
             if url_params:
-                return "%s/plm/show_treejs_model?%s" % (base_url, url_params)
+                return f"{base_url}/plm/show_treejs_model?{url_params}"
     
     def show_releted_3d(self):
         for ir_attachment in self:
@@ -88,5 +89,14 @@ class IrAttachment(models.Model):
                         'type': 'ir.actions.act_url',
                         'target': self,
                         'url': url
-                        }                   
-                    
+                        }
+
+    def get_all_relation(self, document_id, exte):
+        out={}
+        if exte in document_id.name:
+            out[document_id.id] = document_id.name
+        for child_attachment_id in self.getRelatedHiTree(document_id.id):
+            if exte in self.browse(child_attachment_id).name:
+                out[child_attachment_id.id]=child_attachment_id.name
+        return out
+        

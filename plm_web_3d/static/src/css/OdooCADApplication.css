@@ -47,7 +47,7 @@
 	
 }
 .main_command_slide {
-  height: 20px;
+  height: 26px;
   box-shadow:2px 2px 5px 1px grey;
   width: auto;
   opacity: .5;
@@ -65,7 +65,7 @@
   transform-origin: bottom;  
 }
 .main_command_slide:hover{
-	 height: 20%;
+	 height: 210px;
 	 background-color: transparent;
 	 opacity: 1; 
 	 
@@ -138,6 +138,33 @@
      cursor: row-resize;
 }
 
+#object_explosion {
+  margin: 10px;
+  background: #997992;
+  -webkit-appearance: none;
+  background-color: white;
+  border-radius: 5px;  
+}
+
+#object_explosion::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 10px;
+  height: 10px;
+  background: #997992;
+  cursor: pointer;
+}
+
+#object_explosion::-moz-range-thumb {
+  width: 10px;
+  height: 10px;
+  background: #997992;
+  cursor: pointer;
+}
+#object_explosion:hover {
+  opacity: 1.0;
+}
+
 #object_transparency {
   margin: 10px;
   
@@ -146,6 +173,9 @@
   background-color: white;
   border-radius: 5px;  
 }
+
+
+
 #object_transparency::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
@@ -217,6 +247,10 @@ label{
   width: 300px;
   visibility: hidden;
   opacity:0;  
+  resize: horizontal;
+  overflow: auto;
+  direction: rtl;
+  min-width: 300px;
 }
 
 #main_div_hidden{
@@ -256,7 +290,14 @@ div.info_header{
 #click_show:hover{
   background-color:gray;
 }
-
+#tree_structure{
+  margin-left: auto;
+  margin-right: auto;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  width: 100%;
+  height: 500px;
+}
 li.attribute_info{
     text-align: left;
 }
@@ -340,3 +381,58 @@ li.attribute_info{
 .cube__face--bottom {
   transform: rotateX(90deg) rotateX(180deg) translateZ(-40px);
 }
+/* Remove default bullets */
+ul, #myUL {
+  list-style-type: none;
+}
+
+/* Remove margins and padding from the parent ul */
+#myUL {
+  margin: 0;
+  padding: 0;
+}
+
+/* Style the caret/arrow */
+.caret {
+  cursor: pointer;
+  user-select: none; /* Prevent text selection */
+}
+
+/* Create the caret/arrow with a unicode, and style it */
+.caret::before {
+  content: "\25B6";
+  color: black;
+  display: inline-block;
+  margin-right: 6px;
+}
+
+/* Rotate the caret/arrow icon when clicked on (using JavaScript) */
+.caret-down::before {
+  transform: rotate(90deg);
+}
+
+/* Hide the nested list */
+.nested {
+  display: none;
+}
+
+/* Show the nested list when the user clicks on the caret/arrow (with JavaScript) */
+.active {
+  display: block;
+}
+#document_tree{
+	direction: ltr;
+	text-align: left;
+}
+.document_tree_line>span:hover {
+  background-color: #eda3da;
+}
+.document_tree_line>i{
+    padding: 8px;
+}
+.document_tree_line>i:hover{
+	background-color: #eda3da;
+}
+
+
+

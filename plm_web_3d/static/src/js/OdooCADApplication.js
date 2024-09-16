@@ -17,6 +17,7 @@ let OdooCad;
 let cube;
 let clicked = false;
 const ODOO_COLOR = '#714B67';
+const DEBUG_SCENE=true;
 var strDownloadMime = "image/octet-stream";
 
 const measurementLabels = {};
@@ -58,7 +59,11 @@ function createSphereHelper() {
 
 function fitCameraToSelection(selection, fitOffset = 1.2 ) {
 	  const box = new THREE.Box3();
-	  for( const object of selection ) box.expandByObject( object );
+	  for( const object of Object.values(selection) ) {
+          if(object.visible){
+            box.expandByObject( object );
+          }
+      }
 	  const size = box.getSize( new THREE.Vector3() );
 	  const center = box.getCenter( new THREE.Vector3() );
 	  const maxSize = Math.max( size.x, size.y, size.z );
@@ -79,6 +84,7 @@ function fitCameraToSelection(selection, fitOffset = 1.2 ) {
 	  camera.updateProjectionMatrix();
 	  camera.position.copy( controls.target ).sub(direction);
 	  resetLight(box, maxSize);
+	  sphereHelper.scale.set(maxSize/100,maxSize/100,maxSize/100)
 	  controls.update();
 	  render();
 };
@@ -208,6 +214,27 @@ function createMarker(){
 	return new_point
 }
 
+function show_all_scene_item(){
+    var i;
+    var tree_item_visibility = document.getElementsByClassName("tree_item_visibility");
+    for (i = 0; i < tree_item_visibility.length; i++) {
+        var icon = tree_item_visibility[i]
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+    }
+    OdooCad.show_all();                    
+}
+
+function hide_all_scene_item(){
+    var i;
+    var tree_item_visibility = document.getElementsByClassName("tree_item_visibility");
+    for (i = 0; i < tree_item_visibility.length; i++) {
+        var icon = tree_item_visibility[i]
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    }
+    OdooCad.hide_all();
+}
 
 function init() {
 /*
@@ -263,7 +290,27 @@ function init() {
  */
 	OdooCad = new ODOOCAD.OdooCAD(scene);
 	OdooCad.load_document(document_id, document_name);
+/*
+ * Inizialize tree view search
+ */
+  var input_document_tree = document.getElementById('input_search_document_tree');
+  input_document_tree.addEventListener("keyup", OdooCad.search_document_tree);
+/*
+ * function to hide show all components
+ */
+  var bnt_hide_all_parts = document.getElementById('hide_all_parts');
+  bnt_hide_all_parts.addEventListener("click", hide_all_scene_item);
+  
+  
+  var bnt_show_all_parts = document.getElementById('show_all_parts');
+  bnt_show_all_parts.addEventListener("click", show_all_scene_item);
+
 }
+
+
+
+
+
 
 function getCameraCSSMatrix(matrix) {
 
@@ -299,7 +346,7 @@ function epsilon( value ) {
 function initcommand(){
 	var element = document.getElementById("fit_view");
 	element.onclick = function(event) {
-		fitCameraToSelection(OdooCad.items,
+		fitCameraToSelection(OdooCad.tree_ref_elements,
 							 1.1);
 	}
 	var selector = document.getElementById("webgl_background");
@@ -321,7 +368,10 @@ function initcommand(){
 	html_canvas.addEventListener("OdooCAD_fit_items", fitCameraToSelectionEvent, false);
 	var object_transparency = document.getElementById("object_transparency");
 	object_transparency.oninput = change_object_transparency;
-	
+    
+    var object_explosion = document.getElementById("object_explosion");
+    object_explosion.oninput = change_object_explosion;
+    	
 	var colorPicker = document.getElementById("object_color");
 	colorPicker.oninput = change_object_color;
 	/*
@@ -402,28 +452,55 @@ var change_object_color = function(event){
 	}
 }
 
+var apply_transparency = function(item, value){
+        var material = item.material;
+             
+        if(value){
+            if (value>99.9){
+                material.transparent=false;
+                material.alphaTest = false;
+            } else{
+                material.side=THREE.DoubleSide;
+                material.transparent=true;
+                material.opacity = value/100;
+                material.alphaTest = 0.1;
+            }
+        }
+        else{
+            material.transparent=true;
+            material.opacity=0;
+        }   
+}
 var change_object_transparency = function(event) {
 	var items = OdooCad.items;
+	var value = this.value;
 	for (let i = 0; i < items.length; i=i+1) {
-		var material = items[i].material;
-		if(this.value>0){
-			if (this.value>99.9){
-				material.transparent=false;	
-			} else{
-				material.transparent=true;
-				material.opacity = this.value/100;
-			}
-		}
-		else{
-			material.transparent=true;
-			material.opacity=0;
-			
-		}
+        var loop_item = items[i];
+        loop_item.traverse( function ( child_mesh ) {
+            if (child_mesh.type=="Mesh"){
+                apply_transparency(child_mesh, value);
+                }
+        });
 	}
 }
 
+var change_object_explosion = function(event){
+    var entitys_BBOX = OdooCad.active_bbox;
+    var center = new THREE.Vector3();
+    var items = OdooCad.items;
+    var value = this.value;
+    var factor= entitys_BBOX.max.length()/10000
+    for (let i = 0; i < items.length; i=i+1) {
+        var loop_item = items[i];    
+            explode(loop_item,
+                    entitys_BBOX.getCenter(center),
+                    value,
+                    factor) ;
+        }
+}
+
 var fitCameraToSelectionEvent = function(e){
-	fitCameraToSelection(OdooCad.items,1.1);	
+	fitCameraToSelection(OdooCad.tree_ref_elements,1.1);	
 }
 
 /**
@@ -581,33 +658,43 @@ function addLight(){
 	const group = new THREE.Group();
 	scene.add( group );
 
-	light1 = new THREE.DirectionalLight( 0xf7d962, 2, 45);
+	light1 = new THREE.DirectionalLight( 0xf7d962, 0.1);
 	light1.castShadow = true; // default false
 	light1.position.z = 70;
 	light1.position.y = - 70;
 	light1.position.x = - 70;
 	scene.add( light1 );
 	
-	light2 = new THREE.DirectionalLight( 0xffdddd, 2, 45 );
+	light2 = new THREE.DirectionalLight( 0xffdddd, 0.1 );
 	light2.castShadow = true; // default false
 	light2.position.z = 70;
 	light2.position.x = - 70;
 	light2.position.y = 70;
 	scene.add( light2 );
 	
-	light3 = new THREE.DirectionalLight( 0xf7d962, 2, 45 );
+	light3 = new THREE.DirectionalLight( 0xf7d962, 0.1 );
 	light3.castShadow = true; // default false
 	light3.position.z = 70;
 	light3.position.x = 70;
 	light3.position.y = - 70;
 	scene.add( light3 );
 
-   const ambientLight = new THREE.HemisphereLight('blue', // bright sky color
-                                                  'darkslategrey', // dim ground color
-                                                  1, // intensity
+    const ambientLight = new THREE.HemisphereLight('#b199ff',           // bright sky color
+                                                  'darkslategrey',  // dim ground color
+                                                  1.5,                // intensity
     );
     
     scene.add(ambientLight);
+    if (DEBUG_SCENE){
+        let i = 0;
+        const lights = [light1,light2,light3]; 
+        while (i < lights.length) {
+            var directionalLightHelper = new THREE.DirectionalLightHelper(lights[i]);
+            scene.add( directionalLightHelper );
+            i++;
+        }
+
+    }
 }
 
 function showSnapPoint(){
@@ -694,7 +781,7 @@ function tweenCamera(position){
                         offset.y,
                         offset.z);
     //controls.update();
-    fitCameraToSelection(OdooCad.items,
+    fitCameraToSelection(OdooCad.tree_ref_elements,
                         1.1);
     //render();
 }
@@ -734,6 +821,67 @@ function refreshIframe(){
 function getElementByXpath(path, document_env) {
 	  return document_env.evaluate(path, document_env, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
 }
+
+// explode
+/**
+ * obj : the current node on the scene graph
+ * box_ct_world : a vec3 center of the bounding box
+ * Thank to https://stackoverflow.com/questions/46101726/how-to-explode-a-3d-model-group-in-threejs
+ */
+/**
+ * obj : the current node on the scene graph
+ * box_ct_world : a vec3 center of the bounding box
+ * 
+ */
+function explode(obj,
+                 box_center,
+                 speed,
+                 factor){
+    //var scene = this.el.sceneEl.object3D ; //I am using Aframe , so this is how I retrieve the whole scene .   
+    if(obj instanceof THREE.Mesh){
+        var position = obj.position ; 
+
+        position.setFromMatrixPosition(scene.matrixWorld) ; 
+    
+        var addx =0 ;
+        var addy =0 ;
+        var addz =0 ; 
+    
+        /**
+         * This is the vector from the center of the box to the node . we use that to translate every meshes away from the center
+         */
+        var addx =(position.x - box_center.x) * speed * factor; 
+        var addy =(position.y - box_center.y) * speed * factor;
+        var addz =(position.z - box_center.z) * speed * factor; 
+        var explode_vectorx=  addx;
+        var explode_vectory=  addy;
+        var explode_vectorz=  addz;
+    
+        var vector = new THREE.Vector3(explode_vectorx , explode_vectory, explode_vectorz) ; 
+        obj.position.set(vector.x , vector.y , vector.z ) ;
+    
+        if(obj.children.length != 0 ){
+          for(var i = 0 ; i < obj.children.length ; i++){
+             explode(obj.children[i],
+                     box_center,
+                     speed,
+                     factor); 
+          }
+        }
+      }
+      else{
+        if(obj.children.length != 0 ){
+            for(var i = 0 ; i < obj.children.length ; i++){
+                explode(obj.children[i],
+                        box_center,
+                        speed,
+                        factor); 
+            }            
+        }
+     }
+};
+
+
 
 document.addEventListener('DOMContentLoaded', function() {
 	init();
@@ -845,5 +993,6 @@ const defined_orientation = {
     }
     };
 
-export {camera}
-export {tweenCamera}
+
+export {camera};
+export {tweenCamera};
