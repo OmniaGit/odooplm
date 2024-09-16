@@ -247,6 +247,10 @@ label{
   width: 300px;
   visibility: hidden;
   opacity:0;  
+  resize: horizontal;
+  overflow: auto;
+  direction: rtl;
+  min-width: 300px;
 }
 
 #main_div_hidden{
@@ -415,6 +419,10 @@ ul, #myUL {
 /* Show the nested list when the user clicks on the caret/arrow (with JavaScript) */
 .active {
   display: block;
+}
+#document_tree{
+	direction: ltr;
+	text-align: left;
 }
 .document_tree_line>span:hover {
   background-color: #eda3da;

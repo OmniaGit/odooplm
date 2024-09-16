@@ -17,6 +17,7 @@ let OdooCad;
 let cube;
 let clicked = false;
 const ODOO_COLOR = '#714B67';
+const DEBUG_SCENE=true;
 var strDownloadMime = "image/octet-stream";
 
 const measurementLabels = {};
@@ -58,7 +59,11 @@ function createSphereHelper() {
 
 function fitCameraToSelection(selection, fitOffset = 1.2 ) {
 	  const box = new THREE.Box3();
-	  for( const object of selection ) box.expandByObject( object );
+	  for( const object of Object.values(selection) ) {
+          if(object.visible){
+            box.expandByObject( object );
+          }
+      }
 	  const size = box.getSize( new THREE.Vector3() );
 	  const center = box.getCenter( new THREE.Vector3() );
 	  const maxSize = Math.max( size.x, size.y, size.z );
@@ -209,6 +214,27 @@ function createMarker(){
 	return new_point
 }
 
+function show_all_scene_item(){
+    var i;
+    var tree_item_visibility = document.getElementsByClassName("tree_item_visibility");
+    for (i = 0; i < tree_item_visibility.length; i++) {
+        var icon = tree_item_visibility[i]
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+    }
+    OdooCad.show_all();                    
+}
+
+function hide_all_scene_item(){
+    var i;
+    var tree_item_visibility = document.getElementsByClassName("tree_item_visibility");
+    for (i = 0; i < tree_item_visibility.length; i++) {
+        var icon = tree_item_visibility[i]
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    }
+    OdooCad.hide_all();
+}
 
 function init() {
 /*
@@ -273,10 +299,11 @@ function init() {
  * function to hide show all components
  */
   var bnt_hide_all_parts = document.getElementById('hide_all_parts');
-  bnt_hide_all_parts.addEventListener("click", OdooCad.hide_all);
+  bnt_hide_all_parts.addEventListener("click", hide_all_scene_item);
+  
   
   var bnt_show_all_parts = document.getElementById('show_all_parts');
-  bnt_show_all_parts.addEventListener("click", OdooCad.show_all);
+  bnt_show_all_parts.addEventListener("click", show_all_scene_item);
 
 }
 
@@ -319,7 +346,7 @@ function epsilon( value ) {
 function initcommand(){
 	var element = document.getElementById("fit_view");
 	element.onclick = function(event) {
-		fitCameraToSelection(OdooCad.items,
+		fitCameraToSelection(OdooCad.tree_ref_elements,
 							 1.1);
 	}
 	var selector = document.getElementById("webgl_background");
@@ -473,7 +500,7 @@ var change_object_explosion = function(event){
 }
 
 var fitCameraToSelectionEvent = function(e){
-	fitCameraToSelection(OdooCad.items,1.1);	
+	fitCameraToSelection(OdooCad.tree_ref_elements,1.1);	
 }
 
 /**
@@ -631,33 +658,43 @@ function addLight(){
 	const group = new THREE.Group();
 	scene.add( group );
 
-	light1 = new THREE.DirectionalLight( 0xf7d962, 2, 45);
+	light1 = new THREE.DirectionalLight( 0xf7d962, 0.1);
 	light1.castShadow = true; // default false
 	light1.position.z = 70;
 	light1.position.y = - 70;
 	light1.position.x = - 70;
 	scene.add( light1 );
 	
-	light2 = new THREE.DirectionalLight( 0xffdddd, 2, 45 );
+	light2 = new THREE.DirectionalLight( 0xffdddd, 0.1 );
 	light2.castShadow = true; // default false
 	light2.position.z = 70;
 	light2.position.x = - 70;
 	light2.position.y = 70;
 	scene.add( light2 );
 	
-	light3 = new THREE.DirectionalLight( 0xf7d962, 2, 45 );
+	light3 = new THREE.DirectionalLight( 0xf7d962, 0.1 );
 	light3.castShadow = true; // default false
 	light3.position.z = 70;
 	light3.position.x = 70;
 	light3.position.y = - 70;
 	scene.add( light3 );
 
-   const ambientLight = new THREE.HemisphereLight('blue', // bright sky color
-                                                  'darkslategrey', // dim ground color
-                                                  1, // intensity
+    const ambientLight = new THREE.HemisphereLight('#b199ff',           // bright sky color
+                                                  'darkslategrey',  // dim ground color
+                                                  1.5,                // intensity
     );
     
     scene.add(ambientLight);
+    if (DEBUG_SCENE){
+        let i = 0;
+        const lights = [light1,light2,light3]; 
+        while (i < lights.length) {
+            var directionalLightHelper = new THREE.DirectionalLightHelper(lights[i]);
+            scene.add( directionalLightHelper );
+            i++;
+        }
+
+    }
 }
 
 function showSnapPoint(){
@@ -744,7 +781,7 @@ function tweenCamera(position){
                         offset.y,
                         offset.z);
     //controls.update();
-    fitCameraToSelection(OdooCad.items,
+    fitCameraToSelection(OdooCad.tree_ref_elements,
                         1.1);
     //render();
 }

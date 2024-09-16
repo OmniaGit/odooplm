@@ -9,10 +9,13 @@ import * as ODOOLOADER from './loaders.js';
 
 const html_canvas = document.getElementById('odoo_canvas');
 const odoo_hilight_color= new THREE.Color("#eda3da")
-var tree_ref_elements={};
 
+var guid = () => { var w = () => { return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1); }
+  return  `${w()}${w()}-${w()}-${w()}-${w()}-${w()}${w()}${w()}`;}
+  
 class OdooCAD{
 	constructor(scene){
+        this.tree_ref_elements={}
 		this.scene = scene;
 		this.items = [];
 		this.active_bbox=undefined;
@@ -42,6 +45,7 @@ class OdooCAD{
     }
     
 	addItemToScene(object, force_material=true){
+        var self=this;
 		/*
 		 * Add item to scene taking care of adding it to the geometry array
 		 */
@@ -72,9 +76,10 @@ class OdooCAD{
 		
 		///
 		set_str_name(span_element){
-            var file_name = span_element.parentElement.attributes['webgl_ref_name'].value;
+            var guid_name = span_element.parentElement.attributes['webgl_ref_name'].value;
+            var obj_3d = this.tree_ref_elements[guid_name]
             var xmlhttp = new XMLHttpRequest();
-            var url = "../plm/get_3d_web_document_info/?src_name=" + file_name;
+            var url = "../plm/get_3d_web_document_info/?src_name=" + obj_3d.name;
             xmlhttp.onreadystatechange = function() {
                 if (this.readyState == 4 && this.status == 200) {
                     span_element.innerHTML = this.responseText;
@@ -96,16 +101,17 @@ class OdooCAD{
             }
             
             for (let i = 0; i < object.children.length; i++) {
-                  if (object.children[i].type=='Group' ||object.children[i].name!=''){
+                  if (object.children[i].type=='Group' || object.children[i].name!=''){
                      const [inner_html, children_found] = self.get_li_structure(object.children[i], true);
                      var obj_name=object.children[i].name;
-                     var span_lable = "<span class='document_tree_span' webgl_ref_name='" + obj_name + "'>" + obj_name + "</span>";
+                     var internal_obj_name = guid()
+                     var span_lable = "<span class='document_tree_span' webgl_ref_name='" + internal_obj_name + "'>" + obj_name + "</span>";
                      if(children_found || object.children[i].name!=''){
-                         tree_ref_elements[obj_name]=object.children[i]
-                         out_lis += "<li class='document_tree_line' webgl_ref_name="+ obj_name +"><i class='tree_item_visibility fa fa-eye' aria-hidden='true'></i><span class='caret'>" + span_lable + "</span>" + inner_html + "</li>";
+                         self.tree_ref_elements[internal_obj_name]=object.children[i]
+                         out_lis += "<li class='document_tree_line' webgl_ref_name="+ internal_obj_name +"><i class='tree_item_visibility fa fa-eye' aria-hidden='true'></i><span class='caret'>" + span_lable + "</span>" + inner_html + "</li>";
                      }
                      else{
-                        out_lis += "<li class='document_tree_line' webgl_ref_name="+ obj_name +">" + span_lable + "</li>";
+                        out_lis += "<li class='document_tree_line' webgl_ref_name="+ internal_obj_name +">" + span_lable + "</li>";
                      }
                      found=true;
                   }
@@ -113,39 +119,35 @@ class OdooCAD{
             return  [out_lis + "</ul>", found];
         }
         //
-        hide_all(){
-            var i;
-            var tree_item_visibility = document.getElementsByClassName("tree_item_visibility");
-            for (i = 0; i < tree_item_visibility.length; i++) {
-                var icon = tree_item_visibility[i]
-                icon.classList.remove('fa-eye');
-                icon.classList.add('fa-eye-slash');
-
-                var groupObj = tree_ref_elements[icon.parentElement.attributes['webgl_ref_name'].value];
-                if (groupObj){
-                    groupObj.visible=false;
-                }
+        show_hide_item(guid_item_name, visible){
+            var groupObj = self.tree_ref_elements[guid_item_name];
+            if (groupObj){
+                groupObj.visible=visible;
+            }  else{
+                console.log("Item " + item_name + " Not Found")
             }
-            
-            /*
-                var icon = this;
-                      if (icon.classList.contains('fa-eye')) {
-
-              */  
         }
+        //
+        hide_all(){
+            for( const scene_object_element of Object.values(this.tree_ref_elements) ) {
+                scene_object_element.visible=false;
+            }
+        }
+        //
+        hide_item(guid_item_name){
+            show_hide_item(guid_item_name, false);
+        }
+        //
         show_all(){
-            var i;
-            var tree_item_visibility = document.getElementsByClassName("tree_item_visibility");
-            for (i = 0; i < tree_item_visibility.length; i++) {
-                var icon = tree_item_visibility[i]
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
-                var groupObj = tree_ref_elements[icon.parentElement.attributes['webgl_ref_name'].value];
-                if (groupObj){
-                    groupObj.visible=true;
-                }
-            }            
+          for( const scene_object_element of Object.values(this.tree_ref_elements) ) {
+              scene_object_element.visible=true;
+          }
         }
+        //
+        show_item(guid_item_name){
+            show_hide_item(guid_item_name, true);
+        }
+        //
         search_document_tree(element) { 
             var input, filter, ul, li, a, i, txtValue;
             input = document.getElementById("input_search_document_tree");
@@ -180,7 +182,8 @@ class OdooCAD{
             
             for (i = 0; i < toggler.length; i++) {
               toggler[i].onmouseover=function(){
-                  var groupObj = tree_ref_elements[this.innerText];
+                  var webgl_name = this.childNodes[0].attributes['webgl_ref_name'].value;
+                  var groupObj = self.tree_ref_elements[webgl_name];
                   groupObj.traverse( function ( child ) {
                       if ( child instanceof THREE.Mesh ) {
                           if(child.material.userData.oldColor==undefined){
@@ -191,7 +194,8 @@ class OdooCAD{
                   });
               }
               toggler[i].onmouseout=function(){
-                  var groupObj = tree_ref_elements[this.innerText];
+                  var webgl_name = this.childNodes[0].attributes['webgl_ref_name'].value;
+                  var groupObj = self.tree_ref_elements[webgl_name];
                   groupObj.traverse( function ( child ) {
                       if ( child instanceof THREE.Mesh ) {
                          if(child.material.userData.oldColor!=undefined){
@@ -209,7 +213,7 @@ class OdooCAD{
             var tree_item_visibility = document.getElementsByClassName("tree_item_visibility");
             for (i = 0; i < tree_item_visibility.length; i++) {
                 tree_item_visibility[i].addEventListener("click", function() {
-                    var groupObj = tree_ref_elements[this.parentElement.attributes['webgl_ref_name'].value];
+                    var groupObj = self.tree_ref_elements[this.parentElement.attributes['webgl_ref_name'].value];
                     var icon = this;
                       if (icon.classList.contains('fa-eye')) {
                             icon.classList.remove('fa-eye');

@@ -154,6 +154,7 @@ class Loader {
                 console.log(self.progress_bar.style.width + ' loaded')
             },
             //error
+            
             function ( err ) {
                 alert("Unable to load the " + document_name + " err: " + err);
             }
