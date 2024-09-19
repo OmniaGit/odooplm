@@ -2014,8 +2014,8 @@ class PlmDocument(models.Model):
             if docBrws.is_checkout:
                 msg = _("Unable to check-Out a document that is already checked IN by user %s" % docBrws.checkout_user)
                 return docBrws.id, 'check_out_by_user', msg
-            if docBrws.engineering_state not in ['released','undermodify', False]:
-                msg = _("Unable to check-Out a document that is in state %s" % docBrws.engineering_state)
+            if docBrws.state not in ['draft', False]:
+                msg = _("Unable to check-Out a document that is in state %s" % docBrws.state)
                 return docBrws.id, 'check_out_released', msg
             return docBrws.id, 'check_in', ''
         raise Exception()
