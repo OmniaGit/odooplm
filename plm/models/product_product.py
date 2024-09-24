@@ -427,22 +427,34 @@ class ProductProduct(models.Model):
             :currlevel starting level for the bom
             :bom_type type bom calculation
         """
-        result = []
-        bufferdata = []
-        if level <= currlevel and level > 0:
-            return bufferdata
-        for bomid in product_product_id.product_tmpl_id.bom_ids:
-            if bom_type:
-                if bomid.type != bom_type:
+        #
+        computed=[]
+        #
+        def get_flat_children(product_product_id,
+                              level=0,
+                              currlevel=0,
+                              bom_type=False):
+            if currlevel > 1 and level == 0:
+                return []
+            if product_product_id.id in computed:
+                return []
+            computed.append(product_product_id.id)
+            out = [product_product_id.id]
+            for bomid in product_product_id.product_tmpl_id.bom_ids:
+                if bom_type and bomid.type != bom_type:
                     continue
-            for bomline in bomid.bom_line_ids:
-                children = self._getChildrenBom(product_product_id=bomline.product_id,
-                                                level=level,
-                                                currlevel=currlevel + 1,
-                                                bom_type=bom_type)
-                bufferdata.extend(children)
-                bufferdata.append(bomline.product_id.id)
-        result.extend(bufferdata)
+                for bomline in bomid.bom_line_ids:
+                    children_product_product_ids = get_flat_children(product_product_id=bomline.product_id,
+                                                                     level=level,
+                                                                     currlevel=currlevel + 1,
+                                                                     bom_type=bom_type)
+                    out.extend(children_product_product_ids)
+            return out
+        #
+        result = get_flat_children(product_product_id,
+                                   level, 
+                                   currlevel, 
+                                   bom_type)
         return list(set(result))
     
     def getLeafBom(self, bom_type='normal'):
