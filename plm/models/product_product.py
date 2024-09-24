@@ -59,11 +59,11 @@ class ProductProduct(models.Model):
     _inherit = ['product.product']
     _description ="Product Product"
     
-    def onchange(self, values, field_name, field_onchange):
+    def onchange(self, values, field_names, fields_spec):
         values = self.plm_sanitize(values)
         if 'product_tmpl_id' in values:
             del values['product_tmpl_id']
-        return super(ProductProduct, self).onchange(values, field_name, field_onchange)
+        return super(ProductProduct, self).onchange(values, field_names, fields_spec)
 
     def action_show_reference(self):
         localCtx = self.env.context.copy()
