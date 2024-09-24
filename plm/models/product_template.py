@@ -141,6 +141,7 @@ class ProductTemplate(models.Model):
                 'view_mode': 'form',
                 'res_model': 'product.product',
                 'res_id': product_id,
+                'context': {'odooPLM':True},
                 'views': [(form_id.id, 'form')],
             }
 
