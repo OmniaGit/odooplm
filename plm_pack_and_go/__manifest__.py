@@ -20,7 +20,7 @@
 ##############################################################################
 {
     "name": "Plm Pack and Go",
-    "version": "16.0.3",
+    "version": "16.0.4",
     "author": "OmniaSolutions",
     "website": "https://odooplm.omniasolutions.website",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
@@ -29,6 +29,7 @@
     "license": "AGPL-3",
     "images": [],
     "depends": ["plm"],
+    'external_dependencies': {'python': ['base64io']},
     "data": [  # security
         "security/plm_security.xml",
         'views/plm_component.xml',
