@@ -569,14 +569,15 @@ class PackAndGo(models.TransientModel):
                 'domain': "[]"}
 
     def get_steram(self, file_name):
-        stream=b''
-        with open(file_name, 'rb') as fr:
-            while True:
-                piece = fr.read(75232000)
-                if not piece:
-                    break
-                stream+=base64.encodebytes(piece)
-        return stream
+        import io
+        from base64io import Base64IO
+        target = io.BytesIO()
+        with open(file_name, "rb") as source:
+            with Base64IO(target) as encoded_target:
+                for line in source:
+                    encoded_target.write(line)
+        target.seek(0)
+        return target.read()
 
     def getFileExtension(self, docBrws):
         fileExtension = ''
