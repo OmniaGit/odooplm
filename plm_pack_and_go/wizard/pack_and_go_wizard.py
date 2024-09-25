@@ -550,10 +550,8 @@ class PackAndGo(models.TransientModel):
         # Make archive, upload it and clean
         #
         outZipFile2 = shutil.make_archive(outZipFile, 'zip', outZipFile)
-        with open(outZipFile2, 'rb') as f:
-            fileContent = f.read()
-            if fileContent:
-                self.datas = base64.encodebytes(fileContent)
+        self.datas = self.get_steram(outZipFile2)
+        #   
         try:
             shutil.rmtree(outZipFile)
         except Exception as ex:
@@ -569,6 +567,16 @@ class PackAndGo(models.TransientModel):
                 'res_id': self.ids[0],
                 'type': 'ir.actions.act_window',
                 'domain': "[]"}
+
+    def get_steram(self, file_name):
+        stream=b''
+        with open(file_name, 'rb') as fr:
+            while True:
+                piece = fr.read(75232000)
+                if not piece:
+                    break
+                stream+=base64.encodebytes(piece)
+        return stream
 
     def getFileExtension(self, docBrws):
         fileExtension = ''
