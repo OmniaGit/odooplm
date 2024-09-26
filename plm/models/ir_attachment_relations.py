@@ -80,7 +80,7 @@ class PlmDocumentRelations(models.Model):
     userid = fields.Many2one('res.users',
                              _('CheckOut User'),
                              default=False,
-                             readonly="True")
+                             readonly=True)
     notes = fields.Char(string="Notes: ")
     
     _sql_constraints = [
