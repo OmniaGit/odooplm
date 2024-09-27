@@ -466,7 +466,6 @@
 											</tr>
 											<tr>
 												<td>
-												    <field name="datas" filename="name" widget="binary"/>
                                                     <t><strong>Name:</strong></t>
                                                     <field name="engineering_code"
                                                            readonly="id not in [False, [], 0]"/>
