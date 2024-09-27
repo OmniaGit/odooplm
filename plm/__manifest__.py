@@ -20,7 +20,7 @@
 ##############################################################################
 {
     "name": "Product Lifecycle Management",
-    "version": "17.0.0.6",
+    "version": "17.0.0.7",
     "author": "OmniaSolutions",
     "website": "https://odooplm.omniasolutions.website",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
@@ -30,6 +30,7 @@
     "summary": "PLM-PDM Integration with main CAD editors (SolidWorks, SolidEdge, Inventor, Autocad, Thinkdesign, Freecad, Draftsight)",
     "images": ["static/img/odoo_plm.png"],
     "depends": ["base", "board", "product", "mrp"],
+    'external_dependencies': {'python': ['base64io']},
     "data": [
         # data
         "data/data.xml",

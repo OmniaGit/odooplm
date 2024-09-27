@@ -20,6 +20,8 @@
 import random
 import string
 import os
+import io
+from base64io import Base64IO
 import time
 import json
 import copy
@@ -109,6 +111,28 @@ class IrAttachment(models.Model):
     must_update_from_cad = fields.Boolean("Must Update form CAD",
                                           compute="_compute_must_update_from_cad",
                                           help="""When this flag is enabled the 2d document must be updated in order to guaranteey the update betwin 2d and 3d document""")
+
+    @api.depends('store_fname', 'db_datas', 'file_size')
+    @api.depends_context('bin_size')
+    def _compute_datas(self):
+        if self._context.get('bin_size'):
+            for attach in self:
+                attach.datas = human_size(attach.file_size)
+            return
+
+        for attach in self:
+            attach.datas = self.get_stream_b64encode(attach.raw or b'')
+    
+    def get_stream_b64encode(self, from_stream):
+        source = io.BytesIO()
+        target = io.BytesIO()
+        source.write(from_stream)
+        source.seek(0)
+        with Base64IO(target) as encoded_target:
+            for line in source:
+                encoded_target.write(line)
+        target.seek(0)
+        return target.read()
     
     def _compute_must_update_from_cad(self):
         ir_attachment_relation = self.env['ir.attachment.relation']
