@@ -21,6 +21,7 @@ import random
 import string
 import os
 import io
+import binascii
 from base64io import Base64IO
 import time
 import json
@@ -121,6 +122,7 @@ class IrAttachment(models.Model):
             return
 
         for attach in self:
+            attach.datas = binascii.a2b_base64(attach.raw or b'')
             attach.datas = self.get_stream_b64encode(attach.raw or b'')
     
     def get_stream_b64encode(self, from_stream):
