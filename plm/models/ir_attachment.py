@@ -113,17 +113,17 @@ class IrAttachment(models.Model):
                                           compute="_compute_must_update_from_cad",
                                           help="""When this flag is enabled the 2d document must be updated in order to guaranteey the update betwin 2d and 3d document""")
 
-    @api.depends('store_fname', 'db_datas', 'file_size')
-    @api.depends_context('bin_size')
-    def _compute_datas(self):
-        if self._context.get('bin_size'):
-            for attach in self:
-                attach.datas = human_size(attach.file_size)
-            return
-
-        for attach in self:
-            attach.datas = binascii.a2b_base64(attach.raw or b'')
-            #attach.datas = self.get_stream_b64encode(attach.raw or b'')
+    # @api.depends('store_fname', 'db_datas', 'file_size')
+    # @api.depends_context('bin_size')
+    # def _compute_datas(self):
+    #     if self._context.get('bin_size'):
+    #         for attach in self:
+    #             attach.datas = human_size(attach.file_size)
+    #         return
+    #
+    #     for attach in self:
+    #         attach.datas = binascii.a2b_base64(attach.raw or b'')
+    #         #attach.datas = self.get_stream_b64encode(attach.raw or b'')
     
     def get_stream_b64encode(self, from_stream):
         source = io.BytesIO()
