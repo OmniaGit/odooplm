@@ -123,7 +123,7 @@ class IrAttachment(models.Model):
 
         for attach in self:
             attach.datas = binascii.a2b_base64(attach.raw or b'')
-            attach.datas = self.get_stream_b64encode(attach.raw or b'')
+            #attach.datas = self.get_stream_b64encode(attach.raw or b'')
     
     def get_stream_b64encode(self, from_stream):
         source = io.BytesIO()
