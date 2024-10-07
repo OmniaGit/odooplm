@@ -293,13 +293,13 @@ function init() {
 /*
  * Inizialize tree view search
  */
-  var input_document_tree = document.getElementById('input_search_document_tree');
-  input_document_tree.addEventListener("keyup", OdooCad.search_document_tree);
+    var input_document_tree = document.getElementById('input_search_document_tree');
+    input_document_tree.addEventListener("keyup", OdooCad.search_document_tree);
 /*
  * function to hide show all components
  */
-  var bnt_hide_all_parts = document.getElementById('hide_all_parts');
-  bnt_hide_all_parts.addEventListener("click", hide_all_scene_item);
+    var bnt_hide_all_parts = document.getElementById('hide_all_parts');
+    bnt_hide_all_parts.addEventListener("click", hide_all_scene_item);
   
   
   var bnt_show_all_parts = document.getElementById('show_all_parts');
@@ -346,8 +346,10 @@ function epsilon( value ) {
 function initcommand(){
 	var element = document.getElementById("fit_view");
 	element.onclick = function(event) {
-		fitCameraToSelection(OdooCad.tree_ref_elements,
+        fitCameraToSelectionEvent();
+/*		fitCameraToSelection(OdooCad.tree_ref_elements,
 							 1.1);
+	*/
 	}
 	var selector = document.getElementById("webgl_background");
 	selector.onchange = function(event){
@@ -500,7 +502,11 @@ var change_object_explosion = function(event){
 }
 
 var fitCameraToSelectionEvent = function(e){
-	fitCameraToSelection(OdooCad.tree_ref_elements,1.1);	
+    if (Object.values(OdooCad.tree_ref_elements).length>0){
+	   fitCameraToSelection(OdooCad.tree_ref_elements,1.1);
+	   return 
+	}	
+	fitCameraToSelection(OdooCad.items,1.1);
 }
 
 /**
