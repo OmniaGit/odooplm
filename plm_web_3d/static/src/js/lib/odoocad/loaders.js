@@ -105,9 +105,11 @@ class Loader {
 		gLTFLoader.load( url, function ( gltf ) {
 			var children = gltf.scene.children; 
 			var i;
+			var out_html_structure;
 			for (i = 0; i < children.length; i++) {
-				self.odooCad.addItemToScene(children[i]);
+				out_html_structure+=self.odooCad.addItemToScene(children[i]);
 			}
+			self.odooCad.create_tree_structure(out_html_structure)
 		},
 		function ( xhr ) {
 	    	var percentage = (xhr.loaded / xhr.total) * 100;
@@ -121,23 +123,6 @@ class Loader {
 	}
 	
 	load3mf(document_name, url){
-        
-        var load3emfObj = function(args){
-            if(args.type=="Group"){
-                var i;
-                var children = args.children;
-                for (i = 0; i < children.length; i++) {
-                    if(children[i].type=="Mesh"){
-                        self.odooCad.addItemToScene(args);
-                        break;
-                    } 
-                    else {
-                        load3emfObj(children[i]);
-                    }
-                }
-            }
-        }
-        
         var self=this;
         threeMFLoader.load( url,
             //load
@@ -145,7 +130,9 @@ class Loader {
                 mfArgs.traverse( function ( child ) {
                     child.castShadow = true;
                 } );
-                self.odooCad.addItemToScene(mfArgs, false);
+                const out_html_structure = self.odooCad.addItemToScene(mfArgs, false);
+                self.odooCad.create_tree_structure(out_html_structure)
+                
             },
             //progress
             function ( xhr ) {

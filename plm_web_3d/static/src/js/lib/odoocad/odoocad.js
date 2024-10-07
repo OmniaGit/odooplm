@@ -61,9 +61,11 @@ class OdooCAD{
                      });
                 object.material=material;
             }
+            //
 			this.scene.add(object);
 			this.items.push(object);
-			this.create_relation_structure(object);
+			//
+			const out_htm_structure = this.create_relation_structure(object);
 			// Center the object
             // fit item
 			progress.display = 'none';
@@ -71,6 +73,7 @@ class OdooCAD{
 			html_canvas.dispatchEvent(fitItem);
 			// recompute the bounding box
 			this.active_bbox=this.getBBox();
+			return out_htm_structure;
 		}
 		//
 		
@@ -103,11 +106,11 @@ class OdooCAD{
             for (let i = 0; i < object.children.length; i++) {
                   if (object.children[i].type=='Group' || object.children[i].name!=''){
                      const [inner_html, children_found] = self.get_li_structure(object.children[i], true);
-                     var obj_name=object.children[i].name;
+                     var obj_name = object.children[i].name;
                      var internal_obj_name = guid()
                      var span_lable = "<span class='document_tree_span' webgl_ref_name='" + internal_obj_name + "'>" + obj_name + "</span>";
                      if(children_found || object.children[i].name!=''){
-                         self.tree_ref_elements[internal_obj_name]=object.children[i]
+                         self.tree_ref_elements[internal_obj_name] = object.children[i]
                          out_lis += "<li class='document_tree_line' webgl_ref_name="+ internal_obj_name +"><i class='tree_item_visibility fa fa-eye' aria-hidden='true'></i><span class='caret'>" + span_lable + "</span>" + inner_html + "</li>";
                      }
                      else{
@@ -164,20 +167,15 @@ class OdooCAD{
                 }
             }
         }
-		create_relation_structure(object){
-            var self = this;
+        //
+        create_tree_structure(out_html_structure){
+            const self = this;
             var html_out = "<div class='tree_structure' style='overflow-y: scroll;min-height: 1px;max-height: 400px;'>";
-            for (let i = 0; i < object.children.length; i++) {
-                  if (object.children[i].type=='Group'){
-                    const [inner_html, _children] = self.get_li_structure(object.children[i]);
-                    html_out += inner_html;          
-                  }
-            }
+            html_out += out_html_structure
             html_out += "</div>";
-            
             var li_document_tree = document.querySelectorAll('#document_tree')
             li_document_tree[0].innerHTML=html_out;
-            var toggler = document.getElementsByClassName("caret");
+                        var toggler = document.getElementsByClassName("caret");
             var i;
             
             for (i = 0; i < toggler.length; i++) {
@@ -232,6 +230,20 @@ class OdooCAD{
             for (i = 0; i < span_tree_documents.length; i++) {
                     this.set_str_name(tree_item_visibility[i])
                 }
+        }
+        //
+		create_relation_structure(object){
+            const grp_types = ["Group", "Object3D"];
+            var self = this;
+            
+            var html_out = "";
+            for (let i = 0; i < object.children.length; i++) {
+                  if (grp_types.includes(object.children[i].type)){
+                    const [inner_html, _children] = self.get_li_structure(object.children[i]);
+                    html_out += inner_html;          
+                  }
+            }
+            return html_out;
         }
 		
 		removeItemToSeen(object){
