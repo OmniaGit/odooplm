@@ -108,14 +108,12 @@ class ResGroups(models.Model):
 
     def getCustomProcedure(self):
         for groupBrws in self:
-            logging.info('Request CustomProcedure file for user %r and group %r-%r and id %r' % (groupBrws.env.uid, groupBrws.category_id.name, groupBrws.name, groupBrws.id))
             if groupBrws.custom_procedure:
                 return True, groupBrws.custom_procedure, groupBrws.custom_procedure_fname
         return False, '', groupBrws.custom_procedure_fname
 
     def getCustomMulticad(self):
         for groupBrws in self:
-            logging.info('Request Multicad file for user %r and group %r-%r and id %r' % (groupBrws.env.uid, groupBrws.category_id.name, groupBrws.name, groupBrws.id))
             if groupBrws.custom_multicad:
                 return True, groupBrws.custom_multicad, groupBrws.custom_multicad_fname
         return False, '', groupBrws.custom_multicad_fname
