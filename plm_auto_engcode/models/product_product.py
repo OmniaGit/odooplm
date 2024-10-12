@@ -36,7 +36,7 @@ class pProductProduct(models.Model):
     
     @api.onchange("categ_id")
     def onchange_categ_id(self):
-        if self.engineering_code_editable:
+        if self.product_tmpl_id.engineering_code_editable:
             self.product_tmpl_id.engineering_code = self.product_tmpl_id._getNewCode()
                 
 class ProductTemplate(models.Model):

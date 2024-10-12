@@ -416,8 +416,9 @@ class RevisionBaseMixin(models.AbstractModel):
         return super(RevisionBaseMixin, self).write(vals)
 
     def create(self, vals):
-        if 'engineering_code' in vals and vals['engineering_code'] not in [False, '-','']:
-            vals['engineering_code_editable']=False
+        for record_val in vals:
+            if 'engineering_code' in record_val and record_val['engineering_code'] not in [False, '-','']:
+                record_val['engineering_code_editable']=False
         return super(RevisionBaseMixin, self).create(vals)
         
     def get_display_notification(self, message):
