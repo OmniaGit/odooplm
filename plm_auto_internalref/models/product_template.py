@@ -35,23 +35,10 @@ class ProductTemplateExtension(models.Model):
     _name = 'product.template'
     _inherit = 'product.template'
 
-    @api.model_create_multi
-    def create(self, vals):
-        obj_pp = self.env['product.product']
-        for val_dict in vals:
-            new_default_code = obj_pp.computeDefaultCode(val_dict)
-            if new_default_code:
-                logging.info('OdooPLM: Default Code set to %s ' % (new_default_code))
-                val_dict['default_code'] = new_default_code            
-        return super().create(vals)
-
-    def write(self, vals):
-        new_default_code = self.env['product.product'].computeDefaultCode(vals,
-                                                                          self)
-        if new_default_code :
-            logging.info('OdooPLM: Default Code set to %s ' % (new_default_code))
-            vals['default_code'] = new_default_code
-        return super(ProductTemplateExtension, self).write(vals)
-
+    @api.onchange('engineering_code')
+    def oc_engineering_code(self):
+        for pt_id in self:
+            pt_id.default_code=self.env['product.product'].computeDefaultCode({},
+                                                                             pt_id) 
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

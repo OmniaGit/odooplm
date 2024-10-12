@@ -453,11 +453,12 @@ class RevisionBaseMixin(models.AbstractModel):
         get all field translated in all available languages
         """
         out = {}
-        obj = self.env[self._name].browse([object_id])
-        for field_name in fields:
-            for code in self.env['res.lang'].search([('active','=', True)]).mapped("code"):
-                propKey = f"{field_name}@-@-@{code}"
-                out[propKey] = getattr(obj.with_context(lang=code), field_name)
+        obj = self.env[self._name].search([('id','=',object_id)])
+        if obj:
+            for field_name in fields:
+                for code in self.env['res.lang'].search([('active','=', True)]).mapped("code"):
+                    propKey = f"{field_name}@-@-@{code}"
+                    out[propKey] = getattr(obj.with_context(lang=code), field_name)
         return out
         
         
