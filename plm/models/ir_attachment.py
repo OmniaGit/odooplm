@@ -1239,9 +1239,9 @@ class IrAttachment(models.Model):
         for ir_attachment_id in self:
             _docName, _docRev, chekOutUser, _hostName = self.env['ir.attachment'].getCheckedOut(ir_attachment_id.id, None)
             if chekOutUser:
-                ir_attachment_id.is_checkout = True
+                ir_attachment_id.with_context(check=False).is_checkout = True
             else:
-                ir_attachment_id.is_checkout = False
+                ir_attachment_id.with_context(check=False).is_checkout = False
 
     def getFileExtension(self, docBrws):
         fileExtension = ''
