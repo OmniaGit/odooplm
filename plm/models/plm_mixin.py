@@ -460,6 +460,16 @@ class RevisionBaseMixin(models.AbstractModel):
                     propKey = f"{field_name}@-@-@{code}"
                     out[propKey] = getattr(obj.with_context(lang=code), field_name)
         return out
-        
-        
-        
+
+    @api.model
+    def get_possible_status(self):
+        out=[]
+        for model_id in self.env['ir.model'].sudo().search([('model','=', self._name)]):
+            for filed_id in self.env['ir.model.fields'].sudo().search([('model_id','=', model_id.id),
+                                                                ('name', '=', 'engineering_state')]):
+                for ir_model_fields_selection in self.env['ir.model.fields.selection'].sudo().search([('field_id','=',filed_id.id)]):
+                    out.append((ir_model_fields_selection.name,
+                                ir_model_fields_selection.value))    
+        return out
+    
+    
