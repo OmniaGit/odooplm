@@ -2502,6 +2502,11 @@ class IrAttachment(models.Model):
 
     @api.model
     def GetProductDocumentId(self, clientArgs):
+        product_product_id, plm_document_id = self._GetproductDocumentID(clientArgs)
+        return (False if not product_product_id else product_product_id.id, 
+                False if not plm_document_id else plm_document_id.id)
+
+    def _GetproductDocumentID(self, clientArgs):
         componentAtts, documentAttrs = clientArgs
         product_product_id = False
         plm_document_id = False
@@ -2510,18 +2515,17 @@ class IrAttachment(models.Model):
         if engineering_code:
             for product_product in self.env['product.product'].search([('engineering_code', '=', engineering_code),
                                                                       ('engineering_revision', '=', engineering_revision)]):
-                product_product_id = product_product.id
+                product_product_id = product_product
                 break
         document_name = documentAttrs.get('engineering_code')
         document_revision = documentAttrs.get('engineering_revision', 0)
         if document_name:
             for plm_document in self.env['ir.attachment'].search([('engineering_code', '=', document_name),
                                                                  ('engineering_revision', '=', document_revision)]):
-                plm_document_id = plm_document.id
+                plm_document_id = plm_document
                 break
         return product_product_id, plm_document_id
-
-
+    
     def checkNewer(self):
         self.ensure_one()
         for document in self:
@@ -3185,4 +3189,83 @@ class IrAttachment(models.Model):
                 'type': 'ir.actions.act_window',
                 'domain': [('id', 'in', plm_dbthread_ids.ids)],
                 'context': {}}
+    @api.model
+    def getCloneStructure(self,
+                          args): 
+        json_main_root_attributes, cloneRelatedDocuments = args
+        def get_clone_info_attr(doc_id):
+            ir_attachment=self.browse(doc_id)
+            product_dict={}
+            for product_product_id in ir_attachment.linkedcomponents:
+                product_dict={
+                    'engineering_code': product_product_id.engineering_code,
+                    'engineering_revision': product_product_id.engineering_revision,
+                    'name':product_product_id.name,
+                    'id':product_product_id.id
+                    }
+                break
+                
+            return {'document':{
+                                'engineering_code': ir_attachment.engineering_code,
+                                'engineering_revision': ir_attachment.engineering_revision,
+                                'name':ir_attachment.name,
+                                'id':ir_attachment.id,
+                                'document_type':ir_attachment.document_type
+                                },
+                    'product':product_dict
+                }
+        out = {'MAIN':{},
+               'RF':[],
+               'LF':[]}
+        main_root_attributes = json.loads(json_main_root_attributes)
+        product_product_id, attachment_id = self._GetproductDocumentID(tuple(main_root_attributes.values()))
+        #
+        #
+        doc_ids_2d=[]
+        #
+        main_parent_attrs = get_clone_info_attr(attachment_id.id)
+        out['MAIN']=main_parent_attrs
+        #
+        for doc_id in self.getRelatedRfTree(attachment_id.id):
+            sub_attrs = get_clone_info_attr(doc_id)
+            out['RF'].append((main_parent_attrs,
+                              sub_attrs))
+            for doc_id_2d in self.getRelatedLyTree(doc_id):
+                doc_ids_2d.append((sub_attrs, doc_id_2d))
+        #
+        for doc_id_2d in self.getRelatedLyTree(attachment_id.id):
+            doc_ids_2d.append((main_parent_attrs, doc_id_2d))        
+        #
+        for parent_attrs, doc_id in doc_ids_2d:
+            out['LF'].append((parent_attrs,
+                              get_clone_info_attr(doc_id)))
+        #
+        
+        return json.dumps(out)
+
+    @api.model
+    def GetCloneDocumentValues(self, args):
+        """
+            return the new attributes to be used for cloning the document
+        """
+        old_product_attrs, old_document_attrs, new_product_attrs = args
+        out_value = json.loads(old_document_attrs)
+        new_product_attrs = json.loads(new_product_attrs)
+        if hasattr(self, "customGetCloneDocumentValues"):
+            #
+            # If you implement the customGetCloneDocumentValues this call will be used to customize the value of the new cloned document from the client clone action
+            #
+            out_value=self.customGetCloneDocumentValues(out_value)
+        else:
+            #
+            out_value['engineering_code'] = f"{new_product_attrs['engineering_code']}-{self.env['ir.sequence'].next_by_code('ir.attachment.progress')}"
+            out_value['engineering_revision']=0
+            #
+            _, exte = os.path.splitext(out_value['name'])
+            out_value['name'] = f"{out_value['engineering_code']}{exte}"
+        #
+        del out_value['id']
+        #
+        return json.dumps(out_value)
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
