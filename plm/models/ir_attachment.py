@@ -427,7 +427,9 @@ class IrAttachment(models.Model):
         return list(set(out))
 
     @api.model
-    def getRelatedRfTree(self, doc_id, recursion=True, evaluated=[]):
+    def getRelatedRfTree(self, doc_id, recursion=True, evaluated=False):
+        if not evaluated:
+            evaluated=[]
         out = []
         if not doc_id:
             logging.warning('Cannot get links from %r document' % (doc_id))
