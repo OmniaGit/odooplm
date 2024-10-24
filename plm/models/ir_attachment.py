@@ -364,28 +364,28 @@ class IrAttachment(models.Model):
         return list(set(result))
 
     @api.model
-    def getRelatedLyTree(self, doc_id):
+    def getRelatedLyTree(self, doc_id, optional_return_type=['3d']):
         out = []
         if not doc_id:
             logging.warning('Cannot get links from %r document' % (doc_id))
             return []
         doc_brws = self.browse(doc_id)
-        doc_type = doc_brws.document_type
+        parent_doc_type = doc_brws.document_type
         to_search = [('link_kind', 'in', ['LyTree']),
                      '|', 
                         ('parent_id', '=', doc_id),
                         ('child_id', '=', doc_id)]
         doc_rel_ids = self.env['ir.attachment.relation'].search(to_search)
         for doc_rel_id in doc_rel_ids:
-            if doc_type=='3d':
+            if parent_doc_type=='3d':
                 if doc_rel_id.parent_id.id==doc_id and doc_rel_id.child_id.document_type =='2d':
                     out.append(doc_rel_id.child_id.id)
                 elif doc_rel_id.child_id.id==doc_id and doc_rel_id.parent_id.document_type =='2d':
                     out.append(doc_rel_id.parent_id.id)
-            elif doc_type=='2d':
-                if doc_rel_id.parent_id.id==doc_id and doc_rel_id.child_id.document_type =='3d':
+            elif parent_doc_type=='2d':
+                if doc_rel_id.parent_id.id==doc_id and doc_rel_id.child_id.document_type in optional_return_type:
                     out.append(doc_rel_id.child_id.id)
-                elif doc_rel_id.child_id.id==doc_id and doc_rel_id.parent_id.document_type =='3d':
+                elif doc_rel_id.child_id.id==doc_id and doc_rel_id.parent_id.document_type in optional_return_type:
                     out.append(doc_rel_id.parent_id.id)
         return list(set(out))
 
@@ -3232,10 +3232,12 @@ class IrAttachment(models.Model):
             sub_attrs = get_clone_info_attr(doc_id)
             out['RF'].append((main_parent_attrs,
                               sub_attrs))
-            for doc_id_2d in self.getRelatedLyTree(doc_id):
+            for doc_id_2d in self.getRelatedLyTree(doc_id,
+                                            optional_return_type=['2d']):
                 doc_ids_2d.append((sub_attrs, doc_id_2d))
         #
-        for doc_id_2d in self.getRelatedLyTree(attachment_id.id):
+        for doc_id_2d in self.getRelatedLyTree(attachment_id.id,
+                                               optional_return_type=['2d']):
             doc_ids_2d.append((main_parent_attrs, doc_id_2d))        
         #
         for parent_attrs, doc_id in doc_ids_2d:
