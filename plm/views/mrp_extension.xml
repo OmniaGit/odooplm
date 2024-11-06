@@ -79,6 +79,7 @@
         			icon="plm/static/description/odoo_icon_small.png"
         			string="."
         			class="float-right"
+        			column_invisible="False"
         			invisible="att_count in [False,0]"/>
         	</field>
             <field name="product_id" position="after">
@@ -109,8 +110,11 @@
         <field name="priority" eval="16"/>
         <field name="arch" type="xml">
             <div class="oe_button_box" name="button_box" position="inside">
-                <button name="open_related_bom_lines" type="object" string="Related BOM Lines"
-                        class="oe_stat_button" icon="fa-tasks"/>
+                <button name="open_related_bom_lines"
+                        type="object"
+                        string="Related BOM Lines"
+                        class="oe_stat_button"
+                        icon="fa-tasks"/>
                 <button name="open_related_bom_revisions"
                         type="object"
                         string="BOM Rev."
@@ -160,8 +164,12 @@
             	<attribute name="decoration-muted">engineering_state == 'obsoleted'</attribute>
             </xpath>
             <xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_id']" position="before">
-                <field name="related_bom_ids" invisible="True"/>
-                <field name="hasChildBoms" invisible="True"/>
+                <field name="related_bom_ids" 
+                       column_invisible="True"
+                       invisible="True"/>
+                <field name="hasChildBoms" 
+                       column_invisible="True"
+                       invisible="True"/>
                 <field name="product_tumbnail" widget="image" options="{ 'size': [60, 60]}"/>
                 <button name="openRelatedBoms"
                         type="object"
@@ -169,13 +177,15 @@
                         title="Open Related Boms"
                         class="btn btn-sm oe_stat_button"
                         invisible="hasChildBoms==False"/>
-            	<field name="related_document_ids" invisible="True"/>
+            	<field name="related_document_ids"
+            	       column_invisible="True"
+            	       invisible="True"/>
             	<button 
   					name="openRelatedDocuments"
   					type="object"
   					icon="plm/static/description/odoo_icon_small.png"
-  					string="."
-  					class="float-right btn"
+  					title="Open Related Documents"
+  					class="btn btn-sm oe_stat_button"
   					invisible="related_document_ids == []"/>
             </xpath>
             <xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_id']" position="after">
