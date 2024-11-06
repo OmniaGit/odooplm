@@ -210,6 +210,9 @@
                                        groups="base.group_no_one"/>
                             </group>
                             <group colspan="4" col="4" name="technical_infos_group" string="Material / Surface / Treatment">
+                                <field name="engineering_material"
+                                        select="1"
+                                        readonly="True"/>
                                 <field name="tmp_material"
                                        attrs="{'readonly':[('engineering_state','in',['released','obsoleted'])]}"/>
                                 <field name="engineering_material"
