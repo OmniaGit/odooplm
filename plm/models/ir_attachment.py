@@ -3194,17 +3194,30 @@ class IrAttachment(models.Model):
     @api.model
     def getCloneStructure(self,
                           args): 
-        json_main_root_attributes, cloneRelatedDocuments = args
-        def get_clone_info_attr(doc_id):
-            ir_attachment=self.browse(doc_id)
-            product_dict={}
-            for product_product_id in ir_attachment.linkedcomponents:
-                product_dict={
+        #
+        SUPPORT_MAIN_PRODUCT_ATTRIBUTES = [
+            'CONFIGURATION_NAME',
+            'CONFIGURATIONS',
+            'INTEGRATION_FILE_TYPE',
+            ]
+        #
+        def getProduct_dict(product_product_id):
+            return {
                     'engineering_code': product_product_id.engineering_code,
                     'engineering_revision': product_product_id.engineering_revision,
                     'name':product_product_id.name,
                     'id':product_product_id.id
                     }
+        json_main_root_attributes, cloneRelatedDocuments = args
+        #
+        def get_clone_info_attr(doc_id, product_product_id=None):
+            ir_attachment=self.browse(doc_id)
+            if product_product_id:
+                product_dict=getProduct_dict(product_product_id)
+            else:
+                product_dict={}
+                for product_product_id in ir_attachment.linkedcomponents:
+                    product_dict=getProduct_dict(product_product_id)
                 break
                 
             return {'document':{
@@ -3216,34 +3229,39 @@ class IrAttachment(models.Model):
                                 },
                     'product':product_dict
                 }
+        #
         out = {'MAIN':{},
                'RF':[],
                'LF':[]}
         main_root_attributes = json.loads(json_main_root_attributes)
         product_product_id, attachment_id = self._GetproductDocumentID(tuple(main_root_attributes.values()))
         #
+        if attachment_id:
+            #
+            doc_ids_2d=[]
+            #
+            main_parent_attrs = get_clone_info_attr(attachment_id.id, product_product_id)
+            out['MAIN']=main_parent_attrs
+            for k in SUPPORT_MAIN_PRODUCT_ATTRIBUTES:
+                out['MAIN']['product'][k]=main_root_attributes.get('product',{}).get(k,'')
+            #
+            for doc_id in self.getRelatedRfTree(attachment_id.id):
+                sub_attrs = get_clone_info_attr(doc_id)
+                out['RF'].append((main_parent_attrs,
+                                  sub_attrs))
+                for doc_id_2d in self.getRelatedLyTree(doc_id,
+                                                optional_return_type=['2d']):
+                    doc_ids_2d.append((sub_attrs, doc_id_2d))
+            #
+            for doc_id_2d in self.getRelatedLyTree(attachment_id.id,
+                                                   optional_return_type=['2d']):
+                doc_ids_2d.append((main_parent_attrs, doc_id_2d))        
+            #
+            for parent_attrs, doc_id in doc_ids_2d:
+                out['LF'].append((parent_attrs,
+                                  get_clone_info_attr(doc_id)))
         #
-        doc_ids_2d=[]
-        #
-        main_parent_attrs = get_clone_info_attr(attachment_id.id)
-        out['MAIN']=main_parent_attrs
-        #
-        for doc_id in self.getRelatedRfTree(attachment_id.id):
-            sub_attrs = get_clone_info_attr(doc_id)
-            out['RF'].append((main_parent_attrs,
-                              sub_attrs))
-            for doc_id_2d in self.getRelatedLyTree(doc_id,
-                                            optional_return_type=['2d']):
-                doc_ids_2d.append((sub_attrs, doc_id_2d))
-        #
-        for doc_id_2d in self.getRelatedLyTree(attachment_id.id,
-                                               optional_return_type=['2d']):
-            doc_ids_2d.append((main_parent_attrs, doc_id_2d))        
-        #
-        for parent_attrs, doc_id in doc_ids_2d:
-            out['LF'].append((parent_attrs,
-                              get_clone_info_attr(doc_id)))
-        #
+            
         
         return json.dumps(out)
 
@@ -3252,24 +3270,24 @@ class IrAttachment(models.Model):
         """
             return the new attributes to be used for cloning the document
         """
-        old_product_attrs, old_document_attrs, new_product_attrs = args
-        out_value = json.loads(old_document_attrs)
+        _old_product_attrs, old_attachment_attrs, new_product_attrs = args
+        out_attachment_value = json.loads(old_attachment_attrs)
         new_product_attrs = json.loads(new_product_attrs)
         if hasattr(self, "customGetCloneDocumentValues"):
             #
             # If you implement the customGetCloneDocumentValues this call will be used to customize the value of the new cloned document from the client clone action
             #
-            out_value=self.customGetCloneDocumentValues(out_value)
+            out_attachment_value=self.customGetCloneDocumentValues(out_attachment_value)
         else:
             #
-            out_value['engineering_code'] = f"{new_product_attrs['engineering_code']}-{self.env['ir.sequence'].next_by_code('ir.attachment.progress')}"
-            out_value['engineering_revision']=0
+            out_attachment_value['engineering_code'] = f"{new_product_attrs['engineering_code']}-{self.env['ir.sequence'].next_by_code('ir.attachment.progress')}"
+            out_attachment_value['engineering_revision']=0
             #
-            _, exte = os.path.splitext(out_value['name'])
-            out_value['name'] = f"{out_value['engineering_code']}{exte}"
+            _, exte = os.path.splitext(out_attachment_value['name'])
+            out_attachment_value['name'] = f"{out_attachment_value['engineering_code']}{exte}"
         #
-        del out_value['id']
+        del out_attachment_value['id']
         #
-        return json.dumps(out_value)
+        return json.dumps(out_attachment_value)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
