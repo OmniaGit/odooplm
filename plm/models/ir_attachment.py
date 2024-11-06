@@ -3218,7 +3218,7 @@ class IrAttachment(models.Model):
                 product_dict={}
                 for product_product_id in ir_attachment.linkedcomponents:
                     product_dict=getProduct_dict(product_product_id)
-                break
+                    break
                 
             return {'document':{
                                 'engineering_code': ir_attachment.engineering_code,
