@@ -61,4 +61,21 @@ class ProductProductExtension(models.Model):
         for pp_id in self:
             pp_id.default_code=pp_id.computeDefaultCode({},
                                                         pp_id.product_tmpl_id)       
+    @api.model_create_multi
+    def create(self, vals):
+        for val_dict in vals:
+            new_default_code = self.computeDefaultCode(val_dict)
+            if new_default_code:
+                val_dict['default_code'] = new_default_code
+        return super().create(vals)
 
+    def write(self, vals):
+        ret = False
+        for product in self:
+            new_default_code = product.computeDefaultCode(vals,
+                                                          product)
+            if new_default_code:
+                vals['default_code'] = new_default_code
+            ret = super(models.Model, product).write(vals)
+        return ret        
+    

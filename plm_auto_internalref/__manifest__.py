@@ -20,7 +20,7 @@
 ##############################################################################
 {
     "name": "PLM Auto Internal Reference",
-    "version": "16.0.2",
+    "version": "16.0.3",
     "author": "OmniaSolutions",
     "website": "https://odooplm.omniasolutions.website",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",

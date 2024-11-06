@@ -40,5 +40,13 @@ class ProductTemplateExtension(models.Model):
         for pt_id in self:
             pt_id.default_code=self.env['product.product'].computeDefaultCode({},
                                                                              pt_id) 
+    @api.model_create_multi
+    def create(self, vals):
+        obj_pp = self.env['product.product']
+        for val_dict in vals:
+            new_default_code = obj_pp.computeDefaultCode(val_dict)
+            if new_default_code:
+                val_dict['default_code'] = new_default_code            
+        return super().create(vals)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
