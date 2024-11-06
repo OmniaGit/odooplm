@@ -3289,5 +3289,13 @@ class IrAttachment(models.Model):
         del out_attachment_value['id']
         #
         return json.dumps(out_attachment_value)
-
+    
+    def open_related_components(self):
+        return {'name': _('Products.'),
+                'res_model': 'product.product',
+                'view_type': 'form',
+                'view_mode': 'tree,form',
+                'type': 'ir.actions.act_window',
+                'domain': [('id', 'in', self.linkedcomponents.ids)],
+                'context': {}}
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
