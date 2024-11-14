@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -24,13 +25,12 @@ Created on 30 Aug 2016
 
 @author: Daniel Smerghetto
 """
-from odoo import models
-from odoo import fields
-from odoo import api
-from odoo import _
+from odoo import fields, models
 
 
 class MrpBomExtension(models.Model):
-    _inherit = 'mrp.bom'
+    _inherit = "mrp.bom"
 
-    type = fields.Selection(selection_add=[('spbom', 'Spare BoM')], ondelete={'spbom': 'cascade'})
+    type = fields.Selection(
+        selection_add=[("spbom", "Spare BoM")], ondelete={"spbom": "cascade"}
+    )

@@ -19,7 +19,9 @@
         <field name="arch" type="xml">
             <data>
                 <group name="Normalized features formatting" position="after">
-                	<b><separator colspan="1" string="Choose the Reference Object:"/></b>
+                    <b>
+                        <separator colspan="1" string="Choose the Reference Object:"/>
+                    </b>
                     <field name="bom_tmpl" placeholder="Object"/>
                 </group>
             </data>

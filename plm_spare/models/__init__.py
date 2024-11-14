@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -20,6 +21,5 @@
 ##############################################################################
 from . import mrp_bom
 from . import ir_attachment
-from . import plm_temporary
 from . import product_product
 from . import plm_description

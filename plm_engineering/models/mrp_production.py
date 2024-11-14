@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -26,7 +27,6 @@ Created on 31 Aug 2016
 """
 
 from odoo import models
-from odoo import api
 
 
 class MrpProductionExtension(models.Model):
@@ -39,7 +39,10 @@ class MrpProductionExtension(models.Model):
         @param product_qty:
         @return: Dictionary of values.
         """
-        result = super(MrpProductionExtension, self).product_id_change(product_id, product_qty)
+        result = super(MrpProductionExtension, self).product_id_change(
+            product_id,
+            product_qty
+        )
         out_values = result.get('value', {})
         bom_id = out_values.get('bom_id', False)
         if bom_id:

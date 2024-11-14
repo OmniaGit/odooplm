@@ -1,31 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-<data> 
-	
+    <data>
         <record id="res_users_plm_extension" model="ir.ui.view">
             <field name="name">res.users.plm.extension</field>
             <field name="model">res.users</field>
             <field name="inherit_id" ref="base.view_users_form"/>
             <field name="arch" type="xml">
                 <page name="access_rights" position="after">
-                	<page name="omnia_custom" string="Omnia Custom Module">
-		                <group name="omnia_plm" string="CustomProcedure" col="6">
-		                    <field name="custom_procedure" filename="custom_procedure_fname" colspan="5"/>
-		                    <field name="custom_procedure_fname"/>
-		                    <button name="open_custommodule_edit" type="object" string="Show"  class="btn-primary"/>
-		                    <field name="custom_read_content" nolabel="1" colspan="6" widget="ace" options="{'mode': 'python'}" invisible="custom_read_content in [False, '']" style="min-height:1000px;width:100%"/>
-		                </group>
-		                <group name="omnia_plm_multicad" string="Multicad" col="6">
-		                    <field name="custom_multicad" filename="custom_multicad_fname" colspan="5"/>
-		                    <field name="custom_multicad_fname"/>
-		                    <button name="open_custom_multicad_edit" type="object" string="Show" class="btn-primary"/>
-		                    <field name="custom_multicad_content" nolabel="1" colspan="6" widget="ace" options="{'mode': 'python'}" invisible="custom_read_content in [False, '']"  style="min-height:1000px;width:100%"/>
-		                </group>
-		            </page>
+                    <page name="omnia_custom" string="Omnia Custom Module">
+                            <group name="omnia_plm" string="CustomProcedure" col="6">
+                                <field name="custom_procedure_fname" invisible="1"/>
+                                <field name="custom_procedure" filename="custom_procedure_fname"/>
+                                <button name="open_custommodule_edit" type="object" string="Show" class="btn-primary"/>
+                                <field name="custom_read_content" nolabel="1" colspan="6" widget="ace"
+                                       options="{'mode': 'python'}" invisible="custom_read_content in [False, '']"
+                                       style="min-height:1000px;width:100%"/>
+                            </group>
+                            <group name="omnia_plm_multicad" string="Multicad" col="6">
+                                <field name="custom_multicad_fname" invisible="1"/>
+                                <field name="custom_multicad" filename="custom_multicad_fname"/>
+                                <button name="open_custom_multicad_edit" type="object" string="Show"
+                                        class="btn-primary"/>
+                                <field name="custom_multicad_content" nolabel="1" colspan="6" widget="ace"
+                                       options="{'mode': 'python'}" invisible="custom_read_content in [False, '']"
+                                       style="min-height:1000px;width:100%"/>
+                            </group>
+                    </page>
                 </page>
-
             </field>
-        </record> 
-        
-</data>
+        </record>
+    </data>
 </odoo>

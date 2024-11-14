@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -26,9 +27,7 @@ Created on 31 Aug 2016
 """
 import logging
 
-from odoo import models
-from odoo import api
-from odoo import _
+from odoo import _, api, models
 from odoo.exceptions import UserError
 
 
@@ -36,14 +35,19 @@ class ProductProductExtension(models.Model):
     _inherit = 'product.product'
 
     @api.model
-    def create_bom_from_ebom(self, obj_product_product_brw, new_bom_type, summarize=False, migrate_custom_lines=True):
-        evaluated = {'evaluated':[]}
-        return self._create_bom_from_ebom(obj_product_product_brw,
-                                          new_bom_type,
-                                          summarize,
-                                          migrate_custom_lines,
-                                          evaluated)
-        
+    def create_bom_from_ebom(self, obj_product_product_brw, new_bom_type,
+                             summarize=False, migrate_custom_lines=True):
+
+        evaluated = {'evaluated': []}
+
+        return self._create_bom_from_ebom(
+            obj_product_product_brw,
+            new_bom_type,
+            summarize,
+            migrate_custom_lines,
+            evaluated
+        )
+
     def _create_bom_from_ebom(self,
                               obj_product_product_brw,
                               new_bom_type,
@@ -55,7 +59,7 @@ class ProductProductExtension(models.Model):
         """
         if not obj_product_product_brw.engineering_code:
             return []
-        if  obj_product_product_brw.id in evaluated.get('evaluated',[]):
+        if obj_product_product_brw.id in evaluated.get('evaluated', []):
             return []
         evaluated['evaluated'].append(obj_product_product_brw.id)
         bom_type = self.env['mrp.bom']
@@ -67,11 +71,14 @@ class ProductProductExtension(models.Model):
             out_bom_brws = []
             engineering_code = bomBrws.product_tmpl_id.engineering_code
             if engineering_code:
-                previous_rev_product_brws_list = prod_tmpl_obj.search([('engineering_code', '=', engineering_code)],
-                                                                      order='engineering_revision desc')
+                previous_rev_product_brws_list = prod_tmpl_obj.search([
+                    ('engineering_code', '=', engineering_code)
+                ], order='engineering_revision desc')
                 for prod_brws in previous_rev_product_brws_list:
-                    old_bom_brws_list = bom_type.search([('product_tmpl_id', '=', prod_brws.id),
-                                                         ('type', '=', new_bom_type)])
+                    old_bom_brws_list = bom_type.search([
+                        ('product_tmpl_id', '=', prod_brws.id),
+                        ('type', '=', new_bom_type)
+                    ])
                     for old_bom_brws in old_bom_brws_list:
                         if old_bom_brws == exclude_bom_id:
                             continue
@@ -85,8 +92,10 @@ class ProductProductExtension(models.Model):
         if new_bom_type not in ['normal', 'phantom']:
             raise UserError(_("Could not convert source bom to %r" % new_bom_type))
         product_template_id = obj_product_product_brw.product_tmpl_id.id
-        bom_brws_list = bom_type.search([('product_tmpl_id', '=', product_template_id),
-                                         ('type', '=', new_bom_type)], order='engineering_revision DESC', limit=1)
+        bom_brws_list = bom_type.search([
+            ('product_tmpl_id', '=', product_template_id),
+            ('type', '=', new_bom_type)
+        ], order='engineering_revision DESC', limit=1)
         if bom_brws_list:
             for bom_brws in bom_brws_list:
                 for bom_line in bom_brws.bom_line_ids:
@@ -96,10 +105,14 @@ class ProductProductExtension(models.Model):
                                                evaluated=evaluated)
                 break
         else:
-            eng_bom_brws_list = bom_type.search([('product_tmpl_id', '=', product_template_id),
-                                                 ('type', '=', 'ebom')], order='engineering_revision DESC', limit=1)
+            eng_bom_brws_list = bom_type.search([
+                ('product_tmpl_id', '=', product_template_id),
+                ('type', '=', 'ebom')
+            ], order='engineering_revision DESC', limit=1)
             if not eng_bom_brws_list:
-                logging.info('No EBOM or NBOM found for template id: {}'.format(product_template_id))
+                logging.info(
+                    'No EBOM or NBOM found for template id: {}'.format(product_template_id)
+                )
                 return []
             for e_bom_brws in eng_bom_brws_list:
                 e_bom_id = e_bom_brws.id
@@ -136,20 +149,30 @@ class ProductProductExtension(models.Model):
                                                    evaluated=evaluated)
                         line_brws.type = new_bom_type
                         line_brws.ebom_source_id = e_bom_id
-                obj_product_product_brw.message_post(body=_('Created %r' % new_bom_type))
+                obj_product_product_brw.message_post(
+                    body=_('Created %r' % new_bom_type)
+                )
                 break
+
         if new_nbom_id and e_bom_id and migrate_custom_lines:
             # if e_bom_id --> normal BOM was not existing
             ebom_id = bom_type.browse(e_bom_id)
             old_bom_list = get_previous_normal_bom(ebom_id, new_nbom_id)
             for old_n_bom in old_bom_list:
-                collect_list.extend(
-                    self.addOldBomLines(old_n_bom, new_nbom_id, bom_l_type, new_bom_type, ebom_id, bom_type,
-                                        summarize))
+                collect_list.extend(self.addOldBomLines(
+                    old_n_bom,
+                    new_nbom_id,
+                    bom_l_type,
+                    new_bom_type,
+                    ebom_id,
+                    bom_type,
+                    summarize
+                ))
         return collect_list
 
     @api.model
-    def addOldBomLines(self, old_n_bom, new_bom_brws, bom_line_obj, new_bom_type, bom_brws, bom_type, summarize=False):
+    def addOldBomLines(self, old_n_bom, new_bom_brws, bom_line_obj,
+                       new_bom_type, bom_brws, bom_type, summarize=False):
         collect_list = []
 
         def verify_summarize(product_id, old_prod_qty):
@@ -161,7 +184,8 @@ class ProductProductExtension(models.Model):
                     product_name = new_line.product_id.name
                     to_return = 0, False
                     if summarize:
-                        out_msg = out_msg + 'In BOM "%s" line "%s" has been summarized.' % (template_name, product_name)
+                        out_msg =\
+                            out_msg + 'In BOM "%s" line "%s" has been summarized.' % (template_name, product_name)
                         to_return = new_line.product_qty + old_prod_qty, new_line.id
                     else:
                         out_msg = out_msg + 'In BOM "%s" line "%s" has been not summarized.' % (template_name, product_name)
@@ -172,7 +196,10 @@ class ProductProductExtension(models.Model):
 
         for old_brws_line in old_n_bom.bom_line_ids:
             if not old_brws_line.ebom_source_id:
-                qty, found_line_id = verify_summarize(old_brws_line.product_id.id, old_brws_line.product_qty)
+                qty, found_line_id = verify_summarize(
+                    old_brws_line.product_id.id,
+                    old_brws_line.product_qty
+                )
                 if not found_line_id:
                     new_bom_line_brws = old_brws_line.copy()
                     new_bom_line_brws.write({
@@ -181,9 +208,13 @@ class ProductProductExtension(models.Model):
                         'product_qty': old_brws_line.product_qty,
                         'ebom_source_id': False,
                     })
-                    new_bom_brws.write({'bom_line_ids': [(4, new_bom_line_brws.id, 0)]})
+                    new_bom_brws.write({
+                        'bom_line_ids': [(4, new_bom_line_brws.id, 0)]
+                    })
                 else:
-                    bom_line_obj.browse(found_line_id).write({'product_qty': qty})
+                    bom_line_obj.browse(found_line_id).write({
+                        'product_qty': qty
+                    })
         return collect_list
 
     @api.model
@@ -200,11 +231,15 @@ class ProductProductExtension(models.Model):
         bom_type = self.env['mrp.bom']
         bom_l_type = self.env['mrp.bom.line']
         product_template_id = check_obj.product_tmpl_id.id
-        obj_boms = bom_type.search([('product_tmpl_id', '=', product_template_id),
-                                    ('type', '=', 'normal')])
+        obj_boms = bom_type.search([
+            ('product_tmpl_id', '=', product_template_id),
+            ('type', '=', 'normal')
+        ])
         if not obj_boms:
-            bom_brws_list = bom_type.search([('product_tmpl_id', '=', product_template_id),
-                                             ('type', '=', 'ebom')])
+            bom_brws_list = bom_type.search([
+                ('product_tmpl_id', '=', product_template_id),
+                ('type', '=', 'ebom')
+            ])
             for bom_brws in bom_brws_list:
                 new_bom_brws = bom_brws.copy(defaults)
                 processedIds.append(idd)
@@ -230,6 +265,3 @@ class ProductProductExtension(models.Model):
                 for bom_line in objBom.bom_line_ids:
                     self._create_normalBom(bom_line.product_id.id, processedIds)
         return False
-
-
-

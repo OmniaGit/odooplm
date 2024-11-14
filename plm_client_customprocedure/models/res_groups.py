@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 ##############################################################################
 #
-#    OmniaSolutions, Open Source Management Solution    
+#    OmniaSolutions, Open Source Management Solution
 #    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
 #    $Id$
 #
@@ -30,10 +30,7 @@ import logging
 import tempfile
 import os
 import base64
-from odoo import models
-from odoo import fields
-from odoo import api
-from odoo import _
+from odoo import _, api, fields, models
 
 
 class ResGroups(models.Model):
@@ -42,11 +39,11 @@ class ResGroups(models.Model):
 
     custom_procedure = fields.Binary(string=_('Client CustomProcedure'))
     custom_procedure_fname = fields.Char(_("Custom Procedure File name"))
-    custom_read_content = fields.Text('Custom Read Content', default='')
+    custom_read_content = fields.Text('Custom Read Content')
 
     custom_multicad = fields.Binary(string=_('Client Multicad'))
     custom_multicad_fname = fields.Char(_("MultiCad File name"))
-    custom_multicad_content = fields.Text('Custom Multicad Content', default='')
+    custom_multicad_content = fields.Text('Custom Multicad Content')
 
     def write(self, vals):
         erase = self.env.context.get('erase_multicad', True)
@@ -79,8 +76,8 @@ class ResGroups(models.Model):
 
     def open_custommodule_save(self, vals):
         for groupBrws in self:
-            self.commonSave(vals, 
-                            'custom_procedure', 
+            self.commonSave(vals,
+                            'custom_procedure',
                             'custom_read_content',
                             groupBrws.custom_procedure_fname,
                             groupBrws.custom_procedure
@@ -89,8 +86,8 @@ class ResGroups(models.Model):
     @api.model
     def open_custom_multicad_save(self, vals):
         for groupBrws in self:
-            self.commonSave(vals, 
-                            'custom_multicad', 
+            self.commonSave(vals,
+                            'custom_multicad',
                             'custom_multicad_content',
                             groupBrws.custom_multicad_fname,
                             groupBrws.custom_multicad
@@ -107,15 +104,30 @@ class ResGroups(models.Model):
         vals[content_field] = ''
 
     def getCustomProcedure(self):
+        """
+        This method is used on customer side.
+        """
         for groupBrws in self:
-            logging.info('Request CustomProcedure file for user %r and group %r-%r and id %r' % (groupBrws.env.uid, groupBrws.category_id.name, groupBrws.name, groupBrws.id))
-            if groupBrws.custom_procedure:
-                return True, groupBrws.custom_procedure, groupBrws.custom_procedure_fname
+            logging.info(
+                'Request CustomProcedure file for user %r and group %r-%r and id %r'
+                % (groupBrws.env.uid, groupBrws.category_id.name,
+                   groupBrws.name, groupBrws.id)
+            )
+            custom_procedure = groupBrws.custom_procedure
+            if custom_procedure:
+                return True, custom_procedure, groupBrws.custom_procedure_fname
         return False, '', groupBrws.custom_procedure_fname
 
     def getCustomMulticad(self):
+        """
+        This method is used on customer side.
+        """
         for groupBrws in self:
-            logging.info('Request Multicad file for user %r and group %r-%r and id %r' % (groupBrws.env.uid, groupBrws.category_id.name, groupBrws.name, groupBrws.id))
+            logging.info(
+                'Request Multicad file for user %r and group %r-%r and id %r'
+                % (groupBrws.env.uid, groupBrws.category_id.name,
+                   groupBrws.name, groupBrws.id)
+            )
             if groupBrws.custom_multicad:
                 return True, groupBrws.custom_multicad, groupBrws.custom_multicad_fname
         return False, '', groupBrws.custom_multicad_fname

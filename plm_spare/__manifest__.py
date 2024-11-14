@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution
@@ -20,26 +21,24 @@
 ##############################################################################
 {
     "name": "PLM Spare",
-    "version": "18.0.0.1",
+    "version": "18.0.1.0.0",
     "author": "OmniaSolutions",
     "website": "https://odooplm.omniasolutions.website",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
     "sequence": 15,
     "license": "AGPL-3",
     "summary": "Add spare BOM and Spare Parts Manual",
-    "images": [],
     "depends": ["plm"],
     "data": [
-        # views
-        "views/plm_description.xml",
-        "views/plm_temporary.xml",
-        "views/ir_attachment.xml",
         # reporting
         "report/bom_structure.xml",
         "report/product_product.xml",
+        # wizards
+        "wizards/plm_temporary.xml",
+        # views
+        "views/plm_description.xml",
+        "views/ir_attachment.xml",
     ],
-    "demo": [],
-    "test": [],
     "installable": True,
     "application": False,
     "auto_install": False,

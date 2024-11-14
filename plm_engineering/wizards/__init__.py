@@ -19,21 +19,4 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
-"""
-Created on 30 Aug 2016
-
-@author: Daniel Smerghetto
-"""
-from odoo import _, fields, models
-
-
-class PlmDescriptionExtension(models.Model):
-    _inherit = "plm.description"
-
-    bom_tmpl = fields.Many2one(
-        "mrp.bom",
-        _("Choose a BoM"),
-        change_default=True,
-        help=_("Select a  BoM as template to drive building Spare BoM."),
-    )
+from . import plm_temporary

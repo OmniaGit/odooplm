@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 ##############################################################################
 #
-#    OmniaSolutions, Open Source Management Solution    
+#    OmniaSolutions, Open Source Management Solution
 #    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
 #    $Id$
 #
@@ -26,14 +26,11 @@ Created on Apr 19, 2017
 @author: daniel
 '''
 
-from odoo import models
-from odoo import fields
-from odoo import api
-from odoo import _
 import logging
 import base64
 import tempfile
 import os
+from odoo import _, api, fields, models
 
 
 class ResUsers(models.Model):
@@ -41,11 +38,11 @@ class ResUsers(models.Model):
 
     custom_procedure = fields.Binary(string=_('Client CustomProcedure'))
     custom_procedure_fname = fields.Char(_("CustomProcedure File name"))
-    custom_read_content = fields.Text(_('Custom Read Content'), default='')
+    custom_read_content = fields.Text(_('Custom Read Content'))
 
     custom_multicad = fields.Binary(string=_('Client Multicad'))
     custom_multicad_fname = fields.Char(_("Multicad File name"))
-    custom_multicad_content = fields.Text('Custom Multicad Content', default='')
+    custom_multicad_content = fields.Text('Custom Multicad Content')
 
     def write(self, vals):
         erase = self.env.context.get('erase_multicad', True)
@@ -64,7 +61,9 @@ class ResUsers(models.Model):
                 fileReadableContent = base64.b64decode(groupBrws.custom_procedure)
                 if self.custom_read_content:
                     fileReadableContent = ''
-                self.with_context({'erase_customprocedure': False}).custom_read_content = fileReadableContent
+                self.with_context({
+                    'erase_customprocedure': False
+                }).custom_read_content = fileReadableContent
 
     def open_custom_multicad_edit(self):
         ctx = self.env.context.copy()
@@ -74,29 +73,34 @@ class ResUsers(models.Model):
                 fileReadableContent = base64.b64decode(groupBrws.custom_multicad)
                 if self.custom_multicad_content:
                     fileReadableContent = ''
-                self.with_context({'erase_multicad': False}).custom_multicad_content = fileReadableContent
+                self.with_context({
+                    'erase_multicad': False
+                }).custom_multicad_content = fileReadableContent
 
     def open_custommodule_save(self, vals):
         for groupBrws in self:
-            self.commonSave(vals, 
-                            'custom_procedure', 
-                            'custom_read_content',
-                            groupBrws.custom_procedure_fname,
-                            groupBrws.custom_procedure
-                            )
- 
+            self.commonSave(
+                vals,
+                'custom_procedure',
+                'custom_read_content',
+                groupBrws.custom_procedure_fname,
+                groupBrws.custom_procedure
+            )
+
     @api.model
     def open_custom_multicad_save(self, vals):
         for groupBrws in self:
-            self.commonSave(vals, 
-                            'custom_multicad', 
-                            'custom_multicad_content',
-                            groupBrws.custom_multicad_fname,
-                            groupBrws.custom_multicad
-                            )
- 
+            self.commonSave(
+                vals,
+                'custom_multicad',
+                'custom_multicad_content',
+                groupBrws.custom_multicad_fname,
+                groupBrws.custom_multicad
+            )
+
     @api.model
-    def commonSave(self, vals, binary_field, content_field, fname, custom_file):
+    def commonSave(self, vals, binary_field,
+                   content_field, fname, custom_file):
         vals[binary_field] = base64.b64encode(vals.get(content_field, '').encode('utf-8'))
         tmpFolder = tempfile.gettempdir()
         if fname:
@@ -106,8 +110,14 @@ class ResUsers(models.Model):
         vals[content_field] = ''
 
     def getCustomProcedure(self):
+        """
+        This method is used on customer side.
+        """
+
         for userBrws in self.browse(self.env.uid):
-            logging.info('Request CustomProcedure file for user %r' % (userBrws.env.uid))
+            logging.info(
+                'Request CustomProcedure file for user %r' % (userBrws.env.uid)
+            )
             if userBrws.custom_procedure:
                 return userBrws.custom_procedure, userBrws.custom_procedure_fname
             else:
@@ -116,13 +126,23 @@ class ResUsers(models.Model):
                     if not res:
                         continue
                     else:
-                        logging.info('Got CustomProcedure file from group %r-%r with ID %r' % (groupBrws.category_id.name, groupBrws.name, groupBrws.id))
+                        logging.info(
+                            'Got CustomProcedure file from group %r-%r with ID %r' % (
+                                groupBrws.category_id.name, groupBrws.name, groupBrws.id
+                            )
+                        )
                         return fileContent, fileName
         return '', ''
 
     def getCustomMulticad(self):
+        """
+        This method is used on customer side.
+        """
+
         for userBrws in self.browse(self.env.uid):
-            logging.info('Request Multicad file for user %r' % (userBrws.env.uid))
+            logging.info(
+                'Request Multicad file for user %r' % (userBrws.env.uid)
+            )
             if userBrws.custom_multicad:
                 return userBrws.custom_multicad, userBrws.custom_multicad_fname
             else:
@@ -131,7 +151,7 @@ class ResUsers(models.Model):
                     if not res:
                         continue
                     else:
-                        logging.info('Got Multicad file from group %r-%r with ID %r' % (groupBrws.category_id.name, groupBrws.name, groupBrws.id))
+                        logging.info('Got Multicad file from group %r-%r with ID %r' % (
+                            groupBrws.category_id.name, groupBrws.name, groupBrws.id))
                         return fileContent, fileName
         return '', ''
-
