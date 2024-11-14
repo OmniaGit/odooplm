@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution
@@ -20,18 +21,17 @@
 ##############################################################################
 {
     "name": "PLM Auto Internal Reference",
-    "version": "18.0.0.1",
+    "version": "18.0.1.0.0",
     "author": "OmniaSolutions",
     "website": "https://odooplm.omniasolutions.website",
+    "summary": """This Module Create Auto Internal Reference""",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
     "sequence": 15,
     "license": "AGPL-3",
-    "summary": "Allow to compute boms due to date",
-    "images": [],
     "depends": ["plm"],
-    "data": ["views/product_product.xml"],
-    "demo": [],
-    "test": [],
+    "data": [
+        "views/product_product.xml"
+    ],
     "installable": True,
     "application": False,
     "auto_install": False,

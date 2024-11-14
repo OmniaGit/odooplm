@@ -18,22 +18,15 @@
 #    along with this prograIf not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-'''
+"""
 Created on 30 Oct 2022
 
 @author: mboscolo
-'''
+"""
+from odoo import models, fields
 
 
-from odoo import models
-from odoo import fields
-from odoo import api
-from odoo import _
-from odoo.exceptions import UserError
-import logging
-
-    
 class ProductCategory(models.Model):
-    _inherit = 'product.category'
-    plm_code_sequence = fields.Many2one('ir.sequence',
-                                        string='Part Number sequence')
+    _inherit = "product.category"
+
+    plm_code_sequence = fields.Many2one("ir.sequence", string="Part Number sequence")

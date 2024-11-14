@@ -1,6 +1,7 @@
+# -*- coding: utf-8 -*-
 ##############################################################################
 #
-#    OmniaSolutions, Open Source Management Solution    
+#    OmniaSolutions, Open Source Management Solution
 #    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
 #    $Id$
 #
@@ -23,39 +24,40 @@ Created on Mar 30, 2016
 
 @author: Daniel Smerghetto
 """
-from odoo import models
-from odoo import fields
-from odoo import api
+from odoo import _, api, fields, models
 
-from odoo import _
-from odoo.exceptions import UserError
-import logging
 
-class pProductProduct(models.Model):
-    _inherit = 'product.product'
-    
+class ProductProduct(models.Model):
+    _inherit = "product.product"
+
     @api.onchange("categ_id")
     def onchange_categ_id(self):
+        """
+        An onchange method to update the 'engineering_code'
+        """
+        product = self.product_tmpl_id
         if self.engineering_code_editable:
-            self.product_tmpl_id.engineering_code = self.product_tmpl_id._getNewCode()
-                
+            product.engineering_code = product._getNewCode()
+
+
 class ProductTemplate(models.Model):
-    _inherit = 'product.template'
+    _inherit = "product.template"
 
     def _getNewCode(self):
-        if self.env.context.get('odooPLM', False):
+        """
+        A custom method to generate the sequence for 'engineering_code'.
+        """
+        if self.env.context.get("odooPLM", False):
             if self.categ_id and self.categ_id.plm_code_sequence:
                 return self.categ_id.plm_code_sequence.next_by_id()
-            return self.env['ir.sequence'].next_by_code('plm.eng.code')
+            return self.env["ir.sequence"].next_by_code("plm.eng.code")
         return False
-    
-    @api.onchange("categ_id")
-    def onchange_categ_id(self):
-        if self.engineering_code_editable:
-            self.engineering_code = self._getNewCode()
-        
-    engineering_code = fields.Char(_('Part Number'),
-                                   index=True,
-                                   default = _getNewCode,
-                                   help=_("This is engineering reference to manage a different P/N from item Name."),
-                                   size=64)
+
+    engineering_code = fields.Char(
+        _("Part Number"),
+        index=True,
+        help=_(
+            "This is engineering reference to manage a different P/N from item Name."
+        ),
+        size=64,
+    )
