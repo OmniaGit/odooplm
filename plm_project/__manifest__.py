@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution
@@ -20,14 +21,13 @@
 ##############################################################################
 {
     "name": "PLM Project",
-    "version": "18.0.0.1",
+    "version": "18.0.1.0.0",
     "author": "OmniaSolutions",
     "website": "https://odooplm.omniasolutions.website",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
     "license": "AGPL-3",
     "sequence": 15,
     "summary": "Connect odoo project with odooPLM",
-    "images": [],
     "depends": ["plm", "project"],
     "data": [
         "views/project.xml",
@@ -35,8 +35,6 @@
         "views/project_task.xml",
         "views/mail_activity_type.xml",
     ],
-    "demo": [],
-    "test": [],
     "installable": True,
     "application": False,
     "auto_install": False,

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -24,18 +25,13 @@ Created on 30 Aug 2016
 
 @author: Daniel Smerghetto
 """
-
-from odoo import _
-from odoo import api
-from odoo import fields
-from odoo import models
+from odoo import _, fields, models
 
 
 class ProductTemplate(models.Model):
-    _inherit = 'product.template'
+    _inherit = "product.template"
 
-    engineering_state = fields.Selection(selection_add=[('suspended', _('Suspended'))])
-    old_state = fields.Char(
-        size=128,
-        name=_("Old Status")
+    engineering_state = fields.Selection(
+        selection_add=[("suspended", _("Suspended"))]
     )
+    old_state = fields.Char(size=128, name=_("Old Status"))

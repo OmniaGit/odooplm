@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -24,49 +25,51 @@ Created on 30 Aug 2016
 
 @author: Daniel Smerghetto
 """
-from odoo import _
-from odoo import api
-from odoo import models
-from odoo import fields
-
+from odoo import _, api, fields, models
 from odoo.addons.plm.models.plm_mixin import USED_STATES
 
-USED_STATES.append(('suspended', _('Suspended')))
+USED_STATES.append(("suspended", _("Suspended")))
 
 
 class PlmDocumentExtension(models.Model):
-    _inherit = 'ir.attachment'
+    _inherit = "ir.attachment"
 
-    engineering_state = fields.Selection(USED_STATES,
-                                         string='Status',
-                                         help=_("The status of the product."),
-                                         readonly="True",
-                                         default='draft')
-    old_state = fields.Char(
-        name=_("Old Status")
+    engineering_state = fields.Selection(
+        USED_STATES,
+        string="Status",
+        readonly="True",
+        default="draft",
+        help=_("The status of the product."),
     )
+    old_state = fields.Char(name=_("Old Status"))
 
     @property
     def actions(self):
         action_dict = super(PlmDocumentExtension, self).actions
-        action_dict['suspended'] = self.action_suspend
+        action_dict["suspended"] = self.action_suspend
         return action_dict
 
     def action_suspend(self):
         """
-            reactivate the object
+        reactivate the object
         """
         if self.ischecked_in():
-            defaults = {'old_state': self.engineering_state, 'engineering_state': 'suspended'}
+            defaults = {
+                "old_state": self.engineering_state,
+                "engineering_state": "suspended",
+            }
             return self.with_context(check=False).write(defaults)
         return False
 
     def action_unsuspend(self):
         """
-            reactivate the object
+        reactivate the object
         """
         if self.ischecked_in():
-            defaults = {'old_state': self.engineering_state, 'engineering_state': self.old_state}
+            defaults = {
+                "old_state": self.engineering_state,
+                "engineering_state": self.old_state,
+            }
             return self.with_context(check=False).write(defaults)
         return False
 
@@ -74,7 +77,7 @@ class PlmDocumentExtension(models.Model):
     def is_plm_state_writable(self):
         if super(PlmDocumentExtension, self).is_plm_state_writable():
             for customObject in self:
-                if customObject.engineering_state in ('suspended',):
+                if customObject.engineering_state in ("suspended",):
                     return False
             return True
         else:

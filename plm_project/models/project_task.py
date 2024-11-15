@@ -18,21 +18,17 @@
 #    along with this prograIf not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-'''
+"""
 Created on Nov 16, 2019
 
 @author: mboscolo
-'''
-from odoo import models
-from odoo import api
-from odoo import modules
-from odoo import fields
-from odoo import _
+"""
+from odoo import _, fields, models
 
 
 class ProjectTask(models.Model):
-    _inherit = 'project.task'
+    _inherit = "project.task"
 
-
-    activity_product_ids = fields.One2many('product.product', 'activity_task_id', _('Product Ids'))
-
+    activity_product_ids = fields.One2many(
+        "product.product", "activity_task_id", string=_("Product Ids")
+    )

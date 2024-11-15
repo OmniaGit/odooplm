@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record model="ir.ui.view" id="plm_project_product_extend">
+    <record id="plm_project_product_extend" model="ir.ui.view">
         <field name="name">plm.project.product.extend</field>
         <field name="model">product.product</field>
         <field name="inherit_id" ref="plm.plm_component_base_form"/>
@@ -18,7 +18,7 @@
         </field>
     </record>
 
-    <record model="ir.ui.view" id="plm_product_product_normal_form_view_inherit_plm_project">
+    <record id="plm_product_product_normal_form_view_inherit_plm_project" model="ir.ui.view">
         <field name="name">plm.product.product.normal.form.view.inherit.form.plm.project</field>
         <field name="model">product.product</field>
         <field name="inherit_id" ref="plm.plm_product_product_normal_form_view_inherit"/>
@@ -37,5 +37,4 @@
             </page>
         </field>
     </record>
-
 </odoo>

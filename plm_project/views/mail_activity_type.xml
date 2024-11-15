@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-
         <record id="mail_activity_product_confirmed" model="mail.activity.type">
             <field name="name">Product Confirmed</field>
             <field name="icon">fa-gears</field>
@@ -9,6 +8,5 @@
             <field name="res_model">product.product</field>
             <field name="sequence">200</field>
         </record>
-
     </data>
 </odoo>

@@ -7,13 +7,13 @@
         <field name="priority" eval="3"/>
         <field name="arch" type="xml">
             <field name="partner_id" position="after">
-                    <field string="PLM" name="plm_use_plm"  />
-                    <field name="plm_completed" widget="progressbar" invisible="plm_use_plm==False" />                    
+                <field string="PLM" name="plm_use_plm"/>
+                <field name="plm_completed" widget="progressbar"
+                       invisible="plm_use_plm==False"/>
             </field>
             <xpath expr="//notebook" position="inside">
                 <page string="PLM" invisible="plm_use_plm==False">
-                      <field nolabel="1"
-                             name="plm_product_ids"/>
+                      <field name="plm_product_ids" nolabel="1"/>
                 </page>
             </xpath>
         </field>

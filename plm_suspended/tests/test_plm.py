@@ -18,11 +18,11 @@
 #    along with this prograIf not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-'''
+"""
 Created on 8 Oct 2021
 
 @author: mboscolo
-'''
+"""
 import logging
 import datetime
 from odoo import models
@@ -40,8 +40,10 @@ from odoo.addons.plm.models.plm_mixin import CONFIRMED_STATUS
 from odoo.addons.plm.models.plm_mixin import RELEASED_STATUS
 from odoo.addons.plm.models.plm_mixin import UNDER_MODIFY_STATUS
 from odoo.addons.plm.models.plm_mixin import OBSOLATED_STATUS
+
 #
 from odoo.addons.plm.tests.entity_creator import PlmEntityCreator
+
 #
 #
 # --test-tags=odoo_plm
@@ -49,15 +51,18 @@ from odoo.addons.plm.tests.entity_creator import PlmEntityCreator
 #
 DUMMY_CONTENT = b"R0lGODdhAQABAIAAAP///////ywAAAAAAQABAAACAkQBADs="
 #
-@tagged('-standard', 'odoo_plm_suspended')
-class PlmDateBom(TransactionCase,PlmEntityCreator):
-    
+@tagged("-standard", "odoo_plm_suspended")
+class PlmDateBom(TransactionCase, PlmEntityCreator):
     def perform_check_suspend(self, obj):
         obj.action_suspend()
-        assert obj.engineering_state==suspended, "wrong state %s" % product.engineering_state
+        assert obj.engineering_state == suspended, (
+            "wrong state %s" % product.engineering_state
+        )
         obj.action_unsuspend()
-        assert obj.engineering_state==START_STATUS, "wrong state %s" % product.engineering_state
-                    
+        assert obj.engineering_state == START_STATUS, (
+            "wrong state %s" % product.engineering_state
+        )
+
     def test_product_attachment_wk(self):
         #
         # product
@@ -76,6 +81,4 @@ class PlmDateBom(TransactionCase,PlmEntityCreator):
         product.action_confirm()
         self.perform_check_suspend(product)
         product.action_release()
-        self.perform_check_suspend(product)        
-        
-        
+        self.perform_check_suspend(product)

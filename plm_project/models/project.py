@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -24,11 +25,11 @@ Created on 30 Aug 2016
 
 @author: Daniel Smerghetto
 """
-from odoo import fields, models, _
+from odoo import _, fields, models
 
 
 class ProjectExtension(models.Model):
-    _inherit = 'project.project'
+    _inherit = "project.project"
 
     def _compute_plm_complete(self):
         """
@@ -38,9 +39,11 @@ class ProjectExtension(models.Model):
             if project.plm_product_ids:
                 product_ok = 0
                 for product in project.plm_product_ids:
-                    if product.engineering_state in ['released']:
+                    if product.engineering_state in ["released"]:
                         product_ok = product_ok + 1
-                project.plm_completed = round(100.0 * product_ok / len(project.plm_product_ids), 2)
+                project.plm_completed = round(
+                    100.0 * product_ok / len(project.plm_product_ids), 2
+                )
             else:
                 project.plm_completed = 100
 
@@ -49,22 +52,20 @@ class ProjectExtension(models.Model):
             project.plm_product_count = len(project.plm_product_ids)
 
     plm_use_plm = fields.Boolean(
-        string='Use PLM',
+        string="Use PLM",
         default=False,
-        help=_("Check this box to manage plm data into project")
+        help=_("Check this box to manage plm data into project"),
     )
     plm_completed = fields.Float(
-        string=_('Plm Complete'),
-        compute="_compute_plm_complete"
+        string=_("Plm Complete"), compute="_compute_plm_complete"
     )
     plm_product_ids = fields.Many2many(
-        'product.product',
-        'project_product_rel',
-        'project_id',
-        'product_id',
-        string=_('Products')
+        "product.product",
+        "project_product_rel",
+        "project_id",
+        "product_id",
+        string=_("Products"),
     )
     plm_product_count = fields.Integer(
-        compute='_compute_product_count',
-        string=_("Number of product related")
+        compute="_compute_product_count", string=_("Number of product related")
     )
