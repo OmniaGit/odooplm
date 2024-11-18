@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -24,7 +25,7 @@
 
 {
     "name": "PLM Breakages",
-    "version": "18.0.0.1",
+    "version": "18.0.1.0.0",
     "author": "OmniaSolutions",
     "website": "https://www.omniasolutions.website",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
@@ -32,13 +33,12 @@
     "summary": "PLM Breakages",
     "depends": ["base", "product", "mrp"],
     "data": [
-        # Security
         "security/base_plm_security.xml",
-        # Views
+        "data/sequence.xml",
         "views/breakages_view.xml",
         "views/product_view.xml",
         "views/bom_view.xml",
-        'views/mrp_production.xml'
+        "views/mrp_production.xml",
     ],
     "installable": True,
 }

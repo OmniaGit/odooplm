@@ -1,8 +1,8 @@
-# -*- coding: utf-8 -*-
+# -*- encoding: utf-8 -*-
 ##############################################################################
 #
-#    OmniaSolutions, Open Source Management Solution
-#    Copyright (C) 2010-2021 OmniaSolutions (<https://www.omniasolutions.website>).
+#    OmniaSolutions, Your own solutions
+#    Copyright (C) 2010 OmniaSolutions (<https://www.omniasolutions.website>). All Rights Reserved
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -19,17 +19,11 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-{
-    "name": "PLM Bom Sumarize",
-    "version": "18.0.1.0.0",
-    "author": "OmniaSolutions",
-    "website": "https://odooplm.omniasolutions.website",
-    "category": "Product Lifecycle Management",
-    "sequence": 15,
-    "license": "AGPL-3",
-    "summary": "Summarize bom when client upload it",
-    "depends": ["mrp", "plm"],
-    "installable": True,
-    "application": False,
-    "auto_install": False,
-}
+
+"""
+Created on 30 Aug 2016
+
+@author: Daniel Smerghetto
+"""
+
+from . import compare_bom

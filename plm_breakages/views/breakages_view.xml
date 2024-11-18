@@ -1,68 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-<data>
-	
-	<record model="ir.ui.view" id="breakages_list_view">
+    <data>
+        <record id="breakages_list_view" model="ir.ui.view">
             <field name="name">breakages.list</field>
             <field name="model">plm.breakages</field>
             <field name="arch" type="xml">
                 <list string="Breakages list">
-                	<field name="name"/>
-                	<field name="product_id"/>
-                	<field name="parent_id"/>
-                	<field name="partner_id"/>
-                	<field name="lot_number"/>
-                	<field name="date"/>
+                    <field name="name"/>
+                    <field name="product_id"/>
+                    <field name="parent_id"/>
+                    <field name="partner_id"/>
+                    <field name="lot_number"/>
+                    <field name="date"/>
                 </list>
             </field>
-    </record>
-    
-     <record model="ir.ui.view" id="breakages_form_view">
+        </record>
+
+        <record id="breakages_form_view" model="ir.ui.view">
             <field name="name">breakages.form</field>
             <field name="model">plm.breakages</field>
             <field name="arch" type="xml">
                 <form string="Breakages Form">
-                	<sheet>
-                    	<div class="oe_title">
-                     		<h1>
-                     			<field name="name"/>
-                        	</h1>
-                    	</div>                    
-     					<group>
-                       		<group>
-                          		<field name="product_id"/>
-                          		<field name="parent_id"/>
-                            	<field name="partner_id"/>
-                        	</group>
-                        	<group>
-                        		<field name="lot_number"
-                        		       invisible="tracking in ['none'] or product_id==False"/>
-                        		<field name="date"/>
-                        		<field name="tracking" invisible="1"/>
-                        	</group>
-                       		<field name="notes" nolabel="1" widget="html"/>
-                    	</group>
-           			</sheet>
-           			<div class="oe_chatter">
-                    	<field name="message_follower_ids" widget="mail_followers"/>
-                    	<field name="message_ids" widget="mail_thread"/>
-                	</div>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="product_id"/>
+                                <field name="parent_id"/>
+                                <field name="partner_id"/>
+                            </group>
+                            <group>
+                                <field name="lot_number"
+                                       invisible="tracking in ['none'] or product_id==False"/>
+                                <field name="date"/>
+                                <field name="tracking" invisible="1"/>
+                            </group>
+                            <field name="notes" nolabel="1" widget="html"/>
+                        </group>
+                    </sheet>
+                    <!-- Chatter -->
+                    <chatter/>
                 </form>
             </field>
-    </record>
-    
-	<record model="ir.ui.view" id="breakages_graph_view">
-   		<field name="name">breakages.graph</field>
-   		<field name="model">plm.breakages</field>
-   		<field name="arch" type="xml">
-       		<graph string="Graph">
-        		<field name="product_id" type="row"/>
-                <field name="date" type="col"/>
-       		</graph>
-   		</field>
-	</record>
-    
-    <record model="ir.ui.view" id="breakages_pivot_view">
+        </record>
+
+        <record id="breakages_graph_view" model="ir.ui.view">
+            <field name="name">breakages.graph</field>
+            <field name="model">plm.breakages</field>
+            <field name="arch" type="xml">
+                <graph string="Graph">
+                    <field name="product_id" type="row"/>
+                    <field name="date" type="col"/>
+                </graph>
+            </field>
+        </record>
+
+        <record id="breakages_pivot_view" model="ir.ui.view">
             <field name="name">breakages.pivot</field>
             <field name="model">plm.breakages</field>
             <field name="arch" type="xml">
@@ -72,73 +69,65 @@
                 </pivot>
             </field>
         </record>
-        
-    <record model="ir.ui.view" id="breakages_search">
-    	<field name="name">breakages.search</field>
-    	<field name="model">plm.breakages</field>
-    	<field name="arch" type="xml">
-        <search>
-        	<field name = "date"/>
-        	<field name = "product_id"/>
-            <filter 
-            	name="last_year" 
-            	string="Last Year" 
-            	domain="[('date','&gt;=',(datetime.date.today() - relativedelta(days=1,months=1,years=1)).strftime('%%Y-%%m-%%d'))]"/>
-            <filter 
-            	name="last_month" 
-            	string="Last Month" 
-            	domain="[('date','&gt;=',(datetime.date.today() - relativedelta(days=1,months=1)).strftime('%%Y-%%m-%%d'))]"/>
-            <filter 
-            	name="last_week" 
-            	string="Last Week" 
-            	domain="[('date','&gt;=',(datetime.date.today() - datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"/>
-            <group expand="0" string="Group By...">
-           		<filter
-                	name="for_date"
-                	string="For Date"          
-                	context="{'group_by':'date'}"/>
-                <separator orientation="vertical"/>
-            	<filter
-                	name="for_product"
-                	string="For Product"          
-                	context="{'group_by':'product_id'}"/>
-                <separator orientation="vertical"/>
-               	<filter 
-               		name="create_by_me"
-                    string="Created by"
-                   	domain="[]"
-                    context="{'group_by':'create_uid'}"/>
-              	<filter 
-              		name="changed_by_me"
-                    string="Changed by"
-                    domain="[]"
-                   	context="{'group_by':'write_uid'}"/>
-             	</group>
-       	</search>
-    	</field>
-	</record>
 
-	<record model="ir.actions.act_window" id="breakages_menu_action">
-		<field name="context">{"search_default_for_product": 1, "search_default_for_date": 1}</field>
-		<field name="name">Product Breakages</field>
-		<field name="res_model">plm.breakages</field>
-		<field name="view_mode">graph,pivot,list,form</field>
-	</record>
-    
-    <menuitem 
-    		id="breakages_menu"
-    		name="Product Breakages"
-    		parent="plm.plm_component_menu_view"
-    		action="breakages_menu_action"
-    />
-    
-    <record id="seq_plm_breakages" model="ir.sequence">
-	    <field name="name">PLM Breakages</field>
-	    <field name="code">plm.breakages</field>
-	    <field name="prefix">B</field>
-	    <field name="padding">5</field>
-	    <field name="company_id" eval="False"/>
-    </record>
-    
-</data>
-</odoo> 
+        <record id="breakages_search" model="ir.ui.view">
+            <field name="name">breakages.search</field>
+            <field name="model">plm.breakages</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="date"/>
+                    <field name="product_id"/>
+                    <filter
+                        name="last_year"
+                        string="Last Year"
+                        domain="[('date','&gt;=',(datetime.date.today() - relativedelta(days=1,months=1,years=1)).strftime('%%Y-%%m-%%d'))]"/>
+                    <filter
+                        name="last_month"
+                        string="Last Month"
+                        domain="[('date','&gt;=',(datetime.date.today() - relativedelta(days=1,months=1)).strftime('%%Y-%%m-%%d'))]"/>
+                    <filter
+                        name="last_week"
+                        string="Last Week"
+                        domain="[('date','&gt;=',(datetime.date.today() - datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"/>
+                    <group expand="0" string="Group By...">
+                        <filter
+                            name="for_date"
+                            string="For Date"
+                            context="{'group_by':'date'}"/>
+                        <separator orientation="vertical"/>
+                        <filter
+                            name="for_product"
+                            string="For Product"
+                            context="{'group_by':'product_id'}"/>
+                        <separator orientation="vertical"/>
+                        <filter
+                            name="create_by_me"
+                            string="Created by"
+                            domain="[]"
+                            context="{'group_by':'create_uid'}"/>
+                        <filter
+                            name="changed_by_me"
+                            string="Changed by"
+                            domain="[]"
+                            context="{'group_by':'write_uid'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="breakages_menu_action" model="ir.actions.act_window">
+            <field name="context">{"search_default_for_product": 1, "search_default_for_date": 1}</field>
+            <field name="name">Product Breakages</field>
+            <field name="res_model">plm.breakages</field>
+            <field name="view_mode">graph,pivot,list,form</field>
+        </record>
+
+        <menuitem
+            id="breakages_menu"
+            name="Product Breakages"
+            parent="plm.plm_component_menu_view"
+            action="breakages_menu_action"
+        />
+
+    </data>
+</odoo>

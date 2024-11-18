@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -20,7 +21,7 @@
 ##############################################################################
 # Leonardo Cazziolati
 # leonardo.cazziolati@omniasolutions.eu
-#23-06-2020
+# 23-06-2020
 
 from . import breakages
 from . import product_product

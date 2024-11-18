@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -22,37 +23,32 @@
 # matteo.boscolo@omniasolutions.eu
 # 19-03-2022
 
-from odoo import models
-from odoo import fields
-from odoo import api
-from odoo import _
+from odoo import _, fields, models
+
 
 class MrpBomLine(models.Model):
-    _inherit = 'mrp.bom.line'
-    
+    _inherit = "mrp.bom.line"
+
+    breakages_count = fields.Integer(
+        "# Breakages", compute="_compute_breakages_count", compute_sudo=False
+    )
+
     def open_breakages(self):
         product_id = self.product_id
-        if not product_id:
-            for product_id in self.env['product.product'].search([('product_tmpl_id','=',self.product_tmpl_id.id)]):
-                break
-            
-        return {'name': _('Products'),
-                'res_model': 'plm.breakages',
-                'view_type': 'form',
-                'view_mode': 'list,form,pivot',
-                'type': 'ir.actions.act_window',
-                'domain': [('product_id', '=', product_id.id)],
-                'context': {'default_parent_id': product_id.id}}
 
-    breakages_count = fields.Integer('# Breakages',
-        compute='_compute_breakages_count', compute_sudo=False)
-    
+        return {
+            "name": _("Products"),
+            "res_model": "plm.breakages",
+            "view_type": "form",
+            "view_mode": "list,form,pivot",
+            "type": "ir.actions.act_window",
+            "domain": [("product_id", "=", product_id.id)],
+            "context": {"default_parent_id": product_id.id},
+        }
+
     def _compute_breakages_count(self):
         for mrp_bom_line in self:
             product_id = mrp_bom_line.product_id
-            if not product_id:
-                for product_id in self.env['product.product'].search([('product_tmpl_id','=',self.product_tmpl_id.id)]):
-                    break
-            mrp_bom_line.breakages_count = self.env['plm.breakages'].search_count([('product_id', '=', product_id.id)])
-
-            
+            mrp_bom_line.breakages_count = self.env["plm.breakages"].search_count(
+                [("product_id", "=", product_id.id)]
+            )

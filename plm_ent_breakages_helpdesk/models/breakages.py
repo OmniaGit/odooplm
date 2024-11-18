@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -22,20 +23,18 @@
 # leonardo.cazziolati@omniasolutions.eu
 # 23-06-2020
 
-from odoo import models
-from odoo import fields
-from odoo import api
-from odoo import _
+from odoo import fields, models
+
 
 class PlmBreakages(models.Model):
-    _name = 'plm.breakages'
-    _description = 'PLM Breakages'
-    _inherit = 'plm.breakages'
-    
-    ticket_ids = fields.Many2many("helpdesk.ticket",
-                                   relation="omnia_breakages_ticket_rel",
-                                   column1="ticket_id",
-                                   column2="breakage_id",
-                                   string="Ticket")
-    
-    
+    _name = "plm.breakages"
+    _description = "PLM Breakages"
+    _inherit = "plm.breakages"
+
+    ticket_ids = fields.Many2many(
+        "helpdesk.ticket",
+        relation="omnia_breakages_ticket_rel",
+        column1="ticket_id",
+        column2="breakage_id",
+        string="Ticket",
+    )

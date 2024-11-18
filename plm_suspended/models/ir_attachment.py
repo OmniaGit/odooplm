@@ -37,7 +37,7 @@ class PlmDocumentExtension(models.Model):
     engineering_state = fields.Selection(
         USED_STATES,
         string="Status",
-        readonly="True",
+        readonly=True,
         default="draft",
         help=_("The status of the product."),
     )

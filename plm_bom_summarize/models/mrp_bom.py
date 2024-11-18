@@ -18,30 +18,19 @@
 #    along with this prograIf not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-'''
+"""
 Created on 19 Dec 2019
 
 @author: mboscolo
-'''
-import logging
-import datetime
-from odoo import models
-from odoo import fields
-from odoo import api
-from odoo import _
-from odoo.exceptions import UserError
-from datetime import timedelta
-from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
+"""
+from odoo import api, models
+
 
 class MrpBom(models.Model):
-    _inherit = 'mrp.bom'
-    
+    _inherit = "mrp.bom"
+
     @api.model
-    def saveRelationNew(self,
-                        clientArgs):
+    def saveRelationNew(self, clientArgs):
         new_context = self.env.context.copy()
-        new_context['SUMMARIZE_BOM'] = True
+        new_context["SUMMARIZE_BOM"] = True
         return super(MrpBom, self.with_context(new_context)).saveRelationNew(clientArgs)
-        
-        
-        

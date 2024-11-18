@@ -1,0 +1,12 @@
+<odoo>
+    <data>
+        <!--Breakages Sequence-->
+        <record id="seq_plm_breakages" model="ir.sequence">
+            <field name="name">PLM Breakages</field>
+            <field name="code">plm.breakages</field>
+            <field name="prefix">B</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>

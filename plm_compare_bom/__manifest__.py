@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution
@@ -20,23 +21,18 @@
 ##############################################################################
 {
     "name": "PLM Compare Bom",
-    "version": "18.0.0.1",
+    "version": "18.0.1.0.0",
     "author": "OmniaSolutions",
     "website": "https://odooplm.omniasolutions.website",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
     "sequence": 15,
     "summary": "Allow to compare two boms",
-    "images": [],
     "license": "AGPL-3",
     "depends": ["plm"],
     "data": [
-        # security
         "security/plm_security.xml",
-        # views
-        "views/compare_bom_view.xml",
+        "wizard/compare_bom_view.xml",
     ],
-    "demo": [],
-    "test": [],
     "installable": True,
     "application": False,
     "auto_install": False,

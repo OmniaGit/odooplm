@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -23,16 +24,14 @@
 # 23-06-2020
 {
     "name": "PLM Breakages Helpdesk",
-    "version": "18.0.0.1",
+    "version": "18.0.1.0.0",
     "author": "OmniaSolutions",
     "website": "https://www.omniasolutions.website",
     "category": "Helpdesk",
     "license": "LGPL-3",
     "summary": "PLM Breakages",
-    "depends": ["plm_breakages","helpdesk"],
+    "depends": ["plm_breakages", "helpdesk"],
     "data": [
-        # Security
-        # Views
         "views/breakages.xml",
         "views/helpdesk_ticket.xml",
     ],
