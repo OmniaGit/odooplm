@@ -1177,10 +1177,11 @@ class IrAttachment(models.Model):
     def toggle_check_out(self):
         for ir_attachment_id in self:
             if ir_attachment_id.isCheckedOutByMe():
-                ir_attachment_id._check_in()
+                if not ir_attachment_id._check_in():
+                    raise UserError(f"Unable to check out document with id {ir_attachment_id.id} check the log for more detais !!")
             else:
                 if ir_attachment_id.is_checkout:
-                    raise UserError("Unable to check out. The owner of this document is %s" % ir_attachment_id.checkout_user)
+                    raise UserError(f"Unable to check out. The owner of this document is {ir_attachment_id.checkout_user}")
                 else:
                     ir_attachment_id.checkout("localhost", r"check/web")
         
@@ -1308,6 +1309,15 @@ class IrAttachment(models.Model):
     def _checkSavingError(self):
         for ir_attachment_id in self:
             ir_attachment_id.has_error = not ir_attachment_id.is_last_save_ok()
+    
+    def getLastError(self):
+        self.ensure_one()
+        for ir_attachment_id in self:
+            key = f"{ir_attachment_id.engineering_code}_{ir_attachment_id.engineering_revision}"
+            for dbthread in self.env['plm.dbthread'].get_last_dbthread(key):
+                if dbthread.done==True and dbthread.error_message:
+                    return dbthread.error_message
+        return ''
     
     def is_last_save_ok(self):
         """
