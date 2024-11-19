@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="act_plm_pack_and_go" model="ir.ui.view">
+            <field name="name">pack.and_go.form</field>
+            <field name="model">pack.and_go</field>
+            <field name="arch" type="xml">
+                <form string="Export Form">
+                    <field name="convertion_server_available" invisible="1"/>
+                    <group col="12">
+                        <group colspan="10">
+                            <field name="component_id" readonly="1"/>
+                            <field name="export_type"/>
+                            <field name="bom_computation"/>
+                            <field name="bom_version"/>
+                        </group>
+                        <group colspan="2">
+                            <button string="Compute Bom"
+                                    name="action_compute_attachment_bom"
+                                    class="oe_highlight"
+                                    type="object"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="2D" id="2d_page">
+                            <group colspan="4">
+                                <field name="force_types_2d"
+                                       options="{'no_open':True,'no_create':True}"
+                                       invisible="convertion_server_available==False"/>
+                                <button string="Force Types" name="forceTypes2d" type="object"
+                                        invisible="convertion_server_available==False"/>
+                                <button string="Clear" name="clear2d" type="object"/>
+                            </group>
+                            <group colspan="4">
+                                <field name="export_2d" colspan="2" nolabel="1">
+                                    <list editable='bottom'>
+                                        <field name="component_id" readonly="1"/>
+                                        <field name="comp_rev" readonly="1"/>
+                                        <field name="comp_description" readonly="1"/>
+                                        <field name="document_id" readonly="1"/>
+                                        <field name="doc_file_name" readonly="1"/>
+                                        <field name="doc_rev" readonly="1"/>
+                                        <field name="document_description" readonly="1"/>
+                                        <field name="available_types"
+                                               options="{'no_open':True,'no_create':True}"/>
+                                    </list>
+                                </field>
+                            </group>
+                        </page>
+                        <page string="PDF" id="pdf_page">
+                            <button string="Clear" name="clearpdf" type="object"/>
+                            <group>
+                                <field name="export_pdf" colspan="2" nolabel="1">
+                                    <list editable='bottom'>
+                                        <field name="component_id" readonly="1"/>
+                                        <field name="comp_rev" readonly="1"/>
+                                        <field name="comp_description" readonly="1"/>
+                                        <field name="document_id" readonly="1"/>
+                                        <field name="doc_file_name" readonly="1"/>
+                                        <field name="doc_rev" readonly="1"/>
+                                        <field name="document_description" readonly="1"/>
+                                    </list>
+                                </field>
+                            </group>
+                        </page>
+                        <page string="3D" id="3d_page">
+                            <group>
+                                <field name="force_types_3d" options="{'no_open':True,'no_create':True}"
+                                       invisible="convertion_server_available==False"/>
+                                <button string="Force Types" name="forceTypes3d" type="object"
+                                        invisible="convertion_server_available==False"/>
+                                <button string="Clear" name="clear3d" type="object"/>
+                            </group>
+                            <group>
+                                <field name="export_3d" colspan="2" nolabel="1">
+                                    <list editable='bottom'>
+                                        <field name="component_id" readonly="1"/>
+                                        <field name="comp_rev" readonly="1"/>
+                                        <field name="comp_description" readonly="1"/>
+                                        <field name="document_id" readonly="1"/>
+                                        <field name="doc_file_name" readonly="1"/>
+                                        <field name="doc_rev" readonly="1"/>
+                                        <field name="document_description" readonly="1"/>
+                                        <field name="available_types"
+                                               options="{'no_open':True,'no_create':True}"/>
+                                    </list>
+                                </field>
+                            </group>
+                        </page>
+                        <page string="Other" id="other_page">
+                            <button string="Clear" name="clearother" type="object"/>
+                            <group>
+                                <field name="export_other" colspan="2" nolabel="1">
+                                    <list editable='bottom'>
+                                        <field name="component_id" readonly="1"/>
+                                        <field name="comp_rev" readonly="1"/>
+                                        <field name="comp_description" readonly="1"/>
+                                        <field name="document_id" readonly="1"/>
+                                        <field name="doc_file_name" readonly="1"/>
+                                        <field name="doc_rev" readonly="1"/>
+                                        <field name="document_description" readonly="1"/>
+                                    </list>
+                                </field>
+                            </group>
+                        </page>
+                    </notebook>
+                    <group string="File Options">
+                        <field name="file_name_computation"/>
+                        <field name="create_subfolder_by_category"/>
+                        <field name="datas_fname" invisible="1"/>
+                        <field name="datas"
+                               readonly="1"
+                               nolabel="1"
+                               filename="datas_fname"
+                               invisible="datas_fname==False"/>
+                    </group>
+                    <separator string=""/>
+                    <footer>
+                        <field name="show_create_zip" invisible="True"/>
+                        <button special="cancel" string="Cancel"/>
+                        <button string="Create zip archive"
+                                name="action_export_zip"
+                                invisible="show_create_zip==False"
+                                type="object"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="act_pack_and_go_action" model="ir.actions.act_window">
+            <field name="name">Pack and Go</field>
+            <field name="res_model">pack.and_go</field>
+            <field name="view_mode">form</field>
+            <field name="binding_model_id" ref="product.model_product_product"/>
+            <field name="view_id" ref="act_plm_pack_and_go"/>
+            <field name="target">new</field>
+        </record>
+
+        <record id="view_pack_and_go_view_form" model="ir.ui.view">
+            <field name="name">pack.and.go.view.form</field>
+            <field name="model">pack_and_go_view</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <field
+                                name="preview"
+                                widget="image"
+                                readonly="1"
+                                nolabel="1"
+                                colspan="2"
+                                options="{'size':[400,400]}"/>
+                            <field name="component_id" readonly="True"/>
+                            <field name="comp_rev" readonly="True"/>
+                            <field name="document_id" readonly="True"/>
+                            <field name="doc_rev" readonly="True"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_pack_and_go_view_list" model="ir.ui.view">
+            <field name="name">pack.and.go.view.list</field>
+            <field name="model">pack_and_go_view</field>
+            <field name="arch" type="xml">
+                <list>
+                    <field name="component_id"/>
+                    <field name="comp_rev"/>
+                    <field name="document_id"/>
+                    <field name="doc_rev"/>
+                </list>
+            </field>
+        </record>
+    </data>
+</odoo>

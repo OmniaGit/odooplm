@@ -119,6 +119,8 @@ class ProductProductExtended(models.TransientModel):
         ):
             newBomBrws = bomBrws.copy()
             source_id = False
+            newBomBrws.product_tmpl_id = new_product_tmpl_brw
+            newBomBrws.product_id = new_product_tmpl_brw.product_variant_id
             linked_documents = new_product_tmpl_brw.product_variant_id.linkeddocuments
             if linked_documents.ids:
                 source_id = linked_documents.ids[0]

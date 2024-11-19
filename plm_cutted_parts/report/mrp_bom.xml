@@ -63,6 +63,5 @@
         <field name="report_type">qweb-html</field>
         <field name="report_name">plm_cutted_parts.bom_structure_all_cutted</field>
         <field name="binding_type">report</field>
-    </record>  
-        
+    </record>
 </odoo>

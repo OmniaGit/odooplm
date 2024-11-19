@@ -20,9 +20,9 @@
 #
 ##############################################################################
 
-'''
+"""
 Created on Nov 21, 2017
 
 @author: dsmerghetto
-'''
+"""
 from . import product_product

@@ -18,11 +18,11 @@
 #    along with this prograIf not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-'''
+"""
 Created on 9 Set 2023
 
 @author: mboscolo
-'''
+"""
 import logging
 import datetime
 from odoo import models
@@ -41,6 +41,7 @@ from odoo.addons.plm.models.plm_mixin import START_STATUS
 from odoo.addons.plm.models.plm_mixin import CONFIRMED_STATUS
 from odoo.addons.plm.models.plm_mixin import OBSOLATED_STATUS
 from odoo.addons.plm.tests.entity_creator import PlmEntityCreator
+
 #
 #
 # --test-tags=odoo_pack_and_go
@@ -48,144 +49,334 @@ from odoo.addons.plm.tests.entity_creator import PlmEntityCreator
 #
 
 #
-@tagged('-standard', 'odoo_pack_and_go')
+@tagged("-standard", "odoo_pack_and_go")
 class PlmDateBom(TransactionCase, PlmEntityCreator):
-        
     def test_pack_and_go(self):
         product, _bom = self.get_3_level_assembly("pack_and_go")
         other_attachment = self.create_document("parent_other_attachment")
-        other_attachment.linkedcomponents =[(4, product.id)]
-        pack_and_go_id = self.env['pack.and_go'].create({'component_id': product.product_tmpl_id.id})
-        for export_type in ['2d','3d','pdf','2dpdf','3dpdf','3d2d','all']:
-            pack_and_go_id.export_type=export_type
-            pack_and_go_id.bom_computation = 'ONLY_PRODUCT'
+        other_attachment.linkedcomponents = [(4, product.id)]
+        pack_and_go_id = self.env["pack.and_go"].create(
+            {"component_id": product.product_tmpl_id.id}
+        )
+        for export_type in ["2d", "3d", "pdf", "2dpdf", "3dpdf", "3d2d", "all"]:
+            pack_and_go_id.export_type = export_type
+            pack_and_go_id.bom_computation = "ONLY_PRODUCT"
             pack_and_go_id.action_compute_attachment_bom()
-            if export_type=='2d':
-                assert len(pack_and_go_id.export_3d)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_3d}"   
-                assert len(pack_and_go_id.export_2d)==1, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_2d}"   
-                assert len(pack_and_go_id.export_pdf)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_pdf}"  
-                assert len(pack_and_go_id.export_other)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_other}"
-            elif export_type=='3d':
-                assert len(pack_and_go_id.export_3d)==10, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_3d}"   
-                assert len(pack_and_go_id.export_2d)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_2d}"   
-                assert len(pack_and_go_id.export_pdf)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_pdf}"  
-                assert len(pack_and_go_id.export_other)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_other}"
-            elif export_type=='pdf':
-                assert len(pack_and_go_id.export_3d)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_3d}"   
-                assert len(pack_and_go_id.export_2d)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_2d}"   
-                assert len(pack_and_go_id.export_pdf)==1, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_pdf}"  
-                assert len(pack_and_go_id.export_other)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_other}"
-            elif export_type=='2dpdf':
-                assert len(pack_and_go_id.export_3d)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_3d}"   
-                assert len(pack_and_go_id.export_2d)==1, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_2d}"   
-                assert len(pack_and_go_id.export_pdf)==1, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_pdf}"  
-                assert len(pack_and_go_id.export_other)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_other}"
-            elif export_type=='3d2d':
-                assert len(pack_and_go_id.export_3d)==10, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_3d}"   
-                assert len(pack_and_go_id.export_2d)==1, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_2d}"   
-                assert len(pack_and_go_id.export_pdf)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_pdf}"  
-                assert len(pack_and_go_id.export_other)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_other}"
-            elif export_type=='all':
-                assert len(pack_and_go_id.export_3d)==10, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_3d}"   
-                assert len(pack_and_go_id.export_2d)==1, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_2d}"   
-                assert len(pack_and_go_id.export_pdf)==1, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_pdf}"  
-                assert len(pack_and_go_id.export_other)==1, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_other}"
-            pack_and_go_id.bom_computation = 'FIRST_LEVEL'
+            if export_type == "2d":
+                assert (
+                    len(pack_and_go_id.export_3d) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_3d}"
+                assert (
+                    len(pack_and_go_id.export_2d) == 1
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_2d}"
+                assert (
+                    len(pack_and_go_id.export_pdf) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_pdf}"
+                assert (
+                    len(pack_and_go_id.export_other) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_other}"
+            elif export_type == "3d":
+                assert (
+                    len(pack_and_go_id.export_3d) == 10
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_3d}"
+                assert (
+                    len(pack_and_go_id.export_2d) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_2d}"
+                assert (
+                    len(pack_and_go_id.export_pdf) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_pdf}"
+                assert (
+                    len(pack_and_go_id.export_other) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_other}"
+            elif export_type == "pdf":
+                assert (
+                    len(pack_and_go_id.export_3d) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_3d}"
+                assert (
+                    len(pack_and_go_id.export_2d) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_2d}"
+                assert (
+                    len(pack_and_go_id.export_pdf) == 1
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_pdf}"
+                assert (
+                    len(pack_and_go_id.export_other) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_other}"
+            elif export_type == "2dpdf":
+                assert (
+                    len(pack_and_go_id.export_3d) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_3d}"
+                assert (
+                    len(pack_and_go_id.export_2d) == 1
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_2d}"
+                assert (
+                    len(pack_and_go_id.export_pdf) == 1
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_pdf}"
+                assert (
+                    len(pack_and_go_id.export_other) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_other}"
+            elif export_type == "3d2d":
+                assert (
+                    len(pack_and_go_id.export_3d) == 10
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_3d}"
+                assert (
+                    len(pack_and_go_id.export_2d) == 1
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_2d}"
+                assert (
+                    len(pack_and_go_id.export_pdf) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_pdf}"
+                assert (
+                    len(pack_and_go_id.export_other) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_other}"
+            elif export_type == "all":
+                assert (
+                    len(pack_and_go_id.export_3d) == 10
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_3d}"
+                assert (
+                    len(pack_and_go_id.export_2d) == 1
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_2d}"
+                assert (
+                    len(pack_and_go_id.export_pdf) == 1
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_pdf}"
+                assert (
+                    len(pack_and_go_id.export_other) == 1
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_other}"
+            pack_and_go_id.bom_computation = "FIRST_LEVEL"
             pack_and_go_id.action_compute_attachment_bom()
-            if export_type=='2d':
-                assert len(pack_and_go_id.export_3d)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_3d}"   
-                assert len(pack_and_go_id.export_2d)==2, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_2d}"   
-                assert len(pack_and_go_id.export_pdf)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_pdf}"  
-                assert len(pack_and_go_id.export_other)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_other}"
-            elif export_type=='3d':
-                assert len(pack_and_go_id.export_3d)==8, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_3d}"   
-                assert len(pack_and_go_id.export_2d)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_2d}"   
-                assert len(pack_and_go_id.export_pdf)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_pdf}"  
-                assert len(pack_and_go_id.export_other)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_other}"
-            elif export_type=='pdf':
-                assert len(pack_and_go_id.export_3d)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_3d}"   
-                assert len(pack_and_go_id.export_2d)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_2d}"   
-                assert len(pack_and_go_id.export_pdf)==2, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_pdf}"  
-                assert len(pack_and_go_id.export_other)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_other}"
-            elif export_type=='2dpdf':
-                assert len(pack_and_go_id.export_3d)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_3d}"   
-                assert len(pack_and_go_id.export_2d)==2, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_2d}"   
-                assert len(pack_and_go_id.export_pdf)==2, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_pdf}"  
-                assert len(pack_and_go_id.export_other)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_other}"
-            elif export_type=='3d2d':
-                assert len(pack_and_go_id.export_3d)==8, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_3d}"   
-                assert len(pack_and_go_id.export_2d)==2, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_2d}"   
-                assert len(pack_and_go_id.export_pdf)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_pdf}"  
-                assert len(pack_and_go_id.export_other)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_other}"
-            elif export_type=='all':
-                assert len(pack_and_go_id.export_3d)==8, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_3d}"   
-                assert len(pack_and_go_id.export_2d)==2, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_2d}"   
-                assert len(pack_and_go_id.export_pdf)==2, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_pdf}"  
-                assert len(pack_and_go_id.export_other)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_other}"
-            pack_and_go_id.bom_computation = 'ALL_LEVEL'
+            if export_type == "2d":
+                assert (
+                    len(pack_and_go_id.export_3d) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_3d}"
+                assert (
+                    len(pack_and_go_id.export_2d) == 2
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_2d}"
+                assert (
+                    len(pack_and_go_id.export_pdf) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_pdf}"
+                assert (
+                    len(pack_and_go_id.export_other) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_other}"
+            elif export_type == "3d":
+                assert (
+                    len(pack_and_go_id.export_3d) == 8
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_3d}"
+                assert (
+                    len(pack_and_go_id.export_2d) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_2d}"
+                assert (
+                    len(pack_and_go_id.export_pdf) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_pdf}"
+                assert (
+                    len(pack_and_go_id.export_other) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_other}"
+            elif export_type == "pdf":
+                assert (
+                    len(pack_and_go_id.export_3d) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_3d}"
+                assert (
+                    len(pack_and_go_id.export_2d) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_2d}"
+                assert (
+                    len(pack_and_go_id.export_pdf) == 2
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_pdf}"
+                assert (
+                    len(pack_and_go_id.export_other) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_other}"
+            elif export_type == "2dpdf":
+                assert (
+                    len(pack_and_go_id.export_3d) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_3d}"
+                assert (
+                    len(pack_and_go_id.export_2d) == 2
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_2d}"
+                assert (
+                    len(pack_and_go_id.export_pdf) == 2
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_pdf}"
+                assert (
+                    len(pack_and_go_id.export_other) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_other}"
+            elif export_type == "3d2d":
+                assert (
+                    len(pack_and_go_id.export_3d) == 8
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_3d}"
+                assert (
+                    len(pack_and_go_id.export_2d) == 2
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_2d}"
+                assert (
+                    len(pack_and_go_id.export_pdf) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_pdf}"
+                assert (
+                    len(pack_and_go_id.export_other) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_other}"
+            elif export_type == "all":
+                assert (
+                    len(pack_and_go_id.export_3d) == 8
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_3d}"
+                assert (
+                    len(pack_and_go_id.export_2d) == 2
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_2d}"
+                assert (
+                    len(pack_and_go_id.export_pdf) == 2
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_pdf}"
+                assert (
+                    len(pack_and_go_id.export_other) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_other}"
+            pack_and_go_id.bom_computation = "ALL_LEVEL"
             pack_and_go_id.action_compute_attachment_bom()
-            if export_type=='2d':
-                assert len(pack_and_go_id.export_3d)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_3d}"   
-                assert len(pack_and_go_id.export_2d)==5, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_2d}"   
-                assert len(pack_and_go_id.export_pdf)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_pdf}"  
-                assert len(pack_and_go_id.export_other)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_other}"
-            elif export_type=='3d':
-                assert len(pack_and_go_id.export_3d)==10, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_3d}"   
-                assert len(pack_and_go_id.export_2d)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_2d}"   
-                assert len(pack_and_go_id.export_pdf)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_pdf}"  
-                assert len(pack_and_go_id.export_other)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_other}"
-            elif export_type=='pdf':
-                assert len(pack_and_go_id.export_3d)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_3d}"   
-                assert len(pack_and_go_id.export_2d)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_2d}"   
-                assert len(pack_and_go_id.export_pdf)==5, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_pdf}"  
-                assert len(pack_and_go_id.export_other)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_other}"
-            elif export_type=='2dpdf':
-                assert len(pack_and_go_id.export_3d)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_3d}"   
-                assert len(pack_and_go_id.export_2d)==5, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_2d}"   
-                assert len(pack_and_go_id.export_pdf)==5, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_pdf}"  
-                assert len(pack_and_go_id.export_other)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_other}"
-            elif export_type=='3d2d':
-                assert len(pack_and_go_id.export_3d)==10, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_3d}"   
-                assert len(pack_and_go_id.export_2d)==5, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_2d}"   
-                assert len(pack_and_go_id.export_pdf)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_pdf}"  
-                assert len(pack_and_go_id.export_other)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_other}"
-            elif export_type=='all':
-                assert len(pack_and_go_id.export_3d)==10, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_3d}"
-                assert len(pack_and_go_id.export_2d)==5, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_2d}"
-                assert len(pack_and_go_id.export_pdf)==5, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_pdf}"
-                assert len(pack_and_go_id.export_other)==1, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_other}"
-            pack_and_go_id.bom_computation = 'LEAF'
+            if export_type == "2d":
+                assert (
+                    len(pack_and_go_id.export_3d) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_3d}"
+                assert (
+                    len(pack_and_go_id.export_2d) == 5
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_2d}"
+                assert (
+                    len(pack_and_go_id.export_pdf) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_pdf}"
+                assert (
+                    len(pack_and_go_id.export_other) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_other}"
+            elif export_type == "3d":
+                assert (
+                    len(pack_and_go_id.export_3d) == 10
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_3d}"
+                assert (
+                    len(pack_and_go_id.export_2d) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_2d}"
+                assert (
+                    len(pack_and_go_id.export_pdf) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_pdf}"
+                assert (
+                    len(pack_and_go_id.export_other) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_other}"
+            elif export_type == "pdf":
+                assert (
+                    len(pack_and_go_id.export_3d) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_3d}"
+                assert (
+                    len(pack_and_go_id.export_2d) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_2d}"
+                assert (
+                    len(pack_and_go_id.export_pdf) == 5
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_pdf}"
+                assert (
+                    len(pack_and_go_id.export_other) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_other}"
+            elif export_type == "2dpdf":
+                assert (
+                    len(pack_and_go_id.export_3d) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_3d}"
+                assert (
+                    len(pack_and_go_id.export_2d) == 5
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_2d}"
+                assert (
+                    len(pack_and_go_id.export_pdf) == 5
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_pdf}"
+                assert (
+                    len(pack_and_go_id.export_other) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_other}"
+            elif export_type == "3d2d":
+                assert (
+                    len(pack_and_go_id.export_3d) == 10
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_3d}"
+                assert (
+                    len(pack_and_go_id.export_2d) == 5
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_2d}"
+                assert (
+                    len(pack_and_go_id.export_pdf) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_pdf}"
+                assert (
+                    len(pack_and_go_id.export_other) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_other}"
+            elif export_type == "all":
+                assert (
+                    len(pack_and_go_id.export_3d) == 10
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_3d}"
+                assert (
+                    len(pack_and_go_id.export_2d) == 5
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_2d}"
+                assert (
+                    len(pack_and_go_id.export_pdf) == 5
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_pdf}"
+                assert (
+                    len(pack_and_go_id.export_other) == 1
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_other}"
+            pack_and_go_id.bom_computation = "LEAF"
             pack_and_go_id.action_compute_attachment_bom()
-            if export_type=='2d':
-                assert len(pack_and_go_id.export_3d)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_3d}"   
-                assert len(pack_and_go_id.export_2d)==2, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_2d}"   
-                assert len(pack_and_go_id.export_pdf)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_pdf}"  
-                assert len(pack_and_go_id.export_other)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_other}"
-            elif export_type=='3d':
-                assert len(pack_and_go_id.export_3d)==4, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_3d}"   
-                assert len(pack_and_go_id.export_2d)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_2d}"   
-                assert len(pack_and_go_id.export_pdf)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_pdf}"  
-                assert len(pack_and_go_id.export_other)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_other}"
-            elif export_type=='pdf':
-                assert len(pack_and_go_id.export_3d)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_3d}"   
-                assert len(pack_and_go_id.export_2d)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_2d}"   
-                assert len(pack_and_go_id.export_pdf)==2, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_pdf}"  
-                assert len(pack_and_go_id.export_other)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_other}"
-            elif export_type=='2dpdf':
-                assert len(pack_and_go_id.export_3d)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_3d}"   
-                assert len(pack_and_go_id.export_2d)==2, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_2d}"   
-                assert len(pack_and_go_id.export_pdf)==2, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_pdf}"  
-                assert len(pack_and_go_id.export_other)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_other}"
-            elif export_type=='3d2d':
-                assert len(pack_and_go_id.export_3d)==4, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_3d}"   
-                assert len(pack_and_go_id.export_2d)==2, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_2d}"   
-                assert len(pack_and_go_id.export_pdf)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_pdf}"  
-                assert len(pack_and_go_id.export_other)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_other}"
-            elif export_type=='all':
-                assert len(pack_and_go_id.export_3d)==4, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_3d}"   
-                assert len(pack_and_go_id.export_2d)==2, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_2d}"   
-                assert len(pack_and_go_id.export_pdf)==2, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_pdf}"  
-                assert len(pack_and_go_id.export_other)==0, f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_other}"
-
-        
-                
+            if export_type == "2d":
+                assert (
+                    len(pack_and_go_id.export_3d) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_3d}"
+                assert (
+                    len(pack_and_go_id.export_2d) == 2
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_2d}"
+                assert (
+                    len(pack_and_go_id.export_pdf) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_pdf}"
+                assert (
+                    len(pack_and_go_id.export_other) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_other}"
+            elif export_type == "3d":
+                assert (
+                    len(pack_and_go_id.export_3d) == 4
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_3d}"
+                assert (
+                    len(pack_and_go_id.export_2d) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_2d}"
+                assert (
+                    len(pack_and_go_id.export_pdf) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_pdf}"
+                assert (
+                    len(pack_and_go_id.export_other) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_other}"
+            elif export_type == "pdf":
+                assert (
+                    len(pack_and_go_id.export_3d) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_3d}"
+                assert (
+                    len(pack_and_go_id.export_2d) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_2d}"
+                assert (
+                    len(pack_and_go_id.export_pdf) == 2
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_pdf}"
+                assert (
+                    len(pack_and_go_id.export_other) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_other}"
+            elif export_type == "2dpdf":
+                assert (
+                    len(pack_and_go_id.export_3d) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_3d}"
+                assert (
+                    len(pack_and_go_id.export_2d) == 2
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_2d}"
+                assert (
+                    len(pack_and_go_id.export_pdf) == 2
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_pdf}"
+                assert (
+                    len(pack_and_go_id.export_other) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_other}"
+            elif export_type == "3d2d":
+                assert (
+                    len(pack_and_go_id.export_3d) == 4
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_3d}"
+                assert (
+                    len(pack_and_go_id.export_2d) == 2
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_2d}"
+                assert (
+                    len(pack_and_go_id.export_pdf) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_pdf}"
+                assert (
+                    len(pack_and_go_id.export_other) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_other}"
+            elif export_type == "all":
+                assert (
+                    len(pack_and_go_id.export_3d) == 4
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_3d}"
+                assert (
+                    len(pack_and_go_id.export_2d) == 2
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_2d}"
+                assert (
+                    len(pack_and_go_id.export_pdf) == 2
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_pdf}"
+                assert (
+                    len(pack_and_go_id.export_other) == 0
+                ), f"{export_type} {pack_and_go_id.bom_computation} {pack_and_go_id.export_other}"

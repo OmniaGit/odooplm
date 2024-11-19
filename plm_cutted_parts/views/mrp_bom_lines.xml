@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Views -->
     <record id="plm_cutted_parts_bom_line" model="ir.ui.view">
         <field name="name">plm.bom.form.cutted</field>
         <field name="model">mrp.bom</field>
@@ -10,9 +9,8 @@
                 <field name="x_length" optional="hide"/>
                 <field name="y_length" optional="hide"/>
                 <field name="cutted_qty" optional="show"/>
-            	<field name="cutted_type" optional="hide"/>
+                <field name="cutted_type" optional="hide"/>
             </xpath>
         </field>
     </record>
-
 </odoo>

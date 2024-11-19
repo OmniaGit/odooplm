@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Your own solutions
@@ -23,5 +24,4 @@ Created on 30/mag/2016
 
 @author: mboscolo
 """
-
 from . import report

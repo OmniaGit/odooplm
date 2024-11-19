@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution
@@ -20,23 +21,20 @@
 ##############################################################################
 {
     "name": "Plm Pack and Go",
-    "version": "18.0.0.1",
+    "version": "18.0.1.0.0",
     "author": "OmniaSolutions",
     "website": "https://odooplm.omniasolutions.website",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
     "sequence": 15,
     "summary": "Download BOM structure files from a component",
     "license": "AGPL-3",
-    "images": [],
     "depends": ["plm"],
-    'external_dependencies': {'python': ['base64io']},
-    "data": [  # security
+    "external_dependencies": {"python": ["base64io"]},
+    "data": [
         "security/plm_security.xml",
-        'views/plm_component.xml',
-        "views/ir_parameters.xml",
+        "data/ir_parameters.xml",
+        "wizard/plm_component.xml",
     ],
-    "demo": [],
-    "test": [],
     "installable": True,
     "application": False,
     "auto_install": False,

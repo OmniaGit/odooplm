@@ -112,11 +112,11 @@ class RevisionBaseMixin(models.AbstractModel):
     engineering_sub_revision_letter = fields.Char("Sub revision path")
     engineering_revision_count = fields.Integer(compute='_engineering_revision_count')
     
-    # _sql_constraints = [
-    #     ('engineering_uniq', 
-    #      "unique (engineering_code, engineering_revision) WHERE (engineering_code is not null)",
-    #      _('Part Number has to be unique!'))
-    # ]
+     _sql_constraints = [
+         ('engineering_uniq', 
+          "unique (engineering_code, engineering_revision) WHERE (engineering_code is not null)",
+          _('Part Number has to be unique!'))
+     ]
 
     def init(self):
         """Ensure there is at most one active variant for each combination.

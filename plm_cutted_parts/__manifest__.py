@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution
@@ -17,27 +18,24 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-#######################True#######################################################
+##############################################################################
 {
     "name": "PLM Cutted Parts",
-    "version": "18.0.0.1",
+    "version": "18.0.1.0.0",
     "author": "OmniaSolutions",
     "website": "https://odooplm.omniasolutions.website",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
     "sequence": 15,
     "summary": "Manage bom explosion for cutted parts",
-    "images": [],
     "license": "AGPL-3",
-    "depends": ["mrp",
-                "plm"],
+    "depends": ["mrp", "plm"],
     "data": [
+        "security/base_plm_security.xml",
+        "report/mrp_bom.xml",
+        "wizard/plm_temporary.xml",
         "views/product.xml",
         "views/mrp_bom_lines.xml",
-        "report/mrp_bom.xml",
-        "security/base_plm_security.xml",
     ],
-    "demo": [],
-    "test": [],
     "installable": True,
     "application": False,
     "auto_install": False,

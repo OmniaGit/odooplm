@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="plm_cutted_normal_bom" model="ir.ui.view">
+        <field name="name">plm.relation.normal</field>
+        <field name="model">plm.temporary</field>
+        <field name="inherit_id" ref="plm.plm_component_create_normal_bom"/>
+        <field name="arch" type="xml">
+            <field name="summarize" position="after">
+                <field name="cutted_part_explosion" widget="radio"/>
+            </field>
+        </field>
+    </record>
+</odoo>

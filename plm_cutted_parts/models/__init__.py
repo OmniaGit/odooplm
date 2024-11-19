@@ -1,6 +1,7 @@
+# -*- encoding: utf-8 -*-
 ##############################################################################
 #
-#    OmniaSolutions, Open Source Management Solution    
+#    OmniaSolutions, Open Source Management Solution
 #    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
 #    $Id$
 #
@@ -21,4 +22,3 @@
 from . import product_product
 from . import product_template
 from . import mrp_bom_line
-from . import plm_temporary
