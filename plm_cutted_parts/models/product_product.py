@@ -66,17 +66,6 @@ class ProductCuttedParts(models.Model):
                 err = "Cannot create BOM for product %r due to error %r" % (prod, ex)
         return bom, err
 
-    def checkCreateBOMLine(self, parent_bom, vals, child_prod_id, bomType="normal"):
-        bom_line = self.env["mrp.bom.line"]
-        try:
-            vals["product_id"] = child_prod_id.id
-            vals["bom_id"] = parent_bom.id
-            vals["type"] = bomType
-            new_line = bom_line.create(vals)
-            return new_line, ""
-        except Exception as ex:
-            return None, "Cannot create BOM line with values %r, error %r" % (vals, ex)
-
     def getCutLists(self, data):
         #
         # Get variables from JSON object
