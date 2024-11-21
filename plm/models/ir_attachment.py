@@ -312,7 +312,9 @@ class PlmDocument(models.Model):
         return list(set(out))
     
     @api.model
-    def getRelatedRfTree(self, doc_id, recursion=True, evaluated=[]):
+    def getRelatedRfTree(self, doc_id, recursion=True, evaluated=False):
+        if not evaluated:
+            evaluated=[]
         out = []
         if not doc_id:
             logging.warning('Cannot get links from %r document' % (doc_id))
@@ -2206,7 +2208,7 @@ class PlmDocument(models.Model):
             if docBrws.is_checkout:
                 msg = _(f"Unable to check-Out a document that is already checked IN by user {docBrws.checkout_user}")
                 return docBrws.id, 'check_out_by_user', msg
-            if docBrws.engineering_state not in ['released','undermodify', False]:
+            if docBrws.engineering_state not in ['draft', False]:
                 msg = _(f"Unable to check-Out a document that is in state {docBrws.engineering_state}")
                 return docBrws.id, 'check_out_released', msg
             return docBrws.id, 'check_in', ''

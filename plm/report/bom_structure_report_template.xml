@@ -62,6 +62,7 @@
 							<t t-set="i" t-value="i+1"/>
 						</t> 
 				</table>
+				<span t-esc="context_timestamp(datetime.datetime.now()).strftime('%Y-%m-%d %H:%M')"/>
             </div>
         </t> 
     </t> 
