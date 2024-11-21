@@ -23,7 +23,7 @@
             </list>
         </field>
    </record>
-        
+
     <record id="plm_grp_by_parent" model="ir.ui.view">
         <field name="name">plm.grp.by.parente</field>
         <field name="model">mrp.bom.line</field>
@@ -36,8 +36,8 @@
                 <field string="Tags" name="product_tag_ids"/>
             </search>
         </field>
-    </record>        
-    
+    </record>
+
     <record id="plm_mrp_bom_line_view_form" model="ir.ui.view">
         <field name="name">plm.mrp.bom.line.view.form</field>
         <field name="model">mrp.bom.line</field>
@@ -72,7 +72,7 @@
         <field name="arch" type="xml">
         	<field name="product_tmpl_id" position="before">
         		<field name="att_count" invisible="True"/>
-                <button 
+                <button
         			name="open_attachments"
         			type="object"
         			icon="plm/static/description/odoo_icon_small.png"
@@ -99,7 +99,7 @@
             </xpath>
         </field>
     </record>
-    
+
     <record id="plm_bom_form_view" model="ir.ui.view">
         <field name="name">plm.bom.form</field>
         <field name="model">mrp.bom</field>
@@ -110,12 +110,14 @@
             <div class="oe_button_box" name="button_box" position="inside">
                 <button name="open_related_bom_lines"
                         type="object"
-                        title=""
+                        title="Related BOM Line"
+                        string="Related BOM Line"
                         class="oe_stat_button"
                         icon="fa-tasks"/>
                 <button name="open_related_bom_revisions"
                         type="object"
-                        title=""
+                        title="Related BOM Revisions"
+                        string="Related BOM Revisions"
                         class="oe_stat_button"
                         icon="fa-tasks"
                         invisible="bom_revision_count>=1">
@@ -125,13 +127,13 @@
             <field name="product_tmpl_id" position="replace">
 				<label for="product_tmpl_id"/>
                 <div class="o_row no-gutters d-flex">
-	            	<field name="product_tmpl_id" 
+	            	<field name="product_tmpl_id"
 	            		context="{'default_type': 'product'}"
 	            		options="{'no_open':True,'no_create':True}"
 	            		class="oe_inline text-left"
 	            		colspan="2"/>
 	            	<field name="att_count" invisible="True"/>
-	                <button 
+	                <button
 	        			name="open_attachments"
 	        			type="object"
 	        			aria-label="Product Attachments"
@@ -145,7 +147,7 @@
 		    	<separator string=""/>
 		    	<separator string=""/>
 		    	<separator string=""/>
-		    	
+
 		    </field>
             <field name="product_id" position="after">
             	<separator string="Info:" colspan="2"/>
@@ -166,15 +168,15 @@
                 <field name="product_tumbnail" widget="image" options="{ 'size': [60, 60]}"/>
                 <button name="openRelatedBoms"
                         type="object"
-                        icon="fa-level-down" 
+                        icon="fa-level-down"
                         title="Open Related Boms"
                         class="btn btn-sm oe_stat_button"
                         invisible="hasChildBoms==False"/>
             	<field name="related_document_ids" column_invisible="1"/>
-            	<button 
+            	<button
   					name="openRelatedDocuments"
   					type="object"
-  					icon="fa-box-open" 
+  					icon="fa-box-open"
   					title="Open related document"
   					class="float-right btn"
   					invisible="related_document_ids == []"/>
@@ -217,24 +219,24 @@
     </record>
 
     <!-- Overrides standard Search -->
-    
+
     <record id="view_mrp_bom_filter_inherit" model="ir.ui.view">
         <field name="name">plm.bom.select</field>
         <field name="model">mrp.bom</field>
         <field name="inherit_id" ref="mrp.view_mrp_bom_filter"/>
         <field name="arch" type="xml">
             <field name="code" position="before">
-                <filter 
-            		name="last_year" 
-            		string="Last Year" 
+                <filter
+            		name="last_year"
+            		string="Last Year"
             		domain="[('create_date','&gt;=',(datetime.date.today() - relativedelta(days=1,months=1,years=1)).strftime('%%Y-%%m-%%d'))]"/>
-           		<filter 
-            		name="last_month" 
-            		string="Last Month" 
+           		<filter
+            		name="last_month"
+            		string="Last Month"
             		domain="[('create_date','&gt;=',(datetime.date.today() - relativedelta(days=1,months=1)).strftime('%%Y-%%m-%%d'))]"/>
-            	<filter 
-            		name="last_week" 
-            		string="Last Week" 
+            	<filter
+            		name="last_week"
+            		string="Last Week"
             		domain="[('create_date','&gt;=',(datetime.date.today() - datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"/>
                 <separator name="separator" orientation="vertical"/>
             </field>
@@ -242,19 +244,19 @@
              <field name="code"/>
              <field name="product_id"/>
              <field name="source_id"/>
-                 <filter name="bom_name" 
-                         string="Bom Name" 
-                         domain="[]" 
-                         context="{'group_by':'code'}"/> 
-                 <filter name="variant_name" 
-                         string="Variant Name" 
-                         domain="[]" 
-                         context="{'group_by':'product_id'}"/> 
-                 <filter name="source_relationship" 
-                         string="Source Relationship" 
-                         domain="[]" 
-                         context="{'group_by':'source_id'}"/> 
-             </xpath> 
+                 <filter name="bom_name"
+                         string="Bom Name"
+                         domain="[]"
+                         context="{'group_by':'code'}"/>
+                 <filter name="variant_name"
+                         string="Variant Name"
+                         domain="[]"
+                         context="{'group_by':'product_id'}"/>
+                 <filter name="source_relationship"
+                         string="Source Relationship"
+                         domain="[]"
+                         context="{'group_by':'source_id'}"/>
+             </xpath>
         </field>
     </record>
 

@@ -20,13 +20,13 @@
 #
 ##############################################################################
 
-'''
+"""
 Created on 19 Jul 2016
 
 @author: Daniel Smerghetto
-'''
+"""
 from odoo.addons.plm.report.bom_structure import ReportBomStructureAll
 
 
 class ReportDocumentPdf(ReportBomStructureAll):
-    _name = 'report.plm_date_bom.plm_bom_obsoleted'
+    _name = "report.plm_date_bom.plm_bom_obsoleted"

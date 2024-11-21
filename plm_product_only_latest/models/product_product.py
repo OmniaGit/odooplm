@@ -19,34 +19,38 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
-'''
+"""
 Created on 25 Aug 2016
-
 @author: Daniel Smerghetto
-'''
-from odoo import models
-from odoo import fields
-from odoo import api
-from odoo import _
-from odoo.addons.plm.models.plm_mixin import RELEASED_STATUSES
+"""
+from odoo import api, models
+from odoo.addons.plm.models.plm_mixin import RELEASED_STATUSES, OBSOLATED_STATUS
+
 
 class ProductProduct(models.Model):
-    _inherit = 'product.product'
+    _inherit = "product.product"
 
     @api.model
-    def name_search(self, name='', args=None, operator='ilike', limit=100):
-        ret = super(ProductProduct, self).name_search(name=name, args=args, operator=operator, limit=limit)
+    def name_search(self, name="", args=None, operator="ilike", limit=100):
+        ret = super(ProductProduct, self).name_search(
+            name=name, args=args, operator=operator, limit=limit
+        )
         out = []
-        if self.env.context.get('produce_latest'):
+        if self.env.context.get("produce_latest"):
+            conditional_status = RELEASED_STATUSES
+            conditional_status.append(OBSOLATED_STATUS)
             for prod_id, val in ret:
                 eng_code = self.browse(prod_id).engineering_code
                 latest_product = None
                 if eng_code:
-                    latest_product = self.search([('engineering_code', '=', eng_code),
-                                                  ('engineering_state','in', RELEASED_STATUSES)],
-                                                 order='engineering_revision desc',
-                                                 limit=1)
+                    latest_product = self.search(
+                        [
+                            ("engineering_code", "=", eng_code),
+                            ("engineering_state", "in", conditional_status),
+                        ],
+                        order="engineering_revision desc",
+                        limit=1,
+                    )
                 if not eng_code or (latest_product and prod_id == latest_product.id):
                     out.append((prod_id, val))
         return out or ret

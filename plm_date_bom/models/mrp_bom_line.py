@@ -18,29 +18,21 @@
 #    along with this prograIf not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-'''
+"""
 Created on 8 Oct 2021
-
 @author: mboscolo
-'''
-import logging
-import datetime
-from odoo import models
-from odoo import fields
-from odoo import api
-from odoo import _
-from odoo.exceptions import UserError
-from datetime import timedelta
-from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
+"""
+from odoo import api, models
+
 
 class MrpBomLine(models.Model):
-    _inherit = 'mrp.bom.line'
+    _inherit = "mrp.bom.line"
 
-    @api.onchange('state')
+    @api.onchange("state")
     def onchange_line_state(self):
-        '''
-            Force update flag every time bom line state changes
-        '''
+        """
+        Force update flag every time bom line state changes
+        """
         for bomLineObj in self:
             bomBrws = bomLineObj.bom_id
             bomBrws._obsolete_compute()
