@@ -45,10 +45,11 @@ class ProductTemplateExtension(models.Model):
         return super().create(vals)
 
     def write(self, vals):
-        new_default_code = self.env["product.product"].computeDefaultCode(vals, self)
-        if new_default_code:
-            logging.info("OdooPLM: Default Code set to %s " % (new_default_code))
-            vals["default_code"] = new_default_code
+        for product_template_id in self:
+            new_default_code = self.env['product.product'].computeDefaultCode(vals,
+                                                                              product_template_id)
+            if new_default_code :
+                vals['default_code'] = new_default_code
         return super(ProductTemplateExtension, self).write(vals)
 
 
