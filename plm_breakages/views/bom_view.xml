@@ -20,7 +20,7 @@
             <field name="inherit_id" ref="plm.plm_bom_form_view"/>
             <field name="arch" type="xml">
                 <field name="hasChildBoms" position="after">
-                    <field name="breakages_count" invisible="True"/>
+                    <field name="breakages_count" column_invisible="1"/>
                     <button name="open_breakages"
                             type="object"
                             title="Open Brackages"
