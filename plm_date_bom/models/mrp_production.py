@@ -19,22 +19,17 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
-'''
+"""
 Created on 18 Jul 2016
-
 @author: Daniel Smerghetto
-'''
+"""
 
-import logging
-from odoo import models
-from odoo import fields
-from odoo import api
-from odoo import _
-from odoo.exceptions import UserError
-                    
+from odoo import _, fields, models
+
 
 class MrpProduction(models.Model):
-    _inherit = 'mrp.production'
+    _inherit = "mrp.production"
 
-    obsolete_presents = fields.Boolean(_("Obsolete presents"), related='bom_id.obsolete_presents')
+    obsolete_presents = fields.Boolean(
+        _("Obsolete presents"), related="bom_id.obsolete_presents"
+    )

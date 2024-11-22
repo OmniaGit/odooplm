@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution
@@ -20,25 +21,21 @@
 ##############################################################################
 {
     "name": "PLM Date Bom",
-    "version": "18.0.0.1",
+    "version": "18.0.1.0.0",
     "author": "OmniaSolutions",
     "license": "AGPL-3",
     "website": "https://odooplm.omniasolutions.website",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
     "sequence": 15,
     "summary": "Allow to compute boms due to date",
-    "images": [],
     "depends": ["plm"],
-    "data": [  # security
+    "data": [
         "security/plm_security.xml",
-        # views
+        "data/ir_cron.xml",
+        "report/bom_structure_report_extension.xml",
         "views/mrp_bom.xml",
         "views/mrp_production.xml",
-        "views/data.xml",
-        # 'report/bom_structure_report_extension.xml',
     ],
-    "demo": [],
-    "test": [],
     "installable": True,
     "application": False,
     "auto_install": False,

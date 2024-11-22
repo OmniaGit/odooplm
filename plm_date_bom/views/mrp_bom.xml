@@ -1,98 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-	<data>
-<!-- Views -->		
-
-
-
+    <data>
         <record id="plm_bom_list_view_obsoleted" model="ir.ui.view">
             <field name="name">plm.mrp.bom.list</field>
             <field name="model">mrp.bom</field>
             <field name="inherit_id" ref="plm.plm_bom_list_view"/>
             <field name="arch" type="xml">
-                 <field name="weight_net" position="after">
-                   	<field name="obsolete_presents" invisible='True'/>
-                   	<field name="obsolete_presents_computed" invisible='True'/>
-          		</field>
-        	</field>
+                <field name="weight_net" position="after">
+                    <field name="obsolete_presents" invisible='True'/>
+                    <field name="obsolete_presents_computed" invisible='True'/>
+                </field>
+            </field>
         </record>
-
         <record model="ir.ui.view" id="plm_list_bom_obsoleted">
             <field name="name">plm.list.bom.obsoleted</field>
             <field name="model">mrp.bom</field>
             <field name="inherit_id" ref="plm.plm_bom_list_view"/>
             <field name="arch" type="xml">
                 <list position="attributes">
-                    <attribute name="decoration-muted">obsolete_presents == True</attribute>
+                    <attribute name="decoration-danger">obsolete_presents == True</attribute>
                 </list>
             </field>
         </record>
-
-	    <record id="plm_mrp_bom_date_compute" model="ir.ui.view">
+        <record id="plm_mrp_bom_date_compute" model="ir.ui.view">
             <field name="name">plm.bom.form.date.compute</field>
             <field name="model">mrp.bom</field>
             <field name="inherit_id" ref="plm.plm_bom_form_view"/>
             <field name="priority" eval="19"/>
             <field name="arch" type="xml">
-            	<data>
-            		<xpath expr="//button[@name='open_related_bom_lines']" position="before">
-		                    <button string="Update Bom" 
-				                    name="action_wizard_compute_bom" 
-				                    type="object" 
-				                    icon="fa-gears" 
-				                    style="color: red;font-weight: bold;"
-				                    invisible="obsolete_presents != True or type=='ebom'" 
-		                    />
-		                    <button string="All Related Boms to Update" 
-				                    name="showAllBomsToCompute"
-				                    type="object" 
-				                    icon="fa-gears" 
-				                    style="color:#e07200;"
-				                    invisible="obsolete_presents_recursive==False or type=='ebom'"
-		                    />
-		            </xpath>
-	            	<xpath expr="//field[@name='product_qty']" position="after"> 
-		               	<field name="obsolete_presents" invisible='True'/>
-		               	<field name="obsolete_presents_recursive" invisible='True'/>
-		               	<field name="obsolete_presents_computed" invisible='True'/>
-		           	</xpath>
-	           	</data>
-			</field>
+                <data>
+                    <xpath expr="//button[@name='open_related_bom_lines']" position="before">
+                        <button string="Update Bom"
+                                name="action_wizard_compute_bom"
+                                type="object"
+                                icon="fa-gears"
+                                style="color: red;font-weight: bold;"
+                                invisible="obsolete_presents != True or type=='ebom'"
+                        />
+                        <button string="All Related Boms to Update"
+                                name="showAllBomsToCompute"
+                                type="object"
+                                icon="fa-gears"
+                                style="color:#e07200;"
+                                invisible="obsolete_presents_recursive==False or type=='ebom'"
+                        />
+                    </xpath>
+                    <xpath expr="//field[@name='product_qty']" position="after">
+                        <field name="obsolete_presents" invisible='True'/>
+                        <field name="obsolete_presents_recursive" invisible='True'/>
+                        <field name="obsolete_presents_computed" invisible='True'/>
+                    </xpath>
+                </data>
+            </field>
         </record>
-
-
-        
-    <record id="plm_bom_date_compute" model="ir.ui.view">
-        <field name="name">plm.date.compure</field>
-        <field name="model">plm.temporary_date_compute</field>
-        <field name="arch" type="xml">
-        <form string="Compute Bom">
-            <div>Select computation type and proceed.</div>
-            <separator string=""/>
-            <group>
-            	<field name='compute_type'/>
-            </group>
-            <footer>
-            	<button special="cancel" string="Cancel"/>
-            	<button string="Compute Bom" name="action_compute_bom" type="object"/>
-            </footer>
-        </form>
-        </field>
-    </record>
-
-
-    <record model="ir.ui.view" id="plm_bom_filter_obsoleted">
-        <field name="name">plm.bom.filter.obsoleted</field>
-        <field name="model">mrp.bom</field>
-        <field name="inherit_id" ref="plm.view_mrp_bom_filter_inherit"/>
-        <field name="arch" type="xml">
-        	<xpath expr="//separator[@name='separator']" position="after"> 
-                   	<filter name="bom_to_update"
-                   	        string="Boms To Update"
-                           	domain="[('obsolete_presents','=', True)]" />
-            </xpath>
-         </field>
-    </record>
-
+        <record id="plm_bom_date_compute" model="ir.ui.view">
+            <field name="name">plm.date.compure</field>
+            <field name="model">plm.temporary_date_compute</field>
+            <field name="arch" type="xml">
+                <form string="Compute Bom">
+                    <div>Select computation type and proceed.</div>
+                    <separator string=""/>
+                    <group>
+                        <field name='compute_type'/>
+                    </group>
+                    <footer>
+                        <button special="cancel" string="Cancel"/>
+                        <button string="Compute Bom" name="action_compute_bom" type="object"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="plm_bom_filter_obsoleted">
+            <field name="name">plm.bom.filter.obsoleted</field>
+            <field name="model">mrp.bom</field>
+            <field name="inherit_id" ref="plm.view_mrp_bom_filter_inherit"/>
+            <field name="arch" type="xml">
+                <xpath expr="//separator[@name='separator']" position="after">
+                    <filter name="bom_to_update"
+                            string="Boms To Update"
+                            domain="[('obsolete_presents','=', True)]"/>
+                </xpath>
+            </field>
+        </record>
     </data>
 </odoo>

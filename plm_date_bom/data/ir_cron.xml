@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
-    <data noupdate="1"> 
-
+    <data noupdate="1">
 		<record id="ir_cron_update_obsolete_bom" model="ir.cron">
 	        <field name="name">Update Obsolete BOMs updating lines</field>
 	        <field name="active" eval="False"/>
@@ -12,7 +10,6 @@
 	        <field name="interval_number">1</field>
 	        <field name="interval_type">days</field>
 	    </record>
-
 		<record id="ir_cron_replace_obsolete_bom" model="ir.cron">
 	        <field name="name">Update Obsolete BOMs replacing BOM</field>
 	        <field name="active" eval="False"/>
@@ -22,6 +19,5 @@
 	        <field name="interval_number">1</field>
 	        <field name="interval_type">days</field>
 	    </record>
-
     </data>
 </odoo>

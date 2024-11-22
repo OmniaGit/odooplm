@@ -6,39 +6,39 @@
         <field name="priority" eval="15"/>
         <field name="arch" type="xml">
             <search string="Parts">
-                <filter 
-            		name="last_year" 
-            		string="Last Year" 
+                <filter
+            		name="last_year"
+            		string="Last Year"
             		domain="[('create_date','&gt;=',(datetime.date.today() - relativedelta(days=1,months=1,years=1)).strftime('%%Y-%%m-%%d'))]"/>
-           		<filter 
-            		name="last_month" 
-            		string="Last Month" 
+           		<filter
+            		name="last_month"
+            		string="Last Month"
             		domain="[('create_date','&gt;=',(datetime.date.today() - relativedelta(days=1,months=1)).strftime('%%Y-%%m-%%d'))]"/>
-            	<filter 
-            		name="last_week" 
-            		string="Last Week" 
+            	<filter
+            		name="last_week"
+            		string="Last Week"
             		domain="[('create_date','&gt;=',(datetime.date.today() - datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"/>
                 <separator orientation="vertical"/>
                 <field name="engineering_code"/>
                 <field name="name"/>
                 <field name="description" invisible="1"/>
                 <separator orientation="vertical"/>
-                <filter 
-                	name="string" 
-                	string="Confirmed" 
+                <filter
+                	name="string"
+                	string="Confirmed"
                 	domain="[('engineering_state', '=', 'confirmed')]"/>
-                <filter 
-                	name="released" 
-                	string="Released" 
+                <filter
+                	name="released"
+                	string="Released"
                 	domain="[('engineering_state', 'in', ['released','undermodify'])]"/>
-                <filter 
-                	name="obsolated" 
-                	string="Obsoleted" 
+                <filter
+                	name="obsolated"
+                	string="Obsoleted"
                 	domain="[('engineering_state', '=', 'obsoleted')]"/>
                 <separator orientation="vertical"/>
-                <filter 
-                	name="latest" 
-                	string="Latest" 
+                <filter
+                	name="latest"
+                	string="Latest"
                 	domain="[('engineering_state', 'not in', ['obsoleted','undermodify'])]"/>
                 <separator orientation="vertical"/>
                 <group>
@@ -111,10 +111,10 @@
                 </header>
             </form>
         </field>
-    </record> 
-    
+    </record>
+
     <!-- THIS VIEW IS THE ONE USED TO CUSTOMIZE THE CAD APPLICATION -->
-    
+
     <record model="ir.ui.view" id="plm_component_base_form">
         <field name="name">plm.base.component</field>
         <field name="model">product.product</field>
@@ -151,7 +151,7 @@
 	                    <field name="name" string="Description" colspan="4"/>
                         <field name="id" invisible="1"/>
                         <group name="engineering_group" colspan="4" col="6">
-	                        <field name="engineering_code" 
+	                        <field name="engineering_code"
 	                               colspan="4"
 	                               select="1"
 	                               readonly="id>0"/>
@@ -208,14 +208,10 @@
                             <group name="group_general">
                                 <field name="categ_id" string="Category"/>
                             </group>
-                            <group col="4" colspan="4" name='uom_weight'>
+                            <group name='uom_weight'>
                                 <label for="weight"/>
-                                <div name="weight"
-                                     class="o_row" 
-                                     readonly="engineering_state in ['released','obsoleted']">
-                                    <field name="weight"
-                                           readonly="engineering_state in ['released','obsoleted']"
-                                           digits="[14,3]"/>
+                                <div name="weight" class="o_row" readonly="engineering_state in ['released','obsoleted']">
+                                    <field name="weight" readonly="engineering_state in ['released','obsoleted']" digits="[14,3]"/>
                                     <span><field name="weight_uom_name"/></span>
                                 </div>
                                 <field name="uom_id"
@@ -289,7 +285,7 @@
                            statusbar_colors='{"undermodify":"red","obsoleted":"red"}'
                            readonly="1"/>
             </xpath>
-            <!-- 
+            <!--
             <xpath expr="//button[@name='action_view_bom']" position="after">
             	<button	name="open_report_component" type="object" icon="fa-bars" string="Report" class="oe_stat_button"/>
             </xpath>
@@ -317,15 +313,14 @@
             <xpath expr="//div[@name='options']" position="attributes">
                 <attribute name="margin-left">0</attribute>
                 <attribute name="padding-left">0</attribute>
-            </xpath>   
+            </xpath>
             <xpath expr="//notebook[last()]" position="before">
                <field name="is_engcode_editable" invisible="1"/>
                <group>
                <group colspan="4" col="3" string="OdooPLM Information">
 		               <field name="engineering_code"
-		                      readonly="is_engcode_editable==False"/>	              
+		                      readonly="is_engcode_editable==False"/>
 		               <field name="engineering_revision"
-		                      
 		                      nolabel="1"
 	                          readonly="is_engcode_editable==False"/>
 		       </group>
@@ -342,7 +337,7 @@
            		<field name="readonly_std_umc3" invisible="1"/>
            		</group>
 
-	                
+
             <group name="std_desc_attrs"
                    colspan="4"
                    invisible="std_description == False">
@@ -381,18 +376,32 @@
 	                               readonly="std_umc3==False and engineering_state in ['released','obsoleted']"
 	                               invisible="show_std_field3==False"/>
 	                </group>
-                  </group>  
+                  </group>
                 </group>
 	            <field name="source_product" invisible="1"/>
                 <field name="desc_modify" colspan="6"
 	                   readonly="engineering_state in ['released','obsoleted']"
 	                   invisible="engineering_revision==0"/>
-            </group>    
+            </group>
             </xpath>
             <xpath expr="//notebook[last()]" position="inside">
 				<page name="technical_infos" string="Technical Information">
-					<group colspan="4" col="4" name="technical_infos_group" string="Material / Surface / Treatment">
-					    <field name="tmp_material"
+                    <!--group name="uom_weight" is included in the previews version, however I've added here-->
+                    <group name='uom_weight'>
+                        <group>
+                            <label for="weight"/>
+                            <div class="o_row" name="weight" readonly="engineering_state in ['released','obsoleted']">
+                                <field name="weight" readonly="engineering_state in ['released','obsoleted']"
+                                       digits="[14,3]"/>
+                                <span>
+                                    <field name="weight_uom_name"/>
+                                </span>
+                            </div>
+                        </group>
+                    </group>
+                    <group name="technical_infos_group" string="Material / Surface / Treatment">
+                        <group>
+                            <field name="tmp_material"
 					           readonly="engineering_state in ['released','obsoleted']"/>
 					    <field name="engineering_material"
 					           readonly="engineering_state in ['released','obsoleted']"
@@ -400,7 +409,9 @@
 					           groups='base.group_no_one'/>
 					    <field name="tmp_surface"
 					           readonly="engineering_state in ['released','obsoleted']"/>
-					    <field name="engineering_surface"
+                        </group>
+                        <group>
+                            <field name="engineering_surface"
 					           readonly="engineering_state in ['released','obsoleted']"
 					           colspan="2"
 					           groups='base.group_no_one'/>
@@ -410,15 +421,20 @@
 					           readonly="engineering_state in ['released','obsoleted']"
 					           colspan="2"
 					           groups='base.group_no_one'/>
+                        </group>
 					</group>
-					<group col="4" colspan="4" name="workflow_section" string="Workflow">
-						<field name="engineering_release_user"   readonly="1"/>
-						<field name="engineering_release_date"  readonly="1"/>
-						<field name="engineering_revision_user"   readonly="1"/>
-						<field name="engineering_revision_date"  readonly="1"/>
-						<field name="engineering_workflow_user"   readonly="1"/>
-						<field name="engineering_workflow_date"  readonly="1"/>
-					</group>
+                    <group name="workflow_section" string="Workflow">
+                        <group>
+                            <field name="engineering_release_user" readonly="1"/>
+                            <field name="engineering_release_date" readonly="1"/>
+                            <field name="engineering_revision_user" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="engineering_revision_date" readonly="1"/>
+                            <field name="engineering_workflow_user" readonly="1"/>
+                            <field name="engineering_workflow_date" readonly="1"/>
+                        </group>
+                    </group>
 				</page>
                 <page string="Linked Documents" name="linkeddocuments">
                     <group colspan="4">
@@ -448,7 +464,7 @@
                 <field name="engineering_revision"/>
                 <field name="engineering_state"/>
             </xpath>
-            
+
 <!--            <xpath expr="//div/div[hasclass('o_kanban_image')]" position="replace">-->
 <!--                <t t-value="record.engineering_state.raw_value" t-set="stateToUse"/>-->
 <!--                <field name="engineering_code"/>-->
@@ -520,9 +536,9 @@
 <!--                </div> -->
 <!--             </xpath> -->
         </field>
-   </record> 
+   </record>
 
-    
+
     <record model="ir.actions.act_window" id="action_plm_component_base_cad_form">
         <field name="name">Engineering Parts</field>
         <field name="res_model">product.product</field>
@@ -531,7 +547,7 @@
         <field name="context">{"search_default_latest": 1, 'odooPLM': True}</field>
         <field name="domain">[('engineering_code','not in', ('', False))]</field>
     </record>
-    
+
    <record model="ir.actions.act_window" id="action_plm_component_base">
         <field name="name">Engineering Parts</field>
         <field name="res_model">product.product</field>

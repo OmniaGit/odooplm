@@ -244,11 +244,11 @@ class ProductProductExtension(models.Model):
                 new_bom_brws = bom_brws.copy(defaults)
                 processedIds.append(idd)
                 if new_bom_brws:
-                    new_bom_brws.write(
-                        {'name': check_obj.name,
-                         'product_id': check_obj.id,
-                         'type': 'normal'},
-                        check=False)
+                    new_bom_brws.write({
+                        'name': check_obj.name,
+                        'product_id': check_obj.id,
+                        'type': 'normal'
+                    })
                     ok_rows = self._summarizeBom(new_bom_brws.bom_line_ids)
                     for bom_line in list(set(new_bom_brws.bom_line_ids) ^ set(ok_rows)):
                         bom_line.unlink()

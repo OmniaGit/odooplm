@@ -26,9 +26,10 @@ Created on 26 Jul 2016
 @author: Daniel Smerghetto
 '''
 import logging
-from odoo import models
-from odoo import api
+
+from odoo import api, models
 from odoo.addons.plm.models.plm_mixin import RELEASED_STATUS
+
 
 class ProdProdExtension(models.Model):
     _inherit = 'product.product'
@@ -44,23 +45,43 @@ class ProdProdExtension(models.Model):
         if force_products:
             releasedComponents = force_products
         else:
-            releasedComponents = self.search([('engineering_state', '=', RELEASED_STATUS)])
-        logging.info('[Automate Nbom scheduler started] found %s components' % (len(releasedComponents.ids)))
+            releasedComponents = self.search([
+                ('engineering_state', '=', RELEASED_STATUS)
+            ])
+        logging.info(
+            '[Automate Nbom scheduler started] found %s components'
+            % (len(releasedComponents.ids))
+        )
         for prodBrws in releasedComponents:
             try:
-                bomBrwsList = mrpBomObj.search([('product_id', '=', prodBrws.id), ('type', '=', 'normal')])
+                bomBrwsList = mrpBomObj.search([
+                    ('product_id', '=', prodBrws.id),
+                    ('type', '=', 'normal')
+                ])
                 if not bomBrwsList:
-                    engBoms = mrpBomObj.search([('product_id', '=', prodBrws.id), ('type', '=', 'ebom')])
+                    engBoms = mrpBomObj.search([
+                        ('product_id', '=', prodBrws.id),
+                        ('type', '=', 'ebom')
+                    ])
+
                     if engBoms:
+
                         prodBrws.action_create_normalBom_WF()
-                        logging.info('Created Normal bom of %s component on %s' % (releasedComponents.ids.index(prodBrws.id), len(releasedComponents.ids)))
+                        logging.info(
+                            'Created Normal bom of %s component on %s' % (
+                                releasedComponents.ids.index(prodBrws.id),
+                                len(releasedComponents.ids)
+                            )
+                        )
             except Exception as ex:
                 errors.append(ex)
         logging.info('[Automate Nbom scheduler ended]')
         if errors:
-            logging.warning('[Automate Nbom scheduler errors] some errors are found during normal bom computation.')
+            logging.warning(
+                '[Automate Nbom scheduler errors]'
+                'some errors are found during normal bom computation.'
+            )
         for error in errors:
             logging.warning(error)
-
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

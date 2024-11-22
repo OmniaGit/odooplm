@@ -56,8 +56,8 @@ class PlmDateBom(TransactionCase):
         #
         # create main product
         #
-        Product = cls.env['product.product']   
-        MrpBom = cls.env['mrp.bom']                                                   
+        Product = cls.env['product.product']
+        MrpBom = cls.env['mrp.bom']
         cls.product_parent_id = Product.create({
             'name': 'test_parent_product',
             'engineering_code' : 'test_parent_product',
@@ -67,7 +67,7 @@ class PlmDateBom(TransactionCase):
             'name': 'test_child_product',
             'engineering_code' : 'test_child_product',
             'uom_id': cls.uom_unit.id,
-            'uom_po_id': cls.uom_unit.id})        
+            'uom_po_id': cls.uom_unit.id})
         cls.mrp_bom_id = MrpBom.create({'product_tmpl_id': cls.product_parent_id.product_tmpl_id.id,
                                                      'bom_line_ids': [
                                                          Command.create({
@@ -86,7 +86,7 @@ class PlmDateBom(TransactionCase):
         cls.assertFalse(newComponentId==cls.product_child_id.id)
         cls.new_revision_child = Product.browse(newComponentId)
         cls.new_revision_child.action_confirm()
-        cls.new_revision_child.action_release()  
+        cls.new_revision_child.action_release()
         #
         # check bom changed
         #
@@ -94,7 +94,3 @@ class PlmDateBom(TransactionCase):
         cls.assertIn(cls.mrp_bom_id.id, bom_to_update_ids)
         cls.assertTrue(cls.mrp_bom_id.obsolete_presents)
         MrpBom.updateWhereUsed(cls.product_child_id)
-        
-              
-
-    

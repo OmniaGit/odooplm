@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution
@@ -19,28 +20,22 @@
 #
 ##############################################################################
 {
-    'name': 'PLM Sale Only Latest',
-    'version': '18.0.0.1',
-    'author': 'OmniaSolutions',
-    'website': 'https://odooplm.omniasolutions.website',
-    'category': 'Manufacturing/Product Lifecycle Management (PLM)',
-    'sequence': 15,
-    'license': 'AGPL-3',
-    'summary': 'Show only latest product version in sale',
-    'images': ['static/img/odoo_plm.png'],
-    'depends': ['plm', 'sale'],
-    'description': """
-    Allow to select only product that have not engineering_code or is in the latest revision for sale
-    """,
-    'data': [
-            'views/sale_order_line.xml'
-            ],
-    'qweb': [],
-    'demo': [],
-    'test': [],
-    'installable': True,
-    'application': False,
-    'auto_install': False,
+    "name": "PLM Sale Only Latest",
+    "version": "18.0.1.0.0",
+    "author": "OmniaSolutions",
+    "website": "https://odooplm.omniasolutions.website",
+    "category": "Manufacturing/Product Lifecycle Management (PLM)",
+    "sequence": 15,
+    "license": "AGPL-3",
+    "summary": "Show only latest product version in sale",
+    "description": """
+        Allow to select only product that have not engineering_code or
+        is in the latest revision for sale.
+        """,
+    "depends": ["plm", "sale_management"],
+    "data": ["views/sale_order_line.xml"],
+    "installable": True,
+    "application": False,
+    "auto_install": False,
 }
-
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
