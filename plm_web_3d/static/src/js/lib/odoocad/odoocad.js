@@ -61,9 +61,11 @@ class OdooCAD{
                      });
                 object.material=material;
             }
+            //
 			this.scene.add(object);
 			this.items.push(object);
-			this.create_relation_structure(object);
+			//
+			const out_htm_structure = this.create_relation_structure(object);
 			// Center the object
             // fit item
 			progress.display = 'none';
@@ -71,6 +73,7 @@ class OdooCAD{
 			html_canvas.dispatchEvent(fitItem);
 			// recompute the bounding box
 			this.active_bbox=this.getBBox();
+			return out_htm_structure;
 		}
 		//
 		
@@ -164,15 +167,11 @@ class OdooCAD{
                 }
             }
         }
-		create_relation_structure(object){
-            var self = this;
+        //
+        create_tree_structure(out_html_structure){
+            const self = this;
             var html_out = "<div class='tree_structure' style='overflow-y: scroll;min-height: 1px;max-height: 400px;'>";
-            for (let i = 0; i < object.children.length; i++) {
-                  if (object.children[i].type=='Group'){
-                    const [inner_html, _children] = self.get_li_structure(object.children[i]);
-                    html_out += inner_html;          
-                  }
-            }
+            html_out += out_html_structure
             html_out += "</div>";
             
             var li_document_tree = document.querySelectorAll('#document_tree')
@@ -232,6 +231,20 @@ class OdooCAD{
             for (i = 0; i < span_tree_documents.length; i++) {
                     this.set_str_name(tree_item_visibility[i])
                 }
+        }
+        //
+		create_relation_structure(object){
+            const grp_types = ["Group", "Object3D"];
+            var self = this;
+            
+            var html_out = "";
+            for (let i = 0; i < object.children.length; i++) {
+                  if (grp_types.includes(object.children[i].type)){
+                    const [inner_html, _children] = self.get_li_structure(object.children[i]);
+                    html_out += inner_html;          
+                  }
+            }
+            return html_out;
         }
 		
 		removeItemToSeen(object){
