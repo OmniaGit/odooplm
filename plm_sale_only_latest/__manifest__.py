@@ -33,7 +33,10 @@
         is in the latest revision for sale.
         """,
     "depends": ["plm", "sale_management"],
-    "data": ["views/sale_order_line.xml"],
+    "data": [
+        "data/sale_only_parameter.xml",
+        "views/sale_order_line.xml",
+    ],
     "installable": True,
     "application": False,
     "auto_install": False,

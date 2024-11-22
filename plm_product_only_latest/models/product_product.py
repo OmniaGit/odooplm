@@ -32,13 +32,18 @@ class ProductProduct(models.Model):
 
     @api.model
     def name_search(self, name="", args=None, operator="ilike", limit=100):
+
+        conditional_status = RELEASED_STATUSES
+        config_parameter = self.env['ir.config_parameter'].sudo()
+        if config_parameter.get_param('sales_only_latest_params', False):
+            conditional_status = eval(
+                config_parameter.get_param('sales_only_latest_params', False)
+            )
         ret = super(ProductProduct, self).name_search(
             name=name, args=args, operator=operator, limit=limit
         )
         out = []
         if self.env.context.get("produce_latest"):
-            conditional_status = RELEASED_STATUSES
-            conditional_status.append(OBSOLATED_STATUS)
             for prod_id, val in ret:
                 eng_code = self.browse(prod_id).engineering_code
                 latest_product = None

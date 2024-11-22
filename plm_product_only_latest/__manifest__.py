@@ -34,6 +34,7 @@
         is in the latest revision for Manufacturing
         """,
     "data": [
+        "data/product_only_parameter.xml",
         "views/mrp_production.xml"
     ],
     "installable": True,

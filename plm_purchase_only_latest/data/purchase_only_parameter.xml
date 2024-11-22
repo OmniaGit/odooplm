@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="plm_purchase_only_latest_params" model="ir.config_parameter">
+            <field name="key">purchase_only_latest_params</field>
+            <field name="value">['released', 'undermodify', 'obsoleted']</field>
+        </record>
+    </data>
+</odoo>
