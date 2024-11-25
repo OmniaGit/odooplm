@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution
@@ -20,25 +21,19 @@
 ##############################################################################
 {
     "name": "Workflow Custom Actions",
-    "version": "18.0.0.1",
+    "version": "18.0.1.0.0",
     "author": "OmniaSolutions",
     "website": "https://odooplm.omniasolutions.website",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
     "sequence": 1,
     "summary": "",
-    "depends": ["plm",
-                "base_automation"
-    ],
-    "images": ["static/img/plm_workflow_custom_action.gif"],
+    "depends": ["plm", "base_automation"],
     "license": "AGPL-3",
     "data": [
-        # security
         "security/security.xml",
-        # views
         "views/plm_automated_wf_action.xml",
     ],
-    "demo": [],
-    "test": [],
+    "images": ["static/img/plm_workflow_custom_action.gif"],
     "installable": True,
     "application": False,
     "auto_install": False,
