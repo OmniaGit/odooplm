@@ -32,6 +32,20 @@
                     }
                 </attribute>
             </xpath>
+            <xpath expr="//sheet/notebook/page[1]/field[@name='order_line']/list//field[@name='product_template_id']"
+                   position="attributes">
+                <attribute name="context">{
+                    'sale_latest': True,
+                    'partner_id': parent.partner_id,
+                    'quantity':product_uom_qty,
+                    'pricelist':parent.pricelist_id,
+                    'uom':product_uom,
+                    'company_id':parent.company_id,
+                    'default_lst_price':price_unit,
+                    'default_description_sale': name
+                    }
+                </attribute>
+            </xpath>
         </field>
     </record>
 </odoo>

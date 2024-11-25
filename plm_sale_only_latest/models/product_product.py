@@ -24,7 +24,7 @@ Created on 25 Aug 2016
 @author: Daniel Smerghetto
 """
 from odoo import api, models
-from odoo.addons.plm.models.plm_mixin import RELEASED_STATUSES, OBSOLATED_STATUS
+from odoo.addons.plm.models.plm_mixin import RELEASED_STATUSES
 
 
 class ProductProduct(models.Model):
@@ -33,13 +33,8 @@ class ProductProduct(models.Model):
 
     @api.model
     def name_search(self, name="", args=None, operator="ilike", limit=100):
-
         conditional_status = RELEASED_STATUSES
-        config_parameter = self.env['ir.config_parameter'].sudo()
-        if config_parameter.get_param('sales_only_latest_params', False):
-            conditional_status = eval(
-                config_parameter.get_param('sales_only_latest_params', False)
-            )
+        conditional_status.extend( self.env['ir.config_parameter'].sudo().get_param('sales_only_latest_params', '').split(','))
         res = super(ProductProduct, self).name_search(
             name=name, args=args, operator=operator, limit=limit
         )

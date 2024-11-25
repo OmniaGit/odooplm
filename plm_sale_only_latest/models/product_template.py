@@ -23,5 +23,24 @@
 Created on 25 Aug 2016
 @author: Daniel Smerghetto
 """
-from . import product_product
-from . import product_template
+import copy
+from odoo import api, models
+from odoo.addons.plm.models.plm_mixin import RELEASED_STATUSES
+
+
+class ProductTemplate(models.Model):
+    _inherit = "product.template"
+
+
+    @api.model
+    def name_search(self, name="", args=None, operator="ilike", limit=100):
+        conditional_status = copy.copy(RELEASED_STATUSES)
+        conditional_status.extend( self.env['ir.config_parameter'].sudo().get_param('sales_only_latest_params', '').split(','))
+        if self.env.context.get("sale_latest"):
+            args.insert(0,"&")
+            args.append(("|"))
+            args.append(("engineering_code", "=", False))
+            args.append(("engineering_state", "in", conditional_status))
+        return super(ProductTemplate, self).name_search(name=name, args=args, operator=operator, limit=limit)
+        
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
