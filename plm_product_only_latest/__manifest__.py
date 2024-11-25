@@ -33,10 +33,7 @@
         Allow to select only product that have engineering_code and
         is in the latest revision for Manufacturing
         """,
-    "data": [
-        "data/product_only_parameter.xml",
-        "views/mrp_production.xml"
-    ],
+    "data": ["data/product_only_parameter.xml", "views/mrp_production_views.xml"],
     "installable": True,
     "application": False,
     "auto_install": False,

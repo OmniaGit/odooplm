@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record model="ir.ui.view" id="view_purchase_order_form_latest_rev">
+    <record id="view_purchase_order_form_latest_rev" model="ir.ui.view">
         <field name="name">purchase.order.form.latest.rev</field>
         <field name="model">purchase.order</field>
         <field name="priority" eval="1"/>
@@ -17,6 +17,17 @@
                     'quantity':product_qty,'uom':product_uom, 'company_id': parent.company_id}
                 </attribute>
             </xpath>
+            <xpath expr="//sheet/notebook/page[1]/field[@name='order_line']/list//field[@name='product_id']"
+                   position="attributes">
+                <attribute name="context">{
+                    'purchase_latest': True,
+                    'partner_id':parent.partner_id,
+                    'quantity':product_qty,
+                    'uom':product_uom,
+                    'company_id': parent.company_id}
+                </attribute>
+            </xpath>
+
         </field>
     </record>
 </odoo>
