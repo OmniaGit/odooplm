@@ -3,7 +3,7 @@
     <data noupdate="1">
         <record id="plm_product_only_latest_params" model="ir.config_parameter">
             <field name="key">product_only_latest_params</field>
-            <field name="value">[]</field>
+            <field name="value"></field>
         </record>
     </data>
 </odoo>

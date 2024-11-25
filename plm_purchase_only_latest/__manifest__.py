@@ -33,10 +33,7 @@
         or is in the latest revision for Purchase
         """,
     "depends": ["plm", "purchase"],
-    "data": [
-        "data/purchase_only_parameter.xml",
-        "views/purchase_order_line.xml"
-    ],
+    "data": ["data/purchase_only_parameter.xml", "views/purchase_views.xml"],
     "installable": True,
     "application": False,
     "auto_install": False,

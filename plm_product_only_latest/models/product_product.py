@@ -24,7 +24,7 @@ Created on 25 Aug 2016
 @author: Daniel Smerghetto
 """
 from odoo import api, models
-from odoo.addons.plm.models.plm_mixin import RELEASED_STATUSES, OBSOLATED_STATUS
+from odoo.addons.plm.models.plm_mixin import RELEASED_STATUSES
 
 
 class ProductProduct(models.Model):
@@ -32,31 +32,18 @@ class ProductProduct(models.Model):
 
     @api.model
     def name_search(self, name="", args=None, operator="ilike", limit=100):
+        conditional_status = RELEASED_STATUSES.copy()
+        config_param = self.env["ir.config_parameter"].sudo()
+        conditional_status.extend(
+            config_param.get_param("product_only_latest_params", "").split(",")
+        )
+        if self.env.context.get("produce_latest"):
+            args += [
+                "|",
+                ("engineering_code", "=", False),
+                ("engineering_state", "in", conditional_status),
+            ]
 
-        conditional_status = RELEASED_STATUSES
-        config_parameter = self.env['ir.config_parameter'].sudo()
-        if config_parameter.get_param('sales_only_latest_params', False):
-            conditional_status = eval(
-                config_parameter.get_param('sales_only_latest_params', False)
-            )
-        ret = super(ProductProduct, self).name_search(
+        return super(ProductProduct, self).name_search(
             name=name, args=args, operator=operator, limit=limit
         )
-        out = []
-        if self.env.context.get("produce_latest"):
-            for prod_id, val in ret:
-                eng_code = self.browse(prod_id).engineering_code
-                latest_product = None
-                if eng_code:
-                    latest_product = self.search(
-                        [
-                            ("engineering_code", "=", eng_code),
-                            ("engineering_state", "in", conditional_status),
-                        ],
-                        order="engineering_revision desc",
-                        limit=1,
-                    )
-                if not eng_code or (latest_product and prod_id == latest_product.id):
-                    out.append((prod_id, val))
-        return out or ret
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

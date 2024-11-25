@@ -35,7 +35,7 @@
     "depends": ["plm", "sale_management"],
     "data": [
         "data/sale_only_parameter.xml",
-        "views/sale_order_line.xml",
+        "views/sale_order.xml",
     ],
     "installable": True,
     "application": False,
