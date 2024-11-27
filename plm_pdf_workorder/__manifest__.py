@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution
@@ -20,26 +21,31 @@
 ##############################################################################
 {
     "name": "PLM Report PDF Workorder",
-    "version": "18.0.0.1",
+    "version": "18.0.1.0.0",
     "author": "OmniaSolutions",
     "website": "https://odooplm.omniasolutions.website",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
     "sequence": 15,
     "summary": """
-    This module allows you to get the plm pdf document available into the workorder workscheet
+    This module allows you to get the plm pdf document
+    available into the workorder workscheet.
     """,
-    "images": [],
     "license": "LGPL-3",
     "depends": [
         "plm",
         "mrp_workorder",
     ],
     "data": [
+        "views/ir_attachment.xml",
         "views/mrp_routing_workcenter.xml",
         "views/mrp_workorder.xml",
     ],
-    "demo": [],
-    "test": [],
+    "assets": {
+        "web.assets_backend": [
+            "plm_pdf_workorder/static/src/mrpWorksheet.js",
+            "plm_pdf_workorder/static/src/mrpDisplayRecord.xml",
+        ]
+    },
     "installable": True,
     "application": False,
     "auto_install": False,

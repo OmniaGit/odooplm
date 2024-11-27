@@ -1,30 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-    
         <record id="plm_mrp_workorder_view_form_tablet" model="ir.ui.view">
             <field name="name">plm.mrp.workorder.view.form.tablet</field>
             <field name="model">mrp.workorder</field>
-            <field name="inherit_id" ref="mrp_workorder.mrp_workorder_view_form_tablet"/>
+            <field name="inherit_id" ref="mrp.mrp_production_workorder_form_view_inherit"/>
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='company_id']" position="after">
-                    <field name="view_plm_pdf" invisible="1"/>
-                    <field name="use_plm_pdf" invisible="1"/>
-                </xpath>
-                
-                <xpath expr="//div[@class='o_workorder_bar'][2]/div/span" position="after">
-                     <button name="action_switch_pdf"
-                            invisible="use_plm_pdf==False"
-                            class="btn btn-secondary o_workorder_icon_btn fa fa-file-o"
-                            type="object"
-                            aria-label="Show plm pdf related document"
-                            title="Pdf PLM"
-                            string="-PLM"/>
+                <xpath expr="//field[@name='worksheet']" position="before">
+                    <group>
+                        <group>
+                            <field name="view_plm_pdf" string="View PLM PDF" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="use_plm_pdf" string="Use PLM PDF" invisible="1"/>
+                        </group>
+                        <group>
+                            <button name="action_switch_pdf"
+                                    invisible="use_plm_pdf==False"
+                                    class="btn btn-secondary o_workorder_icon_btn fa fa-file-o"
+                                    type="object"
+                                    aria-label="Show plm pdf related document"
+                                    title="Pdf PLM"
+                                    string=" - PLM PDF"/>
+                        </group>
+                    </group>
                 </xpath>
             </field>
-         </record>
-         
-         <record id="plm_pdf_show_document_workorder" model="ir.ui.view">
+        </record>
+
+        <record id="plm_pdf_show_document_workorder" model="ir.ui.view">
             <field name="name">plm.pdf.show.document.workorder</field>
             <field name="model">mrp.workorder</field>
             <field name="arch" type="xml">
@@ -32,7 +36,7 @@
                     <field name="plm_pdf" widget="pdf_viewer" readonly="True"/>
                 </form>
             </field>
-         </record>
+        </record>
     </data>
-    
+
 </odoo>

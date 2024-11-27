@@ -1,6 +1,7 @@
+# -*- encoding: utf-8 -*-
 ##############################################################################
 #
-#    OmniaSolutions, Open Source Management Solution    
+#    OmniaSolutions, Open Source Management Solution
 #    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
 #    $Id$
 #
@@ -20,3 +21,4 @@
 ##############################################################################
 from . import mrp_workorder
 from . import mrp_routing_workcenter
+from . import ir_attachment

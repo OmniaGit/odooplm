@@ -1,6 +1,7 @@
+# -*- encoding: utf-8 -*-
 ##############################################################################
 #
-#    OmniaSolutions, Open Source Management Solution    
+#    OmniaSolutions, Open Source Management Solution
 #    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
 #    $Id$
 #
@@ -20,18 +21,12 @@
 ##############################################################################
 """
 Created on Mar 30, 2016
-
 @author: Daniel Smerghetto
 """
-from odoo import models
-from odoo import fields
-from odoo import api
-from odoo import _
-from odoo.exceptions import UserError
-import logging
+from odoo import _, fields, models
 
-    
+
 class MrpRoutingWorkcenter(models.Model):
-    _inherit = 'mrp.routing.workcenter'
+    _inherit = "mrp.routing.workcenter"
 
-    use_plm_pdf = fields.Boolean(_('Use PLM PDF'))
+    use_plm_pdf = fields.Boolean(_("Use PLM PDF"))
