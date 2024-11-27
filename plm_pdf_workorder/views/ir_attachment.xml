@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="plm_pdf_workorder_plm_view_attachment_form_plm_inherit" model="ir.ui.view">
+        <field name="name">plm.pdf.workorder.plm.view_attachment.form.plm.hinerit</field>
+        <field name="model">ir.attachment</field>
+        <field name="inherit_id" ref="plm.view_attachment_form_plm_hinerit"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='is_plm']" position="after">
+                <field name="is_production_doc" widget="boolean_toggle"/>
+                <field name="doc_seq"/>
+            </xpath>
+        </field>
+    </record>
+    <record id="plm_pdf_workorder_plm_document_kanban_view" model="ir.ui.view">
+        <field name="name">plm.pdf.workorder.plm.document.kanban.view</field>
+        <field name="model">ir.attachment</field>
+        <field name="inherit_id" ref="plm.document_kanban_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='related_not_update']" position="after">
+                <field name="is_production_doc" widget="boolean_toggle"/>
+                <field name="doc_seq"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
