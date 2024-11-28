@@ -44,14 +44,14 @@
 	padding: 5px;
 	position: relative;
 	text-align: center;
-	
+
 }
 .main_command_slide {
   height: 26px;
-  box-shadow:2px 2px 5px 1px grey;
+  /*box-shadow:2px 2px 5px 1px grey;*/
   width: auto;
-  opacity: .5;
-  background-color: white;
+  /*opacity: .5;*/
+  /*background-color: white;*/
   overflow: hidden;
   position: absolute;
   transition: height 0.1s;
@@ -62,14 +62,17 @@
   /* Safari and Chrome */
   -o-transition: height 0.1s;
   /* Opera */
-  transform-origin: bottom;  
+  transform-origin: bottom;
 }
-.main_command_slide:hover{
+#activatorClick{
+        box-shadow: 2px 2px 5px 1px grey;
+}
+/*.main_command_slide:hover{
 	 height: 210px;
 	 background-color: transparent;
-	 opacity: 1; 
-	 
-}
+	 opacity: 1;
+
+}*/
 .main_command_slide .activator {
   height: 80px;
   width: 100%;
@@ -80,15 +83,17 @@
   text-align: center;
   margin: 1px;
   height: 20px;
-  width: 20%;
-  float: top;
+  width: 25px;
+  border-radius: 2px !important;
+  padding: 2px !important;
+  /*float: top;*/
 }
 #hiper_treejs{
 	justify-self:center;
 }
 #hiper_odooplm{
 	justify-self:right;
-	
+
 }
 .header_image{
 	height: 40;
@@ -98,7 +103,7 @@
   margin: 1px;
 }
 
-.activator:hover {}
+/*.activator:hover {}
 
 .activator:hover .content {
   display: block;
@@ -106,7 +111,7 @@
 
 .activator:hover .img {
   float: bottom;
-}
+}*/
 
 .measurement {
 	 pointer-events: auto;
@@ -117,7 +122,7 @@
      margin: 5px;
      cursor: row-resize;
  }
- 
+
 .measurementLabel {
      display: inline-block;
      font-family: monospace;
@@ -143,7 +148,7 @@
   background: #997992;
   -webkit-appearance: none;
   background-color: white;
-  border-radius: 5px;  
+  border-radius: 5px;
 }
 
 #object_explosion::-webkit-slider-thumb {
@@ -167,11 +172,11 @@
 
 #object_transparency {
   margin: 10px;
-  
+
   background: #997992;
   -webkit-appearance: none;
   background-color: white;
-  border-radius: 5px;  
+  border-radius: 5px;
 }
 
 
@@ -244,9 +249,10 @@ label{
   border-radius: 10px;
   border: 2px solid #714B67;
   padding: 2px;
+  margin-top: 27px;
   width: 300px;
   visibility: hidden;
-  opacity:0;  
+  opacity:0;
   resize: horizontal;
   overflow: auto;
   direction: rtl;
@@ -259,12 +265,12 @@ label{
 }
 
 hr.datacard_line{
-    color: #714B67; 
+    color: #714B67;
     margin-top: 2px ;
 }
 
 hr.hover_line{
-    color: #714B67; 
+    color: #714B67;
     margin-top: 4px ;
     margin-bottom: 4px ;
 }
@@ -304,6 +310,10 @@ li.attribute_info{
 .cube {
   width: 80px;
   height: 80px;
+  left: unset !important;
+  top: unset !important;
+  bottom: 25px !important;
+  right: 25px !important;
   transform-style: preserve-3d;
   transform: translateZ(-100px);
   position: absolute;
@@ -331,8 +341,8 @@ li.attribute_info{
 }
 .cube__face:hover{
       background: #7d7d7d;
-      color: #fff;	
-	
+      color: #fff;
+
 }
 .cube__face--front {
   background: rgba(194, 103, 171, 0.9);
@@ -433,6 +443,14 @@ ul, #myUL {
 .document_tree_line>i:hover{
 	background-color: #eda3da;
 }
-
-
-
+canvas#odoo_canvas{
+    height: -webkit-fill-available !important;
+    width: -webkit-fill-available !important;
+}
+.click_show{
+    margin-left: unset !important;
+    margin-right: unset !important;
+    width: 25px !important;
+    right: 0px !important;
+    position: absolute !important;
+}

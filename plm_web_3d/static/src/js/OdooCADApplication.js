@@ -1,6 +1,6 @@
 // some of the code here is taken from
 // https://github.com/leemun1/three-viewcube
-// thanks https://github.com/leemun1 
+// thanks https://github.com/leemun1
 
 import * as THREE from './lib/three.js/build/three.module.js';
 import * as ODOOCAD from './lib/odoocad/odoocad.js';
@@ -48,7 +48,7 @@ const pointer = new THREE.Vector2();
 function createSphereHelper() {
   var sphere = new THREE.SphereGeometry(snapDistance,
 		  								snapDistance,
-		  								snapDistance);	
+		  								snapDistance);
   sphere.widthSegments=32;
   sphere.heightSegments=32;
   const material = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
@@ -139,7 +139,7 @@ var change_background = function (){
 	    break;
 	  case 'room2':
 		  imageBckground('/plm_web_3d/static/src/img/bakgroung_360/white_room.png');
-	    break;	    
+	    break;
 	  case 'workshop1':
 		  imageBckground('/plm_web_3d/static/src/img/bakgroung_360/workshop1.png');
 		  break;
@@ -170,12 +170,12 @@ function imageBckground(path_to_load){
 		texture.mapping = THREE.EquirectangularReflectionMapping;
 	    const rt = new THREE.WebGLCubeRenderTarget(texture.image.height);
 	    rt.fromEquirectangularTexture(renderer, texture);
-	    
+
 	    scene.background = texture;
-	    
+
 	    const cubeCamera = new THREE.CubeCamera( 1, 100000, rt );
 	    scene.add( cubeCamera );
-	    
+
 	    render();
 	    controls.update();
 	  });
@@ -222,7 +222,7 @@ function show_all_scene_item(){
         icon.classList.remove('fa-eye-slash');
         icon.classList.add('fa-eye');
     }
-    OdooCad.show_all();                    
+    OdooCad.show_all();
 }
 
 function hide_all_scene_item(){
@@ -300,8 +300,8 @@ function init() {
  */
   var bnt_hide_all_parts = document.getElementById('hide_all_parts');
   bnt_hide_all_parts.addEventListener("click", hide_all_scene_item);
-  
-  
+
+
   var bnt_show_all_parts = document.getElementById('show_all_parts');
   bnt_show_all_parts.addEventListener("click", show_all_scene_item);
 
@@ -354,13 +354,15 @@ function initcommand(){
 	var selector = document.getElementById("webgl_background");
 	selector.onchange = function(event){
 		change_background();
-	} 
-	
+	}
+
 	let click_show = document.getElementById("click_show");
-	
+	let activatorClick = document.getElementById("activatorClick");
+	console.log(activatorClick);
+    activatorClick.addEventListener("click", onActivatorClick);
 
 	click_show.addEventListener("click", on_data_card_button_click);
-	
+
 	// document.addEventListener('mousemove', onDocumentMousemove, false);
 	document.addEventListener('pointerdown', onClick, false);
 	document.addEventListener('pointermove', onPointerMove );
@@ -370,10 +372,10 @@ function initcommand(){
 	html_canvas.addEventListener("OdooCAD_fit_items", fitCameraToSelectionEvent, false);
 	var object_transparency = document.getElementById("object_transparency");
 	object_transparency.oninput = change_object_transparency;
-    
+
     var object_explosion = document.getElementById("object_explosion");
     object_explosion.oninput = change_object_explosion;
-    	
+
 	var colorPicker = document.getElementById("object_color");
 	colorPicker.oninput = change_object_color;
 	/*
@@ -399,17 +401,32 @@ function initcommand(){
 	xmlhttp.open("GET", url, true);
 	xmlhttp.send();
 }
-
+function onActivatorClick(event) {
+	  // highlight the mouseover target
+	  let bottom_command = document.getElementById("bottom_command");
+	  let main_command_slide = document.getElementById('mainCommandSlide')
+//	  $(bottom_command).toggleClass('d-none')
+	  if (bottom_command.classList.contains('d-none')) {
+	    bottom_command.style.visibility = 'visible';
+	    bottom_command.style.opacity=0.8;
+	    bottom_command.classList.remove('d-none');
+	    main_command_slide.style.height= '210px';
+	  }
+	  else{
+	    bottom_command.style.visibility= 'invisible';
+	    bottom_command.style.opacity=0;
+	    bottom_command.classList.add('d-none');
+	    main_command_slide.style.height= '26px';
+	  }
+	}
 function on_data_card_button_click(event) {
 	  // highlight the mouseover target
 	  let main_div = document.getElementById("main_div");
 	  if (clicked) {
-	    console.log("not clicked");  
 	    main_div.style.visibility = 'invisible';
 	    main_div.style.opacity=0;
 	  }
 	  else{
-	     console.log("clicked");  
 	    main_div.style.visibility= 'visible';
 	    main_div.style.opacity=0.8;
 	  }
@@ -445,7 +462,7 @@ var saveFile = function (strData, filename) {
         location.replace(uri);
     }
 }
-        
+
 var change_object_color = function(event){
 	var items = OdooCad.items;
 	for (let i = 0; i < items.length; i=i+1) {
@@ -456,7 +473,7 @@ var change_object_color = function(event){
 
 var apply_transparency = function(item, value){
         var material = item.material;
-             
+
         if(value){
             if (value>99.9){
                 material.transparent=false;
@@ -471,7 +488,7 @@ var apply_transparency = function(item, value){
         else{
             material.transparent=true;
             material.opacity=0;
-        }   
+        }
 }
 var change_object_transparency = function(event) {
 	var items = OdooCad.items;
@@ -493,7 +510,7 @@ var change_object_explosion = function(event){
     var value = this.value;
     var factor= entitys_BBOX.max.length()/10000
     for (let i = 0; i < items.length; i=i+1) {
-        var loop_item = items[i];    
+        var loop_item = items[i];
             explode(loop_item,
                     entitys_BBOX.getCenter(center),
                     value,
@@ -503,9 +520,9 @@ var change_object_explosion = function(event){
 
 var fitCameraToSelectionEvent = function(e){
     if (Object.values(OdooCad.tree_ref_elements).length>0){
-	fitCameraToSelection(OdooCad.tree_ref_elements,1.1);	
-	   return 
-	}	
+	fitCameraToSelection(OdooCad.tree_ref_elements,1.1);
+	   return
+	}
 	fitCameraToSelection(OdooCad.items,1.1);
 }
 
@@ -554,8 +571,8 @@ var onClick = function (e) {
 	        drawingLine = false;
 	        lineId++;
 	    }
-	} 
-	
+	}
+
 }
 
 function onPointerMove( event ) {
@@ -587,7 +604,7 @@ function onPointerMove( event ) {
 	        }
 		}
 		render();
-		
+
 	}
 }
 
@@ -606,7 +623,7 @@ function onKeyup(event) {
         renderer.domElement.style.cursor = "pointer";
         if (drawingLine) {
         	drawingLine = false;
-        } 
+        }
         scene.remove(measurementLabels[lineId]);
         scene.remove(startPoint[lineId]);
         scene.remove(endPoint[lineId]);
@@ -633,7 +650,7 @@ function addCamera(){
 
 function addOrbit(){
 	controls = new OrbitControls( camera, renderer.domElement );
-	controls.addEventListener('change', render ); 
+	controls.addEventListener('change', render );
 	controls.minDistance = 2;
 	controls.maxDistance = 10;
 	controls.rotateSpeed = 0.5
@@ -643,7 +660,7 @@ function addOrbit(){
 
 function resetLight(bbox, size) {
 	var mult = size * 1000;
-	var center = new THREE.Vector3(); 
+	var center = new THREE.Vector3();
 	bbox.getCenter(center);
 	var x = center.x + mult;
 	var y = center.y + mult;
@@ -670,14 +687,14 @@ function addLight(){
 	light1.position.y = - 70;
 	light1.position.x = - 70;
 	scene.add( light1 );
-	
+
 	light2 = new THREE.DirectionalLight( 0xffdddd, 0.1 );
 	light2.castShadow = true; // default false
 	light2.position.z = 70;
 	light2.position.x = - 70;
 	light2.position.y = 70;
 	scene.add( light2 );
-	
+
 	light3 = new THREE.DirectionalLight( 0xf7d962, 0.1 );
 	light3.castShadow = true; // default false
 	light3.position.z = 70;
@@ -689,11 +706,11 @@ function addLight(){
                                                   'darkslategrey',  // dim ground color
                                                   1.5,                // intensity
     );
-    
+
     scene.add(ambientLight);
     if (DEBUG_SCENE){
         let i = 0;
-        const lights = [light1,light2,light3]; 
+        const lights = [light1,light2,light3];
         while (i < lights.length) {
             var directionalLightHelper = new THREE.DirectionalLightHelper(lights[i]);
             scene.add( directionalLightHelper );
@@ -719,7 +736,7 @@ function showSnapPoint(){
 				spoolVector.x = vertices[i] + intersection.object.position.x;
 				spoolVector.y = vertices[i+1] + intersection.object.position.y;
 				spoolVector.z = vertices[i+2] + intersection.object.position.z;
-				check_distance = intersection.point.distanceTo( spoolVector ) 
+				check_distance = intersection.point.distanceTo( spoolVector )
 				if (first){
 					distance = check_distance;
 					nearestPoint = 	spoolVector;
@@ -727,7 +744,7 @@ function showSnapPoint(){
 				} else {
 					if (check_distance < distance){
 						distance = check_distance;
-						nearestPoint = 	spoolVector;	
+						nearestPoint = 	spoolVector;
 						/*
 						 * console.log(distance); console.log("IP",
 						 * intersection.point); console.log("SV", spoolVector);
@@ -742,7 +759,7 @@ function showSnapPoint(){
 			sphereHelper.visible=false;
 		}
 	}
-	
+
 }
 
 function updateOrientationCube(camera){
@@ -778,7 +795,7 @@ function tweenCamera(position){
         offsetUnit * offsetFactor.y,
         offsetUnit * offsetFactor.z
       );
-    
+
     const center = new THREE.Vector3();
     const finishPosition = center.add(offset);
     console.log("-> new camera position: ");
@@ -837,41 +854,41 @@ function getElementByXpath(path, document_env) {
 /**
  * obj : the current node on the scene graph
  * box_ct_world : a vec3 center of the bounding box
- * 
+ *
  */
 function explode(obj,
                  box_center,
                  speed,
                  factor){
-    //var scene = this.el.sceneEl.object3D ; //I am using Aframe , so this is how I retrieve the whole scene .   
+    //var scene = this.el.sceneEl.object3D ; //I am using Aframe , so this is how I retrieve the whole scene .
     if(obj instanceof THREE.Mesh){
-        var position = obj.position ; 
+        var position = obj.position ;
 
-        position.setFromMatrixPosition(scene.matrixWorld) ; 
-    
+        position.setFromMatrixPosition(scene.matrixWorld) ;
+
         var addx =0 ;
         var addy =0 ;
-        var addz =0 ; 
-    
+        var addz =0 ;
+
         /**
          * This is the vector from the center of the box to the node . we use that to translate every meshes away from the center
          */
-        var addx =(position.x - box_center.x) * speed * factor; 
+        var addx =(position.x - box_center.x) * speed * factor;
         var addy =(position.y - box_center.y) * speed * factor;
-        var addz =(position.z - box_center.z) * speed * factor; 
+        var addz =(position.z - box_center.z) * speed * factor;
         var explode_vectorx=  addx;
         var explode_vectory=  addy;
         var explode_vectorz=  addz;
-    
-        var vector = new THREE.Vector3(explode_vectorx , explode_vectory, explode_vectorz) ; 
+
+        var vector = new THREE.Vector3(explode_vectorx , explode_vectory, explode_vectorz) ;
         obj.position.set(vector.x , vector.y , vector.z ) ;
-    
+
         if(obj.children.length != 0 ){
           for(var i = 0 ; i < obj.children.length ; i++){
              explode(obj.children[i],
                      box_center,
                      speed,
-                     factor); 
+                     factor);
           }
         }
       }
@@ -881,8 +898,8 @@ function explode(obj,
                 explode(obj.children[i],
                         box_center,
                         speed,
-                        factor); 
-            }            
+                        factor);
+            }
         }
      }
 };
@@ -911,11 +928,11 @@ if (inIframe()){
 					carousel.addEventListener("click", function() {
 						console.log("refreshed");
 						refreshIframe();
-					})	
+					})
 					iframe.setAttribute('o-plm-refreshed', true);
 			}	}
 	},false);
-	
+
 }
 // commandEffects();
 
@@ -998,7 +1015,6 @@ const defined_orientation = {
       },
     }
     };
-
 
 export {camera};
 export {tweenCamera};

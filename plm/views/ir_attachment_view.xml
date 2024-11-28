@@ -262,7 +262,7 @@
                 <button
                     class="fa fa-print"
                     type="object"
-                    titel="print"
+                    title="print"
                     name="download_printout"
                     invisible="document_type in ['3d','pr','other']"/>
                 <field name="name" select="True"/>
