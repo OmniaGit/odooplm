@@ -293,8 +293,12 @@ function init() {
 /*
  * Inizialize tree view search
  */
-  var input_document_tree = document.getElementById('input_search_document_tree');
-  //input_document_tree.addEventListener("keyup", OdooCad.search_document_tree);
+// Commented the above as there is no id in the document with
+// input_search_document_tree present.
+//  var input_document_tree = document.getElementById('input_search_document_tree');
+  var input_document_list = document.getElementById('input_search_document_list');
+  console.log(input_document_list);
+  input_document_list.addEventListener("keyup", OdooCad.search_document_tree);
 /*
  * function to hide show all components
  */

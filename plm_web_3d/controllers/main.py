@@ -74,10 +74,11 @@ class Web3DView(Controller):
                 out["document"] = document
                 for component in ir_attachment.linkedcomponents:
                     components = """
-                    <li class="attribute_info"><b>Product Name:</b> %s</li>
+                    <li class="attribute_info" id="linked_component_id" data-id=%s><b>Product Name:</b> %s</li>
                     <li class="attribute_info"><b>Product Revision:</b> %s</li>
                     <li class="attribute_info"><b>Description:</b> %s</li>
                     """ % (
+                        component.id,
                         component.engineering_code,
                         component.engineering_revision,
                         component.name,

@@ -409,12 +409,12 @@ ul, #myUL {
 }
 
 /* Create the caret/arrow with a unicode, and style it */
-.caret::before {
+/*.caret::before {
   content: "\25B6";
   color: black;
   display: inline-block;
   margin-right: 6px;
-}
+}*/
 
 /* Rotate the caret/arrow icon when clicked on (using JavaScript) */
 .caret-down::before {

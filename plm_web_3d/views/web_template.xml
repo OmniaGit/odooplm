@@ -116,7 +116,7 @@
                                     <button type="button" id="show_all_parts" title="Un-Hide"
                                             class="fa fa-lightbulb-o"></button>
                                 </div>
-                                <lu id="document_list">
+                                <lu id="document_tree">
                                 </lu>
                             </div>
                         </div>
