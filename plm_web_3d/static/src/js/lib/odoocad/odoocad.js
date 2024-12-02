@@ -100,7 +100,6 @@ class OdooCAD{
             else{
                 out_lis='<ul id="myUL">';
             }
-
             for (let i = 0; i < object.children.length; i++) {
                   if (object.children[i].type=='Group' || object.children[i].name!=''){
                      const [inner_html, children_found] = self.get_li_structure(object.children[i], true);
@@ -174,12 +173,11 @@ class OdooCAD{
 
             var li_document_tree = document.querySelectorAll('#document_tree')
             li_document_tree[0].innerHTML=html_out;
-            var toggler = document.getElementsByClassName("caret");
+            var toggler = document.getElementsByClassName("document_tree_line");
             var i;
-
             for (i = 0; i < toggler.length; i++) {
               toggler[i].onmouseover=function(){
-                  var webgl_name = this.childNodes[0].attributes['webgl_ref_name'].value;
+                  var webgl_name = this.attributes['webgl_ref_name'].value;
                   var groupObj = self.tree_ref_elements[webgl_name];
                   groupObj.traverse( function ( child ) {
                       if ( child instanceof THREE.Mesh ) {
@@ -191,7 +189,7 @@ class OdooCAD{
                   });
               }
               toggler[i].onmouseout=function(){
-                  var webgl_name = this.childNodes[0].attributes['webgl_ref_name'].value;
+                  var webgl_name = this.attributes['webgl_ref_name'].value;
                   var groupObj = self.tree_ref_elements[webgl_name];
                   groupObj.traverse( function ( child ) {
                       if ( child instanceof THREE.Mesh ) {
@@ -202,35 +200,49 @@ class OdooCAD{
                   });
               }
               toggler[i].addEventListener("click", function() {
-                  let url = location.origin;
-                  let product_tag = document.getElementById('linked_component_id');
-                  if(product_tag && product_tag.length != 0){
-                    let product_id = product_tag.dataset.id
-                    if(product_id){
-                        url = url + '/odoo/product.product/' + product_id
-                        window.open(url);
-                    }
+                  if(event.srcElement.tagName != 'I'){
+                      let url = location.origin;
+                      let product_tag = document.getElementById('linked_component_id');
+                      if(product_tag && product_tag.length != 0){
+                        let product_id = product_tag.dataset.id
+                        if(product_id){
+                            url = url + '/odoo/product.product/' + product_id
+                            window.open(url);
+                        }
+                      }
                   }
-//                this.parentElement.querySelector(".nested").classList.toggle("active");
-//                this.classList.toggle("caret-down");
               });
             }
-            //
             var tree_item_visibility = document.getElementsByClassName("tree_item_visibility");
-            for (i = 0; i < tree_item_visibility.length; i++) {
+             for (i = 0; i < tree_item_visibility.length; i++) {
                 tree_item_visibility[i].addEventListener("click", function() {
-                    var groupObj = self.tree_ref_elements[this.parentElement.attributes['webgl_ref_name'].value];
+                    function objectsVisibility(items, visible, currentAttrValue){
+                        items.forEach(name => {
+                            var groupObj = self.tree_ref_elements[name];
+                            if (!groupObj) return; // Check if groupObj exists
+                            var groupDiv = document.querySelector(`.document_tree_line[webgl_ref_name="${name}"]`);
+                            if (groupDiv && currentAttrValue !== name) {
+                                var icon = groupDiv.querySelector('.tree_item_visibility');
+                                if (icon) {
+                                    icon.classList.toggle('fa-eye', visible);
+                                    icon.classList.toggle('fa-eye-slash', !visible);
+                                }
+                            }
+                            groupObj.visible = visible;
+                        });
+                    }
+                    let currentAttrValue = this.parentElement.attributes['webgl_ref_name'].value;
+                    let caretSpan = this.parentElement.querySelector('span.caret span');
+                    if (!caretSpan) return; // Early return if caretSpan is not found
+                    let caretContent = caretSpan.textContent;
+                    const matchingSpans = Array.from(document.querySelectorAll('span.caret span'))
+                        .filter(span => span.textContent === caretContent);
+                    let webglRefNames = matchingSpans.map(span => span.getAttribute('webgl_ref_name')).filter(name => name !== null);
                     var icon = this;
-                      if (icon.classList.contains('fa-eye')) {
-                            icon.classList.remove('fa-eye');
-                            icon.classList.add('fa-eye-slash');
-                            groupObj.visible=false;
-                      }
-                      else {
-                        icon.classList.remove('fa-eye-slash');
-                        icon.classList.add('fa-eye');
-                        groupObj.visible=true;
-                      }
+                    let isVisible = icon.classList.contains('fa-eye');
+                    icon.classList.toggle('fa-eye', !isVisible);
+                    icon.classList.toggle('fa-eye-slash', isVisible);
+                    objectsVisibility(webglRefNames, !isVisible, currentAttrValue);
                     });
                 }
 

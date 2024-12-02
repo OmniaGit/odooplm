@@ -434,6 +434,9 @@ ul, #myUL {
 	direction: ltr;
 	text-align: left;
 }
+.document_tree_line:hover {
+  background-color: #eda3da;
+}
 .document_tree_line>span:hover {
   background-color: #eda3da;
 }
