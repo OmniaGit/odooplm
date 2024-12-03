@@ -1,8 +1,8 @@
 /** @odoo-module **/
 
-import { MrpWorksheet } from "@mrp_workorder/mrp_display/mrp_record_line/mrp_worksheet";
-import { MrpWorksheetDialog } from "@mrp_workorder/mrp_display/dialog/mrp_worksheet_dialog";
-import { MrpDisplayRecord } from '@mrp_workorder/mrp_display/mrp_display_record'
+import { MrpWorksheet } from "@plm_mrp_workorder/mrp_display/mrp_record_line/mrp_worksheet";
+import { MrpWorksheetDialog } from "@plm_mrp_workorder/mrp_display/dialog/mrp_worksheet_dialog";
+import { MrpDisplayRecord } from '@plm_mrp_workorder/mrp_display/mrp_display_record'
 import { markup } from "@odoo/owl";
 export class PlmMrpWorksheet extends MrpWorksheet{
     setup(){
