@@ -297,7 +297,6 @@ function init() {
 // input_search_document_tree present.
 //  var input_document_tree = document.getElementById('input_search_document_tree');
   var input_document_list = document.getElementById('input_search_document_list');
-  console.log(input_document_list);
   input_document_list.addEventListener("keyup", OdooCad.search_document_tree);
 /*
  * function to hide show all components
@@ -362,7 +361,6 @@ function initcommand(){
 
 	let click_show = document.getElementById("click_show");
 	let activatorClick = document.getElementById("activatorClick");
-	console.log(activatorClick);
     activatorClick.addEventListener("click", onActivatorClick);
 
 	click_show.addEventListener("click", on_data_card_button_click);
@@ -407,19 +405,19 @@ function initcommand(){
 }
 function onActivatorClick(event) {
 	  // highlight the mouseover target
-	  let bottom_command = document.getElementById("bottom_command");
+	  let activatorDiv = document.getElementById("activatorDiv");
 	  let main_command_slide = document.getElementById('mainCommandSlide')
 //	  $(bottom_command).toggleClass('d-none')
-	  if (bottom_command.classList.contains('d-none')) {
-	    bottom_command.style.visibility = 'visible';
-	    bottom_command.style.opacity=0.8;
-	    bottom_command.classList.remove('d-none');
+	  if (activatorDiv.classList.contains('d-none')) {
+	    activatorDiv.style.visibility = 'visible';
+	    activatorDiv.style.opacity=0.8;
+	    activatorDiv.classList.remove('d-none');
 	    main_command_slide.style.height= '210px';
 	  }
 	  else{
-	    bottom_command.style.visibility= 'invisible';
-	    bottom_command.style.opacity=0;
-	    bottom_command.classList.add('d-none');
+	    activatorDiv.style.visibility= 'invisible';
+	    activatorDiv.style.opacity=0;
+	    activatorDiv.classList.add('d-none');
 	    main_command_slide.style.height= '26px';
 	  }
 	}
