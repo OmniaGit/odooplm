@@ -33,7 +33,7 @@
     "license": "LGPL-3",
     "depends": [
         "plm",
-        "mrp_workorder",
+        # "plm_mrp_workorder",
     ],
     "data": [
         "views/ir_attachment.xml",
@@ -46,6 +46,7 @@
             "plm_pdf_workorder/static/src/mrpDisplayRecord.xml",
         ]
     },
+    'pre_init_hook': '_pre_init_plm_mrp_workorder',
     "installable": True,
     "application": False,
     "auto_install": False,

@@ -21,4 +21,20 @@
 ##############################################################################
 from . import models
 
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+def _pre_init_plm_mrp_workorder(env):
+    module_obj = env['ir.module.module']
+
+    # Check 'web_enterprise' is installed
+    enterprise_module = module_obj.search([('name', '=', 'web_enterprise')], limit=1)
+
+    if enterprise_module and enterprise_module.state == 'installed':
+        # Install 'mrp_workorder' module
+        mrp_module = module_obj.search([('name', '=', 'mrp_workorder')], limit=1)
+        if mrp_module and mrp_module.state != 'installed':
+            mrp_module.button_install()
+
+    else:
+        # Install 'plm_mrp_workorder' module
+        plm_module = module_obj.search([('name', '=', 'plm_mrp_workorder')], limit=1)
+        if plm_module and plm_module.state != 'installed':
+            plm_module.button_install()
