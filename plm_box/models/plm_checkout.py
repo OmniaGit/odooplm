@@ -1,8 +1,3 @@
-'''
-Created on Mar 8, 2017
-
-@author: daniel
-'''
 # -*- encoding: utf-8 -*-
 ##############################################################################
 #
@@ -24,14 +19,16 @@ Created on Mar 8, 2017
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from odoo import models
-from odoo import fields
-from odoo import _
+"""
+Created on Mar 8, 2017
+@author: daniel
+"""
+from odoo import _, fields, models
 
 
 class Plm_checkout_custom(models.Model):
-    _inherit = 'plm.checkout'
-    write_uid = fields.Integer(_('Write User Id'))
+    _inherit = "plm.checkout"
 
+    write_uid = fields.Integer(_("Write User Id"))
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

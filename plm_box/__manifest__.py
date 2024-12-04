@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution
@@ -20,7 +21,7 @@
 ##############################################################################
 {
     "name": "Plm Box",
-    "version": "18.0.0.1",
+    "version": "18.0.1.0.0",
     "author": "OmniaSolutions",
     "website": "https://odooplm.omniasolutions.website",
     "category": "Productivity/Documents",
@@ -35,15 +36,11 @@
     ],
     "license": "AGPL-3",
     "data": [
-        # security
         "security/plm_security.xml",
-        # views
+        "data/plm_box_sequence_data.xml",
         "views/non_cad_doc.xml",
         "views/box_object_rel.xml",
-        "views/plm_box_sequence_data.xml",
     ],
-    "demo": [],
-    "test": [],
     "installable": True,
     "application": False,
     "auto_install": False,

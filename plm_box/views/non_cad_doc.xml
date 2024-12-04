@@ -1,112 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-<data>
-
+    <data>
         <record id="plm_box_form_view" model="ir.ui.view">
             <field name="name">plm.box.form</field>
             <field name="model">plm.box</field>
-        	<field name="priority" eval="10"/>
+            <field name="priority" eval="10"/>
             <field name="arch" type="xml">
                 <form string="Show Non CAD Document Relation">
-	               <header>
-	                    <button name="action_release"
-	                            string="Release Box"
-	                            type="object"
-	                            invisible="engineering_state!='confirmed'"  
-	                            class="oe_highlight"/>
-	                    <button name="action_reactivate"
-	                            string="Correct Box"
-	                            type="object"
-	                            invisible="engineering_state!='confirmed'"/>
-	                    <button name="action_confirm"
-	                            string="Confirm Box"
-	                            type="object"
-	                            invisible="engineering_state!='draft'"
-	                            class="oe_highlight"/>
-	                    <field name="engineering_state"
-	                           widget="statusbar"
-	                           statusbar_visible="draft,confirmed,released"
-	                           statusbar_colors='{"undermodify":"red","obsoleted":"red"}'
-	                           readonly="0"/>
-	               </header>
-                <sheet>
-                <group>
-	                	<field name="engineering_code" readonly="1"/>
-	                	<field name="write_date" readonly="1"/>
-	                	<field name="create_date" readonly="1"/>
-	                    <field name="description" widget="link"/>
-	                    <field name="version" />
-	                    <field name="document_rel" />
-	                    <field name="plm_box_rel" />
-	                    <field name="groups_rel" />
-
-                </group>
-                <notebook>
-                    <page string="Products">
-                    	<label for="product_id"/>
-	                    <field name="product_id"/>
-                    </page>
-                    <page string="Projects">
-                    	<label for="project_id"/>
-	                    <field name="project_id"/>
-                    </page>
-                    <page string="Tasks">
-                    	<label for="task_id"/>
-	                    <field name="task_id"/>
-                    </page>
-                    <page string="Sale Orders">
-                    	<label for="sale_ord_id"/>
-	                    <field name="sale_ord_id"/>
-                    </page>
-                    <page string="Users">
-                    	<label for="user_rel_id"/>
-	                    <field name="user_rel_id"/>
-                    </page>
-                    <page string="Boms">
-                    	<label for="bom_id"/>
-	                    <field name="bom_id"/>
-                    </page>
-                    <page string="Workcenters">
-                    	<label for="wc_id"/>
-	                    <field name="wc_id"/>
-                    </page>
-                </notebook>
-                </sheet>
-                    <div class="oe_chatter">
-                        <field name="message_follower_ids" widget="mail_followers"/>
-                        <field name="message_ids" widget="mail_thread"/>
-                    </div>
-               </form>
+                    <header>
+                        <button name="action_release"
+                                string="Release Box"
+                                type="object"
+                                invisible="engineering_state!='confirmed'"
+                                class="oe_highlight"/>
+                        <button name="action_reactivate"
+                                string="Correct Box"
+                                type="object"
+                                invisible="engineering_state!='confirmed'"/>
+                        <button name="action_confirm"
+                                string="Confirm Box"
+                                type="object"
+                                invisible="engineering_state!='draft'"
+                                class="oe_highlight"/>
+                        <field name="engineering_state"
+                               widget="statusbar"
+                               statusbar_visible="draft,confirmed,released"
+                               statusbar_colors='{"undermodify":"red","obsoleted":"red"}'
+                               readonly="0"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="engineering_code" readonly="1"/>
+                                <field name="write_date" readonly="1"/>
+                                <field name="create_date" readonly="1"/>
+                                <field name="description" widget="link"/>
+                            </group>
+                            <group>
+                                <field name="version"/>
+                                <field name="document_rel" widget="many2many_tags"/>
+                                <field name="plm_box_rel" widget="many2many_tags"/>
+                                <field name="groups_rel" widget="many2many_tags"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Products">
+                                <field name="product_id"/>
+                            </page>
+                            <page string="Projects">
+                                <field name="project_id"/>
+                            </page>
+                            <page string="Tasks">
+                                <field name="task_id"/>
+                            </page>
+                            <page string="Sale Orders">
+                                <field name="sale_ord_id"/>
+                            </page>
+                            <page string="Users">
+                                <field name="user_rel_id"/>
+                            </page>
+                            <page string="Boms">
+                                <field name="bom_id"/>
+                            </page>
+                            <page string="Workcenters">
+                                <field name="wc_id"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <chatter/>
+                </form>
             </field>
         </record>
-        
-       <record id="plm_box_list" model="ir.ui.view">
+
+        <record id="plm_box_list" model="ir.ui.view">
             <field name="name">plm.box.list</field>
             <field name="model">plm.box</field>
-        	<field name="priority" eval="10"/>
+            <field name="priority" eval="10"/>
             <field name="arch" type="xml">
                 <list string="Non CAD Document Relations">
-                	<field name="engineering_code" />
-                    <field name="description" />
-                    <field name="document_rel" />
-                    <field name="plm_box_rel" />
-                    <field name="version" />
+                    <field name="engineering_code"/>
+                    <field name="description"/>
+                    <field name="document_rel"/>
+                    <field name="plm_box_rel"/>
+                    <field name="version"/>
                 </list>
             </field>
         </record>
 
-    <record model="ir.actions.act_window" id="action_non_cad_doc">
-    	<field name="name">Non CAD Document Relations</field>
-    	 <field name="res_model">plm.box</field>
-        <field name="view_mode">list,form</field>
-        <field name="view_id" ref="plm_box_list"/>
-    </record>
+        <record id="action_non_cad_doc" model="ir.actions.act_window">
+            <field name="name">Non CAD Document Relations</field>
+            <field name="res_model">plm.box</field>
+            <field name="view_mode">list,form</field>
+            <field name="view_id" ref="plm_box_list"/>
+        </record>
 
-    <menuitem
-        name="Search on Non CAD Document Relations"
-        action="action_non_cad_doc"
-        id="menu_non_cad_doc_relations"
-        parent="plm.ir_attachment_form"/>
-        
-</data>
+        <menuitem
+            name="Search on BOX"
+            action="action_non_cad_doc"
+            id="menu_non_cad_doc_relations"
+            parent="plm.ir_attachment_form"/>
+    </data>
 </odoo>

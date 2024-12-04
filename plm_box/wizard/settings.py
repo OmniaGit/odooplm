@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 ##############################################################################
 #
-#    OmniaSolutions, Open Source Management Solution    
+#    OmniaSolutions, Open Source Management Solution
 #    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
 #    $Id$
 #
@@ -20,13 +20,15 @@
 #
 ##############################################################################
 
-from odoo import models
-from odoo import fields
-from odoo import _
+from odoo import _, fields, models
 
 
 class stock_config_settings(models.TransientModel):
-    _inherit = 'res.config.settings'
+    _inherit = "res.config.settings"
 
-    module_stock_plm_box = fields.Boolean(_("Allow plm_box relation"), help=_("""Adds plm_box relation to Warehouse."""))
-    module_plm_box_widget = fields.Boolean(_("Plm Widget"), help=_("""Adds plm_box relation to Warehouse."""))
+    module_stock_plm_box = fields.Boolean(
+        _("Allow plm_box relation"), help=_("Adds plm_box relation to Warehouse.")
+    )
+    module_plm_box_widget = fields.Boolean(
+        _("Plm Widget"), help=_("Adds plm_box relation to Warehouse.")
+    )

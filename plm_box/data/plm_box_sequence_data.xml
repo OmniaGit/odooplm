@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data noupdate="1">
-
         <record id="seq_plm_box" model="ir.sequence">
             <field name="name">PLMBOX</field>
             <field name="code">plm.box</field>
@@ -13,6 +12,5 @@
             <field name="code">ir.attachment</field>
             <field name="prefix">BoxDoc_</field>
         </record>
-
     </data>
 </odoo>

@@ -1,8 +1,3 @@
-'''
-Created on Mar 8, 2017
-
-@author: daniel
-'''
 # -*- encoding: utf-8 -*-
 ##############################################################################
 #
@@ -24,60 +19,72 @@ Created on Mar 8, 2017
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from odoo import models
-from odoo import fields
-from odoo import _
-from odoo import api
-import logging
+"""
+Created on Mar 8, 2017
+@author: daniel
+"""
 import datetime
-from dateutil import parser
+import logging
 import pytz
+
+from dateutil import parser
+from odoo import _, api, fields, models
 
 DEFAULT_SERVER_DATE_FORMAT = "%Y-%m-%d"
 DEFAULT_SERVER_TIME_FORMAT = "%H:%M:%S"
-DEFAULT_SERVER_DATETIME_FORMAT = "%s %s" % (DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_TIME_FORMAT)
+DEFAULT_SERVER_DATETIME_FORMAT = "%s %s" % (
+    DEFAULT_SERVER_DATE_FORMAT,
+    DEFAULT_SERVER_TIME_FORMAT,
+)
 
 
 def correctDate(fromTimeStr, context):
     serverUtcTime = parser.parse(fromTimeStr.strftime(DEFAULT_SERVER_DATETIME_FORMAT))
-    utcDate = serverUtcTime.replace(tzinfo=pytz.utc).astimezone(pytz.timezone(context.get('tz', 'Europe/Rome')))
+    utcDate = serverUtcTime.replace(tzinfo=pytz.utc).astimezone(
+        pytz.timezone(context.get("tz", "Europe/Rome"))
+    )
     return utcDate.replace(tzinfo=None)
 
 
 class Plm_box_document(models.Model):
-    _inherit = 'ir.attachment'
+    _inherit = "ir.attachment"
 
-    name = fields.Char(_('Attachment Name'), required=False)
+    name = fields.Char(_("Attachment Name"), required=False)
 
     @api.model
     def create(self, vals):
-        if not vals.get('name', False):
+        if not vals.get("name", False):
             name = self.getNewSequencedName(vals)
-            vals['name'] = name
+            vals["name"] = name
         return super(Plm_box_document, self).create(vals)
-            
+
     def getCheckOutUser(self):
         for checkOutBrws in self._getCheckOutUser():
             if checkOutBrws:
                 return checkOutBrws.name
-        return ''
+        return ""
 
     @api.model
     def getUserNameFromId(self, userId):
-        userBrws = self.env.get('res.users').browse(userId)
+        userBrws = self.env.get("res.users").browse(userId)
         if not userBrws:
-            logging.warning("[getUserNameFromId] Couldn able to find user name with id %r" % (userId))
-            return ''
+            logging.warning(
+                "[getUserNameFromId] Couldn able to find user name with id %r"
+                % (userId)
+            )
+            return ""
         return userBrws.name
 
     @api.model
     def getNewSequencedName(self, vals):
-        return self.env.get('ir.sequence').get('ir.attachment')
+        return self.env.get("ir.sequence").next_by_code("ir.attachment")
 
     @api.model
     def getFilesFromName(self, vals):
         docName, docRevision = vals
-        docIds = self.search([('name', '=', docName), ('engineering_revision', '=', docRevision)]).ids
+        docIds = self.search(
+            [("name", "=", docName), ("engineering_revision", "=", docRevision)]
+        ).ids
         if docIds:
             files = self.GetSomeFiles((docIds, [[], []], False))
             if files:
@@ -87,60 +94,73 @@ class Plm_box_document(models.Model):
 
     @api.model
     def checkInOrFalse(self, docDict):
-        docName = docDict.get('name', '')
-        docRev = docDict.get('engineering_revision', '')
-        docContent = docDict.get('fileContent', '')
-        force = docDict.get('force', False)
-        docBrowseList = self.search([('name', '=', docName)])
+        docName = docDict.get("name", "")
+        docRev = docDict.get("engineering_revision", "")
+        docContent = docDict.get("fileContent", "")
+        force = docDict.get("force", False)
+        docBrowseList = self.search([("name", "=", docName)])
         if docBrowseList and not force:
-            clientBytesContent = docContent.encode(encoding='utf_8', errors='strict')
-            if docBrowseList[0].datas + '\n'.encode(encoding='utf_8', errors='strict') != clientBytesContent:
-                return 'File changed'
-        docIds = self.search([('name', '=', docName), ('engineering_revision', '=', docRev)]).ids
+            clientBytesContent = docContent.encode(encoding="utf_8", errors="strict")
+            if (
+                docBrowseList[0].datas + "\n".encode(encoding="utf_8", errors="strict")
+                != clientBytesContent
+            ):
+                return "File changed"
+        docIds = self.search(
+            [("name", "=", docName), ("engineering_revision", "=", docRev)]
+        ).ids
         if len(docIds) == 1:
-            chckOutDocs = self.env.get('plm.checkout').search([('documentid', '=', docIds[0]), ('userid', '=', self.env.uid)])
+            chckOutDocs = self.env.get("plm.checkout").search(
+                [("documentid", "=", docIds[0]), ("userid", "=", self.env.uid)]
+            )
             chckOutDocs.unlink()
             return True
         return False
 
     @api.model
     def checkOutOrFalse(self, docDict):
-        docName = docDict.get('name', '')
-        docRev = docDict.get('engineering_revision', '')
-        plmCheckOutObj = self.env.get('plm.checkout')
-        docBrwsList = self.search([('name', '=', docName), ('engineering_revision', '=', docRev)])
+        docName = docDict.get("name", "")
+        docRev = docDict.get("engineering_revision", "")
+        plmCheckOutObj = self.env.get("plm.checkout")
+        docBrwsList = self.search(
+            [("name", "=", docName), ("engineering_revision", "=", docRev)]
+        )
         for docBrws in docBrwsList:
             docState = docBrws.engineering_state
             docId = docBrws.id
-            if not docState or docState != 'draft':
+            if not docState or docState != "draft":
                 return False
-            if plmCheckOutObj.search([('documentid', '=', docId), ('userid', '=', self.env.uid)]):
+            if plmCheckOutObj.search(
+                [("documentid", "=", docId), ("userid", "=", self.env.uid)]
+            ):
                 return True
-            res = plmCheckOutObj.create({'documentid': docId, 'userid': self.env.uid})
+            res = plmCheckOutObj.create({"documentid": docId, "userid": self.env.uid})
             if res:
                 return True
         return False
 
     @api.model
     def saveBoxDocRel(self, docDict):
-        docName = docDict.get('docName', '')
-        boxName = docDict.get('boxName', '')
-        boxObj = self.env.get('plm.box')
-        boxBrwsList = boxObj.search([('name', '=', boxName)])
+        docName = docDict.get("docName", "")
+        boxName = docDict.get("boxName", "")
+        boxObj = self.env.get("plm.box")
+        boxBrwsList = boxObj.search([("name", "=", boxName)])
         for boxBrws in boxBrwsList:
-            docId = self.search([('name', '=', docName)]).ids
+            docId = self.search([("name", "=", docName)]).ids
             if docId:
-                res = boxBrws.write({'document_rel': [(4, docId[0])]})
+                res = boxBrws.write({"document_rel": [(4, docId[0])]})
                 return res
         return False
 
     @api.model
     def updateDocValues(self, valuesDict):
-        docBrwsList = self.search([('name', '=', valuesDict.get('docName', ''))])
+        docBrwsList = self.search([("name", "=", valuesDict.get("docName", ""))])
         for docBrws in docBrwsList:
-            del valuesDict['docName']
+            del valuesDict["docName"]
             if docBrws.write(valuesDict):
-                writeVal = datetime.datetime.strptime(docBrws.write_date, DEFAULT_SERVER_DATETIME_FORMAT)
+                writeVal = datetime.datetime.strptime(
+                    docBrws.write_date, DEFAULT_SERVER_DATETIME_FORMAT
+                )
                 return correctDate(writeVal, self.env.context)
         return False
 
@@ -148,8 +168,8 @@ class Plm_box_document(models.Model):
     def returnDocsOfFilesChanged(self, valuesDict):
         outDocs = []
         for docName, (docContent, _writeDateClient) in valuesDict.items():
-            if self.getDocumentState({'docName': docName}) == 'check-out-by-me':
-                docBrowseList = self.search([('name', '=', docName)])
+            if self.getDocumentState({"docName": docName}) == "check-out-by-me":
+                docBrowseList = self.search([("name", "=", docName)])
                 for docBrowse in docBrowseList:
                     if docBrowse.datas != docContent:
                         outDocs.append(docName)
@@ -157,17 +177,17 @@ class Plm_box_document(models.Model):
 
     @api.model
     def getDocumentState(self, vals):
-        docName = vals.get('docName', '')
-        docBrwsList = self.search([('name', '=', docName)])
+        docName = vals.get("docName", "")
+        docBrwsList = self.search([("name", "=", docName)])
         for docBrws in docBrwsList:
             checkedOutByMe = docBrws._is_checkedout_for_me()
             checkedIn = docBrws.ischecked_in()
             if checkedOutByMe:
-                return 'check-out-by-me'
+                return "check-out-by-me"
             if not checkedIn:
-                return 'check-out'
+                return "check-out"
             else:
-                return 'check-in'
-        return 'check-out-by-me'
+                return "check-in"
+        return "check-out-by-me"
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
