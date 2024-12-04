@@ -1038,7 +1038,7 @@ class IrAttachment(models.Model):
         return res
 
     
-    def read(self, fields=[], load='_classic_read'):
+    def read(self, fields=[], load='_classic_read', *k,**kw):
         try:
             customFields = [field.replace('plm_m2o_', '') for field in fields if field.startswith('plm_m2o_')]
             fields.extend(customFields)
@@ -3240,7 +3240,11 @@ class IrAttachment(models.Model):
                                                                    new_product_attrs)
         else:
             #
-            out_attachment_value['engineering_code'] = f"{new_product_attrs['engineering_code']}-{self.env['ir.sequence'].next_by_code('ir.attachment.progress')}"
+            engineering_code = new_product_attrs.get('engineering_code','')
+            if engineering_code:
+                out_attachment_value['engineering_code'] = f"{engineering_code}-{self.env['ir.sequence'].next_by_code('ir.attachment.progress')}"
+            else:
+                out_attachment_value['engineering_code'] = f"{self.env['ir.sequence'].next_by_code('ir.attachment.progress')}"
             out_attachment_value['engineering_revision']=0
             #
             _, exte = os.path.splitext(out_attachment_value['name'])

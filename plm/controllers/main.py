@@ -34,7 +34,8 @@ class UploadDocument(Controller):
               db=None):
         if db and db != request.db:
             raise Exception(_("Could not select database '%s'") % db)
-        uid = request.session.authenticate(request.db, login, password)
+        credential = {'type': 'password', 'login': login, 'password': password}
+        uid = request.session.authenticate(request.db, credential )
         if not uid:
             return Response(response="Wrong login/password", status=401)
         return Response(headers={
