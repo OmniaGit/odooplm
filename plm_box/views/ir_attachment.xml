@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_attachment_form_plm_box" model="ir.ui.view">
+        <field name="name">ir.attachment.form.box</field>
+        <field name="model">ir.attachment</field>
+        <field name="type">form</field>
+        <field name="inherit_id" ref="plm.view_attachment_form_plm_hinerit"/>
+        <field name="arch" type="xml">
+            <field name="is_plm" position="after">
+                <field name="is_plm_box" readonly="1"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="plm_box_attachment_tree" model="ir.ui.view">
+        <field name="name">plm.box.attachment.tree</field>
+        <field name="model">ir.attachment</field>
+        <field name="type">list</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <list string="Attachments">
+                 <button name="toggle_check_out"
+                         icon="fa-lock"
+                         type="object"
+                         invisible="is_checkout == True"
+                         string="Check-Out">
+                  </button>
+                 <button name="toggle_check_out"
+                         icon="fa-unlock"
+                         invisible="is_checkout == False"
+                         type="object"
+                         string="Check-In">
+                  </button>
+                <field name="checkout_user"/>
+                <field name="name"/>
+                <field name="datas"/>
+                <field name="engineering_state"/>
+                <field name="create_uid"/>
+                <field name="create_date"/>
+                <field name="write_uid"/>
+                <field name="write_date"/>
+                <field name="is_checkout" invisible="True"/>
+            </list>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_box_docs">
+    	<field name="name">BOX Documents</field>
+    	<field name="res_model">ir.attachment</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="plm.ir_attachment_search"/>
+        <field name="context">{"odooPLM":True}</field>
+        <field name="domain">[('is_plm_box', '=', True)]</field>
+    </record>
+
+    <menuitem
+        name="BOX Documents"
+        action="plm_box.action_box_docs"
+        groups="plm_box.group_plm_box_admin"
+        id="menu_box_docs"
+        sequence="21"
+        parent="plm.ir_attachment_form"/>
+
+</odoo>

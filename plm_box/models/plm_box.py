@@ -661,7 +661,7 @@ class Plm_box(models.Model):
         return [], False
 
     @api.model
-    def getBoxesStructureFromServer(self, primaryBoxes):
+    def getBoxesStructureFromServer(self, primaryBoxes, parameters, kwargs):
         """
         *** CLIENT ***
         Function called by "Add" button in the plm client
@@ -705,6 +705,7 @@ class Plm_box(models.Model):
             outDict["description"] = boxBrws.description
             outDict["state"] = boxBrws.engineering_state
             outDict["readonly"] = boxBrws.boxReadonlyCompute()
+
         return outDict
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

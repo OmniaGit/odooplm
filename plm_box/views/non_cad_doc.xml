@@ -93,9 +93,9 @@
             <field name="view_mode">list,form</field>
             <field name="view_id" ref="plm_box_list"/>
         </record>
-
+getBoxesStructureFromServer
         <menuitem
-            name="Search on BOX"
+            name="BOX Non CAD Document Relations"
             action="action_non_cad_doc"
             id="menu_non_cad_doc_relations"
             parent="plm.ir_attachment_form"/>

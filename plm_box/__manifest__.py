@@ -40,6 +40,7 @@
         "data/plm_box_sequence_data.xml",
         "views/non_cad_doc.xml",
         "views/box_object_rel.xml",
+        "views/ir_attachment.xml"
     ],
     "installable": True,
     "application": False,

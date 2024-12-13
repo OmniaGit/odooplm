@@ -50,12 +50,14 @@ class Plm_box_document(models.Model):
     _inherit = "ir.attachment"
 
     name = fields.Char(_("Attachment Name"), required=False)
+    is_plm_box = fields.Boolean('Is Plm Box document')
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals):
-        if not vals.get("name", False):
-            name = self.getNewSequencedName(vals)
-            vals["name"] = name
+        for val in vals:
+            if not val.get("name", False):
+                name = self.getNewSequencedName(val)
+                vals["name"] = name
         return super(Plm_box_document, self).create(vals)
 
     def getCheckOutUser(self):
