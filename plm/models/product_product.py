@@ -1726,6 +1726,11 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         newDocBrws = docEnv.browse(newDocId)
         return newDocBrws
 
+    @api.model
+    def getUuid(self):
+        param = self.env['ir.config_parameter'].sudo()
+        return param.get_param('database.uuid')
+
     def getComponentBrws(self, componentVals):
         engCode = componentVals.get('engineering_code', '')
         engRev = componentVals.get('engineering_revision', None)
