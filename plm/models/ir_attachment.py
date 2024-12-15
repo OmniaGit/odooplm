@@ -3253,7 +3253,11 @@ class IrAttachment(models.Model):
                                                                    new_product_attrs)
         else:
             #
-            out_attachment_value['engineering_code'] = f"{new_product_attrs['engineering_code']}-{self.env['ir.sequence'].next_by_code('ir.attachment.progress')}"
+            engineering_code = new_product_attrs.get('engineering_code','')
+            if engineering_code:
+                out_attachment_value['engineering_code'] = f"{engineering_code}-{self.env['ir.sequence'].next_by_code('ir.attachment.progress')}"
+            else:
+                out_attachment_value['engineering_code'] = f"{self.env['ir.sequence'].next_by_code('ir.attachment.progress')}"
             out_attachment_value['engineering_revision']=0
             #
             _, exte = os.path.splitext(out_attachment_value['name'])

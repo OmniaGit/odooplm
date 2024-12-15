@@ -1755,6 +1755,11 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                 'context': {}}
 
     @api.model
+    def getUuid(self):
+        param = self.env['ir.config_parameter'].sudo()
+        return param.get_param('database.uuid')
+
+    @api.model
     def createFromProps(self, productAttribute):
         out_product_produc_id = self.env['product.product']
         found = False
