@@ -18,6 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+from logging import exception
 
 """
 Created on 11 Aug 2016
@@ -130,7 +131,42 @@ class PlmBackupDocument(models.Model):
         for ir_attachment in self.env['ir.attachment'].search([('document_type','in',['3d','2d','other'])]):
             for plm_backupdoc_id in self.getAllBck(ir_attachment, daysTokeepSafe):
                 plm_backupdoc_id.unlink()
-        
+    
+    def CleanMissingFile(self):
+        """
+        clean missig file from filesotore
+        """
+        import glob
+        file_store = self.env['ir.attachment']._filestore()
+        for path in glob.glob(f"{file_store}/**/*",recursive=True):
+            if not os.path.isdir(path):
+                if not self.env['ir.attachment'].search_count([("store_fname",'ilike',os.path.basename(path))]):
+                    try:
+                        logging.info(f"Deleting {path}")
+                        os.remove(path)
+                    except Exception as ex:
+                        logging.error(f"Unable to delte file {path} for {ex})")
+                    
+    def MoveMissingFile(self, to_folder):
+        """
+        clean missig file from filesotore
+        """
+        import glob
+        import shutil
+        file_store = self.env['ir.attachment']._filestore()
+        for path in glob.glob(f"{file_store}/**/*",recursive=True):
+            if not os.path.isdir(path):
+                if not self.env['ir.attachment'].search_count([("store_fname",'ilike',os.path.basename(path))]):
+                    try:
+                        logging.info(f"Deleting {path}")
+                        new_base_dir = os.path.join(to_folder, os.path.basename(os.path.dirname(path)))
+                        if not os.path.exists(new_base_dir):
+                            os.makedirs(new_base_dir)
+                        dst = os.path.join(new_base_dir, os.path.basename(path))
+                        shutil.move(path, dst)
+                    except Exception as ex:
+                        logging.error(f"Unable to delte file {path} for {ex})")
+                        
 class BackupDocWizard(osv.osv.osv_memory):
     """
         This class is called from an action in xml located in plm.backupdoc.
