@@ -154,18 +154,20 @@ class PlmBackupDocument(models.Model):
         import glob
         import shutil
         file_store = self.env['ir.attachment']._filestore()
+        logging.info("Start checking filestore %s " % file_store)
         for path in glob.glob(r"%s}/**/*" % file_store,recursive=True):
             if not os.path.isdir(path):
                 if not self.env['ir.attachment'].search_count([("store_fname",'ilike',os.path.basename(path))]):
                     try:
-                        logging.info("Deleting %s" % path)
                         new_base_dir = os.path.join(to_folder, os.path.basename(os.path.dirname(path)))
                         if not os.path.exists(new_base_dir):
                             os.makedirs(new_base_dir)
                         dst = os.path.join(new_base_dir, os.path.basename(path))
+                        logging.info("Moving %s to %" % (path, dst))
                         shutil.move(path, dst)
                     except Exception as ex:
                         logging.error("Unable to delte file %s  for %s)" % (path,ex))
+        logging.info("Done Checking filestore")
                         
 class BackupDocWizard(osv.osv.osv_memory):
     """
