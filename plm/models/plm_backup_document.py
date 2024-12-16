@@ -142,10 +142,10 @@ class PlmBackupDocument(models.Model):
             if not os.path.isdir(path):
                 if not self.env['ir.attachment'].search_count([("store_fname",'ilike',os.path.basename(path))]):
                     try:
-                        logging.info(f"Deleting {path}")
+                        logging.info("Deleting %s" % path)
                         os.remove(path)
                     except Exception as ex:
-                        logging.error(f"Unable to delte file {path} for {ex})")
+                        logging.error("Unable to delte file %s  for %s)" % (path,ex))
                     
     def MoveMissingFile(self, to_folder):
         """
@@ -158,14 +158,14 @@ class PlmBackupDocument(models.Model):
             if not os.path.isdir(path):
                 if not self.env['ir.attachment'].search_count([("store_fname",'ilike',os.path.basename(path))]):
                     try:
-                        logging.info(f"Deleting {path}")
+                        logging.info("Deleting %s" % path)
                         new_base_dir = os.path.join(to_folder, os.path.basename(os.path.dirname(path)))
                         if not os.path.exists(new_base_dir):
                             os.makedirs(new_base_dir)
                         dst = os.path.join(new_base_dir, os.path.basename(path))
                         shutil.move(path, dst)
                     except Exception as ex:
-                        logging.error(f"Unable to delte file {path} for {ex})")
+                        logging.error("Unable to delte file %s  for %s)" % (path,ex))
                         
 class BackupDocWizard(osv.osv.osv_memory):
     """
