@@ -163,7 +163,7 @@ class PlmBackupDocument(models.Model):
                         if not os.path.exists(new_base_dir):
                             os.makedirs(new_base_dir)
                         dst = os.path.join(new_base_dir, os.path.basename(path))
-                        logging.info("Moving %s to %" % (path, dst))
+                        logging.info("Moving %s to %s" % (path, dst))
                         shutil.move(path, dst)
                     except Exception as ex:
                         logging.error("Unable to delte file %s  for %s)" % (path,ex))
