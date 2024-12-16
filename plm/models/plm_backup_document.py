@@ -138,7 +138,7 @@ class PlmBackupDocument(models.Model):
         """
         import glob
         file_store = self.env['ir.attachment']._filestore()
-        for path in glob.glob(r"%s}/**/*" % file_store,recursive=True):
+        for path in glob.glob(r"%s/**/*" % file_store,recursive=True):
             if not os.path.isdir(path):
                 if not self.env['ir.attachment'].search_count([("store_fname",'ilike',os.path.basename(path))]):
                     try:
@@ -155,7 +155,7 @@ class PlmBackupDocument(models.Model):
         import shutil
         file_store = self.env['ir.attachment']._filestore()
         logging.info("Start checking filestore %s " % file_store)
-        for path in glob.glob(r"%s}/**/*" % file_store,recursive=True):
+        for path in glob.glob(r"%s/**/*" % file_store,recursive=True):
             if not os.path.isdir(path):
                 if not self.env['ir.attachment'].search_count([("store_fname",'ilike',os.path.basename(path))]):
                     try:
