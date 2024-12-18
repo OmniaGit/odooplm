@@ -42,7 +42,12 @@ DEFAULT_SERVER_DATETIME_FORMAT = "%s %s" % (
 
 
 def correctDate(fromTimeStr, context):
-    serverUtcTime = parser.parse(fromTimeStr.strftime(DEFAULT_SERVER_DATETIME_FORMAT))
+
+    if isinstance(fromTimeStr, str):
+        serverUtcTime = parser.parse(fromTimeStr)
+    else:
+        serverUtcTime = fromTimeStr
+
     utcDate = serverUtcTime.replace(tzinfo=pytz.utc).astimezone(
         pytz.timezone(context.get("tz", "Europe/Rome"))
     )
@@ -53,6 +58,7 @@ class Plm_box(models.Model):
     _name = "plm.box"
     _description = "Model to manage a box inside the plm module"
     _inherit = "revision.plm.mixin"
+    _rec_name = "engineering_code"
 
 
     box_id = fields.Integer(_("Box ID"))
@@ -375,27 +381,6 @@ class Plm_box(models.Model):
                 outBoxDict[plm_box_id.engineering_code]["boxPrimary"] = boxPrimary
         return outBoxDict
 
-    @api.model
-    def getDocDictValues(self, docBrws):
-        getCheckOutUser = ""
-        plmDocObj = self.env.get("ir.attachment")
-        docState = plmDocObj.getDocumentState({"docName": docBrws.name})
-        if docState in ["check-out", "check-out-by-me"]:
-            getCheckOutUser = docBrws.getCheckOutUser()
-        writeVal = datetime.datetime.strptime(
-            docBrws.write_date, DEFAULT_SERVER_DATETIME_FORMAT
-        )
-        return {
-            "engineering_revision": docBrws.engineering_revision,
-            "datas_fname": docBrws.name,
-            "create_date": docBrws.create_date,
-            "write_date": correctDate(writeVal, self.env.context),
-            "description": docBrws.description,
-            "fileName": docBrws.name,
-            "state": docBrws.engineering_state,
-            "readonly": self.docReadonlyCompute(docBrws.id),
-            "checkoutUser": getCheckOutUser,
-        }
 
     @api.model
     def getDocs(self, docsToUpdate=[]):
@@ -670,12 +655,14 @@ class Plm_box(models.Model):
         notFoundBoxes = []
         if not primaryBoxes:
             return (outDict, notFoundBoxes)
-        for boxName in primaryBoxes:
-            plm_box_id = self.search([("engineering_code", "=", boxName)])
+        for id in primaryBoxes:
+            plm_box_id = self.search([("id", "=", id)])
+            boxName = plm_box_id[0].engineering_code
             if plm_box_id:
                 outDict[boxName] = plm_box_id[0].getBoxStructure(True)
             else:
                 notFoundBoxes.append(boxName)
+
         return (outDict, notFoundBoxes)
 
     def getBoxStructure(self, primary=False):
@@ -684,6 +671,8 @@ class Plm_box(models.Model):
         Used in the client in "Add" button procedure
         """
         outDict = {
+            "headers" : {'name': 'Name','description': 'Description','state': 'State'},
+            'id':0,
             "children": {},
             "documents": {},
             "entities": [],
@@ -693,19 +682,47 @@ class Plm_box(models.Model):
             "primary": primary,
         }
         for boxBrws in self:
+            outDict['id'] = boxBrws.id
             for boxChildBrws in boxBrws.plm_box_rel:
-                outDict["children"][
-                    boxChildBrws.engineering_code
-                ] = boxChildBrws.getBoxStructure(primary)
-            for docBrws in boxBrws.document_rel:
-                outDict["documents"][docBrws.engineering_code] = self.getDocDictValues(
-                    docBrws
-                )
+                outDict["children"][boxChildBrws.engineering_code] = boxChildBrws.getBoxStructure(primary)
+            for docBrws in boxBrws.document_rel.filtered(lambda e_code: e_code.engineering_code):
+                outDict["documents"][docBrws.engineering_code] = self.getDocDictValues(docBrws)
+
             outDict["entities"] = self.getRelatedEntities(boxBrws)
             outDict["description"] = boxBrws.description
             outDict["state"] = boxBrws.engineering_state
             outDict["readonly"] = boxBrws.boxReadonlyCompute()
-
         return outDict
+
+    @api.model
+    def getDocDictValues(self, docBrws):
+        getCheckOutUser = ""
+        plmDocObj = self.env.get("ir.attachment")
+
+        docState = plmDocObj.getDocumentState({"docName": docBrws.name})
+        if docState in ["check-out", "check-out-by-me"]:
+            getCheckOutUser = docBrws.getCheckOutUser()
+        writeVal = docBrws.write_date.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+
+        return {
+            "engineering_revision": docBrws.engineering_revision,
+            "datas_fname": docBrws.name,
+            "create_date": docBrws.create_date,
+            "write_date": correctDate(writeVal, self.env.context),
+            "description": docBrws.description,
+            "fileName": docBrws.name,
+            "state": docBrws.engineering_state,
+            "readonly": self.docReadonlyCompute(docBrws.id),
+            "checkoutUser": getCheckOutUser,
+        }
+
+    @api.model
+    def verifyBoxesPermissions(self, box_ids):
+        to_del = []
+        available_boxes = self.getAvaiableBoxIds()
+        for box_id in box_ids:
+            if box_id not in available_boxes:
+                to_del.append(box_id)
+        return to_del
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
