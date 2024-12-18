@@ -215,6 +215,21 @@ class Plm_box(models.Model):
     @api.model
     def getRelatedEntities(self, parentBrws):
         objRelList = []
+        document_data = dict()
+        for doc in parentBrws.document_rel:
+
+            document_data[str(doc.id)]={
+                "name": doc.engineering_code or '',
+                "description": doc.description or '',
+                "state": doc.engineering_state or '',
+                "readonly": self.docReadonlyCompute(doc.id),
+                "write_date": doc.write_date or '',
+                "revisionid": doc.engineering_revision or '',
+                "fileName": doc.name or '',
+                "checkoutUser": doc.checkout_user or False,
+            }
+        objRelList.append({'document_rel': document_data})
+
         for product_product_id in parentBrws.product_id:
             objRelList.append(
                 {
@@ -662,8 +677,7 @@ class Plm_box(models.Model):
                 outDict[boxName] = plm_box_id[0].getBoxStructure(True)
             else:
                 notFoundBoxes.append(boxName)
-
-        return (outDict, notFoundBoxes)
+        return outDict, notFoundBoxes
 
     def getBoxStructure(self, primary=False):
         """
@@ -689,6 +703,7 @@ class Plm_box(models.Model):
                 outDict["documents"][docBrws.engineering_code] = self.getDocDictValues(docBrws)
 
             outDict["entities"] = self.getRelatedEntities(boxBrws)
+            outDict["document_rel"] = self.document_rel.ids
             outDict["description"] = boxBrws.description
             outDict["state"] = boxBrws.engineering_state
             outDict["readonly"] = boxBrws.boxReadonlyCompute()
