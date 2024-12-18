@@ -34,7 +34,7 @@
 
 
      <record model="ir.ui.view" id="view_attachment_form_plm_hinerit">
-        <field name="name">ir.attachment</field>
+        <field name="name">plm.ir.attachment.form</field>
         <field name="model">ir.attachment</field>
         <field name="priority" eval="20"/>
         <field name="arch" type="xml">
@@ -248,7 +248,7 @@
     </record>
 
     <record model="ir.ui.view" id="ir_attachment_list">
-        <field name="name">ir.attachment</field>
+        <field name="name">plm.ir.attachment.list</field>
         <field name="model">ir.attachment</field>
         <field name="priority" eval="20"/>
         <field name="arch" type="xml">
@@ -279,7 +279,7 @@
     </record>
 
     <record model="ir.ui.view" id="ir_attachment_search">
-        <field name="name">ir.attachment</field>
+        <field name="name">plm.ir.attachment.search</field>
         <field name="model">ir.attachment</field>
         <field name="priority" eval="20"/>
         <field name="arch" type="xml">

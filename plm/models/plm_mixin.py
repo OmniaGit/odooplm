@@ -135,7 +135,7 @@ class RevisionBaseMixin(models.AbstractModel):
     engineering_branch_parent_id = fields.Integer('Parent branch')
     engineering_sub_revision_letter = fields.Char("Sub revision path")
     engineering_revision_count = fields.Integer(compute='_engineering_revision_count')
-    
+
 
 
     _sql_constraints = [
@@ -483,6 +483,7 @@ class RevisionBaseMixin(models.AbstractModel):
                 vals['engineering_code_editable'] = False
         return super(RevisionBaseMixin, self).write(vals)
 
+    @api.model_create_multi
     def create(self, vals):
         for record_val in vals:
             if 'engineering_code' in record_val and record_val[

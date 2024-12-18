@@ -48,7 +48,7 @@
             </xpath>
         </field>
     </record>
-    
+
     <record id="view_stock_product_template_list_plm" model="ir.ui.view">
         <field name="name">product.template.list.plm.inherit</field>
         <field name="model">product.template</field>

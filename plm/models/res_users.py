@@ -46,7 +46,7 @@ class ResUsers(models.Model):
             Omnia CustomProcedure module make an overload of this function and enable macros
         '''
         return '', ''
-    
+
     @api.model
     def koo_context_get(self):
         return dict(self.context_get())

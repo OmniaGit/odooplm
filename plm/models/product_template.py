@@ -73,7 +73,7 @@ class ProductTemplate(models.Model):
                                          compute=lambda self: self._compute_eng_code_editable()
                                          )
     kit_bom = fields.Boolean(_('KIT Bom Type'))
-    
+
     def unlinkCheckBomRelations(self):
 
         def print_where_struct(self, where_struct):
@@ -101,14 +101,14 @@ class ProductTemplate(models.Model):
                 for prod in prod_struct:
                     msg += (_('\t Engineering Code = %r   Engineering Revision = %r   Product Id = %r\n' % (prod[0], prod[1], prod[2])))
                 raise UserError(msg)
-            
+
     def isLastVersion(self):
         for tempate_id in self:
             if tempate_id.id in tempate_id._getlastrev():
                 return True
             return False
-        
-        
+
+
     def _getlastrev(self):
         result = []
         for product_template_id in self:
@@ -118,8 +118,8 @@ class ProductTemplate(models.Model):
                 break
             if not product_template_ids:
                 logging.warning('[_getlastrev] No Product are found for object with engineering_code: "%s"' % (product_template_id.engineering_code))
-        return list(set(result))  
-        
+        return list(set(result))
+
     def _compute_eng_code_editable(self):
         for productBrws in self:
             if productBrws.engineering_code in ['', False, '-']:
