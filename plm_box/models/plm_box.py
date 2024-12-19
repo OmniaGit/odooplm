@@ -20,6 +20,7 @@
 #
 ##############################################################################
 import datetime
+import json
 
 import pytz
 from dateutil import parser
@@ -661,53 +662,165 @@ class Plm_box(models.Model):
         return [], False
 
     @api.model
-    def getBoxesStructureFromServer(self, primaryBoxes, parameters, kwargs):
-        """
-        *** CLIENT ***
-        Function called by "Add" button in the plm client
-        """
+    def getBoxesStructureFromServer(self, box_ids, primary_box_ids=[], download_all=False):
         outDict = {}
-        notFoundBoxes = []
-        if not primaryBoxes:
-            return (outDict, notFoundBoxes)
-        for id in primaryBoxes:
-            plm_box_id = self.search([("id", "=", id)])
-            boxName = plm_box_id[0].engineering_code
-            if plm_box_id:
-                outDict[boxName] = plm_box_id[0].getBoxStructure(True)
-            else:
-                notFoundBoxes.append(boxName)
-        return outDict, notFoundBoxes
-
-    def getBoxStructure(self, primary=False):
-        """
-        *** CLIENT ***
-        Used in the client in "Add" button procedure
-        """
-        outDict = {
-            "headers" : {'name': 'Name','description': 'Description','state': 'State'},
-            'id':0,
-            "children": {},
-            "documents": {},
-            "entities": [],
-            "description": "",
-            "state": "draft",
-            "readonly": True,
-            "primary": primary,
-        }
-        for boxBrws in self:
-            outDict['id'] = boxBrws.id
-            for boxChildBrws in boxBrws.plm_box_rel:
-                outDict["children"][boxChildBrws.engineering_code] = boxChildBrws.getBoxStructure(primary)
-            for docBrws in boxBrws.document_rel.filtered(lambda e_code: e_code.engineering_code):
-                outDict["documents"][docBrws.engineering_code] = self.getDocDictValues(docBrws)
-
-            outDict["entities"] = self.getRelatedEntities(boxBrws)
-            outDict["document_rel"] = self.document_rel.ids
-            outDict["description"] = boxBrws.description
-            outDict["state"] = boxBrws.engineering_state
-            outDict["readonly"] = boxBrws.boxReadonlyCompute()
+        available_box_ids = self.getAvaiableBoxIds()
+        if not box_ids and not download_all:
+            return outDict
+        all_boxes = {}
+        for box_obj in self.browse(box_ids):
+            outDict[str(box_obj.id)], all_boxes_children = box_obj.getBoxStructure0(primary=True,
+                                                                                    available_box_ids=available_box_ids,
+                                                                                    all_boxes=all_boxes,
+                                                                                    primary_box_ids=primary_box_ids)
+            all_boxes.update(all_boxes_children)
+        if download_all:
+            for available_box_id in available_box_ids:
+                if available_box_id not in all_boxes.keys():
+                    box_obj = self.browse(available_box_id)
+                    outDict[str(box_obj.id)], _ = box_obj.getBoxStructure0(primary=True,
+                                                                           available_box_ids=available_box_ids,
+                                                                           all_boxes=all_boxes,
+                                                                           primary_box_ids=primary_box_ids)
         return outDict
+
+    def getBoxStructure0(self, primary=False, available_box_ids=[], all_boxes={}, primary_box_ids=[]):
+        '''
+            *** CLIENT ***
+        '''
+        outDict = {'primary': primary,
+                   'children': {}
+                   }
+        for boxBrws in self:
+            if boxBrws.id not in available_box_ids:
+                return {}, all_boxes
+            for boxChildBrws in boxBrws.plm_box_rel:
+                outDict['children'].setdefault(boxChildBrws.engineering_code, {})
+                outDict['children'][boxChildBrws.engineering_code], all_boxes = boxChildBrws.getBoxStructure0(False,
+                                                                                                  available_box_ids,
+                                                                                                  all_boxes)
+            self.setRelatedEntities(boxBrws, outDict)
+            outDict['description'] = boxBrws.description or ''
+            outDict['state'] = boxBrws.engineering_state
+            outDict['name'] = boxBrws.engineering_code
+            outDict['readonly'] = boxBrws.boxReadonlyCompute()
+            outDict['id'] = boxBrws.id
+            if boxBrws.id in primary_box_ids:
+                outDict['primary'] = True
+            all_boxes[boxBrws.id] = boxBrws
+        return outDict, all_boxes
+
+    @api.model
+    def getBoxStructure(self, box_ids=[], headers={}, fields_to_read=[], tooltip_fields={}):
+        if not headers:
+            headers = {'name': 'Name',
+                       'description': 'Description',
+                       'state': 'State',
+                       # 'entities': 'Entities',
+                       }
+        if not fields_to_read:
+            fields_to_read = [
+                'engineering_code',
+                'description',
+                'engineering_state',
+                'document_rel',
+            ]
+        available_boxes = self.getAvaiableBoxIds()
+        structure = self.boxStructureRecursion(fields_to_read, tooltip_fields, box_ids, available_boxes)
+        return [headers, structure]
+
+    @api.model
+    def boxStructureRecursion(self, to_read, tooltip_fields, box_ids, available_boxes=[]):
+        out = []
+        for box in self.browse(box_ids):
+            if box.id in available_boxes:
+                vals_list = box.read(to_read)
+                for vals in vals_list:
+                    vals['entities'] = box.computeEntities()
+                    children = self.boxStructureRecursion(to_read, tooltip_fields, box.plm_box_rel.ids, available_boxes)
+                    vals = self.setupTooltipFields(vals, tooltip_fields)
+                    out.append([vals, children])
+        return out
+
+    def computeEntities(self):
+
+        def compute_obj(out, model_str, brws_rec):
+            if brws_rec:
+                for obj in brws_rec:
+                    out = obj.display_name
+            return out
+
+        out = '<p><b>ENTITIES</b></p>'
+        for box in self:
+            out = compute_obj(out, 'Product', box.product_id)
+            out = compute_obj(out, 'Project', box.project_id)
+            out = compute_obj(out, 'Task', box.task_id)
+            out = compute_obj(out, 'Sale Order', box.sale_ord_id)
+            out = compute_obj(out, 'Users', box.user_rel_id)
+            out = compute_obj(out, 'BOM', box.bom_id)
+            out = compute_obj(out, 'Work Centers', box.wc_id)
+            break
+        return out
+
+    @api.model
+    def setupTooltipFields(self, vals, tooltip_fields):
+        out = {}
+        for field_name, field_value in vals.items():
+            tooltip_field = tooltip_fields.get(field_name)
+            if tooltip_field:
+                out[tooltip_field] = field_value
+            else:
+                out[field_name] = field_value
+        return out
+
+    # @api.model
+    # def getBoxesStructureFromServer(self, primaryBoxes, parameters, kwargs):
+    #     """
+    #     *** CLIENT ***
+    #     Function called by "Add" button in the plm client
+    #     """
+    #     outDict = {}
+    #     notFoundBoxes = []
+    #     if not primaryBoxes:
+    #         return (outDict, notFoundBoxes)
+    #     for id in primaryBoxes:
+    #         plm_box_id = self.search([("id", "=", id)])
+    #         boxName = plm_box_id[0].engineering_code
+    #         if plm_box_id:
+    #             outDict[boxName] = plm_box_id[0].getBoxStructure(True)
+    #         else:
+    #             notFoundBoxes.append(boxName)
+    #     return outDict, notFoundBoxes
+
+    # def getBoxStructure(self, primary=False):
+    #     """
+    #     *** CLIENT ***
+    #     Used in the client in "Add" button procedure
+    #     """
+    #     outDict = {
+    #         "headers" : {'name': 'Name','description': 'Description','state': 'State'},
+    #         'id':0,
+    #         "children": {},
+    #         "documents": {},
+    #         "entities": [],
+    #         "description": "",
+    #         "state": "draft",
+    #         "readonly": True,
+    #         "primary": primary,
+    #     }
+    #     for boxBrws in self:
+    #         outDict['id'] = boxBrws.id
+    #         for boxChildBrws in boxBrws.plm_box_rel:
+    #             outDict["children"][boxChildBrws.engineering_code] = boxChildBrws.getBoxStructure(primary)
+    #         for docBrws in boxBrws.document_rel.filtered(lambda e_code: e_code.engineering_code):
+    #             outDict["documents"][docBrws.engineering_code] = self.getDocDictValues(docBrws)
+    #
+    #         outDict["entities"] = self.getRelatedEntities(boxBrws)
+    #         outDict["document_rel"] = self.document_rel.ids
+    #         outDict["description"] = boxBrws.description
+    #         outDict["state"] = boxBrws.engineering_state
+    #         outDict["readonly"] = boxBrws.boxReadonlyCompute()
+    #     return outDict
 
     @api.model
     def getDocDictValues(self, docBrws):
@@ -720,6 +833,8 @@ class Plm_box(models.Model):
         writeVal = docBrws.write_date.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
 
         return {
+            "id":docBrws.id,
+            "name": docBrws.engineering_code,
             "engineering_revision": docBrws.engineering_revision,
             "datas_fname": docBrws.name,
             "create_date": docBrws.create_date,
@@ -739,5 +854,38 @@ class Plm_box(models.Model):
             if box_id not in available_boxes:
                 to_del.append(box_id)
         return to_del
+
+    @api.model
+    def setRelatedEntities(self, parentBrws, outDict):
+
+        def populationLoop(brws_record, outDict, field_name):
+            obj_name = self.env['ir.model'].search([('model', '=', brws_record._name)]).display_name
+            for brws in brws_record:
+                if field_name not in outDict['entities']:
+                    outDict['entities'][field_name] = {}
+                outDict['entities'][field_name][str(brws.id)] = {'obj_name': obj_name, 'obj_type': brws._name,
+                                                                 'obj_rel_name': brws.display_name, 'id': brws.id}
+
+        outDict['document_rel'] = parentBrws.document_rel.ids
+        outDict['product_id'] = parentBrws.product_id.ids
+        outDict['project_id'] = parentBrws.project_id.ids
+        outDict['task_id'] = parentBrws.task_id.ids
+        outDict['sale_ord_id'] = parentBrws.sale_ord_id.ids
+        outDict['user_rel_id'] = parentBrws.user_rel_id.ids
+        outDict['bom_id'] = parentBrws.bom_id.ids
+        outDict['wc_id'] = parentBrws.wc_id.ids
+        outDict['entities'] = {}
+
+        populationLoop(parentBrws.product_id, outDict, 'product_id')
+        populationLoop(parentBrws.project_id, outDict, 'project_id')
+        populationLoop(parentBrws.task_id, outDict, 'task_id')
+        populationLoop(parentBrws.sale_ord_id, outDict, 'sale_ord_id')
+        populationLoop(parentBrws.user_rel_id, outDict, 'user_rel_id')
+        populationLoop(parentBrws.bom_id, outDict, 'bom_id')
+        populationLoop(parentBrws.wc_id, outDict, 'wc_id')
+        for document in parentBrws.document_rel:
+            if 'document_rel' not in outDict['entities']:
+                outDict['entities']['document_rel'] = {}
+            outDict['entities']['document_rel'][str(document.id)] = self.getDocDictValues(document)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -238,4 +238,10 @@ class Plm_box_document(models.Model):
                 return 'check-in'
         return 'check-out-by-me'
 
+    def getDocumentStateMulty(self):
+        ret = {}
+        for doc in self:
+            ret[str(doc.id)] = doc.getDocumentState()
+        return ret
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

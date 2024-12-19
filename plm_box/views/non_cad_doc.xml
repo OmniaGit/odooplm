@@ -8,6 +8,8 @@
             <field name="arch" type="xml">
                 <form string="Show Non CAD Document Relation">
                     <header>
+                        <!-- Smart button -->
+
                         <button name="action_release"
                                 string="Release Box"
                                 type="object"
@@ -29,43 +31,33 @@
                                readonly="0"/>
                     </header>
                     <sheet>
+<!--                        <div class="oe_button_box" name="button_box">-->
+<!--                            <button class="oe_stat_button" icon="fa-file-text-o" type="object">-->
+<!--                                <field name="document_rel" string="Documents" widget="statinfo"/>-->
+<!--                            </button>-->
+<!--                        </div>-->
                         <group>
                             <group>
                                 <field name="engineering_code" readonly="1"/>
-                                <field name="write_date" readonly="1"/>
-                                <field name="create_date" readonly="1"/>
-                                <field name="description" widget="link"/>
-                            </group>
-                            <group>
                                 <field name="version"/>
                                 <field name="document_rel" widget="many2many_tags"/>
                                 <field name="plm_box_rel" widget="many2many_tags"/>
                                 <field name="groups_rel" widget="many2many_tags"/>
+                                <field name="product_id" widget="many2many_tags"/>
+                                <field name="project_id" widget="many2many_tags"/>
+                                <field name="task_id" widget="many2many_tags"/>
+
+                            </group>
+                            <group>
+                                <field name="write_date" readonly="1"/>
+                                <field name="create_date" readonly="1"/>
+                                <field name="sale_ord_id" widget="many2many_tags"/>
+                                <field name="user_rel_id" widget="many2many_tags"/>
+                                <field name="bom_id" widget="many2many_tags"/>
+                                <field name="wc_id" widget="many2many_tags"/>
+                                <field name="description" widget="link"/>
                             </group>
                         </group>
-                        <notebook>
-                            <page string="Products">
-                                <field name="product_id"/>
-                            </page>
-                            <page string="Projects">
-                                <field name="project_id"/>
-                            </page>
-                            <page string="Tasks">
-                                <field name="task_id"/>
-                            </page>
-                            <page string="Sale Orders">
-                                <field name="sale_ord_id"/>
-                            </page>
-                            <page string="Users">
-                                <field name="user_rel_id"/>
-                            </page>
-                            <page string="Boms">
-                                <field name="bom_id"/>
-                            </page>
-                            <page string="Workcenters">
-                                <field name="wc_id"/>
-                            </page>
-                        </notebook>
                     </sheet>
                     <chatter/>
                 </form>
@@ -93,7 +85,6 @@
             <field name="view_mode">list,form</field>
             <field name="view_id" ref="plm_box_list"/>
         </record>
-getBoxesStructureFromServer
         <menuitem
             name="BOX Non CAD Document Relations"
             action="action_non_cad_doc"
