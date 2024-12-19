@@ -226,4 +226,16 @@ class Plm_box_document(models.Model):
         logging.info('Box sincronize res %r' % (doc_dict))
         return doc_dict
 
+    def getDocumentState(self):
+        for docBrws in self:
+            checkedOutByMe = docBrws._is_checkedout_for_me()
+            checkedIn = docBrws.ischecked_in()
+            if checkedOutByMe:
+                return 'check-out-by-me'
+            if not checkedIn:
+                return 'check-out'
+            else:
+                return 'check-in'
+        return 'check-out-by-me'
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

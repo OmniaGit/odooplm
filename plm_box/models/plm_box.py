@@ -638,7 +638,7 @@ class Plm_box(models.Model):
         docBrwsList = ir_attachment.search([("name", "=", name)])
         for docBrws in docBrwsList:
             docId = docBrws.id
-            if ir_attachment.getDocumentState({"docName": name}) != "check-in":
+            if ir_attachment.getDocumentState() != "check-in":
                 return [], docId
             wr_date = docBrws.write_date
             if wr_date != "n/a":
@@ -714,7 +714,7 @@ class Plm_box(models.Model):
         getCheckOutUser = ""
         plmDocObj = self.env.get("ir.attachment")
 
-        docState = plmDocObj.getDocumentState({"docName": docBrws.name})
+        docState = plmDocObj.getDocumentState()
         if docState in ["check-out", "check-out-by-me"]:
             getCheckOutUser = docBrws.getCheckOutUser()
         writeVal = docBrws.write_date.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
