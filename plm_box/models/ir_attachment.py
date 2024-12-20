@@ -30,6 +30,8 @@ import pytz
 from dateutil import parser
 from odoo import _, api, fields, models
 
+_logger = logging.getLogger(__name__)
+
 DEFAULT_SERVER_DATE_FORMAT = "%Y-%m-%d"
 DEFAULT_SERVER_TIME_FORMAT = "%H:%M:%S"
 DEFAULT_SERVER_DATETIME_FORMAT = "%s %s" % (
@@ -56,7 +58,7 @@ class Plm_box_document(models.Model):
     def create(self, vals):
         for val in vals:
             if not val.get("name", False):
-                name = self.getNewSequencedName(val)
+                name = self.getNewSequencedName()
                 vals["name"] = name
         return super(Plm_box_document, self).create(vals)
 
@@ -78,7 +80,7 @@ class Plm_box_document(models.Model):
         return userBrws.name
 
     @api.model
-    def getNewSequencedName(self, vals):
+    def getNewSequencedName(self):
         return self.env.get("ir.sequence").next_by_code("ir.attachment")
 
     @api.model
@@ -142,7 +144,7 @@ class Plm_box_document(models.Model):
         return False
 
     @api.model
-    def saveBoxDocRel(self, docDict):
+    def saveBoxDocRel(self, docDict,doc_id):
         docName = docDict.get("docName", "")
         boxName = docDict.get("boxName", "")
         boxObj = self.env.get("plm.box")

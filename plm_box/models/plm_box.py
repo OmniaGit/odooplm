@@ -20,7 +20,7 @@
 #
 ##############################################################################
 import datetime
-import json
+import logging
 
 import pytz
 from dateutil import parser
@@ -31,7 +31,6 @@ from odoo.addons.plm.models.plm_mixin import (START_STATUS,
                                               OBSOLATED_STATUS)
 from odoo.exceptions import UserError
 
-import logging
 _logger = logging.getLogger(__name__)
 
 DEFAULT_SERVER_DATE_FORMAT = "%Y-%m-%d"
@@ -43,7 +42,6 @@ DEFAULT_SERVER_DATETIME_FORMAT = "%s %s" % (
 
 
 def correctDate(fromTimeStr, context):
-
     if isinstance(fromTimeStr, str):
         serverUtcTime = parser.parse(fromTimeStr)
     else:
@@ -60,7 +58,6 @@ class Plm_box(models.Model):
     _description = "Model to manage a box inside the plm module"
     _inherit = "revision.plm.mixin"
     _rec_name = "engineering_code"
-
 
     box_id = fields.Integer(_("Box ID"))
     version = fields.Integer(_("Version"))
@@ -187,6 +184,20 @@ class Plm_box(models.Model):
                 vals["engineering_code"] = name
         return super(Plm_box, self).write(vals)
 
+    def action_add_view_dox_document(self):
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Attachments',
+            'res_model': 'ir.attachment',
+            'view_mode': 'list,form',
+            'target': 'current',
+            'domain': [('id', 'in', self.document_rel.ids)],
+            'context': {
+                'create': False,
+            }
+        }
+
     @api.model
     def getNewSequencedName(self):
         """
@@ -218,8 +229,7 @@ class Plm_box(models.Model):
         objRelList = []
         document_data = dict()
         for doc in parentBrws.document_rel:
-
-            document_data[str(doc.id)]={
+            document_data[str(doc.id)] = {
                 "name": doc.engineering_code or '',
                 "description": doc.description or '',
                 "state": doc.engineering_state or '',
@@ -396,7 +406,6 @@ class Plm_box(models.Model):
                 boxPrimary = boxes[plm_box_id.engineering_code][1]
                 outBoxDict[plm_box_id.engineering_code]["boxPrimary"] = boxPrimary
         return outBoxDict
-
 
     @api.model
     def getDocs(self, docsToUpdate=[]):
@@ -669,22 +678,22 @@ class Plm_box(models.Model):
             return outDict
         all_boxes = {}
         for box_obj in self.browse(box_ids):
-            outDict[str(box_obj.id)], all_boxes_children = box_obj.getBoxStructure0(primary=True,
-                                                                                    available_box_ids=available_box_ids,
-                                                                                    all_boxes=all_boxes,
-                                                                                    primary_box_ids=primary_box_ids)
+            outDict[str(box_obj.id)], all_boxes_children = box_obj.createBoxStructure(primary=True,
+                                                                                      available_box_ids=available_box_ids,
+                                                                                      all_boxes=all_boxes,
+                                                                                      primary_box_ids=primary_box_ids)
             all_boxes.update(all_boxes_children)
         if download_all:
             for available_box_id in available_box_ids:
                 if available_box_id not in all_boxes.keys():
                     box_obj = self.browse(available_box_id)
-                    outDict[str(box_obj.id)], _ = box_obj.getBoxStructure0(primary=True,
-                                                                           available_box_ids=available_box_ids,
-                                                                           all_boxes=all_boxes,
-                                                                           primary_box_ids=primary_box_ids)
+                    outDict[str(box_obj.id)], _ = box_obj.createBoxStructure(primary=True,
+                                                                             available_box_ids=available_box_ids,
+                                                                             all_boxes=all_boxes,
+                                                                             primary_box_ids=primary_box_ids)
         return outDict
 
-    def getBoxStructure0(self, primary=False, available_box_ids=[], all_boxes={}, primary_box_ids=[]):
+    def createBoxStructure(self, primary=False, available_box_ids=[], all_boxes={}, primary_box_ids=[]):
         '''
             *** CLIENT ***
         '''
@@ -696,9 +705,9 @@ class Plm_box(models.Model):
                 return {}, all_boxes
             for boxChildBrws in boxBrws.plm_box_rel:
                 outDict['children'].setdefault(boxChildBrws.engineering_code, {})
-                outDict['children'][boxChildBrws.engineering_code], all_boxes = boxChildBrws.getBoxStructure0(False,
-                                                                                                  available_box_ids,
-                                                                                                  all_boxes)
+                outDict['children'][boxChildBrws.engineering_code], all_boxes = boxChildBrws.createBoxStructure(False,
+                                                                                                                available_box_ids,
+                                                                                                                all_boxes)
             self.setRelatedEntities(boxBrws, outDict)
             outDict['description'] = boxBrws.description or ''
             outDict['state'] = boxBrws.engineering_state
@@ -727,6 +736,14 @@ class Plm_box(models.Model):
             ]
         available_boxes = self.getAvaiableBoxIds()
         structure = self.boxStructureRecursion(fields_to_read, tooltip_fields, box_ids, available_boxes)
+        if structure:
+            for box in structure:
+                for record in box:
+                    if isinstance(record, dict):
+                        if 'engineering_state' in record and 'engineering_code' in record:
+                            record['name'] = record.pop('engineering_code', record.get('name'))
+                            record['state'] = record.pop('engineering_state', record.get('state'))
+
         return [headers, structure]
 
     @api.model
@@ -750,15 +767,15 @@ class Plm_box(models.Model):
                     out = obj.display_name
             return out
 
-        out = '<p><b>ENTITIES</b></p>'
+        out = ''
         for box in self:
-            out = compute_obj(out, 'Product', box.product_id)
-            out = compute_obj(out, 'Project', box.project_id)
-            out = compute_obj(out, 'Task', box.task_id)
-            out = compute_obj(out, 'Sale Order', box.sale_ord_id)
-            out = compute_obj(out, 'Users', box.user_rel_id)
-            out = compute_obj(out, 'BOM', box.bom_id)
-            out = compute_obj(out, 'Work Centers', box.wc_id)
+            out += compute_obj(out, 'Product', box.product_id)
+            out += compute_obj(out, 'Project', box.project_id)
+            out += compute_obj(out, 'Task', box.task_id)
+            out += compute_obj(out, 'Sale Order', box.sale_ord_id)
+            out += compute_obj(out, 'Users', box.user_rel_id)
+            out += compute_obj(out, 'BOM', box.bom_id)
+            out += compute_obj(out, 'Work Centers', box.wc_id)
             break
         return out
 
@@ -773,55 +790,6 @@ class Plm_box(models.Model):
                 out[field_name] = field_value
         return out
 
-    # @api.model
-    # def getBoxesStructureFromServer(self, primaryBoxes, parameters, kwargs):
-    #     """
-    #     *** CLIENT ***
-    #     Function called by "Add" button in the plm client
-    #     """
-    #     outDict = {}
-    #     notFoundBoxes = []
-    #     if not primaryBoxes:
-    #         return (outDict, notFoundBoxes)
-    #     for id in primaryBoxes:
-    #         plm_box_id = self.search([("id", "=", id)])
-    #         boxName = plm_box_id[0].engineering_code
-    #         if plm_box_id:
-    #             outDict[boxName] = plm_box_id[0].getBoxStructure(True)
-    #         else:
-    #             notFoundBoxes.append(boxName)
-    #     return outDict, notFoundBoxes
-
-    # def getBoxStructure(self, primary=False):
-    #     """
-    #     *** CLIENT ***
-    #     Used in the client in "Add" button procedure
-    #     """
-    #     outDict = {
-    #         "headers" : {'name': 'Name','description': 'Description','state': 'State'},
-    #         'id':0,
-    #         "children": {},
-    #         "documents": {},
-    #         "entities": [],
-    #         "description": "",
-    #         "state": "draft",
-    #         "readonly": True,
-    #         "primary": primary,
-    #     }
-    #     for boxBrws in self:
-    #         outDict['id'] = boxBrws.id
-    #         for boxChildBrws in boxBrws.plm_box_rel:
-    #             outDict["children"][boxChildBrws.engineering_code] = boxChildBrws.getBoxStructure(primary)
-    #         for docBrws in boxBrws.document_rel.filtered(lambda e_code: e_code.engineering_code):
-    #             outDict["documents"][docBrws.engineering_code] = self.getDocDictValues(docBrws)
-    #
-    #         outDict["entities"] = self.getRelatedEntities(boxBrws)
-    #         outDict["document_rel"] = self.document_rel.ids
-    #         outDict["description"] = boxBrws.description
-    #         outDict["state"] = boxBrws.engineering_state
-    #         outDict["readonly"] = boxBrws.boxReadonlyCompute()
-    #     return outDict
-
     @api.model
     def getDocDictValues(self, docBrws):
         getCheckOutUser = ""
@@ -833,7 +801,7 @@ class Plm_box(models.Model):
         writeVal = docBrws.write_date.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
 
         return {
-            "id":docBrws.id,
+            "id": docBrws.id,
             "name": docBrws.engineering_code,
             "engineering_revision": docBrws.engineering_revision,
             "datas_fname": docBrws.name,

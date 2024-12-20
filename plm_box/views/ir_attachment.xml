@@ -22,24 +22,21 @@
                  <button name="toggle_check_out"
                          icon="fa-lock"
                          type="object"
-                         invisible="is_checkout == True"
                          string="Check-Out">
                   </button>
                  <button name="toggle_check_out"
                          icon="fa-unlock"
-                         invisible="is_checkout == False"
                          type="object"
                          string="Check-In">
                   </button>
-                <field name="checkout_user"/>
+                <field name="checkout_user" string="Check In/Out User"/>
                 <field name="name"/>
-                <field name="datas"/>
-                <field name="engineering_state"/>
+                <field name="engineering_state" string="State"/>
                 <field name="create_uid"/>
                 <field name="create_date"/>
                 <field name="write_uid"/>
                 <field name="write_date"/>
-                <field name="is_checkout" invisible="True"/>
+
             </list>
         </field>
     </record>

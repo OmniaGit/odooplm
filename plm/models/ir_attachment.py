@@ -2410,6 +2410,10 @@ class IrAttachment(models.Model):
                 return plm_cad_open_brws
         return plm_cad_open
 
+    def setupCadOpenRPC(self, hostname='', pws_path='', operation_type=''):
+        ret = self.setupCadOpen(hostname, pws_path, operation_type)
+        return ret.ids
+
     @api.model
     def clientCanIUpload(self, clientArgs):
         ir_attachment_id, dbThread = clientArgs

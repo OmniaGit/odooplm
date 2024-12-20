@@ -31,16 +31,15 @@
                                readonly="0"/>
                     </header>
                     <sheet>
-<!--                        <div class="oe_button_box" name="button_box">-->
-<!--                            <button class="oe_stat_button" icon="fa-file-text-o" type="object">-->
-<!--                                <field name="document_rel" string="Documents" widget="statinfo"/>-->
-<!--                            </button>-->
-<!--                        </div>-->
+                        <div class="oe_button_box" name="button_box">
+                            <button class="oe_stat_button" icon="fa-file-text-o" type="object" name="action_add_view_dox_document">
+                                <field name="document_rel" string="Documents" widget="statinfo"/>
+                            </button>
+                        </div>
                         <group>
                             <group>
                                 <field name="engineering_code" readonly="1"/>
                                 <field name="version"/>
-                                <field name="document_rel" widget="many2many_tags"/>
                                 <field name="plm_box_rel" widget="many2many_tags"/>
                                 <field name="groups_rel" widget="many2many_tags"/>
                                 <field name="product_id" widget="many2many_tags"/>
@@ -58,6 +57,18 @@
                                 <field name="description" widget="link"/>
                             </group>
                         </group>
+                        <notebook>
+                            <page string="Documents">
+                                <field name="document_rel" nolabel="1" mode="kanban" domain="[('is_plm', '=', True)]"
+                                       widget="hierarchy_kanban"
+                                       context="{
+                                       'odooPLM': True,
+                                       'kanban_view_ref':'plm.document_kanban_view',
+                                       'list_view_ref':'plm.ir_attachment_list',
+                                       'form_view_ref':'plm.view_attachment_form_plm_hinerit'
+                                       }"/>
+                            </page>
+                        </notebook>
                     </sheet>
                     <chatter/>
                 </form>
