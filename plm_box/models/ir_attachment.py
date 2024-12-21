@@ -144,16 +144,14 @@ class Plm_box_document(models.Model):
         return False
 
     @api.model
-    def saveBoxDocRel(self, docDict,doc_id):
-        docName = docDict.get("docName", "")
-        boxName = docDict.get("boxName", "")
+    def saveBoxDocRel(self,
+                      box_id,
+                      doc_id):
         boxObj = self.env.get("plm.box")
-        boxBrwsList = boxObj.search([("name", "=", boxName)])
-        for boxBrws in boxBrwsList:
-            docId = self.search([("name", "=", docName)]).ids
-            if docId:
-                res = boxBrws.write({"document_rel": [(4, docId[0])]})
-                return res
+        for boxBrws in  boxObj.search([("id", "=", box_id)]):
+            if doc_id:
+                res = boxBrws.write({"document_rel": [(4, doc_id)]})
+                return True
         return False
 
     @api.model
