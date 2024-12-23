@@ -31,4 +31,5 @@ class Plm_checkout_custom(models.Model):
 
     write_uid = fields.Integer(_("Write User Id"))
 
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

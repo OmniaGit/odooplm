@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_plm_box_main" name="BOX" parent="plm.ir_attachment_form"
+              groups="plm_box.group_plm_box_admin" sequence="40"/>
+
+    <menuitem
+        name="Box Entities"
+        action="action_non_cad_doc"
+        id="menu_non_cad_doc_relations"
+        parent="plm_box.menu_plm_box_main"/>
+
+    <menuitem
+        name="Box Documents"
+        action="plm_box.action_box_docs"
+        groups="plm_box.group_plm_box_admin"
+        id="menu_box_docs"
+        parent="plm_box.menu_plm_box_main"/>
+</odoo>

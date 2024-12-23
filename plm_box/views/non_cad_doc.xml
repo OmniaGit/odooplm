@@ -39,34 +39,26 @@
                         <group>
                             <group>
                                 <field name="engineering_code" readonly="1"/>
+                                <field name="write_date" readonly="1"/>
+                                <field name="create_date" readonly="1"/>
                                 <field name="version"/>
                                 <field name="plm_box_rel" widget="many2many_tags"/>
+
+                            </group>
+                            <group>
                                 <field name="groups_rel" widget="many2many_tags"/>
                                 <field name="product_id" widget="many2many_tags"/>
                                 <field name="project_id" widget="many2many_tags"/>
                                 <field name="task_id" widget="many2many_tags"/>
-
-                            </group>
-                            <group>
-                                <field name="write_date" readonly="1"/>
-                                <field name="create_date" readonly="1"/>
                                 <field name="sale_ord_id" widget="many2many_tags"/>
                                 <field name="user_rel_id" widget="many2many_tags"/>
                                 <field name="bom_id" widget="many2many_tags"/>
                                 <field name="wc_id" widget="many2many_tags"/>
-                                <field name="description" widget="link"/>
                             </group>
                         </group>
                         <notebook>
-                            <page string="Documents">
-                                <field name="document_rel" nolabel="1" mode="kanban" domain="[('is_plm', '=', True)]"
-                                       widget="hierarchy_kanban"
-                                       context="{
-                                       'odooPLM': True,
-                                       'kanban_view_ref':'plm.document_kanban_view',
-                                       'list_view_ref':'plm.ir_attachment_list',
-                                       'form_view_ref':'plm.view_attachment_form_plm_hinerit'
-                                       }"/>
+                            <page string="Description">
+                                <field name="description"/>
                             </page>
                         </notebook>
                     </sheet>
@@ -96,10 +88,7 @@
             <field name="view_mode">list,form</field>
             <field name="view_id" ref="plm_box_list"/>
         </record>
-        <menuitem
-            name="BOX Non CAD Document Relations"
-            action="action_non_cad_doc"
-            id="menu_non_cad_doc_relations"
-            parent="plm.ir_attachment_form"/>
+
+
     </data>
 </odoo>

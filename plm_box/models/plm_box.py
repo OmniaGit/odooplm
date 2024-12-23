@@ -25,10 +25,12 @@ import logging
 import pytz
 from dateutil import parser
 from odoo import _, api, fields, models
-from odoo.addons.plm.models.plm_mixin import (START_STATUS,
-                                              CONFIRMED_STATUS,
-                                              RELEASED_STATUS,
-                                              OBSOLATED_STATUS)
+from odoo.addons.plm.models.plm_mixin import (
+    START_STATUS,
+    CONFIRMED_STATUS,
+    RELEASED_STATUS,
+    OBSOLATED_STATUS,
+)
 from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
@@ -62,9 +64,7 @@ class Plm_box(models.Model):
     box_id = fields.Integer(_("Box ID"))
     version = fields.Integer(_("Version"))
     description = fields.Text(_("Description"))
-    document_rel = fields.Many2many(
-        "ir.attachment", "ir_attachment_rel", "name", "ir_attachment_id", _("Documents")
-    )
+    document_rel = fields.One2many("ir.attachment", "plm_box_id", "Documents")
     plm_box_rel = fields.Many2many(
         "plm.box",
         "plm_box_box_rel",
@@ -187,15 +187,15 @@ class Plm_box(models.Model):
     def action_add_view_dox_document(self):
 
         return {
-            'type': 'ir.actions.act_window',
-            'name': 'Attachments',
-            'res_model': 'ir.attachment',
-            'view_mode': 'list,form',
-            'target': 'current',
-            'domain': [('id', 'in', self.document_rel.ids)],
-            'context': {
-                'create': False,
-            }
+            "type": "ir.actions.act_window",
+            "name": "Attachments",
+            "res_model": "ir.attachment",
+            "view_mode": "list,form",
+            "target": "current",
+            "domain": [("id", "in", self.document_rel.ids)],
+            "context": {
+                "default_plm_box_id": self.id,
+            },
         }
 
     @api.model
@@ -230,16 +230,16 @@ class Plm_box(models.Model):
         document_data = dict()
         for doc in parentBrws.document_rel:
             document_data[str(doc.id)] = {
-                "name": doc.engineering_code or '',
-                "description": doc.description or '',
-                "state": doc.engineering_state or '',
+                "name": doc.engineering_code or "",
+                "description": doc.description or "",
+                "state": doc.engineering_state or "",
                 "readonly": self.docReadonlyCompute(doc.id),
-                "write_date": doc.write_date or '',
-                "revisionid": doc.engineering_revision or '',
-                "fileName": doc.name or '',
+                "write_date": doc.write_date or "",
+                "revisionid": doc.engineering_revision or "",
+                "fileName": doc.name or "",
                 "checkoutUser": doc.checkout_user or False,
             }
-        objRelList.append({'document_rel': document_data})
+        objRelList.append({"document_rel": document_data})
 
         for product_product_id in parentBrws.product_id:
             objRelList.append(
@@ -497,9 +497,7 @@ class Plm_box(models.Model):
         """
         action to be executed for Confirm state
         """
-        message = self.move_children_object_to_state(
-            CONFIRMED_STATUS, "action_confirm"
-        )
+        message = self.move_children_object_to_state(CONFIRMED_STATUS, "action_confirm")
         if not message:
             self.move_to_state(CONFIRMED_STATUS)
         else:
@@ -510,9 +508,7 @@ class Plm_box(models.Model):
         """
         release the object
         """
-        message = self.move_children_object_to_state(
-            RELEASED_STATUS, "action_release"
-        )
+        message = self.move_children_object_to_state(RELEASED_STATUS, "action_release")
         if not message:
             self.move_to_state(RELEASED_STATUS)
         else:
@@ -671,111 +667,133 @@ class Plm_box(models.Model):
         return [], False
 
     @api.model
-    def getBoxesStructureFromServer(self, box_ids, primary_box_ids=[], download_all=False):
+    def getBoxesStructureFromServer(
+        self, box_ids, primary_box_ids=[], download_all=False
+    ):
         outDict = {}
         available_box_ids = self.getAvaiableBoxIds()
         if not box_ids and not download_all:
             return outDict
         all_boxes = {}
         for box_obj in self.browse(box_ids):
-            outDict[str(box_obj.id)], all_boxes_children = box_obj.createBoxStructure(primary=True,
-                                                                                      available_box_ids=available_box_ids,
-                                                                                      all_boxes=all_boxes,
-                                                                                      primary_box_ids=primary_box_ids)
+            outDict[str(box_obj.id)], all_boxes_children = box_obj.createBoxStructure(
+                primary=True,
+                available_box_ids=available_box_ids,
+                all_boxes=all_boxes,
+                primary_box_ids=primary_box_ids,
+            )
             all_boxes.update(all_boxes_children)
         if download_all:
             for available_box_id in available_box_ids:
                 if available_box_id not in all_boxes.keys():
                     box_obj = self.browse(available_box_id)
-                    outDict[str(box_obj.id)], _ = box_obj.createBoxStructure(primary=True,
-                                                                             available_box_ids=available_box_ids,
-                                                                             all_boxes=all_boxes,
-                                                                             primary_box_ids=primary_box_ids)
+                    outDict[str(box_obj.id)], _ = box_obj.createBoxStructure(
+                        primary=True,
+                        available_box_ids=available_box_ids,
+                        all_boxes=all_boxes,
+                        primary_box_ids=primary_box_ids,
+                    )
         return outDict
 
-    def createBoxStructure(self, primary=False, available_box_ids=[], all_boxes={}, primary_box_ids=[]):
-        '''
-            *** CLIENT ***
-        '''
-        outDict = {'primary': primary,
-                   'children': {}
-                   }
+    def createBoxStructure(
+        self, primary=False, available_box_ids=[], all_boxes={}, primary_box_ids=[]
+    ):
+        """
+        *** CLIENT ***
+        """
+        outDict = {"primary": primary, "children": {}}
         for boxBrws in self:
             if boxBrws.id not in available_box_ids:
                 return {}, all_boxes
             for boxChildBrws in boxBrws.plm_box_rel:
-                outDict['children'].setdefault(boxChildBrws.engineering_code, {})
-                outDict['children'][boxChildBrws.engineering_code], all_boxes = boxChildBrws.createBoxStructure(False,
-                                                                                                                available_box_ids,
-                                                                                                                all_boxes)
+                outDict["children"].setdefault(boxChildBrws.engineering_code, {})
+                (
+                    outDict["children"][boxChildBrws.engineering_code],
+                    all_boxes,
+                ) = boxChildBrws.createBoxStructure(False, available_box_ids, all_boxes)
             self.setRelatedEntities(boxBrws, outDict)
-            outDict['description'] = boxBrws.description or ''
-            outDict['state'] = boxBrws.engineering_state
-            outDict['name'] = boxBrws.engineering_code
-            outDict['readonly'] = boxBrws.boxReadonlyCompute()
-            outDict['id'] = boxBrws.id
+            outDict["description"] = boxBrws.description or ""
+            outDict["state"] = boxBrws.engineering_state
+            outDict["name"] = boxBrws.engineering_code
+            outDict["readonly"] = boxBrws.boxReadonlyCompute()
+            outDict["id"] = boxBrws.id
             if boxBrws.id in primary_box_ids:
-                outDict['primary'] = True
+                outDict["primary"] = True
             all_boxes[boxBrws.id] = boxBrws
         return outDict, all_boxes
 
     @api.model
-    def getBoxStructure(self, box_ids=[], headers={}, fields_to_read=[], tooltip_fields={}):
+    def getBoxStructure(
+        self, box_ids=[], headers={}, fields_to_read=[], tooltip_fields={}
+    ):
         if not headers:
-            headers = {'name': 'Name',
-                       'description': 'Description',
-                       'state': 'State',
-                       # 'entities': 'Entities',
-                       }
+            headers = {
+                "name": "Name",
+                "description": "Description",
+                "state": "State",
+                # 'entities': 'Entities',
+            }
         if not fields_to_read:
             fields_to_read = [
-                'engineering_code',
-                'description',
-                'engineering_state',
-                'document_rel',
+                "engineering_code",
+                "description",
+                "engineering_state",
+                "document_rel",
             ]
         available_boxes = self.getAvaiableBoxIds()
-        structure = self.boxStructureRecursion(fields_to_read, tooltip_fields, box_ids, available_boxes)
+        structure = self.boxStructureRecursion(
+            fields_to_read, tooltip_fields, box_ids, available_boxes
+        )
         if structure:
             for box in structure:
                 for record in box:
                     if isinstance(record, dict):
-                        if 'engineering_state' in record and 'engineering_code' in record:
-                            record['name'] = record.pop('engineering_code', record.get('name'))
-                            record['state'] = record.pop('engineering_state', record.get('state'))
+                        if (
+                            "engineering_state" in record
+                            and "engineering_code" in record
+                        ):
+                            record["name"] = record.pop(
+                                "engineering_code", record.get("name")
+                            )
+                            record["state"] = record.pop(
+                                "engineering_state", record.get("state")
+                            )
 
         return [headers, structure]
 
     @api.model
-    def boxStructureRecursion(self, to_read, tooltip_fields, box_ids, available_boxes=[]):
+    def boxStructureRecursion(
+        self, to_read, tooltip_fields, box_ids, available_boxes=[]
+    ):
         out = []
         for box in self.browse(box_ids):
             if box.id in available_boxes:
                 vals_list = box.read(to_read)
                 for vals in vals_list:
-                    vals['entities'] = box.computeEntities()
-                    children = self.boxStructureRecursion(to_read, tooltip_fields, box.plm_box_rel.ids, available_boxes)
+                    vals["entities"] = box.computeEntities()
+                    children = self.boxStructureRecursion(
+                        to_read, tooltip_fields, box.plm_box_rel.ids, available_boxes
+                    )
                     vals = self.setupTooltipFields(vals, tooltip_fields)
                     out.append([vals, children])
         return out
 
     def computeEntities(self):
-
         def compute_obj(out, model_str, brws_rec):
             if brws_rec:
                 for obj in brws_rec:
                     out = obj.display_name
             return out
 
-        out = ''
+        out = ""
         for box in self:
-            out += compute_obj(out, 'Product', box.product_id)
-            out += compute_obj(out, 'Project', box.project_id)
-            out += compute_obj(out, 'Task', box.task_id)
-            out += compute_obj(out, 'Sale Order', box.sale_ord_id)
-            out += compute_obj(out, 'Users', box.user_rel_id)
-            out += compute_obj(out, 'BOM', box.bom_id)
-            out += compute_obj(out, 'Work Centers', box.wc_id)
+            out += compute_obj(out, "Product", box.product_id)
+            out += compute_obj(out, "Project", box.project_id)
+            out += compute_obj(out, "Task", box.task_id)
+            out += compute_obj(out, "Sale Order", box.sale_ord_id)
+            out += compute_obj(out, "Users", box.user_rel_id)
+            out += compute_obj(out, "BOM", box.bom_id)
+            out += compute_obj(out, "Work Centers", box.wc_id)
             break
         return out
 
@@ -825,35 +843,45 @@ class Plm_box(models.Model):
 
     @api.model
     def setRelatedEntities(self, parentBrws, outDict):
-
         def populationLoop(brws_record, outDict, field_name):
-            obj_name = self.env['ir.model'].search([('model', '=', brws_record._name)]).display_name
+            obj_name = (
+                self.env["ir.model"]
+                .search([("model", "=", brws_record._name)])
+                .display_name
+            )
             for brws in brws_record:
-                if field_name not in outDict['entities']:
-                    outDict['entities'][field_name] = {}
-                outDict['entities'][field_name][str(brws.id)] = {'obj_name': obj_name, 'obj_type': brws._name,
-                                                                 'obj_rel_name': brws.display_name, 'id': brws.id}
+                if field_name not in outDict["entities"]:
+                    outDict["entities"][field_name] = {}
+                outDict["entities"][field_name][str(brws.id)] = {
+                    "obj_name": obj_name,
+                    "obj_type": brws._name,
+                    "obj_rel_name": brws.display_name,
+                    "id": brws.id,
+                }
 
-        outDict['document_rel'] = parentBrws.document_rel.ids
-        outDict['product_id'] = parentBrws.product_id.ids
-        outDict['project_id'] = parentBrws.project_id.ids
-        outDict['task_id'] = parentBrws.task_id.ids
-        outDict['sale_ord_id'] = parentBrws.sale_ord_id.ids
-        outDict['user_rel_id'] = parentBrws.user_rel_id.ids
-        outDict['bom_id'] = parentBrws.bom_id.ids
-        outDict['wc_id'] = parentBrws.wc_id.ids
-        outDict['entities'] = {}
+        outDict["document_rel"] = parentBrws.document_rel.ids
+        outDict["product_id"] = parentBrws.product_id.ids
+        outDict["project_id"] = parentBrws.project_id.ids
+        outDict["task_id"] = parentBrws.task_id.ids
+        outDict["sale_ord_id"] = parentBrws.sale_ord_id.ids
+        outDict["user_rel_id"] = parentBrws.user_rel_id.ids
+        outDict["bom_id"] = parentBrws.bom_id.ids
+        outDict["wc_id"] = parentBrws.wc_id.ids
+        outDict["entities"] = {}
 
-        populationLoop(parentBrws.product_id, outDict, 'product_id')
-        populationLoop(parentBrws.project_id, outDict, 'project_id')
-        populationLoop(parentBrws.task_id, outDict, 'task_id')
-        populationLoop(parentBrws.sale_ord_id, outDict, 'sale_ord_id')
-        populationLoop(parentBrws.user_rel_id, outDict, 'user_rel_id')
-        populationLoop(parentBrws.bom_id, outDict, 'bom_id')
-        populationLoop(parentBrws.wc_id, outDict, 'wc_id')
+        populationLoop(parentBrws.product_id, outDict, "product_id")
+        populationLoop(parentBrws.project_id, outDict, "project_id")
+        populationLoop(parentBrws.task_id, outDict, "task_id")
+        populationLoop(parentBrws.sale_ord_id, outDict, "sale_ord_id")
+        populationLoop(parentBrws.user_rel_id, outDict, "user_rel_id")
+        populationLoop(parentBrws.bom_id, outDict, "bom_id")
+        populationLoop(parentBrws.wc_id, outDict, "wc_id")
         for document in parentBrws.document_rel:
-            if 'document_rel' not in outDict['entities']:
-                outDict['entities']['document_rel'] = {}
-            outDict['entities']['document_rel'][str(document.id)] = self.getDocDictValues(document)
+            if "document_rel" not in outDict["entities"]:
+                outDict["entities"]["document_rel"] = {}
+            outDict["entities"]["document_rel"][
+                str(document.id)
+            ] = self.getDocDictValues(document)
+
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

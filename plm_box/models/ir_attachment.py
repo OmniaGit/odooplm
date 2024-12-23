@@ -52,14 +52,15 @@ class Plm_box_document(models.Model):
     _inherit = "ir.attachment"
 
     name = fields.Char(_("Attachment Name"), required=False)
-    is_plm_box = fields.Boolean('Is Plm Box document')
+    is_plm_box = fields.Boolean("Is Plm Box document")
+    plm_box_id = fields.Many2one("plm.box")
 
     @api.model_create_multi
     def create(self, vals):
         for val in vals:
             if not val.get("name", False):
                 name = self.getNewSequencedName()
-                vals["name"] = name
+                val["name"] = name
         return super(Plm_box_document, self).create(vals)
 
     def getCheckOutUser(self):
@@ -144,13 +145,11 @@ class Plm_box_document(models.Model):
         return False
 
     @api.model
-    def saveBoxDocRel(self,
-                      box_id,
-                      doc_id):
+    def saveBoxDocRel(self, box_id, doc_id):
         boxObj = self.env.get("plm.box")
-        for boxBrws in  boxObj.search([("id", "=", box_id)]):
+        for boxBrws in boxObj.search([("id", "=", box_id)]):
             if doc_id:
-                res = boxBrws.write({"document_rel": [(4, doc_id)]})
+                boxBrws.write({"document_rel": [(4, doc_id)]})
                 return True
         return False
 
@@ -196,52 +195,43 @@ class Plm_box_document(models.Model):
     def checkDocumentPresent(self, doc_dict={}):
         for str_box_id, vals in doc_dict.items():
             box_id = int(str_box_id)
-            box_brws = self.env['plm.box'].browse(box_id)
+            box_brws = self.env["plm.box"].browse(box_id)
             for str_doc_id, doc_vals in vals.items():
                 doc_id = int(str_doc_id)
-                for doc_brws in self.search([('id', '=', doc_id)]):
-                    checksum = doc_vals.get('checksum', '')
-                    doc_dict[str_box_id][str_doc_id]['check_mode'] = doc_brws.getDocumentState()
+                for doc_brws in self.search([("id", "=", doc_id)]):
+                    checksum = doc_vals.get("checksum", "")
+                    doc_dict[str_box_id][str_doc_id][
+                        "check_mode"
+                    ] = doc_brws.getDocumentState()
                     if doc_id in box_brws.document_rel.ids:
                         if not checksum:
-                            doc_dict[str_box_id][str_doc_id]['update'] = 'download'
+                            doc_dict[str_box_id][str_doc_id]["update"] = "download"
                         elif doc_brws.checksum != checksum:
                             doc_condition = doc_brws.getDocumentState()
-                            if doc_condition == 'check-out-by-me':
-                                doc_dict[str_box_id][str_doc_id]['update'] = 'upload'
+                            if doc_condition == "check-out-by-me":
+                                doc_dict[str_box_id][str_doc_id]["update"] = "upload"
                             else:
-                                doc_dict[str_box_id][str_doc_id]['update'] = 'download'
+                                doc_dict[str_box_id][str_doc_id]["update"] = "download"
                         else:
-                            doc_dict[str_box_id][str_doc_id]['update'] = 'none'
+                            doc_dict[str_box_id][str_doc_id]["update"] = "none"
                     else:
-                        cad_opens = self.env['plm.cad.open'].search([
-                            ('document_id', '=', doc_id)
-                        ])
+                        cad_opens = self.env["plm.cad.open"].search(
+                            [("document_id", "=", doc_id)]
+                        )
                         if len(cad_opens.ids) > 1:
-                            doc_dict[str_box_id][str_doc_id]['update'] = 'delete'
+                            doc_dict[str_box_id][str_doc_id]["update"] = "delete"
                         elif doc_brws:
-                            doc_dict[str_box_id][str_doc_id]['update'] = 'delete'
+                            doc_dict[str_box_id][str_doc_id]["update"] = "delete"
                         else:
-                            doc_dict[str_box_id][str_doc_id]['update'] = 'upload'
-        logging.info('Box sincronize res %r' % (doc_dict))
+                            doc_dict[str_box_id][str_doc_id]["update"] = "upload"
+        logging.info("Box sincronize res %r" % (doc_dict))
         return doc_dict
-
-    def getDocumentState(self):
-        for docBrws in self:
-            checkedOutByMe = docBrws._is_checkedout_for_me()
-            checkedIn = docBrws.ischecked_in()
-            if checkedOutByMe:
-                return 'check-out-by-me'
-            if not checkedIn:
-                return 'check-out'
-            else:
-                return 'check-in'
-        return 'check-out-by-me'
 
     def getDocumentStateMulty(self):
         ret = {}
         for doc in self:
             ret[str(doc.id)] = doc.getDocumentState()
         return ret
+
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
