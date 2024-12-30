@@ -19,32 +19,14 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
-'''
+"""
 Created on 15 Jun 2016
-
 @author: Daniel Smerghetto
-'''
-from odoo import models
-from odoo import fields
-from odoo import _
+"""
+from odoo import fields, models
 
 
 class PlmDescriptionExtension(models.Model):
-    _name = 'plm.description'
-    _inherit = 'plm.description'
-    
-    name = fields.Char('Note to Description',
-                       translate=True)
-    description = fields.Char('Standard Description',
-                              translate=True)
-    umc1 = fields.Char('UM / Feature 1',
-                       translate=True,
-                       help=_("Allow to specify a unit measure or a label for the feature."))
-    umc2 = fields.Char('UM / Feature 2',
-                       translate=True,
-                       help=_("Allow to specify a unit measure or a label for the feature."))
-    umc3 = fields.Char('UM / Feature 3',
-                       translate=True,
-                       help=_("Allow to specify a unit measure or a label for the feature."))
+    _inherit = "plm.description"
 
+    description = fields.Char(translate=True)

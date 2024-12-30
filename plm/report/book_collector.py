@@ -70,7 +70,7 @@ class BookCollector(object):
                 logging.error('Cannot eval attribute %r for report due to error %r' % (val, ex))
             out[key] = val or ''
         return out
-            
+
     def getNextPageNumber(self, mediaBox, docObject):
 
         def computeFont(x1, y1):
@@ -130,7 +130,7 @@ class BookCollector(object):
                         logging.warning('advancedPlmReportEngine function not implemented in plm.document object')
                     canvas.showPage()
                     canvas.save()
-                    numberPageReader=PdfFileReader(numberPagerBuffer,strict=False)  
+                    numberPageReader=PdfFileReader(numberPagerBuffer,strict=False)
                     mainPage.getPage(i).mergePage(numberPageReader.getPage(0))
                     self.collector.addPage(mainPage.getPage(i))
             except Exception as ex:

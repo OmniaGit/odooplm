@@ -249,7 +249,7 @@ class ReportProductPdf(models.AbstractModel):
                                             mainBookCollector)
             content = documentContent[0]
         return content
-    
+
     def render_qweb_pdf(self, products=None, level=0, checkState=False):
         content = self._render_qweb_pdf(products, level, checkState)
         byteString = b"data:application/pdf;base64," + base64.b64encode(content)

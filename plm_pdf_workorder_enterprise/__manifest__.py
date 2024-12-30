@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution
-#    Copyright (C) 2010-2021 OmniaSolutions (<http://www.omniasolutions.eu>).
+#    Copyright (C) 2010-2021 OmniaSolutions (<https://www.omniasolutions.website>).
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -17,20 +17,28 @@
 #
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-# http://www.spamhaus.org/query/bl?ip=93.66.161.145
+#
 ##############################################################################
 {
-    "name": "PLM Product Description Language Helper",
+    "name": "PLM Report PDF Workorder Enterprise",
     "version": "18.0.1.0.0",
     "author": "OmniaSolutions",
     "website": "https://odooplm.omniasolutions.website",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
     "sequence": 15,
-    "summary": "PLM Product Description Language Helper",
-    "license": "AGPL-3",
-    "depends": ["plm"],
-    "data": ["views/plm_description_extension.xml"],
+    "summary": """
+    This module allows you to get the plm pdf document
+    available into the workorder workscheet.
+    """,
+    "license": "LGPL-3",
+    "depends": ["plm_pdf_workorder", "mrp_workorder"],
+    "assets": {
+        "web.assets_backend": [
+            "plm_pdf_workorder_enterprise/static/src/mrpWorksheet.js",
+            "plm_pdf_workorder_enterprise/static/src/mrpDisplayRecord.xml",
+        ]
+    },
     "installable": True,
     "application": False,
-    "auto_install": False,
+    "auto_install": True,
 }

@@ -120,6 +120,7 @@
                         <button name="related_not_update"
                                 icon="fa-warning"
                                 type="object"
+                                title=""
                                 invisible="must_update_from_cad==False">
                               <div class="o_field_widget o_stat_info o_readonly_modifier">
                                  <span style="color:orange">Not.Update</span>
@@ -127,6 +128,7 @@
                         </button>
                         <field name="has_error" invisible="True"/>
                         <button name="open_related_dbthread"
+                                title=""
                                 type="object"
                                 string="S.ERR"
                                 class="oe_stat_button"
@@ -409,11 +411,13 @@
                                                  type="object"
                                                  invisible="has_error==False"
                                                  class="fa fa-bug fa-2x btn-danger"
+                                                 title=""
                                                  />
                                          <button name="related_not_update"
                                                  type="object"
                                                  invisible="must_update_from_cad==False"
                                                  class="fa fa-warning fa-2x btn-warning"
+                                                 title=""
                                                  />
                                         <div class="fa fa-lock fa-2x"
                                              string="."
