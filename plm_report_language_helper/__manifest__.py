@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution
@@ -20,24 +21,18 @@
 ##############################################################################
 {
     "name": "Plm Report Language Helper",
-    "version": "18.0.0.1",
+    "version": "18.0.1.0.0",
     "author": "OmniaSolutions",
     "website": "https://odooplm.omniasolutions.website",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
     "sequence": 15,
     "summary": "Manage multilanguage PLM reports",
     "license": "AGPL-3",
-    "images": [],
-    "depends": ["plm",
-                "plm_spare"],
-    "data": [  
-        # security
+    "depends": ["plm", "plm_spare"],
+    "data": [
         "security/plm_security.xml",
-        # views
-        "views/plm_component_action_extended.xml",
+        "wizard/select_lang_wizard_view.xml",
     ],
-    "demo": [],
-    "test": [],
     "installable": True,
     "application": False,
     "auto_install": False,
