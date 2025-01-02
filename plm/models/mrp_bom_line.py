@@ -75,7 +75,7 @@ class MrpBomLineExtension(models.Model):
             else:
                 self.child_line_ids = False
 
-    
+
     def get_related_boms(self):
         for bom_line in self:
             if not bom_line.product_id:
@@ -121,7 +121,7 @@ class MrpBomLineExtension(models.Model):
                 else:
                     bom_line.related_bom_ids = [(6, False, bom_objs.ids)]
 
-    
+
     def openRelatedBoms(self):
         related_boms = self.get_related_boms()
         if not related_boms:
@@ -138,7 +138,7 @@ class MrpBomLineExtension(models.Model):
         if len(ids_to_open) == 1:
             out_act_dict['view_mode'] = 'form'
             out_act_dict['res_id'] = ids_to_open[0]
-        
+
         for line_brws in self:
             if line_brws.type == 'normal':
                 domain.append(('type', 'in', ['normal','subcontract', 'phantom']))
@@ -154,7 +154,7 @@ class MrpBomLineExtension(models.Model):
         out_act_dict['domain'] = domain
         return out_act_dict
 
-    
+
     def openRelatedDocuments(self):
         domain = [('id', 'in', self.related_document_ids.ids)]
         out_act_dict = {'name': _('Documents'),
@@ -169,7 +169,7 @@ class MrpBomLineExtension(models.Model):
                         'domain': domain}
         return out_act_dict
 
-    
+
     def _related_doc_ids(self):
         for bom_line_brws in self:
             bom_line_brws.related_document_ids = bom_line_brws.product_id.linkeddocuments
@@ -192,7 +192,7 @@ class MrpBomLineExtension(models.Model):
                                 readonly=True,
                                 index=True,
                                 help="This is the document object that declares this BoM.")
-    
+
     type = fields.Selection(related="bom_id.type")
     itemnum = fields.Integer('CAD Item Position', help=
         "This is the item reference position into the CAD document that declares this BoM.")
@@ -217,13 +217,13 @@ class MrpBomLineExtension(models.Model):
          ('server', 'Server')],
         'Cutted Compute Type',
         default='none')
-    
+
     product_tag_ids = fields.Many2many(related='product_tmpl_id.product_tag_ids')
 
     product_tag_ids = fields.Many2many(related='product_tmpl_id.product_tag_ids')
-    
+
     product_tumbnail = fields.Image(related="product_id.product_tmpl_id.image_1920")
-    
+
     def go_to_product(self):
         return {'name': _('Product'),
                     'res_model': 'product.product',
@@ -233,7 +233,7 @@ class MrpBomLineExtension(models.Model):
                     'type': 'ir.actions.act_window',
                     'domain': [('id', 'in', self.product_id.ids)],
                     }
-        
+
     def plm_sanitize(self, vals):
         all_keys = self._fields
         if isinstance(vals, dict):
