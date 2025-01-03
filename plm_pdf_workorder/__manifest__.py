@@ -33,7 +33,7 @@
     "license": "LGPL-3",
     "depends": [
         "plm",
-        # "plm_mrp_workorder",
+        "plm_mrp_workorder",
     ],
     "data": [
         "views/ir_attachment.xml",

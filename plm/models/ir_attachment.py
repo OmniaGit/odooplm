@@ -1177,6 +1177,7 @@ class IrAttachment(models.Model):
                         f"Unable to check out. The owner of this document is {ir_attachment_id.checkout_user}")
                 else:
                     ir_attachment_id.checkout("localhost", r"check/web")
+        return True # this is for XmlRpc Calls
 
     @api.model
     def CheckIn(self, attrs):
