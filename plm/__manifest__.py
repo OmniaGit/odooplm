@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution
@@ -20,7 +21,7 @@
 ##############################################################################
 {
     "name": "Product Lifecycle Management",
-    "version": "18.0.0.1",
+    "version": "18.0.1.0.0",
     "author": "OmniaSolutions",
     "website": "https://odooplm.omniasolutions.website",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
@@ -31,11 +32,16 @@
     "images": ["static/img/odoo_plm.png"],
     "depends": ["base", "board", "product", "mrp"],
     "data": [
-        # data
-        "data/data.xml",
-        # security
         "security/base_plm_security.xml",
-        # views
+        "data/data.xml",
+        "report/bom_document.xml",
+        "report/bom_structure_report_template.xml",
+        "report/document_report_templates.xml",
+        "report/product_report_templates.xml",
+        "report/product_report_document.xml",
+        "report/bom_structure.xml",
+        "report/component_report.xml",
+        "report/document_report.xml",
         "views/product_product_first.xml",
         "views/ir_attachment_view.xml",
         "views/ir_attachment_relations.xml",
@@ -59,33 +65,21 @@
         "views/menu.xml",
         "views/product_category.xml",
         "views/plm_temporaty.xml",
+        "views/mrp_production.xml",
         # QwebTemplates
         'views/templates.xml',
-        # Reports Template
-        "report/bom_document.xml",
-        "report/bom_structure_report_template.xml",
-        "report/document_report_templates.xml",
-        "report/product_report_templates.xml",
-        "report/product_report_document.xml",
-        # Report
-        "report/bom_structure.xml",
-        "report/component_report.xml",
-        "report/document_report.xml",
     ],
     "assets": {
         "web.assets_backend": [
             "plm/static/src/css/component_kanban.css",
             "plm/static/src/css/color_fields_tree.css",
-            ],
+        ],
         'web.report_assets_common': [
             "plm/static/src/scss/document_bom.scss",
             "plm/static/src/css/component_kanban.css",
             "plm/static/src/css/color_fields_tree.css",
         ],
-        },
-    "qweb": [],
-    "demo": [],
-    "test": [],
+    },
     "installable": True,
     "application": True,
     "auto_install": False,
