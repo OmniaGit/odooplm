@@ -1,4 +1,5 @@
-##############################################################################
+# -*- encoding: utf-8 -*-
+# ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution
 #    Copyright (C) 2010-2019 OmniaSolutions (<https://www.omniasolutions.website>).
@@ -19,7 +20,7 @@
 ##############################################################################
 {
     "name": "Activity Validation",
-    "version": "18.0.0.1",
+    "version": "18.0.1.0.0",
     "author": "OmniaSolutions",
     "website": "https://github.com/OmniaGit/odooplm",
     "category": "Custom",
@@ -31,23 +32,13 @@
     ],
     "license": "AGPL-3",
     "data": [
-        # security
         "security/security.xml",
-        # data
         "data/mail_activity_data.xml",
-        # views
         "views/mail_activity_type.xml",
         "views/mail_activity.xml",
         "views/mail_activity_children_rel.xml",
     ],
-    "demo": [],
-    "test": [],
     "qweb": ["static/src/xml/*.xml"],
-    'assets': {
-        'web.assets_backend': [
-            #"activity_validation/static/src/js/systray_activity_menu.js",
-            ]
-        },
     "installable": True,
     "application": False,
     "auto_install": False,

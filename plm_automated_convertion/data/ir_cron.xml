@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<odoo noupdate="1">
-
+<odoo>
+    <data noupdate="1">
         <record id="convert_documents_cron" model="ir.cron">
             <field name="name">Convert Documents</field>
             <field name="active" eval="False"/>
@@ -10,5 +10,5 @@
             <field name="code">env['plm.convert.stack'].generateConvertedDocuments()</field>
             <field name="state">code</field>
         </record>
-
+    </data>
 </odoo>

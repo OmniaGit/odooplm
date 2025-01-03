@@ -20,24 +20,15 @@
 ##############################################################################
 '''
 Created on Nov 16, 2019
-
 @author: mboscolo
 '''
-import logging
-import datetime
-from odoo import models
-from odoo import fields
-from odoo import api
-from odoo import _
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError
-from datetime import timedelta
-from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
 
 class MailActivitySchedule(models.TransientModel):
     _inherit = 'mail.activity.schedule'
-    
-    
+
     plm_state = fields.Selection([
         ('draft', _('draft')),
         ('in_progress', _('In Progress')),
@@ -45,7 +36,7 @@ class MailActivitySchedule(models.TransientModel):
         ('done', _('Done')),
         ('cancel', _('Cancel')),
         ('exception', _('Exception')),
-        ],
+    ],
         default='draft',
         string=_('Plm State'))
     children_ids = fields.One2many('mail.activity.children.rel.shedule',
@@ -56,18 +47,32 @@ class MailActivitySchedule(models.TransientModel):
     has_parent = fields.Boolean(_('Has parent ECR'), compute="_compute_has_parent_ecr", store=True)
     has_parent_eco = fields.Boolean(_('Has parent ECO'), compute="_compute_has_parent_eco", store=True)
     eco_child_ids = fields.One2many('mail.activity.schedule',
-                                   'mail_parent_eco_activity_id',
-                                   _('ECO Activities'))
+                                    'mail_parent_eco_activity_id',
+                                    _('ECO Activities'))
     mail_parent_eco_activity_id = fields.Many2one('mail.activity.schedule', _('ECO Parent Activity'))
     default_plm_activity = fields.Many2one('mail.activity.type', compute='_compute_mail_activity_type')
     is_eco = fields.Boolean(_('Is ECO'))
 
+    def _action_schedule_activities(self):
+        res = super()._action_schedule_activities()
+        res.write({
+            'children_ids': [
+                (0, 0, {
+                    'name': self.children_ids.name,
+                    'user_id': self.children_ids.user_id.id,
+                    'mail_children_activity_id' : res.id
+                }),
+            ]
+        })
+        return res
+
     def _compute_mail_activity_type(self):
         for activity_id in self:
             activity_id.default_plm_activity = self.env.ref('plm.mail_activity_plm_activity')
-        
+
     def getParentECRActivity(self, activity_id):
-        parent_activity = self.env['mail.activity.children.rel.shedule'].search([('mail_children_activity_id', '=', activity_id.id)])
+        parent_activity = self.env['mail.activity.children.rel.shedule'].search(
+            [('mail_children_activity_id', '=', activity_id.id)])
         return parent_activity.mapped('mail_parent_activity_id')
 
     def getParentECOActivity(self, activity_id):
@@ -101,12 +106,12 @@ class MailActivitySchedule(models.TransientModel):
                         'name': '%s - %s' % (activity_id.activity_type_id.name, user_id.name),
                         'user_id': user_id.id,
                         'mail_children_activity_id': False,
-                        }
+                    }
                     rel_id = self.env['mail.activity.children.rel.shedule'].create(vals)
                     activity_ids.append(rel_id.id)
             activity_id.write({
                 'children_ids': [(6, False, activity_ids)]
-                })
+            })
 
     def write(self, vals):
         ret = super(MailActivitySchedule, self).write(vals)
@@ -166,7 +171,7 @@ class MailActivitySchedule(models.TransientModel):
             if activity_id.activity_type_id.change_activity_type in ['request', 'plm_activity']:
                 return True
         return False
-        
+
     def unlink(self):
         for activity_id in self:
             if activity_id.isCustomType():
@@ -269,7 +274,7 @@ class MailActivitySchedule(models.TransientModel):
                         'note': line_id.name,
                         'res_model_id': activity_id.res_model_id.id,
                         'res_id': activity_id.res_id,
-                        }
+                    }
                     new_activity_id = self.create(activity_vals)
                     line_id.mail_children_activity_id = new_activity_id.id
                     line_id.mail_parent_activity_id = activity_id.id
@@ -296,11 +301,11 @@ class MailActivitySchedule(models.TransientModel):
                     'view_mode': 'form',
                     'res_id': activity.res_id}
         return {}
-            
-    
+
     def name_get(self):
         out = []
         for activity in self:
-            name = '%s | %s' % (activity.summary or activity.activity_type_id.display_name, activity.user_id.display_name or '')
+            name = '%s | %s' % (
+            activity.summary or activity.activity_type_id.display_name, activity.user_id.display_name or '')
             out.append((activity.id, name))
         return out

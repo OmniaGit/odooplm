@@ -31,15 +31,12 @@
     available into the workorder workscheet.
     """,
     "license": "LGPL-3",
-    "depends": [
-        "plm",
-    ],
+    "depends": ["plm"],
     "data": [
         "views/ir_attachment.xml",
         "views/mrp_routing_workcenter.xml",
         "views/mrp_workorder.xml",
     ],
-    'pre_init_hook': '_pre_init_plm_mrp_workorder',
     "installable": True,
     "application": False,
     "auto_install": False,

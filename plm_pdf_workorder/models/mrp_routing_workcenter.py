@@ -23,10 +23,21 @@
 Created on Mar 30, 2016
 @author: Daniel Smerghetto
 """
-from odoo import _, fields, models
+from odoo import _, api, fields, models
 
 
 class MrpRoutingWorkcenter(models.Model):
     _inherit = "mrp.routing.workcenter"
 
     use_plm_pdf = fields.Boolean(_("Use PLM PDF"))
+    plm_pdf = fields.Binary(_("Plm PDF"), compute="_compute_plm_pdf_data")
+
+    def _compute_plm_pdf_data(self):
+        workorder_id = self.env["mrp.workorder"].search([
+            ("operation_id", "in", self.ids)
+        ], limit=1)
+        for rec in self:
+            if rec.use_plm_pdf:
+                rec.plm_pdf = workorder_id.plm_pdf
+            else:
+                rec.plm_pdf = False

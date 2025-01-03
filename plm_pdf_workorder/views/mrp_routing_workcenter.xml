@@ -8,6 +8,18 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='worksheet_type']" position="before">
                     <field name="use_plm_pdf"/>
+                    <field name="plm_pdf" invisible="use_plm_pdf == False" widget="pdf_viewer"/>
+                </xpath>
+                <xpath expr="//field[@name='worksheet_type']" position="attributes">
+                    <attribute name="invisible">use_plm_pdf == True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='worksheet']" position="attributes">
+                    <attribute name="invisible">use_plm_pdf == True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='worksheet_google_slide']" position="attributes">
+                    <attribute name="invisible">use_plm_pdf == True</attribute>
+                </xpath><xpath expr="//field[@name='note']" position="attributes">
+                    <attribute name="invisible">use_plm_pdf == True</attribute>
                 </xpath>
             </field>
         </record>

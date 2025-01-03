@@ -17,11 +17,11 @@
                         <group>
                             <button name="action_switch_pdf"
                                     invisible="use_plm_pdf==False"
-                                    class="btn btn-secondary o_workorder_icon_btn fa fa-file-o"
+                                    class="btn btn-primary"
                                     type="object"
                                     aria-label="Show plm pdf related document"
                                     title="Pdf PLM"
-                                    string=" - PLM PDF"/>
+                                    string="View Plm Pdf"/>
                         </group>
                     </group>
                 </xpath>
@@ -38,5 +38,4 @@
             </field>
         </record>
     </data>
-
 </odoo>

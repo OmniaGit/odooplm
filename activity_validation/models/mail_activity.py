@@ -20,14 +20,9 @@
 ##############################################################################
 '''
 Created on Nov 16, 2019
-
 @author: mboscolo
 '''
-import logging
-from odoo import models
-from odoo import fields
-from odoo import api
-from odoo import _
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
 
@@ -41,9 +36,7 @@ class MailActivity(models.Model):
         ('done', _('Done')),
         ('cancel', _('Cancel')),
         ('exception', _('Exception')),
-        ],
-        default='draft',
-        string=_('Plm State'))
+    ], default='draft', string=_('Plm State'))
     children_ids = fields.One2many('mail.activity.children.rel',
                                    'mail_parent_activity_id',
                                    _('ECR Activities'))
@@ -52,8 +45,8 @@ class MailActivity(models.Model):
     has_parent = fields.Boolean(_('Has parent ECR'), compute="_compute_has_parent_ecr", store=True)
     has_parent_eco = fields.Boolean(_('Has parent ECO'), compute="_compute_has_parent_eco", store=True)
     eco_child_ids = fields.One2many('mail.activity',
-                                   'mail_parent_eco_activity_id',
-                                   _('ECO Activities'))
+                                    'mail_parent_eco_activity_id',
+                                    _('ECO Activities'))
     mail_parent_eco_activity_id = fields.Many2one('mail.activity', _('ECO Parent Activity'))
     default_plm_activity = fields.Many2one('mail.activity.type', compute='_compute_mail_activity_type')
     is_eco = fields.Boolean(_('Is ECO'))
@@ -61,9 +54,10 @@ class MailActivity(models.Model):
     def _compute_mail_activity_type(self):
         for activity_id in self:
             activity_id.default_plm_activity = self.env.ref('plm.mail_activity_plm_activity')
-        
+
     def getParentECRActivity(self, activity_id):
-        parent_activity = self.env['mail.activity.children.rel'].search([('mail_children_activity_id', '=', activity_id.id)])
+        parent_activity = self.env['mail.activity.children.rel'].search(
+            [('mail_children_activity_id', '=', activity_id.id)])
         return parent_activity.mapped('mail_parent_activity_id')
 
     def getParentECOActivity(self, activity_id):
@@ -97,12 +91,12 @@ class MailActivity(models.Model):
                         'name': '%s - %s' % (activity_id.activity_type_id.name, user_id.name),
                         'user_id': user_id.id,
                         'mail_children_activity_id': False,
-                        }
+                    }
                     rel_id = self.env['mail.activity.children.rel'].create(vals)
                     activity_ids.append(rel_id.id)
             activity_id.write({
                 'children_ids': [(6, False, activity_ids)]
-                })
+            })
 
     def write(self, vals):
         ret = super(MailActivity, self).write(vals)
@@ -162,7 +156,7 @@ class MailActivity(models.Model):
             if activity_id.activity_type_id.change_activity_type in ['request', 'plm_activity']:
                 return True
         return False
-        
+
     def unlink(self):
         for activity_id in self:
             if activity_id.isCustomType():
@@ -173,8 +167,8 @@ class MailActivity(models.Model):
     def clearChildrenActivities(self):
         for child_id in self.children_ids:
             for child_rel in child_id.mail_children_activity_id.sudo():
-                if child_rel.mail_children_activity_id.plm_state == 'draft':
-                    child_rel.mail_children_activity_id.unlink()
+                if child_rel.plm_state == 'draft':
+                    child_rel.unlink()
                     child_rel.unlink()
 
     def action_to_draft(self):
@@ -265,7 +259,7 @@ class MailActivity(models.Model):
                         'note': line_id.name,
                         'res_model_id': activity_id.res_model_id.id,
                         'res_id': activity_id.res_id,
-                        }
+                    }
                     new_activity_id = self.create(activity_vals)
                     line_id.mail_children_activity_id = new_activity_id.id
                     line_id.mail_parent_activity_id = activity_id.id
@@ -284,19 +278,28 @@ class MailActivity(models.Model):
 
     def action_open_releted_ent(self):
         for activity in self:
-            return {'name': activity.display_name,
-                    'view_type': 'form',
-                    'target': 'new',
-                    'res_model': activity.res_model,
-                    'type': 'ir.actions.act_window',
-                    'view_mode': 'form',
-                    'res_id': activity.res_id}
+            if activity.res_id:
+                return {'name': activity.display_name,
+                        'view_type': 'form',
+                        'target': 'new',
+                        'res_model': activity.res_model,
+                        'type': 'ir.actions.act_window',
+                        'view_mode': 'form',
+                        'res_id': activity.res_id}
+            else:
+                raise UserError(
+                    "Activity Not created yet, to open Related entity Create Activity first"
+                )
+
         return {}
-            
-    
+
     def name_get(self):
         out = []
         for activity in self:
-            name = '%s | %s' % (activity.summary or activity.activity_type_id.display_name, activity.user_id.display_name or '')
+            name = '%s | %s' % (
+            activity.summary or activity.activity_type_id.display_name, activity.user_id.display_name or '')
             out.append((activity.id, name))
         return out
+
+
+
