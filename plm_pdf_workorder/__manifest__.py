@@ -33,19 +33,12 @@
     "license": "LGPL-3",
     "depends": [
         "plm",
-        "plm_mrp_workorder",
     ],
     "data": [
         "views/ir_attachment.xml",
         "views/mrp_routing_workcenter.xml",
         "views/mrp_workorder.xml",
     ],
-    "assets": {
-        "web.assets_backend": [
-            "plm_pdf_workorder/static/src/mrpWorksheet.js",
-            "plm_pdf_workorder/static/src/mrpDisplayRecord.xml",
-        ]
-    },
     'pre_init_hook': '_pre_init_plm_mrp_workorder',
     "installable": True,
     "application": False,
