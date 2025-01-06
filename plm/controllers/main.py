@@ -17,8 +17,8 @@ def webservice(f):
         except Exception as e:
             logging.error(e)
             return Response(response=f"{e}", status=500)
-    return wrap   
-    
+    return wrap
+
 class UploadDocument(Controller):
 
     @route('/plm_document_upload/isalive', type='http', auth='none', methods=['GET'], csrf=False)
@@ -87,8 +87,8 @@ class UploadDocument(Controller):
             logging.info('upload %r' % (doc_id))
             return Response('Upload succeeded', status=200)
         logging.info('no upload %r' % (doc_id))
-        return Response('Failed upload', status=400)      
-        
+        return Response('Failed upload', status=400)
+
     @route('/plm_document_upload/download', type='http', auth='user', methods=['GET'])
     @webservice
     def download(self,
@@ -137,7 +137,7 @@ class UploadDocument(Controller):
 
     @route('/plm_document_upload/zip_archive', type='http', auth='user', methods=['POST'], csrf=False)
     @webservice
-    def upload_zip(self, 
+    def upload_zip(self,
                    attachment_id=None,
                    filename='', **kw):
         logging.info('start upload zip %r' % (attachment_id))
@@ -176,7 +176,7 @@ class UploadDocument(Controller):
             if not link_id:
                 request.env['ir.attachment.relation'].create({'parent_id': from_ir_attachment_id.id,
                                                               'child_id': zip_ir_attachment_id.id,
-                                                              'link_kind': 'PkgTree'})                     
+                                                              'link_kind': 'PkgTree'})
             return Response('Zip Upload succeeded', status=200)
         logging.info('Zip no upload %r' % (attachment_id))
         return Response('Zip Failed upload', status=400)
@@ -208,7 +208,7 @@ class UploadDocument(Controller):
                         attachment_brws.name,
                         attachment_brws.write_date.strftime(DEFAULT_SERVER_DATETIME_FORMAT)))
         return Response(json.dumps(out))
-        
+
 
     @route('/plm_document_upload/extra_file', type='http', auth='user', methods=['POST'], csrf=False)
     @webservice
@@ -247,7 +247,7 @@ class UploadDocument(Controller):
             if not link_id:
                 request.env['ir.attachment.relation'].create({'parent_id': related_attachment_id,
                                                               'child_id': ir_attachment_id.id,
-                                                              'link_kind': 'ExtraTree'})    
+                                                              'link_kind': 'ExtraTree'})
             if product_id:
                 product_id = request.env['product.product'].browse(product_id)
                 request.env['plm.component.document.rel'].createFromIds(product_id, ir_attachment_id)
@@ -282,7 +282,7 @@ class UploadDocument(Controller):
                 if ir_attachement_id.printout:
                     print_out_data = request.env['report.plm.ir_attachment_pdf']._render_qweb_pdf(ir_attachement_id)
                     print_out_data = print_out_data[0]
-                    if print_out_data: 
+                    if print_out_data:
                         headers = [('Content-Type', 'application/pdf'),
                                    ('Content-Length', len(print_out_data)),
                                    ('Content-Disposition', f'inline; filename="{ir_attachement_id.engineering_code}_{ir_attachement_id.engineering_revision}.pdf"')]
