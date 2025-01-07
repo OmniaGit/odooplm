@@ -55,15 +55,25 @@ class MailActivitySchedule(models.TransientModel):
 
     def _action_schedule_activities(self):
         res = super()._action_schedule_activities()
-        res.write({
-            'children_ids': [
-                (0, 0, {
-                    'name': self.children_ids.name,
-                    'user_id': self.children_ids.user_id.id,
-                    'mail_children_activity_id' : res.id
-                }),
-            ]
-        })
+        children_data = []
+        for child in self.children_ids:
+            activity = self.env['mail.activity'].create({
+                'summary': res.summary,
+                'activity_type_id': res.activity_type_id.id,
+                'user_id': child.user_id.id,
+                'res_model_id':res.res_model_id.id,
+                'date_deadline':res.date_deadline,
+                'res_id': res.res_id,
+            })
+            children_data.append({
+                'name': child.name,
+                'user_id': child.user_id.id,
+                'mail_children_activity_id': activity.id,
+            })
+
+        if children_data:
+            res.write({'children_ids': [(0, 0, data) for data in children_data]})
+
         return res
 
     def _compute_mail_activity_type(self):
@@ -115,11 +125,8 @@ class MailActivitySchedule(models.TransientModel):
 
     def write(self, vals):
         ret = super(MailActivitySchedule, self).write(vals)
-        for activity_id in self:
-            if self.env.user.has_group('activity_validation.group_force_activity_validation_admin'):
-                return ret
-            if activity_id.plm_state == 'done' and 'plm_state' not in vals:
-                raise UserError('You cannot modify a confirmed activity')
+        if self.env.user.has_group('activity_validation.group_force_activity_validation_admin'):
+            return ret
         return ret
 
     def checkConfirmed(self, check=False):
@@ -224,11 +231,15 @@ class MailActivitySchedule(models.TransientModel):
 
     def action_to_cancel(self):
         for activity_id in self:
-            activity_id.plm_state = 'cancel'
-            self.cancelChildrenECO(activity_id)
-            self.cancelChildrenECR(activity_id)
-            activity_id._action_done()
-
+            if activity_id._name == 'mail.activity':
+                activity_id.plm_state = 'cancel'
+                self.cancelChildrenECO(activity_id)
+                self.cancelChildrenECR(activity_id)
+                activity_id._action_done()
+            else:
+                return {
+                    'type': 'ir.actions.act_window_close',
+                }
     def cancelChildrenECR(self, activity_id):
         for child in activity_id.children_ids:
             if child.plm_state not in ['done', 'cancel']:

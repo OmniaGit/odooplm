@@ -100,11 +100,8 @@ class MailActivity(models.Model):
 
     def write(self, vals):
         ret = super(MailActivity, self).write(vals)
-        for activity_id in self:
-            if self.env.user.has_group('activity_validation.group_force_activity_validation_admin'):
-                return ret
-            if activity_id.plm_state == 'done' and 'plm_state' not in vals:
-                raise UserError('You cannot modify a confirmed activity')
+        if self.env.user.has_group('activity_validation.group_force_activity_validation_admin'):
+            return ret
         return ret
 
     def checkConfirmed(self, check=False):
@@ -157,13 +154,6 @@ class MailActivity(models.Model):
                 return True
         return False
 
-    def unlink(self):
-        for activity_id in self:
-            if activity_id.isCustomType():
-                if not self.env.su:
-                    return
-        return super(MailActivity, self).unlink()
-
     def clearChildrenActivities(self):
         for child_id in self.children_ids:
             for child_rel in child_id.mail_children_activity_id.sudo():
@@ -193,7 +183,7 @@ class MailActivity(models.Model):
                     if child_activity_id.plm_state != 'done':
                         close = False
                 if close:
-                    parents._action_done()
+                    parents.children_ids.mail_children_activity_id._action_done()
             else:
                 activity_id._action_done()
 
@@ -217,7 +207,7 @@ class MailActivity(models.Model):
     def cancelChildrenECR(self, activity_id):
         for child in activity_id.children_ids:
             if child.plm_state not in ['done', 'cancel']:
-                child.action_to_cancel()
+                child.mail_children_activity_id.action_to_cancel()
 
     def cancelChildrenECO(self, activity_id):
         for child in activity_id.children_ids:

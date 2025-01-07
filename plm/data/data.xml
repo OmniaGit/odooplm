@@ -9,6 +9,5 @@
             <field name="sequence">200</field>
             <field name="change_activity_type">request</field>
         </record>
-
     </data>
 </odoo>

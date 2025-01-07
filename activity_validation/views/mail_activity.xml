@@ -106,8 +106,6 @@
                         </list>
                     </field>
                 </xpath>
-
-
             </field>
         </record>
 
@@ -167,14 +165,12 @@
                     <label for="children_ids"
                            invisible="change_activity_type != 'request'"
                            readonly="plm_state in ['eco', 'done']"/>
-                    <field name="children_ids"
-                           nolabel="1"
-                           invisible="change_activity_type != 'request'"
-                           readonly="plm_state=='eco'">
+                    <field name="children_ids" nolabel="1" invisible="change_activity_type != 'request'" readonly="plm_state=='eco'">
                         <list editable='bottom'>
                             <field name="name"/>
                             <field name="user_id"/>
                             <field name="activity_user_id"/>
+                            <field name="mail_children_activity_id" invisible="1" force_save="1"/>
                             <field name="plm_state" />
                         </list>
                     </field>
