@@ -91,6 +91,7 @@ class MailActivity(models.Model):
                         'name': '%s - %s' % (activity_id.activity_type_id.name, user_id.name),
                         'user_id': user_id.id,
                         'mail_children_activity_id': False,
+                        'is_eco': True
                     }
                     rel_id = self.env['mail.activity.children.rel'].create(vals)
                     activity_ids.append(rel_id.id)
@@ -99,6 +100,14 @@ class MailActivity(models.Model):
             })
 
     def write(self, vals):
+        eco_child_ids = vals.get('eco_child_ids')
+        if isinstance(eco_child_ids, list):
+            for child in eco_child_ids:
+                if isinstance(child, list) and len(child) > 2:
+                    child_dict = child[2]
+                    if isinstance(child_dict, dict):
+                        child_dict['is_eco'] = True
+
         ret = super(MailActivity, self).write(vals)
         if self.env.user.has_group('activity_validation.group_force_activity_validation_admin'):
             return ret
@@ -239,20 +248,19 @@ class MailActivity(models.Model):
     def action_in_progress(self):
         for activity_id in self:
             for line_id in activity_id.children_ids:
-                if not line_id.mail_children_activity_id:
-                    activity_vals = {
+                activity_vals = {
                         'activity_type_id': activity_id.activity_type_id.id,
                         'date_deadline': activity_id.date_deadline,
                         'user_id': line_id.user_id.id,
                         'plm_state': 'draft',
                         'name': line_id.name,
-                        'note': line_id.name,
+                        'note': activity_id.note,
                         'res_model_id': activity_id.res_model_id.id,
                         'res_id': activity_id.res_id,
                     }
-                    new_activity_id = self.create(activity_vals)
-                    line_id.mail_children_activity_id = new_activity_id.id
-                    line_id.mail_parent_activity_id = activity_id.id
+                new_activity_id = self.create(activity_vals)
+                line_id.mail_children_activity_id = new_activity_id.id
+                line_id.mail_parent_activity_id = activity_id.id
             activity_id.plm_state = 'in_progress'
             return self.reopenActivity(activity_id.id)
 
@@ -280,7 +288,6 @@ class MailActivity(models.Model):
                 raise UserError(
                     "Activity Not created yet, to open Related entity Create Activity first"
                 )
-
         return {}
 
     def name_get(self):
@@ -290,6 +297,3 @@ class MailActivity(models.Model):
             activity.summary or activity.activity_type_id.display_name, activity.user_id.display_name or '')
             out.append((activity.id, name))
         return out
-
-
-

@@ -57,23 +57,12 @@ class MailActivitySchedule(models.TransientModel):
         res = super()._action_schedule_activities()
         children_data = []
         for child in self.children_ids:
-            activity = self.env['mail.activity'].create({
-                'summary': res.summary,
-                'activity_type_id': res.activity_type_id.id,
-                'user_id': child.user_id.id,
-                'res_model_id':res.res_model_id.id,
-                'date_deadline':res.date_deadline,
-                'res_id': res.res_id,
-            })
-            children_data.append({
+            children_data.append((0, 0, {
                 'name': child.name,
                 'user_id': child.user_id.id,
-                'mail_children_activity_id': activity.id,
-            })
-
-        if children_data:
-            res.write({'children_ids': [(0, 0, data) for data in children_data]})
-
+                'mail_children_activity_id': res.id
+            }))
+        res.write({'children_ids': children_data})
         return res
 
     def _compute_mail_activity_type(self):
@@ -240,6 +229,7 @@ class MailActivitySchedule(models.TransientModel):
                 return {
                     'type': 'ir.actions.act_window_close',
                 }
+
     def cancelChildrenECR(self, activity_id):
         for child in activity_id.children_ids:
             if child.plm_state not in ['done', 'cancel']:
@@ -282,7 +272,7 @@ class MailActivitySchedule(models.TransientModel):
                         'user_id': line_id.user_id.id,
                         'plm_state': 'draft',
                         'name': line_id.name,
-                        'note': line_id.name,
+                        'note': activity_id.note,
                         'res_model_id': activity_id.res_model_id.id,
                         'res_id': activity_id.res_id,
                     }
@@ -317,6 +307,6 @@ class MailActivitySchedule(models.TransientModel):
         out = []
         for activity in self:
             name = '%s | %s' % (
-            activity.summary or activity.activity_type_id.display_name, activity.user_id.display_name or '')
+                activity.summary or activity.activity_type_id.display_name, activity.user_id.display_name or '')
             out.append((activity.id, name))
         return out
