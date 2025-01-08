@@ -109,6 +109,23 @@ class MailActivity(models.Model):
                         child_dict['is_eco'] = True
 
         ret = super(MailActivity, self).write(vals)
+        if self.plm_state == 'in_progress':
+            for child in self.children_ids:
+                if not child.mail_children_activity_id:
+                    activity_vals = {
+                        'activity_type_id': self.activity_type_id.id,
+                        'date_deadline': self.date_deadline,
+                        'user_id': child.user_id.id,
+                        'plm_state': 'draft',
+                        'name': child.name,
+                        'note': self.note,
+                        'res_model_id': self.res_model_id.id,
+                        'res_id': self.res_id,
+                    }
+                    new_activity_id = self.create(activity_vals)
+                    child.mail_children_activity_id = new_activity_id.id
+                    child.mail_parent_activity_id = self.id
+
         if self.env.user.has_group('activity_validation.group_force_activity_validation_admin'):
             return ret
         return ret
@@ -167,7 +184,6 @@ class MailActivity(models.Model):
         for child_id in self.children_ids:
             for child_rel in child_id.mail_children_activity_id.sudo():
                 if child_rel.plm_state == 'draft':
-                    child_rel.unlink()
                     child_rel.unlink()
 
     def action_to_draft(self):
