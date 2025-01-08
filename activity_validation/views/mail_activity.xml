@@ -153,7 +153,8 @@
                     </div>
                     <hr></hr>
                     <div class="o_row o_kanban_top_right" col="4">
-                        <button string="Open Releted Ent" name="action_open_releted_ent" type="object" class="btn-primary" icon="fa-check-circle"/>
+                        <button string="Open Releted Ent" name="action_open_releted_ent" type="object"
+                                class="btn-primary" icon="fa-check-circle"/>
 
                         <field name="change_activity_type" invisible="True"/>
                         <field name="has_parent" invisible="True"/>

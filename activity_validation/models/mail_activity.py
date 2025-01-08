@@ -188,12 +188,12 @@ class MailActivity(models.Model):
                 self.checkChildrenECRDone(activity_id)
                 parent = self.getParentECRActivity(activity_id)
             close = True
-            if parent.is_eco and parent.eco_child_ids:
+            if parent.is_eco:
                 for child_activity_id in parent.eco_child_ids:
                     if child_activity_id.plm_state != 'done':
                         close = False
                         break
-                if close:#
+                if close:
                     parent.plm_state = 'done'
                     parent._action_done()
 

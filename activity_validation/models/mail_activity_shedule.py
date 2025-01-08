@@ -24,6 +24,7 @@ Created on Nov 16, 2019
 '''
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
+import ast
 
 
 class MailActivitySchedule(models.TransientModel):
@@ -63,6 +64,8 @@ class MailActivitySchedule(models.TransientModel):
                 'mail_children_activity_id': res.id
             }))
         res.write({'children_ids': children_data})
+        if self.plm_state == 'in_progress':
+            res.action_in_progress()
         return res
 
     def _compute_mail_activity_type(self):
@@ -263,24 +266,24 @@ class MailActivitySchedule(models.TransientModel):
             activity_id.is_eco = True
 
     def action_in_progress(self):
+
         for activity_id in self:
             for line_id in activity_id.children_ids:
                 if not line_id.mail_children_activity_id:
                     activity_vals = {
                         'activity_type_id': activity_id.activity_type_id.id,
                         'date_deadline': activity_id.date_deadline,
-                        'user_id': line_id.user_id.id,
                         'plm_state': 'draft',
                         'name': line_id.name,
                         'note': activity_id.note,
                         'res_model_id': activity_id.res_model_id.id,
-                        'res_id': activity_id.res_id,
+                        'res_ids': activity_id.res_ids,
                     }
                     new_activity_id = self.create(activity_vals)
                     line_id.mail_children_activity_id = new_activity_id.id
                     line_id.mail_parent_activity_id = activity_id.id
             activity_id.plm_state = 'in_progress'
-            return self.reopenActivity(activity_id.id)
+            activity_id.action_schedule_activities()
 
     def reopenActivity(self, res_id):
         out_act_dict = {'name': _('Activity'),
@@ -294,13 +297,16 @@ class MailActivitySchedule(models.TransientModel):
 
     def action_open_releted_ent(self):
         for activity in self:
-            return {'name': activity.display_name,
+            if activity.res_ids:
+                return {
+                    'name': activity.display_name,
                     'view_type': 'form',
                     'target': 'new',
                     'res_model': activity.res_model,
                     'type': 'ir.actions.act_window',
                     'view_mode': 'form',
-                    'res_id': activity.res_id}
+                    'res_id': ast.literal_eval(activity.res_ids)[0]
+                }
         return {}
 
     def name_get(self):
