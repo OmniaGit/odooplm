@@ -180,21 +180,22 @@ class MailActivity(models.Model):
     def action_to_done(self):
         for activity_id in self:
             activity_id.plm_state = 'done'
+            activity_id._action_done()
             if activity_id.is_eco:
                 self.checkChildrenECODone(activity_id)
-                parents = self.getParentECOActivity(activity_id)
+                parent = self.getParentECOActivity(activity_id)
             else:
                 self.checkChildrenECRDone(activity_id)
-                parents = self.getParentECRActivity(activity_id)
+                parent = self.getParentECRActivity(activity_id)
             close = True
-            if parents.children_ids:
-                for child_activity_id in parents.children_ids:
+            if parent.is_eco and parent.eco_child_ids:
+                for child_activity_id in parent.eco_child_ids:
                     if child_activity_id.plm_state != 'done':
                         close = False
-                if close:
-                    parents.children_ids.mail_children_activity_id._action_done()
-            else:
-                activity_id._action_done()
+                        break
+                if close:#
+                    parent.plm_state = 'done'
+                    parent._action_done()
 
     def action_to_exception(self):
         for activity_id in self:

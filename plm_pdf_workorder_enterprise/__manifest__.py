@@ -31,7 +31,8 @@
     available into the workorder workscheet.
     """,
     "license": "LGPL-3",
-    "depends": ["plm_pdf_workorder", "mrp_workorder"],
+    "depends": ["plm_pdf_workorder", 
+                "mrp_workorder"],
     "assets": {
         "web.assets_backend": [
             "plm_pdf_workorder_enterprise/static/src/mrpWorksheet.js",
