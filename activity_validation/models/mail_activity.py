@@ -249,12 +249,13 @@ class MailActivity(models.Model):
             raise UserError(_('You cannot move to Done because there are pending ECO activities.'))
 
     def checkChildrenECRDone(self, activity_id):
-        do_ecr = True
+        do_ecr = f"You cannot move to ECO or to Done because there are pending ECR activities for User:\n"
         for child in activity_id.children_ids:
             if child.plm_state not in ['done', 'cancel']:
-                do_ecr = False
-        if not do_ecr:
-            raise UserError(_('You cannot move to ECO or to Done because there are pending ECR activities.'))
+                do_ecr += f"\t-->\t{child.user_id.name}\n"
+
+        if do_ecr:
+            raise UserError(_(do_ecr))
 
     def action_to_eco(self):
         for activity_id in self:
