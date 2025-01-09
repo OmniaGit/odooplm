@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="plm.BomOverviewTable" t-inherit="mrp.BomOverviewTable" t-inherit-mode="extension">
+        <xpath expr="//th[@name='th_mrp_bom_h']" position="before">
+            <th name="th_mrp_bom_p_i">Image</th>
+        </xpath>
+        <xpath expr="//tfoot/tr/td" position="before">
+            <td/>
+        </xpath>
+    </t>
+    <t t-name="plm.BomOverviewLine" t-inherit="mrp.BomOverviewLine" t-inherit-mode="extension">
+        <xpath expr="//td" position="before">
+            <td name="td_mrp_bom">
+                <img t-if="image_data" t-att-src="this.image_data" width="50"/>
+            </td>
+        </xpath>
+    </t>
+</templates>
