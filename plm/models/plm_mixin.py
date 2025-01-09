@@ -479,8 +479,9 @@ class RevisionBaseMixin(models.AbstractModel):
             'engineering_code'] not in [False, '-', '']:
             vals['engineering_code_editable'] = False
         else:
-            if self.engineering_code and self.engineering_code_editable == True:
-                vals['engineering_code_editable'] = False
+            for record in self:
+                if record.engineering_code and record.engineering_code_editable == True:
+                    vals['engineering_code_editable'] = False
         return super(RevisionBaseMixin, self).write(vals)
 
     @api.model_create_multi

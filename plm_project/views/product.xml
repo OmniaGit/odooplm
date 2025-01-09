@@ -31,7 +31,7 @@
                     </group>
                     <group name="project_infos">
                     	<label for="project_ids"/>
-                        <field name="project_ids" nolabel="1" />
+                        <field name="project_ids" nolabel="1" context="{'default_plm_use_plm': True}" />
                     </group>
                 </page>
             </page>

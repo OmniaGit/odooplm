@@ -39,7 +39,11 @@
                                 <field name="date"/>
                                 <field name="tracking" invisible="1"/>
                             </group>
-                            <field name="notes" nolabel="1" widget="html"/>
+                            <notebook>
+                                <page string="Description">
+                                    <field name="notes" nolabel="1" widget="html"/>
+                                </page>
+                            </notebook>
                         </group>
                     </sheet>
                     <!-- Chatter -->
@@ -120,6 +124,12 @@
             <field name="name">Product Breakages</field>
             <field name="res_model">plm.breakages</field>
             <field name="view_mode">graph,pivot,list,form</field>
+        </record>
+
+        <record id="breakages_form_view_action" model="ir.actions.act_window">
+            <field name="name">Product Breakages</field>
+            <field name="res_model">plm.breakages</field>
+            <field name="view_mode">form</field>
         </record>
 
         <menuitem

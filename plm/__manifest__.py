@@ -34,6 +34,7 @@
     "data": [
         "security/base_plm_security.xml",
         "data/data.xml",
+        "data/sequence.xml",
         "report/bom_document.xml",
         "report/bom_structure_report_template.xml",
         "report/document_report_templates.xml",
@@ -61,7 +62,7 @@
         "views/plm_cad_open.xml",
         "views/plm_cad_open_bck.xml",
         "views/mail_activity_type.xml",
-        "views/sequence.xml",
+
         "views/menu.xml",
         "views/product_category.xml",
         "views/plm_temporaty.xml",

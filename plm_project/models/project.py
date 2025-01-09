@@ -25,7 +25,7 @@ Created on 30 Aug 2016
 
 @author: Daniel Smerghetto
 """
-from odoo import _, fields, models
+from odoo import _, api, fields, models
 
 
 class ProjectExtension(models.Model):
@@ -55,6 +55,8 @@ class ProjectExtension(models.Model):
         string="Use PLM",
         default=False,
         help=_("Check this box to manage plm data into project"),
+        compute="_compute_plm_use_plm",
+        store=True
     )
     plm_completed = fields.Float(
         string=_("Plm Complete"), compute="_compute_plm_complete"
@@ -69,3 +71,11 @@ class ProjectExtension(models.Model):
     plm_product_count = fields.Integer(
         compute="_compute_product_count", string=_("Number of product related")
     )
+
+    @api.depends('plm_product_ids')
+    def _compute_plm_use_plm(self):
+        for rec in self:
+            if rec.plm_product_ids:
+                rec.plm_use_plm = True
+            else:
+                rec.plm_use_plm = False
