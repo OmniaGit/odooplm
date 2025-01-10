@@ -73,6 +73,8 @@ class ProductProductExtension(models.Model):
             out = self.getDefaultCodeTemplate % (engineering_code, engineering_revision)
         if default_code == out:
             return False
+        if default_code:
+            out = f"{engineering_code}_{engineering_revision}"
         return out
 
     def write(self, vals):

@@ -321,12 +321,15 @@
             <xpath expr="//notebook[last()]" position="before">
                 <field name="is_engcode_editable" invisible="1"/>
                 <group>
-                    <group colspan="4" col="3" string="OdooPLM Information">
-                        <field name="engineering_code"
-                               readonly="is_engcode_editable==False"/>
-                        <field name="engineering_revision"
-                               nolabel="1"
-                               readonly="is_engcode_editable==False"/>
+                    <group  colspan="4" string="OdooPLM Information">
+                        <label for="engineering_code"/>
+                        <div>
+                            <field name="engineering_code" class="oe_inline"
+                                   readonly="is_engcode_editable==False"/> - Rev_
+                            <field name="engineering_revision"
+                                   nolabel="1" class="oe_inline"
+                                   readonly="is_engcode_editable==False"/>
+                        </div>
                     </group>
                     <group colspan="4">
                         <field name="std_description"

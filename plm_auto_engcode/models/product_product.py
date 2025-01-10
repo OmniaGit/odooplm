@@ -49,8 +49,15 @@ class ProductTemplate(models.Model):
         """
         if self.env.context.get("odooPLM", False):
             if self.categ_id and self.categ_id.plm_code_sequence:
-                return self.categ_id.plm_code_sequence.next_by_id()
-            return self.env["ir.sequence"].next_by_code("plm.eng.code")
+                if self.old_plm_code_sequence_id.id != self.categ_id.plm_code_sequence.id:
+                    self.old_plm_code_sequence_id = self.categ_id.plm_code_sequence.id
+                    return self.categ_id.plm_code_sequence.next_by_id()
+                elif self.old_plm_code_sequence_id.id == self.categ_id.plm_code_sequence.id:
+                    return self.engineering_code
+
+            else:
+                self.old_plm_code_sequence_id = False
+                return self.env["ir.sequence"].next_by_code("plm.eng.code")
         return False
 
     engineering_code = fields.Char(
@@ -61,3 +68,4 @@ class ProductTemplate(models.Model):
         ),
         size=64,
     )
+    old_plm_code_sequence_id = fields.Many2one('ir.sequence')

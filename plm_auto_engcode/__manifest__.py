@@ -31,7 +31,11 @@
     """,
     "license": "AGPL-3",
     "depends": ["plm"],
-    "data": ["data/ir_sequence.xml", "views/product_category.xml"],
+    "data": [
+        "data/ir_sequence.xml",
+        "views/product_category.xml",
+        "views/product_product.xml"
+    ],
     "installable": True,
     "application": False,
     "auto_install": False,
