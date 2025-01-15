@@ -809,26 +809,24 @@ class Plm_box(models.Model):
         return out
 
     @api.model
-    def getDocDictValues(self, docBrws):
+    def getDocDictValues(self, ir_attachment_id):
         getCheckOutUser = ""
-        plmDocObj = self.env.get("ir.attachment")
-
-        docState = plmDocObj.getDocumentState()
+        docState = ir_attachment_id.getDocumentState()
         if docState in ["check-out", "check-out-by-me"]:
-            getCheckOutUser = docBrws.getCheckOutUser()
-        writeVal = docBrws.write_date.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+            getCheckOutUser = ir_attachment_id.getCheckOutUser()
+        writeVal = ir_attachment_id.write_date.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
 
         return {
-            "id": docBrws.id,
-            "name": docBrws.engineering_code,
-            "engineering_revision": docBrws.engineering_revision,
-            "datas_fname": docBrws.name,
-            "create_date": docBrws.create_date,
+            "id": ir_attachment_id.id,
+            "name": ir_attachment_id.engineering_code,
+            "engineering_revision": ir_attachment_id.engineering_revision,
+            "datas_fname": ir_attachment_id.name,
+            "create_date": ir_attachment_id.create_date,
             "write_date": correctDate(writeVal, self.env.context),
-            "description": docBrws.description,
-            "fileName": docBrws.name,
-            "state": docBrws.engineering_state,
-            "readonly": self.docReadonlyCompute(docBrws.id),
+            "description": ir_attachment_id.description,
+            "fileName": ir_attachment_id.name,
+            "state": ir_attachment_id.engineering_state,
+            "readonly": self.docReadonlyCompute(ir_attachment_id.id),
             "checkoutUser": getCheckOutUser,
         }
 

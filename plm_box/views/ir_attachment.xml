@@ -37,7 +37,7 @@
                 <field name="create_date"/>
                 <field name="write_uid"/>
                 <field name="write_date"/>
-
+                <field name="is_checkout" invisible="True"/>
             </list>
         </field>
     </record>
