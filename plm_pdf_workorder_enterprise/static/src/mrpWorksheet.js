@@ -9,26 +9,29 @@ export class PlmMrpWorksheet extends MrpWorksheet{
         super.setup();
     }
      async clicked() {
-        let worksheetData = false;
-            const sheet = await this.props.record.model.orm.read(
-                    "mrp.workorder",
-                    [this.props.record.resId],
-                    ["plm_pdf"]
-            );
-            if(sheet && sheet.length !=0){
-
-                worksheetData = {
-                    resModel: "mrp.workorder",
-                    resId: this.props.record.resId,
-                    resField: "plm_pdf",
-                    value: sheet[0].plm_pdf,
-                    page: 1,
-                };
-                this.dialog.add(MrpWorksheetDialog, {
-                worksheetText: markup(''),
-                worksheetData,
-            });
-            }
+     debugger;
+     let action_open_workorder_kanban = await this.props.record.model.orm.call("mrp.workorder", "action_open_workorder_kanban", [this.props.record.resId]);
+        return this.action.doAction(action_open_workorder_kanban);
+//        let worksheetData = false;
+//            const sheet = await this.props.record.model.orm.read(
+//                    "mrp.workorder",
+//                    [this.props.record.resId],
+//                    ["plm_pdf"]
+//            );
+//            if(sheet && sheet.length !=0){
+//
+//                worksheetData = {
+//                    resModel: "mrp.workorder",
+//                    resId: this.props.record.resId,
+//                    resField: "plm_pdf",
+//                    value: sheet[0].plm_pdf,
+//                    page: 1,
+//                };
+//                this.dialog.add(MrpWorksheetDialog, {
+//                worksheetText: markup(''),
+//                worksheetData,
+//            });
+//            }
      }
 }
 PlmMrpWorksheet.template = 'plm_pdf_workorder_enterprise.MrpWorksheet'

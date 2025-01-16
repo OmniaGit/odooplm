@@ -5,14 +5,17 @@
         <field name="model">ir.attachment</field>
         <field name="inherit_id" ref="plm.document_kanban_view"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='is_linkedcomponents']" position="after">
-                <field string="Spare Part" name="used_for_spare" invisible="True"/>
-            </xpath>
-            <xpath expr="//td[@name='Component']" position="inside">
-                <div class="fa fa-gear fa-2x"
-                     aria-label="Is A Spare Drawing"
-                     style="color: blue;"
-                     invisible="used_for_spare in [False]"/>
+            <xpath expr="//table/tr" position="inside">
+                <td>
+                    Spare Part:
+                    <field name="used_for_spare" widget="boolean_toggle"/>
+                </td>
+                <td>
+                    <div class="fa fa-gear fa-2x"
+                         aria-label="Is A Spare Drawing"
+                         style="color: blue;"
+                         invisible="used_for_spare in [False]"/>
+                </td>
             </xpath>
         </field>
     </record>

@@ -9,20 +9,20 @@
                 <xpath expr="//field[@name='worksheet_type']" position="before">
                     <field name="use_plm_pdf"/>
                     <button name="refresh_plm_instruction_pdf"
-                            type="object"
-                            icon="fa-refresh"/>
+                            type="object" icon="fa-refresh"/>
                     <field name="plm_pdf" invisible="use_plm_pdf == False" widget="pdf_viewer"/>
                 </xpath>
                 <xpath expr="//field[@name='worksheet_type']" position="attributes">
                     <attribute name="invisible">use_plm_pdf == True</attribute>
                 </xpath>
                 <xpath expr="//field[@name='worksheet']" position="attributes">
-                    <attribute name="invisible">use_plm_pdf == True</attribute>
+                    <attribute name="invisible">use_plm_pdf == True or worksheet_type != 'pdf'</attribute>
                 </xpath>
                 <xpath expr="//field[@name='worksheet_google_slide']" position="attributes">
-                    <attribute name="invisible">use_plm_pdf == True</attribute>
-                </xpath><xpath expr="//field[@name='note']" position="attributes">
-                    <attribute name="invisible">use_plm_pdf == True</attribute>
+                    <attribute name="invisible">use_plm_pdf == True or worksheet_type != 'google_slide'</attribute>
+                </xpath>
+                <xpath expr="//field[@name='note']" position="attributes">
+                    <attribute name="invisible">use_plm_pdf == True or worksheet_type != 'text'</attribute>
                 </xpath>
             </field>
         </record>

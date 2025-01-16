@@ -24,47 +24,29 @@ Created on Mar 30, 2016
 @author: Daniel Smerghetto
 """
 import base64
-import io
-
-from PyPDF2 import PdfFileMerger
 from odoo import _, api, fields, models
 
 
 class MrpWorkorder(models.Model):
     _inherit = "mrp.workorder"
 
-    view_plm_pdf = fields.Boolean(_("Switch PDF"))
-    plm_pdf = fields.Binary(_("Plm PDF"))
+    plm_pdf = fields.Binary(_("Plm PDF"), compute="_compute_production_pdf", store=True)
     use_plm_pdf = fields.Boolean(
         related="operation_id.use_plm_pdf", string=_("Use PLM PDF")
     )
+    production_doc_ids = fields.Many2many("ir.attachment",
+                                          compute="_compute_production_doc_ids",
+                                          store=True)
 
-    def action_switch_pdf(self):
-        for workorder_id in self:
-            if not workorder_id.view_plm_pdf:
-                workorder_id.view_plm_pdf = not workorder_id.view_plm_pdf
-
-            if workorder_id.operation_id.use_plm_pdf:  # and not workorder_id.plm_pdf:
-                self.fetch_release_attachment(workorder_id)
-                workorder_id.plm_pdf = self.fetch_release_attachment(workorder_id)
-
-        view_id = self.env["ir.model.data"]._xmlid_to_res_id(
-            "plm_pdf_workorder.plm_pdf_show_document_workorder"
-        )
-        ctx = self.env.context.copy()
-        ctx.update({"create": False, "delete": False})
-        return {
-            "type": "ir.actions.act_window",
-            "view_type": "form",
-            "view_mode": "form",
-            "res_model": "mrp.workorder",  # name of respective model,
-            "target": "new",
-            "views": [[view_id, "form"]],
-            "flags": {"initial_mode": "view"},
-            "context": ctx,
-            "res_id": self.id,
-            "target": "new",
-        }
+    @api.depends("product_id.linkeddocuments.is_production_doc")
+    def _compute_production_doc_ids(self):
+        for rec in self:
+            if rec.product_id.linkeddocuments:
+                rec.production_doc_ids = rec.product_id.linkeddocuments.filtered(
+                    lambda doc: doc.is_production_doc == True
+                )
+            else:
+                rec.production_doc_ids = False
 
     @api.model_create_multi
     def create(self, vals):
@@ -77,28 +59,9 @@ class MrpWorkorder(models.Model):
         self.ensure_one()
         if self.operation_id.use_plm_pdf:
             self.plm_pdf = base64.b64encode(self.getAttachmentWorkorderPDF())
-        
+
     def getAttachmentWorkorderPDF(self):
         self.ensure_one()
         report_model = self.env["report.plm.product_production_one_pdf_latest"]
-        return report_model._render_qweb_pdf(self.product_id,
-                                            checkState=True)
+        return report_model._render_qweb_pdf(self.product_id, checkState=True)
 
-    def fetch_release_attachment(self, workorder_id):
-        if self.view_plm_pdf:
-            attachment_ids = self.env["ir.attachment"].search(
-                [
-                    ("linkedcomponents", "in", workorder_id.product_id.id),
-                    ("is_production_doc", "=", True),
-                ]
-            )
-            merger = PdfFileMerger()  # Use PdfFileMerger for older versions
-            for attachment in attachment_ids:
-                pdf_bytes = base64.b64decode(attachment.datas)
-                pdf_stream = io.BytesIO(pdf_bytes)
-                merger.append(pdf_stream, import_bookmarks=False)
-            merged_stream = io.BytesIO()
-            merger.write(merged_stream)
-            merger.close()
-
-            return base64.b64encode(merged_stream.getvalue())

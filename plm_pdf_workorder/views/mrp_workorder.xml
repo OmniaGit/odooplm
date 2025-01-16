@@ -6,27 +6,21 @@
             <field name="model">mrp.workorder</field>
             <field name="inherit_id" ref="mrp.mrp_production_workorder_form_view_inherit"/>
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='worksheet']" position="before">
-                    <group>
-                        <group>
-                            <field name="view_plm_pdf" string="View PLM PDF" invisible="1"/>
-                            <button name="refresh_plm_instruction_pdf"
-                                    type="object"
-                                    icon="fa-refresh"/>
-                        </group>
-                        <group>
-                            <field name="use_plm_pdf" string="Use PLM PDF" invisible="1"/>
-                        </group>
-                        <group>
-                            <button name="action_switch_pdf"
-                                    invisible="use_plm_pdf==False"
-                                    class="btn btn-primary"
-                                    type="object"
-                                    aria-label="Show plm pdf related document"
-                                    title="Pdf PLM"
-                                    string="View Plm Pdf"/>
-                        </group>
-                    </group>
+                <xpath expr="//page[@name='workorder_page_work_instruction']" position="attributes">
+                    <attribute name="invisible">use_plm_pdf == True or not worksheet and not worksheet_google_slide and not operation_note</attribute>
+                </xpath>
+                <xpath expr="//notebook" position="inside">
+                    <page name="plm_production_doc" string="PLM Production Doc" invisible="use_plm_pdf==False">
+                        <field name="production_doc_ids" nolabel="1" mode="kanban"
+                               domain="[('is_plm', '=', True), ('is_production_doc','=', True)]"
+                               widget="hierarchy_kanban"
+                               context="{
+                               'odooPLM': True,
+                               'kanban_view_ref':'plm.document_kanban_view',
+                               'list_view_ref':'plm.ir_attachment_list',
+                               'form_view_ref':'plm.view_attachment_form_plm_hinerit'
+                               }"/>
+                    </page>
                 </xpath>
             </field>
         </record>
