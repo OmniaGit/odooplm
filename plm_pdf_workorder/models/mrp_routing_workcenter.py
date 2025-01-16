@@ -32,6 +32,11 @@ class MrpRoutingWorkcenter(models.Model):
     use_plm_pdf = fields.Boolean(_("Use PLM PDF"))
     plm_pdf = fields.Binary(_("Plm PDF"), compute="_compute_plm_pdf_data")
 
+    def refresh_plm_instruction_pdf(self):
+        self.ensure_one()
+        for workorder_id in self.workorder_ids.filtered(lambda x: x.use_plm_pdf):
+            workorder_id.refresh_plm_instruction_pdf()
+
     def _compute_plm_pdf_data(self):
         workorder_id = self.env["mrp.workorder"].search([
             ("operation_id", "in", self.ids)

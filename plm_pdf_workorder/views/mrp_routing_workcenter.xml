@@ -8,6 +8,9 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='worksheet_type']" position="before">
                     <field name="use_plm_pdf"/>
+                    <button name="refresh_plm_instruction_pdf"
+                            type="object"
+                            icon="fa-refresh"/>
                     <field name="plm_pdf" invisible="use_plm_pdf == False" widget="pdf_viewer"/>
                 </xpath>
                 <xpath expr="//field[@name='worksheet_type']" position="attributes">

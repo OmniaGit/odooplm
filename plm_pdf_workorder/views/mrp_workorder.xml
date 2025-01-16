@@ -10,6 +10,9 @@
                     <group>
                         <group>
                             <field name="view_plm_pdf" string="View PLM PDF" invisible="1"/>
+                            <button name="refresh_plm_instruction_pdf"
+                                    type="object"
+                                    icon="fa-refresh"/>
                         </group>
                         <group>
                             <field name="use_plm_pdf" string="Use PLM PDF" invisible="1"/>

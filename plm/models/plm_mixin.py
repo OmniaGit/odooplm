@@ -60,8 +60,6 @@ LOWERCASE_LETTERS = [chr(i) for i in range(ord('a'), ord('z') + 1)]
 UPPERCASE_LETTERS = [
     chr(i) for i in range(ord('A'), ord('Z') + 1)
 ]
-
-
 #
 def convert_to_letter(l, n):
     n_o_w = len(l)
@@ -71,9 +69,6 @@ def convert_to_letter(l, n):
     else:
         out = l[n]
     return out
-
-
-#
 #
 class RevisionBaseMixin(models.AbstractModel):
     _name = 'revision.plm.mixin'
@@ -81,7 +76,8 @@ class RevisionBaseMixin(models.AbstractModel):
     _description = 'Revision Mixin'
 
     engineering_code = fields.Char(string="Engineering Code")
-    engineering_revision = fields.Integer(string="Engineering Revision index")
+    engineering_revision = fields.Integer(string="Engineering Revision index",
+                                          default=0)
     engineering_revision_letter = fields.Char(
         string="Engineering Revision letter",
         default="A"

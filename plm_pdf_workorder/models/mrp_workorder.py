@@ -70,13 +70,19 @@ class MrpWorkorder(models.Model):
     def create(self, vals):
         ret = super(MrpWorkorder, self).create(vals)
         for r in ret:
-            if r.operation_id.use_plm_pdf:
-                r.plm_pdf = base64.b64encode(self.getPDF(r))
+            r.refresh_plm_instruction_pdf()
         return ret
 
-    def getPDF(self, workorder_id):
+    def refresh_plm_instruction_pdf(self):
+        self.ensure_one()
+        if self.operation_id.use_plm_pdf:
+            self.plm_pdf = base64.b64encode(self.getAttachmentWorkorderPDF())
+        
+    def getAttachmentWorkorderPDF(self):
+        self.ensure_one()
         report_model = self.env["report.plm.product_production_one_pdf_latest"]
-        return report_model._render_qweb_pdf(workorder_id.product_id, checkState=True)
+        return report_model._render_qweb_pdf(self.product_id,
+                                            checkState=True)
 
     def fetch_release_attachment(self, workorder_id):
         if self.view_plm_pdf:
