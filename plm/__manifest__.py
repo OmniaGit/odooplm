@@ -77,6 +77,8 @@
         "web.assets_backend": [
             "plm/static/src/css/component_kanban.css",
             "plm/static/src/css/color_fields_tree.css",
+            "plm/static/src/js/mrp_bom_overview_line.js",
+            "plm/static/src/xml/mrp_bom_overview_table_inherit.xml",
             ],
         'web.report_assets_common': [
             "plm/static/src/scss/document_bom.scss",
