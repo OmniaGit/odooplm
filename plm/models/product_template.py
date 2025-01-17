@@ -87,13 +87,13 @@ class ProductTemplate(models.Model):
                 prod_struct.append((prod_obj.engineering_code, prod_obj.engineering_revision, ids))
             return prod_struct
 
-        for product_id in self:
+        for product_template_id in self:
             bom_obj = self.env['mrp.bom']
             field_type_def = bom_obj.fields_get('type').get('type', {})
             bom_types = []
             for option in field_type_def.get('selection', []):
                 bom_types.append(option[0])
-            bom_line = bom_obj._get_in_bom(product_id.id, False, bom_types)
+            bom_line = bom_obj._get_in_bom(product_template_id.product_variant_id.id, False, bom_types)
             where_struct = bom_obj._implode_bom(bom_line, False, bom_types)
             prod_struct = print_where_struct(self, where_struct)
             if where_struct:
