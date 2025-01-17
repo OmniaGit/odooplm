@@ -71,12 +71,12 @@
         <field name="inherit_id" ref="mrp.mrp_bom_tree_view"/>
         <field name="arch" type="xml">
         	<field name="product_tmpl_id" position="before">
-        		<field name="att_count" invisible="True"/>
+        		<field name="att_count" column_invisible="1" />
                 <button
         			name="open_attachments"
         			type="object"
-        			icon="plm/static/description/odoo_icon_small.png"
-        			string="."
+        			string=""
+        			icon="fa-folder-open"
         			class="float-right"
         			invisible="att_count in [False,0]"/>
         	</field>
@@ -121,7 +121,7 @@
                         class="oe_stat_button"
                         icon="fa-tasks"
                         invisible="bom_revision_count>=1">
-                <field name="bom_revision_count" string=" " widget="statinfo"/>
+                    <field name="bom_revision_count" string=" " widget="statinfo"/>
                 </button>
             </div>
             <field name="product_tmpl_id" position="replace">
@@ -138,7 +138,8 @@
 	        			type="object"
 	        			aria-label="Product Attachments"
 	        			title="Open Attachment"
-	        			class="float-right fa-box-open"
+	        			icon="fa-folder-open"
+	        			class="float-right"
 	        			invisible="att_count in [False,0]"/>
 				</div>
 		    </field>
