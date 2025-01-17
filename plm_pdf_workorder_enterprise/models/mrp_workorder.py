@@ -30,11 +30,9 @@ class MrpWorkorder(models.Model):
             "plm.document_kanban_view"
         )
         ctx = self.env.context.copy()
-        domain = [
-            ('is_plm', '=', True),
-            ('is_production_doc', '=', True),
-            ('id', 'in', self.production_doc_ids.ids)
-        ]
+        domain = [('is_plm', '=', True),
+                  ('is_production_doc', '=', True),
+                  ('id', 'in', self.production_doc_ids.ids)]
         ctx.update({
             "create": False,
             "delete": False,

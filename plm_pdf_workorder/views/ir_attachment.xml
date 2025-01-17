@@ -18,7 +18,7 @@
         <field name="arch" type="xml">
             <xpath expr="//button[@name='related_not_update']" position="after">
                 <field name="is_production_doc" widget="boolean_toggle"/>
-                <field name="doc_seq"/>
+                <field name="doc_seq" invisible="1"/>
             </xpath>
         </field>
     </record>

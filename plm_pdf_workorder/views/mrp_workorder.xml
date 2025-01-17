@@ -7,10 +7,10 @@
             <field name="inherit_id" ref="mrp.mrp_production_workorder_form_view_inherit"/>
             <field name="arch" type="xml">
                 <xpath expr="//page[@name='workorder_page_work_instruction']" position="attributes">
-                    <attribute name="invisible">use_plm_pdf == True or not worksheet and not worksheet_google_slide and not operation_note</attribute>
+                    <attribute name="invisible">use_plm_docs == True or not worksheet and not worksheet_google_slide and not operation_note</attribute>
                 </xpath>
                 <xpath expr="//notebook" position="inside">
-                    <page name="plm_production_doc" string="PLM Production Doc" invisible="use_plm_pdf==False">
+                    <page name="plm_production_doc" string="PLM Production Doc" invisible="use_plm_docs==False">
                         <field name="production_doc_ids" nolabel="1" mode="kanban"
                                domain="[('is_plm', '=', True), ('is_production_doc','=', True)]"
                                widget="hierarchy_kanban"
@@ -25,14 +25,14 @@
             </field>
         </record>
 
-        <record id="plm_pdf_show_document_workorder" model="ir.ui.view">
-            <field name="name">plm.pdf.show.document.workorder</field>
-            <field name="model">mrp.workorder</field>
-            <field name="arch" type="xml">
-                <form string="Plm Worksheet" create="false" edit="false">
-                    <field name="plm_pdf" widget="pdf_viewer" readonly="True"/>
-                </form>
-            </field>
-        </record>
+<!--        <record id="plm_pdf_show_document_workorder" model="ir.ui.view">-->
+<!--            <field name="name">plm.pdf.show.document.workorder</field>-->
+<!--            <field name="model">mrp.workorder</field>-->
+<!--            <field name="arch" type="xml">-->
+<!--                <form string="Plm Worksheet" create="false" edit="false">-->
+<!--                    <field name="plm_pdf" widget="pdf_viewer" readonly="True"/>-->
+<!--                </form>-->
+<!--            </field>-->
+<!--        </record>-->
     </data>
 </odoo>
