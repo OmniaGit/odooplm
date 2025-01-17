@@ -28,7 +28,7 @@ from odoo import fields
 class PlmDocumentRelations(models.Model):
     _name = 'ir.attachment.relation'
     _description = "Relation between document used for cad file structure"
-    
+
     parent_preview = fields.Binary(related="parent_id.preview",
                                    string=_("Parent Preview"),
                                    store=False)
@@ -82,11 +82,25 @@ class PlmDocumentRelations(models.Model):
                              default=False,
                              readonly=True)
     notes = fields.Char(string="Notes: ")
-    
+    preview_related = fields.Image(
+        compute="_compute_preview_related",
+        store=True, attachment=False,
+        max_height=1920, max_width=1920,
+        string=_("Child Parent Preview")
+    )
+
     _sql_constraints = [
-        ('relation_uniq', 'unique (parent_id,child_id,link_kind)', _('The Document Relation must be unique !')),
-        ('parent_child_check', 'CHECK (parent_id <> child_id)', _('Parent child product must be different !'))
+    ('relation_uniq', 'unique (parent_id,child_id,link_kind)', _('The Document Relation must be unique !')),
+    ('parent_child_check', 'CHECK (parent_id <> child_id)', _('Parent child product must be different !'))
     ]
+
+    @api.depends('parent_id.preview', 'link_kind', 'child_id')
+    def _compute_preview_related(self):
+        for rec in self:
+            if not rec.child_preview and rec.child_id and rec.link_kind == 'ExtraTree' and rec.parent_id.preview:
+                rec.preview_related = rec.parent_id.preview
+            else:
+                rec.preview_related = False
 
     def copy(self, default=None):
         if not default:
@@ -188,7 +202,7 @@ class PlmDocumentRelations(models.Model):
             if relation_id.child_id.document_type=='2d' and relation_id.parent_id.document_type in ['3d','pr'] :
                 if relation_id.child_id.getLastCadSave()<relation_id.parent_id.getLastCadSave():
                     return False
-        return True                
+        return True
 
     def is_pr_ok(self, from_ir_attachment_id):
         for relation_id in self.search(["|",('parent_id','=',from_ir_attachment_id.id),
@@ -201,7 +215,6 @@ class PlmDocumentRelations(models.Model):
             if relation_id.child_id.document_type=='pr' and relation_id.parent_id.document_type==['2d','3d']:
                 if relation_id.child_id.write_date < relation_id.parent_id.write_date:
                     return False
-        return True  
-            
-            
+        return True
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

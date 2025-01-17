@@ -36,7 +36,8 @@ class MrpWorkorder(models.Model):
         ctx.update({
             "create": False,
             "delete": False,
-            'default_res_ids': self.production_doc_ids.ids
+            'default_res_ids': self.production_doc_ids.ids,
+            'readonly': True
         })
 
         return {

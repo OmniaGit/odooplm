@@ -11,7 +11,7 @@
             <xpath expr="//td[@name='attachment_button_box']" position="inside">
                 <button type="object"
                         name="show_releted_3d"
-                        class="btn btn-primary btn-sm"
+                        class="btn btn-primary btn-sm ms-1"
                         invisible="has_web3d==False">
                     <i class="fa fa-cube"></i>
                     WebGl

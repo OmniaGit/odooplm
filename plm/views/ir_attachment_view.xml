@@ -461,9 +461,13 @@
 													</t>
 												</td>
 											</tr>
+                                            <tr>
+                                                <td>
+												    <field name="datas" filename="name" widget="binary"/>
+                                                </td>
+                                            </tr>
 											<tr>
 												<td>
-												    <field name="datas" filename="name" widget="binary"/>
                                                     <t><strong>Name:</strong></t>
                                                     <field name="engineering_code"
                                                            readonly="id not in [False, [], 0]"/>
@@ -513,7 +517,7 @@
                                                 </td>
                                             </tr>
                                             <tr name="attachment_button_box">
-                                                <td name="attachment_button_box">
+                                                <td name="attachment_button_box" style="display: inline-flex;">
                                                 </td>
                                             </tr>
                                 			<tr>

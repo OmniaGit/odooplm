@@ -16,9 +16,21 @@
         <field name="model">ir.attachment</field>
         <field name="inherit_id" ref="plm.document_kanban_view"/>
         <field name="arch" type="xml">
-            <xpath expr="//button[@name='related_not_update']" position="after">
-                <field name="is_production_doc" widget="boolean_toggle"/>
+            <xpath expr="//table/tr" position="inside">
+                <td>
+                    <span>Prod Doc:</span>
+                    <field name="is_production_doc" widget="boolean_toggle" readonly="context.get('readonly', False)"/>
+                </td>
                 <field name="doc_seq" invisible="1"/>
+            </xpath>
+            <xpath expr="//td[@name='attachment_button_box']" position="inside">
+                <button name="%(plm.report_ir_attachment_pdf)d"
+                        class="btn btn-primary btn-sm ms-1"
+                        type="action"
+                        invisible="printout == False">
+                <i class="fa fa-file-pdf-o"></i>
+                PDF
+                </button>
             </xpath>
         </field>
     </record>

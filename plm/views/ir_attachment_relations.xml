@@ -29,7 +29,7 @@
                 		<hr style="background-color: rgba(0, 170, 34, 0.66);height: 1px;"></hr>
                		</span>
                		<span colspan="4"
-               		      style="color: rgb(218, 159, 34);" 
+               		      style="color: rgb(218, 159, 34);"
                		      invisible="parent_state != 'undermodify'">
                 		<hr style="background-color: rgb(218, 159, 34);height: 1px;"></hr>
                		</span>
@@ -69,7 +69,7 @@
                 			invisible="parent_linked in [False, []]"/>
 	                </group>
 	                <span colspan="4"
-	                      style="color: rgb(110, 51, 197);" 
+	                      style="color: rgb(110, 51, 197);"
 	                      invisible="parent_state != 'draft'">
                 		<hr style="background-color: rgb(110, 51, 197);height: 1px;"></hr>
                		</span>
@@ -84,7 +84,7 @@
                 		<hr style="background-color: rgba(0, 170, 34, 0.66);height: 1px;"></hr>
                		</span>
                		<span colspan="4"
-               		      style="color: rgb(218, 159, 34);" 
+               		      style="color: rgb(218, 159, 34);"
                		      invisible="parent_state != 'undermodify'">
                 		<hr style="background-color: rgb(218, 159, 34);height: 1px;"></hr>
                		</span>
@@ -135,7 +135,12 @@
                         <field name="child_state" readonly="True" style="color: rgb(231, 43, 26);"             invisible="child_state != 'obsoleted'"/>
 	                </group>
 	                <group colspan="1" col="1">
-	                    <field name="child_preview" colspan="2" widget="image" readonly="1" nolabel="1" options="{'size':[400,400],'zoom': true, 'zoom_delay': 800}"/>
+	                    <field name="child_preview" colspan="2" widget="image"
+                               readonly="1" nolabel="1" invisible="child_preview == False"
+                               options="{'size':[400,400],'zoom': true, 'zoom_delay': 800}"/>
+                        <field name="preview_related" colspan="2" widget="image"
+                               readonly="1" nolabel="1" invisible="child_id == False or child_preview != False"
+                               options="{'size':[400,400],'zoom': true, 'zoom_delay': 800}"/>
 	                </group>
 	                <group colspan="1" col="1">
                			<field name="child_linked" invisible="True"/>
@@ -179,7 +184,7 @@
                 <group>
                 	<field name="notes"/>
                 </group>
-               	</sheet> 
+               	</sheet>
                </form>
             </field>
         </record>
@@ -189,19 +194,19 @@
             <field name="model">ir.attachment.relation</field>
             <field name="inherit_id" ref="plm.plm_docbom_form_view" />
             <!-- <field name="groups_id" eval="[(6, 0, [ref('plm.group_plm_admin')])]" /> -->
-            <!-- Inherited view cannot have 'Groups' define on the record. Use 'groups' attributes inside the view definition -->            
-            <field name="arch" type="xml">                                   
+            <!-- Inherited view cannot have 'Groups' define on the record. Use 'groups' attributes inside the view definition -->
+            <field name="arch" type="xml">
                 <field name="parent_id" position="attributes">
-                   <attribute name="readonly">0</attribute>                   
-                </field>                             
+                   <attribute name="readonly">0</attribute>
+                </field>
                 <field name="child_id" position="attributes">
-                   <attribute name="readonly">0</attribute>                   
-                </field>  
+                   <attribute name="readonly">0</attribute>
+                </field>
                 <field name="configuration" position="attributes">
-                   <attribute name="readonly">0</attribute>                   
-                </field>                             
+                   <attribute name="readonly">0</attribute>
+                </field>
                 <field name="link_kind" position="attributes">
-                   <attribute name="readonly">0</attribute>                   
+                   <attribute name="readonly">0</attribute>
                 </field>
             </field>
         </record>
@@ -235,17 +240,17 @@
 				<search string="Search on Document Relations">
              		<field name="parent_type"/>
              		<field name="child_type"/>
-                   	<filter 
-            			name="last_year" 
-            			string="Last Year" 
+                   	<filter
+            			name="last_year"
+            			string="Last Year"
             			domain="[('create_date','&gt;=',(datetime.date.today() - relativedelta(days=1,months=1,years=1)).strftime('%%Y-%%m-%%d'))]"/>
-           			<filter 
-            			name="last_month" 
-            			string="Last Month" 
+           			<filter
+            			name="last_month"
+            			string="Last Month"
             			domain="[('create_date','&gt;=',(datetime.date.today() - relativedelta(days=1,months=1)).strftime('%%Y-%%m-%%d'))]"/>
-            		<filter 
-            			name="last_week" 
-            			string="Last Week" 
+            		<filter
+            			name="last_week"
+            			string="Last Week"
             			domain="[('create_date','&gt;=',(datetime.date.today() - datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"/>
             		<separator orientation="vertical"/>
 	            	<field name="parent_state"/>
@@ -514,7 +519,7 @@
 												<td>
                                                     <t><strong>Name:</strong></t>
                                                     <field name="child_id"/>
-                                                    <field name="display_name" 
+                                                    <field name="display_name"
                                                            invisible="child_id not in [False, []]"/>
                                                 </td>
                                             </tr>
@@ -601,11 +606,11 @@
     <record model="ir.actions.act_window" id="act_view_doc_related">
         <field name="name">View Document Relations</field>
         <field name="res_model">ir.attachment.relation</field>
-        <field name="binding_model_id" ref="model_ir_attachment"/> 
+        <field name="binding_model_id" ref="model_ir_attachment"/>
         <field name="view_mode">kanban,list,form</field>
         <field name="view_id" ref="plm_docbom_list_view"/>
         <field name="domain">['|', ('child_id', 'in', context.get('active_ids', [])), ('parent_id', 'in', context.get('active_ids', []))]</field>
     </record>
-    
+
 	</data>
 </odoo>
