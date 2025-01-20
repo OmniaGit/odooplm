@@ -26,6 +26,10 @@ Created on Mar 8, 2017
 import datetime
 import logging
 import pytz
+import json
+import os
+import base64
+import csv
 
 from dateutil import parser
 from odoo import _, api, fields, models
@@ -228,5 +232,42 @@ class Plm_box_document(models.Model):
             ret[str(doc.id)] = doc.getDocumentState()
         return ret
 
+    @api.model
+    def import_bom_from_csv(self, box_id, doc_id):
+        if doc_id and box_id:
+            attachment_id = self.env['ir.attachment'].browse(doc_id)
+            product_details = self.parse_file_name(attachment_id.name)
+            if product_details and product_details.get('prefix') == "IMP_BOM":
+                product_id = self.env['product.product'].search([
+                    ("engineering_code","=", product_details.get('part_number'))
+                ])
 
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+                box_id = self.env['plm.box'].browse(box_id)
+                csv_column_mapping = json.loads(box_id.csv_structure)
+                file_content = base64.b64decode(attachment_id.datas)
+                csv_reader = csv.reader(file_content.decode('utf-8').splitlines())
+                bom_lines = []
+                for row in csv_reader:
+                    bom_line_data = {}
+
+            return True
+
+
+    # Function to validate and extract details from the file name
+    @api.model
+    def parse_file_name(self,fname):
+        if fname.endswith('.csv'):
+            parts = fname.split('_')
+            if parts[0] == 'IMP' or parts[1] == 'BOM':
+                try:
+                    part_number = parts[2]
+                    revision = parts[3].split('.')[0]
+                except IndexError:
+                    return "Invalid file: missing part number or revision"
+
+                return {
+                    "prefix": f"{parts[0]}_{parts[1]}",
+                    "part_number": part_number,
+                    "revision": revision,
+                    "file_extension": os.path.splitext(fname)[1]
+                }

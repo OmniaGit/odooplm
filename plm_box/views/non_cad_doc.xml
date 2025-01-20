@@ -60,6 +60,9 @@
                             <page string="Description">
                                 <field name="description"/>
                             </page>
+                            <page string="Import Bom">
+                                <field name="csv_structure"/>
+                            </page>
                         </notebook>
                     </sheet>
                     <chatter/>

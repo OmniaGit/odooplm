@@ -64,6 +64,8 @@ class Plm_box(models.Model):
     box_id = fields.Integer(_("Box ID"))
     version = fields.Integer(_("Version"))
     description = fields.Text(_("Description"))
+    csv_structure = fields.Text(_('CSV Structure'), default="""{"engineering_code":"","engineering_revision": "","qty":""}""")
+
     document_rel = fields.One2many("ir.attachment", "plm_box_id", "Documents")
     plm_box_rel = fields.Many2many(
         "plm.box",
