@@ -92,6 +92,5 @@
             <field name="view_id" ref="plm_box_list"/>
         </record>
 
-
     </data>
 </odoo>

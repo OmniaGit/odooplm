@@ -55,7 +55,4 @@
         (0, 0, {'view_mode': 'form', 'view_id': ref('plm_box.view_attachment_form_plm_box')})
         ]"/>
     </record>
-
-
-
 </odoo>
