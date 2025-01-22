@@ -66,12 +66,12 @@ class MrpBomExtension(models.Model):
                     if not (bom_line_brws.bom_id.id in result):
                         result.extend([bom_line_brws.bom_id.id])
             bom_obj.father_complete_ids = self.env['mrp.bom'].browse(list(set(result)))
-    
+
     engineering_state = fields.Selection(related="product_id.engineering_state",
                                          string=_("Status"),
                                          help=_("The status of the product in its LifeCycle."),
                                          store=False)
-    
+
     description = fields.Char(related="product_tmpl_id.name",
                               string=_("Description"),
                               store=False)
@@ -99,9 +99,9 @@ class MrpBomExtension(models.Model):
                                           store=True)
 
     bom_revision_count = fields.Integer(related='product_tmpl_id.engineering_revision_count')
-    
+
     att_count = fields.Integer(compute='attch_count')
-    
+
     def attch_count(self):
         for bom in self:
             doc_ids = bom.get_related_attachments()
@@ -120,7 +120,7 @@ class MrpBomExtension(models.Model):
         return self.env['ir.attachment']
 
     def open_attachments(self):
-        out_att  = self.get_related_attachments()
+        out_att = self.get_related_attachments()
         return {
             'name': _('Attachments'),
             'domain': [('id', 'in', out_att.ids)],
@@ -131,7 +131,7 @@ class MrpBomExtension(models.Model):
                 (self.env.ref('plm.document_kanban_view').id, 'kanban'),
                 (self.env.ref('plm.view_attachment_form_plm_hinerit').id, 'form'),
                 (self.env.ref('plm.ir_attachment_list').id, 'list'),
-                ],
+            ],
             'help': _('''<p class="o_view_nocontent_smiling_face">
                         Upload files to your product
                     </p><p>
@@ -319,7 +319,6 @@ class MrpBomExtension(models.Model):
                 output.append([prod_id, inner_ids])
         return output
 
-    
     def get_last_comp_id(self, comp_id):
         prod_prod_obj = self.env['product.product']
         comp_brws = prod_prod_obj.browse(comp_id)
@@ -419,7 +418,6 @@ class MrpBomExtension(models.Model):
         prt_datas = self._get_pack_datas(rel_datas)
         return rel_datas, prt_datas, self._get_pack_rel_datas(rel_datas, prt_datas)
 
-    
     def get_exploded_bom(self, level=0, curr_level=0):
         """
             Return a list of all children in a Bom ( level = 0 one level only, level = 1 all levels)
@@ -610,13 +608,14 @@ class MrpBomExtension(models.Model):
             for _bom_id, bom_brws in evaluated_boms.items():
                 if not bom_brws.bom_line_ids:
                     bom_brws.unlink()
+
         if len(relations) < 1:  # no relation to save
             return False
 
         parent_name, _parent_id, _child_name, child_id, _source_id, rel_args = relations[0]
         if eco_module_installed is None:
             clean_old_eng_bom_lines(relations)
-        if len(relations) == 1 and not child_id: # Case of not children, so no more BOM for this product
+        if len(relations) == 1 and not child_id:  # Case of not children, so no more BOM for this product
             return False
         bom_id = to_compute(parent_name, relations, kind_bom)
         clean_empty_boms()
@@ -653,7 +652,7 @@ class MrpBomExtension(models.Model):
     def read(self, fields=[], load='_classic_read'):
         fields = self.plm_sanitize(fields)
         return super(MrpBomExtension, self).read(fields=fields, load=load)
-    
+
     def write(self, vals):
         vals = self.plm_sanitize(vals)
         ret = super(MrpBomExtension, self).write(vals)
@@ -663,14 +662,13 @@ class MrpBomExtension(models.Model):
 
     @api.model_create_multi
     def create(self, vals):
-        to_create=[]
+        to_create = []
         for vals_dict in vals:
             to_create.append(self.plm_sanitize(vals_dict))
         ret = super().create(to_create)
         ret.rebase_bom_weight()
         return ret
 
-    
     def copy(self, default={}):
         """
             Return new object copied (removing source_id)
@@ -680,7 +678,7 @@ class MrpBomExtension(models.Model):
             for bom_line in new_bom_brws.bom_line_ids:
                 if not bom_line.product_id.product_tmpl_id.engineering_code:
                     bom_line.sudo().write({'engineering_state': 'draft',
-                                           'source_id': False,})   
+                                           'source_id': False, })
                     continue
                 late_rev_id_c = self.env['product.product'].GetLatestIds([
                     (bom_line.product_id.product_tmpl_id.engineering_code,
@@ -758,7 +756,7 @@ class MrpBomExtension(models.Model):
                     'context': {},
                     }
 
-    
+
     def open_related_bom_revisions(self):
         bom_ids = self.search([('product_tmpl_id', 'in', self.product_tmpl_id.getAllVersionTemplate().ids)])
         return {'name': _('B.O.M.S'),
@@ -768,10 +766,10 @@ class MrpBomExtension(models.Model):
                 'type': 'ir.actions.act_window',
                 'domain': [('id', 'in', bom_ids.ids)],
                 'context': {}}
-    
+
     def saveRelationNewGetBom(self, product_tmpl_id, bomType, parent_product_product_id):
         return self._saveRelationNewGetBom(product_tmpl_id, bomType, parent_product_product_id)
-    
+
     def _saveRelationNewGetBom(self, product_tmpl_id, bomType, parent_product_product_id):
         prod_template = self.env['product.template'].browse(product_tmpl_id)
         if parent_product_product_id.kit_bom:
@@ -792,18 +790,18 @@ class MrpBomExtension(models.Model):
                                                 'product_id': parent_product_product_id.id,
                                                 'type': bomType})
         return mrp_bom_found_id
-    
+
     def custom_exclude(self, product_product_id, ir_attachment_id, relationAttributes, mrp_bom_found_id):
         """
         this function is very importand for customizing the bom line creation
-        :product_product_id   id of product_product 
+        :product_product_id   id of product_product
         :ir_attachment_id     id of ir_attachment
         :relationAttributes   dixt like with all creation attributes
-        :mrp_bom_found_id     browse(mrp.bom) for the current bom 
+        :mrp_bom_found_id     browse(mrp.bom) for the current bom
         :return: bool True -> create the bom line False -> jump to next
         """
         return False
-        
+
     @api.model
     def saveRelationNew(self,
                         clientArgs):
@@ -815,7 +813,7 @@ class MrpBomExtension(models.Model):
             bomType = 'normal'
             if apps:
                 bomType = 'ebom'
-            parentOdooTuple, childrenOdooTuple  = clientArgs
+            parentOdooTuple, childrenOdooTuple = clientArgs
             l_tree_document_id, parent_product_product_id, parent_ir_attachment_id = parentOdooTuple
             if not parent_ir_attachment_id:
                 parent_ir_attachment_id = l_tree_document_id
@@ -829,7 +827,7 @@ class MrpBomExtension(models.Model):
             #
             # add rows
             #
-            summarize_bom =  self.env.context.get('SUMMARIZE_BOM', False)
+            summarize_bom = self.env.context.get('SUMMARIZE_BOM', False)
             cache_row = {}
             for product_product_id, ir_attachment_id, relationAttributes in childrenOdooTuple:
                 if self.custom_exclude(product_product_id, ir_attachment_id, relationAttributes, mrp_bom_found_id):
@@ -883,4 +881,3 @@ class MrpBomExtension(models.Model):
             available_types = ['engineering', 'spare']
             domain = AND([domain, [('type', 'not in', available_types)]])
         return domain
-    

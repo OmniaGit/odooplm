@@ -24,14 +24,25 @@
                 <field name="doc_seq" invisible="1"/>
             </xpath>
             <xpath expr="//td[@name='attachment_button_box']" position="inside">
-                <button name="%(plm.report_ir_attachment_pdf)d"
+                <button name="action_open_report_ir_attachment_pdf"
                         class="btn btn-primary btn-sm ms-1"
-                        type="action"
+                        type="object"
                         invisible="printout == False">
-                <i class="fa fa-file-pdf-o"></i>
-                PDF
+                    <i class="fa fa-file-pdf-o"></i>
+                    PDF
                 </button>
             </xpath>
         </field>
     </record>
+
+    <record id="plm_pdf_show_document_attachment" model="ir.ui.view">
+        <field name="name">plm.show.pdf.document</field>
+        <field name="model">ir.attachment</field>
+        <field name="arch" type="xml">
+            <form string="Plm PDF" create="false" edit="false">
+                <field name="printout" widget="pdf_viewer" readonly="True"/>
+            </form>
+        </field>
+    </record>
+
 </odoo>

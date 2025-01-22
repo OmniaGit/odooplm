@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-     <record model="ir.ui.view" id="view_attachment_client_workflow">
+    <record model="ir.ui.view" id="view_attachment_client_workflow">
         <field name="name">view.attachment.client.workflow</field>
         <field name="model">ir.attachment</field>
         <field name="priority" eval="20"/>
@@ -9,9 +9,9 @@
                 <header>
                     <field name="is_checkout" invisible="1"></field>
                     <field name="engineering_state" widget="statusbar"
-                            statusbar_visible="draft,confirmed,released"
-                            statusbar_colors='{"undermodify":"red","obsoleted":"red"}'
-                            readonly="1"/>
+                           statusbar_visible="draft,confirmed,released"
+                           statusbar_colors='{"undermodify":"red","obsoleted":"red"}'
+                           readonly="1"/>
                     <button name="action_release"
                             string="Release Document"
                             class="oe_highlight"
@@ -28,12 +28,12 @@
                             class="oe_highlight"
                             invisible="is_checkout==True or engineering_state!='draft'"/>
                 </header>
-              </form>
+            </form>
         </field>
-       </record>
+    </record>
 
 
-     <record model="ir.ui.view" id="view_attachment_form_plm_hinerit">
+    <record model="ir.ui.view" id="view_attachment_form_plm_hinerit">
         <field name="name">plm.ir.attachment.form</field>
         <field name="model">ir.attachment</field>
         <field name="priority" eval="20"/>
@@ -74,8 +74,8 @@
                            statusbar_colors='{"undermodify":"red","obsoleted":"red"}'
                            readonly="1"/>
                 </header>
-               	<sheet>
-               	    <div class="oe_button_box" name="button_box">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
                         <button class="oe_stat_button" icon="fa-sitemap" type="object" name="action_view_rel_doc">
                             <field name="document_rel_count" string="Documents" widget="statinfo"/>
                         </button>
@@ -85,18 +85,18 @@
                                 icon="fa-lock"
                                 type="object"
                                 invisible="is_checkout==True">
-                                <div class="o_field_widget o_stat_info o_readonly_modifier">
-                                   <span>Check-Out</span>
-                                </div>
+                            <div class="o_field_widget o_stat_info o_readonly_modifier">
+                                <span>Check-Out</span>
+                            </div>
                         </button>
                         <button name="toggle_check_out"
                                 class="oe_stat_button"
                                 icon="fa-unlock"
                                 invisible="is_checkout==False"
                                 type="object">
-                                <div class="o_field_widget o_stat_info o_readonly_modifier">
-                                   <span>Check-In</span>
-                                </div>
+                            <div class="o_field_widget o_stat_info o_readonly_modifier">
+                                <span>Check-In</span>
+                            </div>
                         </button>
                         <button name="print_Document_Doc_Structure"
                                 string="Doc Structure"
@@ -109,7 +109,7 @@
                                 class="oe_stat_button"
                                 icon="fa-tasks"
                                 invisible="engineering_revision_count &lt;=1">
-                                <field name="engineering_revision_count" string=" " widget="statinfo"/>
+                            <field name="engineering_revision_count" string=" " widget="statinfo"/>
                         </button>
                         <button name="check_out_user"
                                 icon="fa-user"
@@ -122,9 +122,9 @@
                                 type="object"
                                 title=""
                                 invisible="must_update_from_cad==False">
-                              <div class="o_field_widget o_stat_info o_readonly_modifier">
-                                 <span style="color:orange">Not.Update</span>
-                              </div>
+                            <div class="o_field_widget o_stat_info o_readonly_modifier">
+                                <span style="color:orange">Not.Update</span>
+                            </div>
                         </button>
                         <field name="has_error" invisible="True"/>
                         <button name="open_related_dbthread"
@@ -135,21 +135,25 @@
                                 icon="fa-bug"
                                 invisible="has_error==False">
                         </button>
-                   </div>
+                    </div>
                     <group>
-                        <group string= "PLM Infos:" name="main_doc_info">
+                        <group string="PLM Infos:" name="main_doc_info">
                             <field string="Eng. Document Name"
                                    name="engineering_code"
                                    readonly="id>0"/>
                             <field string="Enineering revision" name="engineering_revision" readonly="True"/>
-                            <field string="Is a Plm Document" name="is_plm" visible="0" widget="boolean_toggle" readonly="True"/>
+                            <field string="Is a Plm Document" name="is_plm" visible="0" widget="boolean_toggle"
+                                   readonly="True"/>
                         </group>
                         <group name="doc_preview">
                             <field name="preview"
                                    widget="image"
                                    options="{'zoom': true, 'zoom_delay': 800}"
-                                   nolabel="1"
+                                   nolabel="1" invisible="preview == False"
                                    readonly="is_plm==True"/>
+                            <field name="preview_related" colspan="2" widget="image"
+                                   readonly="1" nolabel="1" invisible="preview != False"
+                                   options="{'size':[400,400],'zoom': true, 'zoom_delay': 800}"/>
                         </group>
                     </group>
                     <notebook>
@@ -191,28 +195,38 @@
                                 <group>
                                     <label for="create_uid" string="Creation"/>
                                     <div name="create_uid_div">
-                                        <field name="create_uid" readonly="1" class="oe_inline"/> on <field name="create_date" readonly="1" class="oe_inline"/>
+                                        <field name="create_uid" readonly="1" class="oe_inline"/>
+                                        on
+                                        <field name="create_date" readonly="1" class="oe_inline"/>
                                     </div>
                                     <label for="write_uid"/>
                                     <div name="write_uid_div">
-                                        <field name="write_uid" readonly="1" class="oe_inline"/> on <field name="write_date" readonly="1" class="oe_inline"/>
+                                        <field name="write_uid" readonly="1" class="oe_inline"/>
+                                        on
+                                        <field name="write_date" readonly="1" class="oe_inline"/>
                                     </div>
                                 </group>
                                 <group>
                                     <label for="engineering_workflow_user"/>
                                     <div name="workflow_user_div">
-                                        <field name="engineering_workflow_user" readonly="1" class="oe_inline"/> on <field name="engineering_workflow_date" readonly="1" class="oe_inline"/>
+                                        <field name="engineering_workflow_user" readonly="1" class="oe_inline"/>
+                                        on
+                                        <field name="engineering_workflow_date" readonly="1" class="oe_inline"/>
                                     </div>
                                 </group>
                                 <group string="User"
-                                      invisible="engineering_release_user==False or engineering_revision_user==False">
+                                       invisible="engineering_release_user==False or engineering_revision_user==False">
                                     <label for="engineering_release_user"/>
                                     <div name="attachment_release_user_div">
-                                        <field name="engineering_release_user" readonly="1" class="oe_inline"/> on <field name="engineering_release_date" readonly="1" class="oe_inline"/>
+                                        <field name="engineering_release_user" readonly="1" class="oe_inline"/>
+                                        on
+                                        <field name="engineering_release_date" readonly="1" class="oe_inline"/>
                                     </div>
                                     <label for="engineering_revision_user"/>
                                     <div name="engineering_revision_user">
-                                        <field name="engineering_revision_user" readonly="1" class="oe_inline"/> on <field name="engineering_revision_date" readonly="1" class="oe_inline"/>
+                                        <field name="engineering_revision_user" readonly="1" class="oe_inline"/>
+                                        on
+                                        <field name="engineering_revision_date" readonly="1" class="oe_inline"/>
                                     </div>
                                 </group>
                             </group>
@@ -243,10 +257,10 @@
                                    invisible="engineering_revision==0"/>
                         </page>
                     </notebook>
-               </sheet>
+                </sheet>
                 <chatter/>
             </form>
-    	</field>
+        </field>
     </record>
 
     <record model="ir.ui.view" id="ir_attachment_list">
@@ -260,7 +274,8 @@
                   decoration-warning="engineering_state == 'undermodify'"
                   decoration-muted="engineering_state == 'obsoleted'">
                 <field name="document_type" invisible="True"/>
-                <field name="preview" widget="image" options="{ 'size': [60, 60]}"/>
+                <field name="preview" widget="image" invisible="preview == False" options="{ 'size': [60, 60]}"/>
+                <field name="preview_related" widget="image" invisible="preview != False" options="{ 'size': [60, 60]}"/>
                 <button
                     class="fa fa-print"
                     type="object"
@@ -286,52 +301,52 @@
         <field name="priority" eval="20"/>
         <field name="arch" type="xml">
             <search string="Documents">
-             	<field name="engineering_code"/>
-             	<field name="name"/>
-             	<field name="document_type"/>
-            	<filter
-            		name="last_year"
-            		string="Last Year"
-            		domain="[('create_date','&gt;=',(datetime.date.today() - relativedelta(days=1,months=1,years=1)).strftime('%%Y-%%m-%%d'))]"/>
-           		<filter
-            		name="last_month"
-            		string="Last Month"
-            		domain="[('create_date','&gt;=',(datetime.date.today() - relativedelta(days=1,months=1)).strftime('%%Y-%%m-%%d'))]"/>
-            	<filter
-            		name="last_week"
-            		string="Last Week"
-            		domain="[('create_date','&gt;=',(datetime.date.today() - datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"/>
-            	<separator orientation="vertical"/>
-            	<field name="engineering_state"/>
-              	<filter name="confirmed"
-                      	string="Confirmed"
-                      	domain="[('engineering_state', '=', 'confirmed')]"/>
-              	<filter name="released"
-                      	string="Released"
-                      	domain="[('engineering_state', 'in', ['released','undermodify'])]"/>
-              	<filter name="latest"
-                      	string="Latest"
-                      	domain="[('engineering_state', 'not in', ['obsoleted','undermodify'])]"/>
+                <field name="engineering_code"/>
+                <field name="name"/>
+                <field name="document_type"/>
+                <filter
+                    name="last_year"
+                    string="Last Year"
+                    domain="[('create_date','&gt;=',(datetime.date.today() - relativedelta(days=1,months=1,years=1)).strftime('%%Y-%%m-%%d'))]"/>
+                <filter
+                    name="last_month"
+                    string="Last Month"
+                    domain="[('create_date','&gt;=',(datetime.date.today() - relativedelta(days=1,months=1)).strftime('%%Y-%%m-%%d'))]"/>
+                <filter
+                    name="last_week"
+                    string="Last Week"
+                    domain="[('create_date','&gt;=',(datetime.date.today() - datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"/>
+                <separator orientation="vertical"/>
+                <field name="engineering_state"/>
+                <filter name="confirmed"
+                        string="Confirmed"
+                        domain="[('engineering_state', '=', 'confirmed')]"/>
+                <filter name="released"
+                        string="Released"
+                        domain="[('engineering_state', 'in', ['released','undermodify'])]"/>
+                <filter name="latest"
+                        string="Latest"
+                        domain="[('engineering_state', 'not in', ['obsoleted','undermodify'])]"/>
                 <filter name="doc_has_error"
-                            string="Has Error"
-                            domain="[('has_error','=',True)]"
-                            help="Filter on documents with error"/>
-              	<separator orientation="vertical"/>
-          		<group>
-	                <field name="create_uid"/>
-	                <filter name="create_by_me"
-	                        string="Create By Me"
-	                        domain="[('create_uid','=',uid)]"
-	                        help="Filter on documents created by me"/>
-	              	<field name="write_uid"/>
-	            	<filter name="changed_by_me"
-	                       	string="Changed By Me"
-	                       	domain="[('write_uid','=',uid)]"
-	                       	help="Filter on documents changed by me"/>
-               	</group>
-               	<separator orientation="vertical"/>
+                        string="Has Error"
+                        domain="[('has_error','=',True)]"
+                        help="Filter on documents with error"/>
+                <separator orientation="vertical"/>
+                <group>
+                    <field name="create_uid"/>
+                    <filter name="create_by_me"
+                            string="Create By Me"
+                            domain="[('create_uid','=',uid)]"
+                            help="Filter on documents created by me"/>
+                    <field name="write_uid"/>
+                    <filter name="changed_by_me"
+                            string="Changed By Me"
+                            domain="[('write_uid','=',uid)]"
+                            help="Filter on documents changed by me"/>
+                </group>
+                <separator orientation="vertical"/>
                 <group expand="0" string="Group By...">
-                	<filter name="created_in"
+                    <filter name="created_in"
                             string="Created in"
                             domain="[]"
                             context="{'group_by':'create_date'}"/>
@@ -357,7 +372,7 @@
                             string="Type Document"
                             domain="[]"
                             context="{'group_by':'document_type'}"/>
-              	</group>
+                </group>
             </search>
         </field>
     </record>
@@ -368,7 +383,7 @@
         <field name="priority" eval="20"/>
         <field name="arch" type="xml">
             <kanban>
-                <field name="id"/>    											<!-- Necessary to render previews -->
+                <field name="id"/>                                                <!-- Necessary to render previews -->
                 <field name="engineering_code"/>
                 <field name="engineering_revision"/>
                 <field name="description"/>
@@ -384,91 +399,96 @@
                     <t t-value="record.engineering_state.raw_value" t-set="stateToUse"/>
                     <t t-name="kanban-box">
                         <div class="oe_kanban_global_click o_kanban_record_has_image_fill">
-                            <div style="margin-right: 3px;border-left: 1px solid lightgray;border-right: 1px solid lightgray;">
-	                           <field name="preview"
-	                                  widget="image"
-	                                  style="padding:1px"
-	                                  class="oe_avatar"
-	                                  options="{'zoom': true, 'zoom_delay': 800, 'size':[100,100]}"
-	                                  />
+                            <div
+                                style="margin-right: 3px;border-left: 1px solid lightgray;border-right: 1px solid lightgray;">
+                                <field name="preview"
+                                       widget="image"
+                                       options="{'zoom': true, 'zoom_delay': 800}"
+                                       nolabel="1" invisible="preview == False"
+                                       readonly="is_plm==True"/>
+                                <field name="preview_related" colspan="2" widget="image"
+                                       readonly="1" nolabel="1" invisible="preview != False"
+                                       options="{'zoom': true, 'zoom_delay': 800}"/>
                             </div>
                             <table style="width: 100%; line-height: 1;">
-                            	<tr>
-                        			<td>
-                        				<strong invisible="document_type!='other'">Other</strong>
-                        				<strong invisible="document_type!='2d'">2D</strong>
-                        				<strong invisible="document_type!='3d'">3D</strong>
-                        				<strong invisible="document_type!='pr'">PR</strong>
-                        			</td>
-                        			<td name="check-in-out">
-                                         <h2>
-                                             <field name="checkout_user"
-                                                    invisible="checkout_user==False or checkout_user==''"/>
-                                         </h2>
-                        			</td>
-                        			<td name="Component" style="text-align: right; width: 100%; padding:1px;">
-                                         <button name="open_related_dbthread"
-                                                 type="object"
-                                                 invisible="has_error==False"
-                                                 class="fa fa-bug fa-2x btn-danger"
-                                                 title=""
-                                                 />
-                                         <button name="related_not_update"
-                                                 type="object"
-                                                 invisible="must_update_from_cad==False"
-                                                 class="fa fa-warning fa-2x btn-warning"
-                                                 title=""
-                                                 />
+                                <tr>
+                                    <td>
+                                        <strong invisible="document_type!='other'">Other</strong>
+                                        <strong invisible="document_type!='2d'">2D</strong>
+                                        <strong invisible="document_type!='3d'">3D</strong>
+                                        <strong invisible="document_type!='pr'">PR</strong>
+                                    </td>
+                                    <td name="check-in-out">
+                                        <h2>
+                                            <field name="checkout_user"
+                                                   invisible="checkout_user==False or checkout_user==''"/>
+                                        </h2>
+                                    </td>
+                                    <td name="Component" style="text-align: right; width: 100%; padding:1px;">
+                                        <button name="open_related_dbthread"
+                                                type="object"
+                                                invisible="has_error==False"
+                                                class="fa fa-bug fa-2x btn-danger"
+                                                title=""
+                                        />
+                                        <button name="related_not_update"
+                                                type="object"
+                                                invisible="must_update_from_cad==False"
+                                                class="fa fa-warning fa-2x btn-warning"
+                                                title=""
+                                        />
                                         <div class="fa fa-lock fa-2x"
                                              string="."
                                              style="color:red;display: inline;"
                                              invisible="checkout_user=='False' or checkout_user==''"/>
-	                            		<div class="fa fa-dropbox fa-2x"
-	                            		     aria-label="Missing Component"
-	                            		     style="color:#ff8300;"
-	                            		     invisible="is_linkedcomponents not in [False, []]"/>
-                            			<div class="fa fa-dropbox fa-2x"
-                            			     aria-label="Founding Component"
-                            			     style="color: green;"
-                            			     invisible="is_linkedcomponents in [False, []]"/>
-                            		</td>
-                        		</tr>
-                            	<tr>
-                            		<td>
+                                        <div class="fa fa-dropbox fa-2x"
+                                             aria-label="Missing Component"
+                                             style="color:#ff8300;"
+                                             invisible="is_linkedcomponents not in [False, []]"/>
+                                        <div class="fa fa-dropbox fa-2x"
+                                             aria-label="Founding Component"
+                                             style="color: green;"
+                                             invisible="is_linkedcomponents in [False, []]"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
 
-                            		</td>
-                                	<td style="padding-left:10px; vertical-align: middle;" colspan="2">
-                                		<table style="width:100%">
-                                			<tr>
-                                                <td>
-                                                	<t t-if="stateToUse == 'draft'">
-                                                		<hr style="background-color: rgb(110, 51, 197);height: 1px;"></hr>
-                                                    </t>
-                                                    <t t-elif="stateToUse == 'confirmed'">
-                                                    	<hr style="background-color: blue;height: 1px;"></hr>
-                                                    </t>
-                                                    <t t-elif="stateToUse == 'released'">
-                                                    	<hr style="background-color: rgba(0, 170, 34, 0.66);height: 1px;"></hr>
-                                                    </t>
-                                                    <t t-elif="stateToUse == 'undermodify'">
-                                                    	<hr style="background-color: rgb(218, 159, 34);height: 1px;"></hr>
-                                                    </t>
-                                                    <t t-elif="stateToUse == 'obsoleted'">
-                                                    	<hr style="background-color: rgb(231, 43, 26);height: 1px;"></hr>
-                                                    </t>
-													<t t-else="">
-														<hr style="background-color: black;height: 1px;"></hr>
-													</t>
-												</td>
-											</tr>
+                                    </td>
+                                    <td style="padding-left:10px; vertical-align: middle;" colspan="2">
+                                        <table style="width:100%">
                                             <tr>
                                                 <td>
-												    <field name="datas" filename="name" widget="binary"/>
+                                                    <t t-if="stateToUse == 'draft'">
+                                                        <hr style="background-color: rgb(110, 51, 197);height: 1px;"></hr>
+                                                    </t>
+                                                    <t t-elif="stateToUse == 'confirmed'">
+                                                        <hr style="background-color: blue;height: 1px;"></hr>
+                                                    </t>
+                                                    <t t-elif="stateToUse == 'released'">
+                                                        <hr style="background-color: rgba(0, 170, 34, 0.66);height: 1px;"></hr>
+                                                    </t>
+                                                    <t t-elif="stateToUse == 'undermodify'">
+                                                        <hr style="background-color: rgb(218, 159, 34);height: 1px;"></hr>
+                                                    </t>
+                                                    <t t-elif="stateToUse == 'obsoleted'">
+                                                        <hr style="background-color: rgb(231, 43, 26);height: 1px;"></hr>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <hr style="background-color: black;height: 1px;"></hr>
+                                                    </t>
                                                 </td>
                                             </tr>
-											<tr>
-												<td>
-                                                    <t><strong>Name:</strong></t>
+                                            <tr>
+                                                <td>
+                                                    <field name="datas" filename="name" widget="binary"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <t>
+                                                        <strong>Name:</strong>
+                                                    </t>
                                                     <field name="engineering_code"
                                                            readonly="id not in [False, [], 0]"/>
                                                     <field name="display_name"
@@ -477,7 +497,9 @@
                                             </tr>
                                             <tr>
                                                 <td>
-                                                    <t><strong>Revision:</strong></t>
+                                                    <t>
+                                                        <strong>Revision:</strong>
+                                                    </t>
                                                     <field name="engineering_revision"/>
                                                 </td>
                                             </tr>
@@ -485,67 +507,92 @@
                                                 <td>
                                                     <strong>State:</strong>
                                                     <t t-if="stateToUse == 'draft'">
-                                                        <b><span style="color: rgb(110, 51, 197);padding-left: 5px;">
-                                                         	<u><field name="engineering_state"/></u>
-                                                       	</span></b>
+                                                        <b>
+                                                            <span style="color: rgb(110, 51, 197);padding-left: 5px;">
+                                                                <u>
+                                                                    <field name="engineering_state"/>
+                                                                </u>
+                                                            </span>
+                                                        </b>
                                                     </t>
                                                     <t t-elif="stateToUse == 'confirmed'">
-                                                        <b><span style="color: blue;padding-left: 5px;">
-                                                        	<u><field name="engineering_state"/></u>
-                                                        </span></b>
+                                                        <b>
+                                                            <span style="color: blue;padding-left: 5px;">
+                                                                <u>
+                                                                    <field name="engineering_state"/>
+                                                                </u>
+                                                            </span>
+                                                        </b>
                                                     </t>
                                                     <t t-elif="stateToUse == 'released'">
-                                                        <b><span style="color: rgba(0, 170, 34, 0.66);padding-left: 5px;">
-                                                        	<u><field name="engineering_state"/></u>
-                                                       	</span></b>
+                                                        <b>
+                                                            <span
+                                                                style="color: rgba(0, 170, 34, 0.66);padding-left: 5px;">
+                                                                <u>
+                                                                    <field name="engineering_state"/>
+                                                                </u>
+                                                            </span>
+                                                        </b>
                                                     </t>
                                                     <t t-elif="stateToUse == 'undermodify'">
-                                                        <b><span style="color: rgb(218, 159, 34);padding-left: 5px;">
-                                                        	<u><field name="engineering_state"/></u>
-                                                      	</span></b>
+                                                        <b>
+                                                            <span style="color: rgb(218, 159, 34);padding-left: 5px;">
+                                                                <u>
+                                                                    <field name="engineering_state"/>
+                                                                </u>
+                                                            </span>
+                                                        </b>
                                                     </t>
                                                     <t t-elif="stateToUse == 'obsoleted'">
-                                                        <b><span style="color: rgb(231, 43, 26);padding-left: 5px;">
-                                                        	<u><field name="engineering_state"/></u>
-                                                        </span></b>
+                                                        <b>
+                                                            <span style="color: rgb(231, 43, 26);padding-left: 5px;">
+                                                                <u>
+                                                                    <field name="engineering_state"/>
+                                                                </u>
+                                                            </span>
+                                                        </b>
                                                     </t>
-													<t t-else="">
-                                                        <b><span style="color: black;padding-left: 5px;">
-                                                        	<u><field name="engineering_state"/></u>
-                                                      	</span></b>
-													</t>
+                                                    <t t-else="">
+                                                        <b>
+                                                            <span style="color: black;padding-left: 5px;">
+                                                                <u>
+                                                                    <field name="engineering_state"/>
+                                                                </u>
+                                                            </span>
+                                                        </b>
+                                                    </t>
                                                 </td>
                                             </tr>
                                             <tr name="attachment_button_box">
                                                 <td name="attachment_button_box" style="display: inline-flex;">
                                                 </td>
                                             </tr>
-                                			<tr>
+                                            <tr>
                                                 <td>
-                                                	<t t-if="stateToUse == 'draft'">
-                                                		<hr style="background-color: rgb(110, 51, 197);height: 1px;"></hr>
+                                                    <t t-if="stateToUse == 'draft'">
+                                                        <hr style="background-color: rgb(110, 51, 197);height: 1px;"></hr>
                                                     </t>
                                                     <t t-elif="stateToUse == 'confirmed'">
-                                                    	<hr style="background-color: blue;height: 1px;"></hr>
+                                                        <hr style="background-color: blue;height: 1px;"></hr>
                                                     </t>
                                                     <t t-elif="stateToUse == 'released'">
-                                                    	<hr style="background-color: rgba(0, 170, 34, 0.66);height: 1px;"></hr>
+                                                        <hr style="background-color: rgba(0, 170, 34, 0.66);height: 1px;"></hr>
                                                     </t>
                                                     <t t-elif="stateToUse == 'undermodify'">
-                                                    	<hr style="background-color: rgb(218, 159, 34);height: 1px;"></hr>
+                                                        <hr style="background-color: rgb(218, 159, 34);height: 1px;"></hr>
                                                     </t>
                                                     <t t-elif="stateToUse == 'obsoleted'">
-                                                    	<hr style="background-color: rgb(231, 43, 26);height: 1px;"></hr>
+                                                        <hr style="background-color: rgb(231, 43, 26);height: 1px;"></hr>
                                                     </t>
-													<t t-else="">
-														<hr style="background-color: black;height: 1px;"></hr>
-													</t>
-												</td>
-											</tr>
-                                		</table>
-                                	</td>
+                                                    <t t-else="">
+                                                        <hr style="background-color: black;height: 1px;"></hr>
+                                                    </t>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
                                 </tr>
-                        	</table>
+                            </table>
                         </div>
                     </t>
                 </templates>
@@ -554,16 +601,16 @@
     </record>
 
     <record model="ir.ui.view" id="document_graph_view">
-   		<field name="name">Product.template.product.graph</field>
-   		<field name="model">ir.attachment</field>
-   		<field name="priority" eval="20"/>
-   		<field name="arch" type="xml">
-       		<graph string="Graph">
+        <field name="name">Product.template.product.graph</field>
+        <field name="model">ir.attachment</field>
+        <field name="priority" eval="20"/>
+        <field name="arch" type="xml">
+            <graph string="Graph">
                 <field name="create_date"/>
                 <field name="create_uid"/>
-       		</graph>
-   		</field>
-	</record>
+            </graph>
+        </field>
+    </record>
 
     <record model="ir.actions.act_window" id="plm_action_document_form">
         <field name="name">Documents</field>

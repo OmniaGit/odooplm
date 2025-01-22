@@ -10,12 +10,6 @@
                     <span>Spare Part:</span>
                     <field name="used_for_spare" widget="boolean_toggle" readonly="context.get('readonly', False)"/>
                 </td>
-                <td>
-                    <div class="fa fa-gear fa-2x"
-                         aria-label="Is A Spare Drawing"
-                         style="color: blue;"
-                         invisible="used_for_spare in [False]"/>
-                </td>
             </xpath>
         </field>
     </record>

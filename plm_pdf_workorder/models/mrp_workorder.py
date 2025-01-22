@@ -35,7 +35,15 @@ class MrpWorkorder(models.Model):
     )
     production_doc_ids = fields.Many2many("ir.attachment",
                                           compute="_compute_production_doc_ids",
+                                          inverse="_set_production_doc_ids",
                                           store=True)
+
+    def _set_production_doc_ids(self):
+        for rec in self:
+            for doc_id in rec.production_doc_ids:
+                attachment_id = rec.product_id.linkeddocuments.filtered(
+                    lambda attachment: attachment.id == doc_id.id)
+                attachment_id = doc_id
 
     @api.depends("product_id.linkeddocuments.is_production_doc")
     def _compute_production_doc_ids(self):

@@ -82,12 +82,10 @@ class PlmDocumentRelations(models.Model):
                              default=False,
                              readonly=True)
     notes = fields.Char(string="Notes: ")
-    preview_related = fields.Image(
-        compute="_compute_preview_related",
-        store=True, attachment=False,
-        max_height=1920, max_width=1920,
-        string=_("Child Parent Preview")
-    )
+    preview_related = fields.Image(compute="_compute_preview_related",
+                                   store=True, attachment=False,
+                                   max_height=1920, max_width=1920,
+                                   string=_("Child Parent Preview"))
 
     _sql_constraints = [
     ('relation_uniq', 'unique (parent_id,child_id,link_kind)', _('The Document Relation must be unique !')),
@@ -99,8 +97,9 @@ class PlmDocumentRelations(models.Model):
         for rec in self:
             if not rec.child_preview and rec.child_id and rec.link_kind == 'ExtraTree' and rec.parent_id.preview:
                 rec.preview_related = rec.parent_id.preview
+                rec.child_id.preview_related = rec.parent_id.preview
             else:
-                rec.preview_related = False
+                rec.preview_related = rec.preview_related
 
     def copy(self, default=None):
         if not default:

@@ -6,20 +6,24 @@
             <field name="model">mrp.routing.workcenter</field>
             <field name="inherit_id" ref="mrp.mrp_routing_workcenter_form_view"/>
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='worksheet_type']" position="before">
+                <xpath expr="//field[@name='bom_product_template_attribute_value_ids']" position="after">
                     <field name="use_plm_docs"/>
                 </xpath>
-                <xpath expr="//field[@name='worksheet_type']" position="attributes">
+                <xpath expr="//page[@name='worksheet']" position="attributes">
                     <attribute name="invisible">use_plm_docs == True</attribute>
                 </xpath>
-                <xpath expr="//field[@name='worksheet']" position="attributes">
-                    <attribute name="invisible">use_plm_docs == True or worksheet_type != 'pdf'</attribute>
-                </xpath>
-                <xpath expr="//field[@name='worksheet_google_slide']" position="attributes">
-                    <attribute name="invisible">use_plm_docs == True or worksheet_type != 'google_slide'</attribute>
-                </xpath>
-                <xpath expr="//field[@name='note']" position="attributes">
-                    <attribute name="invisible">use_plm_docs == True or worksheet_type != 'text'</attribute>
+                <xpath expr="//page[@name='worksheet']" position="after">
+                        <page name="plm_production_doc" string="PLM Production Doc" invisible="use_plm_docs==False">
+                        <field name="production_doc_ids" nolabel="1" mode="kanban"
+                               domain="[('is_plm', '=', True), ('is_production_doc','=', True)]"
+                               widget="hierarchy_kanban"
+                               context="{
+                               'odooPLM': True,
+                               'kanban_view_ref':'plm.document_kanban_view',
+                               'list_view_ref':'plm.ir_attachment_list',
+                               'form_view_ref':'plm.view_attachment_form_plm_hinerit'
+                               }"/>
+                    </page>
                 </xpath>
             </field>
         </record>
