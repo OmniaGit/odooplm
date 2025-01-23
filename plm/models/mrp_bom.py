@@ -25,17 +25,18 @@ Created on 25 Aug 2016
 @author: Daniel Smerghetto
 """
 import copy
-import sys
 import logging
+import sys
+
 from odoo import _
 from odoo import api
-from odoo import models
 from odoo import fields
+from odoo import models
 from odoo.osv.expression import AND
 
 
 class MrpBomExtension(models.Model):
-    _name='mrp.bom'
+    _name = 'mrp.bom'
     _inherit = 'mrp.bom'
 
     def _father_compute(self, name='', arg={}):
@@ -361,7 +362,8 @@ class MrpBomExtension(models.Model):
         """
             Execute implosion for a a bom object
         """
-        _packed=[]
+        _packed = []
+
         def get_product_id(bom_local_obj):
             out_prod = False
             prod_id = bom_local_obj.product_id.id
@@ -725,6 +727,7 @@ class MrpBomExtension(models.Model):
 
     def open_related_bom_lines(self):
         computed = []
+
         def recursion(bom_brws_list):
             out_bom_lines = []
             for mrp_bom_id in bom_brws_list:
@@ -755,7 +758,6 @@ class MrpBomExtension(models.Model):
                     'domain': [('id', 'in', bom_line_ids)],
                     'context': {},
                     }
-
 
     def open_related_bom_revisions(self):
         bom_ids = self.search([('product_tmpl_id', 'in', self.product_tmpl_id.getAllVersionTemplate().ids)])

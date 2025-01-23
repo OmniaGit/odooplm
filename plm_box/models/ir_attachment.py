@@ -240,66 +240,71 @@ class Plm_box_document(models.Model):
     def import_bom_from_csv(self, box_id, doc_id):
         """
         This method processes a CSV file attached to a specific box, extracts
-        product details, and creates BOM lines based on the column mapping defined
+        product details, and creates BOM and BOM lines based on the column mapping defined
         in the box.
 
         Args:
         box_id (int): The ID of the PLM box containing the CSV structure mapping.
         doc_id (int): The ID of the attachment (CSV file) to be processed.
+
+        Sample :
+        clientArgs formate should be
+        (
+             # parentOdooTuple
+            (l_tree_document_id, parent_product_product_id, parent_ir_attachment_id),
+            # childrenOdooTuple
+            [
+                (child_product_product_id_1, child_ir_attachment_id_1, {'product_qty': 2, 'link_kind': 'HiTree'}),
+                (child_product_product_id_2, child_ir_attachment_id_2, {'product_qty': 1, 'link_kind': 'RfTree'}),
+                # Add more child tuples as needed
+            ]
+        )
         """
+
         if doc_id and box_id:
             attachment_id = self.env["ir.attachment"].browse(doc_id)
+            box_id = self.env["plm.box"].browse(box_id)
             product_details = self.parse_file_name(attachment_id.name)
             if product_details and product_details.get("prefix") == "IMP_BOM":
-                product_id = self.product_by_engcode(
-                    product_details.get("part_number"), product_details.get("revision")
-                )
-                bom_ids = self.get_create_bom(product_id)
-                if bom_ids:
-                    box_id = self.env["plm.box"].browse(box_id)
-                    csv_column_mapping = json.loads(box_id.csv_structure)
-                    file_content = base64.b64decode(attachment_id.datas)
-                    csv_reader = csv.reader(file_content.decode("utf-8").splitlines())
-                    headers = next(csv_reader)
-                    existing_bom_lines = self.env["mrp.bom.line"].search(
-                        [("bom_id", "=", bom_ids[0].id)]
-                    )
-                    existing_bom_lines.unlink()
-                    bom_lines = []
-                    for row in csv_reader:
-                        bom_line_data = {}
-                        for odoo_field, csv_column in csv_column_mapping.items():
-                            if csv_column in headers:
-                                index = headers.index(csv_column)
-                                bom_line_data[odoo_field] = row[index]
-                        bom_lines.append(
-                            self.create_bom_line_data(
-                                bom_line_data, bom_ids[0], product_id, attachment_id
-                            )
-                        )
-                    self.env["mrp.bom.line"].create(bom_lines)
+                product_id = self.product_by_engcode(product_details.get("part_number"),
+                                                     product_details.get("revision"))
+                csv_column_mapping = json.loads(box_id.csv_structure)
+                file_content = base64.b64decode(attachment_id.datas)
+                csv_reader = csv.reader(file_content.decode("utf-8").splitlines())
+                headers = next(csv_reader)
+                child_data = []
+                for row in csv_reader:
+                    bom_line_data = {}
+                    for odoo_field, csv_column in csv_column_mapping.items():
+                        if csv_column in headers:
+                            index = headers.index(csv_column)
+                            bom_line_data[odoo_field] = row[index]
+                    child_data.append(self.create_bom_line_data(bom_line_data,
+                                                                product_id,
+                                                                attachment_id))
+                clientArgs = ((False, product_id.id, attachment_id.id), child_data)
+                self.env['mrp.bom'].saveRelationNew(clientArgs)
+
             return True
 
     @api.model
-    def create_bom_line_data(self, bom_line_data, bom_id, product_id, attachment_id):
+    def create_bom_line_data(self, bom_line_data, product_id, attachment_id):
         """
         a custom method will use to prepare BOM line data and return dictionary of
         updated data which will directly use to create BoM line recode.
         """
 
-        if bom_line_data and bom_id and product_id and attachment_id:
+        if bom_line_data  and product_id and attachment_id:
             line_product_id = self.product_by_engcode(
                 engcode=bom_line_data.get("engineering_code"),
                 revision=bom_line_data.get("engineering_revision"),
             )
-            bom_line_data["bom_id"] = bom_id.id
-            bom_line_data["product_id"] = line_product_id.id
-            bom_line_data["product_qty"] = bom_line_data.get("qty", 1)
-            bom_line_data["product_uom_id"] = line_product_id.uom_id.id
-            bom_line_data["source_id"] = attachment_id.id
-            # bom_line_id = self.env['mrp.bom.line'].create(bom_line_data)
-            # return _logger.info(f"{bom_line_id} Created Successfully")
-            return bom_line_data
+
+            return [
+                line_product_id.id,
+                False,
+                {'product_qty': bom_line_data.get("qty", 1), 'link_kind': 'HiTree'}
+            ]
 
     @api.model
     def parse_file_name(self, fname):
@@ -348,18 +353,3 @@ class Plm_box_document(models.Model):
                 )
             return product_id
         raise UserError(_("Invalid File Name: missing part number or revision"))
-
-    def get_create_bom(self, product_id):
-        """
-        a custom method takes product_id as parameter and return bom_ids
-        if bom not available then create it and return bom_ids.
-        """
-        if not product_id.bom_ids:
-            self.env["mrp.bom"].create(
-                {
-                    "product_tmpl_id": product_id.product_tmpl_id.id,
-                    "product_id": product_id.id,
-                    "type": "normal",
-                }
-            )
-        return product_id.bom_ids
