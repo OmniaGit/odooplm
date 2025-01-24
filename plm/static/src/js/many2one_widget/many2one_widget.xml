@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<templates xml:space="preserve">
+    <t t-name="plm.PlmMany2oneWidget" t-inherit="web.Many2OneField" t-inherit-mode="primary">
+        <xpath expr="//div[hasclass('o_field_many2one_selection')]/Many2XAutocomplete" position="before">
+            <span t-if="imageData">
+                <img data-tooltip-template="web.ImageZoomTooltip"
+                     t-att-data-tooltip-info="imageToolTipData"
+                     style="width:30px;height:30px" t-att-src="imageData"
+                     t-on-click="onImageClicked"
+                />
+            </span>
+        </xpath>
+    </t>
+</templates>
