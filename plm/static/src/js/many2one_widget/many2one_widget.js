@@ -38,7 +38,7 @@ export class PlmMany2oneWidget extends Many2OneField {
         });
         if (this.props && this.props.record && this.props.record.data && this.props.record.data[this.props.name] && this.props.record.data[this.props.name].length != 0) {
 
-
+            
             let imageData = await this.env.model.orm.call(this.relation, "search_read", [], {
                 domain: [["id", "=", this.props.record.data[this.props.name][0]]],
                 fields: [this.props.options.image_field],

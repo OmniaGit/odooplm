@@ -146,7 +146,7 @@ class MrpBomLineExtension(models.Model):
                 domain.append(('type', 'in', ['normal','subcontract', 'phantom']))
                 out_act_dict['view_ids'] = [
                     (5, 0, 0),
-                    (0, 0, {'view_mode': 'list', 'view_id': self.env.ref('plm.plm_bom_tree_view').id}),
+                    (0, 0, {'view_mode': 'list', 'view_id': self.env.ref('plm.plm_bom_list_view').id}),
                     (0, 0, {'view_mode': 'form', 'view_id': self.env.ref('plm.plm_bom_form_view').id})
                 ]
             elif line_brws.type == 'spbom':
@@ -221,8 +221,6 @@ class MrpBomLineExtension(models.Model):
     product_tag_ids = fields.Many2many(related='product_tmpl_id.product_tag_ids')
 
     product_tag_ids = fields.Many2many(related='product_tmpl_id.product_tag_ids')
-
-    product_tumbnail = fields.Image(related="product_id.product_tmpl_id.image_1920")
 
     def go_to_product(self):
         return {'name': _('Product'),

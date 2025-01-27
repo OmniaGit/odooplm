@@ -176,5 +176,5 @@ class PlmClient(models.TransientModel):
             return brwItem.checkout(hostName=hostName,
                                     hostPws=hostPws,
                                     showError=showError)
-        return True, ''    
+        return True, ''        
     

@@ -73,7 +73,12 @@ class ProductTemplate(models.Model):
                                          compute=lambda self: self._compute_eng_code_editable()
                                          )
     kit_bom = fields.Boolean(_('KIT Bom Type'))
+    
+    linkeddocuments = fields.Many2many(related="product_variant_id.linkeddocuments")
 
+    def action_open_linked_field(self, related_field):
+        return self.product_variant_id.action_open_linked_field(related_field)
+    
     def unlinkCheckBomRelations(self):
 
         def print_where_struct(self, where_struct):
@@ -207,15 +212,16 @@ class ProductTemplate(models.Model):
         """)
 
     def getSequenceFrom(self, prefix, digit, start_number= 0):
-        plm_prefix = "PLM_SEQUENCE_%s" % prefix
+        plm_prefix = f"PLM_SEQUENCE_{prefix}" 
         sequence=None
         for sequence in  self.env['ir.sequence'].sudo().search([('code','=', plm_prefix)]):
             break
             return sequence.next_by_id()
         if not sequence:
             sequence = self.env['ir.sequence'].sudo().create({
-                'name': "Plm Autocreate sequence %s " % prefix,
+                'name': f"Plm Autocreate sequence {prefix} ",
                 'code': plm_prefix,
+                'prefix':prefix,
                 'number_increment':1,
                 'number_next_actual':start_number,
                 'padding': digit
