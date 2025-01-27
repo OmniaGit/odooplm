@@ -17,7 +17,6 @@ export class PlmMany2oneWidget extends Many2OneField {
 
     async setup() {
         super.setup();
-        console.log("..........1");
         this.imageData = false;
         this.relatedField = false;
         this.imageToolTipData = false;
@@ -56,8 +55,8 @@ export class PlmMany2oneWidget extends Many2OneField {
         }
     }
 
-    onImageClicked() {
-
+    onImageClicked(event) {
+        event.stopPropagation(); // It stops the event from triggering any additional event handlers
         let selectedProductId = this.props.record.data.product_id[0];
         let relatedFieldName = this.props.options.linked_field;
         let model = this.props.record.model.root.model.config.fields[this.props.name].relation;
