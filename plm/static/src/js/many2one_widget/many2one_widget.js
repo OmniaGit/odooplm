@@ -38,7 +38,6 @@ export class PlmMany2oneWidget extends Many2OneField {
         });
         if (this.props && this.props.record && this.props.record.data && this.props.record.data[this.props.name] && this.props.record.data[this.props.name].length != 0) {
 
-            
             let imageData = await this.env.model.orm.call(this.relation, "search_read", [], {
                 domain: [["id", "=", this.props.record.data[this.props.name][0]]],
                 fields: [this.props.options.image_field],
@@ -55,12 +54,12 @@ export class PlmMany2oneWidget extends Many2OneField {
         }
     }
 
-    onImageClicked(event) {
+    async onImageClicked(event) {
         event.stopPropagation(); // It stops the event from triggering any additional event handlers
         let selectedProductId = this.props.record.data.product_id[0];
         let relatedFieldName = this.props.options.linked_field;
         let model = this.props.record.model.root.model.config.fields[this.props.name].relation;
-        let action_open_linked_field = this.props.record.model.orm.call(model, "action_open_linked_field", [selectedProductId, relatedFieldName]);
+        let action_open_linked_field = await this.props.record.model.orm.call(model, "action_open_linked_field", [selectedProductId, relatedFieldName]);
         return this.action.doAction(action_open_linked_field);
     }
 }

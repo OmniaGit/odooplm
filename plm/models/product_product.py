@@ -1936,6 +1936,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         })
 
         return {
+            "name": "Linked Documents",
             "type": "ir.actions.act_window",
             "view_mode": "kanban",
             'domain': domain,
