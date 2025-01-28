@@ -8,18 +8,24 @@
                 <img data-tooltip-template="web.ImageZoomTooltip"
                      t-att-data-tooltip-info="imageToolTipData"
                      style="width:30px;height:30px" t-att-src="imageData"
-                     t-on-click="onImageClicked"
-                />
+                     t-on-click="onImageClicked"/>
+            </span>
+            <span t-else="" style="padding:0px 10px 0px 0px;" class="plm_m2o_avatar">
+                <div class="fa fa-folder-open" t-on-click="onImageClicked"
+                     style="font-size: 20px; width:30px;height:30px"/>
             </span>
         </xpath>
-<!--        plm_many2one_widget for list view -->
+        <!--        plm_many2one_widget for list view -->
         <xpath expr="//t[@t-if='!props.canOpen']" position="before">
             <span t-if="imageData" style="padding:0px 10px 0px 0px;" class="plm_m2o_avatar">
                   <img data-tooltip-template="web.ImageZoomTooltip"
                        t-att-data-tooltip-info="imageToolTipData"
                        style="width:30px;height:30px" t-att-src="imageData"
-                       t-on-click="onImageClicked"
-                  />
+                       t-on-click="onImageClicked"/>
+            </span>
+            <span t-else="" style="padding:0px 10px 0px 0px;" class="plm_m2o_avatar">
+                <div class="fa fa-folder-open" t-on-click="onImageClicked"
+                     style="font-size: 20px; width:30px;height:30px"/>
             </span>
         </xpath>
     </t>
