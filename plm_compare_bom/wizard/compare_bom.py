@@ -200,15 +200,11 @@ class plm_compare_bom(models.TransientModel):
     )
     anotinb = fields.One2many("plm.adding.bom", "bom_id", _("BoM Adding"))
     bnotina = fields.One2many("plm.missing.bom", "bom_id", _("BoM Missing"))
-    compute_type = fields.Selection(
-        [
-            ("only_product", _("Compare Only Product Existence")),
-            ("num_qty", _("Compare By Item Number and Quantity")),
-            ("summarized", _("Compare Product Quantity")),
-        ],
-        default="only_product",
-        string=_("Compare type"),
-    )
+    compute_type = fields.Selection([
+        ("only_product", _("Compare Only Product Existence")),
+        ("num_qty", _("Compare By Item Number and Quantity")),
+        ("summarized", _("Compare Product Quantity"))
+    ], default="only_product", string=_("Compare type"))
 
     bom_line_id_to_delete = fields.Many2many(
         "mrp.bom.line", string=_("BoM Line to Delete")
@@ -230,35 +226,40 @@ class plm_compare_bom(models.TransientModel):
         return result
 
     def update_bom(self):
+        def process_bom_line(records, bom_id, bom_type):
+            for record in records.filtered(lambda x: x.reason == "new"):
+                existing_line = self.env["mrp.bom.line"].search([
+                    ("bom_id", "=", bom_id.id),
+                    ("product_id", "=", record.part_id.id),
+                    ("itemnum", "=", record.itemnum)
+                ], limit=1)
+
+                if existing_line:
+                    if self.compute_type == "num_qty":
+                        existing_line.product_qty = record.itemqty
+                    else:
+                        existing_line.product_qty += record.itemqty
+                else:
+                    self.env["mrp.bom.line"].create({
+                        "bom_id": bom_id.id,
+                        "product_qty": record.itemqty,
+                        "product_id": record.part_id.id,
+                        "type": bom_type,
+                        "itemnum": record.itemnum
+                    })
+                record.reason = "added"
+
         self.to_update = False
-        mrp_bom_line = self.env["mrp.bom.line"]
         for plm_compare_bom_id in self:
-            for plm_missing_id in plm_compare_bom_id.anotinb.filtered(
-                lambda x: x.reason == "new"
-            ):
-                mrp_bom_line.create(
-                    {
-                        "bom_id": self.bom_id1.id,
-                        "product_qty": plm_missing_id.itemqty,
-                        "product_id": plm_missing_id.part_id.id,
-                        "type": self.bom_id1.type,
-                        "itemnum": len(self.bom_id1.bom_line_ids) + 1,
-                    }
-                )
-                plm_missing_id.reason = "added"
-            for plm_adding_id in plm_compare_bom_id.bnotina.filtered(
-                lambda x: x.reason == "new"
-            ):
-                mrp_bom_line.create(
-                    {
-                        "bom_id": self.bom_id2.id,
-                        "product_qty": plm_adding_id.itemqty,
-                        "product_id": plm_adding_id.part_id.id,
-                        "type": self.bom_id2.type,
-                        "itemnum": len(self.bom_id2.bom_line_ids) + 1,
-                    }
-                )
-                plm_adding_id.reason = "added"
+
+            process_bom_line(plm_compare_bom_id.anotinb,
+                             self.bom_id1,
+                             self.bom_id1.type)
+
+            process_bom_line(plm_compare_bom_id.bnotina,
+                             self.bom_id2,
+                             self.bom_id2.type)
+
             for mrp_bom_line_id in plm_compare_bom_id.bom_line_id_to_delete:
                 mrp_bom_line_id.unlink()
 
@@ -400,12 +401,10 @@ class plm_compare_bom(models.TransientModel):
         else:
             logging.warning("Compute type not found!")
         logging.info("Starting returning self %r" % (self))
-        self.write(
-            {
-                "anotinb": [(6, False, bom1NewItems)],
-                "bnotina": [(6, False, bom2NewItems)],
-            }
-        )
+        self.write({
+            "anotinb": [(6, False, bom1NewItems)],
+            "bnotina": [(6, False, bom2NewItems)]
+        })
         data_obj = self.env["ir.model.data"]
         _modelName, id3 = data_obj.check_object_reference(
             openerpModule, "plm_visualize_diff_form"
