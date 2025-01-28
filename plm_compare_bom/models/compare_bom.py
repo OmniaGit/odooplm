@@ -187,12 +187,12 @@ class plm_compare_bom(models.TransientModel):
 
     bom_line_id_to_delete = fields.Many2many('mrp.bom.line', string=_('BoM Line to Delete'))
 
-    to_update = fields.Boolean("Bom need to be updated", default=False)       
+    to_update = fields.Boolean("Bom need to be updated", default=False)
 
     def _are_equal(self):
         for plm_compare_bom_id in self:
             plm_compare_bom_id.bom_are_equal = len(plm_compare_bom_id.anotinb) == 0 and len(plm_compare_bom_id.bnotina) == 0
-    
+
     bom_are_equal = fields.Boolean(compute='_are_equal')
 
     def name_get(self):
@@ -203,24 +203,49 @@ class plm_compare_bom(models.TransientModel):
         return result
 
     def update_bom(self):
-        self.to_update=False
         mrp_bom_line = self.env['mrp.bom.line']
         for plm_compare_bom_id in self:
             for plm_missing_id in plm_compare_bom_id.anotinb.filtered(lambda x: x.reason == 'new'):
-                mrp_bom_line.create({
-                    'bom_id': self.bom_id1.id,
-                    'product_qty': plm_missing_id.itemqty,
-                    'product_id': plm_missing_id.part_id.id,
-                    'type': self.bom_id1.type,
-                    'itemnum': len(self.bom_id1.bom_line_ids) + 1})
+                existing_line = mrp_bom_line.search([
+                    ('bom_id', '=', self.bom_id1.id),
+                    ('product_id', '=', plm_missing_id.part_id.id),
+                    ('itemnum', '=', plm_missing_id.itemnum)
+                ], limit=1)
+
+                if existing_line:
+                    if self.compute_type == "num_qty":
+                        existing_line.product_qty = plm_missing_id.itemqty
+                    else:
+                        existing_line.product_qty += plm_missing_id.itemqty
+                else:
+                    mrp_bom_line.create({
+                        'bom_id': self.bom_id1.id,
+                        'product_qty': plm_missing_id.itemqty,
+                        'product_id': plm_missing_id.part_id.id,
+                        'type': self.bom_id1.type,
+                        'itemnum': plm_missing_id.itemnum
+                    })
                 plm_missing_id.reason = 'added'
             for plm_adding_id in plm_compare_bom_id.bnotina.filtered(lambda x: x.reason == 'new'):
-                mrp_bom_line.create({
-                    'bom_id': self.bom_id2.id,
-                    'product_qty': plm_adding_id.itemqty,
-                    'product_id': plm_adding_id.part_id.id,
-                    'type': self.bom_id2.type,
-                    'itemnum': len(self.bom_id2.bom_line_ids) + 1})
+                existing_line = mrp_bom_line.search([
+                    ('bom_id', '=', self.bom_id2.id),
+                    ('product_id', '=', plm_adding_id.part_id.id),
+                    ('itemnum', '=', plm_adding_id.itemnum)
+                ], limit=1)
+
+                if existing_line:
+                    if self.compute_type == "num_qty":
+                        existing_line.product_qty = plm_adding_id.itemqty
+                    else:
+                        existing_line.product_qty += plm_adding_id.itemqty
+                else:
+                    mrp_bom_line.create({
+                        'bom_id': self.bom_id2.id,
+                        'product_qty': plm_adding_id.itemqty,
+                        'product_id': plm_adding_id.part_id.id,
+                        'type': self.bom_id2.type,
+                        'itemnum': plm_adding_id.itemnum
+                    })
                 plm_adding_id.reason = 'added'
             for mrp_bom_line_id in plm_compare_bom_id.bom_line_id_to_delete:
                 mrp_bom_line_id.unlink()
