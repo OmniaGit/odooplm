@@ -267,6 +267,13 @@ class UploadDocument(Controller):
         for record in ir_attachement.search_read([('id','=', id)], ['preview']):
             return base64.b64decode(record.get('preview'))
 
+    @route('/plm/product_product_image_1920/<int:id>', type='http', auth='user', methods=['GET'], csrf=False)
+    @webservice
+    def get_product_preview(self, id):
+        productobj = request.env['product.product'].sudo()
+        for record in productobj.search_read([('id', '=', id)], ['image_1920']):
+            return base64.b64decode(record.get('image_1920'))
+
     @route('/plm/product_product_preview/<int:product_id>', type='http', auth='user', methods=['GET'], csrf=False)
     @webservice
     def get_pp_preview(self, product_id):

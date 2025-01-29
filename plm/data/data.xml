@@ -9,5 +9,27 @@
             <field name="sequence">200</field>
             <field name="change_activity_type">request</field>
         </record>
+
+        <!-- generate product change impact report -->
+        <record id="check_product_change_impact" model="ir.actions.server">
+            <field name="name">Check Change Impact</field>
+            <field name="model_id" ref="product.model_product_product"/>
+            <field name="binding_model_id" ref="product.model_product_product"/>
+            <field name="binding_view_types">form</field>
+            <field name="state">code</field>
+            <field name="code">action = records.check_product_change_impact()</field>
+        </record>
+
+        <!-- product change impact report -->
+        <record id="action_report_product_change_impact" model="ir.actions.report">
+            <field name="name">Product Change Impact</field>
+            <field name="model">product.product</field>
+            <field name="report_type">qweb-html</field>
+            <field name="paperformat_id" ref="plm.paperformat_doc_structure"/>
+            <field name="report_name">plm.product_change_impact_report_template</field>
+            <field name="report_file">plm.product_change_impact_report_template</field>
+            <field name="print_report_name">'product : %s Change Impact' % (object.display_name)</field>
+        </record>
+
     </data>
 </odoo>

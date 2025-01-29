@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="product_change_impact_report_template">
+        <t t-set="data_report_landscape" t-value="True"/>
+        <t t-call="web.basic_layout">
+            <div class="container document_report_page">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="mt16">
+                            <div class="mb-lg-2 mt-lg-4">
+                                <span>
+                                    <strong>Affected Products</strong>
+                                </span>
+                            </div>
+                            <div>
+                                <table class="table_style">
+                                    <tr>
+                                        <th class="text-center">Name</th>
+                                        <th class="text-center">Code</th>
+                                        <th class="text-center">Revision</th>
+                                        <th class="text-center">State</th>
+                                        <th class="text-center">Image</th>
+                                    </tr>
+                                    <t t-foreach="affect_product_ids" t-as="product">
+                                        <tr>
+                                            <td class="text-center">
+                                                <a t-attf-href="/web#id={{product.id}}&amp;model={{product._name}}&amp;view_type=form"
+                                                   t-out="product.name"
+                                                   target="_blank"></a>
+                                            </td>
+                                            <td class="text-center">
+                                                <t t-out="product.engineering_code"/>
+                                            </td>
+                                            <td class="text-center">
+                                                <t t-out="product.engineering_revision"/>
+                                            </td>
+                                            <td class="text-center">
+                                                <strong>
+                                                    <t t-if="product.engineering_state == 'draft'">
+                                                        <span style="color: grey;padding-left: 5px;">
+                                                            <t t-out="product.engineering_state"/>
+                                                        </span>
+                                                    </t>
+                                                    <t t-elif="product.engineering_state == 'confirmed'">
+                                                        <span style="color: blue;padding-left: 5px;">
+                                                            <t t-out="product.engineering_state"/>
+                                                        </span>
+                                                    </t>
+                                                    <t t-elif="product.engineering_state == 'released'">
+                                                        <span style="color: green;padding-left: 5px;">
+                                                            <t t-out="product.engineering_state"/>
+                                                        </span>
+                                                    </t>
+                                                    <t t-elif="product.engineering_state == 'undermodify'">
+                                                        <span style="color: orange;padding-left: 5px;">
+                                                            <t t-out="product.engineering_state"/>
+                                                        </span>
+                                                    </t>
+                                                    <t t-elif="product.engineering_state == 'obsoleted'">
+                                                        <span style="color: red;padding-left: 5px;">
+                                                            <t t-out="product.engineering_state"/>
+                                                        </span>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <span style="color: black;padding-left: 5px;">
+                                                            <t t-out="product.engineering_state"/>
+                                                        </span>
+                                                    </t>
+                                                </strong>
+                                            </td>
+                                            <td class="text-center" style="padding-top: 5px; padding-bottom: 5px;">
+                                                <img t-att-src="'/plm/product_product_image_1920/%s' % product.id"
+                                                     t-att-alt="product.display_name"
+                                                     class="image_document_report"
+                                                     style="margin: auto;"/>
+
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </table>
+                            </div>
+
+                            <div class="mb-lg-2 mt-lg-4">
+                                <span>
+                                    <strong>Affected Attachments</strong>
+                                </span>
+                            </div>
+                            <div>
+                                <table class="table_style">
+                                    <tr>
+                                        <th class="text-center">Doc Name</th>
+                                        <th class="text-center">File Name</th>
+                                        <th class="text-center">State</th>
+                                        <th class="text-center">CheckOut By</th>
+                                        <th class="text-center">Preview</th>
+                                    </tr>
+                                    <t t-foreach="affect_attachment_ids" t-as="attachment">
+                                        <tr>
+                                            <td class="text-center">
+                                                <a t-attf-href="/web#id={{attachment.id}}&amp;model={{attachment._name}}&amp;view_type=form&amp;view_id={{ env.ref('plm.view_attachment_form_plm_hinerit').id }}"
+                                                   t-out="attachment.name"
+                                                   target="_blank">
+                                                </a>
+                                            </td>
+                                            <td class="text-center">
+                                                <t t-out="attachment.engineering_code"/>
+                                            </td>
+                                            <td class="text-center">
+                                                <strong>
+                                                    <t t-if="attachment.engineering_state == 'draft'">
+                                                        <span style="color: grey;padding-left: 5px;">
+                                                            <t t-out="attachment.engineering_state"/>
+                                                        </span>
+                                                    </t>
+                                                    <t t-elif="attachment.engineering_state == 'confirmed'">
+                                                        <span style="color: blue;padding-left: 5px;">
+                                                            <t t-out="attachment.engineering_state"/>
+                                                        </span>
+                                                    </t>
+                                                    <t t-elif="attachment.engineering_state == 'released'">
+                                                        <span style="color: green;padding-left: 5px;">
+                                                            <t t-out="attachment.engineering_state"/>
+                                                        </span>
+                                                    </t>
+                                                    <t t-elif="attachment.engineering_state == 'undermodify'">
+                                                        <span style="color: orange;padding-left: 5px;">
+                                                            <t t-out="attachment.engineering_state"/>
+                                                        </span>
+                                                    </t>
+                                                    <t t-elif="attachment.engineering_state == 'obsoleted'">
+                                                        <span style="color: red;padding-left: 5px;">
+                                                            <t t-out="attachment.engineering_state"/>
+                                                        </span>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <span style="color: black;padding-left: 5px;">
+                                                            <t t-out="attachment.engineering_state"/>
+                                                        </span>
+                                                    </t>
+                                                </strong>
+                                            </td>
+                                            <td class="text-center">
+                                                <t t-if="attachment.checkout_user">
+                                                    <div class="fa fa-lock" t-esc="attachment.checkout_user"/>
+                                                </t>
+                                                <t t-else="">
+                                                    <div class="fa fa-unlock" style="color:green;"/>
+                                                </t>
+                                            </td>
+                                            <td class="text-center"
+                                                style="padding-top: 5px; padding-bottom: 5px;">
+                                                <img t-att-src="'/plm/ir_attachment_preview/%s' % attachment.id"
+                                                     t-att-alt="attachment.display_name"
+                                                     class="image_document_report text-center"
+                                                     style="margin: auto;"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </table>
+                            </div>
+
+                            <div class="mb-lg-2 mt-lg-4">
+                                <span>
+                                    <strong>Affected BoMs</strong>
+                                </span>
+                            </div>
+                            <div>
+                                <table class="table_style">
+                                    <tr>
+                                        <th class="text-center">Reference</th>
+                                        <th class="text-center">Product</th>
+                                        <th class="text-center">BoM Type</th>
+                                        <th class="text-center">Revision</th>
+                                        <th class="text-center">Status</th>
+                                    </tr>
+                                    <t t-foreach="affect_bom_ids" t-as="bom">
+                                        <tr>
+                                            <td class="text-center">
+                                                <a t-attf-href="/web#id={{bom.id}}&amp;model={{bom._name}}&amp;view_type=form"
+                                                   t-esc="bom.code"
+                                                   target="_blank"></a>
+                                            </td>
+                                            <td class="text-center">
+                                                <t t-out="bom.product_tmpl_id.display_name"/>
+                                            </td>
+                                            <td class="text-center">
+                                                <t t-out="bom.type"/>
+                                            </td>
+                                            <td class="text-center">
+                                                <t t-out="bom.engineering_revision"/>
+                                            </td>
+                                            <td class="text-center">
+                                                <strong>
+                                                    <t t-if="bom.engineering_state == 'draft'">
+                                                        <span style="color: grey;padding-left: 5px;">
+                                                            <t t-out="bom.engineering_state"/>
+                                                        </span>
+                                                    </t>
+                                                    <t t-elif="bom.engineering_state == 'confirmed'">
+                                                        <span style="color: blue;padding-left: 5px;">
+                                                            <t t-out="bom.engineering_state"/>
+                                                        </span>
+                                                    </t>
+                                                    <t t-elif="bom.engineering_state == 'released'">
+                                                        <span style="color: green;padding-left: 5px;">
+                                                            <t t-out="bom.engineering_state"/>
+                                                        </span>
+                                                    </t>
+                                                    <t t-elif="bom.engineering_state == 'undermodify'">
+                                                        <span style="color: orange;padding-left: 5px;">
+                                                            <t t-out="bom.engineering_state"/>
+                                                        </span>
+                                                    </t>
+                                                    <t t-elif="bom.engineering_state == 'obsoleted'">
+                                                        <span style="color: red;padding-left: 5px;">
+                                                            <t t-out="bom.engineering_state"/>
+                                                        </span>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <span style="color: black;padding-left: 5px;">
+                                                            <t t-out="bom.engineering_state"/>
+                                                        </span>
+                                                    </t>
+                                                </strong>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

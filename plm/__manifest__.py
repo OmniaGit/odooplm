@@ -33,6 +33,7 @@
     "depends": ["base", "board", "product", "mrp"],
     "data": [
         "security/base_plm_security.xml",
+        "report/product_change_impact_template.xml",
         "data/data.xml",
         "data/sequence.xml",
         "report/bom_document.xml",

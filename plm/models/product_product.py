@@ -59,6 +59,15 @@ class ProductProduct(models.Model):
     _inherit = ['product.product']
     _description ="Product Product"
 
+    def check_product_change_impact(self):
+        self.ensure_one()
+        report_data = {}
+        bomobj = self.env['mrp.bom']
+        rel_datas, prt_datas, relation_datas = bomobj.get_where_used([self.id])
+        report_data["active_id"] = self.id
+        report_data["prt_datas"] = prt_datas
+        return self.env.ref('plm.action_report_product_change_impact').report_action(docids=[self.id], data=report_data)
+
     def onchange(self, values, field_names, fields_spec):
         values = self.plm_sanitize(values)
         if 'product_tmpl_id' in values:
