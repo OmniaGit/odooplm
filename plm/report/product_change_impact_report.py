@@ -6,19 +6,12 @@ class ProductChangeImpactReport(models.AbstractModel):
     _name = 'report.plm.product_change_impact_report_template'
     _description = 'product change impact report'
 
-    def get_bom_hierarchy(self, product_id, level=0, direction="child"):
+    def get_bom_hierarchy(self, product_id, level=0, direction="parent"):
 
         product = self.env['product.product'].browse(product_id)
         hierarchy = {"level": level, "product": product, "children": []}
 
-        if direction == "child":
-            boms = self.env['mrp.bom'].search([('product_tmpl_id', '=', product.product_tmpl_id.id)])
-            for bom in boms:
-                for line in bom.bom_line_ids:
-                    sub_hierarchy = self.get_bom_hierarchy(line.product_id.id, level + 1, direction)
-                    hierarchy["children"].append(sub_hierarchy)
-
-        elif direction == "parent":
+        if direction == "parent":
             bom_lines = self.env['mrp.bom.line'].search([('product_id', '=', product.id)])
             for bom_line in bom_lines:
                 parent_product = bom_line.bom_id.product_tmpl_id.product_variant_id
@@ -38,7 +31,6 @@ class ProductChangeImpactReport(models.AbstractModel):
             prt_datas = data.get("prt_datas", {})
             product_id = productobj.browse(data['active_id'])
 
-            hierarchy_child = self.get_bom_hierarchy(product_id=data['active_id'], level=0, direction="child")
             hierarchy_parent = self.get_bom_hierarchy(product_id=data['active_id'], level=0, direction="parent")
 
             for product_data in prt_datas:
@@ -47,7 +39,6 @@ class ProductChangeImpactReport(models.AbstractModel):
             return {
                 'doc_ids': product_id,
                 'doc_model': product_change_impact_report.model,
-                'hierarchy_child': hierarchy_child,
                 'hierarchy_parent': hierarchy_parent,
                 'affect_attachment_ids': affect_attachment_ids,
             }

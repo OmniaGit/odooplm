@@ -3284,4 +3284,14 @@ class IrAttachment(models.Model):
             return docBrws.id
         return False
 
+    def check_attachment_change_impact(self):
+        self.ensure_one()
+        report_data = {}
+        report_data["active_id"] = self.id
+
+        return self.env.ref(
+            'plm.action_report_attachment_change_impact'
+        ).report_action(docids=[self.id],
+                        data=report_data)
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
