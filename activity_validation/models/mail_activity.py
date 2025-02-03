@@ -20,14 +20,9 @@
 ##############################################################################
 '''
 Created on Nov 16, 2019
-
 @author: mboscolo
 '''
-import logging
-from odoo import models
-from odoo import fields
-from odoo import api
-from odoo import _
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
 
@@ -41,9 +36,7 @@ class MailActivity(models.Model):
         ('done', _('Done')),
         ('cancel', _('Cancel')),
         ('exception', _('Exception')),
-        ],
-        default='draft',
-        string=_('Plm State'))
+    ], default='draft', string=_('Plm State'))
     children_ids = fields.One2many('mail.activity.children.rel',
                                    'mail_parent_activity_id',
                                    _('ECR Activities'))
@@ -52,8 +45,8 @@ class MailActivity(models.Model):
     has_parent = fields.Boolean(_('Has parent ECR'), compute="_compute_has_parent_ecr", store=True)
     has_parent_eco = fields.Boolean(_('Has parent ECO'), compute="_compute_has_parent_eco", store=True)
     eco_child_ids = fields.One2many('mail.activity',
-                                   'mail_parent_eco_activity_id',
-                                   _('ECO Activities'))
+                                    'mail_parent_eco_activity_id',
+                                    _('ECO Activities'))
     mail_parent_eco_activity_id = fields.Many2one('mail.activity', _('ECO Parent Activity'))
     default_plm_activity = fields.Many2one('mail.activity.type', compute='_compute_mail_activity_type')
     is_eco = fields.Boolean(_('Is ECO'))
@@ -61,9 +54,10 @@ class MailActivity(models.Model):
     def _compute_mail_activity_type(self):
         for activity_id in self:
             activity_id.default_plm_activity = self.env.ref('plm.mail_activity_plm_activity')
-        
+
     def getParentECRActivity(self, activity_id):
-        parent_activity = self.env['mail.activity.children.rel'].search([('mail_children_activity_id', '=', activity_id.id)])
+        parent_activity = self.env['mail.activity.children.rel'].search(
+            [('mail_children_activity_id', '=', activity_id.id)])
         return parent_activity.mapped('mail_parent_activity_id')
 
     def getParentECOActivity(self, activity_id):
@@ -97,20 +91,43 @@ class MailActivity(models.Model):
                         'name': '%s - %s' % (activity_id.activity_type_id.name, user_id.name),
                         'user_id': user_id.id,
                         'mail_children_activity_id': False,
-                        }
+                        'is_eco': True
+                    }
                     rel_id = self.env['mail.activity.children.rel'].create(vals)
                     activity_ids.append(rel_id.id)
             activity_id.write({
                 'children_ids': [(6, False, activity_ids)]
-                })
+            })
 
     def write(self, vals):
+        eco_child_ids = vals.get('eco_child_ids')
+        if isinstance(eco_child_ids, list):
+            for child in eco_child_ids:
+                if isinstance(child, list) and len(child) > 2:
+                    child_dict = child[2]
+                    if isinstance(child_dict, dict):
+                        child_dict['is_eco'] = True
+
         ret = super(MailActivity, self).write(vals)
-        for activity_id in self:
-            if self.env.user.has_group('activity_validation.group_force_activity_validation_admin'):
-                return ret
-            if activity_id.plm_state == 'done' and 'plm_state' not in vals:
-                raise UserError('You cannot modify a confirmed activity')
+        if self.plm_state == 'in_progress':
+            for child in self.children_ids:
+                if not child.mail_children_activity_id:
+                    activity_vals = {
+                        'activity_type_id': self.activity_type_id.id,
+                        'date_deadline': self.date_deadline,
+                        'user_id': child.user_id.id,
+                        'plm_state': 'draft',
+                        'name': child.name,
+                        'note': self.note,
+                        'res_model_id': self.res_model_id.id,
+                        'res_id': self.res_id,
+                    }
+                    new_activity_id = self.create(activity_vals)
+                    child.mail_children_activity_id = new_activity_id.id
+                    child.mail_parent_activity_id = self.id
+
+        if self.env.user.has_group('activity_validation.group_force_activity_validation_admin'):
+            return ret
         return ret
 
     def checkConfirmed(self, check=False):
@@ -159,22 +176,15 @@ class MailActivity(models.Model):
 
     def isCustomType(self):
         for activity_id in self:
-            if activity_id.activity_type_id.change_activity_type in ['request', 'plm_activity']:
+            if activity_id.activity_type_id.change_activity_type in ['request',
+                                                                     'plm_activity']:
                 return True
         return False
-        
-    def unlink(self):
-        for activity_id in self:
-            if activity_id.isCustomType():
-                if not self.env.su:
-                    return
-        return super(MailActivity, self).unlink()
 
     def clearChildrenActivities(self):
         for child_id in self.children_ids:
             for child_rel in child_id.mail_children_activity_id.sudo():
-                if child_rel.mail_children_activity_id.plm_state == 'draft':
-                    child_rel.mail_children_activity_id.unlink()
+                if child_rel.plm_state == 'draft':
                     child_rel.unlink()
 
     def action_to_draft(self):
@@ -187,21 +197,22 @@ class MailActivity(models.Model):
     def action_to_done(self):
         for activity_id in self:
             activity_id.plm_state = 'done'
+            activity_id._action_done()
             if activity_id.is_eco:
                 self.checkChildrenECODone(activity_id)
-                parents = self.getParentECOActivity(activity_id)
+                parent = self.getParentECOActivity(activity_id)
             else:
                 self.checkChildrenECRDone(activity_id)
-                parents = self.getParentECRActivity(activity_id)
+                parent = self.getParentECRActivity(activity_id)
             close = True
-            if parents.children_ids:
-                for child_activity_id in parents.children_ids:
+            if parent.is_eco:
+                for child_activity_id in parent.eco_child_ids:
                     if child_activity_id.plm_state != 'done':
                         close = False
+                        break
                 if close:
-                    parents._action_done()
-            else:
-                activity_id._action_done()
+                    parent.plm_state = 'done'
+                    parent._action_done()
 
     def action_to_exception(self):
         for activity_id in self:
@@ -236,15 +247,23 @@ class MailActivity(models.Model):
             if child.plm_state not in ['done', 'cancel']:
                 do_eco = False
         if not do_eco:
-            raise UserError(_('You cannot move to Done because there are pending ECO activities.'))
+            raise UserError(_('You cannot move to Done because '
+                              'there are pending ECO activities.'))
 
     def checkChildrenECRDone(self, activity_id):
-        do_ecr = True
-        for child in activity_id.children_ids:
-            if child.plm_state not in ['done', 'cancel']:
-                do_ecr = False
-        if not do_ecr:
-            raise UserError(_('You cannot move to ECO or to Done because there are pending ECR activities.'))
+
+        pending_ecr_users = [
+            child.user_id.name
+            for child in activity_id.children_ids
+            if child.plm_state not in ['done', 'cancel']
+        ]
+        if pending_ecr_users:
+            user_list = "\n".join(f"\t-->\t{user}" for user in pending_ecr_users)
+            message = (
+                "You cannot move to ECO or to Done state because there are pending ECR activities for User:\n"
+                f"{user_list}"
+            )
+            raise UserError(_(message))
 
     def action_to_eco(self):
         for activity_id in self:
@@ -255,20 +274,19 @@ class MailActivity(models.Model):
     def action_in_progress(self):
         for activity_id in self:
             for line_id in activity_id.children_ids:
-                if not line_id.mail_children_activity_id:
-                    activity_vals = {
-                        'activity_type_id': activity_id.activity_type_id.id,
-                        'date_deadline': activity_id.date_deadline,
-                        'user_id': line_id.user_id.id,
-                        'plm_state': 'draft',
-                        'name': line_id.name,
-                        'note': line_id.name,
-                        'res_model_id': activity_id.res_model_id.id,
-                        'res_id': activity_id.res_id,
-                        }
-                    new_activity_id = self.create(activity_vals)
-                    line_id.mail_children_activity_id = new_activity_id.id
-                    line_id.mail_parent_activity_id = activity_id.id
+                activity_vals = {
+                    'activity_type_id': activity_id.activity_type_id.id,
+                    'date_deadline': activity_id.date_deadline,
+                    'user_id': line_id.user_id.id,
+                    'plm_state': 'draft',
+                    'name': line_id.name,
+                    'note': activity_id.note,
+                    'res_model_id': activity_id.res_model_id.id,
+                    'res_id': activity_id.res_id,
+                }
+                new_activity_id = self.create(activity_vals)
+                line_id.mail_children_activity_id = new_activity_id.id
+                line_id.mail_parent_activity_id = activity_id.id
             activity_id.plm_state = 'in_progress'
             return self.reopenActivity(activity_id.id)
 
@@ -284,19 +302,24 @@ class MailActivity(models.Model):
 
     def action_open_releted_ent(self):
         for activity in self:
-            return {'name': activity.display_name,
-                    'view_type': 'form',
-                    'target': 'new',
-                    'res_model': activity.res_model,
-                    'type': 'ir.actions.act_window',
-                    'view_mode': 'form',
-                    'res_id': activity.res_id}
+            if activity.res_id:
+                return {'name': activity.display_name,
+                        'view_type': 'form',
+                        'target': 'new',
+                        'res_model': activity.res_model,
+                        'type': 'ir.actions.act_window',
+                        'view_mode': 'form',
+                        'res_id': activity.res_id}
+            else:
+                raise UserError(
+                    "Activity Not created yet, to open Related entity Create Activity first"
+                )
         return {}
-            
-    
+
     def name_get(self):
         out = []
         for activity in self:
-            name = '%s | %s' % (activity.summary or activity.activity_type_id.display_name, activity.user_id.display_name or '')
+            name = '%s | %s' % (
+                activity.summary or activity.activity_type_id.display_name, activity.user_id.display_name or '')
             out.append((activity.id, name))
         return out

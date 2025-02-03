@@ -19,35 +19,22 @@
 ##############################################################################
 {
     "name": "Activity Validation",
-    "version": "17.0.0.1",
+    "version": "17.0.1.0.0",
     "author": "OmniaSolutions",
     "website": "https://github.com/OmniaGit/odooplm",
     "category": "Custom",
     "sequence": 1,
     "summary": "",
-    "depends": [
-        "mail",
-        "plm",
-    ],
+    "depends": ["mail", "plm"],
     "license": "AGPL-3",
     "data": [
-        # security
         "security/security.xml",
-        # data
         "data/mail_activity_data.xml",
-        # views
         "views/mail_activity_type.xml",
         "views/mail_activity.xml",
         "views/mail_activity_children_rel.xml",
     ],
-    "demo": [],
-    "test": [],
     "qweb": ["static/src/xml/*.xml"],
-    'assets': {
-        'web.assets_backend': [
-            #"activity_validation/static/src/js/systray_activity_menu.js",
-            ]
-        },
     "installable": True,
     "application": False,
     "auto_install": False,

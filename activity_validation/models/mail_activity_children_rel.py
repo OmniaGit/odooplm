@@ -20,18 +20,9 @@
 ##############################################################################
 '''
 Created on Nov 16, 2019
-
 @author: mboscolo
 '''
-import logging
-import datetime
-from odoo import models
-from odoo import fields
-from odoo import api
-from odoo import _
-from odoo.exceptions import UserError
-from datetime import timedelta
-from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
+from odoo import fields, models
 
 
 class MailActivityChildrenRel(models.Model):
@@ -44,6 +35,7 @@ class MailActivityChildrenRel(models.Model):
     mail_children_activity_id = fields.Many2one('mail.activity', 'Child Activity')
     mail_parent_activity_id = fields.Many2one('mail.activity', 'Parent Activity')
     plm_state = fields.Selection(related='mail_children_activity_id.plm_state')
+
 
 class MailActivityChildrenRel(models.TransientModel):
     _name = 'mail.activity.children.rel.shedule'
