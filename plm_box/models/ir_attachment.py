@@ -148,26 +148,21 @@ class Plm_box_document(models.Model):
     def returnDocsOfFilesChanged(self, valuesDict):
         outDocs = []
         for docName, (docContent, _writeDateClient) in valuesDict.items():
-            if self.getDocumentState({'docName': docName}) == 'check-out-by-me':
-                docBrowseList = self.search([('name', '=', docName)])
-                for docBrowse in docBrowseList:
-                    if docBrowse.datas != docContent:
-                        outDocs.append(docName)
+            for ir_attachment_id in self.search([("name", "=", docName)]):
+                if ir_attachment_id.datas != docContent \
+                    and ir_attachment_id.getDocumentState() == "check-out-by-me":
+                    outDocs.append(docName)
         return outDocs
 
-    @api.model
-    def getDocumentState(self, vals):
-        docName = vals.get('docName', '')
-        docBrwsList = self.search([('name', '=', docName)])
-        for docBrws in docBrwsList:
-            checkedOutByMe = docBrws._is_checkedout_for_me()
-            checkedIn = docBrws.ischecked_in()
-            if checkedOutByMe:
-                return 'check-out-by-me'
-            if not checkedIn:
-                return 'check-out'
-            else:
-                return 'check-in'
-        return 'check-out-by-me'
+    def getDocumentState(self):
+        self.ensure_one()
+        checkedOutByMe = self._is_checkedout_for_me()
+        checkedIn = self.ischecked_in()
+        if checkedOutByMe:
+            return 'check-out-by-me'
+        if checkedIn:
+            return 'check-in'
+        else:
+            return 'check-out'
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

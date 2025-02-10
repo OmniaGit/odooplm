@@ -299,8 +299,7 @@ class Plm_box(models.Model):
     @api.model
     def getDocDictValues(self, docBrws):
         getCheckOutUser = ''
-        plmDocObj = self.env.get('ir.attachment')
-        docState = plmDocObj.getDocumentState({'docName': docBrws.name})
+        docState = docBrws.getDocumentState()
         if docState in ['check-out', 'check-out-by-me']:
             getCheckOutUser = docBrws.getCheckOutUser()
         writeVal = datetime.datetime.strptime(docBrws.write_date, DEFAULT_SERVER_DATETIME_FORMAT)
@@ -539,7 +538,7 @@ class Plm_box(models.Model):
         docBrwsList = ir_attachment.search([('name', '=', name)])
         for docBrws in docBrwsList:
             docId = docBrws.id
-            if ir_attachment.getDocumentState({'docName': name}) != 'check-in':
+            if docBrws.getDocumentState() != 'check-in':
                 return [], docId
             wr_date = docBrws.write_date
             if wr_date != 'n/a':

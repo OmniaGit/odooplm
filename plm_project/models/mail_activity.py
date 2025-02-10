@@ -46,8 +46,9 @@ class MailActivity(models.Model):
         return messages, activities
 
     def checkProdConfirmedType(self, activity):
-        if activity.activity_type_id == self.env.ref('plm_project.mail_activity_product_confirmed'):
+        if activity.activity_type_id.id in [self.env.ref('plm_project.mail_activity_product_confirmed').id]:
             return True
+        
         return False
 
     def checkSameUser(self, activity):

@@ -323,3 +323,11 @@ class MailActivity(models.Model):
                 activity.summary or activity.activity_type_id.display_name, activity.user_id.display_name or '')
             out.append((activity.id, name))
         return out
+    
+    def unlink(self):
+        for activity in self:
+            if activity.activity_type_id.id in [self.env.ref('plm.mail_activity_plm_activity').id]:
+                return
+        return super(MailActivity, self).unlink()
+    
+    
