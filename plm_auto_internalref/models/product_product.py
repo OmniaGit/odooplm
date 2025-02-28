@@ -81,7 +81,7 @@ class ProductProductExtension(models.Model):
         ret = False
         for product in self:
             new_default_code = product.computeDefaultCode(vals, product)
-            if new_default_code:
+            if product.default_code!=product.computeDefaultCode(vals, product):
                 logging.info("OdooPLM: Default Code set to %s " % (new_default_code))
                 vals["default_code"] = new_default_code
             ret = super(models.Model, product).write(vals)
