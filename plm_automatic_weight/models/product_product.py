@@ -99,9 +99,12 @@ class PlmComponent(models.Model):
                 vals['weight'] = weight_cad + weight_additional
             elif product_id.automatic_compute_selection == 'use_normal_bom':
                 vals['weight'] = weight_additional + product_id.weight_n_bom_computed
+            if product_id.weight==vals['weight']:
+                del vals['weight']
         res = super(PlmComponent, self).write(vals)
-        for product_product_id in self:
-            product_product_id.fix_parent()
+        if 'weight' in vals:
+            for product_product_id in self:
+                product_product_id.fix_parent()
         return res
 
     def fix_parent(self):
