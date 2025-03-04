@@ -206,12 +206,12 @@ class ProductTemplate(models.Model):
           (engineering_code, engineering_revision);
         """)
 
-    def getSequenceFrom(self, prefix, digit, start_number= 0):
+    def getSequenceFrom(self, prefix, digit, start_number= 0, force_prefix=False):
         plm_prefix = "PLM_SEQUENCE_%s" % prefix
         sequence=None
+
         for sequence in  self.env['ir.sequence'].sudo().search([('code','=', plm_prefix)]):
             break
-            return sequence.next_by_id()
         if not sequence:
             sequence = self.env['ir.sequence'].sudo().create({
                 'name': "Plm Autocreate sequence %s " % prefix,
@@ -220,4 +220,7 @@ class ProductTemplate(models.Model):
                 'number_next_actual':start_number,
                 'padding': digit
                 })
-        return sequence.next_by_id()
+        out = sequence.next_by_id()
+        if force_prefix:
+            return f"{prefix}{out}"
+        return out
