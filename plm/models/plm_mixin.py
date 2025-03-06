@@ -453,12 +453,21 @@ class RevisionBaseMixin(models.AbstractModel):
         get all field translated in all available languages
         """
         out = {}
-        obj = self.env[self._name].browse([object_id])
-        for field_name in fields:
-            for code in self.env['res.lang'].search([('active','=', True)]).mapped("code"):
-                propKey = f"{field_name}@-@-@{code}"
-                out[propKey] = getattr(obj.with_context(lang=code), field_name)
+        obj = self.env[self._name].search([('id','=',object_id)])
+        if obj:
+            for field_name in fields:
+                for code in self.env['res.lang'].search([('active','=', True)]).mapped("code"):
+                    propKey = f"{field_name}@-@-@{code}"
+                    out[propKey] = getattr(obj.with_context(lang=code), field_name)
         return out
         
-        
-        
+    @api.model
+    def get_possible_status(self):
+        out=[]
+        for model_id in self.env['ir.model'].sudo().search([('model','=', self._name)]):
+            for filed_id in self.env['ir.model.fields'].sudo().search([('model_id','=', model_id.id),
+                                                                ('name', '=', 'engineering_state')]):
+                for ir_model_fields_selection in self.env['ir.model.fields.selection'].sudo().search([('field_id','=',filed_id.id)]):
+                    out.append((ir_model_fields_selection.name,
+                                ir_model_fields_selection.value))    
+        return out

@@ -1761,9 +1761,9 @@ class IrAttachment(models.Model):
 
         documentAttribute = objStructure.get('DOCUMENT_ATTRIBUTES', {})
         if documentAttribute:
-            for brwItem in self.search([('engineering_code', '=', documentAttribute.get('engineering_code', '')),
+            for pp_id in self.search([('engineering_code', '=', documentAttribute.get('engineering_code', '')),
                                         ('engineering_revision', '=', documentAttribute.get('engineering_revision', -1))]):
-                brwItem.canBeSaved(raiseError=True)
+                pp_id.canBeSaved(raiseError=True)
 
         def populateStructure(parentItem=False, structure={}, parentCreateBOM=True):
             documentId = False
@@ -1819,18 +1819,18 @@ class IrAttachment(models.Model):
                 documentAttribute['TO_UPDATE'] = False
                 skipCheckOut = documentAttribute.get('SKIP_CHECKOUT', False)
                 docBrws = False
-                for brwItem in self.search([('engineering_code', '=', documentAttribute.get('engineering_code')),
+                for pp_id in self.search([('engineering_code', '=', documentAttribute.get('engineering_code')),
                                             ('engineering_revision', '=', documentAttribute.get('engineering_revision'))]):
-                    if brwItem.id in alreadyEvaluated:
-                        docBrws = brwItem  # To skip creation
+                    if pp_id.id in alreadyEvaluated:
+                        docBrws = pp_id  # To skip creation
                         documentAttribute[
                             'TO_UPDATE'] = False  # To skip same document preview/pdf uploading by the client
                         break
-                    if brwItem.engineering_state not in [RELEASED_STATUS, OBSOLATED_STATUS]:
-                        if brwItem.needUpdate():
-                            brwItem.write(documentAttribute)
+                    if pp_id.engineering_state not in [RELEASED_STATUS, OBSOLATED_STATUS]:
+                        if pp_id.needUpdate():
+                            pp_id.write(documentAttribute)
                             documentAttribute['TO_UPDATE'] = True
-                    docBrws = brwItem
+                    docBrws = pp_id
                     alreadyEvaluated.append(docBrws.id)
                 if not docBrws:
                     docBrws = self.create(documentAttribute)
@@ -1850,35 +1850,35 @@ class IrAttachment(models.Model):
         # Save product - document relation
         logging.info("Saving Product")
         productsEvaluated = []
-        productTemplate = self.env['product.product']
+        product_product = self.env['product.product']
         for refId, productAttribute in list(productAttributes.items()):
             try:
                 linkedDocuments = set()
                 for refDocId in productDocumentRelations.get(refId, []):
                     linkedDocuments.add((4, documentAttributes[refDocId].get('id', 0)))
-                prodBrws = False
-                for brwItem in productTemplate.search(
+                product_product_id = False
+                for pp_id in product_product.search(
                         [('engineering_code', '=', productAttribute.get('engineering_code')),
                          ('engineering_revision', '=', productAttribute.get('engineering_revision'))]):
-                    if brwItem.id in productsEvaluated:
-                        prodBrws = brwItem
+                    if pp_id.id in productsEvaluated:
+                        product_product_id = pp_id
                         break
-                    if brwItem.engineering_state not in [RELEASED_STATUS, OBSOLATED_STATUS]:
-                        brwItem.write(productAttribute)
-                    prodBrws = brwItem
-                    productsEvaluated.append(brwItem.id)
+                    if pp_id.engineering_state not in [RELEASED_STATUS, OBSOLATED_STATUS]:
+                        pp_id.write(productAttribute)
+                    product_product_id = pp_id
+                    productsEvaluated.append(pp_id.id)
                     break
-                if not prodBrws:
+                if not product_product_id:
                     if not productAttribute.get('name', False):
                         productAttribute['name'] = productAttribute.get('engineering_code', False)
                     if not productAttribute.get('engineering_code',
                                                 False):  # I could have a document without component, so not create product
                         continue
-                    prodBrws = productTemplate.create(productAttribute)
-                    productsEvaluated.append(prodBrws.id)
+                    product_product_id = product_product.create(productAttribute)
+                    productsEvaluated.append(product_product_id.id)
                 if linkedDocuments:
-                    prodBrws.write({'linkeddocuments': list(linkedDocuments)})
-                productAttribute['id'] = prodBrws.id
+                    product_product_id.write({'linkeddocuments': list(linkedDocuments)})
+                productAttribute['id'] = product_product_id.id
             except Exception as ex:
                 logging.error(ex)
                 raise ex
@@ -1926,7 +1926,7 @@ class IrAttachment(models.Model):
         for parentId, childRelations in list(productRelations.items()):
             try:
                 trueParentId = productAttributes[parentId].get('id')
-                brwProduct = productTemplate.search([('id', '=', trueParentId)])
+                brwProduct = product_product.search([('id', '=', trueParentId)])
                 productTempId = brwProduct.product_tmpl_id.id
                 brwBoml = mrpBomTemplate.search([('product_tmpl_id', '=', productTempId)])
                 if not brwBoml:
@@ -3270,17 +3270,23 @@ class IrAttachment(models.Model):
         """
             return the new attributes to be used for cloning the document
         """
-        _old_product_attrs, old_attachment_attrs, new_product_attrs = args
+        old_product_attrs, old_attachment_attrs, new_product_attrs = args
         out_attachment_value = json.loads(old_attachment_attrs)
         new_product_attrs = json.loads(new_product_attrs)
         if hasattr(self, "customGetCloneDocumentValues"):
             #
             # If you implement the customGetCloneDocumentValues this call will be used to customize the value of the new cloned document from the client clone action
             #
-            out_attachment_value=self.customGetCloneDocumentValues(out_attachment_value)
+            out_attachment_value=self.customGetCloneDocumentValues(out_attachment_value,
+                                                                   json.loads(old_product_attrs),
+                                                                   new_product_attrs)
         else:
             #
-            out_attachment_value['engineering_code'] = f"{new_product_attrs['engineering_code']}-{self.env['ir.sequence'].next_by_code('ir.attachment.progress')}"
+            engineering_code = new_product_attrs.get('engineering_code','')
+            if engineering_code:
+                out_attachment_value['engineering_code'] = f"{engineering_code}-{self.env['ir.sequence'].next_by_code('ir.attachment.progress')}"
+            else:
+                out_attachment_value['engineering_code'] = f"{self.env['ir.sequence'].next_by_code('ir.attachment.progress')}"
             out_attachment_value['engineering_revision']=0
             #
             _, exte = os.path.splitext(out_attachment_value['name'])
