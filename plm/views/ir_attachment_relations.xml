@@ -13,6 +13,7 @@
                 	<field name="configuration" readonly="True"/>
                 	<field name="link_kind" readonly="True"/>
                 </group>
+                <field name="parent_state" invisible="True"/>
                 <group colspan="4" col="4">
                    	<span colspan="4" style="color: rgb(110, 51, 197);" attrs="{'invisible': [('parent_state', '!=', 'draft')]}">
                 		<hr style="background-color: rgb(110, 51, 197);height: 1px;"></hr>
