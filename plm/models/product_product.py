@@ -1793,7 +1793,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         if found:  # Write
             if product_produc_id.engineering_state not in [RELEASED_STATUS, OBSOLATED_STATUS]:
                 out_product_produc_id.write(sanitaized_attributes)
-        else:  # write
+        else:  # create
             out_product_produc_id = self.create(sanitaized_attributes)
         for lang, translated_values in language_attrs.items():
             out_product_produc_id.with_context(lang=lang).write(translated_values)
