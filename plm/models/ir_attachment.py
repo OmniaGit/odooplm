@@ -1150,9 +1150,7 @@ class PlmDocument(models.Model):
                                compute='_checkSavingError',
                                store=True)
     #
-    #
-    #
-    @api.depends("write_date")
+    @api.depends("datas")
     def _checkSavingError(self):
         for ir_attachment_id in self:
             ir_attachment_id.has_error = not ir_attachment_id.is_last_save_ok()
@@ -2953,14 +2951,16 @@ class PlmDocument(models.Model):
         """
             return the new attributes to be used for cloning the document
         """
-        _old_product_attrs, old_attachment_attrs, new_product_attrs = args
+        old_product_attrs, old_attachment_attrs, new_product_attrs = args
         out_attachment_value = json.loads(old_attachment_attrs)
         new_product_attrs = json.loads(new_product_attrs)
         if hasattr(self, "customGetCloneDocumentValues"):
             #
             # If you implement the customGetCloneDocumentValues this call will be used to customize the value of the new cloned document from the client clone action
             #
-            out_attachment_value=self.customGetCloneDocumentValues(out_attachment_value)
+            out_attachment_value=self.customGetCloneDocumentValues(out_attachment_value,
+                                                                   json.loads(old_product_attrs),
+                                                                   new_product_attrs)
         else:
             #
             out_attachment_value['engineering_document_name'] = f"{new_product_attrs['engineering_code']}-{self.env['ir.sequence'].next_by_code('ir.attachment.progress')}"
