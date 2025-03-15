@@ -1726,6 +1726,11 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         nodeResursionUpdate(updatedNode, True)
         return json.dumps(updatedNode)
 
+    @api.model
+    def getUuid(self):
+        param = self.env['ir.config_parameter'].sudo()
+        return param.get_param('database.uuid')
+
     def getDocBrws(self, docId, docProps):
         docEnv = self.env['ir.attachment']
         oldDocBrws = False
