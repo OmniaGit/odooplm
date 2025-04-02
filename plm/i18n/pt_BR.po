@@ -7,9 +7,9 @@ msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-04-02 14:26+0000\n"
-"PO-Revision-Date: 2025-04-02 11:53-0300\n"
-"Last-Translator: \n"
-"Language-Team: \n"
+"PO-Revision-Date: 2025-04-02 13:20-0300\n"
+"Last-Translator: \Rodrigo A. Madureira"
+"Language-Team: \Madureira Ind. e Com."
 "Language: pt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -543,19 +543,19 @@ msgstr ""
 #: model:ir.model.fields,field_description:plm.field_product_product__engineering_material
 #: model:ir.model.fields,field_description:plm.field_product_template__engineering_material
 msgid "Cad Raw Material"
-msgstr ""
+msgstr "Cad Materia Prima"
 
 #. module: plm
 #: model:ir.model.fields,field_description:plm.field_product_product__engineering_surface
 #: model:ir.model.fields,field_description:plm.field_product_template__engineering_surface
 msgid "Cad Surface Finishing"
-msgstr ""
+msgstr "Cad Acabamento"
 
 #. module: plm
 #: model:ir.model.fields,field_description:plm.field_product_product__engineering_treatment
 #: model:ir.model.fields,field_description:plm.field_product_template__engineering_treatment
 msgid "Cad Thermal Treatment"
-msgstr ""
+msgstr "Cad Tratamento Térmico"
 
 #. module: plm
 #: model:ir.model.fields,field_description:plm.field_product_product__sale_ok model:ir.model.fields,field_description:plm.field_product_template__sale_ok
@@ -668,7 +668,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:plm.field_ir_attachment__checkout_user
 #: model:ir.model.fields,field_description:plm.field_mrp_document__checkout_user
 msgid "Checked-Out to"
-msgstr ""
+msgstr "Checado por"
 
 #. module: plm
 #: model_terms:ir.ui.view,arch_db:plm.plm_backupdoc_search model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search
@@ -1224,7 +1224,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:plm.field_product_template__engineering_state
 #: model:ir.model.fields,field_description:plm.field_revision_plm_mixin__engineering_state
 msgid "Engineering Status"
-msgstr ""
+msgstr "Status"
 
 #. module: plm
 #: model:ir.model.fields,field_description:plm.field_ir_attachment__engineering_branch_revision_letter
@@ -1238,7 +1238,7 @@ msgstr ""
 #. module: plm
 #: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
 msgid "Enineering revision"
-msgstr ""
+msgstr "Revisão"
 
 #. module: plm
 #: model:ir.model.fields,field_description:plm.field_plm_dbthread__error_message
@@ -1856,7 +1856,7 @@ msgstr "Material"
 #. module: plm
 #: model_terms:ir.ui.view,arch_db:plm.plm_component_base_form model_terms:ir.ui.view,arch_db:plm.plm_product_product_normal_form_view_inherit
 msgid "Material / Surface / Treatment"
-msgstr ""
+msgstr "Material / Acabamento / Tratamento"
 
 #. module: plm
 #: model:ir.actions.act_window,name:plm.plm_action_material_form model:ir.ui.menu,name:plm.menu_material
@@ -2061,7 +2061,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:plm.selection__revision_plm_mixin__engineering_state__obsoleted
 #: model_terms:ir.ui.view,arch_db:plm.plm_component_base_search
 msgid "Obsoleted"
-msgstr ""
+msgstr "Obsoleto"
 
 #. module: plm
 #: model:ir.module.category,name:plm.odooplm_module_category
@@ -2280,7 +2280,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:plm.field_ir_attachment__preview model:ir.model.fields,field_description:plm.field_mrp_document__preview
 #: model:ir.model.fields,field_description:plm.field_plm_backupdoc__preview model:ir.model.fields,field_description:plm.field_plm_checkout__preview
 msgid "Preview Content"
-msgstr ""
+msgstr "Pré-Visualização"
 
 #. module: plm
 #: model:ir.model.fields,help:plm.field_ir_attachment__printout model:ir.model.fields,help:plm.field_mrp_document__printout
@@ -2487,7 +2487,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:plm.field_product_template__engineering_release_user
 #: model:ir.model.fields,field_description:plm.field_revision_plm_mixin__engineering_release_user
 msgid "Release User"
-msgstr ""
+msgstr "Usuario Liberação"
 
 #. module: plm
 #: model:ir.model.fields,field_description:plm.field_ir_attachment__engineering_release_date
@@ -3069,7 +3069,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:plm.selection__product_template__engineering_state__undermodify
 #: model:ir.model.fields.selection,name:plm.selection__revision_plm_mixin__engineering_state__undermodify
 msgid "UnderModify"
-msgstr ""
+msgstr "Submodificado"
 
 #. module: plm
 #: model:res.groups,name:plm.group_plm_admin_unrelease
@@ -3210,7 +3210,7 @@ msgstr "Fluxo de Trabalho"
 #: model:ir.model.fields,field_description:plm.field_product_template__engineering_workflow_user
 #: model:ir.model.fields,field_description:plm.field_revision_plm_mixin__engineering_workflow_user
 msgid "Workflow User"
-msgstr "Usuário liberação"
+msgstr "Usuário Fluxo"
 
 #. module: plm
 #: model:ir.model.fields,field_description:plm.field_ir_attachment__engineering_workflow_date
