@@ -193,7 +193,6 @@ class UploadDocument(Controller):
                             headers={'file_name': pkg_brws.name})
         return Response(status=200)
 
-
     @route('/plm_document_upload/get_files_write_time', type='http', auth='user', methods=['get'], csrf=False)
     @webservice
     def get_files_write_time(self,
@@ -202,12 +201,17 @@ class UploadDocument(Controller):
         ir_attachment_ids = json.loads(ir_attachment_ids)
         attachment = request.env['ir.attachment']
         out = []
-        for attachment_id in ir_attachment_ids:
-            attachment_brws = attachment.browse(attachment_id)
-            out.append((attachment_brws.id,
-                        attachment_brws.name,
-                        attachment_brws.write_date.strftime(DEFAULT_SERVER_DATETIME_FORMAT)))
-        return Response(json.dumps(out))
+        for attachment_id in attachment.search([('id','in',ir_attachment_ids)]):
+            if attachment_id._is_checkedout_for_me():
+                out.append((attachment_id.id,
+                            attachment_id.name,
+                            attachment_id.write_date.strftime(DEFAULT_SERVER_DATETIME_FORMAT)))
+        try:
+            out = json.dumps(out)
+        except Exception as ex:
+            logging.error(f"Error dumps object {out}")
+            out = json.dumps([])
+        return Response(out)
 
 
     @route('/plm_document_upload/extra_file', type='http', auth='user', methods=['POST'], csrf=False)
