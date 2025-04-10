@@ -358,7 +358,10 @@ class IrAttachment(models.Model):
         return list(set(result))
 
     @api.model
-    def getRelatedLyTree(self, doc_id, optional_return_type=['3d']):
+    def getRelatedLyTree(self, 
+                         doc_id, 
+                         optional_return_type=['3d'],
+                         getOnyChkOut=False):
         out = []
         if not doc_id:
             logging.warning('Cannot get links from %r document' % (doc_id))
@@ -386,7 +389,8 @@ class IrAttachment(models.Model):
     @api.model
     def getRelatedPrTree(self,
                          root_doc_id,
-                         recursion=False):
+                         recursion=False,
+                         getOnyChkOut=False):
         out = []
 
         def _getRelatedPrTree(doc_id):
@@ -404,18 +408,21 @@ class IrAttachment(models.Model):
                 good_id = None
                 if doc_type in ['3d', '2d']:
                     if doc_rel_id.parent_id.id == doc_id and doc_rel_id.child_id.document_type == 'pr':
-                        good_id = doc_rel_id.child_id.id
+                        good_id = doc_rel_id.child_id
                     if doc_rel_id.child_id.id == doc_id and doc_rel_id.parent_id.document_type == 'pr':
-                        good_id = doc_rel_id.parent_id.id
+                        good_id = doc_rel_id.parent_id
                 elif doc_type == 'pr':
                     if doc_rel_id.parent_id.id == doc_id and doc_rel_id.child_id.document_type == '3d':
-                        good_id = doc_rel_id.child_id.id
+                        good_id = doc_rel_id.child_id
                     elif doc_rel_id.child_id.id == doc_id and doc_rel_id.parent_id.document_type == '3d':
-                        good_id = doc_rel_id.parent_id.id
-                if good_id and good_id not in out:
-                    out.append(good_id)
+                        good_id = doc_rel_id.parent_id
+                if good_id and good_id.i not in out:
+                    if getOnyChkOut:
+                        if not good_id.is_checkout:
+                            continue
+                    out.append(good_id.id)
                     if recursion:
-                        for recursion_id in _getRelatedPrTree(good_id):
+                        for recursion_id in _getRelatedPrTree(good_id.id):
                             if recursion_id not in out:
                                 out.append(recursion_id)
 
@@ -461,13 +468,19 @@ class IrAttachment(models.Model):
         return list(set(out))
 
     @api.model
-    def getRelatedHiTree(self, doc_id, recursion=True, getRftree=False):
+    def getRelatedHiTree(self,
+                         doc_id, 
+                         recursion=True, 
+                         getRftree=False,
+                         getOnyChkOut=False):
         '''
             Get children HiTree documents
         '''
         out = []
 
-        def _getRelatedHiTree(doc_id, recursion, getRftree):
+        def _getRelatedHiTree(doc_id, 
+                              recursion, 
+                              getRftree):
             if not doc_id:
                 logging.warning('Cannot get links from %r document' % (doc_id))
                 return []
@@ -481,9 +494,13 @@ class IrAttachment(models.Model):
                     continue
                 out.append(child_id)
                 if recursion:
-                    _getRelatedHiTree(child_id, recursion, getRftree)
+                    _getRelatedHiTree(child_id,
+                                      recursion,
+                                      getRftree)
             if getRftree:
-                out.extend(self.getRelatedRfTree(doc_id, recursion=True, evaluated=[]))
+                out.extend(self.getRelatedRfTree(doc_id, 
+                                                 recursion=True, 
+                                                 evaluated=[]))
 
         _getRelatedHiTree(doc_id, recursion, getRftree)
         return out
@@ -1019,14 +1036,16 @@ class IrAttachment(models.Model):
             return super(IrAttachment, self).write(vals)
         check = self.env.context.get('check', True)
         if check:
-            if not self.is_plm_state_writable() and not (self.env.user._is_admin() or self.env.user._is_superuser()):
-                raise UserError(_("The active state does not allow you to make save action"))
-        self.writeCheckDatas(vals)
+            self.writeCheckDatas(vals)
+        #
         self._check_unique_document(vals)
+        #
         vals.update(self.checkMany2oneClient(vals))
         vals = self.plm_sanitize(vals)
         res = super(IrAttachment, self).write(vals)
+        #
         self.check_unique()
+        #
         return res
 
     def read(self, fields=[], load='_classic_read', *k, **kw):
@@ -1061,12 +1080,14 @@ class IrAttachment(models.Model):
 
     def writeCheckDatas(self, vals):
         if 'datas' in list(vals.keys()) or 'engineering_code' in list(vals.keys()):
-            for docBrws in self:
-                if docBrws.document_type and docBrws.document_type.upper() in ['2D', '3D']:
-                    if not docBrws._is_checkedout_for_me():
-                        if not (self.env.user._is_admin() or self.env.user._is_superuser()):
+            for attachment_id in self:
+                if not (self.env.user._is_admin() or self.env.user._is_superuser()):
+                    if attachment_id.document_type and attachment_id.document_type.upper() in ['2D', '3D']:
+                        if not attachment_id._is_checkedout_for_me():
                             raise UserError(
                                 _("You cannot edit a file not in check-out by you! User ID %s" % (self.env.uid)))
+                        if not attachment_id.is_plm_state_writable():
+                            raise UserError(_("The active state does not allow you to make save action"))
 
     def getParentDocuments(self):
         parent_dict = {}
@@ -2747,8 +2768,11 @@ class IrAttachment(models.Model):
         doc_2d_ids = self.env[self._name]
         doc_3d_ids = self.env[self._name]
         #
-        for doc_id in self.browse(
-            list(set(self.getRelatedLyTree(root_id.id) + self.getRelatedPrTree(root_id.id, recursion=True)))):
+        for doc_id in self.browse(list(set(self.getRelatedLyTree(root_id.id,
+                                                                 getOnyChkOut=True) + \
+                                           self.getRelatedPrTree(root_id.id,
+                                                                 recursion=True,
+                                                                 getOnyChkOut=True)))):
             if doc_id.is3D():
                 doc_3d_ids += doc_id
             else:
@@ -2758,15 +2782,18 @@ class IrAttachment(models.Model):
             doc_3d_ids += root_id
             doc_3d_ids += self.browse(self.getRelatedHiTree(root_id.id,
                                                             recursion=True,
-                                                            getRftree=True))
+                                                           getRftree=True,
+                                                           getOnyChkOut=True))
         else:
             doc_2d_ids += root_id
             for doc_id in doc_3d_ids:
                 doc_3d_ids += self.browse(self.getRelatedHiTree(doc_id.id,
                                                                 recursion=True,
-                                                                getRftree=True))
+                                                               getRftree=True,
+                                                               getOnyChkOut=True))
         for doc_3d_id in doc_3d_ids:
-            doc_2d_ids += self.browse(list(set(self.getRelatedLyTree(doc_3d_id.id))))
+            doc_2d_ids+= self.browse(list(set(self.getRelatedLyTree(doc_3d_id.id,
+                                                                    getOnyChkOut=True))))
         done = []
         for s_doc_id in doc_3d_ids + doc_2d_ids:
             if s_doc_id.id in done:
