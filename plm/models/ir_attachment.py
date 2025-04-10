@@ -1150,9 +1150,7 @@ class PlmDocument(models.Model):
                                compute='_checkSavingError',
                                store=True)
     #
-    #
-    #
-    @api.depends("write_date")
+    @api.depends("datas")
     def _checkSavingError(self):
         for ir_attachment_id in self:
             ir_attachment_id.has_error = not ir_attachment_id.is_last_save_ok()
