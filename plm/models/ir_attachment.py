@@ -390,7 +390,10 @@ class IrAttachment(models.Model):
         return list(set(result))
 
     @api.model
-    def getRelatedLyTree(self, doc_id, optional_return_type=['3d']):
+    def getRelatedLyTree(self, 
+                         doc_id, 
+                         optional_return_type=['3d'],
+                         getOnyChkOut=False):
         out = []
         if not doc_id:
             logging.warning('Cannot get links from %r document' % (doc_id))
@@ -405,20 +408,33 @@ class IrAttachment(models.Model):
         for doc_rel_id in doc_rel_ids:
             if parent_doc_type=='3d':
                 if doc_rel_id.parent_id.id==doc_id and doc_rel_id.child_id.document_type =='2d':
+                    if getOnyChkOut:
+                        if not doc_rel_id.child_id.is_checkout:
+                            continue
                     out.append(doc_rel_id.child_id.id)
                 elif doc_rel_id.child_id.id==doc_id and doc_rel_id.parent_id.document_type =='2d':
+                    if getOnyChkOut:
+                        if not doc_rel_id.parent_id.is_checkout:
+                            continue
                     out.append(doc_rel_id.parent_id.id)
             elif parent_doc_type=='2d':
                 if doc_rel_id.parent_id.id==doc_id and doc_rel_id.child_id.document_type in optional_return_type:
+                    if getOnyChkOut:
+                        if not doc_rel_id.child_id.is_checkout:
+                            continue
                     out.append(doc_rel_id.child_id.id)
                 elif doc_rel_id.child_id.id==doc_id and doc_rel_id.parent_id.document_type in optional_return_type:
+                    if getOnyChkOut:
+                        if not doc_rel_id.parent_id.is_checkout:
+                            continue
                     out.append(doc_rel_id.parent_id.id)
         return list(set(out))
 
     @api.model
     def getRelatedPrTree(self,
                          root_doc_id,
-                         recursion=False):
+                         recursion=False,
+                         getOnyChkOut=False):
         out = []
         def _getRelatedPrTree(doc_id):
             if not doc_id:
@@ -435,18 +451,21 @@ class IrAttachment(models.Model):
                 good_id = None
                 if doc_type in ['3d','2d']:
                     if doc_rel_id.parent_id.id==doc_id and doc_rel_id.child_id.document_type =='pr':
-                        good_id = doc_rel_id.child_id.id
+                        good_id = doc_rel_id.child_id
                     if doc_rel_id.child_id.id==doc_id and doc_rel_id.parent_id.document_type =='pr':
-                        good_id = doc_rel_id.parent_id.id
+                        good_id = doc_rel_id.parent_id
                 elif doc_type=='pr':
                     if doc_rel_id.parent_id.id==doc_id and doc_rel_id.child_id.document_type =='3d':
-                        good_id = doc_rel_id.child_id.id
+                        good_id = doc_rel_id.child_id
                     elif doc_rel_id.child_id.id==doc_id and doc_rel_id.parent_id.document_type =='3d':
-                        good_id = doc_rel_id.parent_id.id
-                if good_id and good_id not in out:
-                    out.append(good_id)
+                        good_id = doc_rel_id.parent_id
+                if good_id and good_id.i not in out:
+                    if getOnyChkOut:
+                        if not good_id.is_checkout:
+                            continue
+                    out.append(good_id.id)
                     if recursion:
-                        for recursion_id in _getRelatedPrTree(good_id):
+                        for recursion_id in _getRelatedPrTree(good_id.id):
                             if recursion_id not in out:
                                 out.append(recursion_id)
         _getRelatedPrTree(root_doc_id)
@@ -491,12 +510,21 @@ class IrAttachment(models.Model):
         return list(set(out))
 
     @api.model
-    def getRelatedHiTree(self, doc_id, recursion=True, getRftree=False):
+    def getRelatedHiTree(self, 
+                         doc_id, 
+                         recursion=True, 
+                         getRftree=False,
+                         getOnyChkOut=False):
         '''
             Get children HiTree documents
+            :recursion     perform a recursion search
+            :getRftree
+            :getOnyChkOut  get only check out product
         '''
         out = []
-        def _getRelatedHiTree(doc_id, recursion, getRftree):
+        def _getRelatedHiTree(doc_id,
+                              recursion, 
+                              getRftree):
             if not doc_id:
                 logging.warning('Cannot get links from %r document' % (doc_id))
                 return []
@@ -508,11 +536,18 @@ class IrAttachment(models.Model):
                 if child_id in out:
                     logging.warning('Document %r document already found' % (doc_id))
                     continue
+                if getOnyChkOut:
+                    if not child_id.is_checkout:
+                        continue 
                 out.append(child_id)
                 if recursion:
-                    _getRelatedHiTree(child_id, recursion, getRftree)
+                    _getRelatedHiTree(child_id,
+                                      recursion, 
+                                      getRftree)
             if getRftree:
-                out.extend(self.getRelatedRfTree(doc_id, recursion=True, evaluated=[]))
+                out.extend(self.getRelatedRfTree(doc_id, 
+                                                 recursion=True, 
+                                                 evaluated=[]))
 
         _getRelatedHiTree(doc_id, recursion, getRftree)
         return out
@@ -2750,7 +2785,11 @@ class IrAttachment(models.Model):
         doc_2d_ids=self.env[self._name]
         doc_3d_ids=self.env[self._name]
         #
-        for doc_id in self.browse(list(set(self.getRelatedLyTree(root_id.id) + self.getRelatedPrTree(root_id.id,recursion=True)))):
+        for doc_id in self.browse(list(set(self.getRelatedLyTree(root_id.id,
+                                                                 getOnyChkOut=True) + \
+                                           self.getRelatedPrTree(root_id.id,
+                                                                 recursion=True,
+                                                                 getOnyChkOut=True)))):
             if doc_id.is3D():
                 doc_3d_ids+=doc_id
             else:
@@ -2760,15 +2799,18 @@ class IrAttachment(models.Model):
             doc_3d_ids+=root_id
             doc_3d_ids+= self.browse(self.getRelatedHiTree(root_id.id,
                                                            recursion=True,
-                                                           getRftree=True))
+                                                           getRftree=True,
+                                                           getOnyChkOut=True))
         else:
             doc_2d_ids+=root_id
             for doc_id in doc_3d_ids:
                 doc_3d_ids+= self.browse(self.getRelatedHiTree(doc_id.id,
                                                                recursion=True,
-                                                               getRftree=True))
+                                                               getRftree=True,
+                                                               getOnyChkOut=True))
         for doc_3d_id in doc_3d_ids:
-            doc_2d_ids+= self.browse(list(set(self.getRelatedLyTree(doc_3d_id.id))))
+            doc_2d_ids+= self.browse(list(set(self.getRelatedLyTree(doc_3d_id.id,
+                                                                    getOnyChkOut=True))))
         done = []
         for s_doc_id in doc_3d_ids+doc_2d_ids:
             if s_doc_id.id in done:
