@@ -1,0 +1,3287 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* plm
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-04-02 14:26+0000\n"
+"PO-Revision-Date: 2025-04-02 13:20-0300\n"
+"Last-Translator: \Rodrigo A. Madureira"
+"Language-Team: \Madureira Ind. e Com."
+"Language: pt\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Poedit 3.5\n"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_report_ir_attachment_file__nbr
+msgid "# of Files"
+msgstr ""
+
+#. module: plm
+#: model:ir.actions.report,print_report_name:plm.action_report_doc_structure
+msgid "'Bom Doc Structure - %s' % object.display_name"
+msgstr ""
+
+#. module: plm
+#: model:ir.actions.report,print_report_name:plm.action_report_prod_structure
+msgid "'Bom prod Structure - %s' % object.display_name"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields.selection,name:plm.selection__ir_attachment__document_type__2d
+msgid "2D"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields.selection,name:plm.selection__ir_attachment__document_type__3d
+msgid "3D"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_product_product_normal_form_view_inherit
+msgid "<b colpspan=\"4\" size=\"32\">Standard Description Parameters:  </b>"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_search_tooltip
+msgid "<b>Crate Date:</b>"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_search_tooltip
+msgid "<b>Create User:</b>"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_search_tooltip
+msgid "<b>Document Information</b>"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_search_tooltip
+msgid "<b>Last Write Date:</b>"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_search_tooltip
+msgid "<b>Last Write User:</b>"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_search_tooltip
+msgid "<b>State:</b>"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "<span style=\"color:orange\">Not.Update</span>"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "<span>Check-In</span>"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "<span>Check-Out</span>"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_document_relation_kanban_view
+msgid ""
+"<strong attrs=\"{'invisible': [('child_type', '!=', 'other')]}\">Other</strong>\n"
+"                        \t\t\t\t<strong attrs=\"{'invisible': [('child_type', '!=', '2d')]}\">2D</strong>\n"
+"                        \t\t\t\t<strong attrs=\"{'invisible': [('child_type', '!=', '3d')]}\">3D</strong>"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_kanban_view
+msgid ""
+"<strong attrs=\"{'invisible': [('document_type', '!=', 'other')]}\">Other</strong>\n"
+"                        \t\t\t\t<strong attrs=\"{'invisible': [('document_type', '!=', '2d')]}\">2D</strong>\n"
+"                        \t\t\t\t<strong attrs=\"{'invisible': [('document_type', '!=', '3d')]}\">3D</strong>\n"
+"                        \t\t\t\t<strong attrs=\"{'invisible': [('document_type', '!=', 'pr')]}\">PR</strong>"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_document_relation_kanban_view
+msgid ""
+"<strong attrs=\"{'invisible': [('parent_type', '!=', 'other')]}\">Other</strong>\n"
+"                        \t\t\t\t<strong attrs=\"{'invisible': [('parent_type', '!=', '2d')]}\">2D</strong>\n"
+"                        \t\t\t\t<strong attrs=\"{'invisible': [('parent_type', '!=', '3d')]}\">3D</strong>"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_document_relation_kanban_view
+msgid "<strong>Child</strong>"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.report_prod_bom
+msgid "<strong>Missing product structure</strong>"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_document_relation_kanban_view model_terms:ir.ui.view,arch_db:plm.document_kanban_view
+msgid "<strong>Name:</strong>"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_document_relation_kanban_view
+msgid "<strong>Parent</strong>"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_document_relation_kanban_view model_terms:ir.ui.view,arch_db:plm.document_kanban_view
+msgid "<strong>Revision:</strong>"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_document_relation_kanban_view model_terms:ir.ui.view,arch_db:plm.document_kanban_view
+msgid "<strong>State:</strong>"
+msgstr ""
+
+#. module: plm
+#: model:ir.model,name:plm.model_res_groups
+msgid "Access Groups"
+msgstr "Grupos de Acesso"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__message_needaction
+#: model:ir.model.fields,field_description:plm.field_product_template__message_needaction
+#: model:ir.model.fields,field_description:plm.field_revision_plm_mixin__message_needaction
+msgid "Action Needed"
+msgstr "Ação Necessária"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_action_plm_dbthread_tree
+msgid "Actions"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_client_customprocedure
+msgid "Activate the PLM Client mapping"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_project
+msgid "Activate the PLM Project connection"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_automated_convertion
+msgid "Activate the server conversion tool"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__activity_ids
+#: model:ir.model.fields,field_description:plm.field_product_template__activity_ids
+#: model:ir.model.fields,field_description:plm.field_revision_plm_mixin__activity_ids
+msgid "Activities"
+msgstr "Atividades"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__activity_exception_decoration
+#: model:ir.model.fields,field_description:plm.field_product_template__activity_exception_decoration
+#: model:ir.model.fields,field_description:plm.field_revision_plm_mixin__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr "Decoração de Atividade Excepcional"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__activity_state
+#: model:ir.model.fields,field_description:plm.field_product_template__activity_state
+#: model:ir.model.fields,field_description:plm.field_revision_plm_mixin__activity_state
+msgid "Activity State"
+msgstr "Estado de Atividade"
+
+#. module: plm
+#: model:ir.model,name:plm.model_mail_activity_type
+msgid "Activity Type"
+msgstr "Tipo de Atividade"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__activity_type_icon
+#: model:ir.model.fields,field_description:plm.field_product_template__activity_type_icon
+#: model:ir.model.fields,field_description:plm.field_revision_plm_mixin__activity_type_icon
+msgid "Activity Type Icon"
+msgstr "Ícone do Tipo de Atividade"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Add a progress bar to check the progress of the project based on the status of the products"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_sale_fix
+msgid "Add plm groups permission to sale"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid ""
+"Add the capability to update the manufacturing order from a revised BOM\n"
+"                                        <b>\n"
+"                                        ATTENTION !! This module depends on plm_mrp_bom_update from:\n"
+"                                        git clone -b 16.0 https://github.com/OmniaSolutions/odooAddons.git</b>"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid ""
+"Add the capability to use the PDF PLM document inside work order\n"
+"                                        ATTENTION !! This module work only for enterprise version because the mrp_workorder is in the enterprise version"
+msgstr ""
+
+#. module: plm
+#: model:res.groups,name:plm.group_plm_admin
+msgid "Administrator"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Advanced linking and organise your document with virtual box"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid ""
+"Advanced way to save and synchronise PLM document to improve open and save operation for pour connection bandwidth\n"
+"                                    To make it work you need to install a file server application   \"mirror_document_server\""
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid ""
+"Allow converting files in different format. \n"
+"                                    In order to make it run you will need the conversion server provided by OmniaSolutions."
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_automate_normal_bom
+msgid "Allow to create normal BOM if not exists and product are released."
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_plm_description__fmtend
+msgid "Allow to represent a normalized composition of technical features : %s%s allows to build chained values."
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_plm_description__fmt1 model:ir.model.fields,help:plm.field_plm_description__fmt2
+#: model:ir.model.fields,help:plm.field_plm_description__fmt3
+msgid "Allow to represent the measure: %s%s allow to build um and value, %s builds only value, none builds only value."
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Allow to select only product that have engineering_code and is in the latest revision for Manufacturing"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Allow to select only product that have engineering_code and is in the latest revision for Purchase"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Allow to select only product that have not engineering_code or is in the latest revision for Purchase"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_product_product__std_umc3
+msgid "Allow to specifiy a unit measure for the third feature."
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_product_product__std_umc1
+msgid "Allow to specify a unit measure for the first feature."
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_product_product__std_umc2
+msgid "Allow to specify a unit measure for the second feature."
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_plm_description__umc1 model:ir.model.fields,help:plm.field_plm_description__umc2
+#: model:ir.model.fields,help:plm.field_plm_description__umc3
+msgid "Allow to specify a unit measure or a label for the feature."
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_engineering
+msgid "Allow to use engineering BOM"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Allows view and/or update obsoleted components in a Normal Bill Of Materials using released components."
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_component_create_normal_bom
+msgid "Are you sure you want to create a new Normal Bom?"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_plm_description__sequence
+msgid "Assign the sequence order when displaying a list of product categories."
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_product_product__std_value1
+msgid "Assign value to the first characteristic."
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_product_product__std_value2 model:ir.model.fields,help:plm.field_product_product__std_value3
+msgid "Assign value to the second characteristic."
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_mrp_bom__att_count
+msgid "Att Count"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "Attachment"
+msgstr "Anexo"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__message_attachment_count
+#: model:ir.model.fields,field_description:plm.field_product_template__message_attachment_count
+#: model:ir.model.fields,field_description:plm.field_revision_plm_mixin__message_attachment_count
+msgid "Attachment Count"
+msgstr "Contagem de Anexos"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__attachment_revision_count
+#: model:ir.model.fields,field_description:plm.field_mrp_document__attachment_revision_count
+msgid "Attachment Revision Count"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_client_workflow model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "Attachments"
+msgstr "Anexos"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "Attachments To"
+msgstr "Anexos a"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Automate the creation of normal B.O.M. with scheduled action"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_automatic_weight
+msgid "Automatic weight calculation"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_workflow_custom_action
+msgid "Automatic workFlow actions"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "BOM"
+msgstr ""
+
+#. module: plm
+#: model:ir.actions.report,name:plm.report_plm_bom_structure_all
+msgid "BOM All Levels"
+msgstr ""
+
+#. module: plm
+#: model:ir.actions.report,name:plm.report_plm_bom_structure_all_sum
+msgid "BOM All Levels Summarized"
+msgstr ""
+
+#. module: plm
+#: model:ir.actions.report,name:plm.report_plm_bom_structure_flat
+msgid "BOM Flat Summarized"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.bom_structure_all
+msgid "BOM Name"
+msgstr ""
+
+#. module: plm
+#: model:ir.actions.report,name:plm.report_plm_bom_structure_one
+msgid "BOM One Level"
+msgstr ""
+
+#. module: plm
+#: model:ir.actions.report,name:plm.report_plm_bom_structure_one_sum
+msgid "BOM One Level Summarized"
+msgstr ""
+
+#. module: plm
+#: model:ir.actions.report,name:plm.report_plm_bom_structure_leaves
+msgid "BOM Only Leaves Summarize"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_bom_form_view model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "BOM Rev."
+msgstr ""
+
+#. module: plm
+#: model:ir.model,name:plm.model_plm_backupdoc_wizard
+msgid "Back up document wizard"
+msgstr ""
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.action_plm_backupdoc
+msgid "Backup Data Set"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open__plm_backup_doc_id
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open_bck__plm_backup_doc_id
+msgid "Backup Document Reference"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_backupdoc_search
+msgid "Backup Document Set"
+msgstr ""
+
+#. module: plm
+#: model:ir.model,name:plm.model_base
+msgid "Base"
+msgstr ""
+
+#. module: plm
+#: model:ir.model,name:plm.model_mrp_bom
+msgid "Bill of Material"
+msgstr "Lista de Materiais"
+
+#. module: plm
+#: model:ir.model,name:plm.model_mrp_bom_line
+msgid "Bill of Material Line"
+msgstr "Linha da Lista de Materias"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_bom_tree_structure
+msgid "Bill of Materials"
+msgstr ""
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.action2
+msgid "Bill of Materials Structure"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_mrp_bom__father_complete_ids
+#: model:ir.model.fields,field_description:plm.field_product_product__father_part_ids
+msgid "BoM Hierarchy"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_mrp_bom__type model:ir.model.fields,field_description:plm.field_mrp_bom_line__type
+msgid "BoM Type"
+msgstr "Tipo de LdM"
+
+#. module: plm
+#: model:ir.actions.report,name:plm.report_all_product_product_pdf
+msgid "Bom All Levels PDF Drawings"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_mrp_bom_filter_inherit
+msgid "Bom Name"
+msgstr ""
+
+#. module: plm
+#: model:ir.actions.report,name:plm.report_one_product_product_pdf
+msgid "Bom One Level PDF Drawings"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_temporary_message__name
+msgid "Bom Result"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_mrp_bom_line__itemnum
+msgid "CAD Item Position"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_mrp_bom_line__itemlbl
+msgid "CAD Item Position Label"
+msgstr ""
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.menu_cad_open
+msgid "CAD Opens"
+msgstr ""
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.menu_cad_open_bck
+msgid "CAD Opens Bck"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__cad_name model:ir.model.fields,field_description:plm.field_mrp_document__cad_name
+msgid "Cad Name"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__engineering_material
+#: model:ir.model.fields,field_description:plm.field_product_template__engineering_material
+msgid "Cad Raw Material"
+msgstr "Cad Materia Prima"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__engineering_surface
+#: model:ir.model.fields,field_description:plm.field_product_template__engineering_surface
+msgid "Cad Surface Finishing"
+msgstr "Cad Acabamento"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__engineering_treatment
+#: model:ir.model.fields,field_description:plm.field_product_template__engineering_treatment
+msgid "Cad Thermal Treatment"
+msgstr "Cad Tratamento Térmico"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__sale_ok model:ir.model.fields,field_description:plm.field_product_template__sale_ok
+msgid "Can be Sold"
+msgstr "Pode ser Vendido"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_component_create_normal_bom model_terms:ir.ui.view,arch_db:plm.restore_document_button_view
+msgid "Cancel"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_component_base_form
+msgid "Category"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_mail_activity_type__change_activity_type
+msgid "Change Activity Type"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search model_terms:ir.ui.view,arch_db:plm.plm_component_base_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_docbom_search
+msgid "Changed By Me"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search model_terms:ir.ui.view,arch_db:plm.plm_component_base_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_docbom_search
+msgid "Changed by"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search model_terms:ir.ui.view,arch_db:plm.plm_component_base_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_docbom_search
+msgid "Changed in"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "Changes"
+msgstr ""
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.action_plm_checkout
+msgid "Check-Out"
+msgstr ""
+
+#. module: plm
+#: model:mail.activity.type,name:plm.mail_activity_check_out_request
+msgid "Check-Out Request"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_search_tooltip
+msgid "CheckIn"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.report_doc_bom
+msgid "CheckOut By"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment_relation__userid
+msgid "CheckOut User"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_search_tooltip
+msgid "CheckOut by me"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_search_button model_terms:ir.ui.view,arch_db:plm.document_search_tooltip
+msgid "CheckOutUser:"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search_bck
+#: model_terms:ir.ui.view,arch_db:plm.plm_checkout_search
+msgid "Checked-Out Document"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_backupdoc_search model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search_bck model_terms:ir.ui.view,arch_db:plm.plm_checkout_search
+msgid "Checked-Out Yesterday"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_backupdoc_search model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search_bck model_terms:ir.ui.view,arch_db:plm.plm_checkout_search
+msgid "Checked-Out in last month"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_backupdoc_search model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search_bck model_terms:ir.ui.view,arch_db:plm.plm_checkout_search
+msgid "Checked-Out in last week"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_backupdoc_search
+msgid "Checked-Out in latest 7 days"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__checkout_user
+#: model:ir.model.fields,field_description:plm.field_mrp_document__checkout_user
+msgid "Checked-Out to"
+msgstr "Checado por"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_backupdoc_search model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search_bck model_terms:ir.ui.view,arch_db:plm.plm_checkout_search
+msgid "Checked-Out today"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_docbom_search
+msgid "Child"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_docbom_search
+msgid "Child Confirmed"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment_relation__child_type
+msgid "Child Document Type"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment_relation__child_linked
+msgid "Child Linked Components"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment_relation__child_preview model_terms:ir.ui.view,arch_db:plm.plm_docbom_form_view
+msgid "Child Preview"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_docbom_search
+msgid "Child Released"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment_relation__child_revision
+msgid "Child Revision"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment_relation__child_state
+msgid "Child Status"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields.selection,name:plm.selection__mrp_bom_line__cutted_type__client model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Client"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Compare two B.O.M from the B.O.M tree interface"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_compare_bom
+msgid "Compare two BOM tool"
+msgstr ""
+
+#. module: plm
+#: model:ir.model,name:plm.model_plm_component_document_rel
+msgid "Component Document Relations"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.mrp_bom_tree_view_where model_terms:ir.ui.view,arch_db:plm.plm_bom_tree_structure
+msgid "Component Name"
+msgstr ""
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.plm_menu_relation
+msgid "Component Relations"
+msgstr ""
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.plm_component_menu_view
+msgid "Components"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_mrp_bom_line_summarize_tree
+msgid "Compute Cost"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Compute product weight due to Normal BOM calculation, using CAD weight or setting a custom weight."
+msgstr ""
+
+#. module: plm
+#: model:ir.model,name:plm.model_res_config_settings
+msgid "Config Settings"
+msgstr "Configurações"
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.plm_menu_dictionaries
+msgid "Configuration"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment_relation__configuration
+msgid "Configuration Name"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_component_base_form model_terms:ir.ui.view,arch_db:plm.plm_product_product_normal_form_view_inherit
+#: model_terms:ir.ui.view,arch_db:plm.view_product_client_workflow
+msgid "Confirm Component"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_client_workflow model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "Confirm Document"
+msgstr "Confirmar Documento"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_report_plmcomponent__count_component_confirmed
+#: model:ir.model.fields.selection,name:plm.selection__ir_attachment__engineering_state__confirmed
+#: model:ir.model.fields.selection,name:plm.selection__product_template__engineering_state__confirmed
+#: model:ir.model.fields.selection,name:plm.selection__revision_plm_mixin__engineering_state__confirmed
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search model_terms:ir.ui.view,arch_db:plm.plm_component_base_search
+msgid "Confirmed"
+msgstr "Confirmado"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_component_base_form model_terms:ir.ui.view,arch_db:plm.plm_product_product_normal_form_view_inherit
+#: model_terms:ir.ui.view,arch_db:plm.view_product_client_workflow
+msgid "Correct Component"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_client_workflow model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "Correct Document"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_template__standard_price
+msgid "Cost"
+msgstr "Custo"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_product_template__standard_price
+msgid "Cost of the product, in the default unit of measure of the product."
+msgstr ""
+"Em Preço Padrão & AVCO: valor do produto (calculado automaticamente em AVCO).\n"
+"Em PEPS \"FIFO\": valor da próxima unidade que sairá do estoque (calculado automaticamente).\n"
+"Usado para avaliar o produto quando o custo de compra não é conhecido (por exemplo, ajuste de estoque).\n"
+"Usado para calcular margens em ordens de venda."
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search model_terms:ir.ui.view,arch_db:plm.plm_component_base_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_docbom_search
+msgid "Create By Me"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_component_create_normal_bom
+msgid "Create Normal Bom"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Create breakages directly from Ticket module <b>only on enterprise</b>"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_backupdoc_search model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search_bck model_terms:ir.ui.view,arch_db:plm.plm_checkout_search
+msgid "Create by Month"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_web_revision
+msgid "Create new revision from WEB"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment_relation__create_uid
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc__create_uid
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc_wizard__create_uid
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open__create_uid
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open_bck__create_uid
+#: model:ir.model.fields,field_description:plm.field_plm_checkout__create_uid model:ir.model.fields,field_description:plm.field_plm_client__create_uid
+#: model:ir.model.fields,field_description:plm.field_plm_component_document_rel__create_uid
+#: model:ir.model.fields,field_description:plm.field_plm_dbthread__create_uid
+#: model:ir.model.fields,field_description:plm.field_plm_description__create_uid
+#: model:ir.model.fields,field_description:plm.field_plm_finishing__create_uid model:ir.model.fields,field_description:plm.field_plm_material__create_uid
+#: model:ir.model.fields,field_description:plm.field_plm_temporary__create_uid
+#: model:ir.model.fields,field_description:plm.field_plm_temporary_message__create_uid
+#: model:ir.model.fields,field_description:plm.field_plm_treatment__create_uid model_terms:ir.ui.view,arch_db:plm.ir_attachment_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_component_base_search model_terms:ir.ui.view,arch_db:plm.plm_docbom_search
+msgid "Created by"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_backupdoc_search model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search_bck model_terms:ir.ui.view,arch_db:plm.plm_checkout_search
+msgid "Created by me"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search model_terms:ir.ui.view,arch_db:plm.plm_component_base_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_docbom_search
+msgid "Created in"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc__create_date
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc_wizard__create_date
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open__create_date
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open_bck__create_date
+#: model:ir.model.fields,field_description:plm.field_plm_checkout__create_date model:ir.model.fields,field_description:plm.field_plm_client__create_date
+#: model:ir.model.fields,field_description:plm.field_plm_component_document_rel__create_date
+#: model:ir.model.fields,field_description:plm.field_plm_dbthread__create_date
+#: model:ir.model.fields,field_description:plm.field_plm_description__create_date
+#: model:ir.model.fields,field_description:plm.field_plm_finishing__create_date
+#: model:ir.model.fields,field_description:plm.field_plm_material__create_date
+#: model:ir.model.fields,field_description:plm.field_plm_temporary__create_date
+#: model:ir.model.fields,field_description:plm.field_plm_temporary_message__create_date
+#: model:ir.model.fields,field_description:plm.field_plm_treatment__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "Creation"
+msgstr "Criado"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_mrp_bom__create_date model:ir.model.fields,field_description:plm.field_mrp_bom_line__create_date
+msgid "Creation Date"
+msgstr "Criado em"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_component_create_normal_bom
+msgid "Creation of Normal Bom"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_backupdoc_search model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search_bck model_terms:ir.ui.view,arch_db:plm.plm_checkout_search
+msgid "Creator"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_mrp_bom_line__cutted_type
+msgid "Cutted Compute Type"
+msgstr ""
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.plm_action_plm_dbthread
+msgid "DB Thread Action"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment_relation__create_date
+#: model:ir.model.fields,field_description:plm.field_product_product__create_date
+msgid "Date Created"
+msgstr "Criado em"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__write_date
+msgid "Date Modified"
+msgstr "Última atualização em"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__engineering_revision_date
+#: model:ir.model.fields,field_description:plm.field_mrp_document__engineering_revision_date
+#: model:ir.model.fields,field_description:plm.field_product_product__engineering_revision_date
+#: model:ir.model.fields,field_description:plm.field_product_template__engineering_revision_date
+#: model:ir.model.fields,field_description:plm.field_revision_plm_mixin__engineering_revision_date
+msgid "Datetime Revision"
+msgstr "Dia e hora da Revisão"
+
+#. module: plm
+#: model:ir.model,name:plm.model_plm_dbthread
+msgid "Db Thread Saving Model"
+msgstr ""
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.plm_dbthread_id
+msgid "DbThread"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_mrp_bom__description model:ir.model.fields,field_description:plm.field_mrp_bom_line__description
+#: model:ir.model.fields,field_description:plm.field_plm_finishing__description
+#: model:ir.model.fields,field_description:plm.field_plm_material__description
+#: model:ir.model.fields,field_description:plm.field_plm_treatment__description model_terms:ir.ui.view,arch_db:plm.bom_structure_all
+#: model_terms:ir.ui.view,arch_db:plm.plm_component_base_form model_terms:ir.ui.view,arch_db:plm.plm_grp_by_parent
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_description
+msgid "Description"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_description__description_en
+msgid "Description English"
+msgstr ""
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.plm_action_description_form model:ir.ui.menu,name:plm.menu_description
+#: model_terms:ir.ui.view,arch_db:plm.plm_view_description_tree
+msgid "Descriptions"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_material__name
+msgid "Designation"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment_relation__display_name
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc__display_name
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc_wizard__display_name
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open__display_name
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open_bck__display_name
+#: model:ir.model.fields,field_description:plm.field_plm_checkout__display_name model:ir.model.fields,field_description:plm.field_plm_client__display_name
+#: model:ir.model.fields,field_description:plm.field_plm_component_document_rel__display_name
+#: model:ir.model.fields,field_description:plm.field_plm_dbthread__display_name
+#: model:ir.model.fields,field_description:plm.field_plm_description__display_name
+#: model:ir.model.fields,field_description:plm.field_plm_finishing__display_name
+#: model:ir.model.fields,field_description:plm.field_plm_material__display_name
+#: model:ir.model.fields,field_description:plm.field_plm_temporary__display_name
+#: model:ir.model.fields,field_description:plm.field_plm_temporary_message__display_name
+#: model:ir.model.fields,field_description:plm.field_plm_treatment__display_name
+#: model:ir.model.fields,field_description:plm.field_report_ir_attachment_file__display_name
+#: model:ir.model.fields,field_description:plm.field_report_plmcomponent__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.report_doc_bom model_terms:ir.ui.view,arch_db:plm.report_prod_bom
+msgid "Doc Name"
+msgstr "Nome Doc"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "Doc Structure"
+msgstr "Estrutura Doc"
+
+#. module: plm
+#: model:ir.model,name:plm.model_report_plm_report_doc_structure
+msgid "Doc Structure Report"
+msgstr "Relatório Estrutura Doc"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search_bck
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Document"
+msgstr "Documento"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_backupdoc_search
+msgid "Document Name"
+msgstr "Nome Documento"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__document_rel_count
+#: model:ir.model.fields,field_description:plm.field_mrp_document__document_rel_count
+msgid "Document Rel Count"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_docbom_search
+msgid "Document Relation Kind"
+msgstr ""
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.plm_action_document_relations model_terms:ir.ui.view,arch_db:plm.plm_docbom_tree_view
+msgid "Document Relations"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__document_type
+#: model:ir.model.fields,field_description:plm.field_mrp_document__document_type
+msgid "Document Type"
+msgstr "Tipo de Documento"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_dbthread__documement_name_version
+msgid "Document name and version"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_search_tooltip
+msgid "Document released"
+msgstr ""
+
+#. module: plm
+#: model:ir.actions.report,name:plm.action_report_doc_structure
+msgid "Document structure"
+msgstr ""
+
+#. module: plm
+#: model:ir.model,name:plm.model_plm_checkout
+msgid "Document that are locked from someone"
+msgstr ""
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.plm_action_document_form model:ir.ui.menu,name:plm.ir_attachment_form
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search model_terms:ir.ui.view,arch_db:plm.ir_attachment_tree
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "Documents"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_backupdoc_tree model_terms:ir.ui.view,arch_db:plm.plm_checkout_tree
+msgid "Documents in Check-Out"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Download a zip file containing all documents/and printout attached to a product or BOM."
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_report_plmcomponent__count_component_draft
+#: model:ir.model.fields.selection,name:plm.selection__ir_attachment__engineering_state__draft
+#: model:ir.model.fields.selection,name:plm.selection__product_template__engineering_state__draft
+#: model:ir.model.fields.selection,name:plm.selection__revision_plm_mixin__engineering_state__draft
+msgid "Draft"
+msgstr "Rascunho"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_web_3d
+msgid "Enable 3D WebGl"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_web_3d_sale
+msgid "Enable 3D WebGl for e-commerce and sale"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_auto_engcode
+msgid "Enable Automatic Engineering Code"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_bom_summarize
+msgid "Enable B.O.M. summarisation during the client upload"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_activity_validation
+msgid "Enable Eco /Ecr"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_pdf_workorder
+msgid "Enable Plm PDF document inside workorder"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_breakages
+msgid "Enable breakages management"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_ent_breakages_helpdesk
+msgid "Enable breakages management on Helpdesk (Enterprise only)"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "Eng. Document Name"
+msgstr "Nome do documento"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__engineering_branch_revision
+#: model:ir.model.fields,field_description:plm.field_mrp_document__engineering_branch_revision
+#: model:ir.model.fields,field_description:plm.field_product_product__engineering_branch_revision
+#: model:ir.model.fields,field_description:plm.field_product_template__engineering_branch_revision
+#: model:ir.model.fields,field_description:plm.field_revision_plm_mixin__engineering_branch_revision
+msgid "Engineering Branch index"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__engineering_code
+#: model:ir.model.fields,field_description:plm.field_mrp_document__engineering_code
+#: model:ir.model.fields,field_description:plm.field_product_product__engineering_code
+#: model:ir.model.fields,field_description:plm.field_product_template__engineering_code
+#: model:ir.model.fields,field_description:plm.field_revision_plm_mixin__engineering_code
+msgid "Engineering Code"
+msgstr "Nome do Desenho"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__engineering_code_editable
+#: model:ir.model.fields,field_description:plm.field_mrp_document__engineering_code_editable
+#: model:ir.model.fields,field_description:plm.field_product_product__engineering_code_editable
+#: model:ir.model.fields,field_description:plm.field_product_template__engineering_code_editable
+#: model:ir.model.fields,field_description:plm.field_revision_plm_mixin__engineering_code_editable
+msgid "Engineering Code Editable"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__is_engcode_editable
+#: model:ir.model.fields,field_description:plm.field_product_template__is_engcode_editable
+msgid "Engineering Editable"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.product_template_form_view_plm_custom
+msgid "Engineering Information"
+msgstr ""
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.action_plm_component_base model:ir.actions.act_window,name:plm.action_plm_component_base_cad_form
+#: model_terms:ir.ui.view,arch_db:plm.plm_component_base_tree
+msgid "Engineering Parts"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_component_base_form model_terms:ir.ui.view,arch_db:plm.view_product_client_workflow
+msgid "Engineering Product"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__engineering_revision_count
+#: model:ir.model.fields,field_description:plm.field_mrp_bom__bom_revision_count
+#: model:ir.model.fields,field_description:plm.field_mrp_document__engineering_revision_count
+#: model:ir.model.fields,field_description:plm.field_product_product__engineering_revision_count
+#: model:ir.model.fields,field_description:plm.field_product_template__engineering_revision_count
+#: model:ir.model.fields,field_description:plm.field_revision_plm_mixin__engineering_revision_count
+msgid "Engineering Revision Count"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__engineering_revision
+#: model:ir.model.fields,field_description:plm.field_mrp_document__engineering_revision
+#: model:ir.model.fields,field_description:plm.field_product_product__engineering_revision
+#: model:ir.model.fields,field_description:plm.field_product_template__engineering_revision
+#: model:ir.model.fields,field_description:plm.field_revision_plm_mixin__engineering_revision
+msgid "Engineering Revision index"
+msgstr "Código da Revisão"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__engineering_revision_letter
+#: model:ir.model.fields,field_description:plm.field_mrp_document__engineering_revision_letter
+#: model:ir.model.fields,field_description:plm.field_product_product__engineering_revision_letter
+#: model:ir.model.fields,field_description:plm.field_product_template__engineering_revision_letter
+#: model:ir.model.fields,field_description:plm.field_revision_plm_mixin__engineering_revision_letter
+msgid "Engineering Revision letter"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__engineering_state
+#: model:ir.model.fields,field_description:plm.field_mrp_document__engineering_state
+#: model:ir.model.fields,field_description:plm.field_product_product__engineering_state
+#: model:ir.model.fields,field_description:plm.field_product_template__engineering_state
+#: model:ir.model.fields,field_description:plm.field_revision_plm_mixin__engineering_state
+msgid "Engineering Status"
+msgstr "Status"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__engineering_branch_revision_letter
+#: model:ir.model.fields,field_description:plm.field_mrp_document__engineering_branch_revision_letter
+#: model:ir.model.fields,field_description:plm.field_product_product__engineering_branch_revision_letter
+#: model:ir.model.fields,field_description:plm.field_product_template__engineering_branch_revision_letter
+#: model:ir.model.fields,field_description:plm.field_revision_plm_mixin__engineering_branch_revision_letter
+msgid "Engineering Sub Revision letter"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "Enineering revision"
+msgstr "Revisão"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_dbthread__error_message
+msgid "Error message"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_description
+msgid "Example Result:<br/>"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_description
+msgid "Example Values:<br/>"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_description
+msgid "Example: %s"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_description
+msgid "Example: (%s, %s %s, %s_%s, %s/%s)"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_description
+msgid "Example: UNI"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_description
+msgid "Feature Example: A"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_description
+msgid "Feature Example: B"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_description
+msgid "Feature Example: C"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_description
+msgid "Feature.Value1 (in component form) = 1"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_description
+msgid "Feature.Value1 (in component form) = 2"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_description
+msgid "Feature.Value1 (in component form) = 3"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_description
+msgid "Feature.Value2 (in component form) = 2"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_description
+msgid "Feature.Value3 (in component form) = 3"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__datas model:ir.model.fields,field_description:plm.field_mrp_document__datas
+msgid "File Content (base64))"
+msgstr "Conteúdo do Arquivo (base64)"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "File Data:"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.report_doc_bom model_terms:ir.ui.view,arch_db:plm.report_prod_bom
+msgid "File Name"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_report_ir_attachment_file__file_size
+msgid "File Size"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__library_path
+#: model:ir.model.fields,field_description:plm.field_mrp_document__library_path
+msgid "File library path"
+msgstr ""
+
+#. module: plm
+#: model:ir.model,name:plm.model_report_ir_attachment_file
+msgid "Files details by Directory"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search model_terms:ir.ui.view,arch_db:plm.plm_component_base_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_docbom_search
+msgid "Filter on documents changed by me"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search model_terms:ir.ui.view,arch_db:plm.plm_component_base_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_docbom_search
+msgid "Filter on documents created by me"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search
+msgid "Filter on documents with error"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_description
+msgid "Final Description:  Standard Description + Format Feature Composed + Normative Rule<br/><b>    STD 1 Title n°2-3 UNI</b>"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_description
+msgid "Final Description:  Standard Description + Format Feature Composed + Normative Rule<br/><b>    STD 1 Title n°B-2-C/3 UNI</b>"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_description
+msgid "Final Description:  Standard Description + Format Feature Composed + Normative Rule<br/><b>    STD A 1 Title n°B-2-C/3 UNI</b>"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_finishing
+msgid "Finishing"
+msgstr ""
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.plm_action_finishing_form model:ir.ui.menu,name:plm.menu_finishing
+#: model_terms:ir.ui.view,arch_db:plm.plm_view_finishing_tree model_terms:ir.ui.view,arch_db:plm.plm_view_treatment_tree
+msgid "Finishings"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__message_follower_ids
+#: model:ir.model.fields,field_description:plm.field_product_template__message_follower_ids
+#: model:ir.model.fields,field_description:plm.field_revision_plm_mixin__message_follower_ids
+msgid "Followers"
+msgstr "Seguidores"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__message_partner_ids
+#: model:ir.model.fields,field_description:plm.field_product_template__message_partner_ids
+#: model:ir.model.fields,field_description:plm.field_revision_plm_mixin__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Seguidores (Parceiros)"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_ir_attachment__activity_type_icon model:ir.model.fields,help:plm.field_product_template__activity_type_icon
+#: model:ir.model.fields,help:plm.field_revision_plm_mixin__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr "Ícone do Font Awesome. Ex: fa-tasks"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_product_only_latest
+msgid "Force last version on Manufacturing"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_sale_only_latest
+msgid "Force last version on Sale"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_purchase_only_latest
+msgid "Force last version on purchase"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_description__fmt1
+msgid "Format Feature 1"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_description__fmt2
+msgid "Format Feature 2"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_description__fmt3
+msgid "Format Feature 3"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_description__fmtend
+msgid "Format Feature Composed"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_description
+msgid "Format Feature Composed = %s Title n°%s-%s"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_document_relation_kanban_view model_terms:ir.ui.view,arch_db:plm.document_kanban_view
+#: model_terms:ir.ui.view,arch_db:plm.plm_docbom_form_view
+msgid "Founding Component"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Generate Engineering Code by sequence"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__source_product
+msgid "Generated From"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_plm_finishing__sequence model:ir.model.fields,help:plm.field_plm_material__sequence
+#: model:ir.model.fields,help:plm.field_plm_treatment__sequence
+msgid "Gives the sequence order when displaying a list of product categories."
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_graph_view
+msgid "Graph"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_grp_by_parent
+msgid "Group By Parent"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search model_terms:ir.ui.view,arch_db:plm.plm_backupdoc_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search_bck
+#: model_terms:ir.ui.view,arch_db:plm.plm_checkout_search model_terms:ir.ui.view,arch_db:plm.plm_component_base_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_docbom_search
+msgid "Group By..."
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_docbom_search
+msgid "Group by..."
+msgstr ""
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.plm_action_res_groups model:ir.ui.menu,name:plm.plm_groups
+msgid "Groups"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_mrp_bom_line__hasChildBoms
+msgid "Has Children Boms"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__has_error model:ir.model.fields,field_description:plm.field_mrp_document__has_error
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search
+msgid "Has Error"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__has_message
+#: model:ir.model.fields,field_description:plm.field_product_template__has_message
+#: model:ir.model.fields,field_description:plm.field_revision_plm_mixin__has_message
+msgid "Has Message"
+msgstr "Tem uma mensagem"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_description
+msgid "Help"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "History"
+msgstr "Histórico"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open__hostname model:ir.model.fields,field_description:plm.field_plm_cad_open_bck__hostname
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search_bck
+#: model_terms:ir.ui.view,arch_db:plm.plm_checkout_search
+msgid "Hostname"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment_relation__id model:ir.model.fields,field_description:plm.field_plm_backupdoc__id
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc_wizard__id model:ir.model.fields,field_description:plm.field_plm_cad_open__id
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open_bck__id model:ir.model.fields,field_description:plm.field_plm_checkout__id
+#: model:ir.model.fields,field_description:plm.field_plm_client__id model:ir.model.fields,field_description:plm.field_plm_component_document_rel__id
+#: model:ir.model.fields,field_description:plm.field_plm_dbthread__id model:ir.model.fields,field_description:plm.field_plm_description__id
+#: model:ir.model.fields,field_description:plm.field_plm_finishing__id model:ir.model.fields,field_description:plm.field_plm_material__id
+#: model:ir.model.fields,field_description:plm.field_plm_temporary__id model:ir.model.fields,field_description:plm.field_plm_temporary_message__id
+#: model:ir.model.fields,field_description:plm.field_plm_treatment__id model:ir.model.fields,field_description:plm.field_report_ir_attachment_file__id
+#: model:ir.model.fields,field_description:plm.field_report_plmcomponent__id
+msgid "ID"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__activity_exception_icon
+#: model:ir.model.fields,field_description:plm.field_product_template__activity_exception_icon
+#: model:ir.model.fields,field_description:plm.field_revision_plm_mixin__activity_exception_icon
+msgid "Icon"
+msgstr "Ícone"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_ir_attachment__activity_exception_icon
+#: model:ir.model.fields,help:plm.field_product_template__activity_exception_icon
+#: model:ir.model.fields,help:plm.field_revision_plm_mixin__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr "Ícone para indicar uma atividade excepcional."
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_description
+msgid "If Normative Rule is defined, it will be added at the end of the description."
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_ir_attachment__message_needaction model:ir.model.fields,help:plm.field_product_template__message_needaction
+#: model:ir.model.fields,help:plm.field_revision_plm_mixin__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "Se marcado, novas mensagens solicitarão sua atenção."
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_ir_attachment__message_has_error model:ir.model.fields,help:plm.field_ir_attachment__message_has_sms_error
+#: model:ir.model.fields,help:plm.field_product_template__message_has_error model:ir.model.fields,help:plm.field_product_template__message_has_sms_error
+#: model:ir.model.fields,help:plm.field_revision_plm_mixin__message_has_error
+#: model:ir.model.fields,help:plm.field_revision_plm_mixin__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Se marcado, algumas mensagens tem erro de entrega."
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_plm_temporary__summarize
+msgid "If set as true, when a Bom line comes from EBOM was in the old normal BOM two lines where been summarized."
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_ir_attachment__is_plm model:ir.model.fields,help:plm.field_mrp_document__is_plm
+msgid "If the flag is set, the document is managed by the plm module, and imply its backup at each save and the visibility on some views."
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_plm_temporary__migrate_custom_lines
+msgid ""
+"If the user adds custom BOM lines in the revision 0 BOM, than makes the revision 1, creates it's engineering BOM and than create the new Normal BOM "
+"form EBOM your revision 0 custom BOM lines are created in the new BOM"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "Indexed Content"
+msgstr "Conteúdo Anexado"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_bom_form_view
+msgid "Info:"
+msgstr ""
+
+#. module: plm
+#: model:res.groups,name:plm.group_plm_integration_user
+msgid "Integration User"
+msgstr ""
+
+#. module: plm
+#: model:ir.model,name:plm.model_ir_attachment
+msgid "Ir Attachment"
+msgstr "Anexo"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__is_plm model:ir.model.fields,field_description:plm.field_mrp_document__is_plm
+msgid "Is A Plm Document"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__is_checkout
+#: model:ir.model.fields,field_description:plm.field_mrp_document__is_checkout
+msgid "Is Checked-Out"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__message_is_follower
+#: model:ir.model.fields,field_description:plm.field_product_template__message_is_follower
+#: model:ir.model.fields,field_description:plm.field_revision_plm_mixin__message_is_follower
+msgid "Is Follower"
+msgstr "É um seguidor"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__is_library model:ir.model.fields,field_description:plm.field_mrp_document__is_library
+msgid "Is Library file"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__is_linkedcomponents
+#: model:ir.model.fields,field_description:plm.field_mrp_document__is_linkedcomponents
+msgid "Is Linked Components"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "Is a Plm Document"
+msgstr "É um Documento PLM"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_category__kit_bom model:ir.model.fields,field_description:plm.field_product_product__kit_bom
+#: model:ir.model.fields,field_description:plm.field_product_template__kit_bom
+msgid "KIT Bom Type"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__kanban_dashboard
+msgid "Kanban Dashboard"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_docbom_search
+msgid "Kind"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment_relation__link_kind
+msgid "Kind of Link"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment_relation____last_update
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc____last_update
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc_wizard____last_update
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open____last_update
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open_bck____last_update
+#: model:ir.model.fields,field_description:plm.field_plm_checkout____last_update
+#: model:ir.model.fields,field_description:plm.field_plm_client____last_update
+#: model:ir.model.fields,field_description:plm.field_plm_component_document_rel____last_update
+#: model:ir.model.fields,field_description:plm.field_plm_dbthread____last_update
+#: model:ir.model.fields,field_description:plm.field_plm_description____last_update
+#: model:ir.model.fields,field_description:plm.field_plm_finishing____last_update
+#: model:ir.model.fields,field_description:plm.field_plm_material____last_update
+#: model:ir.model.fields,field_description:plm.field_plm_temporary____last_update
+#: model:ir.model.fields,field_description:plm.field_plm_temporary_message____last_update
+#: model:ir.model.fields,field_description:plm.field_plm_treatment____last_update
+#: model:ir.model.fields,field_description:plm.field_report_ir_attachment_file____last_update
+#: model:ir.model.fields,field_description:plm.field_report_plmcomponent____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search model_terms:ir.ui.view,arch_db:plm.plm_backupdoc_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search_bck
+#: model_terms:ir.ui.view,arch_db:plm.plm_checkout_search model_terms:ir.ui.view,arch_db:plm.plm_component_base_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_docbom_search model_terms:ir.ui.view,arch_db:plm.view_mrp_bom_filter_inherit
+msgid "Last Month"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment_relation__write_uid
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc__write_uid
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc_wizard__write_uid
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open__write_uid model:ir.model.fields,field_description:plm.field_plm_cad_open_bck__write_uid
+#: model:ir.model.fields,field_description:plm.field_plm_checkout__write_uid model:ir.model.fields,field_description:plm.field_plm_client__write_uid
+#: model:ir.model.fields,field_description:plm.field_plm_component_document_rel__write_uid
+#: model:ir.model.fields,field_description:plm.field_plm_dbthread__write_uid model:ir.model.fields,field_description:plm.field_plm_description__write_uid
+#: model:ir.model.fields,field_description:plm.field_plm_finishing__write_uid model:ir.model.fields,field_description:plm.field_plm_material__write_uid
+#: model:ir.model.fields,field_description:plm.field_plm_temporary__write_uid
+#: model:ir.model.fields,field_description:plm.field_plm_temporary_message__write_uid
+#: model:ir.model.fields,field_description:plm.field_plm_treatment__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment_relation__write_date
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc__write_date
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc_wizard__write_date
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open__write_date
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open_bck__write_date
+#: model:ir.model.fields,field_description:plm.field_plm_checkout__write_date model:ir.model.fields,field_description:plm.field_plm_client__write_date
+#: model:ir.model.fields,field_description:plm.field_plm_component_document_rel__write_date
+#: model:ir.model.fields,field_description:plm.field_plm_dbthread__write_date
+#: model:ir.model.fields,field_description:plm.field_plm_description__write_date
+#: model:ir.model.fields,field_description:plm.field_plm_finishing__write_date model:ir.model.fields,field_description:plm.field_plm_material__write_date
+#: model:ir.model.fields,field_description:plm.field_plm_temporary__write_date
+#: model:ir.model.fields,field_description:plm.field_plm_temporary_message__write_date
+#: model:ir.model.fields,field_description:plm.field_plm_treatment__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search model_terms:ir.ui.view,arch_db:plm.plm_backupdoc_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search_bck
+#: model_terms:ir.ui.view,arch_db:plm.plm_checkout_search model_terms:ir.ui.view,arch_db:plm.plm_component_base_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_docbom_search model_terms:ir.ui.view,arch_db:plm.view_mrp_bom_filter_inherit
+msgid "Last Week"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search model_terms:ir.ui.view,arch_db:plm.plm_component_base_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_docbom_search model_terms:ir.ui.view,arch_db:plm.view_mrp_bom_filter_inherit
+msgid "Last Year"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search model_terms:ir.ui.view,arch_db:plm.plm_component_base_search
+msgid "Latest"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_backupdoc_search model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search_bck model_terms:ir.ui.view,arch_db:plm.plm_checkout_search
+msgid "Latest 7 Days"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_docbom_search
+msgid "Latest Child"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_docbom_search
+msgid "Latest Parent"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.bom_structure_all model_terms:ir.ui.view,arch_db:plm.report_doc_bom
+#: model_terms:ir.ui.view,arch_db:plm.report_prod_bom
+msgid "Level"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_component_document_rel__component_id
+msgid "Linked Component"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__linkeddocuments
+msgid "Linked Docs"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_component_document_rel__document_id
+msgid "Linked Document"
+msgstr "Documento Linkado"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_product_product_normal_form_view_inherit
+msgid "Linked Documents"
+msgstr "Documentos Linkados"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__linkedcomponents
+#: model:ir.model.fields,field_description:plm.field_mrp_document__linkedcomponents
+msgid "Linked Parts"
+msgstr "Peças Linkadas"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_mrp_bom_update
+msgid "MRP B.O.M Update"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__message_main_attachment_id
+#: model:ir.model.fields,field_description:plm.field_product_template__message_main_attachment_id
+#: model:ir.model.fields,field_description:plm.field_revision_plm_mixin__message_main_attachment_id
+msgid "Main Attachment"
+msgstr "Anexo Principal"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_date_bom
+msgid "Manage BOM due to date"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_cutted_parts
+msgid "Manage BOM explosion for cut parts"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_suspended
+msgid "Manage Product suspend code"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Manage breakage on your products"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_report_language_helper
+msgid "Manage more Language PLM reports"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Manage product Suspension State on workFlow for document and product"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_spare
+msgid "Manage spare BOM and Spare Parts Manual"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Manufacturing"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_material
+#, fuzzy
+msgid "Material"
+msgstr "Material"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_component_base_form model_terms:ir.ui.view,arch_db:plm.plm_product_product_normal_form_view_inherit
+msgid "Material / Surface / Treatment"
+msgstr "Material / Acabamento / Tratamento"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.plm_action_material_form model:ir.ui.menu,name:plm.menu_material
+#: model_terms:ir.ui.view,arch_db:plm.plm_view_material_tree
+msgid "Materials"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__message_has_error
+#: model:ir.model.fields,field_description:plm.field_product_template__message_has_error
+#: model:ir.model.fields,field_description:plm.field_revision_plm_mixin__message_has_error
+msgid "Message Delivery error"
+msgstr "Erro na entrega da Mensagem"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__message_ids
+#: model:ir.model.fields,field_description:plm.field_product_template__message_ids
+#: model:ir.model.fields,field_description:plm.field_revision_plm_mixin__message_ids
+msgid "Messages"
+msgstr "Mensagens"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_document_relation_kanban_view model_terms:ir.ui.view,arch_db:plm.document_kanban_view
+#: model_terms:ir.ui.view,arch_db:plm.plm_docbom_form_view
+msgid "Missing Component"
+msgstr ""
+
+#. module: plm
+#: model:ir.actions.report,name:plm.action_report_prod_structure
+msgid "Missing product structure"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__desc_modify
+#: model:ir.model.fields,field_description:plm.field_mrp_document__desc_modify
+#: model:ir.model.fields,field_description:plm.field_product_product__desc_modify
+msgid "Modification Description"
+msgstr "Descrição de Modificação"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_report_ir_attachment_file__month
+msgid "Month"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_document_multi_site
+msgid "Multi server storage system"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__must_update_from_cad
+#: model:ir.model.fields,field_description:plm.field_mrp_document__must_update_from_cad
+msgid "Must Update form CAD"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__my_activity_date_deadline
+#: model:ir.model.fields,field_description:plm.field_product_template__my_activity_date_deadline
+#: model:ir.model.fields,field_description:plm.field_revision_plm_mixin__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr "Prazo da Minha Atividade"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__activity_calendar_event_id
+#: model:ir.model.fields,field_description:plm.field_product_template__activity_calendar_event_id
+#: model:ir.model.fields,field_description:plm.field_revision_plm_mixin__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
+msgstr "Próxima Atividade do Calendário de Eventos"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__activity_date_deadline
+#: model:ir.model.fields,field_description:plm.field_product_template__activity_date_deadline
+#: model:ir.model.fields,field_description:plm.field_revision_plm_mixin__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr "Prazo Final para Próxima Atividade"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__activity_summary
+#: model:ir.model.fields,field_description:plm.field_product_template__activity_summary
+#: model:ir.model.fields,field_description:plm.field_revision_plm_mixin__activity_summary
+msgid "Next Activity Summary"
+msgstr "Próximo Sumário de Atividade"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__activity_type_id
+#: model:ir.model.fields,field_description:plm.field_product_template__activity_type_id
+#: model:ir.model.fields,field_description:plm.field_revision_plm_mixin__activity_type_id
+msgid "Next Activity Type"
+msgstr "Tipo da Próxima Atividade"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_component_kanban_hinerit
+msgid "No Image"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__non_conformity_ids
+#: model:ir.model.fields,field_description:plm.field_product_template__non_conformity_ids
+#: model:ir.model.fields,field_description:plm.field_revision_plm_mixin__non_conformity_ids
+msgid "Non Conformity"
+msgstr "Não conformidade"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__non_conformity_count
+#: model:ir.model.fields,field_description:plm.field_product_template__non_conformity_count
+#: model:ir.model.fields,field_description:plm.field_revision_plm_mixin__non_conformity_count
+msgid "Non Conformity Count"
+msgstr "Contar Não conformidade"
+
+#. module: plm
+#: model:ir.model.fields.selection,name:plm.selection__mrp_bom_line__cutted_type__none
+msgid "None"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields.selection,name:plm.selection__mrp_bom__type__normal
+msgid "Normal BoM"
+msgstr "Fabricar este produto"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.plm_action_normal_form
+msgid "Normal BoMs"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_description
+msgid "Normalized features formatting"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_description__unitab
+msgid "Normative Rule"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_description
+msgid "Normative Rule = UNI"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_description
+msgid "Normative reference"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_description__name
+msgid "Note to Description"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_description
+msgid "Note to help selection"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "Notes"
+msgstr "Notas"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment_relation__notes
+msgid "Notes: "
+msgstr "Notas:"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__message_needaction_counter
+#: model:ir.model.fields,field_description:plm.field_product_template__message_needaction_counter
+#: model:ir.model.fields,field_description:plm.field_revision_plm_mixin__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Número de Ações"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__message_has_error_counter
+#: model:ir.model.fields,field_description:plm.field_product_template__message_has_error_counter
+#: model:ir.model.fields,field_description:plm.field_revision_plm_mixin__message_has_error_counter
+msgid "Number of errors"
+msgstr "Número de Erros"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_ir_attachment__message_needaction_counter
+#: model:ir.model.fields,help:plm.field_product_template__message_needaction_counter
+#: model:ir.model.fields,help:plm.field_revision_plm_mixin__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "Número de mensagens que requerem ação"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_ir_attachment__message_has_error_counter
+#: model:ir.model.fields,help:plm.field_product_template__message_has_error_counter
+#: model:ir.model.fields,help:plm.field_revision_plm_mixin__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Número de mensagens com erro de entrega"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.report_doc_bom model_terms:ir.ui.view,arch_db:plm.report_prod_bom
+msgid "N° Revision"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_report_plmcomponent__count_component_obsoleted
+#: model:ir.model.fields.selection,name:plm.selection__ir_attachment__engineering_state__obsoleted
+#: model:ir.model.fields.selection,name:plm.selection__product_template__engineering_state__obsoleted
+#: model:ir.model.fields.selection,name:plm.selection__revision_plm_mixin__engineering_state__obsoleted
+#: model_terms:ir.ui.view,arch_db:plm.plm_component_base_search
+msgid "Obsoleted"
+msgstr "Obsoleto"
+
+#. module: plm
+#: model:ir.module.category,name:plm.odooplm_module_category
+msgid "OdooPLM"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_bom_form_view
+msgid "Open Related Boms"
+msgstr ""
+
+#. module: plm
+#: model:ir.model,name:plm.model_plm_cad_open model:ir.model,name:plm.model_plm_cad_open_bck
+msgid "Opens made by the client"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open__operation_type
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open_bck__operation_type
+msgid "Operation Type"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields.selection,name:plm.selection__mail_activity_type__change_activity_type__plm_activity
+msgid "Order"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc__orig_data_fstore
+msgid "Original FStore Name"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields.selection,name:plm.selection__ir_attachment__document_type__other model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Other"
+msgstr ""
+
+#. module: plm
+#: model:ir.actions.report,name:plm.report_product_product_pdf
+msgid "PDF Drawings"
+msgstr ""
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.plm_menu
+msgid "PLM"
+msgstr ""
+
+#. module: plm
+#: model:res.groups,name:plm.group_plm_release_users
+msgid "PLM / Release Users"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_box
+msgid "PLM Box"
+msgstr ""
+
+#. module: plm
+#: model:ir.model,name:plm.model_plm_client
+msgid "PLM Client Support object"
+msgstr ""
+
+#. module: plm
+#: model:ir.model,name:plm.model_plm_description
+msgid "PLM Descriptions"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "PLM Infos:"
+msgstr ""
+
+#. module: plm
+#: model:res.groups,name:plm.group_plm_readonly_released
+msgid "PLM Integration Readonly"
+msgstr ""
+
+#. module: plm
+#: model:ir.model,name:plm.model_plm_material
+msgid "PLM Materials"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_checkout__hostpws
+msgid "PWS Directory"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open__pws_path model:ir.model.fields,field_description:plm.field_plm_cad_open_bck__pws_path
+msgid "PWS Path"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_pack_and_go
+msgid "Pack and go"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_docbom_search
+msgid "Parent"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_docbom_search
+msgid "Parent Confirmed"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment_relation__parent_type
+msgid "Parent Document Type"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment_relation__parent_linked
+msgid "Parent Linked Components"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment_relation__parent_preview model_terms:ir.ui.view,arch_db:plm.plm_docbom_form_view
+msgid "Parent Preview"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_docbom_search
+msgid "Parent Released"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment_relation__parent_revision
+msgid "Parent Revision"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment_relation__parent_state
+msgid "Parent Status"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__engineering_branch_parent_id
+#: model:ir.model.fields,field_description:plm.field_mrp_document__engineering_branch_parent_id
+#: model:ir.model.fields,field_description:plm.field_product_product__engineering_branch_parent_id
+#: model:ir.model.fields,field_description:plm.field_product_template__engineering_branch_parent_id
+#: model:ir.model.fields,field_description:plm.field_revision_plm_mixin__engineering_branch_parent_id
+msgid "Parent branch"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.constraint,message:plm.constraint_ir_attachment_relation_parent_child_check
+msgid "Parent child product must be different !"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_component_base_search
+msgid "Parts"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc__existingfile
+msgid "Physical Document Location"
+msgstr ""
+
+#. module: plm
+#: model:mail.activity.type,name:plm.mail_activity_plm_activity
+msgid "Plm Activity"
+msgstr ""
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.action_plm_cad_open model_terms:ir.ui.view,arch_db:plm.plm_cad_open_tree
+msgid "Plm Cad Open"
+msgstr ""
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.action_plm_cad_open_bck model:ir.actions.server,name:plm.ir_cron_scheduler_bck_cad_open_ir_actions_server
+#: model:ir.cron,cron_name:plm.ir_cron_scheduler_bck_cad_open model_terms:ir.ui.view,arch_db:plm.plm_cad_open_form_bck
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_tree_bck
+msgid "Plm Cad Open Bck"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_form model_terms:ir.ui.view,arch_db:plm.view_plm_checkout_form
+msgid "Plm checkout"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_auto_internalref
+msgid "Populate internal reference with engineering part number"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.bom_structure_all
+msgid "Pos."
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_bom_tree_structure
+msgid "Position"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields.selection,name:plm.selection__ir_attachment__document_type__pr
+msgid "Presentation"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_temporary__migrate_custom_lines
+msgid "Preserve custom BOM lines from previous Normal BOM revision"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.report_doc_bom model_terms:ir.ui.view,arch_db:plm.report_prod_bom
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_backupdoc
+msgid "Preview"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__preview model:ir.model.fields,field_description:plm.field_mrp_document__preview
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc__preview model:ir.model.fields,field_description:plm.field_plm_checkout__preview
+msgid "Preview Content"
+msgstr "Pré-Visualização"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_ir_attachment__printout model:ir.model.fields,help:plm.field_mrp_document__printout
+msgid "Print PDF content."
+msgstr ""
+
+#. module: plm
+#: model:ir.actions.report,name:plm.report_ir_attachment_pdf
+msgid "Print Pdf"
+msgstr "Imprimir Pdf"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__printout model:ir.model.fields,field_description:plm.field_mrp_document__printout
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc__printout
+msgid "Printout Content"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__printout_name
+#: model:ir.model.fields,field_description:plm.field_mrp_document__printout_name
+msgid "Printout Name"
+msgstr ""
+
+#. module: plm
+#: model:ir.model,name:plm.model_report_plm_report_prod_structure
+msgid "Prod Doc Structure Report"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_component_kanban_hinerit model_terms:ir.ui.view,arch_db:plm.plm_grp_by_parent
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Product"
+msgstr "Produto"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_bom_form_view
+msgid "Product Attachments"
+msgstr "Anexos Produto"
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.plm_product_cad_search
+msgid "Product Cad Search"
+msgstr ""
+
+#. module: plm
+#: model:ir.model,name:plm.model_product_category
+msgid "Product Category"
+msgstr "Categoria de Produtos"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_product_description_language_helper
+msgid "Product Description Language Helper"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.bom_structure_all model_terms:ir.ui.view,arch_db:plm.report_doc_bom
+#: model_terms:ir.ui.view,arch_db:plm.report_prod_bom
+msgid "Product Name"
+msgstr "Nome Produto"
+
+#. module: plm
+#: model:ir.model,name:plm.model_product_product
+msgid "Product Product"
+msgstr "Variação do Produto"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_mrp_bom_line__product_tag_ids
+msgid "Product Tags"
+msgstr ""
+
+#. module: plm
+#: model:ir.model,name:plm.model_product_template
+msgid "Product Template"
+msgstr "Produto"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_grp_by_parent
+msgid "Product line search"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.constraint,message:plm.constraint_plm_component_document_rel_relation_unique
+msgid "ProductProduct and Irattachment relation has to be unique !"
+msgstr ""
+
+#. module: plm
+#: model:ir.actions.report,name:plm.report_product_product_all_pdf_latest
+msgid "Production All Level PDF Drawings"
+msgstr ""
+
+#. module: plm
+#: model:ir.actions.report,name:plm.report_product_product_one_pdf_latest
+msgid "Production First Level PDF Drawings"
+msgstr ""
+
+#. module: plm
+#: model:ir.actions.report,name:plm.report_product_product_pdf_latest
+msgid "Production PDF Drawings"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Project"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Purchase"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.bom_structure_all
+msgid "Qty"
+msgstr "Qtd"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__tmp_material
+msgid "Raw Material"
+msgstr "Matéria Prima"
+
+#. module: plm
+#: model:ir.model.constraint,message:plm.constraint_plm_material_name_uniq
+msgid "Raw Material has to be unique !"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_product_product__engineering_material model:ir.model.fields,help:plm.field_product_template__engineering_material
+msgid "Raw material for current product, only description for titleblock."
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "Re Release"
+msgstr ""
+
+#. module: plm
+#: model:ir.actions.server,name:plm.action_update_doc_type
+msgid "Recompute Doc Type"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_bom_form_view
+msgid "Related BOM Lines"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_mrp_bom_line__related_bom_ids
+msgid "Related BOMs"
+msgstr "Listas Relacionadas"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc__documentid model:ir.model.fields,field_description:plm.field_plm_cad_open__document_id
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open_bck__document_id
+#: model:ir.model.fields,field_description:plm.field_plm_checkout__documentid
+msgid "Related Document"
+msgstr "Documento Relacionado"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_mrp_bom_line__related_document_ids
+msgid "Related Documents"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "Related To"
+msgstr "Relacionado a"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc__userid model:ir.model.fields,field_description:plm.field_plm_cad_open__userid
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open_bck__userid model:ir.model.fields,field_description:plm.field_plm_checkout__userid
+msgid "Related User"
+msgstr "Usuário Relacionado"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment_relation__child_id
+msgid "Related child document"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment_relation__parent_id
+msgid "Related parent document"
+msgstr ""
+
+#. module: plm
+#: model:ir.model,name:plm.model_ir_attachment_relation
+msgid "Relation between document used for cad file structure"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_component_base_form model_terms:ir.ui.view,arch_db:plm.plm_product_product_normal_form_view_inherit
+#: model_terms:ir.ui.view,arch_db:plm.view_product_client_workflow
+msgid "Release Component"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_client_workflow model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "Release Document"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__engineering_release_user
+#: model:ir.model.fields,field_description:plm.field_mrp_document__engineering_release_user
+#: model:ir.model.fields,field_description:plm.field_product_product__engineering_release_user
+#: model:ir.model.fields,field_description:plm.field_product_template__engineering_release_user
+#: model:ir.model.fields,field_description:plm.field_revision_plm_mixin__engineering_release_user
+msgid "Release User"
+msgstr "Usuario Liberação"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__engineering_release_date
+#: model:ir.model.fields,field_description:plm.field_mrp_document__engineering_release_date
+#: model:ir.model.fields,field_description:plm.field_product_product__engineering_release_date
+#: model:ir.model.fields,field_description:plm.field_product_template__engineering_release_date
+#: model:ir.model.fields,field_description:plm.field_revision_plm_mixin__engineering_release_date
+msgid "Release date"
+msgstr "Data de liberação"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_report_plmcomponent__count_component_released
+#: model:ir.model.fields.selection,name:plm.selection__ir_attachment__engineering_state__released
+#: model:ir.model.fields.selection,name:plm.selection__product_template__engineering_state__released
+#: model:ir.model.fields.selection,name:plm.selection__revision_plm_mixin__engineering_state__released
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search model_terms:ir.ui.view,arch_db:plm.plm_component_base_search
+msgid "Released"
+msgstr "Liberado"
+
+#. module: plm
+#: model:ir.model,name:plm.model_report_plm_bom_structure_all
+msgid "Report Bom All Structure"
+msgstr ""
+
+#. module: plm
+#: model:ir.model,name:plm.model_report_plm_bom_structure_all_sum
+msgid "Report Bom All Structure summarised"
+msgstr ""
+
+#. module: plm
+#: model:ir.model,name:plm.model_report_plm_bom_structure_leaves
+msgid "Report Bom Leavs"
+msgstr ""
+
+#. module: plm
+#: model:ir.model,name:plm.model_report_plm_bom_structure_flat
+msgid "Report Bom Structure"
+msgstr ""
+
+#. module: plm
+#: model:ir.model,name:plm.model_report_plmcomponent
+msgid "Report Component"
+msgstr ""
+
+#. module: plm
+#: model:ir.model,name:plm.model_report_plm_ir_attachment_pdf
+msgid "Report Document PDF"
+msgstr ""
+
+#. module: plm
+#: model:ir.model,name:plm.model_report_plm_bom_structure_one
+msgid "Report PLM Bom Structure"
+msgstr ""
+
+#. module: plm
+#: model:ir.model,name:plm.model_report_plm_bom_structure_one_sum
+msgid "Report PLM Bom Structure summaraized"
+msgstr ""
+
+#. module: plm
+#: model:ir.model,name:plm.model_report_plm_product_pdf
+msgid "Report for producing pdf"
+msgstr ""
+
+#. module: plm
+#: model:ir.model,name:plm.model_report_plm_all_product_pdf model:ir.model,name:plm.model_report_plm_one_product_pdf
+#: model:ir.model,name:plm.model_report_plm_product_production_all_pdf_latest model:ir.model,name:plm.model_report_plm_product_production_one_pdf_latest
+#: model:ir.model,name:plm.model_report_plm_product_production_pdf_latest
+msgid "Report pdf"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields.selection,name:plm.selection__mail_activity_type__change_activity_type__request
+msgid "Request"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__activity_user_id
+#: model:ir.model.fields,field_description:plm.field_product_template__activity_user_id
+#: model:ir.model.fields,field_description:plm.field_revision_plm_mixin__activity_user_id
+msgid "Responsible User"
+msgstr "Usuário Responsável"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.act_restore_document
+msgid "Restore Document"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.restore_document_button_view
+msgid "Restore Entry"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.restore_document_button_view
+msgid "Restore Selected Document"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.restore_document_button_view
+msgid "Restore this document"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.product_template_form_view_plm_custom
+msgid "Rev."
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_product_product_normal_form_view_inherit
+msgid "Rev.s."
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Revise a product / plm document from the web interface"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_mrp_bom__engineering_revision
+#: model:ir.model.fields,field_description:plm.field_mrp_bom_line__engineering_revision
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc__engineering_revision
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open__rel_doc_rev
+#: model:ir.model.fields,field_description:plm.field_plm_cad_open_bck__rel_doc_rev
+#: model:ir.model.fields,field_description:plm.field_plm_checkout__rel_doc_rev model_terms:ir.ui.view,arch_db:plm.mrp_bom_tree_view_where
+#: model_terms:ir.ui.view,arch_db:plm.plm_bom_tree_structure
+msgid "Revision"
+msgstr "Revisão"
+
+#. module: plm
+#: model:ir.model,name:plm.model_revision_plm_mixin
+msgid "Revision Mixin"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_product_product_normal_form_view_inherit
+msgid "Revision Rel Docs"
+msgstr "Docs Rel a Revisão"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "S.ERR"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__message_has_sms_error
+#: model:ir.model.fields,field_description:plm.field_product_template__message_has_sms_error
+#: model:ir.model.fields,field_description:plm.field_revision_plm_mixin__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "Erro no envio de SMS"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Sales"
+msgstr ""
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.menu_backupdoc
+msgid "Search on Backup Data Set"
+msgstr ""
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.menu_checkout
+msgid "Search on Checked-Out Documents"
+msgstr ""
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.menu_document_relations model_terms:ir.ui.view,arch_db:plm.plm_docbom_search
+msgid "Search on Document Relations"
+msgstr ""
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.menu_document_files
+msgid "Search on Documents"
+msgstr ""
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.menu_base_component
+msgid "Search on Engineering Parts"
+msgstr ""
+
+#. module: plm
+#: model:ir.ui.menu,name:plm.menu_relation_normal
+msgid "Search on Normal Bill of Materials"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_product_product__tmp_material
+msgid "Select raw material for current product"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_product_product__std_description
+msgid "Select standard description for current product."
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_product_product__tmp_surface
+msgid "Select surface finishing for current product"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_product_product__tmp_treatment
+msgid "Select thermal treatment for current product"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_description__sequence model:ir.model.fields,field_description:plm.field_plm_finishing__sequence
+#: model:ir.model.fields,field_description:plm.field_plm_material__sequence model:ir.model.fields,field_description:plm.field_plm_treatment__sequence
+msgid "Sequence"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields.selection,name:plm.selection__mrp_bom_line__cutted_type__server
+msgid "Server"
+msgstr ""
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.plm_action_settings_form model:ir.ui.menu,name:plm.plm_settings
+msgid "Settings"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_docbom_form_view
+msgid "Show Document Relation"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__show_std_field1
+msgid "Show std field 1"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__show_std_field2
+msgid "Show std field 2"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__show_std_field3
+msgid "Show std field 3"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.mrp_bom_tree_view_where model_terms:ir.ui.view,arch_db:plm.plm_bom_form_view
+#: model_terms:ir.ui.view,arch_db:plm.plm_bom_tree_structure model_terms:ir.ui.view,arch_db:plm.plm_bom_tree_view
+#: model_terms:ir.ui.view,arch_db:plm.plm_mrp_bom_line_view_form
+msgid "Source Relation"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_mrp_bom_filter_inherit
+msgid "Source Relationship"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__first_source_path
+#: model:ir.model.fields,field_description:plm.field_mrp_document__first_source_path
+msgid "Source path of the first time save"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_finishing__name model:ir.model.fields,field_description:plm.field_plm_treatment__name
+msgid "Specification"
+msgstr "Especificação"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_product_product__sale_ok model:ir.model.fields,help:plm.field_product_template__sale_ok
+msgid "Specify if the product can be selected in a sales order line."
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_plm_description__unitab
+msgid "Specify normative rule (UNI, ISO, DIN...). It will be queued to build the product description."
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_description__description
+#: model:ir.model.fields,field_description:plm.field_product_product__std_description model_terms:ir.ui.view,arch_db:plm.view_plm_description
+msgid "Standard Description"
+msgstr "Descrição"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_description
+msgid "Standard Description = STD"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_component_base_form
+msgid "Standard Description Parameters"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_product_product_normal_form_view_inherit
+msgid "Standard description parameters info"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.report_doc_bom model_terms:ir.ui.view,arch_db:plm.report_prod_bom
+msgid "State"
+msgstr "Estado"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_mrp_bom__engineering_state
+#: model:ir.model.fields,field_description:plm.field_mrp_bom_line__engineering_state
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc__engineering_state model_terms:ir.ui.view,arch_db:plm.ir_attachment_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_component_base_search
+msgid "Status"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_ir_attachment__activity_state model:ir.model.fields,help:plm.field_product_template__activity_state
+#: model:ir.model.fields,help:plm.field_revision_plm_mixin__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+"Status baseado em atividades\n"
+"Atrasado: Data definida já passou\n"
+"Hoje: Data de atividade é hoje\n"
+"Planejado: Atividades futuras."
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.document_search_button
+msgid "Status:"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_backupdoc__document_name
+msgid "Stored Name"
+msgstr "Nome Armazenado"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__engineering_sub_revision_letter
+#: model:ir.model.fields,field_description:plm.field_mrp_document__engineering_sub_revision_letter
+#: model:ir.model.fields,field_description:plm.field_product_product__engineering_sub_revision_letter
+#: model:ir.model.fields,field_description:plm.field_product_template__engineering_sub_revision_letter
+#: model:ir.model.fields,field_description:plm.field_revision_plm_mixin__engineering_sub_revision_letter
+msgid "Sub revision path"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_temporary__summarize
+msgid "Summarise Bom Lines if needed."
+msgstr ""
+
+#. module: plm
+#: model:ir.model,name:plm.model_plm_finishing model:ir.model.fields,field_description:plm.field_product_product__tmp_surface
+msgid "Surface Finishing"
+msgstr "Acabamento da Superfície"
+
+#. module: plm
+#: model:ir.model.constraint,message:plm.constraint_plm_finishing_name_uniq
+msgid "Surface Finishing has to be unique !"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_product_product__engineering_surface model:ir.model.fields,help:plm.field_product_template__engineering_surface
+msgid "Surface finishing for current product, only description for titleblock."
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_grp_by_parent
+msgid "Tags"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_description
+msgid "Technical Features"
+msgstr "Características Técnicas"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_component_base_form model_terms:ir.ui.view,arch_db:plm.plm_product_product_normal_form_view_inherit
+msgid "Technical Information"
+msgstr "Informações Técnicas"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_description
+msgid "Technical feature label and formatting"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_temporary__name
+msgid "Temp"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_product_product_normal_form_view_inherit
+msgid "Template"
+msgstr ""
+
+#. module: plm
+#: model:ir.model,name:plm.model_plm_temporary model:ir.model,name:plm.model_plm_temporary_message
+msgid "Temporary Class"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_mrp_bom__weight_net
+msgid "The BoM net weight in Kg."
+msgstr ""
+
+#. module: plm
+#: model:ir.model.constraint,message:plm.constraint_ir_attachment_relation_relation_uniq
+msgid "The Document Relation must be unique !"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.constraint,message:plm.constraint_plm_checkout_documentid
+msgid "The documentid must be unique !"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_mrp_bom__engineering_revision model:ir.model.fields,help:plm.field_mrp_bom_line__engineering_revision
+msgid "The revision of the product."
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_mrp_bom__engineering_state model:ir.model.fields,help:plm.field_mrp_bom_line__engineering_state
+msgid "The status of the product in its LifeCycle."
+msgstr ""
+
+#. module: plm
+#: model:ir.model,name:plm.model_plm_treatment model:ir.model.fields,field_description:plm.field_product_product__tmp_treatment
+msgid "Thermal Treatment"
+msgstr "Tratamento Térmico"
+
+#. module: plm
+#: model:ir.model.constraint,message:plm.constraint_plm_treatment_name_uniq
+msgid "Thermal Treatment has to be unique !"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_product_product__engineering_treatment
+#: model:ir.model.fields,help:plm.field_product_template__engineering_treatment
+msgid "Thermal treatment for current product, only description for titleblock."
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "This Module extend the capability of the activity adding a workflow and validation process similar to the EC0/ECR"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "This Module extend the capability of the standard automated action based on the workflow action"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_mrp_bom__source_id model:ir.model.fields,help:plm.field_mrp_bom_line__source_id
+msgid "This is the document object that declares this BoM."
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_mrp_bom_line__itemnum
+msgid "This is the item reference position into the CAD document that declares this BoM."
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "This module adds permissions to sale module allowing some PLM procedures to work better."
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "This module adds the capability to use the 3D WebGL inside your product and E-Commerce"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "This module allows you to improve the capability of your OdooPLM for managing the cut parts"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_dbthread__done
+msgid "This thread is done ?"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_dbthread__threadCode
+msgid "Thread Code assigned automatically"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_description
+msgid "Title Description"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_backupdoc_search model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search_bck model_terms:ir.ui.view,arch_db:plm.plm_checkout_search
+msgid "Today"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_treatment
+msgid "Treatment"
+msgstr ""
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.plm_action_treatment_form model:ir.ui.menu,name:plm.menu_treatment
+msgid "Treatments"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.ir_attachment_search
+msgid "Type Document"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_ir_attachment__activity_exception_decoration
+#: model:ir.model.fields,help:plm.field_product_template__activity_exception_decoration
+#: model:ir.model.fields,help:plm.field_revision_plm_mixin__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr "Tipo de atividade de exceção registrada."
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_description
+msgid "Types of Feature Format: %s for Only Value / %s %s for Label Value / %s_%s for Label_Value / %s/%s for Label/Value"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_description__umc1 model:ir.model.fields,field_description:plm.field_product_product__std_umc1
+msgid "UM / Feature 1"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_description__umc2 model:ir.model.fields,field_description:plm.field_product_product__std_umc2
+msgid "UM / Feature 2"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_description__umc3 model:ir.model.fields,field_description:plm.field_product_product__std_umc3
+msgid "UM / Feature 3"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_description
+msgid "UM/Feature1 = A and\t Format_Feature1 = %s"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_description
+msgid "UM/Feature1 = A and\t Format_Feature1 = %s %s"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_description
+msgid "UM/Feature2 = B and Format_Feature2 = %s"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_description
+msgid "UM/Feature2 = B and Format_Feature2 = %s-%s"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_description
+msgid "UM/Feature3 = C and Format Feature3 = %s"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_description
+msgid "UM/Feature3 = C and Format Feature3 = %s/%s"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "Un Release"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_report_plmcomponent__count_component_modified
+msgid "Under Modify"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields.selection,name:plm.selection__ir_attachment__engineering_state__undermodify
+#: model:ir.model.fields.selection,name:plm.selection__product_template__engineering_state__undermodify
+#: model:ir.model.fields.selection,name:plm.selection__revision_plm_mixin__engineering_state__undermodify
+msgid "UnderModify"
+msgstr "Submodificado"
+
+#. module: plm
+#: model:res.groups,name:plm.group_plm_admin_unrelease
+msgid "Unrelease User"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.bom_structure_all
+msgid "UoM"
+msgstr ""
+
+#. module: plm
+#: model:ir.actions.server,name:plm.ir_update_preview_cron_ir_actions_server model:ir.cron,cron_name:plm.ir_update_preview_cron
+msgid "Update Preview"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Upload summarised B.O.M. from client application"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Use translations in product description providing also a view to manage plm description translations."
+msgstr ""
+
+#. module: plm
+#: model:ir.model,name:plm.model_res_users model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "User"
+msgstr "Usuário"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__engineering_revision_user
+#: model:ir.model.fields,field_description:plm.field_mrp_document__engineering_revision_user
+#: model:ir.model.fields,field_description:plm.field_product_product__engineering_revision_user
+#: model:ir.model.fields,field_description:plm.field_product_template__engineering_revision_user
+#: model:ir.model.fields,field_description:plm.field_revision_plm_mixin__engineering_revision_user
+msgid "User Revision"
+msgstr "Usuário Revisão"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "Using a simple wizard interfaces for printing PLM report's in different languages"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__std_value1
+msgid "Value 1"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__std_value2
+msgid "Value 2"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__std_value3
+msgid "Value 3"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_mrp_bom_filter_inherit
+msgid "Variant Name"
+msgstr ""
+
+#. module: plm
+#: model:ir.model,name:plm.model_ir_ui_view
+msgid "View"
+msgstr "Visão"
+
+#. module: plm
+#: model:ir.actions.act_window,name:plm.act_view_doc_related
+msgid "View Document Relations"
+msgstr ""
+
+#. module: plm
+#: model:res.groups,name:plm.group_plm_view_user
+msgid "View User"
+msgstr ""
+
+#. module: plm
+#: model:res.groups,name:plm.group_plm_release_document
+msgid "View only released document"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_description__show_help
+msgid "Visible"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__website_message_ids
+#: model:ir.model.fields,field_description:plm.field_product_template__website_message_ids
+#: model:ir.model.fields,field_description:plm.field_revision_plm_mixin__website_message_ids
+msgid "Website Messages"
+msgstr "Mensagens do site"
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_ir_attachment__website_message_ids model:ir.model.fields,help:plm.field_product_template__website_message_ids
+#: model:ir.model.fields,help:plm.field_revision_plm_mixin__website_message_ids
+msgid "Website communication history"
+msgstr "Histórico de comunicação do site"
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "Website:"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_mrp_bom__weight_net model_terms:ir.ui.view,arch_db:plm.bom_structure_all
+msgid "Weight"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_mrp_bom_line__weight_net
+msgid "Weight Net"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,help:plm.field_ir_attachment__must_update_from_cad model:ir.model.fields,help:plm.field_mrp_document__must_update_from_cad
+msgid "When this flag is enabled the 2d document must be updated in order to guaranteey the update betwin 2d and 3d document"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.mrp_bom_tree_view_where
+msgid "Where Used Bill of Materials"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_component_base_form model_terms:ir.ui.view,arch_db:plm.plm_product_product_normal_form_view_inherit
+msgid "Workflow"
+msgstr "Fluxo de Trabalho"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__engineering_workflow_user
+#: model:ir.model.fields,field_description:plm.field_mrp_document__engineering_workflow_user
+#: model:ir.model.fields,field_description:plm.field_product_product__engineering_workflow_user
+#: model:ir.model.fields,field_description:plm.field_product_template__engineering_workflow_user
+#: model:ir.model.fields,field_description:plm.field_revision_plm_mixin__engineering_workflow_user
+msgid "Workflow User"
+msgstr "Usuário Fluxo"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__engineering_workflow_date
+#: model:ir.model.fields,field_description:plm.field_mrp_document__engineering_workflow_date
+#: model:ir.model.fields,field_description:plm.field_product_product__engineering_workflow_date
+#: model:ir.model.fields,field_description:plm.field_product_template__engineering_workflow_date
+#: model:ir.model.fields,field_description:plm.field_revision_plm_mixin__engineering_workflow_date
+msgid "Workflow date"
+msgstr "Data do Fluxo"
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_ir_attachment__engineering_writable
+#: model:ir.model.fields,field_description:plm.field_mrp_document__engineering_writable
+#: model:ir.model.fields,field_description:plm.field_product_product__engineering_writable
+#: model:ir.model.fields,field_description:plm.field_product_template__engineering_writable
+#: model:ir.model.fields,field_description:plm.field_revision_plm_mixin__engineering_writable
+msgid "Writable"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_report_ir_attachment_file__write_uid
+msgid "Write User"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.plm_backupdoc_search model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search
+#: model_terms:ir.ui.view,arch_db:plm.plm_cad_open_search_bck model_terms:ir.ui.view,arch_db:plm.plm_checkout_search
+msgid "Yesterday"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_description
+msgid "You can use Normalized features formatting, where the component description will be Standard Description + Format Feature Composed."
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_mrp_bom__source_id model:ir.model.fields,field_description:plm.field_mrp_bom_line__source_id
+msgid "engineering_code"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
+msgid "extend the plm module adding support for the WebGl 3d Environment"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_plm_checkout__hostname
+msgid "hostname"
+msgstr ""
+
+#. module: plm
+#: model:ir.model,name:plm.model_plm_backupdoc
+msgid "manage your document back up"
+msgstr ""
+
+#. module: plm
+#: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
+msgid "on"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__readonly_std_umc1
+msgid "put readOnly the field standard description 1"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__readonly_std_umc2
+msgid "put readOnly the field standard description 2"
+msgstr ""
+
+#. module: plm
+#: model:ir.model.fields,field_description:plm.field_product_product__readonly_std_umc3
+msgid "put readOnly the field standard description 3"
+msgstr ""
