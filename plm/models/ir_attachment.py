@@ -2953,17 +2953,23 @@ class PlmDocument(models.Model):
         """
             return the new attributes to be used for cloning the document
         """
-        _old_product_attrs, old_attachment_attrs, new_product_attrs = args
+        old_product_attrs, old_attachment_attrs, new_product_attrs = args
         out_attachment_value = json.loads(old_attachment_attrs)
         new_product_attrs = json.loads(new_product_attrs)
         if hasattr(self, "customGetCloneDocumentValues"):
             #
             # If you implement the customGetCloneDocumentValues this call will be used to customize the value of the new cloned document from the client clone action
             #
-            out_attachment_value=self.customGetCloneDocumentValues(out_attachment_value)
+            out_attachment_value=self.customGetCloneDocumentValues(out_attachment_value,
+                                                                   json.loads(old_product_attrs),
+                                                                   new_product_attrs)
         else:
             #
-            out_attachment_value['engineering_document_name'] = f"{new_product_attrs['engineering_code']}-{self.env['ir.sequence'].next_by_code('ir.attachment.progress')}"
+            engineering_code = new_product_attrs.get('engineering_code','')
+            if engineering_code:
+                out_attachment_value['engineering_document_name'] = f"{engineering_code}-{self.env['ir.sequence'].next_by_code('ir.attachment.progress')}"
+            else:
+                out_attachment_value['engineering_document_name'] = f"{self.env['ir.sequence'].next_by_code('ir.attachment.progress')}"
             out_attachment_value['revisionid']=0
             #
             _, exte = os.path.splitext(out_attachment_value['name'])
