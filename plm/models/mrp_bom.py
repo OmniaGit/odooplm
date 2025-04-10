@@ -835,7 +835,10 @@ class MrpBomExtension(models.Model):
                 if self.custom_exclude(product_product_id, ir_attachment_id, relationAttributes, mrp_bom_found_id):
                     continue
                 if mrp_bom_found_id and not relationAttributes.get('EXCLUDE', False) and product_product_id:
-                    key = "%s_%s" % (product_product_id, parent_ir_attachment_id)
+                    key = f"{product_product_id}_{parent_ir_attachment_id}"
+                    if relationAttributes.get('CUTTED_COMP'):
+                        position=relationAttributes.get('POSITION')
+                        key = f"{key}_{position}"
                     if summarize_bom and key in cache_row:
                         cache_row[key].product_qty += relationAttributes.get('product_qty', 1)
                     else:
