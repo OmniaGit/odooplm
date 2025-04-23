@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="plm_spare_mrp_bom_form_view_inherit" model="ir.ui.view">
+            <field name="name">plm.spare.mrp.bom.form.view.inherit</field>
+            <field name="model">mrp.bom</field>
+            <field name="inherit_id" ref="mrp.mrp_bom_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//form//sheet//notebook//page[@name='components']//field[@name='bom_line_ids']//list//field[@name='product_id']" position="before">
+                    <field name="is_spare_part" column_invisible="1"/>
+                    <button name="action_mrp_product_spare" type="object" readonly="1" class="btn oe_stat_button text-end" icon="fa-cogs text-muted" invisible="not is_spare_part" />
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>

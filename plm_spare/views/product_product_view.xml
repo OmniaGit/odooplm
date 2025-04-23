@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="plm_spare_view_product_template_form_inherit" model="ir.ui.view">
+            <field name="name">plm.spare.view.product.template.form.inherit</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_only_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@name='options']" position="inside">
+                    <span class="d-inline-block">
+                        <label for="is_spare_part"/>
+                        <field name="is_spare_part"/>
+                    </span>
+                </xpath>
+            </field>
+        </record>
+  
+        <record id="plm_spare_product_normal_form_view_inherit" model="ir.ui.view">
+            <field name="name">plm.spare.product.normal.form.view.inherit</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_normal_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@name='options']" position="inside">
+                    <span class="d-inline-block">
+                        <label for="is_spare_part"/>
+                        <field name="is_spare_part"/>
+                    </span>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

@@ -21,7 +21,7 @@
 ##############################################################################
 {
     "name": "PLM Spare",
-    "version": "18.0.1.0.0",
+    "version": "18.0.1.0.1",
     "author": "OmniaSolutions",
     "website": "https://odooplm.omniasolutions.website",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
@@ -38,6 +38,8 @@
         # views
         "views/plm_description.xml",
         "views/ir_attachment.xml",
+        "views/product_product_view.xml",
+        "views/mrp_bom_view.xml",
     ],
     "installable": True,
     "application": False,

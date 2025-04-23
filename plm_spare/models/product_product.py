@@ -26,11 +26,30 @@ Created on 30 Aug 2016
 @author: Daniel Smerghetto
 """
 
-from odoo import _, models
+from odoo import _, models, fields
+
+class ProdTemplate(models.Model):
+    _inherit = 'product.template'
+
+    is_spare_part = fields.Boolean(string="Spare Part", default=False, help="Is this a spare part by default?")
 
 
 class ProductTemplate(models.Model):
     _inherit = "product.product"
+
+    is_spare_part = fields.Boolean(string="Spare Part", help="Check this if this product variant is a spare part.", compute='_compute_is_spare_part', inverse='_set_is_spare_part', search='_search_is_spare_part', store=True)
+
+    def _compute_is_spare_part(self):
+        for product in self:
+            product.is_spare_part = product.product_tmpl_id.is_spare_part
+
+    def _set_is_spare_part(self):
+        for product in self:
+            if len(product.product_tmpl_id.product_variant_ids) == 1:
+                product.product_tmpl_id.is_spare_part = product.is_spare_part
+
+    def _search_is_spare_part(self, operator, value):
+        return [('product_tmpl_id.is_spare_part', operator, value)]
 
     def open_spare_bom(self):
         boms = self.get_related_boms()
