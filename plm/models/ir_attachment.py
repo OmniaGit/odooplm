@@ -1726,12 +1726,12 @@ class PlmDocument(models.Model):
     def canCheckOut(self, showError=False):
         for docBrws in self:
             if docBrws.is_checkout:
-                msg = _("Unable to check-Out document %r that is already checked id by user %r" % (docBrws.datas_fname, docBrws.checkout_user))
+                msg = _("Unable to check-Out document %r that is already checked id by user %r" % (docBrws.name, docBrws.checkout_user))
                 if showError:
                     raise UserError(msg)
                 return False, msg
             if docBrws.state != 'draft':
-                msg = _("Unable to check-Out the document %r that is in state %r" % (docBrws.datas_fname, docBrws.state))
+                msg = _("Unable to check-Out the document %r that is in state %r" % (docBrws.name, docBrws.state))
                 if showError:
                     raise UserError(msg)
                 return False, msg

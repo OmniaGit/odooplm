@@ -3,7 +3,7 @@
 <data>
 	<record id="act_product_boxis" model="ir.actions.act_window">
 	    <field name="name">View Reated Boxis</field>
-	    <field name="domain">[('product_id.id', '=', active_id)</field>
+	    <field name="domain">[('product_id.id', '=', active_id)]</field>
 	    <field name="res_model">plm.box</field>
 	    <field name="binding_model_id" ref="product.model_product_product"/>
 	    <field name="view_id" ref="plm_box_tree"/>
