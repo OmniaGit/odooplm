@@ -57,6 +57,7 @@
             <field name="default_code" position="after">
                 <field name="engineering_code"/>
                 <field name="engineering_revision"/>
+                <field name="description"/>
             </field>
         </field>
     </record>
