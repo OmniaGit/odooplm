@@ -2534,7 +2534,7 @@ class IrAttachment(models.Model):
 
     @api.model
     def GetProductDocumentId(self, clientArgs):
-        product_product_id, plm_document_id = self._GetproductDocumentID(clientArgs)
+        product_product_id, plm_document_id = self.sudo()._GetproductDocumentID(clientArgs)
         return (False if not product_product_id else product_product_id.id, 
                 False if not plm_document_id else plm_document_id.id)
 
