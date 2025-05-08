@@ -11,7 +11,7 @@
                     <field name="is_checkout" invisible="1"></field>
                     <field name="engineering_state" widget="statusbar"
                             statusbar_visible="draft,confirmed,released"
-                            statusbar_colors='{"undermodify":"red","obsoleted":"red"}' 
+                            statusbar_colors='{"undermodify":"red","obsoleted":"red"}'
                             readonly="1"/>
                     <button name="action_release"
                             string="Release Document"
@@ -32,8 +32,8 @@
               </form>
         </field>
        </record>
-                
-                
+
+
      <record model="ir.ui.view" id="view_attachment_form_plm_hinerit">
         <field name="name">ir.attachment</field>
         <field name="model">ir.attachment</field>
@@ -76,20 +76,33 @@
                            readonly="1"/>
                 </header>
                	<sheet>
-               	    
+
 	                <div class="oe_button_box" name="button_box">
 						<button class="oe_stat_button" icon="fa-sitemap" type="object" name="action_view_rel_doc">
 							<field name="document_rel_count" string="Documents" widget="statinfo"/>
 						</button>
-						<field name="is_checkout" invisible="True"/>
+						<button name="print_Document_Doc_Structure"
+								string="Doc Structure"
+								type="object"
+								class="oe_stat_button"
+								icon="fa-bars"/>
+						<button name="open_related_document_revisions"
+						        type="object"
+						        string="BOM Rev."
+						        class="oe_stat_button"
+						        icon="fa-tasks"
+						        attrs="{'invisible':[('engineering_revision_count','&lt;=','1')]}">
+						        <field name="engineering_revision_count" string=" " widget="statinfo"/>
+						</button>
+                        <field name="is_checkout" invisible="True"/>
 						<button name="toggle_check_out"
 						        class="oe_stat_button"
-						        icon="fa-lock" 
+						        icon="fa-lock"
 						        type="object"
 						        attrs="{'invisible': [('is_checkout','=', True)]}">
 						        <div class="o_field_widget o_stat_info o_readonly_modifier">
 						           <span>Check-Out</span>
-						        </div>                        
+						        </div>
 						</button>
 						<button name="toggle_check_out"
 						        class="oe_stat_button"
@@ -100,24 +113,13 @@
 						           <span>Check-In</span>
 						        </div>
 						</button>
-						<button name="print_Document_Doc_Structure"
-								string="Doc Structure"
-								type="object"
-								class="oe_stat_button" 
-								icon="fa-bars"/>
-						<button name="open_related_document_revisions"
-						        type="object"
-						        string="BOM Rev."
-						        class="oe_stat_button"
-						        icon="fa-tasks"
-						        attrs="{'invisible':[('engineering_revision_count','&lt;=','1')]}">
-						        <field name="engineering_revision_count" string=" " widget="statinfo"/>
-						</button>
-						<button name="check_out_user" icon="fa-user" attrs="{'invisible': ['|',('checkout_user', '=', 'False'),('checkout_user', '=', '')]}">
-							<field name="checkout_user"/>
-						</button>
+                        <a href="#" class="btn btn-primary disabled" style="margin-right: 5px;"
+                           attrs="{'invisible': ['|',('checkout_user', '=', 'False'),('checkout_user', '=', '')]}">
+                            <i class="fa fa-user"/>
+                            <field name="checkout_user"/>
+                        </a>
 						<field name="must_update_from_cad" invisible="1"></field>
-                        <button name="related_not_update" 
+                        <button name="related_not_update"
                                 icon="fa-warning"
                                 type="object"
                                 attrs="{'invisible': [('must_update_from_cad', '=', False)]}">
@@ -182,7 +184,7 @@
 	                   				<label for="write_uid"/>
 	                        		<div name="write_uid_div">
 	                        			<field name="write_uid" readonly="1" class="oe_inline"/> on <field name="write_date" readonly="1" class="oe_inline"/>
-	                        		</div>	
+	                        		</div>
                         		</group>
                         		<group>
 	                            	<label for="engineering_workflow_user"/>
@@ -221,7 +223,7 @@
             </form>
     	</field>
     </record>
- 
+
     <record model="ir.ui.view" id="ir_attachment_tree">
         <field name="name">ir.attachment</field>
         <field name="model">ir.attachment</field>
@@ -234,7 +236,7 @@
                   decoration-warning="engineering_state == 'undermodify'"
                   decoration-muted="engineering_state == 'obsoleted'">
                 <field name="document_type" invisible="True"/>
-                <field name="preview" widget="image" options="{ 'size': [60, 60]}"/>                
+                <field name="preview" widget="image" options="{ 'size': [60, 60]}"/>
                 <button
                     class="fa fa-print"
                     type="object"
@@ -263,17 +265,17 @@
              	<field name="engineering_code"/>
              	<field name="name"/>
              	<field name="document_type"/>
-            	<filter 
-            		name="last_year" 
-            		string="Last Year" 
+            	<filter
+            		name="last_year"
+            		string="Last Year"
             		domain="[('create_date','&gt;=',(datetime.date.today() - relativedelta(days=1,months=1,years=1)).strftime('%%Y-%%m-%%d'))]"/>
-           		<filter 
-            		name="last_month" 
-            		string="Last Month" 
+           		<filter
+            		name="last_month"
+            		string="Last Month"
             		domain="[('create_date','&gt;=',(datetime.date.today() - relativedelta(days=1,months=1)).strftime('%%Y-%%m-%%d'))]"/>
-            	<filter 
-            		name="last_week" 
-            		string="Last Week" 
+            	<filter
+            		name="last_week"
+            		string="Last Week"
             		domain="[('create_date','&gt;=',(datetime.date.today() - datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"/>
             	<separator orientation="vertical"/>
             	<field name="engineering_state"/>
@@ -335,7 +337,7 @@
             </search>
         </field>
     </record>
- 
+
     <record id="document_kanban_view" model="ir.ui.view">
         <field name="name">Product.template.product.kanban</field>
         <field name="model">ir.attachment</field>
@@ -359,7 +361,7 @@
                     <t t-name="kanban-box">
                         <div class="oe_kanban_global_click o_kanban_record_has_image_fill">
                             <div style="margin-right: 3px;border-left: 1px solid lightgray;border-right: 1px solid lightgray;">
-	                           <field name="preview" 
+	                           <field name="preview"
 	                                  widget="image"
 	                                  style="padding:1px"
 	                                  class="oe_avatar"
@@ -384,12 +386,12 @@
                                          <button name="open_related_dbthread"
                                                  type="object"
                                                  attrs="{'invisible': [('has_error', '=', False)]}"
-                                                 class="fa fa-bug fa-2x btn-danger"       
+                                                 class="fa fa-bug fa-2x btn-danger"
                                                  />
                                          <button name="related_not_update"
                                                  type="object"
                                                  attrs="{'invisible': [('must_update_from_cad', '=', False)]}"
-                                                 class="fa fa-warning fa-2x btn-warning"       
+                                                 class="fa fa-warning fa-2x btn-warning"
                                                  />
                                         <div class="fa fa-lock fa-2x"
                                              string="."
@@ -512,7 +514,7 @@
             </kanban>
         </field>
     </record>
-    
+
     <record model="ir.ui.view" id="document_graph_view">
    		<field name="name">Product.template.product.graph</field>
    		<field name="model">ir.attachment</field>
