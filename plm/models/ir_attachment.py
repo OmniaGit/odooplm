@@ -285,12 +285,15 @@ class PlmDocument(models.Model):
         if not doc_id:
             logging.warning('Cannot get links from %r document' % (doc_id))
             return []
-        doc_brws = self.browse(doc_id)
+        if not isinstance(doc_id, models.Model): 
+            doc_brws = self.browse(doc_id)
+        else:
+            doc_brws = doc_id
         doc_type = doc_brws.document_type.upper()
         to_search = [('link_kind', 'in', ['LyTree']),
                      '|', 
-                        ('parent_id', '=', doc_id),
-                        ('child_id', '=', doc_id)]
+                        ('parent_id', '=', doc_brws.id),
+                        ('child_id', '=', doc_brws.id)]
         doc_rel_ids = self.env['ir.attachment.relation'].search(to_search)
         for doc_rel_id in doc_rel_ids:
             if doc_type == '3D':
@@ -2874,7 +2877,72 @@ class PlmDocument(models.Model):
                 'domain': [('id', 'in', plm_dbthread_ids.ids)],
                 'context': {}}
 
-
+    @api.model
+    def fillUpClonedStructure(self, args):
+        """
+        fill up the structure with the missing elements like layout
+        """
+        def _recursion(cad_structure):
+            #
+            parent_attrs, children_attrs_structure = cad_structure
+            product_product_id, attachment_id = self._GetproductDocumentID(tuple(parent_attrs.values()))
+            parent_attrs = self.get_clone_info_attr(attachment_id,
+                                                    product_product_id)
+            #
+            # Collect missing layout
+            #
+            children = []
+            for doc_id_2d in self.getRelatedLyTree(attachment_id,
+                                                   optional_return_type=['2d']):
+                layout_data = self.get_clone_info_attr(doc_id_2d)
+                if 'layouts' in parent_attrs:
+                    parent_attrs['layouts'].append(layout_data)
+                else:
+                    parent_attrs['layouts']=[layout_data]
+            #
+            # Collect children missing layouts
+            #
+            for child_attrs_structure in children_attrs_structure:
+                children.append(_recursion(child_attrs_structure))
+            #
+            return (parent_attrs, children)
+        
+        return json.dumps(_recursion(json.loads(args[0])))
+    
+    def get_clone_info_attr(self,
+                            doc_id, 
+                            product_product_id=None):
+            def get_dict(product_product_id):
+                return {
+                        'engineering_code': product_product_id.engineering_code,
+                        'engineering_revision': product_product_id.engineering_revision,
+                        'name':product_product_id.name,
+                        'id':product_product_id.id
+                        }
+            #
+            if not isinstance(doc_id, models.Model):
+                ir_attachment=self.browse(doc_id)
+            else:
+                ir_attachment=doc_id
+            #
+            if product_product_id:
+                product_dict=get_dict(product_product_id)
+            else:
+                product_dict={}
+                for product_product_id in ir_attachment.linkedcomponents:
+                    product_dict=get_dict(product_product_id)
+                    break
+            #
+            return {'document':{
+                                'engineering_document_name': ir_attachment.engineering_document_name,
+                                'revisionid': ir_attachment.revisionid,
+                                'name':ir_attachment.name,
+                                'id':ir_attachment.id,
+                                'document_type':ir_attachment.document_type
+                                },
+                    'product':product_dict
+                }
+             
     @api.model
     def getCloneStructure(self,
                           args):
@@ -2885,33 +2953,8 @@ class PlmDocument(models.Model):
             'INTEGRATION_FILE_TYPE',
             ]
         #
-        def getProduct_dict(product_product_id):
-            return {
-                    'engineering_code': product_product_id.engineering_code,
-                    'engineering_revision': product_product_id.engineering_revision,
-                    'name':product_product_id.name,
-                    'id':product_product_id.id
-                    }
-        json_main_root_attributes, cloneRelatedDocuments = args
-        #
-        def get_clone_info_attr(doc_id, product_product_id=None):
-            ir_attachment=self.browse(doc_id)
-            if product_product_id:
-                product_dict=getProduct_dict(product_product_id)
-            else:
-                product_dict={}
-                for product_product_id in ir_attachment.linkedcomponents:
-                    product_dict=getProduct_dict(product_product_id)
-                    break
-            return {'document':{
-                                'engineering_document_name': ir_attachment.engineering_document_name,
-                                'revisionid': ir_attachment.revisionid,
-                                'name':ir_attachment.name,
-                                'id':ir_attachment.id,
-                                'document_type':ir_attachment.document_type
-                                },
-                    'product':product_dict
-                }
+
+        json_main_root_attributes, _cloneRelatedDocuments = args
         #
         out = {'MAIN':{},
                'RF':[],
@@ -2923,13 +2966,13 @@ class PlmDocument(models.Model):
             #
             doc_ids_2d=[]
             #
-            main_parent_attrs = get_clone_info_attr(attachment_id.id, product_product_id)
+            main_parent_attrs = self.get_clone_info_attr(attachment_id.id, product_product_id)
             out['MAIN']=main_parent_attrs
             for k in SUPPORT_MAIN_PRODUCT_ATTRIBUTES:
                 out['MAIN']['product'][k]=main_root_attributes.get('product',{}).get(k,'')
             #
             for doc_id in self.getRelatedRfTree(attachment_id.id):
-                sub_attrs = get_clone_info_attr(doc_id)
+                sub_attrs = self.get_clone_info_attr(doc_id)
                 out['RF'].append((main_parent_attrs,
                                   sub_attrs))
                 for doc_id_2d in self.getRelatedLyTree(doc_id,
@@ -2942,7 +2985,7 @@ class PlmDocument(models.Model):
             #
             for parent_attrs, doc_id in doc_ids_2d:
                 out['LF'].append((parent_attrs,
-                                  get_clone_info_attr(doc_id)))
+                                  self.get_clone_info_attr(doc_id)))
         #
         return json.dumps(out)
 
