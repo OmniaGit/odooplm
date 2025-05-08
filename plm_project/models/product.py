@@ -27,7 +27,6 @@ Created on 30 Aug 2016
 """
 from odoo import _, fields, models
 from datetime import datetime
-from odoo.exceptions import ValidationError
 
 
 class ProductExtension(models.Model):
@@ -100,7 +99,4 @@ class ProductExtension(models.Model):
                     ),
                 ]
             ).action_done()
-        # if self.engineering_state == 'released':
-        if not self.standard_price:
-            raise ValidationError(_("The following products are missing cost value"))
         return super().action_release()
