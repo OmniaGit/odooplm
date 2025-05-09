@@ -3011,13 +3011,13 @@ class PlmDocument(models.Model):
                 out_attachment_value['engineering_document_name'] = f"{engineering_code}-{self.env['ir.sequence'].next_by_code('ir.attachment.progress')}"
             else:
                 out_attachment_value['engineering_document_name'] = f"{self.env['ir.sequence'].next_by_code('ir.attachment.progress')}"
-            out_attachment_value['revisionid']=0
             #
             _, exte = os.path.splitext(out_attachment_value['name'])
             out_attachment_value['name'] = f"{out_attachment_value['engineering_document_name']}{exte}"
         #
         del out_attachment_value['id']
         #
+        out_attachment_value['revisionid']=0
         return json.dumps(out_attachment_value)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
