@@ -3225,9 +3225,11 @@ class IrAttachment(models.Model):
         def _recursion(cad_structure):
             #
             parent_attrs, children_attrs_structure = cad_structure
+            configuration_name = parent_attrs.get('product',{}).get('CONFIGURATION_NAME','')
             product_product_id, attachment_id = self._GetproductDocumentID(tuple(parent_attrs.values()))
             parent_attrs = self.get_clone_info_attr(attachment_id,
                                                     product_product_id)
+            parent_attrs['CONFIGURATION_NAME'] = configuration_name
             #
             # Collect missing layout
             #

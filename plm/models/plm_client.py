@@ -176,5 +176,13 @@ class PlmClient(models.TransientModel):
             return brwItem.checkout(hostName=hostName,
                                     hostPws=hostPws,
                                     showError=showError)
-        return True, ''        
-    
+        return True, ''
+
+    @api.model
+    def getNotCopiableFields(self, model_name):
+        """
+        return a non copiable fields name
+        """
+        return self.env['ir.model.fields'].sudo().search([('model','in' ,model_name),
+                                                          ('copied','=',False)]).mapped("name")
+

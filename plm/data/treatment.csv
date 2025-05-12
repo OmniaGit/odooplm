@@ -1,0 +1,12 @@
+Treatment;	Description;	Used Ingredients
+Patina;	Chemical reaction that produces a layer of oxide on the surface of the metal;	Hydrochloric acid, water
+HCl Cleaning;	Removal of patina and revealing the underlying surface of the metal;	Hydrochloric acid, water
+NaOH Cleaning;	Removal of patina and revealing the underlying surface of the metal;	Sodium hydroxide, water
+Cerbizi	Removal; of patina and revealing the underlying surface of the metal;	Cerbicides, water
+SiC Polishing;	Refining of the metal surface using abrasive powders of silicon carbide;	Silicon carbide powder, solvent
+Al2O3 Polishing;	Refining of the metal surface using abrasive powders of aluminum oxide;	Aluminum oxide powder, solvent
+HNO3 Patina Removal;	Removal of patina from the surface of the metal using nitric acid;	Nitric acid, water
+TiO2 Toning;	Coloring of the metal surface using titanium dioxide pigments;	Titanium dioxide pigment, solvent
+Cr2O3 Pigmentation;	Coloring of the metal surface using chromium oxide pigments;	Chromium oxide pigment, solvent
+Al2O3 Lamining; with Solvent	Refining of the metal surface using abrasive powders of aluminum oxide and solvents;	Aluminum oxide powder, solvent
+SiC Buffing with Solvent;	Finishing of the metal surface using abrasive powders of silicon carbide and solvents;	Silicon carbide powder, solvent

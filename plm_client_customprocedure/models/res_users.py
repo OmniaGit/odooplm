@@ -113,25 +113,17 @@ class ResUsers(models.Model):
         """
         This method is used on customer side.
         """
-
-        for userBrws in self.browse(self.env.uid):
-            logging.info(
-                'Request CustomProcedure file for user %r' % (userBrws.env.uid)
-            )
-            if userBrws.custom_procedure:
-                return userBrws.custom_procedure, userBrws.custom_procedure_fname
+        CLINET_FILE_NAME="CustomProcedure.py"
+        sudo_user_id = self.env.user.sudo()
+        for sudo_user_id in sudo_user_id:
+            if sudo_user_id.custom_procedure:
+                return sudo_user_id.custom_procedure, CLINET_FILE_NAME
             else:
-                for groupBrws in userBrws.groups_id:
-                    res, fileContent, fileName = groupBrws.getCustomProcedure()
-                    if not res:
-                        continue
-                    else:
-                        logging.info(
-                            'Got CustomProcedure file from group %r-%r with ID %r' % (
-                                groupBrws.category_id.name, groupBrws.name, groupBrws.id
-                            )
-                        )
-                        return fileContent, fileName
+                logging.info(f"Custom procedure not found for user {sudo_user_id.display_name}")
+                for group_id in sudo_user_id.groups_id.filtered(lambda x :x.custom_procedure!=False):
+                    return group_id.custom_procedure, CLINET_FILE_NAME
+                logging.warning(f"No user related groups contain custom procedure {sudo_user_id.display_name}")
+        logging.warning("Unable to get custom procedure")
         return '', ''
 
     def getCustomMulticad(self):
