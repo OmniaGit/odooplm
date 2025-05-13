@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record id="paperformat_product_bom_report" model="report.paperformat">
+        <field name="name">Custom Paperformat Product BoM</field>
+        <field name="default" eval="False"/>
+        <field name="disable_shrinking" eval="True"/>
+        <field name="format">A4</field>
+        <field name="page_height">0</field>
+        <field name="page_width">0</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">10</field>
+        <field name="header_spacing">20</field>
+        <field name="margin_bottom">5</field>
+        <field name="margin_left">0</field>
+        <field name="margin_right">0</field>
+        <field name="dpi">96</field>
+    </record>
+
+	<!-- Main template -->
+    <template id="report_product_product_bom_activity">
+        <t t-set="data_report_landscape" t-value="True"/>
+        <t t-call="web.basic_layout">
+            <t t-foreach="docs" t-as="product_product">
+                <div class="page">
+                    <t t-call="activity_validation.report_product_product_bom"/>
+                </div>
+                <p style="page-break-before:always;"> </p>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_product_product_bom">
+        <div class="o_mrp_bom_report_page container py-lg-5 px-0 bg-view">
+            <div class="px-3 mb-5">
+                <h1>BoM Overview</h1>
+                <h2 t-if="product_product['display_name']">Reference: <t t-esc="product_product['display_name']"/></h2>
+            </div>
+            <t t-set="currency" t-value="product_product.currency_id"/>
+            <div t-if="product_product.bom_ids">
+                <table class="table table-borderless" style="table-layout: fixed; width: 100%;">
+                    <thead>
+                        <tr>
+                            <th name="th_mrp_bom_h" style="width: 27%;">Product</th>
+                            <th class="text-end" style="width: 7.5%;">Quantity</th>
+                            <th class="text-end" style="width: 9%;">Ready to Produce</th>
+                            <th class="text-end" style="width: 10%;">Free to Use / On Hand</th>
+                            <th style="width: 9.5%;">Availability</th>
+                            <th class="text-end" style="width: 5%;">Lead Time</th>
+                            <th style="width: 16%;">Route</th>
+                            <th class="text-end" style="width: 7%;">BoM Cost</th>
+                            <th class="text-end" style="width: 9%;">Product Cost</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    	<t t-foreach="product_product.bom_ids" t-as="data">
+                    		<tr>
+                    			<td name="td_mrp_bom" t-out="data.display_name"/>
+                            	<td class="text-end" t-out="data.product_qty" t-options='{"widget": "float", "decimal_precision": "Product Unit of Measure"}'/>
+                            	<td></td>
+                            	<td class="text-end">
+                            		<t t-out="product_product.product_variant_id.free_qty" t-options='{"widget": "float", "decimal_precision": "Product Unit of Measure"}'/> /
+	                                <t t-out="product_product.product_variant_id.qty_available" t-options='{"widget": "float", "decimal_precision": "Product Unit of Measure"}'/>
+                                </td>
+                                <t t-set="now" t-value="datetime.datetime.now()"/>
+								<t t-set="future_date" t-value="now + datetime.timedelta(days=data.produce_delay)"/>
+								<td><t t-out="future_date.strftime('%m/%d/%Y')"/></td>
+                            	<td class="text-end">
+                            		<span> 
+                            			<t t-out="data.produce_delay" t-options="{'widget': 'float', 'precision': 0}"/> Days
+                            		</span>
+                            	</td>
+                            	<td>
+                            		<span>Manufacture: <t t-out="data.display_name"/></span>
+                            	</td>
+                            	<td class="text-end" t-out="product_product.standard_price" t-options='{"widget": "monetary", "display_currency": currency}'></td>
+                            	<td class="text-end" t-out="product_product.standard_price" t-options='{"widget": "monetary", "display_currency": currency}'></td>
+                    		</tr>
+                    		<t t-foreach="data.bom_line_ids" t-as="line">
+				                <tr>
+				                    <td style="padding-left: 2rem;" name="td_mrp_bom" t-out="line.product_id.display_name"/>
+				                    <td class="text-end" t-out="line.product_qty" t-options='{"widget": "float", "decimal_precision": "Product Unit of Measure"}'/>
+				                    <td></td>
+				                    <td class="text-end"> 
+	                            		<t t-out="line.product_id.free_qty" t-options='{"widget": "float", "decimal_precision": "Product Unit of Measure"}'/> 
+	                            		/
+	                                	<t t-out="line.product_id.qty_available" t-options='{"widget": "float", "decimal_precision": "Product Unit of Measure"}'/>
+	                                </td>
+	                            	<t t-if="line.product_id.seller_ids">
+		                                <t t-set="today_now" t-value="datetime.datetime.now()"/>
+										<t t-set="next_date" t-value="today_now + datetime.timedelta(days=line.product_id.seller_ids[0].delay)"/>
+										<td><t t-out="next_date.strftime('%m/%d/%Y')"/></td>
+	                            		<td class="text-end">
+		                            		<span>
+		                            			<t t-out="line.product_id.seller_ids[0].delay" t-options="{'widget': 'float', 'precision': 0}"/> Days
+		                            		</span>
+		                            	</td>
+		                            	<td>
+		                            		<span>Buy: <t t-out="line.product_id.seller_ids[0].partner_id.name"/></span>
+		                            	</td>
+		                            </t>
+		                            <t t-else="">
+		                            	<td></td>
+		                            	<td></td>
+		                            	<td></td>
+		                            </t>
+	                            	<td class="text-end" t-out="line.product_id.standard_price" t-options='{"widget": "monetary", "display_currency": currency}'></td>
+	                            	<td class="text-end" t-out="line.product_id.standard_price" t-options='{"widget": "monetary", "display_currency": currency}'></td>
+				                </tr>
+				                <t t-foreach="line.product_id.activity_ids" t-as="activity">
+				                	<t t-set="change_request_id" t-value="activity.env.ref('activity_validation.mail_activity_change_request')"/>
+									<t t-set="plm_activity_id" t-value="activity.env.ref('plm.mail_activity_plm_activity')"/>
+									<t t-if="activity.activity_type_id in [change_request_id, plm_activity_id]">
+									    <tr>
+										    <td t-att-class="'text-danger' if activity.plm_state == 'exception' else 'text-success' if activity.plm_state == 'done' else 'text-warning' if activity.plm_state == 'draft' else 'text-muted' if activity.plm_state == 'cancel' else 'text-info' if activity.plm_state == 'eco' else ''"
+										        style="padding-left: 4rem;" name="td_activity_name">
+										        <div style="width: 33rem;">
+										        	<t t-out="activity.note"/>
+										        </div>
+										    </td>
+										    <td></td>
+										    <td></td>
+										    <td></td>
+										    <td t-att-class="'text-danger' if activity.plm_state == 'exception' else 'text-success' if activity.plm_state == 'done' else 'text-warning' if activity.plm_state == 'draft' else 'text-muted' if activity.plm_state == 'cancel' else 'text-info' if activity.plm_state == 'eco' else ''"
+										        name="td_activity_state">
+										        <t t-out="{
+										            'draft': 'Draft',
+										            'in_progress': 'In Progress',
+										            'eco': 'Change Order',
+										            'done': 'Done',
+										            'cancel': 'Cancel',
+										            'exception': 'Exception'
+										        }.get(activity.plm_state, 'Unknown')"/>
+										    </td>
+										    <td></td>
+										    <td></td>
+										    <td></td>
+										    <td></td>
+										</tr>
+									</t>
+								</t>
+				            </t>
+                    	</t>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </template>
+
+	<record id="bom_activity_product_procduct_report_action" model="ir.actions.report">
+	    <field name="name">BoM Activity Overview</field>
+	    <field name="model">product.product</field>
+	    <field name="report_type">qweb-pdf</field>
+	    <field name="report_name">activity_validation.report_product_product_bom_activity</field>
+	    <field name="report_file">activity_validation.report_product_product_bom_activity</field>
+	    <field name="print_report_name">'BOM_Activity_Hierarchy_' + object.name</field>
+        <field name="paperformat_id" ref="paperformat_product_bom_report"/>
+	    <field name="binding_model_id" ref="product.model_product_product"/>
+	    <field name="binding_type">report</field>
+	</record>
+</odoo>
