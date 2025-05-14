@@ -3,7 +3,7 @@
 	<record id="bom_activity_product_template_report_action" model="ir.actions.report">
 	    <field name="name">BoM Activity Overview</field>
 	    <field name="model">product.template</field>
-	    <field name="report_type">qweb-pdf</field>
+	    <field name="report_type">qweb-html</field>
 	    <field name="report_name">activity_validation.report_product_product_bom_activity</field>
 	    <field name="report_file">activity_validation.report_product_product_bom_activity</field>
 	    <field name="print_report_name">'BOM_Activity_Hierarchy_' + object.name</field>
