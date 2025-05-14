@@ -40,11 +40,15 @@
                 <table class="table table-borderless" style="table-layout: fixed; width: 100%;">
                     <thead>
                         <tr style="border-bottom: 1px solid;">
-                            <th name="th_mrp_bom_h" style="width: 15%;"><strong>Image</strong></th>
-                            <th style="width: 15%;"><strong>Engineering Code</strong></th>
-                            <th class="text-end" style="width: 15%;"><strong>Engineering Revision</strong></th>
-                            <th style="width: 45%;"><strong>Name</strong></th>
-                            <th style="width: 10%;"><strong>Related Activity</strong></th>
+                            <th name="th_mrp_bom_h" style="width: 10%;"><strong>Image</strong></th>
+                            <th style="width: 10%;"><strong>Engineering Code</strong></th>
+                            <th class="text-end" style="width: 10%;"><strong>Engineering Revision</strong></th>
+                            <th style="width: 10%;"><strong>Name</strong></th>
+                            <th style="width: 10%;"><strong>From</strong></th>
+                            <th style="width: 10%;"><strong>Assigned</strong></th>
+                            <th style="width: 10%;"><strong>Due Date</strong></th>
+                            <th style="width: 30%;"><strong>Activity Info</strong></th>
+                            <th style="width: 10%;"><strong>Activity State</strong></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -96,12 +100,30 @@
                                             <td></td>
                                             <td></td>
                                             <td></td>
-                                            <td style="padding-left: 4rem;" name="td_activity_name">
-                                                <div t-attf-class="d-inline-block">
-                                                    <a t-attf-href="/web#id={{activity.id}}&amp;model={{activity._name}}&amp;view_type=form" t-out="activity.note" target="_blank"></a>
+                                            <td></td>
+                                            <td>
+                                                <div><t t-out="activity.create_uid.display_name"></t></div>
+                                            </td>
+                                            <td>
+                                                <div><t t-out="activity.user_id.display_name"></t></div>
+                                            </td>
+                                            <td >
+                                                <t t-if="activity.plm_state not in ['done','cancel'] and activity.date_deadline &lt; datetime.date.today()">
+                                                 <i class="fa fa-warning" style="font-size:24px;color:red"></i>
+                                                </t>
+                                                <div t-att-class="'text-danger' if activity.plm_state not in ['done','cancel'] and activity.date_deadline &lt; datetime.date.today() else ''">
+                                                    <t t-out="activity.date_deadline"></t>
                                                 </div>
                                             </td>
-                                            <td t-att-class="'text-danger' if activity.plm_state == 'exception' else 'text-success' if activity.plm_state == 'done' else 'text-warning' if activity.plm_state == 'draft' else 'text-muted' if activity.plm_state == 'cancel' else 'text-info' if activity.plm_state == 'eco' else ''" name="td_activity_state">
+                                            <td  name="td_activity_name">
+                                                <div t-attf-class="d-inline-block">
+                                                    <a t-attf-href="/web#id={{activity.id}}&amp;model={{activity._name}}&amp;view_type=form" t-out="activity.summary" target="_blank"></a>
+                                                    <br></br>
+                                                    <i><span t-field="activity.note"/></i>
+                                                </div>
+                                                 </td>
+                                            <td t-att-class="'text-danger' if activity.plm_state == 'exception' else 'text-success' if activity.plm_state == 'done' else 'text-warning' if activity.plm_state == 'draft' else 'text-muted' if activity.plm_state == 'cancel' else 'text-info' if activity.plm_state == 'eco' else ''"
+                                                name="td_activity_state">
                                                 <t t-out="{
                                                     'draft': 'Draft',
                                                     'in_progress': 'In Progress',
