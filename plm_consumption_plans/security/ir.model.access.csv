@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+plm_consumption_plans.access_template_consumption_plan,access_template_consumption_plan,plm_consumption_plans.model_template_consumption_plan,base.group_user,1,1,1,1

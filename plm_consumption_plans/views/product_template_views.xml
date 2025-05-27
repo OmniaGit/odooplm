@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="ni_product_template_only_form_view">
+            <field name="name">Ni product template customization</field>
+            <field name="model">product.template</field>
+            <field name="priority">101</field>
+            <field name="inherit_id" ref="product.product_template_only_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//sheet[@name='product_form']//notebook" position="inside">
+                    <page string="Consumption Plans" nolabel="1">
+                        <field name="template_consumption_plan_ids" nolabel="1">
+                            <list editable="bottom">
+                                <field name="name"/>
+                                <field name="state"/>
+                                <field name="time_span" widget="float_time"/>
+                            </list>
+                        </field>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

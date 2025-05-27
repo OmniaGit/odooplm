@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- List View -->
+        <record id="view_tempalte_consumption_plan_list" model="ir.ui.view">
+            <field name="name">template.consumption.plan.list</field>
+            <field name="model">template.consumption.plan</field>
+            <field name="arch" type="xml">
+                <list>
+                    <field name="name"/>
+                    <field name="time_span" widget="float_time"/>
+                    <field name="state"/>
+                    <field name="product_template_id"/>
+                    <field name="product_id"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Form View -->
+        <record id="view_template_consumption_plan_form" model="ir.ui.view">
+            <field name="name">template.consumption.plan.form</field>
+            <field name="model">template.consumption.plan</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="time_span" widget="float_time"/>
+                            <field name="state"/>
+                            <field name="product_template_id"/>
+                            <field name="product_id"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+    </data>
+</odoo>
