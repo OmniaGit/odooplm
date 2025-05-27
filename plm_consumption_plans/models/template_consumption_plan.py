@@ -25,6 +25,7 @@ from odoo import models, fields
 class TemplateConsumptionPlan(models.Model):
     _name = "template.consumption.plan"
     _description = "Template Comsumption Plan"
+    _rec_name = 'name'
 
     name = fields.Char(string="Name")
     time_span = fields.Float(string="Hours")

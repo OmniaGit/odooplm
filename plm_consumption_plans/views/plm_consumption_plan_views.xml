@@ -24,7 +24,7 @@
                 <form>
                     <sheet>
                         <group>
-                            <field name="name"/>
+                            <field name="name" required="1"/>
                             <field name="time_span" widget="float_time"/>
                             <field name="state"/>
                             <field name="product_template_id"/>
