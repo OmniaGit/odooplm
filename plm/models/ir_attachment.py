@@ -1062,6 +1062,9 @@ class IrAttachment(models.Model):
             return super(IrAttachment, self).create(vals)
         to_create_vals=[]
         for vals_dict in vals:
+            if 'res_model' not in vals_dict:
+                vals_dict['res_model'] = 'plm.access'
+                vals_dict['res_id'] = self.env.ref('plm.plm_basic_access_model').id
             if 'engineering_state' not in vals:
                 vals_dict['engineering_state']=START_STATUS
             vals_dict['is_plm'] = True
@@ -3399,12 +3402,5 @@ class IrAttachment(models.Model):
         del out_attachment_value['id']
         #
         return json.dumps(out_attachment_value)
-
-    @api.model
-    def _search(self, domain, offset=0, limit=None, order=None, access_rights_uid=None):
-        if self.env.context.get('odooPLM'):
-            sudo_call = super(IrAttachment, self.sudo())
-            return sudo_call._search(domain, offset, limit, order, access_rights_uid)
-        return super()._search(domain, offset, limit, order, access_rights_uid)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

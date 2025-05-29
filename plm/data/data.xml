@@ -9,6 +9,8 @@
             <field name="sequence">200</field>
             <field name="change_activity_type">request</field>
         </record>
-
+        <record id="plm_basic_access_model" model="plm.access">
+            <field name="name">Basic PLM access Model</field>
+        </record>
     </data>
 </odoo>
