@@ -3400,4 +3400,11 @@ class IrAttachment(models.Model):
         #
         return json.dumps(out_attachment_value)
 
+    @api.model
+    def _search(self, domain, offset=0, limit=None, order=None, access_rights_uid=None):
+        if self.env.context.get('odooPLM'):
+            sudo_call = super(IrAttachment, self.sudo())
+            return sudo_call._search(domain, offset, limit, order, access_rights_uid)
+        return super()._search(domain, offset, limit, order, access_rights_uid)
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
