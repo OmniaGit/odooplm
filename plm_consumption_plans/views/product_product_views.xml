@@ -9,13 +9,15 @@
             <field name="arch" type="xml">
                 <xpath expr="//form[1]//sheet[@name='product_form']//notebook[1]" position="inside">
                     <page string="Consumption Plans">
-                        <field name="template_consumption_plan_ids" nolabel="1">
-                            <list editable="bottom">
-                                <field name="name" required="1"/>
-                                <field name="state"/>
-                                <field name="time_span" widget="float_time"/>
-                            </list>
-                        </field>
+                        <group>
+                            <field name="template_consumption_plan_ids" nolabel="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="time_span"/>
+                                    <field name="consumption_state_id"/>
+                                </list>
+                            </field>
+                        </group>
                     </page>
                 </xpath>
             </field>

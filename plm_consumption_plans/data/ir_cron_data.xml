@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="action_generate_report_consumption_plan" model="ir.actions.server">
+            <field name="name">Print Consumption Plan</field>
+            <field name="type">ir.actions.server</field>
+            <field name="model_id" ref="product.model_product_template"/>
+            <field name="state">code</field>
+            <field name="binding_model_id" ref="product.model_product_template"/>
+            <field name="code">
+                action = env['product.template'].browse(env.context.get('active_id')).act_get_consumption_plan_report()
+            </field>
+        </record>
+
+        <record id="action_generate_report_consumption_plan_product_variant" model="ir.actions.server">
+            <field name="name">Print Consumption Plan</field>
+            <field name="type">ir.actions.server</field>
+            <field name="model_id" ref="product.model_product_product"/>
+            <field name="state">code</field>
+            <field name="binding_model_id" ref="product.model_product_product"/>
+            <field name="code">
+                action = env['product.product'].browse(env.context.get('active_id')).act_get_consumption_plan_report()
+            </field>
+        </record>
+    </data>
+</odoo>

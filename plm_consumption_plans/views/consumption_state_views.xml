@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- List View -->
+        <record id="view_consumption_state_list" model="ir.ui.view">
+            <field name="name">consumption.state.list</field>
+            <field name="model">consumption.state</field>
+            <field name="arch" type="xml">
+                <list>
+                    <field name="name"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Form View -->
+        <record id="view_consumption_state_form" model="ir.ui.view">
+            <field name="name">consumption.state.form</field>
+            <field name="model">consumption.state</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <field name="name" required="1"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+    </data>
+</odoo>

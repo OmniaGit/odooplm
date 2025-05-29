@@ -6,25 +6,40 @@
             <field name="model">mrp.bom.line</field>
             <field name="inherit_id" ref="mrp.mrp_bom_line_view_form"/>
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='product_id']" position="after">
-                    <field name="consumption_plan_ids">
-                        <list editable="bottom">
-                            <field name="name" required="1"/>
-                            <field name="time_span"/>
-                            <field name="state"/>
-                            <field name="product_template_id"/>
-                            <field name="product_id"/>
-                        </list>
-                        <form>
-                            <group>
-                                <field name="name" required="1"/>
-                                <field name="time_span"/>
-                                <field name="state"/>
-                                <field name="product_template_id"/>
-                                <field name="product_id"/>
-                            </group>
-                        </form>
-                    </field>
+                <xpath expr="//sheet" position="inside">
+                    <notebook>
+                        <page name="consumption_plan" string="Consumption Plans">
+                            <field name="template_consumption_plan_ids">
+                                <list editable="bottom">
+                                    <field name="name" required="1"/>
+                                    <field name="time_span"/>
+                                    <field name="consumption_state_id"/>
+                                    <field name="product_template_ids"/>
+                                    <field name="product_ids"/>
+                                </list>
+                                <form>
+                                    <group>
+                                        <field name="name" required="1"/>
+                                        <field name="time_span"/>
+                                        <field name="consumption_state_id"/>
+                                        <field name="product_template_ids"/>
+                                        <field name="product_ids"/>
+                                    </group>
+                                </form>
+                            </field>
+                        </page>
+                    </notebook>
+                </xpath>
+            </field>
+        </record>
+        <!-- list view of plm bom lines -->
+         <record id="view_plm_mrp_bom_line_summarize_list" model="ir.ui.view">
+            <field name="name">plm.mrp.bom.line.summarize.list.view</field>
+            <field name="model">mrp.bom.line</field>
+            <field name="inherit_id" ref="plm.plm_mrp_bom_line_summarize_list"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='product_tag_ids']" position="after">
+                    <field name="template_consumption_plan_ids"/>
                 </xpath>
             </field>
         </record>

@@ -21,7 +21,7 @@
 ##############################################################################
 {
     "name": "PLM Consumption Plans",
-    "version": "18.0.0.0.1",
+    "version": "18.0.0.0.2",
     "author": "OmniaSolutions",
     "website": "https://odooplm.omniasolutions.website",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
@@ -37,14 +37,19 @@
     "data": [
         # security files
         "security/ir.model.access.csv",
+        # data files
+        "data/ir_cron_data.xml",
         # views files
         "views/product_template_views.xml",
         "views/product_product_views.xml",
-        "views/plm_consumption_plan_menus.xml",
-        "views/plm_consumption_plan_views.xml",
+        "views/plm_template_consumption_plan_menu.xml",
+        "views/plm_template_consumption_plan_view.xml",
         "views/mrp_bom_line_views.xml",
+        "views/consumption_state_views.xml",
+        # report files
+        "report/report_consumption_plan.xml",
     ],
     "installable": True,
-    "application": False,
+    "application": True,
     "auto_install": False,
 }

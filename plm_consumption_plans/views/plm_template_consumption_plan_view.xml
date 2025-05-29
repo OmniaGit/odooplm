@@ -9,9 +9,9 @@
                 <list>
                     <field name="name"/>
                     <field name="time_span" widget="float_time"/>
-                    <field name="state"/>
-                    <field name="product_template_id"/>
-                    <field name="product_id"/>
+                    <field name="consumption_state_id"/>
+                    <field name="product_template_ids"/>
+                    <field name="product_ids"/>
                 </list>
             </field>
         </record>
@@ -26,9 +26,9 @@
                         <group>
                             <field name="name" required="1"/>
                             <field name="time_span" widget="float_time"/>
-                            <field name="state"/>
-                            <field name="product_template_id"/>
-                            <field name="product_id"/>
+                            <field name="consumption_state_id"/>
+                            <field name="product_template_ids" widget="many2many_tags"/>
+                            <field name="product_ids" widget="many2many_tags"/>
                         </group>
                     </sheet>
                 </form>

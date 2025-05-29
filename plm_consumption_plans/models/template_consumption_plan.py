@@ -29,11 +29,8 @@ class TemplateConsumptionPlan(models.Model):
 
     name = fields.Char(string="Name")
     time_span = fields.Float(string="Hours")
-    state = fields.Selection(
-        selection=[("mandatory", "Mandatory"), ("recommended", "Recommended")],
-        string="State",
+    consumption_state_id = fields.Many2one(string="Consumption_state_id", comodel_name="consumption.state")
+    product_template_ids = fields.Many2many(
+        comodel_name="product.template", string="Product Templates"
     )
-    product_template_id = fields.Many2one(
-        comodel_name="product.template", string="Product Template"
-    )
-    product_id = fields.Many2one(comodel_name="product.product", string="Product")
+    product_ids = fields.Many2many(comodel_name="product.product", string="Products")

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Action -->
+    <record id="action_template_consumption_plan" model="ir.actions.act_window">
+        <field name="name">Template Consumption Plans</field>
+        <field name="res_model">template.consumption.plan</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first consumption plan Template.
+            </p>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_consumption_states" model="ir.actions.act_window">
+        <field name="name">Consumption States</field>
+        <field name="res_model">consumption.state</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first consumption states.
+            </p>
+        </field>
+    </record>
+
+    <!-- Template consumption plans menu -->
+    <menuitem
+            name="Template Consumption Plans"
+            action="action_template_consumption_plan"
+            id="menu_template_consumption_plans"
+            sequence="5"
+            parent="plm.plm_menu_dictionaries"/>
+
+     <!-- consumption state menu -->
+    <menuitem
+            name="Consumption States"
+            action="action_consumption_states"
+            id="menu_consumption_states"
+            sequence="6"
+            parent="plm.plm_menu_dictionaries"/>
+
+</odoo>

@@ -21,18 +21,10 @@
 from odoo import models, fields
 
 
-class ConsumptionPlan(models.Model):
-    _name = "consumption.plan"
-    _description = "Consumption Plan"
+class ConsumptionState(models.Model):
+    _name = "consumption.state"
+    _description = "Consumption State"
+    _rec_name = "name"
 
-    bom_line_id = fields.Many2one("mrp.bom.line", string="BoM Line")
-    name = fields.Char(string="Name")
-    time_span = fields.Float(string="Hours")
-    state = fields.Selection(
-        selection=[("mandatory", "Mandatory"), ("recommended", "Recommended")],
-        string="State",
-    )
-    product_template_id = fields.Many2one(
-        comodel_name="product.template", string="Product Template"
-    )
-    product_id = fields.Many2one(comodel_name="product.product", string="Product")
+    name = fields.Char(string="Consumption State", required=True)
+
