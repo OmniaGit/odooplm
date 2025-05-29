@@ -27,6 +27,7 @@ Created on 25 Aug 2016
 
 from odoo import models
 from odoo import fields
+from odoo import api
 from odoo import _
 
 
@@ -67,4 +68,33 @@ class PlmConfigSettings(models.TransientModel):
     module_plm_purchase_only_latest = fields.Boolean("Force last version on purchase")
     module_plm_sale_only_latest = fields.Boolean("Force last version on Sale")
     module_plm_workflow_custom_action = fields.Boolean("Automatic workFlow actions")
-    
+
+    install_consumption_plan_feature = fields.Boolean(
+        string="Enable Consumption Plan Feature",
+        config_parameter="plm.install_consumption_plan_feature"
+    )
+
+    @api.model
+    def get_values(self):
+        res = super().get_values()
+        module_installed = self.env['ir.module.module'].sudo().search([
+            ('name', '=', 'plm_consumption_plans'),
+            ('state', '=', 'installed')
+        ], limit=1)
+        res.update({
+            'install_consumption_plan_feature': bool(module_installed),
+        })
+        return res
+
+    def set_values(self):
+        super().set_values()
+        module_model = self.env['ir.module.module'].sudo()
+        module_record = module_model.search([('name', '=', 'plm_consumption_plans')], limit=1)
+
+        if self.install_consumption_plan_feature:
+            if module_record.state != 'installed':
+                module_record.button_immediate_install()
+        else:
+            if module_record.state == 'installed':
+                module_record.button_immediate_uninstall()
+

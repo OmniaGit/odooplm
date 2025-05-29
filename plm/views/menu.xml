@@ -73,7 +73,7 @@
 	        name="CAD Opens"
 	        action="plm.action_plm_cad_open"
 	        id="menu_cad_open"
-	        parent="plm.ir_attachment_form" 
+	        parent="plm.ir_attachment_form"
 	    	sequence="15"
 	    	groups="plm.group_plm_admin,base.group_no_one"
 	    />
@@ -82,7 +82,7 @@
         name="CAD Opens Bck"
         action="plm.action_plm_cad_open_bck"
         id="menu_cad_open_bck"
-        parent="plm.ir_attachment_form" 
+        parent="plm.ir_attachment_form"
     	sequence="16"
     	groups="plm.group_plm_admin,base.group_no_one"
     />
@@ -92,6 +92,7 @@
             name="Descriptions"
             action="plm_action_description_form"
             id="menu_description"
+            sequence="1"
             groups="plm.group_plm_admin"
             parent="plm.plm_menu_dictionaries"/>
 
@@ -99,6 +100,7 @@
             name="Finishings"
             action="plm_action_finishing_form"
             id="menu_finishing"
+            sequence="2"
             groups="plm.group_plm_admin"
             parent="plm.plm_menu_dictionaries"/>
 
@@ -106,6 +108,7 @@
             name="Treatments"
             action="plm_action_treatment_form"
             id="menu_treatment"
+            sequence="3"
             groups="plm.group_plm_admin"
             parent="plm.plm_menu_dictionaries"/>
 
@@ -113,6 +116,7 @@
             name="Materials"
             action="plm_action_material_form"
             id="menu_material"
+            sequence="4"
             groups="plm.group_plm_admin"
             parent="plm.plm_menu_dictionaries"/>
 
@@ -122,13 +126,13 @@
             parent="plm.plm_menu_dictionaries"
             groups="plm.group_plm_admin"
             action="plm_action_plm_dbthread"/>
-            
+
     <menuitem
             id="plm_groups"
             name="Groups"
             parent="plm.plm_menu_dictionaries"
             action="plm_action_res_groups"/>
-    
+
     <menuitem
             id="plm_product_cad_search"
             name="Product Cad Search"
