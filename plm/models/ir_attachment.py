@@ -1013,6 +1013,9 @@ class IrAttachment(models.Model):
             return super(IrAttachment, self).create(vals)
         to_create_vals = []
         for vals_dict in vals:
+            if 'res_model' not in vals_dict:
+                vals_dict['res_model'] = 'plm.access'
+                vals_dict['res_id'] = self.env.ref('plm.plm_basic_access_model').id
             if 'engineering_state' not in vals:
                 vals_dict['engineering_state'] = START_STATUS
             vals_dict['is_plm'] = True

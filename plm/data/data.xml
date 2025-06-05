@@ -52,5 +52,8 @@
             <field name="print_report_name">'attachment : %s change impact report' % (object.display_name)</field>
         </record>
 
+        <record id="plm_basic_access_model" model="plm.access">
+            <field name="name">Basic PLM access Model</field>
+        </record>
     </data>
 </odoo>

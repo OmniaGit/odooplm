@@ -108,7 +108,9 @@ from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 # preCheckOutRecursive
 # 
 
-
+class PLMAccessObject(models.Model):
+    _name = "plm.access"
+    name = fields.Char("Name")
 
 class PlmClient(models.TransientModel):
     _name = "plm.client"
