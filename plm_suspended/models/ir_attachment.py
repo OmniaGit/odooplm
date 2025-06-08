@@ -41,7 +41,7 @@ class PlmDocumentExtension(models.Model):
         default="draft",
         help=_("The status of the product."),
     )
-    old_state = fields.Char(name=_("Old Status"))
+    old_state = fields.Char(name="Old Status")
 
     @property
     def actions(self):

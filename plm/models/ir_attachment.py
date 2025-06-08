@@ -60,6 +60,8 @@ class IrAttachment(models.Model):
 
     checkout_user = fields.Char(string=_("Checked-Out to"),
                                 compute='_get_checkout_state')
+    
+    
     is_checkout = fields.Boolean(_('Is Checked-Out'),
                                  compute='_is_checkout',
                                  store=False)

@@ -188,3 +188,28 @@ class PlmClient(models.TransientModel):
         return self.env['ir.model.fields'].sudo().search([('model','in' ,model_name),
                                                           ('copied','=',False)]).mapped("name")
 
+    @api.model
+    def check_pre_download_data(self, 
+                                args):
+        """
+        function used for prefetch easely the data fro the download function
+        :attachemnt id to downalod
+        :last_revision get latest version of the file
+        :out list of result
+        """
+        attachment_ids, last_revision= args
+        out = []
+        for attachment_id in self.env['ir.attachment'].search([('id', 'in', attachment_ids)]):
+            if last_revision:
+                attachment_id = attachment_id.get_latest_version()[0]
+            out.append( {'id':attachment_id.id,
+                         'code': attachment_id.engineering_code,
+                         'revision': attachment_id.engineering_revision,
+                         'file_name': attachment_id.name,
+                         'write_date': attachment_id.write_date.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
+                         'is_library': attachment_id.is_library,
+                         'library_path':attachment_id.library_path,
+                         'is_out_by_me': attachment_id.isCheckedOutByMe(),
+                         })
+        return out
+

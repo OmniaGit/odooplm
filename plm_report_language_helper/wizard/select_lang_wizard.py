@@ -27,7 +27,9 @@ import base64
 import logging
 from email.policy import default
 
-from odoo import _, fields, models
+from odoo import (_, 
+                  fields, 
+                  models)
 from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
@@ -162,7 +164,7 @@ class plm_bomChoseLanguage(models.TransientModel):
             }
         raise UserError(_("Select a language"))
 
-    lang = fields.Selection(getInstalledLanguage, _("Language"), required=True)
+    lang = fields.Selection(getInstalledLanguage, "Language", required=True)
 
     bom_type = fields.Selection(
         AVAILABLE_REPORT,
@@ -171,7 +173,9 @@ class plm_bomChoseLanguage(models.TransientModel):
         help=_("Chose the Bom report you would like to print"),
     )
 
-    datas = fields.Binary(_("Download"), readonly=True)
+    datas = fields.Binary("Download", readonly=True)
 
-    datas_name = fields.Char(_("Download file name "), size=255, readonly=True)
+    datas_name = fields.Char("Download file name ", 
+                             size=255, 
+                             readonly=True)
     _defaults = {"bom_type": False}
