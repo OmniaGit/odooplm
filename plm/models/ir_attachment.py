@@ -3541,7 +3541,7 @@ class IrAttachment(models.Model):
                 if latest:
                     child_id=child_id.get_latest_version()[0]
                 if child_id.id in out['data'].ids:
-                    logging.warning('Document %r document already found' % (doc_id))
+                    logging.warning('Document %r document already found' % (child_id))
                     continue
                 out['data']+=child_id
                 if recursion:
