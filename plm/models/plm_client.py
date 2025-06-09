@@ -116,8 +116,11 @@ class PlmClient(models.TransientModel):
     _name = "plm.client"
     _description = "PLM Client Support object"
 
-    @api.model
-    def getFileStructure(self, ir_attachemnt_id, hostname, pws_path):
+    def getFileStructure(self, 
+                         ir_attachemnt_id, 
+                         hostname, 
+                         pws_path,
+                         latest=False):
         """
         get all the relation of the passed attachment and their status
         :ir_attachment_id int id of object ir_attachment
@@ -125,15 +128,29 @@ class PlmClient(models.TransientModel):
         :pws_path client pws path
         :return: list of [{<ir_attachment_attrivutes>}]
         """
-        outIds = []
+        out = []
         ir_attachemnt = self.env['ir.attachment']
-        for doc_id in ir_attachemnt.browse(ir_attachemnt_id):
-            outIds.extend(doc_id.computeDownloadStatus(hostname, pws_path))
-            if doc_id.is2D():
-                outIds.extend(ir_attachemnt.browse(ir_attachemnt.getRelatedLyTree(doc_id.id)).computeDownloadStatus(hostname, pws_path))
-        outIds.extend(ir_attachemnt.browse(ir_attachemnt.getRelatedHiTree(doc_id.id, recursion=True, getRftree=True)).computeDownloadStatus(hostname,pws_path))
-        return outIds
-    
+        for ir_attachment_id in ir_attachemnt.search([("id",'=', ir_attachemnt_id)]):
+            #
+            if latest:
+                ir_attachment_id = ir_attachment_id.get_latest_version()[0]
+            out.extend(ir_attachment_id.computeDownloadStatus(hostname,
+                                                              pws_path))
+            #
+            if ir_attachment_id.is2D():
+                for related_attachment_id in ir_attachment_id.getRelatedLyTreeNew(latest=latest):
+                    out.extend(related_attachment_id.computeDownloadStatus(hostname,
+                                                                           pws_path))
+            #
+            for children_attachment_id in ir_attachment_id.getRelatedHiTreeNew(recursion=True, 
+                                                                               getRftree=True,
+                                                                               latest=latest):
+                #
+                out.extend(children_attachment_id.computeDownloadStatus(hostname,
+                                                                        pws_path))
+            #
+        return out
+
     def getAttachmentFromProp(self,
                               document_attributes):
         """
@@ -187,7 +204,8 @@ class PlmClient(models.TransientModel):
         """
         return self.env['ir.model.fields'].sudo().search([('model','in' ,model_name),
                                                           ('copied','=',False)]).mapped("name")
-
+                                                          
+        
     @api.model
     def check_pre_download_data(self, 
                                 args):
@@ -202,14 +220,28 @@ class PlmClient(models.TransientModel):
         for attachment_id in self.env['ir.attachment'].search([('id', 'in', attachment_ids)]):
             if last_revision:
                 attachment_id = attachment_id.get_latest_version()[0]
-            out.append( {'id':attachment_id.id,
-                         'code': attachment_id.engineering_code,
-                         'revision': attachment_id.engineering_revision,
-                         'file_name': attachment_id.name,
-                         'write_date': attachment_id.write_date.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
-                         'is_library': attachment_id.is_library,
-                         'library_path':attachment_id.library_path,
-                         'is_out_by_me': attachment_id.isCheckedOutByMe(),
-                         })
+            out.append( attachment_id.get_open_attachment_data_out())
         return out
 
+    def CheckAllFiles(self, request, default=None):
+        """
+            Evaluate documents to return
+        """
+        forceFlag = False
+        outIds = []
+        doc_id, listedFiles, selection, hostname, hostpws = request
+        docBrws = self.browse(doc_id)
+        outIds.append(doc_id)
+        if selection is False:
+            selection = 1  # Case of selected
+        if selection < 0:  # Case of force refresh PWS
+            forceFlag = True
+            selection = selection * (-1)
+        if docBrws.is2D():
+            outIds.extend(self.getRelatedLyTree(doc_id))
+        outIds.extend(self.getRelatedHiTree(doc_id, recursion=True, getRftree=True))
+        outIds = list(set(outIds))
+        if selection == 2:  # Case of latest
+            outIds = self._getlastrev(outIds)
+        return self._data_check_files(outIds, listedFiles, forceFlag, False, hostname, hostpws)
+    
