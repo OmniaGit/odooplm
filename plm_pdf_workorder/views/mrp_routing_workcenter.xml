@@ -16,7 +16,6 @@
                         <page name="plm_production_doc" string="PLM Production Doc" invisible="use_plm_docs==False">
                         <field name="production_doc_ids" nolabel="1" mode="kanban"
                                domain="[('is_plm', '=', True), ('is_production_doc','=', True)]"
-                               widget="hierarchy_kanban"
                                context="{
                                'odooPLM': True,
                                'kanban_view_ref':'plm.document_kanban_view',

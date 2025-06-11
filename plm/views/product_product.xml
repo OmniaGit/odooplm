@@ -458,7 +458,6 @@
                     </group>
 
                     <field name="linkeddocuments" nolabel="1" mode="kanban" domain="[('is_plm', '=', True)]"
-                           widget="hierarchy_kanban"
                            context="{'odooPLM': True,
                                      'kanban_view_ref':'plm.document_kanban_view',
 		 					         'list_view_ref':'plm.ir_attachment_list',
