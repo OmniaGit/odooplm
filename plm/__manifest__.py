@@ -21,7 +21,7 @@
 ##############################################################################
 {
     "name": "Product Lifecycle Management",
-    "version": "18.0.11.0.1",
+    "version": "18.0.12.0.1",
     "author": "OmniaSolutions",
     "website": "https://odooplm.omniasolutions.website",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
