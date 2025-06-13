@@ -32,7 +32,7 @@ from odoo import api
 from odoo import fields
 #
 from odoo import models
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 #
 _logger = logging.getLogger(__name__)
@@ -132,13 +132,22 @@ class RevisionBaseMixin(models.AbstractModel):
     engineering_sub_revision_letter = fields.Char("Sub revision path")
     engineering_revision_count = fields.Integer(compute='_engineering_revision_count')
 
+    @api.constrains('engineering_code', 'engineering_revision')
+    def _check_engineering_constraints(self):
+        """method used checks eng code and eng revision both should not same value or duplicate combination."""
+        for rec in self:
 
-
-    _sql_constraints = [
-        ('engineering_uniq',
-         "unique (engineering_code, engineering_revision) WHERE (engineering_code is not null)",
-         _('Part Number has to be unique!'))
-    ]
+            # 2️⃣ Check for uniqueness across the table
+            if rec.engineering_code:
+                domain = [
+                    ('engineering_code', '=', rec.engineering_code),
+                    ('engineering_revision', '=', rec.engineering_revision),
+                    ('id', '!=', rec.id)
+                ]
+                if self.search_count(domain):
+                    raise ValidationError(
+                        _("This Engineering Code and Revision combination already exists: '%s' - Rev %s") % (
+                            rec.engineering_code, rec.engineering_revision))
 
     def init(self):
         """Ensure there is at most one active variant for each combination.

@@ -4209,7 +4209,7 @@ msgstr "公開された文書のみを表示"
 #. module: plm
 #: model:ir.model.fields,field_description:plm.field_plm_description__show_help
 msgid "Visible"
-msgstr ""
+msgstr "見える"
 
 #. module: plm
 #: model:ir.model.fields,field_description:plm.field_ir_attachment__website_message_ids
@@ -4228,7 +4228,7 @@ msgstr "ウェブサイトの通信履歴"
 #. module: plm
 #: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
 msgid "Website:"
-msgstr ""
+msgstr "Webサイト"
 
 #. module: plm
 #: model:ir.model.fields,field_description:plm.field_mrp_bom__weight_net
@@ -4248,11 +4248,13 @@ msgid ""
 "When this flag is enabled the 2d document must be updated in order to "
 "guaranteey the update betwin 2d and 3d document"
 msgstr ""
+"このフラグを有効にすると、2Dドキュメントを更新する必要があります。 "
+"2D ドキュメントと 3D ドキュメント間の更新を保証する"
 
 #. module: plm
 #: model_terms:ir.ui.view,arch_db:plm.mrp_bom_list_view_where
 msgid "Where Used Bill of Materials"
-msgstr ""
+msgstr "使用箇所部品表"
 
 #. module: plm
 #: model_terms:ir.ui.view,arch_db:plm.plm_component_base_form
@@ -4269,7 +4271,7 @@ msgstr "ワークフロー"
 #: model:ir.model.fields,field_description:plm.field_product_template__engineering_workflow_user
 #: model:ir.model.fields,field_description:plm.field_revision_plm_mixin__engineering_workflow_user
 msgid "Workflow User"
-msgstr ""
+msgstr "ワークフローユーザー"
 
 #. module: plm
 #. odoo-python
@@ -4280,7 +4282,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:plm.field_product_template__engineering_workflow_date
 #: model:ir.model.fields,field_description:plm.field_revision_plm_mixin__engineering_workflow_date
 msgid "Workflow date"
-msgstr ""
+msgstr "ワークフローの日付"
 
 #. module: plm
 #: model:ir.model.fields,field_description:plm.field_ir_attachment__engineering_writable
@@ -4308,7 +4310,7 @@ msgstr "昨日"
 #. odoo-python
 #: code:addons/plm/models/plm_backup_document.py:0
 msgid "You can restore only a document at a time."
-msgstr ""
+msgstr "一度に復元できるのは1つのドキュメントのみです"
 
 #. module: plm
 #: model_terms:ir.ui.view,arch_db:plm.view_plm_description
@@ -4316,17 +4318,19 @@ msgid ""
 "You can use Normalized features formatting, where the component description "
 "will be Standard Description + Format Feature Composed."
 msgstr ""
+"正規化された特徴のフォーマットを使用すると、コンポーネントの説明が "
+"標準的な説明+フォーマット機能で構成される."
 
 #. module: plm
 #. odoo-python
 #: code:addons/plm/models/product_template.py:0
 msgid "You cannot unlink a component that is present in a BOM:\n"
-msgstr ""
+msgstr "BOMに存在するコンポーネントのリンクを解除することはできません:\n"
 
 #. module: plm
 #: model:ir.model,name:plm.model_report_plm_attachment_change_impact_report_template
 msgid "attachment change impact report"
-msgstr ""
+msgstr "添付ファイルの変更影響レポート"
 
 #. module: plm
 #: model:ir.model.fields,field_description:plm.field_mrp_bom__source_id
@@ -4354,7 +4358,7 @@ msgstr "ドキュメントのバックアップを管理する"
 #. module: plm
 #: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
 msgid "on"
-msgstr ""
+msgstr "の上"
 
 #. module: plm
 #: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
@@ -4369,12 +4373,12 @@ msgstr ""
 #. module: plm
 #: model_terms:ir.ui.view,arch_db:plm.ir_attachment_list
 msgid "print"
-msgstr ""
+msgstr "印刷"
 
 #. module: plm
 #: model:ir.model,name:plm.model_report_plm_product_change_impact_report_template
 msgid "product change impact report"
-msgstr ""
+msgstr "製品変更影響レポート"
 
 #. module: plm
 #. odoo-python
@@ -4401,13 +4405,13 @@ msgstr "readOnlyをフィールド標準の説明に入れます1"
 #. odoo-python
 #: code:addons/plm/models/mrp_bom.py:0
 msgid "saveChild.toCompute : Father \"%s\" refers to himself"
-msgstr ""
+msgstr "saveChild.toCompute: 父親\"%s\"は自分自身を指します"
 
 #. module: plm
 #. odoo-python
 #: code:addons/plm/models/product_product_document_rel.py:0
 msgid "saveChild: Unable to create a link."
-msgstr ""
+msgstr "saveChild: リンクを作成できません"
 
 #. module: plm
 #. odoo-python
@@ -4416,12 +4420,14 @@ msgid ""
 "saveChild: Unable to create a relation between documents. One of documents "
 "involved doesn't exist."
 msgstr ""
+"saveChild: ドキュメント間の関係を作成できません。ドキュメントの1つ "
+"関与は存在しない."
 
 #. module: plm
 #. odoo-python
 #: code:addons/plm/models/ir_attachment_relations.py:0
 msgid "saveChild: Unable to create a relation."
-msgstr ""
+msgstr "saveChild: リレーションを作成できません"
 
 #. module: plm
 #. odoo-python
@@ -4430,6 +4436,8 @@ msgid ""
 "save_child :  unable to create a relation for part ({0}) with source ({1}) :"
 " {2}."
 msgstr ""
+"save_child: ソース ({1}) を持つパーツ ({0}) の関係を作成できません :"
+" {2}."
 
 #. module: plm
 #. odoo-python
@@ -4438,3 +4446,5 @@ msgid ""
 "save_parent :  unable to create a relation for part ({0}) with source ({1}) "
 ": {2}."
 msgstr ""
+"save_parent: ソース ({1}) を持つパーツ ({0}) の関係を作成できません "
+": {2}."
