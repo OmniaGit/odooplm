@@ -37,4 +37,23 @@
             </page>
         </field>
     </record>
+
+    <record id="view_product_product_list_plm_colored" model="ir.ui.view">
+        <field name="name">product.product.list.plm.colored</field>
+        <field name="model">product.product</field>
+        <field name="arch" type="xml">
+            <list string="PLM Products" decoration-danger="engineering_state in ('draft','obsolated')" decoration-success="engineering_state == 'released'" decoration-warning="engineering_state == 'confirmed'" decoration-info="engineering_state == 'undermodify'">
+                <field name="image_1920" widget="image"/>
+                <field name="name"/>
+                <field name="engineering_code"/>
+                <field name="default_code"/>
+                <field name="engineering_revision"/>
+                <field name="engineering_state"/>
+                <field name="engineering_material"/>
+                <field name="engineering_surface"/>
+                <field name="write_date"/>
+                <field name="create_date"/>
+            </list>
+        </field>
+    </record>
 </odoo>

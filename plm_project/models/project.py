@@ -79,3 +79,20 @@ class ProjectExtension(models.Model):
                 rec.plm_use_plm = True
             else:
                 rec.plm_use_plm = False
+
+
+    def action_get_product_variant_list_view(self):
+        self.ensure_one()
+        list_view_id = self.env.ref('plm_project.view_product_product_list_plm_colored').id
+        return {
+            'name': 'PLM Products',
+            'type': 'ir.actions.act_window',
+            'res_model': 'product.product',
+            'view_mode': 'list,form',
+            'views': [(list_view_id, 'list'), (False, 'form')],
+            'domain': [('id', 'in', self.plm_product_ids.ids)],
+            'context': {
+                'create': False,
+            },
+            'target': 'current',
+        }
