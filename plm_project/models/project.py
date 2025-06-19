@@ -72,6 +72,9 @@ class ProjectExtension(models.Model):
         compute="_compute_product_count", string=_("Number of product related")
     )
 
+    total_components = fields.Integer(string="Total Components", compute="_compute_component_stats")
+    released_components = fields.Integer(string="Released Components", compute="_compute_component_stats")
+
     @api.depends('plm_product_ids')
     def _compute_plm_use_plm(self):
         for rec in self:
@@ -85,7 +88,7 @@ class ProjectExtension(models.Model):
         self.ensure_one()
         list_view_id = self.env.ref('plm_project.view_product_product_list_plm_colored').id
         return {
-            'name': 'PLM Products',
+            'name': self.name,
             'type': 'ir.actions.act_window',
             'res_model': 'product.product',
             'view_mode': 'list,form',
@@ -93,6 +96,14 @@ class ProjectExtension(models.Model):
             'domain': [('id', 'in', self.plm_product_ids.ids)],
             'context': {
                 'create': False,
+                'group_by': 'engineering_state',
             },
             'target': 'current',
         }
+
+    @api.depends('plm_product_ids')  # Update this field name to actual relation
+    def _compute_component_stats(self):
+        for project in self:
+            components = project.plm_product_ids
+            project.total_components = len(components)
+            project.released_components = len(components.filtered(lambda x: x.engineering_state == 'released'))
