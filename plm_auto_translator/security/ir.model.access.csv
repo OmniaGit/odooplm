@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+plm_auto_translator.access_auto_translator,access_auto_translator,plm_auto_translator.model_auto_translator,base.group_user,1,1,1,1

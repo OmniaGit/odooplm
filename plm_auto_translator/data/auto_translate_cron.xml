@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+        <record id="ir_cron_auto_translate_po" model="ir.cron">
+            <field name="name">Translate PO Files</field>
+            <field name="model_id" ref="model_auto_translator"/>
+            <field name="state">code</field>
+            <field name="code">model.run_daily_translation()</field>
+            <field name="interval_type">days</field>
+            <field name="interval_number">1</field>
+        </record>
+
+    </data>
+</odoo>

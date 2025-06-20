@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_auto_translator_form" model="ir.ui.view">
+        <field name="name">auto.translator.form</field>
+        <field name="model">auto.translator</field>
+        <field name="arch" type="xml">
+            <form string="Auto PO Translator">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="path"/>
+                        <field name="lang_ids" widget="many2many_tags"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_auto_translator_tree" model="ir.ui.view">
+        <field name="name">auto.translator.tree</field>
+        <field name="model">auto.translator</field>
+        <field name="arch" type="xml">
+            <list string="Auto PO Translators">
+                <field name="name"/>
+                <field name="path"/>
+                <field name="lang_ids" widget="many2many_tags"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_auto_translator" model="ir.actions.act_window">
+        <field name="name">PLM Auto Translator</field>
+        <field name="res_model">auto.translator</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem
+            name="PLM Auto Translator"
+            action="action_auto_translator"
+            id="menu_auto_translator_config"
+            sequence="7"
+            parent="plm.plm_menu_dictionaries"/>
+</odoo>
+
