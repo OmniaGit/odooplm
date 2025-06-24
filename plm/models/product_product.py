@@ -1076,7 +1076,8 @@ class ProductProduct(models.Model):
         try:
             if self.env.context.get('odooPLM'):
                 if not fields:
-                    fields = list(self._fields.keys())
+                    fields = ['engineering_code', 'engineering_revision', 'description','bom_ids']  # and other safe fields
+                    # fields = list(self._fields.keys())
                 cleaned_up_fields = []
                 for field_name, field_attrs in self.fields_get(fields).items():
                     if field_attrs['type']=='properties':
@@ -1086,9 +1087,9 @@ class ProductProduct(models.Model):
                 fields.extend(customFields)
                 fields = list(set(cleaned_up_fields))
                 fields = self.plm_sanitize(fields)
-                res = super(ProductProduct, self).read(fields=fields, load=load)
+                res = super().read(fields=fields, load=load)
                 return self.readMany2oneFields(res, fields)
-            return super(ProductProduct, self).read(fields=fields, load=load)
+            return super().read(fields=fields, load=load)
         except Exception as ex:
             if isinstance(ex, AccessError) and 'sale.report' in ex.name:
                 return """

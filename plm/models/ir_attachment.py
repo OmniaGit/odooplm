@@ -361,19 +361,19 @@ class IrAttachment(models.Model):
         return list(set(result))
 
     @api.model
-    def getRelatedLyTree(self, 
-                         doc_id, 
+    def getRelatedLyTree(self,
+                         doc_id,
                          optional_return_type=['3d'],
                          getOnyChkOut=False):
         out = []
         if not doc_id:
             logging.warning('Cannot get links from %r document' % (doc_id))
             return []
-        if not isinstance(doc_id, models.Model): 
+        if not isinstance(doc_id, models.Model):
             doc_brws = self.browse(doc_id)
         else:
             doc_brws = doc_id
-            doc_id = doc_brws.id 
+            doc_id = doc_brws.id
         parent_doc_type = doc_brws.document_type
         to_search = [('link_kind', 'in', ['LyTree']),
                      '|',
@@ -476,8 +476,8 @@ class IrAttachment(models.Model):
 
     @api.model
     def getRelatedHiTree(self,
-                         doc_id, 
-                         recursion=True, 
+                         doc_id,
+                         recursion=True,
                          getRftree=False,
                          getOnyChkOut=False):
         '''
@@ -485,8 +485,8 @@ class IrAttachment(models.Model):
         '''
         out = []
 
-        def _getRelatedHiTree(doc_id, 
-                              recursion, 
+        def _getRelatedHiTree(doc_id,
+                              recursion,
                               getRftree):
             if not doc_id:
                 logging.warning('Cannot get links from %r document' % (doc_id))
@@ -505,8 +505,8 @@ class IrAttachment(models.Model):
                                       recursion,
                                       getRftree)
             if getRftree:
-                out.extend(self.getRelatedRfTree(doc_id, 
-                                                 recursion=True, 
+                out.extend(self.getRelatedRfTree(doc_id,
+                                                 recursion=True,
                                                  evaluated=[]))
 
         _getRelatedHiTree(doc_id, recursion, getRftree)
@@ -1741,10 +1741,10 @@ class IrAttachment(models.Model):
             return super(IrAttachment, self)._file_delete(fname)
 
     @api.model
-    def GetNextDocumentName(self, documentName):
+    def GetNextDocumentName(self, documentName, context):
         """
             Return a new name due to sequence next number.
-            
+
             NEW client set in the contex this informations
             {
             #
@@ -1754,11 +1754,11 @@ class IrAttachment(models.Model):
             'product_attrs': {} # dictionary like of attribute changed for documents
             'ori_document_attrs': {} # dictionary like of attribute from cad application for products
             'orig_product_attrs': {} # dictionary like of attribute from cad application for documents
-            'mode':'ir.attachment' or 'product.product' 
+            'mode':'ir.attachment' or 'product.product'
             #
             # those other value are for compatibylity with the old version
             #
-            'active_file_doc_attrs': {}, 
+            'active_file_doc_attrs': {},
             'all_attributes': {'product': self.attributes,
                                 'document':self._documentAttrs
             },
@@ -3292,11 +3292,11 @@ class IrAttachment(models.Model):
                 children.append(_recursion(child_attrs_structure))
             #
             return (parent_attrs, children)
-        
+
         return json.dumps(_recursion(json.loads(args[0])))
-    
+
     def get_clone_info_attr(self,
-                            doc_id, 
+                            doc_id,
                             product_product_id=None):
             def get_dict(product_product_id):
                 return {
