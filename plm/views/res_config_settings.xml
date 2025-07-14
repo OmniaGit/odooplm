@@ -4,327 +4,170 @@
         <record id="view_plm_settings" model="ir.ui.view">
             <field name="name">plm settings</field>
             <field name="model">res.config.settings</field>
-            <field name="inherit_id" ref="base.res_config_settings_view_form" />
+            <field name="inherit_id" ref="base.res_config_settings_view_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//form" position="inside">
-                    <app data-string="plm"
-                        string="plm"
-                        name="plm"
-                        logo="/plm/static/description/icon.png"
-                        groups="plm.group_plm_admin">
-                    <div class="app_settings_block" data-string="Plm" data-key="plm" groups="plm.group_plm_admin">
-                        <h2>Product</h2>
-                        <div class="row mt16 o_settings_container">
-                            <div class="col-md-6 col-xs-12 o_setting_box">
-                                <div class="o_setting_left_pane"><field name="module_plm_automatic_weight"/></div>
-                                <div class="o_setting_right_pane"><label for="module_plm_automatic_weight"/>
-                                	<div class="text-muted">
-                                		Compute product weight due to Normal BOM calculation, using CAD weight or setting a custom weight.
-                                	</div>
-                                </div>
+                    <app data-string="plm" string="plm" name="plm" logo="/plm/static/description/icon.png"
+                         groups="plm.group_plm_admin">
+                        <block title="Product" name="plm_product" groups="plm.group_plm_admin">
+                            <setting
+                                help="Compute product weight due to Normal BOM calculation, using CAD weight or setting a custom weight.">
+                                <field name="module_plm_automatic_weight"/>
+                            </setting>
+                            <setting
+                                help="Use translations in product description providing also a view to manage plm description translations.">
+                                <field name="module_plm_product_description_language_helper"/>
+                            </setting>
+                            <setting help="Revise a product / plm document from the web interface.">
+                                <field name="module_plm_web_revision"/>
+                            </setting>
+                            <setting>
+                                <field name="module_plm_auto_internalref"/>
+                            </setting>
+                            <setting help="Manage product Suspension State on workFlow for document and product.">
+                                <field name="module_plm_suspended"/>
+                            </setting>
+                            <setting help="Generate Engineering Code by sequence.">
+                                <field name="module_plm_auto_engcode"/>
+                            </setting>
+                            <setting help="Manage breakage on your products.">
+                                <field name="module_plm_breakages"/>
+                            </setting>
+                            <setting help="Create breakages directly from Ticket module.only for Enterprise Edition">
+                                <field name="module_plm_ent_breakages_helpdesk"/>
+                            </setting>
+                        </block>
+                        <block title="Document" name="plm_document" groups="plm.group_plm_admin">
+                            <setting help="Allow converting files in different format. In order to make it run you will
+                             need the conversion server provided by OmniaSolutions.">
+                                <field name="module_plm_automated_convertion"/>
+                                <input type="submit" value="More Info" class="oe_button form-control"
+                                       onclick="window.location.href='http://www.omniasolutions.website/page/plm-convertion-server'"/>
+                            </setting>
+                            <setting help="Advanced linking and organise your document with virtual box.">
+                                <field name="module_plm_box"/>
+                                <input type="submit" value="More Info" class="oe_button form-control"
+                                       onclick="window.location.href='http://www.omniasolutions.eu/page/plm-box'"/>
+                            </setting>
+                            <setting help="Advanced way to save and synchronise PLM document to improve open and save
+                            operation for pour connection bandwidth To make it work you need to install a file server
+                            application mirror_document_server.">
+                                <field name="module_plm_document_multi_site"/>
+                                <input type="submit" value="More Info" class="oe_button form-control"
+                                       onclick="window.location.href='http://www.omniasolutions.website'"/>
+                            </setting>
+                        </block>
+                        <block title="BOM" name="plm_bom" groups="plm.group_plm_admin">
+                            <setting help="Automate the creation of normal B.O.M. with scheduled action.">
+                                <field name="module_plm_automate_normal_bom"/>
+                            </setting>
+                            <setting help="Compare two B.O.M from the B.O.M tree interface.">
+                                <field name="module_plm_compare_bom"/>
+                            </setting>
+                            <setting help="Upload summarised B.O.M. from client application.">
+                                <field name="module_plm_bom_summarize"/>
+                            </setting>
+                            <setting help="Allows view and/or update obsoleted components in a Normal Bill Of Materials
+                            using released components.">
+                                <field name="module_plm_date_bom"/>
+                            </setting>
+                            <setting help="This module allows you to improve the capability of your OdooPLM for managing
+                             the cut parts.">
+                                <field name="module_plm_cutted_parts"/>
+                            </setting>
+                            <setting>
+                                <field name="module_plm_engineering"/>
+                            </setting>
+                            <setting>
+                                <field name="module_plm_spare"/>
+                            </setting>
+                        </block>
+                        <block title="Project" name="plm_project" groups="plm.group_plm_admin">
+                            <setting help="Add a progress bar to check the progress of the project based
+                            on the status of the products.">
+                                <field name="module_plm_project"/>
+                            </setting>
+                        </block>
+                        <block title="Manufacturing" name="plm_manufacturing" groups="plm.group_plm_admin">
+                            <setting help="Add the capability to use the PDF PLM document inside work order
+                            ATTENTION !! This module work only for enterprise version because the
+                            mrp_workorder is in the enterprise version.">
+                                <field name="module_plm_pdf_workorder"/>
+                            </setting>
+                            <setting help="Allow to select only product that have engineering_code
+                             and is in the latest revision for Manufacturing.">
+                                <field name="module_plm_product_only_latest"/>
+                            </setting>
+                            <setting help="Add the capability to update the manufacturing order from a revised BOM
+                             **** ATTENTION **** This module depends on plm_mrp_bom_update from:
+                            git clone -b 16.0 https://github.com/OmniaSolutions/odooAddons.git.">
+                                <field name="module_plm_mrp_bom_update"/>
+                            </setting>
+                        </block>
+                        <block title="Sales" name="plm_sales" groups="plm.group_plm_admin">
+                            <setting help="This module adds permissions to sale module allowing
+                            some PLM procedures to work better.">
+                                <field name="module_plm_sale_fix"/>
+                            </setting>
+                            <setting help="This module adds the capability to use the 3D
+                             WebGL inside your product and E-Commerce">
+                                <field name="module_plm_web_3d_sale"/>
+                            </setting>
+                            <setting help="Allow to select only product that have not
+                             engineering_code or is in the latest revision for Purchase">
+                                <field name="module_plm_sale_only_latest"/>
+                            </setting>
+                        </block>
+                        <block title="Purchase" name="plm_purchase" groups="plm.group_plm_admin">
 
-                            </div>
-                            <div class="col-md-6 col-xs-12 o_setting_box">
-                                <div class="o_setting_left_pane"><field name="module_plm_product_description_language_helper"/></div>
-                                <div class="o_setting_right_pane"><label for="module_plm_product_description_language_helper"/>
-                                	 <div class="text-muted">
-                                		Use translations in product description providing also a view to manage plm description translations.
-                                	</div>
-                                </div>
-                            </div>
-                            <div class="col-md-6 col-xs-12 o_setting_box">
-                                <div class="o_setting_left_pane"><field name="module_plm_web_revision"/></div>
-                                <div class="o_setting_right_pane"><label for="module_plm_web_revision"/>
-	                                <div class="text-muted">
-	                                Revise a product / plm document from the web interface
-	                                </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6 col-xs-12 o_setting_box">
-                                <div class="o_setting_left_pane"><field name="module_plm_auto_internalref"/></div>
-                                <div class="o_setting_right_pane"><label for="module_plm_auto_internalref"/></div>
-                            </div>
-							<div class="col-md-6 col-xs-12 o_setting_box">
-                                <div class="o_setting_left_pane"><field name="module_plm_suspended"/></div>
-                                <div class="o_setting_right_pane"><label for="module_plm_suspended"/>
-	                                <div class="text-muted">
-	                                Manage product Suspension State on workFlow for document and product
-	                                </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6 col-xs-12 o_setting_box">
-                                <div class="o_setting_left_pane"><field name="module_plm_auto_engcode"/></div>
-                                <div class="o_setting_right_pane"><label for="module_plm_auto_engcode"/>
-	                                <div class="text-muted">
-	                                Generate Engineering Code by sequence
-	                                </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6 col-xs-12 o_setting_box">
-                                <div class="o_setting_left_pane"><field name="module_plm_breakages"/></div>
-                                <div class="o_setting_right_pane"><label for="module_plm_breakages"/>
-                                    <div class="text-muted">
-                                    Manage breakage on your products
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6 col-xs-12 o_setting_box">
-                                <div class="o_setting_left_pane"><field name="module_plm_ent_breakages_helpdesk"/></div>
-                                <div class="o_setting_right_pane"><label for="module_plm_ent_breakages_helpdesk"/>
-                                    <div class="text-muted">
-                                        Create breakages directly from Ticket module <b>only on enterprise</b>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <h2>Document</h2>
-                        <div class="row mt16 o_settings_container">
-                            <div class="col-md-6 col-xs-12 o_setting_box">
-                                <div class="o_setting_left_pane"><field name="module_plm_automated_convertion"/></div>
-                                <div class="o_setting_right_pane"><label for="module_plm_automated_convertion"/>
-                                <div class="text-muted">
-                                    Allow converting files in different format.
-                                    In order to make it run you will need the conversion server provided by OmniaSolutions.
-                                </div>
-                                	<form>
-										<input type="submit"
-											   value="More Info"
-											   onclick="window.location.href='http://www.omniasolutions.website/page/plm-convertion-server'"
-											   class="o_input form-control" />
-									</form>
-                                </div>
-                          	</div>
-                          	<div class="col-md-6 col-xs-12 o_setting_box">
-                                <div class="o_setting_left_pane"><field name="module_plm_box"/></div>
-                                <div class="o_setting_right_pane"><label for="module_plm_box"/>
-                                <div class="text-muted">
-                                    Advanced linking and organise your document with virtual box
-                                </div>
-                                	<form>
-										<input type="submit"
-											   value="More Info"
-											   onclick="window.location.href='http://www.omniasolutions.eu/page/plm-box'"
-											   class="o_input form-control" />
-									</form>
-                                </div>
+                            <setting help="Allow to select only product that have
+                            engineering_code and is in the latest revision for Purchase.">
+                                <field name="module_plm_purchase_only_latest"/>
+                            </setting>
+                        </block>
+                        <block title="Client" name="plm_client" groups="plm.group_plm_admin">
+                            <setting>
+                                <field name="module_plm_client_customprocedure"/>
+                            </setting>
+                        </block>
+                        <block title="Other" name="plm_other" groups="plm.group_plm_admin">
+                            <setting help="Download a zip file containing all documents
+                             and printout attached to a product or BOM.">
+                                <field name="module_plm_pack_and_go"/>
+                            </setting>
+                            <setting help="Using a simple wizard interfaces for
+                             printing PLM report's in different languages.">
+                                <field name="module_plm_report_language_helper"/>
+                            </setting>
+                            <setting help="This Module extend the capability of the activity
+                             adding a workflow and validation process similar to the EC0/ECR.">
+                                <field name="module_activity_validation"/>
+                            </setting>
+                            <setting help="This Module extend the capability of the standard
+                             automated action based on the workflow action.">
+                                <field name="module_plm_workflow_custom_action"/>
+                            </setting>
+                            <setting help="extend the plm module adding support for the WebGl 3d Environment.">
+                                <field name="module_plm_web_3d"/>
+                            </setting>
+                            <setting help=" Enable or Disable Template Consumption Plans.">
+                                <field name="install_consumption_plan_feature"/>
+                            </setting>
+                        </block>
 
-                            </div>
-                            <div class="col-md-6 col-xs-12 o_setting_box">
-                                <div class="o_setting_left_pane"><field name="module_plm_document_multi_site"/></div>
-                                <div class="o_setting_right_pane"><label for="module_plm_document_multi_site"/>
-                                <div class="text-muted">
-                                    Advanced way to save and synchronise PLM document to improve open and save operation for pour connection bandwidth
-                                    To make it work you need to install a file server application   "mirror_document_server"
-                                </div>
-                                    <form>
-                                        <input type="submit"
-                                               value="More Info"
-                                               onclick="window.location.href='http://www.omniasolutions.website'"
-                                               class="o_input form-control" />
-                                    </form>
-                                </div>
-
-                            </div>
-                        </div>
-                        <h2>BOM</h2>
-                        <div class="row mt16 o_settings_container">
-                            <div class="col-md-6 col-xs-12 o_setting_box" id="plm_settings">
-                                <div class="o_setting_left_pane"><field name="module_plm_automate_normal_bom"/></div>
-                                <div class="o_setting_right_pane"><label for="module_plm_automate_normal_bom"/></div>
-                                    <div class="text-muted">
-                                    Automate the creation of normal B.O.M. with scheduled action
-                                    </div>
-                            </div>
-                            <div class="col-md-6 col-xs-12 o_setting_box">
-                                <div class="o_setting_left_pane"><field name="module_plm_compare_bom"/></div>
-                                <div class="o_setting_right_pane"><label for="module_plm_compare_bom"/>
-                               		<div class="text-muted">
-                                    Compare two B.O.M from the B.O.M list interface
-                                	</div>
-                                </div>
-                            </div>
-                            <div class="col-md-6 col-xs-12 o_setting_box">
-                                <div class="o_setting_left_pane"><field name="module_plm_bom_summarize"/></div>
-                                <div class="o_setting_right_pane"><label for="module_plm_bom_summarize"/>
-                                    <div class="text-muted">
-                                    Upload summarised B.O.M. from client application
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6 col-xs-12 o_setting_box">
-                                <div class="o_setting_left_pane"><field name="module_plm_date_bom"/></div>
-                                <div class="o_setting_right_pane"><label for="module_plm_date_bom"/>
-                                	<div class="text-muted">
-                                	Allows view and/or update obsoleted components in a Normal Bill Of Materials using released components.
-                                	</div>
-                                </div>
-                            </div>
-                            <div class="col-md-6 col-xs-12 o_setting_box">
-                                <div class="o_setting_left_pane"><field name="module_plm_cutted_parts"/></div>
-                                <div class="o_setting_right_pane"><label for="module_plm_cutted_parts"/>
-                                	<div class="text-muted">
-                                	This module allows you to improve the capability of your OdooPLM for managing the cut parts
-                                	</div>
-                                </div>
-                            </div>
-                            <div class="col-md-6 col-xs-12 o_setting_box">
-                                <div class="o_setting_left_pane"><field name="module_plm_engineering"/></div>
-                                <div class="o_setting_right_pane"> <label for="module_plm_engineering"/></div>
-                            </div>
-                            <div class="col-md-6 col-xs-12 o_setting_box">
-                                <div class="o_setting_left_pane"><field name="module_plm_spare"/></div>
-                                <div class="o_setting_right_pane"><label for="module_plm_spare"/></div>
-                            </div>
-                        </div>
-                        <h2>Project</h2>
-                        <div class="row mt16 o_settings_container">
-                            <div class="col-md-6 col-xs-12 o_setting_box">
-                                <div class="o_setting_left_pane"><field name="module_plm_project"/></div>
-                                <div class="o_setting_right_pane"><label for="module_plm_project"/>
-	                                <div class="text-muted">
-	                                	Add a progress bar to check the progress of the project based on the status of the products
-	                                </div>
-                                </div>
-                            </div>
-                        </div>
-                        <h2>Manufacturing</h2>
-                        <div class="row mt16 o_settings_container">
-                            <div class="col-md-6 col-xs-12 o_setting_box">
-                                <div class="o_setting_left_pane"><field name="module_plm_pdf_workorder"/></div>
-                                <div class="o_setting_right_pane"><label for="module_plm_pdf_workorder"/>
-                                    <div class="text-muted">
-                                        Add the capability to use the PDF PLM document inside work order
-                                        ATTENTION !! This module work only for enterprise version because the mrp_workorder is in the enterprise version
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6 col-xs-12 o_setting_box">
-                                <div class="o_setting_left_pane"><field name="module_plm_product_only_latest"/></div>
-                                <div class="o_setting_right_pane"><label for="module_plm_product_only_latest"/>
-                                    <div class="text-muted">
-                                   Allow to select only product that have engineering_code and is in the latest revision for Manufacturing
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row mt16 o_settings_container">
-                            <div class="col-md-6 col-xs-12 o_setting_box">
-                                <div class="o_setting_left_pane"><field name="module_plm_mrp_bom_update"/></div>
-                                <div class="o_setting_right_pane"><label for="module_plm_mrp_bom_update"/>
-                                    <div class="text-muted">
-                                        Add the capability to update the manufacturing order from a revised BOM
-                                        <b>
-                                        ATTENTION !! This module depends on plm_mrp_bom_update from:
-                                        git clone -b 16.0 https://github.com/OmniaSolutions/odooAddons.git</b>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <h2>Sales</h2>
-                        <div class="row mt16 o_settings_container">
-                            <div class="col-md-6 col-xs-12 o_setting_box">
-                                <div class="o_setting_left_pane"><field name="module_plm_sale_fix"/></div>
-                                <div class="o_setting_right_pane"><label for="module_plm_sale_fix"/>
-                                    <div class="text-muted">
-						                This module adds permissions to sale module allowing some PLM procedures to work better.
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6 col-xs-12 o_setting_box">
-                                <div class="o_setting_left_pane"><field name="module_plm_web_3d_sale"/></div>
-                                <div class="o_setting_right_pane"><label for="module_plm_web_3d_sale"/>
-                                    <div class="text-muted">
-                                        This module adds the capability to use the 3D WebGL inside your product and E-Commerce
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6 col-xs-12 o_setting_box">
-                                <div class="o_setting_left_pane"><field name="module_plm_sale_only_latest"/></div>
-                                <div class="o_setting_right_pane"><label for="module_plm_sale_only_latest"/>
-                                    <div class="text-muted">
-                                        Allow to select only product that have not engineering_code or is in the latest revision for Purchase
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <h2>Purchase</h2>
-                        <div class="row mt16 o_settings_container">
-                            <div class="col-md-6 col-xs-12 o_setting_box">
-                                <div class="o_setting_left_pane"><field name="module_plm_purchase_only_latest"/></div>
-                                <div class="o_setting_right_pane"><label for="module_plm_purchase_only_latest"/>
-                                    <div class="text-muted">
-                                        Allow to select only product that have engineering_code and is in the latest revision for Purchase
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                        <h2>Client</h2>
-                        <div class="row mt16 o_settings_container">
-                            <div class="col-md-6 col-xs-12 o_setting_box">
-                                <div class="o_setting_left_pane"><field name="module_plm_client_customprocedure"/></div>
-                                <div class="o_setting_right_pane"><label for="module_plm_client_customprocedure"/></div>
-                            </div>
-                        </div>
-                        <h2>Other</h2>
-                        <div class="row mt16 o_settings_container">
-                        <!--plm_pack_and_go-->
-                            <div class="col-md-6 col-xs-12 o_setting_box">
-                                <div class="o_setting_left_pane"><field name="module_plm_pack_and_go"/></div>
-                                <div class="o_setting_right_pane"><label for="module_plm_pack_and_go"/>
-                                	<div class="text-muted">
-                                		Download a zip file containing all documents/and printout attached to a product or BOM.
-                                	</div>
-                                </div>
-                            </div>
-                        <!--plm_report_language_helper-->
-                            <div class="col-md-6 col-xs-12 o_setting_box">
-                                <div class="o_setting_left_pane"><field name="module_plm_report_language_helper"/></div>
-                                <div class="o_setting_right_pane"><label for="module_plm_report_language_helper"/>
-	                                <div class="text-muted">
-	                   					Using a simple wizard interfaces for printing PLM report's in different languages
-									</div>
-                                </div>
-                            </div>
-                        <!--activity_validation-->
-                            <div class="col-md-6 col-xs-12 o_setting_box">
-                                <div class="o_setting_left_pane"><field name="module_activity_validation"/></div>
-                                <div class="o_setting_right_pane"><label for="module_activity_validation"/>
-                                    <div class="text-muted">
-                                        This Module extend the capability of the activity adding a workflow and validation process similar to the EC0/ECR
-                                    </div>
-                                </div>
-                            </div>
-                        <!--Automated workflow actions-->
-                            <div class="col-md-6 col-xs-12 o_setting_box">
-                                <div class="o_setting_left_pane"><field name="module_plm_workflow_custom_action"/></div>
-                                <div class="o_setting_right_pane"><label for="module_plm_workflow_custom_action"/>
-                                    <div class="text-muted">
-                                        This Module extend the capability of the standard automated action based on the workflow action
-                                    </div>
-                                </div>
-                            </div>
-                        <!--plm_web_3d-->
-                            <div class="col-md-6 col-xs-12 o_setting_box">
-                                <div class="o_setting_left_pane"><field name="module_plm_web_3d"/></div>
-                                <div class="o_setting_right_pane"><label for="module_plm_web_3d"/>
-                                    <div class="text-muted">
-                                        extend the plm module adding support for the WebGl 3d Environment
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- module_template_consumption_plans -->
-                            <div class="col-md-6 col-xs-12 o_setting_box">
-                                <div class="o_setting_left_pane"><field name="install_consumption_plan_feature"/></div>
-                                <div class="o_setting_right_pane"><label for="install_consumption_plan_feature"/>
-                                    <div class="text-muted">
-                                        Enable or Disable Template Consumption Plans
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                        <block title="Conversion Server" name="Conversion Server">
+                            <setting>
+                                <field name="conversion_server_ip"/>
+                            </setting>
+                            <setting>
+                                <field name="conversion_server_protocol"/>
+                            </setting>
+                            <setting>
+                                <field name="conversion_server_port"/>
+                            </setting>
+                        </block>
                     </app>
+
                 </xpath>
             </field>
         </record>
@@ -332,7 +175,7 @@
         <record id="view_groups_search_inherited" model="ir.ui.view">
             <field name="name">res.groups.search</field>
             <field name="model">res.groups</field>
-            <field name="inherit_id" ref="base.view_groups_search" />
+            <field name="inherit_id" ref="base.view_groups_search"/>
             <field name="arch" type="xml">
                 <xpath expr="//search[string('Groups')]" position="inside">
 
@@ -347,7 +190,7 @@
             <field name="domain">["|", ("full_name", "ilike", "plm"), ("category_id", "ilike", "plm")]</field>
         </record>
 
-         <record id="plm_action_settings_form" model="ir.actions.act_window">
+        <record id="plm_action_settings_form" model="ir.actions.act_window">
             <field name="name">Settings</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">res.config.settings</field>
@@ -356,8 +199,8 @@
             <field name="context">{'module' : 'plm'}</field>
         </record>
 
-  </data>
-  <data noupdate="1">
+    </data>
+    <data noupdate="1">
 
         <record id="action_update_doc_type" model="ir.actions.server">
             <field name="name">Recompute Doc Type</field>

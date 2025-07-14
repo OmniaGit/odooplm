@@ -35,7 +35,7 @@ from datetime import timedelta
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 # SaveStructure
 # GetExploseSum
-# GetExplose  
+# GetExplose
 # GetWhereUsedSum
 # GetWhereUsed
 # ConvertToPlmProduct
@@ -56,11 +56,11 @@ from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 # GetRelatedDocs
 # GetLastNamesFromID
 # CheckIn
-# RegMessage 
+# RegMessage
 # CheckSaveUpdate
-# SaveOrUpdate  
+# SaveOrUpdate
 # CheckedIn
-# UpdateDocuments 
+# UpdateDocuments
 # CleanUp
 # getCheckedOut
 # SaveStructure
@@ -87,7 +87,7 @@ from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 # getErrorMissingDocument
 # GetProductDocumentId
 # getRelated3DFiles
-# 
+#
 #
 # CallCustomFunction
 # cleanZipArchives
@@ -106,7 +106,7 @@ from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 # saveSingleLevel
 # preCheckInRecursive
 # preCheckOutRecursive
-# 
+#
 
 class PLMAccessObject(models.Model):
     _name = "plm.access"
@@ -116,9 +116,9 @@ class PlmClient(models.TransientModel):
     _name = "plm.client"
     _description = "PLM Client Support object"
 
-    def getFileStructure(self, 
-                         ir_attachemnt_id, 
-                         hostname, 
+    def getFileStructure(self,
+                         ir_attachemnt_id,
+                         hostname,
                          pws_path,
                          latest=False):
         """
@@ -142,7 +142,7 @@ class PlmClient(models.TransientModel):
                     out.extend(related_attachment_id.computeDownloadStatus(hostname,
                                                                            pws_path))
             #
-            for children_attachment_id in ir_attachment_id.getRelatedHiTreeNew(recursion=True, 
+            for children_attachment_id in ir_attachment_id.getRelatedHiTreeNew(recursion=True,
                                                                                getRftree=True,
                                                                                latest=latest):
                 #
@@ -163,7 +163,7 @@ class PlmClient(models.TransientModel):
             ir_browse = attach_object.browse(attach_id)
         else:
             ir_browse = attach_object.search([('engineering_code', '=', document_attributes.get('engineering_code', '')),
-                                              ('engineering_revision', '=', document_attributes.get('engineering_revision', -1))]) 
+                                              ('engineering_revision', '=', document_attributes.get('engineering_revision', -1))])
         return ir_browse
 
     @api.model
@@ -172,7 +172,7 @@ class PlmClient(models.TransientModel):
                              raiseError=False,
                              returnCode=False,
                              skipCheckOutControl=False):
-        
+
         """
         Check if the document can be saved !!
         """
@@ -186,7 +186,7 @@ class PlmClient(models.TransientModel):
     def attachmentCheckOut(self,
                            document_attributes,
                            hostName,
-                           hostPws, 
+                           hostPws,
                            showError=True):
         """
         perform the check out operation from document attributes
@@ -204,10 +204,10 @@ class PlmClient(models.TransientModel):
         """
         return self.env['ir.model.fields'].sudo().search([('model','in' ,model_name),
                                                           ('copied','=',False)]).mapped("name")
-                                                          
-        
+
+
     @api.model
-    def check_pre_download_data(self, 
+    def check_pre_download_data(self,
                                 args):
         """
         function used for prefetch easely the data fro the download function
@@ -244,4 +244,4 @@ class PlmClient(models.TransientModel):
         if selection == 2:  # Case of latest
             outIds = self._getlastrev(outIds)
         return self._data_check_files(outIds, listedFiles, forceFlag, False, hostname, hostpws)
-    
+
