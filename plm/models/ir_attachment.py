@@ -1083,7 +1083,7 @@ class IrAttachment(models.Model):
             if ir_attachment_id.document_type=='3d' and ir_attachment_id.preview:
                 to_update = {}
                 for product_tmpl in ir_attachment_id.linkedcomponents:
-                    to_update[product_tmpl.engineering_revision]=product_tmpl                
+                    to_update[product_tmpl.engineering_revision]=product_tmpl
                 if to_update:
                     to_update[max(to_update)].image_1920=self.preview
         
@@ -1095,14 +1095,17 @@ class IrAttachment(models.Model):
             if not self.is_plm_state_writable() and not (self.env.user._is_admin() or self.env.user._is_superuser()):
                 raise UserError(_("The active state does not allow you to make save action"))
         self.writeCheckDatas(vals)
-        self._check_unique_document(vals)
+        if 'engineering_code' in vals:
+            if self.engineering_code and vals['engineering_code'] != self.engineering_code:
+                raise UserError(f"You are trying to change the engieering_code to this document {self.engineering_code} !! Operation Not Allowed")
+            if self.name and  vals.get('name','').upper() != self.name.upper():
+                raise UserError(f"You are trying to change the name {self.name} to {vals['name']} !! Operation Not Allowed")
         vals.update(self.checkMany2oneClient(vals))
         vals = self.plm_sanitize(vals)
         res = super(IrAttachment, self).write(vals)
         self.check_unique()
         return res
 
-    
     def read(self, fields=[], load='_classic_read'):
         try:
             customFields = [field.replace('plm_m2o_', '') for field in fields if field.startswith('plm_m2o_')]

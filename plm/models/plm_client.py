@@ -119,7 +119,10 @@ class PlmClient(models.TransientModel):
     _description = "PLM Client Support object"
 
     @api.model
-    def getFileStructure(self, ir_attachemnt_id, hostname, pws_path):
+    def getFileStructure(self, 
+                         ir_attachemnt_id, 
+                         hostname, 
+                         pws_path):
         """
         get all the relation of the passed attachment and their status
         :ir_attachment_id int id of object ir_attachment
@@ -180,5 +183,10 @@ class PlmClient(models.TransientModel):
             return brwItem.checkout(hostName=hostName,
                                     hostPws=hostPws,
                                     showError=showError)
-        return True, ''    
-    
+        return True, ''
+
+    def getCopyField(self, src_model):
+        return self.env['ir.model.fields'].sudo().search([('model','=' ,src_model),
+                                            ('copied','=', True)]).mapped("name")
+
+

@@ -1901,6 +1901,19 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
     def get_all_document_source_path(self, attributes, *k, **kw):
         out_src = []
         #
+        ir_attachment = self.env['ir.attachment']
+        product_product_id = attributes.get('_id')
+        brw_product_product_id = self.browse(product_product_id)
+        for ref_document_id in brw_product_product_id.linkeddocuments.filtered(lambda x:x.document_type=='3d'):
+            for document_id in ref_document_id.getRelatedAllLevelDocumentsTree(ref_document_id):
+                brw_attachment_id = ir_attachment.browse(document_id)
+                if brw_attachment_id.document_type=='3d':
+                    out_src.append((brw_attachment_id.first_source_path,
+                                    brw_attachment_id.id))
+        return list(set(out_src))
+    #
+    ## old code
+    #
         def fillUpSrvPath(p_p_id):
             for ir_attachment_id in p_p_id.linkeddocuments.filtered(lambda x:x.document_type=='3d'):
                 is_brake=False
