@@ -20,7 +20,7 @@
 ##############################################################################
 {
     'name': '[OMNIASOLUTIONS] Production Bom Update',
- 'version': '17.0.0.1',
+ 'version': '18.0.0.1',
  'sequence': 1,
  'category': 'Manufacturing/Product Lifecycle Management (PLM)',
  'description': """
@@ -36,7 +36,7 @@ This module allows you to update your working manufacture order based on the bom
              'stock'],
  'data': ['views/mrp_bom_extension.xml'],
  'license': 'AGPL-3',
- 'installable': False,
- 'application': False,
+ 'installable': True,
+ 'application': True,
  'auto_install': False,
 }
