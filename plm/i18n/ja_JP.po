@@ -488,31 +488,6 @@ msgid "Add plm groups permission to sale"
 msgstr "Plmグループに販売許可を追加する"
 
 #. module: plm
-#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
-msgid ""
-"Add the capability to update the manufacturing order from a revised BOM\n"
-"                                        <b>\n"
-"                                        ATTENTION !! This module depends on plm_mrp_bom_update from:\n"
-"                                        git clone -b 16.0 https://github.com/OmniaSolutions/odooAddons.git</b>"
-msgstr ""
-"改訂されたBOMから製造オーダーを更新する機能を追加します\n"
-"                                        <b>\n"
-"                                        注意!! このモジュールはplm_mrp_bom_updateに依存しています:\n"
-"                                        git clone -b 16.0 https://github.com/OmniaSolutions/odooAddons.git</b>"
-
-#. module: plm
-#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
-msgid ""
-"Add the capability to use the PDF PLM document inside work order\n"
-"                                        ATTENTION !! This module work only for enterprise version because the mrp_workorder is in the enterprise version"
-msgstr ""
-"改訂されたBOMから製造オーダーを更新する機能を追加します\n"
-"                                         <b>\n"
-"                                         注意 ！！ このモジュールは、plm_mrp_bom_updateに依存しています。\n"
-"                                         git clone -b 15.0 https://github.com/OmniaSolutions/odooAddons.git  b&gt;\n"
-"                                    </b>"
-
-#. module: plm
 #: model:res.groups,name:plm.group_plm_admin
 msgid "Administrator"
 msgstr "管理者"
@@ -2464,11 +2439,6 @@ msgstr "リンクされたドキュメント"
 #: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
 msgid "Linked Parts"
 msgstr "関連部品"
-
-#. module: plm
-#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_mrp_bom_update
-msgid "MRP B.O.M Update"
-msgstr "マルチサイドストレージシステム"
 
 #. module: plm
 #. odoo-python

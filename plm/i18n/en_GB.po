@@ -174,19 +174,6 @@ msgstr "Add plm groups permission to sale"
 #. module: plm
 #: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
 msgid ""
-"Add the capability to update the manufacturing order from a revised BOM\n"
-"                                        <b>\n"
-"                                        ATTENTION !! This module depends on plm_mrp_bom_update from:\n"
-"                                        git clone -b 15.0 https://github.com/OmniaSolutions/odooAddons.git</b>"
-msgstr ""
-"Add the capability to update the manufacturing order from a revised BOM\n"
-"                                        <b>\n"
-"                                        ATTENTION !! This module depends on plm_mrp_bom_update from:\n"
-"                                        git clone -b 15.0 https://github.com/OmniaSolutions/odooAddons.git</b>"
-
-#. module: plm
-#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
-msgid ""
 "Add the capability to use the PDF PLM document inside work order\n"
 "                                        ATTENTION !! This module work only for enterprise version because the mrp_workorder is in the enterprise version"
 msgstr ""
@@ -1916,7 +1903,6 @@ msgstr "Mrp Bom"
 
 #. module: plm
 #: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_document_multi_site
-#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_mrp_bom_update
 msgid "Multi side storege system"
 msgstr "Multi side storege system"
 

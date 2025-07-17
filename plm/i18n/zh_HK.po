@@ -482,19 +482,6 @@ msgstr "添加 plm 组销售权限"
 #. module: plm
 #: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
 msgid ""
-"Add the capability to update the manufacturing order from a revised BOM\n"
-"                                        <b>\n"
-"                                        ATTENTION !! This module depends on plm_mrp_bom_update from:\n"
-"                                        git clone -b 16.0 https://github.com/OmniaSolutions/odooAddons.git</b>"
-msgstr ""
-"添加从修订的 BOM 更新制造订单的功能\n"
-"                                        <b>\n"
-"                                        注意！此模块依赖于 plm_mrp_bom_update:\n"
-"                                        git clone -b 16.0 https://github.com/OmniaSolutions/odooAddons.git</b>"
-
-#. module: plm
-#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
-msgid ""
 "Add the capability to use the PDF PLM document inside work order\n"
 "                                        ATTENTION !! This module work only for enterprise version because the mrp_workorder is in the enterprise version"
 msgstr ""
@@ -2454,11 +2441,6 @@ msgstr "链接的文档"
 #: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
 msgid "Linked Parts"
 msgstr "相关零件"
-
-#. module: plm
-#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_mrp_bom_update
-msgid "MRP B.O.M Update"
-msgstr "多面存储系统"
 
 #. module: plm
 #. odoo-python
