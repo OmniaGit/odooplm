@@ -33,13 +33,13 @@
             </field>
         </record>
         <!-- list view of plm bom lines -->
-         <record id="view_plm_mrp_bom_line_summarize_list" model="ir.ui.view">
-            <field name="name">plm.mrp.bom.line.summarize.list.view</field>
-            <field name="model">mrp.bom.line</field>
-            <field name="inherit_id" ref="plm.plm_mrp_bom_line_summarize_list"/>
+         <record id="view_plm_plan_mrp_bom" model="ir.ui.view">
+            <field name="name">view.plm.plan.mrp.bom</field>
+            <field name="model">mrp.bom</field>
+            <field name="inherit_id" ref="mrp.mrp_bom_form_view"/>
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='product_tag_ids']" position="after">
-                    <field name="template_consumption_plan_ids"/>
+                <xpath expr="//field[@name='bom_line_ids']/list/field[@name='product_qty']" position="before">
+                    <field name="template_consumption_plan_ids" widget='one2many'/>
                 </xpath>
             </field>
         </record>

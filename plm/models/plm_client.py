@@ -244,4 +244,8 @@ class PlmClient(models.TransientModel):
         if selection == 2:  # Case of latest
             outIds = self._getlastrev(outIds)
         return self._data_check_files(outIds, listedFiles, forceFlag, False, hostname, hostpws)
-    
+
+    def getCopyField(self, src_model):
+        return self.env['ir.model.fields'].sudo().search([('model','=' ,src_model),
+                                            ('copied','=', True)]).mapped("name")
+

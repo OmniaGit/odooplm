@@ -18,7 +18,9 @@
 #    along with this prograIf not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from odoo import models, fields
+from odoo import (models, 
+                  fields, 
+                  api)
 
 
 class MrpBomLine(models.Model):
@@ -27,11 +29,12 @@ class MrpBomLine(models.Model):
     template_consumption_plan_ids = fields.Many2many(
         comodel_name="template.consumption.plan",
         string="Consumption Plans",
-        compute="_compute_template_consumption_plan_ids",
-        readonly=True
     )
-
-    def _compute_template_consumption_plan_ids(self):
-        for bom_line in self:
-            plans = self.env['template.consumption.plan'].search([('product_ids', 'in', bom_line.product_id.id)])
-            bom_line.template_consumption_plan_ids = plans
+    
+    @api.model_create_multi
+    def create(self, vals):
+        line_ids = super().create(vals)
+        for bom_line_id in line_ids:
+            if bom_line_id.product_id.template_consumption_plan_ids:
+                bom_line_id.template_consumption_plan_ids = [(6,0,bom_line_id.product_id.template_consumption_plan_ids.ids)]
+        return line_ids

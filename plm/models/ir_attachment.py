@@ -1086,8 +1086,6 @@ class IrAttachment(models.Model):
         if check:
             self.writeCheckDatas(vals)
         #
-        self._check_unique_document(vals)
-        #
         vals.update(self.checkMany2oneClient(vals))
         vals = self.plm_sanitize(vals)
         res = super(IrAttachment, self).write(vals)
@@ -1740,8 +1738,9 @@ class IrAttachment(models.Model):
         if not backupDocBrwsList:
             return super(IrAttachment, self)._file_delete(fname)
 
-    @api.model
-    def GetNextDocumentName(self, documentName):
+   
+    def GetNextDocumentName(self, 
+                            documentName):
         """
             Return a new name due to sequence next number.
             

@@ -50,6 +50,6 @@
         "report/report_consumption_plan.xml",
     ],
     "installable": True,
-    "application": True,
+    "application": False,
     "auto_install": False,
 }
