@@ -485,20 +485,6 @@ msgstr "Ajouter l'autorisation de groupes plm à la vente"
 #. module: plm
 #: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
 msgid ""
-"Add the capability to update the manufacturing order from a revised BOM\n"
-"                                        <b>\n"
-"                                        ATTENTION !! This module depends on plm_mrp_bom_update from:\n"
-"                                        git clone -b 16.0 https://github.com/OmniaSolutions/odooAddons.git</b>"
-msgstr ""
-"Ajoutez la possibilité de mettre à jour l'ordre de fabrication à partir d'une nomenclature révisée\n"
-"                                        <b>\n"
-"                                        ATTENTION !! Ce module dépend de plm_mrp_bom_update de:\n"
-"                                        git clone -b 16.0 https://github.com/OmniaSolutions/odooAddons.git</b>"
-
-
-#. module: plm
-#: model_terms:ir.ui.view,arch_db:plm.view_plm_settings
-msgid ""
 "Add the capability to use the PDF PLM document inside work order\n"
 "                                        ATTENTION !! This module work only for enterprise version because the mrp_workorder is in the enterprise version"
 msgstr ""
@@ -2495,11 +2481,6 @@ msgstr "Documents liés"
 #: model_terms:ir.ui.view,arch_db:plm.view_attachment_form_plm_hinerit
 msgid "Linked Parts"
 msgstr "Pièces connexes"
-
-#. module: plm
-#: model:ir.model.fields,field_description:plm.field_res_config_settings__module_plm_mrp_bom_update
-msgid "MRP B.O.M Update"
-msgstr "Système de stockage multi-faces"
 
 #. module: plm
 #. odoo-python

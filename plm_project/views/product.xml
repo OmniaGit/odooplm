@@ -43,7 +43,7 @@
         <field name="model">product.product</field>
         <field name="arch" type="xml">
             <list string="PLM Products" decoration-danger="engineering_state in ('draft','obsolated')" decoration-success="engineering_state == 'released'" decoration-warning="engineering_state == 'confirmed'" decoration-info="engineering_state == 'undermodify'">
-                <field name="image_1920" widget="image"/>
+                <field name="image_1920" widget="image" class="oe_avatar" options="{'zoom': true, 'preview_image':'image_128'}"/>
                 <field name="name"/>
                 <field name="engineering_code"/>
                 <field name="default_code"/>

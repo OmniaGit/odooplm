@@ -25,14 +25,20 @@
         <field name="inherit_id" ref="project.view_project_kanban"/>
         <field name="priority">24</field>
         <field name="arch" type="xml">
+            <xpath expr="//templates" position="before">
+                <field name="plm_use_plm"/>
+                <field name="total_components"/>
+                <field name="released_components"/>
+            </xpath>
             <xpath expr="//div[hasclass('d-flex', 'align-items-center')]" position="after">
-                <a class="d-inline-block btn-link text-dark small me-1" role="button"
-                   name="action_get_product_variant_list_view" type="object"
-                   t-attf-title="#{record.milestone_count_reached.value} Milestones reached out of #{record.milestone_count.value}">
-                    <i class="fa fa-tags fa-fw"></i>
-                </a>
+                <t t-if="record.plm_use_plm.raw_value">
+                    <a class="d-inline-block btn-link text-dark small me-1" role="button"
+                       name="action_get_product_variant_list_view" type="object"
+                       t-attf-title="#{record.released_components.value} out of #{record.total_components.value} components released">
+                        <i class="fa fa-tags fa-fw"></i>
+                    </a>
+                </t>
             </xpath>
         </field>
     </record>
-
 </odoo>
