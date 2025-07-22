@@ -808,4 +808,96 @@ class PackAndGo(models.TransientModel):
                             out[product_product_id].append(ref_ir_attachment_id)
         return out
 
+    def action_create_zip_checkout(self):
+        active_ids = self.env.context.get('active_ids', [])
+        products = self.env['product.product'].browse(active_ids)
+
+        user = self.env.user
+        now = fields.Datetime.now()
+
+        # Containers
+        ir_attachment_data = []
+        product_data = []
+        relation_data = []
+        component_doc_data = []
+
+        zip_buffer = BytesIO()
+        with zipfile.ZipFile(zip_buffer, 'w') as zip_file:
+            all_attachment_ids = []
+
+            for product in products:
+
+                product_data.append({
+                    'id': product.id,
+                    'name': product.name,
+                    'engineering_code': product.engineering_code,
+                    'engineering_revision': product.engineering_revision,
+                })
+
+                for attach in products.linkeddocuments:
+                    # if hasattr(attach, 'checkout'):
+                        # attach.checkout()
+
+                    if attach.datas:
+                        zip_file.writestr(attach.name or f"file_{attach.id}", base64.b64decode(attach.datas))
+
+                    ir_attachment_data.append({
+                        'id': attach.id,
+                        'name': attach.name,
+                        'engineering_code': attach.engineering_code,
+                        'engineering_revision': attach.engineering_revision,
+                    })
+                    all_attachment_ids.append(attach.id)
+
+            rels = self.env['ir.attachment.relation'].search([
+                ('parent_id', 'in', all_attachment_ids),
+                ('child_id', 'in', all_attachment_ids)
+            ])
+            for rel in rels:
+                relation_data.append({
+                    'link_kind': rel.link_kind,
+                    'parent_id': rel.parent_id.id,
+                    'child_id': rel.child_id.id,
+                })
+
+            comp_rels = self.env['plm.component.document.rel'].search([
+                ('document_id', 'in', all_attachment_ids)
+            ])
+            for rel in comp_rels:
+                component_doc_data.append({
+                    'document_id': rel.document_id.id,
+                    'component_id': rel.component_id.id,
+                    'line_id': rel.id,
+                })
+
+            json_data = {
+                'user_id': user.id,
+                'user_name': user.name,
+                'date': now.isoformat(),
+                'ir_attachment': ir_attachment_data,
+                'product_product': product_data,
+                'ir_attachment_relation': relation_data,
+                'plm_component_document_rel': component_doc_data,
+            }
+
+            zip_file.writestr('exported_data.json', json.dumps(json_data, indent=4))
+
+        # Save ZIP to temporary attachment
+        zip_buffer.seek(0)
+        zip_data = base64.b64encode(zip_buffer.read())
+
+        attachment = self.env['ir.attachment'].create({
+            'name': '%s_Export.zip' % products.default_code,
+            'type': 'binary',
+            'datas': zip_data,
+            'mimetype': 'application/zip',
+        })
+
+        # Trigger file download with static name
+        return {
+            'type': 'ir.actions.act_url',
+            'url': f'/web/content/{attachment.id}?download=true&filename={products.default_code}_Export.zip',
+            'target': 'self',
+        }
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
