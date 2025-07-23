@@ -31,6 +31,7 @@ import shutil
 import tempfile
 import requests
 import zipfile
+import base64
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
@@ -811,7 +812,7 @@ class PackAndGo(models.TransientModel):
         return out
 
     def action_create_zip_checkout(self):
-        active_ids = self.env.context.get('active_ids', [])
+        active_ids = self.env.context.get('params', {}).get('resId', False)
         products = self.env['product.product'].browse(active_ids)
 
         user = self.env.user
@@ -836,12 +837,16 @@ class PackAndGo(models.TransientModel):
                     'engineering_revision': product.engineering_revision,
                 })
 
-                for attach in products.linkeddocuments:
-                    # if hasattr(attach, 'checkout'):
-                        # attach.checkout()
+                for attach in product.linkeddocuments:
+                    content = attach.preview or attach.datas  # fallback to datas if preview is empty
 
-                    if attach.datas:
-                        zip_file.writestr(attach.name or f"file_{attach.id}", base64.b64decode(attach.datas))
+                    if content and isinstance(content, (str, bytes)):
+                        try:
+                            zip_file.writestr(attach.name or f"file_{attach.id}", base64.b64decode(content))
+                        except Exception as e:
+                            _logger.warning(f"Could not write file {attach.name}: {e}")
+                    else:
+                        _logger.warning(f"Attachment {attach.name} has no valid preview or datas content.")
 
                     ir_attachment_data.append({
                         'id': attach.id,
