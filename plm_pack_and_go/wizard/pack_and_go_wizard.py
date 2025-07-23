@@ -30,9 +30,11 @@ import os
 import shutil
 import tempfile
 import requests
+import zipfile
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
+from io import BytesIO
 
 _logger = logging.getLogger(__name__)
 
