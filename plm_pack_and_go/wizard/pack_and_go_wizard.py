@@ -608,14 +608,20 @@ class PackAndGo(models.TransientModel):
 
     def exportSingle(self, lineBrws, outZipFile):
         ir_attachment_id = lineBrws.document_id
+        if not ir_attachment_id or not ir_attachment_id.store_fname:
+            logging.error(
+                f"Attachment missing or store_fname is None for document ID {getattr(ir_attachment_id, 'id', 'N/A')}"
+            )
+            return
+
         fromFile = ir_attachment_id._full_path(ir_attachment_id.store_fname)
         outFilePath = self.computeDocName(lineBrws, outZipFile, compute_file_name=False)
+
         if os.path.exists(fromFile):
             shutil.copyfile(fromFile, outFilePath)
         else:
             logging.error(
-                "Unable to export file from document ID %r. File %r does not exists."
-                % (ir_attachment_id.id, fromFile)
+                f"Unable to export file from document ID {ir_attachment_id.id}. File {fromFile} does not exist."
             )
 
     def exportConverted(self, line_wizard_brows):
