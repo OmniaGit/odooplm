@@ -99,14 +99,15 @@ class ProductTemplate(models.Model):
             bom_types = []
             for option in field_type_def.get('selection', []):
                 bom_types.append(option[0])
-            bom_line = bom_obj._get_in_bom(product_id.id, False, bom_types)
-            where_struct = bom_obj._implode_bom(bom_line, False, bom_types)
-            prod_struct = print_where_struct(self, where_struct)
-            if where_struct:
-                msg = _('You cannot unlink a component that is present in a BOM:\n')
-                for prod in prod_struct:
-                    msg += (_('\t Engineering Code = %r   Engineering Revision = %r   Product Id = %r\n' % (prod[0], prod[1], prod[2])))
-                raise UserError(msg)
+            for product_product_id in product_id.product_variant_ids:
+                bom_line = bom_obj._get_in_bom(product_product_id.id, False, bom_types)
+                where_struct = bom_obj._implode_bom(bom_line, False, bom_types)
+                prod_struct = print_where_struct(self, where_struct)
+                if where_struct:
+                    msg = _('You cannot unlink a component that is present in a BOM:\n')
+                    for prod in prod_struct:
+                        msg += (_('\t Engineering Code = %r   Engineering Revision = %r   Product Id = %r\n' % (prod[0], prod[1], prod[2])))
+                    raise UserError(msg)
 
     def isLastVersion(self):
         for tempate_id in self:
