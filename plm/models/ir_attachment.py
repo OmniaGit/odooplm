@@ -1738,9 +1738,9 @@ class IrAttachment(models.Model):
         if not backupDocBrwsList:
             return super(IrAttachment, self)._file_delete(fname)
 
+    @api.model
     def GetNextDocumentName(self, 
-                            documentName, 
-                            context):
+                            documentName):
 
         """
             Return a new name due to sequence next number.
