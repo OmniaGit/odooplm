@@ -30,11 +30,12 @@ class MrpBomLine(models.Model):
         comodel_name="template.consumption.plan",
         string="Consumption Plans",
     )
-    
+
     @api.model_create_multi
     def create(self, vals):
         line_ids = super().create(vals)
         for bom_line_id in line_ids:
-            if bom_line_id.product_id.template_consumption_plan_ids:
-                bom_line_id.template_consumption_plan_ids = [(6,0,bom_line_id.product_id.template_consumption_plan_ids.ids)]
+            bom_product = bom_line_id.product_id
+            if not bom_product.is_independent_consumption_plan and bom_product.template_consumption_plan_ids:
+                bom_line_id.template_consumption_plan_ids = [(6,0,bom_product.template_consumption_plan_ids.ids)]
         return line_ids

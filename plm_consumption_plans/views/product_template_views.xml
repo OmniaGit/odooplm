@@ -20,6 +20,9 @@
                         </group>
                     </page>
                 </xpath>
+                <xpath expr="//field[@name='default_code']" position="after">
+                    <field name="is_independent_consumption_plan"/>
+                </xpath>
             </field>
         </record>
     </data>
