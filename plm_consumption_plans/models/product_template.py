@@ -28,6 +28,7 @@ class ProductTemplate(models.Model):
         comodel_name="template.consumption.plan",
         string="Consumption Plans",
     )
+    is_independent_consumption_plan = fields.Boolean(string="Independent Consumption Plan", help="If enabled, the BoM line has its own consumption plans and changes here won’t affect the product.", default=False, copy=False)
 
     def act_get_consumption_plan_report(self):
         self.ensure_one()
