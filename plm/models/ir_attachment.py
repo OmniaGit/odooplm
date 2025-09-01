@@ -1188,7 +1188,6 @@ class IrAttachment(models.Model):
     def unlink(self):
         for checkObj in self:
             checkObj.unlinkCheckDocumentRelations()
-            checkObj.linkedcomponents.mapped("product_tmpl_id").unlinkCheckBomRelations()
             checkObj.linkedcomponents = False
             checkObj.unlinkRestorePreviousDocument()
             checkObj.unlinkBackUp()

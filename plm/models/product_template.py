@@ -75,7 +75,6 @@ class ProductTemplate(models.Model):
     kit_bom = fields.Boolean(_('KIT Bom Type'))
     
     def unlinkCheckBomRelations(self):
-
         def print_where_struct(self, where_struct):
             print_struct = []
             prod_struct = []
@@ -95,8 +94,8 @@ class ProductTemplate(models.Model):
                 bom_types.append(option[0])
             bom_line = bom_obj._get_in_bom(product_template_id.product_variant_id.id, False, bom_types)
             where_struct = bom_obj._implode_bom(bom_line, False, bom_types)
-            prod_struct = print_where_struct(self, where_struct)
             if where_struct:
+                prod_struct = print_where_struct(self, where_struct)
                 msg = _('You cannot unlink a component that is present in a BOM:\n')
                 for prod in prod_struct:
                     msg += (_('\t Engineering Code = %r   Engineering Revision = %r   Product Id = %r\n' % (prod[0], prod[1], prod[2])))

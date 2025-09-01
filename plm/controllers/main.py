@@ -221,43 +221,77 @@ class UploadDocument(Controller):
         product_id = eval(product_id)
         doc_rev = eval(doc_rev)
         related_attachment_id = eval(related_attachment_id)
-        if doc_name:
+        #
+        new_context = request.env.context.copy()
+        new_context['backup'] = False
+        new_context['check'] = False    # Or zip file will not be updated if in check-in
+        contex_brw = request.env['ir.attachment'].with_context(new_context)
+        link_id =  request.env['ir.attachment.relation']
+        #
+        configParamObj = request.env['ir.config_parameter'].sudo()
+        upload_same_revision = configParamObj._get_param('upload_extra_file_some_revision')
+        #
+        product_id = request.env['product.product'].browse(product_id)
+        #
+        if upload_same_revision and product_id:
             value1 = kw.get('file_stream').stream.read()
-            ir_attachment_id  = request.env['ir.attachment'].search([('engineering_code',  '=', doc_name),
-                                                                     ('engineering_revision', '=', doc_rev)])
-            to_write = {'datas': base64.b64encode(value1),
-                        'name': kw.get('filename') or doc_name,
-                        'engineering_code': doc_name,
-                        'engineering_revision': doc_rev}
-            link_id =  request.env['ir.attachment.relation']
-            new_context = request.env.context.copy()
-            new_context['backup'] = False
-            new_context['check'] = False    # Or zip file will not be updated if in check-in
-            contex_brw = request.env['ir.attachment'].with_context(new_context)
-            to_write['is_plm'] = True
-            if not ir_attachment_id:
-                ir_attachment_id = contex_brw.create(to_write)
-            else:
+            
+            file_name = kw.get('filename')
+            _name, exte = os.path.splitext(file_name)
+            doc_name = "%s_%s" % (product_id.engineering_code,
+                                  exte.replace(".",""))
+            doc_rev = product_id.engineering_revision
+            ir_attachment_id = False
+            to_write = {'datas': base64.b64encode(value1)}
+            for ir_attachment_id in  request.env['ir.attachment'].sudo().search([('engineering_code',  '=', doc_name),
+                                                                                  ('engineering_revision', '=', doc_rev)]):
+                break
+            if ir_attachment_id:
                 ir_attachment_id.with_context(new_context).write(to_write)
-            if ir_attachment_id and related_attachment_id:
-                link_id = link_id.search([('parent_id', '=', related_attachment_id),
-                                          ('child_id', '=', ir_attachment_id.id),
-                                          ('link_kind', '=', 'ExtraTree')])
-            if not link_id:
-                request.env['ir.attachment.relation'].create({'parent_id': related_attachment_id,
-                                                              'child_id': ir_attachment_id.id,
-                                                              'link_kind': 'ExtraTree'})    
-            if product_id:
-                product_id = request.env['product.product'].browse(product_id)
-                request.env['plm.component.document.rel'].createFromIds(product_id, ir_attachment_id)
             else:
-                if related_attachment_id:
-                    for product_id in request.env['ir.attachment'].browse(related_attachment_id).linkedcomponents:
-                        request.env['plm.component.document.rel'].createFromIds(product_id, ir_attachment_id)
-                        break
-            return Response('Extra file Upload succeeded', status=200)
-        logging.info('Extra file no upload %r' % (ir_attachment_id))
-        return Response('Extra file Failed upload', status=400)
+                
+                new_file_name = "%s_%s.%s" % (product_id.engineering_code,
+                                              doc_rev,
+                                              exte.replace(".",""))
+                to_write['name'] = new_file_name
+                to_write['engineering_code'] = doc_name
+                to_write['engineering_revision'] = doc_rev
+                to_write['is_plm'] = True
+                ir_attachment_id= contex_brw.create(to_write)
+        else:
+            if doc_name:
+                value1 = kw.get('file_stream').stream.read()
+                ir_attachment_id  = request.env['ir.attachment'].search([('engineering_code',  '=', doc_name),
+                                                                         ('engineering_revision', '=', doc_rev)])
+                to_write = {'datas': base64.b64encode(value1),
+                            'name': kw.get('filename') or doc_name,
+                            'engineering_code': doc_name,
+                            'is_plm':True,
+                            'engineering_revision': doc_rev}
+                
+                
+              
+                if not ir_attachment_id:
+                    ir_attachment_id = contex_brw.create(to_write)
+                else:
+                    ir_attachment_id.with_context(new_context).write(to_write)
+                
+        if ir_attachment_id and related_attachment_id:
+            link_id = link_id.search([('parent_id', '=', related_attachment_id),
+                                      ('child_id', '=', ir_attachment_id.id),
+                                      ('link_kind', '=', 'ExtraTree')])
+        if not link_id:
+            request.env['ir.attachment.relation'].create({'parent_id': related_attachment_id,
+                                                          'child_id': ir_attachment_id.id,
+                                                          'link_kind': 'ExtraTree'})    
+        if product_id:
+            product_id = request.env['product.product'].browse(product_id)
+            request.env['plm.component.document.rel'].createFromIds(product_id.id, ir_attachment_id)
+        else:
+            if related_attachment_id:
+                for product_id in request.env['ir.attachment'].browse(related_attachment_id).linkedcomponents:
+                    request.env['plm.component.document.rel'].createFromIds(product_id.id, ir_attachment_id)
+                    break
 
     @route('/plm/ir_attachment_preview/<int:id>', type='http', auth='user', methods=['GET'], csrf=False)
     @webservice
