@@ -1146,7 +1146,11 @@ class IrAttachment(models.Model):
 
     def unlinkCheckDocumentRelations(self):
         ctx = self.env.context.copy()
+        mrp_bom_line = self.env['mrp.bom.line']
         for checkObj in self:
+            #
+            # Check document document relations
+            #
             id_parents = checkObj.getParentDocuments()
             for child_doc, parent_docs in id_parents.items():
                 if parent_docs:
@@ -1155,7 +1159,12 @@ class IrAttachment(models.Model):
                         msg += _('\t Engineering Name = %r   Engineering Revision = %r   Id = %r\n') % (
                         parent_doc.engineering_code, parent_doc.engineering_revision, parent_doc.id)
                     raise UserError(msg)
-
+            #
+            # Check Bom relations
+            #
+            for mrp_bom_line_id in mrp_bom_line.search(['source_id','=', ir_attachment_id.id]):
+                raise UserError(f"Unable to delete the Attachment that is present on the bom {mrp_bom_line_id.bom_id.display_name}")
+            
     def unlinkRestorePreviousDocument(self):
         for checkObj in self:
             docBrwsList = self.search([('engineering_code', '=', checkObj.engineering_code),
@@ -1181,7 +1190,6 @@ class IrAttachment(models.Model):
     def unlink(self):
         for checkObj in self:
             checkObj.unlinkCheckDocumentRelations()
-            checkObj.linkedcomponents.mapped("product_tmpl_id").unlinkCheckBomRelations()
             checkObj.linkedcomponents = False
             checkObj.unlinkRestorePreviousDocument()
             checkObj.unlinkBackUp()
