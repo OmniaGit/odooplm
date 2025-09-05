@@ -43,6 +43,9 @@ class plm_temporary_batch_converter(models.TransientModel):
     )
 
     extention = fields.Char("Extension", compute="get_ext")
+    # cad_config_id = fields.Many2one("cad.config", string="Configuration")
+    # cad_config_line_ids = fields.One2many(related='cad_config_id.config_lines', string="Configuration Lines", readonly=False)
+
 
     @api.onchange("document_id")
     def get_ext(self):
@@ -64,6 +67,20 @@ class plm_temporary_batch_converter(models.TransientModel):
         :mode plm_stack.operation_type ['UPDATE','CONVERT','TOSHARED']
         :return: plm_stack object
         """
+        # selected_config = self.cad_config_id.name
+        # cad_config_data = {}
+        # config_lines = []
+        #
+        #
+        #
+        # for line in self.cad_config_line_ids:
+        #     config_lines.append({
+        #         'key': line.key,
+        #         'value': line.value,
+        #     })
+        # cad_config_data[selected_config] = config_lines
+        # print('cad_config_data', cad_config_data)
+
         if not self.targetFormat:
             raise UserError(_("Select a target format !!"))
         obj_stack = self.env["plm.convert.stack"]
@@ -84,15 +101,18 @@ class plm_temporary_batch_converter(models.TransientModel):
                     "start_document_id": self.document_id.id,
                     "product_category": prod_categ.id,
                     "operation_type": mode,
+                    # "config_line_json": cad_config_data,
                 }
             )
         plm_stack.convert()
+
         return plm_stack
 
     def action_create_convert_download(self):
         """
         Convert file in the given format and return it to the web page
         """
+
         plm_stack = self._convert("CONVERT")
         return {
             "name": _("File Converted"),

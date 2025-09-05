@@ -38,11 +38,28 @@
         <field name="inherit_id" ref="plm.document_kanban_view"/>
         <field name="arch" type="xml">
             <xpath expr="//td[@name='attachment_button_box']" position="inside">
-                <button name="show_convert_wizard" type="object" class="btn btn-primary btn-sm ms-1">
+                <button name="show_convert_wizard" type="object" class="btn btn-primary btn-sm ms-1" context="{'attachment_id': id}">
                     <i class="fa fa-openid"></i>
                     Convert
                 </button>
             </xpath>
         </field>
     </record>
+
+    <record id="document_form_view_hinerit" model="ir.ui.view">
+        <field name="name">ir.attachment.convert</field>
+        <field name="model">ir.attachment</field>
+        <field name="priority" eval="1"/>
+        <field name="inherit_id" ref="plm.view_attachment_form_plm_hinerit"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="show_convert_wizard" type="object" class="btn btn-primary">
+                    <i class="fa fa-openid"></i>
+                    Convert
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+
 </odoo>

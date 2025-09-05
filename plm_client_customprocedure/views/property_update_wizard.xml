@@ -1,0 +1,39 @@
+<odoo>
+    <record id="view_update_property_form" model="ir.ui.view">
+        <field name="name">update.property.form</field>
+        <field name="model">update.property</field>
+        <field name="arch" type="xml">
+            <form string="Update Property">
+                <group>
+                    <div class="form-group">
+                        <group>
+                            <field name="attachment_id"/>
+                        </group>
+
+                        <button name="action_fetch_cad_data" string="Fetch Data" type="object"
+                                class="btn btn-primary"/>
+
+                    </div>
+                </group>
+                <notebook>
+                    <page string="Configuration">
+                        <field name="cad_config_ids" options="{'no_create': True}">
+                            <list create="0" editable="bottom" duplicate="0">
+                                <field name="name" column_invisible="1"/>
+                                <field name="key" readonly="1"/>
+                                <field name="value"/>
+                                <field name="is_updated" column_invisible="1"/>
+                            </list>
+                        </field>
+                    </page>
+                </notebook>
+                <footer>
+                    <button name="update_cad_server_data" type="object" string="Update" class="btn btn-primary"/>
+                    <button name="update_conversion_file_stack" string="Update conversion" type="object"
+                            class="btn-primary"/>
+                    <button special="cancel" string="Close" class="btn btn-primary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,26 @@
+<odoo>
+
+    <record id="view_odoo_cad_mapping_list" model="ir.ui.view">
+        <field name="name">odoo.cad.mapping.list</field>
+        <field name="model">odoo.cad.mapping</field>
+        <field name="arch" type="xml">
+            <list string="Odoo CAD Mappings" editable="bottom">
+                <field name="odoo_model_id"/>
+                <field name="odoo_fields_id"/>
+                <field name="cad_field"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_odoo_cad_mapping" model="ir.actions.act_window">
+        <field name="name">Odoo CAD Mappings</field>
+        <field name="res_model">odoo.cad.mapping</field>
+        <field name="view_mode">list</field>
+    </record>
+    <menuitem
+        id="menu_odoo_cad_mapping"
+        name="Odoo CAD Mappings"
+        parent="plm_automated_convertion.menu_plm_submenu_main"
+        action="action_odoo_cad_mapping"
+    />
+</odoo>

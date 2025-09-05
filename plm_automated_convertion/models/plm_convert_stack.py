@@ -30,9 +30,21 @@ import shutil
 import traceback
 import requests
 import tempfile
+import json
 
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
+from odoo import release
+import re
+
+
+# odoo version check #
+current_version = release.version
+match = re.match(r"(\d+)", current_version)
+if match:
+    major_version = match.group(1)
+else:
+    print("Could not parse version")
 
 
 class PlmConvertStack(models.Model):
@@ -43,11 +55,17 @@ class PlmConvertStack(models.Model):
     name = fields.Char("Name", compute="_compute_name")
     sequence = fields.Integer(string="Sequence")
     convrsion_rule = fields.Many2one(
-        "plm.convert.format", string="Conversion rule", required=True
+        "plm.convert.format", string="Conversion rule"
     )
     product_category = fields.Many2one("product.category", string="Category")
     conversion_done = fields.Boolean(string="Conversion Done")
-    start_document_id = fields.Many2one("ir.attachment", string="Starting Document")
+    product_id = fields.Many2one('product.product', string='Product')
+    start_document_id = fields.Many2one(
+        "ir.attachment",
+        string="Starting Document",
+        domain=[("document_type", "=", "3d")],
+        required=True
+    )
     end_document_id = fields.Many2one("ir.attachment", string="Converted Document")
     output_name_rule = fields.Char("Output Name Rule")
     error_string = fields.Text("Error")
@@ -55,7 +73,7 @@ class PlmConvertStack(models.Model):
         related="convrsion_rule.server_id", string="Conversion Server"
     )
     operation_type = fields.Selection(
-        [("UPDATE", "Update"), ("TOSHARED", "Shared Folder"), ("CONVERT", "Convert")],
+        [("UPDATE", "Update"), ("TOSHARED", "Shared Folder"), ("CONVERT", "Convert"), ("update_Cad", "Update Cad")],
         string="Operation Type",
         help="""
         Type of conversion operation
@@ -64,6 +82,17 @@ class PlmConvertStack(models.Model):
                   in the given server path
         Convert: Convert the file in place on the stack object
         """
+    )
+    stack_data = fields.Json()
+    conversion_line_ids = fields.One2many('plm.conversion.stack.line',
+                                          'conversion_stack_id', string='Changes')
+    state = fields.Selection(
+        [
+            ('draft', 'Draft'),
+            ('done', 'Done'),
+        ],
+        string="Status",
+        default='draft'
     )
 
     def _compute_name(self):
@@ -75,11 +104,11 @@ class PlmConvertStack(models.Model):
 
     def setToConver(self):
         for convertStack in self:
-            convertStack.conversion_done = False
+            convertStack.state = 'draft'
 
     def setToConverted(self):
         for convertStack in self:
-            convertStack.conversion_done = True
+            convertStack.state = 'done'
 
     @api.model_create_multi
     def create(self, vals):
@@ -87,73 +116,6 @@ class PlmConvertStack(models.Model):
         for r in ret:
             r.sequence = r.id
         return ret
-
-    def convert(self):
-        for stack_id in self:
-            if stack_id.conversion_done:
-                continue
-            try:
-                if stack_id.operation_type == "UPDATE":
-                    stack_id.start_document_id._updatePreview()
-                elif stack_id.operation_type in "TOSHARED":
-                    file_converted = stack_id._generateFile()
-                    if stack_id.server_id.folder_to:
-                        dest_path = os.path.join(
-                            stack_id.server_id.folder_to,
-                            os.path.basename(file_converted),
-                        )
-                        shutil.copyfile(file_converted, dest_path)
-                    else:
-                        raise Exception(
-                            _("No server path defined for server %s" % stack_id.server_id.name)
-                        )
-                elif stack_id.operation_type == "CONVERT":
-                    file_converted = stack_id._generateFile()
-                    stack_id._attach_to_stack(file_converted)
-                else:
-                    continue
-                stack_id.setToConverted()
-                stack_id.error_string = ""
-                self.env.cr.commit()
-            except Exception as ex:
-                logging.error(ex)
-                traceback.print_exc()
-                stack_id.error_string = (
-                    _("Internal Error %s check odoo log for the full error stack") % ex
-                )
-
-    def generateConvertedDocuments(self):
-        logging.info("generateConvertedDocuments started")
-        toConvert = self.search([("conversion_done", "=", False)], order="sequence ASC")
-        toConvert.convert()
-
-    def getAllFiles(self):
-        out = {}
-        document = self.start_document_id
-        ir_attachment = self.env["ir.attachment"]
-        fileStoreLocation = ir_attachment._get_filestore()
-
-        def templateFile(docId):
-            document = ir_attachment.browse(docId)
-            return {
-                document.name: (
-                    document.name,
-                    open(os.path.join(fileStoreLocation, document.store_fname), "rb"),
-                )
-            }
-
-        out["root_file"] = (
-            document.name,
-            open(os.path.join(fileStoreLocation, document.store_fname), "rb"),
-        )
-        request = (document.id, [], -1)
-        for outId, _, _, _, _, _ in ir_attachment.CheckAllFiles(
-            request
-        ):  # todo: verificare se carica il datas
-            if outId == document.id:
-                continue
-            out.update(templateFile(outId))
-        return out
 
     def getFileConverted(self, newFileName=False):
         targetExtention = self.convrsion_rule.end_format
@@ -164,20 +126,38 @@ class PlmConvertStack(models.Model):
             )
         else:
             # questa e sbagliata deve prendere il server che e' configurato
-            serverName = self.env["ir.config_parameter"].get_param(
-                "plm_convetion_server"
-            )
+
+            # serverName = self.env["ir.config_parameter"].get_param(
+            #     "plm_convetion_server"
+            # )
+            IrConfig = self.env['ir.config_parameter'].sudo()
+            conversion_server_ip = IrConfig.get_param('conversion_server_ip')
+
+            conversion_server_port = IrConfig.get_param('conversion_server_port')
+
+            serverName = f"{conversion_server_ip}:{conversion_server_port}"
             if not serverName:
                 raise Exception(
+
                     "Configure plm_convetion_server to use this functionality"
                 )
+
+            if not serverName:
+                raise Exception(
+
+                    "Configure plm_convetion_server to use this functionality"
+                )
+
+
             url = "http://%s/odooplm/api/v1.0/saveas" % serverName
             params = {}
             params["targetExtention"] = targetExtention
             params["integrationName"] = self.convrsion_rule.cad_name
+
             response = requests.post(
                 url, params=params, files=self.getAllFiles(self.start_document_id)
             )
+
             if response.status_code != 200:
                 raise UserError(
                     "Conversion of cad server failed, check the cad server log"
@@ -213,6 +193,164 @@ class PlmConvertStack(models.Model):
         if not os.path.exists(newFilePath):
             raise Exception(_("File not converted"))
         return newFilePath
+
+    def _auto_update_cad_file(self):
+
+        IrConfig = self.env['ir.config_parameter'].sudo()
+        conversion_server_ip = IrConfig.get_param('conversion_server_ip')
+        conversion_server_port = IrConfig.get_param('conversion_server_port')
+        conversion_server_protocol = IrConfig.get_param('conversion_server_protocol', default='http')
+        conversion_server_ip = conversion_server_ip
+        conversion_server_port = conversion_server_port
+
+        serverName = f"{conversion_server_protocol}://{conversion_server_ip}:{conversion_server_port}"
+        url = f"{serverName}/odooplm/api/v1.0/update_odoo_mapping_cad_properties"
+
+        mappings_data = self.env['odoo.cad.mapping'].search([])
+
+        cad_update_data = {}
+        data_to_update = []
+        if self.stack_data:
+            data_to_update = self.stack_data['data_to_update']
+        else:
+            pass
+        for line in self.conversion_line_ids:
+            cad_field = mappings_data.filtered(lambda a: a.odoo_fields_id.name == line.field_id.name).cad_field
+            data_to_update.append({cad_field: line.new_value or line.old_value})
+
+        cad_update_data['data_to_update'] = data_to_update
+        cad_update_data['file_content'] = (self.start_document_id.datas).decode('utf-8')
+        cad_update_data['integration'] = 'solidworks'
+        cad_update_data['file_name'] = self.start_document_id.name
+        cad_update_data['current_version'] = major_version
+
+        self.start_document_id.toggle_check_out()
+        response = requests.post(url, json=cad_update_data, headers={'Content-Type': 'application/json'})
+        if response.status_code != 200:
+            try:
+                error_msg = response.json().get("error", response.text)
+            except Exception:
+                error_msg = response.text or "Invalid license or expired"
+            return False, error_msg
+
+        try:
+            binary_data = response.content
+            encoded_data = base64.b64encode(binary_data).decode('utf-8')
+            self.start_document_id.write({
+                'datas': encoded_data,
+                'mimetype': 'application/octet-stream'
+            })
+
+            self.start_document_id.toggle_check_out()
+            self.start_document_id.linkedcomponents.write({'update_3d_file': False})
+
+            attachments_3d = self.start_document_id.linkedcomponents.linkeddocuments.filtered(
+                lambda att: att.document_type == '3d'
+            )
+            attachment_name = ', '.join(attachments_3d.mapped('name'))
+            if attachment_name:
+                for product in self.start_document_id.linkedcomponents:
+                    product.message_post(body=f'Product CAD file {attachment_name} update successful.')
+                self.start_document_id.message_post(
+                    body=f'CAD file {attachment_name} successfully updated and attached.'
+                )
+            return True, ""  # ✅ Success
+
+        except Exception as e:
+            # only triggered if license was valid but internal CAD update failed
+            return False, f"Failed to process CAD update: {e}"
+
+
+    def convert(self):
+        for stack_id in self:
+            if stack_id.state == 'done':
+                continue
+            try:
+                if stack_id.operation_type == "UPDATE":
+                    stack_id.start_document_id._updatePreview()
+                elif stack_id.operation_type in "TOSHARED":
+                    file_converted = stack_id._generateFile()
+                    if stack_id.server_id.folder_to:
+                        dest_path = os.path.join(
+                            stack_id.server_id.folder_to,
+                            os.path.basename(file_converted),
+                        )
+                        shutil.copyfile(file_converted, dest_path)
+                    else:
+                        raise Exception(
+                            _("No server path defined for server %s" % stack_id.server_id.name)
+                        )
+                elif stack_id.operation_type == "CONVERT":
+                    file_converted = stack_id._generateFile()
+                    stack_id._attach_to_stack(file_converted)
+
+                elif stack_id.operation_type == "update_Cad":
+                    success, error_msg = stack_id._auto_update_cad_file()
+                    if success:
+                        stack_id.setToConverted()
+                        stack_id.error_string = ""
+                        self.env.cr.commit()
+                    else:
+                        stack_id.write({
+                            'error_string': error_msg,
+                            'state': 'draft'
+                        })
+                        continue  # skip success flow
+
+                else:
+                    continue  # unknown operation, just skip
+
+                stack_id.setToConverted()
+                stack_id.error_string = ""
+                self.env.cr.commit()
+                stack_id.start_document_id.toggle_check_out()
+
+            except Exception as ex:
+                logging.error(ex)
+                traceback.print_exc()
+                stack_id.error_string = (
+                    _("Internal Error %s check odoo log for the full error stack") % ex
+                )
+
+    def generateConvertedDocuments(self):
+        logging.info("generateConvertedDocuments started")
+        toConvert = self.search([("state", "=", 'draft')], order="sequence ASC")
+        toConvert.convert()
+
+    def getAllFiles(self, document_id):
+        out = {}
+        document = self.start_document_id
+        ir_attachment = self.env["ir.attachment"]
+        fileStoreLocation = ir_attachment._get_filestore()
+
+        def get_file_content(doc):
+            file_path = os.path.join(fileStoreLocation, doc.store_fname)
+            if not os.path.exists(file_path):
+                if doc.datas:
+                    temp_path = os.path.join(tempfile.gettempdir(), doc.name)
+                    with open(temp_path, "wb") as f:
+                        f.write(base64.b64decode(doc.datas))
+                    return open(temp_path, "rb")
+                else:
+                    raise UserError(_("Missing file in filestore and no in-database content for '%s'") % doc.name)
+            return open(file_path, "rb")
+
+        def templateFile(docId):
+            doc = ir_attachment.browse(docId)
+            return {doc.name: (doc.name, get_file_content(doc))}
+
+        # Load root file
+        out["root_file"] = (document.name, get_file_content(document))
+
+        # Load all related files
+        request = (document.id, [], -1, None, None)
+
+        for outId, *_ in ir_attachment.CheckAllFiles(request):
+            if outId == document.id:
+                continue
+            out.update(templateFile(outId))
+
+        return out
 
     def _attach_to_stack(self, file_name):
         attachment = self.env["ir.attachment"]

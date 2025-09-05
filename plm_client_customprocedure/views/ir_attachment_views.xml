@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="ir_attchement_form_view_inherit_fetch_data" model="ir.ui.view">
+        <field name="name">ir.attachment.convert</field>
+        <field name="model">ir.attachment</field>
+        <field name="priority" eval="1"/>
+        <field name="inherit_id" ref="plm.view_attachment_form_plm_hinerit"/>
+        <field name="arch" type="xml">
+             <xpath expr="//sheet/div[@name='button_box']" position="inside">
+
+                    <button class="oe_stat_button" icon="fa-cog" type="object" name="action_open_cad_config" string="CAD Configurations"/>
+
+            </xpath>
+        </field>
+    </record>
+
+    <record id="ir_actions_server_ir_attachment" model="ir.actions.server">
+        <field name="name">Cad Configuration Update</field>
+        <field name="model_id" ref="plm_client_customprocedure.model_ir_attachment"/>
+        <field name="binding_model_id" ref="plm_client_customprocedure.model_ir_attachment"/>
+        <field name="binding_view_types">form</field>
+        <field name="state">code</field>
+        <field name="code">action = model.open_ir_attachment_wizard_config()</field>
+    </record>
+</odoo>

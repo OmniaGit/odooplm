@@ -110,7 +110,7 @@
         <menuitem
             id="plm_convert_rule_menu"
             name="Plm Convert Rule"
-            parent="plm.plm_menu_dictionaries"
+            parent="plm_automated_convertion.menu_plm_submenu_main"
             groups="plm_automated_convertion.group_plm_convert_view"
             action="plm_convert_rule_action"/>
 
