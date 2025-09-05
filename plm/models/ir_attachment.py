@@ -61,8 +61,8 @@ class IrAttachment(models.Model):
 
     checkout_user = fields.Char(string=_("Checked-Out to"),
                                 compute='_get_checkout_state')
-    
-    
+
+
     is_checkout = fields.Boolean(_('Is Checked-Out'),
                                  compute='_is_checkout',
                                  store=False)
@@ -3467,7 +3467,7 @@ class IrAttachment(models.Model):
         ).report_action(docids=[self.id],
                         data=report_data)
 
-    def getRelatedLyTreeNew(self, 
+    def getRelatedLyTreeNew(self,
                             optional_return_type=['3d'],
                             getOnyChkOut=False,
                             latest=False):
@@ -3524,7 +3524,7 @@ class IrAttachment(models.Model):
 
     @api.model
     def getRelatedHiTreeNew(self,
-                            recursion=True, 
+                            recursion=True,
                             getRftree=False,
                             getOnyChkOut=False,
                             latest=False):
@@ -3536,8 +3536,8 @@ class IrAttachment(models.Model):
         #
         out = {"data":self.env['ir.attachment']}
         #
-        def _getRelatedHiTree(attachment_id, 
-                              recursion, 
+        def _getRelatedHiTree(attachment_id,
+                              recursion,
                               getRftree):
             if latest:
                 attachment_id=attachment_id.get_latest_version()[0]
@@ -3557,18 +3557,18 @@ class IrAttachment(models.Model):
                                       recursion,
                                       getRftree)
             if getRftree:
-                for obj in self.getRelatedRfTreeNew(recursion=True, 
+                for obj in self.getRelatedRfTreeNew(recursion=True,
                                                     evaluated=[],
                                                     latest=latest):
                     out['data']+=obj
-        _getRelatedHiTree(self, 
-                          recursion, 
+        _getRelatedHiTree(self,
+                          recursion,
                           getRftree)
         return out['data']
 
     @api.model
-    def getRelatedRfTreeNew(self, 
-                            recursion=True, 
+    def getRelatedRfTreeNew(self,
+                            recursion=True,
                             evaluated=False,
                             latest=False):
         #
@@ -3596,16 +3596,16 @@ class IrAttachment(models.Model):
             if child.id == self.id:
                 out+=parent_id
                 if recursion:
-                    for obj in self.getRelatedRfTreeNew(parent_id, 
-                                                        recursion, 
+                    for obj in self.getRelatedRfTreeNew(parent_id,
+                                                        recursion,
                                                         evaluated,
                                                         latest):
                         out = obj
             else:
                 out+=child_id
                 if recursion:
-                    for obj in self.getRelatedRfTreeNew(child_id, 
-                                                        recursion, 
+                    for obj in self.getRelatedRfTreeNew(child_id,
+                                                        recursion,
                                                         evaluated,
                                                         latest):
                         out = obj

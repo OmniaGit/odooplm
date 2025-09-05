@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_cad_config_tree" model="ir.ui.view">
+        <field name="name">cad.config.tree</field>
+        <field name="model">cad.config</field>
+        <field name="arch" type="xml">
+
+            <list create="0" editable="bottom" duplicate="0">
+                <field name="key" readonly="1"/>
+                <field name="value"/>
+            </list>
+        </field>
+    </record>
+</odoo>

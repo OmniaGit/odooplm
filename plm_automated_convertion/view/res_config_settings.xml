@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_plm_automated_convertion" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.plm.automated.convertion</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="0"/>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app data-string="Plm Conversion" string="Conversion Server" name="plm_conversion_server">
+                    <block title="Conversion Server" name="Conversion Server">
+                        <setting id="sdaf" string="Conversion Server">
+                            <field name="plm_convetion_server"/>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+</odoo>

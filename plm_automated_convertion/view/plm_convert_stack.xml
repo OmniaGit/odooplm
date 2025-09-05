@@ -24,7 +24,7 @@
                             domain="[('error_string','not in', [False, ''])]"/>
                     <field name="product_category"/>
                     <field name="start_document_id"/>
-                    <field name="convrsion_rule"/>
+                    <field name="convrsion_rule" required="1"/>
                     <group expand="0" string="Group By...">
                         <filter string="Category" icon="terp-personal" domain="[]"
                                 context="{'group_by':'product_category'}" name="convert_stack_category"/>
@@ -38,33 +38,54 @@
             <field name="model">plm.convert.stack</field>
             <field name="arch" type="xml">
                 <form string="Plm Convert Stack">
+                    <header>
+                        <field name="state" widget="statusbar"/>
+                        <button name="convert" type="object"
+                                string="Conversion" class="btn btn-primary"
+                                invisible="state == 'done'"
+                        />
+                    </header>
                     <sheet>
                         <group>
-                            <field name="sequence" groups="base.group_no_one"/>
+                            <field name="sequence" groups="base.group_no_one" readonly="state == 'done'"/>
                             <field name="write_date" groups="base.group_no_one"/>
-                            <field name="operation_type"/>
-                            <field name="start_document_id" readonly="True"/>
+                            <field name="operation_type" readonly="state == 'done'"/>
+                            <field name="product_id" readonly="state == 'done'"/>
+                            <field name="start_document_id" readonly="state == 'done'"/>
 
-                            <field name="server_id"/>
-                            <div>
-                                <span>Converted ?</span>
-                                <field name="conversion_done"/>
-                                <button name="setToConver"
-                                        type="object"
-                                        help="Re-Active Convertion"
-                                        string="Convertion Done"
-                                        invisible="conversion_done==False"
-                                        icon="fa-arrow-circle-right"
-                                        groups="base.group_no_one"/>
-                            </div>
+                            <field name="server_id" invisible="operation_type=='update_Cad'" readonly="state == 'done'"/>
+<!--                            <div>-->
+<!--                                <span>Converted ?</span>-->
+<!--                                <field name="conversion_done"/>-->
+<!--                                <button name="setToConver"-->
+<!--                                        type="object"-->
+<!--                                        help="Re-Active Convertion"-->
+<!--                                        string="Convertion Done"-->
+<!--                                        invisible="conversion_done==False"-->
+<!--                                        icon="fa-arrow-circle-right"-->
+<!--                                        groups="base.group_no_one"/>-->
+<!--                            </div>-->
                         </group>
                         <group name="Convert"
                                invisible="operation_type=='UPDATE'">
-                            <field name="convrsion_rule"/>
-                            <field name="product_category"/>
-                            <field name="end_document_id" readonly="True"/>
-                            <field name="output_name_rule"/>
+                            <field name="convrsion_rule" required="1" invisible="operation_type=='update_Cad'" readonly="state == 'done'"/>
+                            <field name="product_category" invisible="operation_type=='update_Cad'"/>
+                            <field name="end_document_id" readonly="True" invisible="operation_type=='update_Cad'"/>
+                            <field name="output_name_rule" invisible="operation_type=='update_Cad'" readonly="state == 'done'"/>
                         </group>
+                        <notebook>
+                            <page string="Update Details">
+                                <field name="conversion_line_ids" readonly="state == 'done'">
+                                    <list editable="bottom">
+                                        <field name="model_id"/>
+                                        <field name="field_id" />
+                                        <field name="cad_field"/>
+                                        <field name="old_value"/>
+                                        <field name="new_value"/>
+                                    </list>
+                                </field>
+                            </page>
+                        </notebook>
                         <div style="background-color: #f49390;color: white;font-weight: bold;"
                              invisible="error_string in ['',False]">
                             <field name="error_string" readonly="True"/>
@@ -82,7 +103,7 @@
                 <list string="Plm Convert Stack">
                     <field name="sequence" widget="handle"/>
                     <field name="operation_type"/>
-                    <field name="convrsion_rule"/>
+                    <field name="convrsion_rule" required="1"/>
                     <field name="product_category"/>
                     <field name="start_document_id"/>
                     <field name="end_document_id"/>
@@ -105,10 +126,13 @@
             <field name="search_view_id" ref="plm_convert_stack_search"/>
         </record>
 
+        <menuitem id="menu_plm_submenu_main" name="PLM Conversion" parent="plm.plm_menu_dictionaries"
+          groups="plm_automated_convertion.group_plm_convert_view" sequence="40"/>
+
         <menuitem
             id="plm_convert_stack_menu"
-            name="Plm Convert Stack"
-            parent="plm.plm_menu_dictionaries"
+            name="Plm Automated Stack"
+            parent="plm_automated_convertion.menu_plm_submenu_main"
             groups="plm_automated_convertion.group_plm_convert_view"
             action="plm_convert_stack_action"/>
     </data>

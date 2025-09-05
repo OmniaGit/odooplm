@@ -5,3 +5,5 @@ from . import plm_convert_stack
 from . import plm_convert_rule
 from . import product_product
 from . import plm_convert_format
+from . import res_config_settings
+from . import plm_conversion_stack_line
