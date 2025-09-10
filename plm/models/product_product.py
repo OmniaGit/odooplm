@@ -1017,8 +1017,9 @@ class ProductProduct(models.Model):
             import psycopg2
             if isinstance(ex, psycopg2.IntegrityError):
                 msg = _('Error during component creation with values:\n')
-                for key, value in vals.items():
-                    msg = msg + '%r = %r\n' % (key, value)
+                for val in vals:
+                    for key, value in val.items():
+                        msg = msg + '%r = %r\n' % (key, value)
                 try:
                     msg = msg + str(ex.message) + '\n'
                 except:
@@ -1745,7 +1746,13 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         sanitaized_attributes = {}
         for attribute_name in self._fields.keys():
             if attribute_name in productAttribute:
-                sanitaized_attributes[attribute_name] = productAttribute[attribute_name]
+                value=productAttribute[attribute_name]
+                if value and self._fields[attribute_name].type =='float':
+                    sanitaized_attributes[attribute_name] = float(productAttribute[attribute_name])
+                elif value and self._fields[attribute_name].type =='integer':
+                    sanitaized_attributes[attribute_name] = int(productAttribute[attribute_name])
+                else:
+                    sanitaized_attributes[attribute_name] = productAttribute[attribute_name]
             elif "plm_m2o_" + attribute_name in productAttribute:
                 value = productAttribute["plm_m2o_" + attribute_name]
                 sanitaized_attributes[attribute_name] = self.env['product.template'].translate_plm_m2o_name([self.env['product.template'],
@@ -1765,7 +1772,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             if not sanitaized_attributes['name']:
                 sanitaized_attributes['name'] = engineering_name
         for product_produc_id in self.search([('engineering_code', '=', engineering_name),
-                                              ('engineering_revision', '=', sanitaized_attributes.get('engineering_revision', '0'))]):
+                                              ('engineering_revision', '=', sanitaized_attributes.get('engineering_revision', 0))]):
             out_product_produc_id = product_produc_id
             found = True
             break

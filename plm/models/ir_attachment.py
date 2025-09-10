@@ -1301,7 +1301,7 @@ class IrAttachment(models.Model):
     #
     #
     #
-    @api.depends("write_date")
+    @api.depends("datas")
     def _checkSavingError(self):
         for ir_attachment_id in self:
             ir_attachment_id.has_error = not ir_attachment_id.is_last_save_ok()
@@ -3296,4 +3296,150 @@ class IrAttachment(models.Model):
         #
         return json.dumps(out_attachment_value)
 
+    @api.model
+    def fillUpClonedStructure(self, args):
+        """
+        fill up the structure with the missing elements like layout
+        """
+        def _recursion(cad_structure):
+            #
+            parent_attrs, children_attrs_structure = cad_structure
+            configuration_name = parent_attrs.get('product',{}).get('CONFIGURATION_NAME','')
+            product_product_id, attachment_id = self._GetproductDocumentID(tuple(parent_attrs.values()))
+            parent_attrs = self.get_clone_info_attr(attachment_id,
+                                                    product_product_id)
+            parent_attrs['CONFIGURATION_NAME'] = configuration_name
+            #
+            # Collect missing layout
+            #
+            children = []
+            for doc_id_2d in self.getRelatedLyTree(attachment_id.id,
+                                                   optional_return_type=['2d']):
+                layout_data = self.get_clone_info_attr(doc_id_2d)
+                if 'layouts' in parent_attrs:
+                    parent_attrs['layouts'].append(layout_data)
+                else:
+                    parent_attrs['layouts']=[layout_data]
+            #
+            # Collect children missing layouts
+            #
+            for child_attrs_structure in children_attrs_structure:
+                children.append(_recursion(child_attrs_structure))
+            #
+            return (parent_attrs, children)
+
+        return json.dumps(_recursion(json.loads(args[0])))
+
+    def get_clone_info_attr(self,
+                            doc_id,
+                            product_product_id=None):
+            def get_dict(product_product_id):
+                return {
+                        'engineering_code': product_product_id.engineering_code,
+                        'engineering_revision': product_product_id.engineering_revision,
+                        'name':product_product_id.name,
+                        'id':product_product_id.id
+                        }
+            #
+            if not isinstance(doc_id, models.Model):
+                ir_attachment=self.browse(doc_id)
+            else:
+                ir_attachment=doc_id
+            #
+            if product_product_id:
+                product_dict=get_dict(product_product_id)
+            else:
+                product_dict={}
+                for product_product_id in ir_attachment.linkedcomponents:
+                    product_dict=get_dict(product_product_id)
+                    break
+            #
+            return {'document':{
+                                'engineering_code': ir_attachment.engineering_code,
+                                'engineering_revision': ir_attachment.engineering_revision,
+                                'name':ir_attachment.name,
+                                'id':ir_attachment.id,
+                                'document_type':ir_attachment.document_type
+                                },
+                    'product':product_dict
+                }
+
+    @api.model
+    def getCloneStructure(self,
+                          args):
+        #
+        logging.warning("Function getClonedStructure will be removed in the new verison !!")
+        #
+        SUPPORT_MAIN_PRODUCT_ATTRIBUTES = [
+            'CONFIGURATION_NAME',
+            'CONFIGURATIONS',
+            'INTEGRATION_FILE_TYPE',
+        ]
+
+        #
+        def getProduct_dict(product_product_id):
+            return {
+                'engineering_code': product_product_id.engineering_code,
+                'engineering_revision': product_product_id.engineering_revision,
+                'name': product_product_id.name,
+                'id': product_product_id.id
+            }
+
+        json_main_root_attributes, cloneRelatedDocuments = args
+
+        #
+        def get_clone_info_attr(doc_id, product_product_id=None):
+            ir_attachment = self.browse(doc_id)
+            if product_product_id:
+                product_dict = getProduct_dict(product_product_id)
+            else:
+                product_dict = {}
+                for product_product_id in ir_attachment.linkedcomponents:
+                    product_dict = getProduct_dict(product_product_id)
+                    break
+
+            return {'document': {
+                'engineering_code': ir_attachment.engineering_code,
+                'engineering_revision': ir_attachment.engineering_revision,
+                'name': ir_attachment.name,
+                'id': ir_attachment.id,
+                'document_type': ir_attachment.document_type
+            },
+                'product': product_dict
+            }
+
+        #
+        out = {'MAIN': {},
+               'RF': [],
+               'LF': []}
+        main_root_attributes = json.loads(json_main_root_attributes)
+        product_product_id, attachment_id = self._GetproductDocumentID(tuple(main_root_attributes.values()))
+        #
+        if attachment_id:
+            #
+            doc_ids_2d = []
+            #
+            main_parent_attrs = get_clone_info_attr(attachment_id.id, product_product_id)
+            out['MAIN'] = main_parent_attrs
+            for k in SUPPORT_MAIN_PRODUCT_ATTRIBUTES:
+                out['MAIN']['product'][k] = main_root_attributes.get('product', {}).get(k, '')
+            #
+            for doc_id in self.getRelatedRfTree(attachment_id.id):
+                sub_attrs = get_clone_info_attr(doc_id)
+                out['RF'].append((main_parent_attrs,
+                                  sub_attrs))
+                for doc_id_2d in self.getRelatedLyTree(doc_id,
+                                                       optional_return_type=['2d']):
+                    doc_ids_2d.append((sub_attrs, doc_id_2d))
+            #
+            for doc_id_2d in self.getRelatedLyTree(attachment_id.id,
+                                                   optional_return_type=['2d']):
+                doc_ids_2d.append((main_parent_attrs, doc_id_2d))
+                #
+            for parent_attrs, doc_id in doc_ids_2d:
+                out['LF'].append((parent_attrs,
+                                  get_clone_info_attr(doc_id)))
+        #
+
+        return json.dumps(out)
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
