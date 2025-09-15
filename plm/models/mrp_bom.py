@@ -810,7 +810,8 @@ class MrpBomExtension(models.Model):
         product_product = self.env['product.product']
         ir_attachment_relation = self.env['ir.attachment.relation']
         try:
-            domain = [('state', 'in', ['installed', 'to upgrade', 'to remove']), ('name', '=', 'plm_engineering')]
+            domain = [('state', 'in', ['installed', 'to upgrade', 'to remove']), 
+                      ('name', '=', 'plm_engineering')]
             apps = self.env['ir.module.module'].sudo().search_read(domain, ['name'])
             bomType = 'normal'
             if apps:
@@ -832,7 +833,10 @@ class MrpBomExtension(models.Model):
             summarize_bom = self.env.context.get('SUMMARIZE_BOM', False)
             cache_row = {}
             for product_product_id, ir_attachment_id, relationAttributes in childrenOdooTuple:
-                if self.custom_exclude(product_product_id, ir_attachment_id, relationAttributes, mrp_bom_found_id):
+                if self.custom_exclude(product_product_id, 
+                                       ir_attachment_id, 
+                                       relationAttributes, 
+                                       mrp_bom_found_id):
                     continue
                 if mrp_bom_found_id and not relationAttributes.get('EXCLUDE', False) and product_product_id:
                     key = f"{product_product_id}_{parent_ir_attachment_id}"

@@ -1147,24 +1147,23 @@ class IrAttachment(models.Model):
     def unlinkCheckDocumentRelations(self):
         ctx = self.env.context.copy()
         mrp_bom_line = self.env['mrp.bom.line']
-        for checkObj in self:
+        for ir_attachment_id in self:
             #
             # Check document document relations
             #
-            id_parents = checkObj.getParentDocuments()
+            id_parents = ir_attachment_id.getParentDocuments()
             for child_doc, parent_docs in id_parents.items():
                 if parent_docs:
                     msg = _('You cannot unlink a component child that is present in a related documents:\n')
                     for parent_doc in parent_docs:
-                        msg += _('\t Engineering Name = %r   Engineering Revision = %r   Id = %r\n') % (
-                        parent_doc.engineering_code, parent_doc.engineering_revision, parent_doc.id)
+                        msg += _(f'\t Engineering Name = {parent_doc.engineering_code}   Engineering Revision = {parent_doc.engineering_revision}   Id = {parent_doc.id}\n') 
                     raise UserError(msg)
             #
             # Check Bom relations
             #
             for mrp_bom_line_id in mrp_bom_line.search(['source_id','=', ir_attachment_id.id]):
                 raise UserError(f"Unable to delete the Attachment that is present on the bom {mrp_bom_line_id.bom_id.display_name}")
-            
+
     def unlinkRestorePreviousDocument(self):
         for checkObj in self:
             docBrwsList = self.search([('engineering_code', '=', checkObj.engineering_code),
@@ -1188,7 +1187,7 @@ class IrAttachment(models.Model):
                 oldObject.remaining_unlink()
 
     def unlink(self):
-        for checkObj in self:
+        for checkObj in self.filtered(lambda x :x.is_plm==True):
             checkObj.unlinkCheckDocumentRelations()
             checkObj.linkedcomponents = False
             checkObj.unlinkRestorePreviousDocument()
@@ -2106,13 +2105,13 @@ class IrAttachment(models.Model):
     def canCheckOut1(self):
         for docBrws in self:
             if docBrws.isCheckedOutByMe():
-                msg = _(f"Unable to check-Out a document that is already checked Out By {docBrws.checkout_user}")
+                msg = _(f"Unable to check-Out document {docBrws.name} that is already checked Out By {docBrws.checkout_user}")
                 return docBrws.id, 'check_out_by_me', msg
             if docBrws.is_checkout:
-                msg = _(f"Unable to check-Out a document that is already checked IN by user {docBrws.checkout_user}")
+                msg = _(f"Unable to check-Out document {docBrws.name} that is already checked IN by user {docBrws.checkout_user}")
                 return docBrws.id, 'check_out_by_user', msg
             if docBrws.engineering_state not in [START_STATUS, False]:
-                msg = _(f"Unable to check-Out a document that is in state {docBrws.engineering_state}")
+                msg = _(f"Unable to check-Out document {docBrws.name} that is in state {docBrws.engineering_state}")
                 return docBrws.id, 'check_out_released', msg
             return docBrws.id, 'check_in', ''
         raise Exception()
@@ -2120,12 +2119,12 @@ class IrAttachment(models.Model):
     def canCheckOut(self, showError=False):
         for docBrws in self:
             if docBrws.is_checkout:
-                msg = _("Unable to check-Out a document that is already checked IN by user %r" % docBrws.checkout_user)
+                msg = _(f"Unable to check-Out document {docBrws.name} that is already checked IN by user {docBrws.checkout_user}") 
                 if showError:
                     raise UserError(msg)
                 return False, msg
             if docBrws.engineering_state not in [START_STATUS, False]:
-                msg = _("Unable to check-Out a document that is in state %r" % docBrws.engineering_state)
+                msg = _(f"Unable to check-Out document {docBrws.name} that is in state {docBrws.engineering_state}")
                 if showError:
                     raise UserError(msg)
                 return False, msg
@@ -2415,10 +2414,20 @@ class IrAttachment(models.Model):
 
     @api.model
     def saveSingleLevel(self, clientArg):
+        
         component_props, document_props, dbThread = clientArg[0]
         host_name = clientArg[1]
         host_pws = clientArg[2]
+        #
+        configuration_name=False
+        #
+        # Se the onfiguration on the product
+        #
+        if len(clientArg)==4:
+            component_props['configuration_name'] = clientArg[3]
+        #
         #  generate component
+        #
         product_product_id = self.env['product.product'].with_context(plm_saving_context=clientArg).createFromProps(
             component_props)
         if not product_product_id:
@@ -3277,11 +3286,17 @@ class IrAttachment(models.Model):
         def _recursion(cad_structure):
             #
             parent_attrs, children_attrs_structure = cad_structure
-            configuration_name = parent_attrs.get('product',{}).get('CONFIGURATION_NAME','')
             product_product_id, attachment_id = self._GetproductDocumentID(tuple(parent_attrs.values()))
-            parent_attrs = self.get_clone_info_attr(attachment_id,
-                                                    product_product_id)
-            parent_attrs['CONFIGURATION_NAME'] = configuration_name
+            out_parent_attrs = self.get_clone_info_attr(attachment_id,
+                                                        product_product_id)
+            out_parent_attrs['CONFIGURATION_NAME'] = parent_attrs.get('product',{}).get('CONFIGURATION_NAME','')
+            out_parent_attrs['CONFIGURATIONS'] = parent_attrs.get('product',{}).get('CONFIGURATIONS',[])
+            out_parent_attrs['CONFIGURATIONS_ATTRIBUTES']={}
+            for config_name, config_attrs in parent_attrs.get('product',{}).get('CONFIGURATIONS_ATTRIBUTES',{}).items():
+                config_product_product_id, config_attachment_id = self._GetproductDocumentID(tuple(parent_attrs.values()))
+                config_out_parent_attrs = self.get_clone_info_attr(config_attachment_id,
+                                                                   config_product_product_id)
+                out_parent_attrs['CONFIGURATIONS_ATTRIBUTES'][config_name] = config_out_parent_attrs.get('product')
             #
             # Collect missing layout
             #
@@ -3289,17 +3304,17 @@ class IrAttachment(models.Model):
             for doc_id_2d in self.getRelatedLyTree(attachment_id,
                                                    optional_return_type=['2d']):
                 layout_data = self.get_clone_info_attr(doc_id_2d)
-                if 'layouts' in parent_attrs:
-                    parent_attrs['layouts'].append(layout_data)
+                if 'layouts' in out_parent_attrs:
+                    out_parent_attrs['layouts'].append(layout_data)
                 else:
-                    parent_attrs['layouts']=[layout_data]
+                    out_parent_attrs['layouts']=[layout_data]
             #
             # Collect children missing layouts
             #
             for child_attrs_structure in children_attrs_structure:
                 children.append(_recursion(child_attrs_structure))
             #
-            return (parent_attrs, children)
+            return (out_parent_attrs, children)
 
         return json.dumps(_recursion(json.loads(args[0])))
 

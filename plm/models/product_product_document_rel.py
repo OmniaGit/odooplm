@@ -39,16 +39,16 @@ class PlmComponentDocumentRel(models.Model):
     component_id = fields.Many2one('product.product',
                                    _('Linked Component'),
                                    required=True,
-                                   #ondelete='cascade'
+                                   # ondelete='cascade'
                                    )
-
 
     document_id = fields.Many2one('ir.attachment',
                                   _('Linked Document'),
                                   required=True,
-                                  #ondelete='cascade'
+                                  # ondelete='cascade'
                                   )
-
+    
+    configuration_name = fields.Char(related="component_id.configuration_name")
 
     _sql_constraints = [
         ('relation_unique',
@@ -93,9 +93,13 @@ class PlmComponentDocumentRel(models.Model):
         return False
 
     @api.model
-    def createFromIds(self, product_product_id, ir_attachment_id):
-        exsist = self.search_count([('component_id', '=', product_product_id.id),
-                                    ('document_id', '=', ir_attachment_id.id)])
+    def createFromIds(self, 
+                      product_product_id,
+                      ir_attachment_id):
+        domain = [('component_id', '=', product_product_id.id),
+                  ('document_id', '=', ir_attachment_id.id)]
+
+        exsist = self.search_count(domain)
         if not exsist:
             product_product_id.linkeddocuments = [(4, ir_attachment_id.id, False)]
         return True
