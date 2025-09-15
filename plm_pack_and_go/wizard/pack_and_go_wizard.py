@@ -438,11 +438,12 @@ class PackAndGo(models.TransientModel):
         """
         Clear all pack and go views
         """
-        packAndGoViewObj = self.env["pack_and_go_view"]
-        objBrwsList = packAndGoViewObj.search([])
-        objBrwsList.unlink()
-        packList = self.search([("id", "!=", self.id)])
-        packList.sudo().unlink()
+        for objBrwsList in self:
+            objBrwsList.export_3d = False
+            objBrwsList.export_2d = False
+            objBrwsList.export_pdf = False
+            objBrwsList.export_other = False
+            objBrwsList.datas = False
 
     def getAllAvailableTypes(self):
         """
