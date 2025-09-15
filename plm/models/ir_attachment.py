@@ -1161,7 +1161,7 @@ class IrAttachment(models.Model):
             #
             # Check Bom relations
             #
-            for mrp_bom_line_id in mrp_bom_line.search(['source_id','=', ir_attachment_id.id]):
+            for mrp_bom_line_id in mrp_bom_line.search([('source_id','=', ir_attachment_id.id)]):
                 raise UserError(f"Unable to delete the Attachment that is present on the bom {mrp_bom_line_id.bom_id.display_name}")
 
     def unlinkRestorePreviousDocument(self):
