@@ -19,13 +19,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
-"""
-Created on 31 Aug 2016
-
-@author: Daniel Smerghetto
-"""
-
 from odoo import models
 
 
@@ -39,7 +32,7 @@ class MrpProductionExtension(models.Model):
         @param product_qty:
         @return: Dictionary of values.
         """
-        result = super(MrpProductionExtension, self).product_id_change(
+        result = super().product_id_change(
             product_id,
             product_qty
         )

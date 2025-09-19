@@ -19,13 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-"""
-Created on Mar 30, 2016
-
-@author: Daniel Smerghetto
-"""
 from odoo import _, api, fields, models
-
 
 class ProductProduct(models.Model):
     _inherit = "product.product"
@@ -54,7 +48,6 @@ class ProductTemplate(models.Model):
                     return self.categ_id.plm_code_sequence.next_by_id()
                 elif self.old_plm_code_sequence_id.id == self.categ_id.plm_code_sequence.id:
                     return self.engineering_code
-
             else:
                 self.old_plm_code_sequence_id = False
                 return self.env["ir.sequence"].next_by_code("plm.eng.code")

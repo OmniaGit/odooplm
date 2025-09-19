@@ -18,11 +18,6 @@
 #    along with this prograIf not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-'''
-Created on 7 Oct 2021
-
-@author: mboscolo
-'''
 from odoo import _, models
 from odoo.exceptions import UserError
 
@@ -55,11 +50,11 @@ class ProductTemporaryNormalBom(models.TransientModel):
                 ])
                 if obj_boms:
                     raise UserError(
-                        _("Normal BoM for Part '%s' and revision '%s' already exists."
-                          % (obj_boms.product_tmpl_id.engineering_code,
-                             obj_boms.product_tmpl_id.engineering_revision
-                             )
-                          )
+                        _("Normal BoM for Part '%(code)s' and revision '%(rev)s' already exists.")
+                        % {
+                            'code': obj_boms.product_tmpl_id.engineering_code,
+                            'rev': obj_boms.product_tmpl_id.engineering_revision,
+                        }
                     )
                 line_messages_list = product_product_type_object.create_bom_from_ebom(
                     product_browse, 'normal',

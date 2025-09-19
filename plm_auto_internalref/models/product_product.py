@@ -20,16 +20,9 @@
 #
 ##############################################################################
 
-"""
-Created on 9 Dec 2016
-
-@author: Daniel Smerghetto
-"""
-
 import logging
 from odoo import models
 from odoo import api
-
 
 class ProductProductExtension(models.Model):
     _name = "product.product"
@@ -38,9 +31,9 @@ class ProductProductExtension(models.Model):
     @api.model_create_multi
     def create(self, vals):
         for val_dict in vals:
-            new_default_code = self.computeDefaultCode(val_dict)
+            new_default_code = self.compute_default_code(val_dict)
             if new_default_code:
-                logging.info("OdooPLM: Default Code set to %s " % (new_default_code))
+                logging.info("OdooPLM: Default Code set to %s ", new_default_code)
                 val_dict["default_code"] = new_default_code
         return super().create(vals)
 
@@ -48,9 +41,9 @@ class ProductProductExtension(models.Model):
     def getDefaultCodeTemplate(self):
         return "%s_%s"
 
-    def computeDefaultCode(self, vals={}, objBrowse=None):
+    def compute_default_code(self, vals={}, objBrowse=None):
         """
-        Function to be overloaded for changing the inetrnal referense computation
+        Function to be overloaded for changing the internal reference computation
         :vals dict like with all the value that be updated
         :objBrowse product.product or product.template in case of write operation
         """
@@ -80,9 +73,9 @@ class ProductProductExtension(models.Model):
     def write(self, vals):
         ret = False
         for product in self:
-            new_default_code = product.computeDefaultCode(vals, product)
-            if product.default_code!=product.computeDefaultCode(vals, product):
-                logging.info("OdooPLM: Default Code set to %s " % (new_default_code))
+            new_default_code = product.compute_default_code(vals, product)
+            if product.default_code!=product.compute_default_code(vals, product):
+                logging.info("OdooPLM: Default Code set to %s ",new_default_code)
                 vals["default_code"] = new_default_code
             ret = super(models.Model, product).write(vals)
         return ret

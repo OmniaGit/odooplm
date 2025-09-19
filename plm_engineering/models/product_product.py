@@ -19,12 +19,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
-"""
-Created on 31 Aug 2016
-
-@author: Daniel Smerghetto
-"""
 import logging
 
 from odoo import _, api, models
@@ -90,7 +84,9 @@ class ProductProductExtension(models.Model):
         e_bom_id = False
         new_nbom_id = False
         if new_bom_type not in ['normal', 'phantom']:
-            raise UserError(_("Could not convert source bom to %r" % new_bom_type))
+            raise UserError(
+                _("Could not convert source bom to %(bom_type)r") % {"bom_type": new_bom_type}
+            )
         product_template_id = obj_product_product_brw.product_tmpl_id.id
         bom_brws_list = bom_type.search([
             ('product_tmpl_id', '=', product_template_id),
@@ -110,9 +106,7 @@ class ProductProductExtension(models.Model):
                 ('type', '=', 'ebom')
             ], order='engineering_revision DESC', limit=1)
             if not eng_bom_brws_list:
-                logging.info(
-                    'No EBOM or NBOM found for template id: {}'.format(product_template_id)
-                )
+                logging.info("No EBOM or NBOM found for template id: %s", product_template_id)
                 return []
             for e_bom_brws in eng_bom_brws_list:
                 e_bom_id = e_bom_brws.id
@@ -150,7 +144,7 @@ class ProductProductExtension(models.Model):
                         line_brws.type = new_bom_type
                         line_brws.ebom_source_id = e_bom_id
                 obj_product_product_brw.message_post(
-                    body=_('Created %r' % new_bom_type)
+                    body=_("Created %(bom_type)r") % {"bom_type": new_bom_type}
                 )
                 break
 
@@ -184,11 +178,14 @@ class ProductProductExtension(models.Model):
                     product_name = new_line.product_id.name
                     to_return = 0, False
                     if summarize:
-                        out_msg =\
-                            out_msg + 'In BOM "%s" line "%s" has been summarized.' % (template_name, product_name)
+                        out_msg = \
+                            out_msg + _('In BOM "%(tmpl)s" line "%(prod)s" has been summarized.') % {
+                                "tmpl": template_name,
+                                "prod": product_name,
+                            }
                         to_return = new_line.product_qty + old_prod_qty, new_line.id
                     else:
-                        out_msg = out_msg + 'In BOM "%s" line "%s" has been not summarized.' % (template_name, product_name)
+                        out_msg += f'In BOM "{template_name}" line "{product_name}" has not been summarized.'
                         to_return = new_line.product_qty, False
                     collect_list.append(out_msg)
                     return to_return

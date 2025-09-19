@@ -19,13 +19,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
-"""
-Created on 31 Aug 2016
-
-@author: Daniel Smerghetto
-"""
-
 from odoo import api, fields, models
 
 
@@ -126,7 +119,7 @@ class MrpBomExtension(models.Model):
         """
         Save EBom relations
         """
-        return super(MrpBomExtension, self).SaveStructure(
+        return super().SaveStructure(
             relations,
             level,
             curr_level,
