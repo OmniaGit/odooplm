@@ -25,13 +25,13 @@
 
 {
     "name": "PLM Breakages",
-    "version": "18.0.1.0.0",
+    "version": "19.0.1.0.0",
     "author": "OmniaSolutions",
     "website": "https://www.omniasolutions.website",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
     "license": "AGPL-3",
     "summary": "PLM Breakages",
-    "depends": ["base", "product", "mrp"],
+    "depends": ["base", "product", "mrp","plm"],
     "data": [
         "security/base_plm_security.xml",
         "data/sequence.xml",

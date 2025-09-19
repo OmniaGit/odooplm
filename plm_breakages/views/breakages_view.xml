@@ -93,7 +93,7 @@
                         name="last_week"
                         string="Last Week"
                         domain="[('date','&gt;=',(datetime.date.today() - datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"/>
-                    <group expand="0" string="Group By...">
+                    <group>
                         <filter
                             name="for_date"
                             string="For Date"

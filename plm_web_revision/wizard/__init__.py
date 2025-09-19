@@ -1,8 +1,8 @@
-# -*- coding: utf-8 -*-
+# -*- encoding: utf-8 -*-
 ##############################################################################
 #
-#    OmniaSolutions, Your own solutions
-#    Copyright (C) 2020-2021 OmniaSolutions (<https://omniasolutions.website>).
+#    OmniaSolutions, Open Source Management Solution
+#    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -19,21 +19,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-# Leonardo Cazziolati
-# leonardo.cazziolati@omniasolutions.eu
-# 23-06-2020
-{
-    "name": "PLM Breakages Helpdesk",
-    "version": "19.0.1.0.0",
-    "author": "OmniaSolutions",
-    "website": "https://www.omniasolutions.website",
-    "category": "Helpdesk",
-    "license": "LGPL-3",
-    "summary": "PLM Breakages",
-    "depends": ["plm_breakages", "helpdesk"],
-    "data": [
-        "views/breakages.xml",
-        "views/helpdesk_ticket.xml",
-    ],
-    "installable": True,
-}
+from . import product_rev_wizard
+from . import document_rev_wizard
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
