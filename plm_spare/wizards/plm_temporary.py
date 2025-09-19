@@ -44,7 +44,7 @@ class PlmTemporary(models.TransientModel):
             prod_prod_obj = product_type.browse(prod_ids)
             if not prod_prod_obj:
                 logging.warning(
-                    "[action_create_spareBom] product_id {} not found".format(prod_ids)
+                    "[action_create_spareBom] product_id %s not found", prod_ids
                 )
                 continue
             obj_boms = self.env["mrp.bom"].search(
@@ -56,7 +56,7 @@ class PlmTemporary(models.TransientModel):
             if obj_boms:
                 raise UserError(
                     _("Creating a new Spare Bom Error."),
-                    _("BoM for Part {} already exists.".format(prod_prod_obj.name)),
+                    _("BoM for Part %s already exists.") % prod_prod_obj.name,
                 )
 
         product_type.browse(active_ids).action_create_spare_bom_wf()

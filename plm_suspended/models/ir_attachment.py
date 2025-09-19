@@ -19,12 +19,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
-"""
-Created on 30 Aug 2016
-
-@author: Daniel Smerghetto
-"""
 from odoo import _, api, fields, models
 from odoo.addons.plm.models.plm_mixin import USED_STATES
 
@@ -45,7 +39,7 @@ class PlmDocumentExtension(models.Model):
 
     @property
     def actions(self):
-        action_dict = super(PlmDocumentExtension, self).actions
+        action_dict = super().actions
         action_dict["suspended"] = self.action_suspend
         return action_dict
 
@@ -75,7 +69,7 @@ class PlmDocumentExtension(models.Model):
 
     @api.model
     def is_plm_state_writable(self):
-        if super(PlmDocumentExtension, self).is_plm_state_writable():
+        if super().is_plm_state_writable():
             for customObject in self:
                 if customObject.engineering_state in ("suspended",):
                     return False

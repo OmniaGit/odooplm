@@ -18,22 +18,14 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
-"""
-Created on Apr 15, 2016
-
-@author: Daniel Smerghetto
-"""
-
 import os
 import time
 import base64
 import logging
 from io import BytesIO
-from dateutil import tz
 from datetime import datetime
 from operator import itemgetter
-
+from dateutil import tz
 from odoo import _, api, models
 from odoo.addons.plm.report.book_collector import BookCollector
 
@@ -42,7 +34,6 @@ def is_pdf(file_name):
     if os.path.splitext(file_name)[1].lower() == ".pdf":
         return True
     return False
-
 
 def get_document_stream(doc_repository, obj_doc):
     """
@@ -57,9 +48,9 @@ def get_document_stream(doc_repository, obj_doc):
                 content = f.read()
     except Exception as ex:
         logging.error(
-            "getFileStream : Exception ({0})reading  stream on file : {1}.".format(
-                ex, obj_doc.name
-            )
+            "getFileStream : Exception (%s) reading stream on file : %s",
+            ex,
+            obj_doc.name,
         )
     return content
 
@@ -231,8 +222,11 @@ class ReportSpareDocumentOne(models.AbstractModel):
                         ln = len(product_ids)
                         for i, packed_obj in enumerate(product_ids, 1):
                             logging.info(
-                                "Work on %s/%s - %s %s"
-                                % (i, ln, product.name, packed_obj.name)
+                                "Work on %s/%s - %s %s",
+                                i,
+                                ln,
+                                product.name,
+                                packed_obj.name,
                             )
                             processed = self.get_spare_parts_pdf_file(
                                 packed_obj,

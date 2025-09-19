@@ -19,11 +19,4 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
-"""
-Created on 24 Aug 2016
-
-@author: Daniel Smerghetto
-"""
-
 from . import models

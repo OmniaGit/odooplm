@@ -18,21 +18,13 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-##############################################################################
-
-"""
-Created on 30 Aug 2016
-
-@author: Daniel Smerghetto
-"""
-
+#############################################################################
 from odoo import _, models, fields
 
 class ProdTemplate(models.Model):
     _inherit = 'product.template'
 
     is_spare_part = fields.Boolean(string="Spare Part", default=False, help="Is this a spare part by default?")
-
 
 class ProductTemplate(models.Model):
     _inherit = "product.product"

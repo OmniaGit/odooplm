@@ -19,12 +19,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
-"""
-Created on 30 Aug 2016
-
-@author: Daniel Smerghetto
-"""
 from odoo import _, models
 from odoo.exceptions import UserError
 
@@ -42,7 +36,7 @@ class MailActivity(models.Model):
                             " if is not assigned to you."
                         )
                     )
-        messages, activities = super(MailActivity, self)._action_done(
+        messages, activities = super()._action_done(
             feedback=feedback, attachment_ids=attachment_ids
         )
         for message in messages:
@@ -76,7 +70,7 @@ class MailActivity(models.Model):
                             "if is not assigned to you."
                         )
                     )
-        return super(MailActivity, self).unlink()
+        return super().unlink()
 
     def write(self, vals):
         for activity in self:
@@ -88,4 +82,4 @@ class MailActivity(models.Model):
                             " if is not assigned to you."
                         )
                     )
-        return super(MailActivity, self).write(vals)
+        return super().write(vals)

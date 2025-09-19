@@ -26,7 +26,6 @@
         <field name="report_name">plm_spare.bom_spare_header</field>
         <field name="report_file">plm_spare.bom_spare_header</field>
         <field name="binding_type">report</field>
-        <field name="groups_id" eval="[(6, 0, [ref('plm.group_plm_admin')])]"/>
+<!--        <field name="groups_id" eval="[(6, 0, [ref('plm.group_plm_admin')])]"/>-->
     </record>
-
 </odoo>
