@@ -18,7 +18,7 @@
                 <field name="father_part_ids"/>
                 <field name="kanban_dashboard"/>
                 <templates>
-                    <t t-name="kanban-box">
+                    <t t-name="card">
                         <div t-attf-class="#{kanban_color(0)}" style="max-height: 340px;">
                             <t t-value="engineering_state" t-set="stateToUse"/>
                             <t t-value="JSON.parse(record.kanban_dashboard.raw_value)" t-set="dashboard"/>

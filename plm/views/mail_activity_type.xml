@@ -8,7 +8,6 @@
             <field name="res_model">product.product</field>
             <field name="sequence">200</field>
             <field name="change_activity_type">plm_activity</field>
-            <field name="keep_done">True</field>
         </record>
 
 </odoo>

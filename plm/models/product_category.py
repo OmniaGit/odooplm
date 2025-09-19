@@ -30,7 +30,6 @@ from odoo import _
 
 
 class ProductCategory(models.Model):
-    _inherit = ['product.category']
+    _inherit = ["product.category"]
 
-    kit_bom = fields.Boolean(_('KIT Bom Type'))
-
+    kit_bom = fields.Boolean(_("KIT Bom Type"))

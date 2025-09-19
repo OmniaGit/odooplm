@@ -18,15 +18,17 @@
 #    along with this prograIf not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-'''
+"""
 Created on 30 Mar 2023
 
 @author: mboscolo
-'''
+"""
 import base64
 
 CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-L_CHARS =len(CHARS)
+L_CHARS = len(CHARS)
+
+
 #
 # this function are copyed from https://stackoverflow.com/a/56826099/1630672 thanks for sharing
 #
@@ -36,6 +38,7 @@ def str2int(s):
         i *= L_CHARS
         i += CHARS.index(c)
     return i
+
 
 def int2str(i, digit=False):
     s = ""
@@ -47,8 +50,10 @@ def int2str(i, digit=False):
         return s.zfill(digit)
     return s
 
+
 def getEmptyDocument():
-    return base64.b64decode(b"""JVBERi0xLjQKJcOkw7zDtsOfCjIgMCBvYmoKPDwvTGVuZ3RoIDMgMCBSL0ZpbHRlci9GbGF0ZURl
+    return base64.b64decode(
+        b"""JVBERi0xLjQKJcOkw7zDtsOfCjIgMCBvYmoKPDwvTGVuZ3RoIDMgMCBSL0ZpbHRlci9GbGF0ZURl
 Y29kZT4+CnN0cmVhbQp4nG2NTQvCMBBE7/kVexYSZ2M2aSEErG0P3goBD+LNj5tgL/59t/QgiCzM
 Djx4A8f0Ni8CQZu04jw1gV1D882cNvRcmd78MF01EhWlGFyieqXtyOQ91fs5gwtneOyK1b9mgCAi
 lks9mqGa6a+Lgw7/uJKKBM1ibIv1GfulShHJ6EpKGQf0GDCiLzZkhmLm785EH25LLk8KZW5kc3Ry
@@ -209,4 +214,5 @@ MDAwMCBuIAowMDAwMDA4MDc2IDAwMDAwIG4gCjAwMDAwMDgxMDggMDAwMDAgbiAKMDAwMDAwODQw
 NSAwMDAwMCBuIAowMDAwMDA4NTAyIDAwMDAwIG4gCnRyYWlsZXIKPDwvU2l6ZSAxNC9Sb290IDEy
 IDAgUgovSW5mbyAxMyAwIFIKL0lEIFsgPEMzRDZBMzFBMTcxNkU1QjAyMjkxN0Y4QzkxQUM1MDk3
 Pgo8QzNENkEzMUExNzE2RTVCMDIyOTE3RjhDOTFBQzUwOTc+IF0KL0RvY0NoZWNrc3VtIC8wQjMy
-RjYxNzJGNDFCNzYwNjRBM0NDQjFEMTgxOTFCQgo+PgpzdGFydHhyZWYKODc0NwolJUVPRgo=""")
+RjYxNzJGNDFCNzYwNjRBM0NDQjFEMTgxOTFCQgo+PgpzdGFydHhyZWYKODc0NwolJUVPRgo="""
+    )

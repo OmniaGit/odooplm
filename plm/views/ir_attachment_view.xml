@@ -345,7 +345,7 @@
                             help="Filter on documents changed by me"/>
                 </group>
                 <separator orientation="vertical"/>
-                <group expand="0" string="Group By...">
+                <group>
                     <filter name="created_in"
                             string="Created in"
                             domain="[]"
@@ -397,202 +397,203 @@
                 <field name="is_linkedcomponents" invisible="True"/>
                 <templates>
                     <t t-value="record.engineering_state.raw_value" t-set="stateToUse"/>
-                    <t t-name="kanban-box">
-                        <div class="oe_kanban_global_click o_kanban_record_has_image_fill">
-                            <div
-                                style="margin-right: 3px;border-left: 1px solid lightgray;border-right: 1px solid lightgray;">
-                                <field name="preview"
-                                       widget="image"
-                                       options="{'zoom': true, 'zoom_delay': 800}"
-                                       nolabel="1" invisible="preview == False"
-                                       readonly="is_plm==True"/>
-                                <field name="preview_related" colspan="2" widget="image"
-                                       readonly="1" nolabel="1" invisible="preview != False"
-                                       options="{'zoom': true, 'zoom_delay': 800}"/>
+                    <t t-name="card">
+                        <div class="row">
+                            <div class="col-4" style="border-right: 1px solid lightgray;">
+                                <div
+                                        style="margin-right: 3px;border-left: 1px solid lightgray;border-right: 1px solid lightgray;">
+                                    <field name="preview"
+                                           widget="image"
+                                           options="{'zoom': true, 'zoom_delay': 800}"
+                                           nolabel="1" invisible="preview == False"
+                                           readonly="is_plm==True"/>
+                                    <field name="preview_related" colspan="2" widget="image"
+                                           readonly="1" nolabel="1" invisible="preview != False"
+                                           options="{'zoom': true, 'zoom_delay': 800}"/>
+                                </div>
                             </div>
-                            <table style="width: 100%; line-height: 1;">
-                                <tr>
-                                    <td>
-                                        <strong invisible="document_type!='other'">Other</strong>
-                                        <strong invisible="document_type!='2d'">2D</strong>
-                                        <strong invisible="document_type!='3d'">3D</strong>
-                                        <strong invisible="document_type!='pr'">PR</strong>
-                                    </td>
-                                    <td name="check-in-out">
-                                        <h2>
-                                            <field name="checkout_user"
-                                                   invisible="checkout_user==False or checkout_user==''"/>
-                                        </h2>
-                                    </td>
-                                    <td name="Component" style="text-align: right; width: 100%; padding:1px;">
-                                        <button name="open_related_dbthread"
-                                                type="object"
-                                                invisible="has_error==False"
-                                                class="fa fa-bug fa-2x btn-danger"
-                                                title=""
-                                        />
-                                        <button name="related_not_update"
-                                                type="object"
-                                                invisible="must_update_from_cad==False"
-                                                class="fa fa-warning fa-2x btn-warning"
-                                                title=""
-                                        />
-                                        <div class="fa fa-lock fa-2x"
-                                             string="."
-                                             style="color:red;display: inline;"
-                                             invisible="checkout_user=='False' or checkout_user==''"/>
-                                        <div class="fa fa-dropbox fa-2x"
-                                             aria-label="Missing Component"
-                                             style="color:#ff8300;"
-                                             invisible="is_linkedcomponents not in [False, []]"/>
-                                        <div class="fa fa-dropbox fa-2x"
-                                             aria-label="Founding Component"
-                                             style="color: green;"
-                                             invisible="is_linkedcomponents in [False, []]"/>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-
-                                    </td>
-                                    <td style="padding-left:10px; vertical-align: middle;" colspan="2">
-                                        <table style="width:100%">
-                                            <tr>
-                                                <td>
-                                                    <t t-if="stateToUse == 'draft'">
-                                                        <hr style="background-color: rgb(110, 51, 197);height: 1px;"></hr>
-                                                    </t>
-                                                    <t t-elif="stateToUse == 'confirmed'">
-                                                        <hr style="background-color: blue;height: 1px;"></hr>
-                                                    </t>
-                                                    <t t-elif="stateToUse == 'released'">
-                                                        <hr style="background-color: rgba(0, 170, 34, 0.66);height: 1px;"></hr>
-                                                    </t>
-                                                    <t t-elif="stateToUse == 'undermodify'">
-                                                        <hr style="background-color: rgb(218, 159, 34);height: 1px;"></hr>
-                                                    </t>
-                                                    <t t-elif="stateToUse == 'obsoleted'">
-                                                        <hr style="background-color: rgb(231, 43, 26);height: 1px;"></hr>
-                                                    </t>
-                                                    <t t-else="">
-                                                        <hr style="background-color: black;height: 1px;"></hr>
-                                                    </t>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <field name="datas" filename="name" widget="binary"/>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <t>
-                                                        <strong>Name:</strong>
-                                                    </t>
-                                                    <field name="engineering_code"
-                                                           readonly="id not in [False, [], 0]"/>
-                                                    <field name="display_name"
-                                                           invisible="id not in [False, []]"/>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <t>
-                                                        <strong>Revision:</strong>
-                                                    </t>
-                                                    <field name="engineering_revision"/>
-                                                </td>
-                                            </tr>
-                                            <tr name="state">
-                                                <td>
-                                                    <strong>State:</strong>
-                                                    <t t-if="stateToUse == 'draft'">
-                                                        <b>
-                                                            <span style="color: rgb(110, 51, 197);padding-left: 5px;">
-                                                                <u>
-                                                                    <field name="engineering_state"/>
-                                                                </u>
-                                                            </span>
-                                                        </b>
-                                                    </t>
-                                                    <t t-elif="stateToUse == 'confirmed'">
-                                                        <b>
-                                                            <span style="color: blue;padding-left: 5px;">
-                                                                <u>
-                                                                    <field name="engineering_state"/>
-                                                                </u>
-                                                            </span>
-                                                        </b>
-                                                    </t>
-                                                    <t t-elif="stateToUse == 'released'">
-                                                        <b>
-                                                            <span
-                                                                style="color: rgba(0, 170, 34, 0.66);padding-left: 5px;">
-                                                                <u>
-                                                                    <field name="engineering_state"/>
-                                                                </u>
-                                                            </span>
-                                                        </b>
-                                                    </t>
-                                                    <t t-elif="stateToUse == 'undermodify'">
-                                                        <b>
-                                                            <span style="color: rgb(218, 159, 34);padding-left: 5px;">
-                                                                <u>
-                                                                    <field name="engineering_state"/>
-                                                                </u>
-                                                            </span>
-                                                        </b>
-                                                    </t>
-                                                    <t t-elif="stateToUse == 'obsoleted'">
-                                                        <b>
-                                                            <span style="color: rgb(231, 43, 26);padding-left: 5px;">
-                                                                <u>
-                                                                    <field name="engineering_state"/>
-                                                                </u>
-                                                            </span>
-                                                        </b>
-                                                    </t>
-                                                    <t t-else="">
-                                                        <b>
-                                                            <span style="color: black;padding-left: 5px;">
-                                                                <u>
-                                                                    <field name="engineering_state"/>
-                                                                </u>
-                                                            </span>
-                                                        </b>
-                                                    </t>
-                                                </td>
-                                            </tr>
-                                            <tr name="attachment_button_box">
-                                                <td name="attachment_button_box" style="display: inline-flex;">
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <t t-if="stateToUse == 'draft'">
-                                                        <hr style="background-color: rgb(110, 51, 197);height: 1px;"></hr>
-                                                    </t>
-                                                    <t t-elif="stateToUse == 'confirmed'">
-                                                        <hr style="background-color: blue;height: 1px;"></hr>
-                                                    </t>
-                                                    <t t-elif="stateToUse == 'released'">
-                                                        <hr style="background-color: rgba(0, 170, 34, 0.66);height: 1px;"></hr>
-                                                    </t>
-                                                    <t t-elif="stateToUse == 'undermodify'">
-                                                        <hr style="background-color: rgb(218, 159, 34);height: 1px;"></hr>
-                                                    </t>
-                                                    <t t-elif="stateToUse == 'obsoleted'">
-                                                        <hr style="background-color: rgb(231, 43, 26);height: 1px;"></hr>
-                                                    </t>
-                                                    <t t-else="">
-                                                        <hr style="background-color: black;height: 1px;"></hr>
-                                                    </t>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                </tr>
-                            </table>
+                            <div class="col-8">
+                                <table style="width: 100%; line-height: 1;">
+                                    <tr>
+                                        <td style="width: 30%;">
+                                            <strong invisible="document_type!='other'">Other</strong>
+                                            <strong invisible="document_type!='2d'">2D</strong>
+                                            <strong invisible="document_type!='3d'">3D</strong>
+                                            <strong invisible="document_type!='pr'">PR</strong>
+                                        </td>
+                                        <td name="check-in-out" style="width: 50%;">
+                                            <h4>
+                                                <field name="checkout_user"
+                                                       invisible="checkout_user==False or checkout_user==''"/>
+                                            </h4>
+                                        </td>
+                                        <td name="Component" style="text-align: right; padding:1px;">
+                                            <button name="open_related_dbthread"
+                                                    type="object"
+                                                    invisible="has_error==False"
+                                                    class="fa fa-bug fa-2x btn-danger"
+                                                    title=""
+                                            />
+                                            <button name="related_not_update"
+                                                    type="object"
+                                                    invisible="must_update_from_cad==False"
+                                                    class="fa fa-warning fa-2x btn-warning"
+                                                    title=""
+                                            />
+                                            <div class="fa fa-lock fa-2x"
+                                                 string="."
+                                                 style="color:red;display: inline;"
+                                                 invisible="checkout_user=='False' or checkout_user==''"/>
+                                            <div class="fa fa-dropbox fa-2x"
+                                                 aria-label="Missing Component"
+                                                 style="color:#ff8300;"
+                                                 invisible="is_linkedcomponents not in [False, []]"/>
+                                            <div class="fa fa-dropbox fa-2x"
+                                                 aria-label="Founding Component"
+                                                 style="color: green;"
+                                                 invisible="is_linkedcomponents in [False, []]"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding-left:10px; vertical-align: middle;" colspan="2">
+                                            <table style="width:100%">
+                                                <tr>
+                                                    <td>
+                                                        <t t-if="stateToUse == 'draft'">
+                                                            <hr style="background-color: rgb(110, 51, 197);height: 1px;"></hr>
+                                                        </t>
+                                                        <t t-elif="stateToUse == 'confirmed'">
+                                                            <hr style="background-color: blue;height: 1px;"></hr>
+                                                        </t>
+                                                        <t t-elif="stateToUse == 'released'">
+                                                            <hr style="background-color: rgba(0, 170, 34, 0.66);height: 1px;"></hr>
+                                                        </t>
+                                                        <t t-elif="stateToUse == 'undermodify'">
+                                                            <hr style="background-color: rgb(218, 159, 34);height: 1px;"></hr>
+                                                        </t>
+                                                        <t t-elif="stateToUse == 'obsoleted'">
+                                                            <hr style="background-color: rgb(231, 43, 26);height: 1px;"></hr>
+                                                        </t>
+                                                        <t t-else="">
+                                                            <hr style="background-color: black;height: 1px;"></hr>
+                                                        </t>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <field name="datas" filename="name" widget="binary"/>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <t>
+                                                            <strong>Name:</strong>
+                                                        </t>
+                                                        <field name="engineering_code"
+                                                               readonly="id not in [False, [], 0]"/>
+                                                        <field name="display_name"
+                                                               invisible="id not in [False, []]"/>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <t>
+                                                            <strong>Revision:</strong>
+                                                        </t>
+                                                        <field name="engineering_revision"/>
+                                                    </td>
+                                                </tr>
+                                                <tr name="state">
+                                                    <td>
+                                                        <strong>State:</strong>
+                                                        <t t-if="stateToUse == 'draft'">
+                                                            <b>
+                                                                <span style="color: rgb(110, 51, 197);padding-left: 5px;">
+                                                                    <u>
+                                                                        <field name="engineering_state"/>
+                                                                    </u>
+                                                                </span>
+                                                            </b>
+                                                        </t>
+                                                        <t t-elif="stateToUse == 'confirmed'">
+                                                            <b>
+                                                                <span style="color: blue;padding-left: 5px;">
+                                                                    <u>
+                                                                        <field name="engineering_state"/>
+                                                                    </u>
+                                                                </span>
+                                                            </b>
+                                                        </t>
+                                                        <t t-elif="stateToUse == 'released'">
+                                                            <b>
+                                                                <span
+                                                                        style="color: rgba(0, 170, 34, 0.66);padding-left: 5px;">
+                                                                    <u>
+                                                                        <field name="engineering_state"/>
+                                                                    </u>
+                                                                </span>
+                                                            </b>
+                                                        </t>
+                                                        <t t-elif="stateToUse == 'undermodify'">
+                                                            <b>
+                                                                <span style="color: rgb(218, 159, 34);padding-left: 5px;">
+                                                                    <u>
+                                                                        <field name="engineering_state"/>
+                                                                    </u>
+                                                                </span>
+                                                            </b>
+                                                        </t>
+                                                        <t t-elif="stateToUse == 'obsoleted'">
+                                                            <b>
+                                                                <span style="color: rgb(231, 43, 26);padding-left: 5px;">
+                                                                    <u>
+                                                                        <field name="engineering_state"/>
+                                                                    </u>
+                                                                </span>
+                                                            </b>
+                                                        </t>
+                                                        <t t-else="">
+                                                            <b>
+                                                                <span style="color: black;padding-left: 5px;">
+                                                                    <u>
+                                                                        <field name="engineering_state"/>
+                                                                    </u>
+                                                                </span>
+                                                            </b>
+                                                        </t>
+                                                    </td>
+                                                </tr>
+                                                <tr name="attachment_button_box">
+                                                    <td name="attachment_button_box" style="display: inline-flex;">
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <t t-if="stateToUse == 'draft'">
+                                                            <hr style="background-color: rgb(110, 51, 197);height: 1px;"></hr>
+                                                        </t>
+                                                        <t t-elif="stateToUse == 'confirmed'">
+                                                            <hr style="background-color: blue;height: 1px;"></hr>
+                                                        </t>
+                                                        <t t-elif="stateToUse == 'released'">
+                                                            <hr style="background-color: rgba(0, 170, 34, 0.66);height: 1px;"></hr>
+                                                        </t>
+                                                        <t t-elif="stateToUse == 'undermodify'">
+                                                            <hr style="background-color: rgb(218, 159, 34);height: 1px;"></hr>
+                                                        </t>
+                                                        <t t-elif="stateToUse == 'obsoleted'">
+                                                            <hr style="background-color: rgb(231, 43, 26);height: 1px;"></hr>
+                                                        </t>
+                                                        <t t-else="">
+                                                            <hr style="background-color: black;height: 1px;"></hr>
+                                                        </t>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
                         </div>
                     </t>
                 </templates>

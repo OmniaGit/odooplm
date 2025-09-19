@@ -18,20 +18,17 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+import base64
 from .book_collector import BookCollector
 from .book_collector import packDocuments
 from datetime import datetime
 from dateutil import tz
-import base64
-from odoo import _
-from odoo import api
-from odoo import models
-from odoo.exceptions import UserError
-from odoo.addons.plm.report.book_collector import getBottomMessage
+from odoo import api, models
 
 
 def getEmptyDocument():
-    return base64.b64decode(b"""JVBERi0xLjQKJcOkw7zDtsOfCjIgMCBvYmoKPDwvTGVuZ3RoIDMgMCBSL0ZpbHRlci9GbGF0ZURl
+    return base64.b64decode(
+        b"""JVBERi0xLjQKJcOkw7zDtsOfCjIgMCBvYmoKPDwvTGVuZ3RoIDMgMCBSL0ZpbHRlci9GbGF0ZURl
 Y29kZT4+CnN0cmVhbQp4nG2NTQvCMBBE7/kVexYSZ2M2aSEErG0P3goBD+LNj5tgL/59t/QgiCzM
 Djx4A8f0Ni8CQZu04jw1gV1D882cNvRcmd78MF01EhWlGFyieqXtyOQ91fs5gwtneOyK1b9mgCAi
 lks9mqGa6a+Lgw7/uJKKBM1ibIv1GfulShHJ6EpKGQf0GDCiLzZkhmLm785EH25LLk8KZW5kc3Ry
@@ -192,17 +189,17 @@ MDAwMCBuIAowMDAwMDA4MDc2IDAwMDAwIG4gCjAwMDAwMDgxMDggMDAwMDAgbiAKMDAwMDAwODQw
 NSAwMDAwMCBuIAowMDAwMDA4NTAyIDAwMDAwIG4gCnRyYWlsZXIKPDwvU2l6ZSAxNC9Sb290IDEy
 IDAgUgovSW5mbyAxMyAwIFIKL0lEIFsgPEMzRDZBMzFBMTcxNkU1QjAyMjkxN0Y4QzkxQUM1MDk3
 Pgo8QzNENkEzMUExNzE2RTVCMDIyOTE3RjhDOTFBQzUwOTc+IF0KL0RvY0NoZWNrc3VtIC8wQjMy
-RjYxNzJGNDFCNzYwNjRBM0NDQjFEMTgxOTFCQgo+PgpzdGFydHhyZWYKODc0NwolJUVPRgo=""")
+RjYxNzJGNDFCNzYwNjRBM0NDQjFEMTgxOTFCQgo+PgpzdGFydHhyZWYKODc0NwolJUVPRgo="""
+    )
 
 
 class ReportProductPdf(models.AbstractModel):
-    _name = 'report.plm.product_pdf'
-    _description = 'Report for producing pdf'
-
+    _name = "report.plm.product_pdf"
+    _description = "Report for producing pdf"
 
     def commonInfos(self):
-        docRepository = self.env['ir.attachment']._get_filestore()
-        to_zone = tz.gettz(self.env.context.get('tz', 'Europe/Rome'))
+        docRepository = self.env["ir.attachment"]._get_filestore()
+        to_zone = tz.gettz(self.env.context.get("tz", "Europe/Rome"))
         from_zone = tz.tzutc()
         dt = datetime.now()
         dt = dt.replace(tzinfo=from_zone)
@@ -210,21 +207,23 @@ class ReportProductPdf(models.AbstractModel):
         localDT = localDT.replace(microsecond=0)
         msg = "Printed by '%(print_user)s' : %(date_now)s State: %(state)s"
         msg_vals = {
-            'print_user': 'user_id.name',
-            'date_now': localDT.ctime(),
-            'state': 'doc_obj.engineering_state',
-                }
-        mainBookCollector = BookCollector(jumpFirst=False,
-                                          customText=(msg, msg_vals),
-                                          bottomHeight=10,
-                                          poolObj=self.env)
+            "print_user": "user_id.name",
+            "date_now": localDT.ctime(),
+            "state": "doc_obj.engineering_state",
+        }
+        mainBookCollector = BookCollector(
+            jumpFirst=False,
+            customText=(msg, msg_vals),
+            bottomHeight=10,
+            poolObj=self.env,
+        )
         return docRepository, mainBookCollector
 
     def getDocument(self, product, check):
         out = []
         for doc in product.linkeddocuments:
             if check:
-                if doc.engineering_state in ['released', 'undermodify']:
+                if doc.engineering_state in ["released", "undermodify"]:
                     out.append(doc)
                 continue
             out.append(doc)
@@ -239,49 +238,46 @@ class ReportProductPdf(models.AbstractModel):
             documents.extend(self.getDocument(product, checkState))
             if level > -1:
                 for childProduct in product._getChildrenBom(product, level):
-                    childProduct = self.env['product.product'].browse(childProduct)
+                    childProduct = self.env["product.product"].browse(childProduct)
                     documents.extend(self.getDocument(childProduct, checkState))
         if len(documents) == 0:
             content = getEmptyDocument()
         else:
-            documentContent = packDocuments(docRepository,
-                                            documents,
-                                            mainBookCollector)
+            documentContent = packDocuments(docRepository, documents, mainBookCollector)
             content = documentContent[0]
         return content
 
     def render_qweb_pdf(self, products=None, level=0, checkState=False):
         content = self._render_qweb_pdf(products, level, checkState)
         byteString = b"data:application/pdf;base64," + base64.b64encode(content)
-        return byteString.decode('UTF-8')
+        return byteString.decode("UTF-8")
 
     @api.model
     def _get_report_values(self, docids, data=None):
-        products = self.env['product.product'].browse(docids)
-        return {'docs': products,
-                'get_content': self.render_qweb_pdf}
+        products = self.env["product.product"].browse(docids)
+        return {"docs": products, "get_content": self.render_qweb_pdf}
 
 
 class ReportOneLevelProductPdf(ReportProductPdf):
-    _name = 'report.plm.one_product_pdf'
-    _description = 'Report pdf'
+    _name = "report.plm.one_product_pdf"
+    _description = "Report pdf"
 
 
 class ReportAllLevelProductPdf(ReportProductPdf):
-    _name = 'report.plm.all_product_pdf'
-    _description = 'Report pdf'
+    _name = "report.plm.all_product_pdf"
+    _description = "Report pdf"
 
 
 class ReportProductionProductPdf(ReportProductPdf):
-    _name = 'report.plm.product_production_pdf_latest'
-    _description = 'Report pdf'
+    _name = "report.plm.product_production_pdf_latest"
+    _description = "Report pdf"
 
 
 class ReportProductionOneProductPdf(ReportProductPdf):
-    _name = 'report.plm.product_production_one_pdf_latest'
-    _description = 'Report pdf'
+    _name = "report.plm.product_production_one_pdf_latest"
+    _description = "Report pdf"
 
 
 class ReportProductionAllProductPdf(ReportProductPdf):
-    _name = 'report.plm.product_production_all_pdf_latest'
-    _description = 'Report pdf'
+    _name = "report.plm.product_production_all_pdf_latest"
+    _description = "Report pdf"

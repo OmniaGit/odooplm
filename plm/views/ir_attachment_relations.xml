@@ -235,7 +235,6 @@
         <record id="plm_docbom_search" model="ir.ui.view">
             <field name="name">plm.doc.relation.search</field>
             <field name="model">ir.attachment.relation</field>
-        	<field name="priority" eval="10"/>
             <field name="arch" type="xml">
 				<search string="Search on Document Relations">
              		<field name="parent_type"/>
@@ -287,7 +286,7 @@
 		                       	domain="[('write_uid','=',uid)]"
 		                       	help="Filter on documents changed by me"/>
 	               	</group>
-            		<group expand="0" string="Group By...">
+            		<group>
 	                	<filter name="created_in"
 	                            string="Created in"
 	                            domain="[]"
@@ -312,7 +311,7 @@
                     <field name="child_id"/>
                     <field name="link_kind"  string="Document Relation Kind"/>
                     <newline/>
-                    <group expand="0" string="Group by...">
+                    <group>
                         <filter name="parent"
                                 string="Parent"
                                 domain="[]"
@@ -350,7 +349,7 @@
                 <field name="parent_type" invisible="True"/>
                 <field name="child_type" invisible="True"/>
                 <templates>
-                    <t t-name="kanban-box">
+                    <t t-name="card">
                     	<t t-value="record.parent_state.raw_value" t-set="stateToUse1"/>
                     	<t t-value="record.child_state.raw_value" t-set="stateToUse2"/>
 						<field name="parent_linked" invisible="True"/>

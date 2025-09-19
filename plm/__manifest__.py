@@ -21,7 +21,7 @@
 ##############################################################################
 {
     "name": "Product Lifecycle Management",
-    "version": "18.0.15.0.1",
+    "version": "19.0.1.0.1",
     "author": "OmniaSolutions",
     "website": "https://odooplm.omniasolutions.website",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
@@ -35,7 +35,6 @@
         "security/base_plm_security.xml",
         "report/product_report_document.xml",
         "report/bom_document.xml",
-
         "data/data.xml",
         "data/sequence.xml",
         "report/bom_structure_report_template.xml",
@@ -65,13 +64,12 @@
         "views/plm_cad_open.xml",
         "views/plm_cad_open_bck.xml",
         "views/mail_activity_type.xml",
-
         "views/menu.xml",
         "views/product_category.xml",
         "views/plm_temporaty.xml",
         "views/mrp_production.xml",
         # QwebTemplates
-        'views/templates.xml',
+        "views/templates.xml",
     ],
     "assets": {
         "web.assets_backend": [
@@ -79,12 +77,11 @@
             "plm/static/src/css/color_fields_tree.css",
             "plm/static/src/js/mrp_bom_overview_line.js",
             "plm/static/src/xml/mrp_bom_overview_table_inherit.xml",
-
             # many2one Widget
             "plm/static/src/js/many2one_widget/many2one_widget.js",
             "plm/static/src/js/many2one_widget/many2one_widget.xml",
         ],
-        'web.report_assets_common': [
+        "web.report_assets_common": [
             "plm/static/src/scss/document_bom.scss",
             "plm/static/src/css/component_kanban.css",
             "plm/static/src/css/color_fields_tree.css",

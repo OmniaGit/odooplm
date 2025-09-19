@@ -18,48 +18,49 @@
 #    along with this prograIf not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-'''
+"""
 Created on 28 Sep 2022
 
 @author: mboscolo
-'''
-import datetime
+"""
 import logging
+
+from odoo import models, fields, api, _
 from datetime import datetime
 
-from odoo import _
-from odoo import api
-from odoo import fields
 #
-from odoo import models
 from odoo.exceptions import UserError, ValidationError
 
 #
 _logger = logging.getLogger(__name__)
 #
-START_STATUS = 'draft'
-CONFIRMED_STATUS = 'confirmed'
-RELEASED_STATUS = 'released'
-OBSOLATED_STATUS = 'obsoleted'
-UNDER_MODIFY_STATUS = 'undermodify'
-USED_STATES = [(START_STATUS, _('Draft')),
-               (CONFIRMED_STATUS, _('Confirmed')),
-               (RELEASED_STATUS, _('Released')),
-               (UNDER_MODIFY_STATUS, _('UnderModify')),
-               (OBSOLATED_STATUS, _('Obsoleted'))]
+START_STATUS = "draft"
+CONFIRMED_STATUS = "confirmed"
+RELEASED_STATUS = "released"
+OBSOLATED_STATUS = "obsoleted"
+UNDER_MODIFY_STATUS = "undermodify"
+USED_STATES = [
+    (START_STATUS, _("Draft")),
+    (CONFIRMED_STATUS, _("Confirmed")),
+    (RELEASED_STATUS, _("Released")),
+    (UNDER_MODIFY_STATUS, _("UnderModify")),
+    (OBSOLATED_STATUS, _("Obsoleted")),
+]
 #
 RELEASED_STATUSES = [RELEASED_STATUS, UNDER_MODIFY_STATUS]
 #
-PLM_NO_WRITE_STATE = [CONFIRMED_STATUS,
-                      RELEASED_STATUS,
-                      UNDER_MODIFY_STATUS,
-                      OBSOLATED_STATUS]
-#
-LOWERCASE_LETTERS = [chr(i) for i in range(ord('a'), ord('z') + 1)]
-#
-UPPERCASE_LETTERS = [
-    chr(i) for i in range(ord('A'), ord('Z') + 1)
+PLM_NO_WRITE_STATE = [
+    CONFIRMED_STATUS,
+    RELEASED_STATUS,
+    UNDER_MODIFY_STATUS,
+    OBSOLATED_STATUS,
 ]
+#
+LOWERCASE_LETTERS = [chr(i) for i in range(ord("a"), ord("z") + 1)]
+#
+UPPERCASE_LETTERS = [chr(i) for i in range(ord("A"), ord("Z") + 1)]
+
+
 #
 def convert_to_letter(l, n):
     n_o_w = len(l)
@@ -69,70 +70,46 @@ def convert_to_letter(l, n):
     else:
         out = l[n]
     return out
+
+
 #
 class RevisionBaseMixin(models.AbstractModel):
-    _name = 'revision.plm.mixin'
-    _inherit = ['mail.thread', 'mail.activity.mixin']
-    _description = 'Revision Mixin'
+    _name = "revision.plm.mixin"
+    _inherit = ["mail.thread", "mail.activity.mixin"]
+    _description = "Revision Mixin"
 
     engineering_code = fields.Char(string="Engineering Code")
-    engineering_revision = fields.Integer(string="Engineering Revision index",
-                                          default=0)
+    engineering_revision = fields.Integer(
+        string="Engineering Revision index", default=0
+    )
     engineering_revision_letter = fields.Char(
-        string="Engineering Revision letter",
-        default="A"
+        string="Engineering Revision letter", default="A"
     )
     engineering_branch_revision = fields.Integer(
-        string="Engineering Branch index",
-        default=0
+        string="Engineering Branch index", default=0
     )
     engineering_branch_revision_letter = fields.Char(
-        string="Engineering Sub Revision letter",
-        default="A"
+        string="Engineering Sub Revision letter", default="A"
     )
     engineering_state = fields.Selection(
-        USED_STATES,
-        string="Engineering Status",
-        default='draft',
-        tracking=True
+        USED_STATES, string="Engineering Status", default="draft", tracking=True
     )
     # workflow filed to manage revision information
-    engineering_release_date = fields.Datetime(
-        _('Release date'),
-        tracking=True
-    )
-    engineering_release_user = fields.Many2one(
-        'res.users',
-        string=_("Release User")
-    )
-    engineering_workflow_date = fields.Datetime(
-        _('Workflow date'),
-        tracking=True
-    )
-    engineering_workflow_user = fields.Many2one(
-        'res.users',
-        string=_("Workflow User")
-    )
-    engineering_writable = fields.Boolean(
-        'Writable',
-        default=True
-    )
+    engineering_release_date = fields.Datetime(_("Release date"), tracking=True)
+    engineering_release_user = fields.Many2one("res.users", string=_("Release User"))
+    engineering_workflow_date = fields.Datetime(_("Workflow date"), tracking=True)
+    engineering_workflow_user = fields.Many2one("res.users", string=_("Workflow User"))
+    engineering_writable = fields.Boolean("Writable", default=True)
     engineering_code_editable = fields.Boolean(
-        "Engineering Code Editable",
-        default=True
+        "Engineering Code Editable", default=True
     )
-    engineering_revision_user = fields.Many2one(
-        'res.users',
-        string=_("User Revision")
-    )
-    engineering_revision_date = fields.Datetime(
-        string=_('Datetime Revision')
-    )
-    engineering_branch_parent_id = fields.Integer('Parent branch')
+    engineering_revision_user = fields.Many2one("res.users", string=_("User Revision"))
+    engineering_revision_date = fields.Datetime(string=_("Datetime Revision"))
+    engineering_branch_parent_id = fields.Integer("Parent branch")
     engineering_sub_revision_letter = fields.Char("Sub revision path")
-    engineering_revision_count = fields.Integer(compute='_engineering_revision_count')
+    engineering_revision_count = fields.Integer(compute="_engineering_revision_count")
 
-    @api.constrains('engineering_code', 'engineering_revision')
+    @api.constrains("engineering_code", "engineering_revision")
     def _check_engineering_constraints(self):
         """method used checks eng code and eng revision both should not same value or duplicate combination."""
         for rec in self:
@@ -140,27 +117,31 @@ class RevisionBaseMixin(models.AbstractModel):
             # 2️⃣ Check for uniqueness across the table
             if rec.engineering_code:
                 domain = [
-                    ('engineering_code', '=', rec.engineering_code),
-                    ('engineering_revision', '=', rec.engineering_revision),
-                    ('id', '!=', rec.id)
+                    ("engineering_code", "=", rec.engineering_code),
+                    ("engineering_revision", "=", rec.engineering_revision),
+                    ("id", "!=", rec.id),
                 ]
                 if self.search_count(domain):
                     raise ValidationError(
-                        _("This Engineering Code and Revision combination already exists: '%s' - Rev %s") % (
-                            rec.engineering_code, rec.engineering_revision))
+                        _(
+                            "This Engineering Code and Revision combination already exists: '%s' - Rev %s"
+                        )
+                        % (rec.engineering_code, rec.engineering_revision)
+                    )
 
     def init(self):
         """Ensure there is at most one active variant for each combination.
 
         There could be no variant for a combination if using dynamic attributes.
         """
-        if self._name != 'revision.plm.mixin':
+        if self._name != "revision.plm.mixin":
             sql = """
             CREATE UNIQUE INDEX IF NOT EXISTS {unique_name}
             ON {table_name} (engineering_code, engineering_revision)
             WHERE (engineering_code is not null or engineering_code not in ('-',''))
-            """.format(unique_name="unique_index_%s" % self._table,
-                       table_name=self._table)
+            """.format(
+                unique_name="unique_index_%s" % self._table, table_name=self._table
+            )
             self.env.cr.execute(sql)
 
     def _engineering_revision_count(self):
@@ -169,9 +150,9 @@ class RevisionBaseMixin(models.AbstractModel):
         """
         for obj in self:
             if obj.engineering_code:
-                obj.engineering_revision_count = self.search_count([
-                    ('engineering_code', '=', obj.engineering_code)
-                ])
+                obj.engineering_revision_count = self.search_count(
+                    [("engineering_code", "=", obj.engineering_code)]
+                )
             else:
                 obj.engineering_revision_count = 0
 
@@ -191,6 +172,7 @@ class RevisionBaseMixin(models.AbstractModel):
 
     def _mark_worklow_user_date(self):
         for obj in self:
+
             obj.engineering_workflow_date = datetime.now()
             obj.engineering_workflow_user = self.env.uid
             obj._mark_workflow_release_now()
@@ -254,10 +236,13 @@ class RevisionBaseMixin(models.AbstractModel):
             obj_previus_version = obj.get_previus_version()
             obj_previus_version._mark_under_modifie()
             obj.message_post(
-                body=_("New version created from Code %s Rev. %s" % (
-                    obj_previus_version.engineering_code,
-                    obj_previus_version.engineering_revision
-                ))
+                body=_(
+                    "New version created from Code %s Rev. %s"
+                    % (
+                        obj_previus_version.engineering_code,
+                        obj_previus_version.engineering_revision,
+                    )
+                )
             )
 
     def _mark_obsolete_previous(self):
@@ -280,11 +265,8 @@ class RevisionBaseMixin(models.AbstractModel):
             before_state = obj.engineering_state
             if before_state == state:
                 logging.warning(
-                    "[%s] Moving %s to %s nothing to perform" % (
-                        obj.engineering_code,
-                        state,
-                        state
-                    )
+                    "[%s] Moving %s to %s nothing to perform"
+                    % (obj.engineering_code, state, state)
                 )
                 continue
             function_name = "action_from_%s_to_%s" % (before_state, state)
@@ -322,10 +304,10 @@ class RevisionBaseMixin(models.AbstractModel):
         for obj in self:
             if not obj.is_releaseble():
                 raise UserError(
-                    _("Unable to revise a %s in status %s that different from released"
-                      % (obj.engineering_code,
-                         obj.engineering_revision)
-                      )
+                    _(
+                        "Unable to revise a %s in status %s that different from released"
+                        % (obj.engineering_code, obj.engineering_revision)
+                    )
                 )
             obj_new = obj._new_version()
             obj_new._mark_under_modifie_previous()
@@ -353,11 +335,11 @@ class RevisionBaseMixin(models.AbstractModel):
         obj_latest = self.get_latest_version()
         new_revision_index = obj_latest.engineering_revision + 1
         write_context = {
-            'name': self.name,
-            'engineering_code': self.engineering_code,
-            'engineering_revision': new_revision_index,
-            'engineering_revision_letter': self.get_revision_letter(new_revision_index),
-            'engineering_state': START_STATUS,
+            "name": self.name,
+            "engineering_code": self.engineering_code,
+            "engineering_revision": new_revision_index,
+            "engineering_revision_letter": self.get_revision_letter(new_revision_index),
+            "engineering_state": START_STATUS,
         }
         obj_new = self.with_context(copy_context=write_context).copy(write_context)
         return obj_new
@@ -386,16 +368,20 @@ class RevisionBaseMixin(models.AbstractModel):
         self.ensure_one()
         obj_latest = self.get_latest_version()
         new_eng_revision = obj_latest.engineering_revision + 1
-        new_branch_revision = self.get_latest_level_branch_revision(
-        ).engineering_branch_revision + 1
+        new_branch_revision = (
+            self.get_latest_level_branch_revision().engineering_branch_revision + 1
+        )
         path = ".".join(self.engineering_sub_revision_letter.split(".")[:-1])
-        return self.copy({
-            'engineering_revision': new_eng_revision,
-            'engineering_code': obj_latest.engineering_code,
-            'engineering_branch_revision': new_branch_revision,
-            'engineering_sub_revision_letter': "%s.%s" % (path, new_branch_revision),
-            'engineering_state': START_STATUS,
-        })
+        return self.copy(
+            {
+                "engineering_revision": new_eng_revision,
+                "engineering_code": obj_latest.engineering_code,
+                "engineering_branch_revision": new_branch_revision,
+                "engineering_sub_revision_letter": "%s.%s"
+                % (path, new_branch_revision),
+                "engineering_state": START_STATUS,
+            }
+        )
 
     def _new_branch(self):
         self.ensure_one()
@@ -420,27 +406,35 @@ class RevisionBaseMixin(models.AbstractModel):
 
     def children_branch(self):
         self.ensure_one()
-        return self.search([
-            ('engineering_branch_parent_id', '=', self.id)
-        ], order="engineering_branch_revision desc")
+        return self.search(
+            [("engineering_branch_parent_id", "=", self.id)],
+            order="engineering_branch_revision desc",
+        )
 
     def get_latest_level_branch_revision(self):
         if self.engineering_branch_parent_id:
-            for children in self.search([
-                ('engineering_branch_parent_id', '=', self.engineering_branch_parent_id)
-            ],order="engineering_branch_revision desc"):
+            for children in self.search(
+                [
+                    (
+                        "engineering_branch_parent_id",
+                        "=",
+                        self.engineering_branch_parent_id,
+                    )
+                ],
+                order="engineering_branch_revision desc",
+            ):
                 return children
         return []
 
     def copy(self, default=None):
         default = default or {}
-        if 'engineering_state' not in default:
-            default['engineering_state'] = START_STATUS
-        if 'engineering_code' not in default:
-            default['engineering_code'] = False
-        if 'engineering_revision' not in default:
-            default['engineering_revision'] = 0
-            default['engineering_revision_letter'] = self.get_revision_letter(0)
+        if "engineering_state" not in default:
+            default["engineering_state"] = START_STATUS
+        if "engineering_code" not in default:
+            default["engineering_code"] = False
+        if "engineering_revision" not in default:
+            default["engineering_revision"] = 0
+            default["engineering_revision_letter"] = self.get_revision_letter(0)
         return super(RevisionBaseMixin, self).copy(default)
 
     def get_latest_version(self):
@@ -448,83 +442,98 @@ class RevisionBaseMixin(models.AbstractModel):
         get the latest version of this object
         """
         self.ensure_one()
-        return self.search([
-            ('engineering_code', '=', self.engineering_code)
-        ], order='engineering_revision DESC', limit=1)
+        return self.search(
+            [("engineering_code", "=", self.engineering_code)],
+            order="engineering_revision DESC",
+            limit=1,
+        )
 
     def get_previus_version(self):
         self.ensure_one()
-        return self.search([
-            ('engineering_code', '=', self.engineering_code),
-            ('engineering_revision', '=', self.engineering_revision - 1)
-        ], limit=1)
+        return self.search(
+            [
+                ("engineering_code", "=", self.engineering_code),
+                ("engineering_revision", "=", self.engineering_revision - 1),
+            ],
+            limit=1,
+        )
 
     def get_next_version(self):
         self.ensure_one()
-        return self.search([
-            ('engineering_code', '=', self.engineering_code),
-            ('engineering_revision', '=', self.engineering_revision + 1)
-        ], limit=1)
+        return self.search(
+            [
+                ("engineering_code", "=", self.engineering_code),
+                ("engineering_revision", "=", self.engineering_revision + 1),
+            ],
+            limit=1,
+        )
 
     def get_released(self):
         self.ensure_one()
-        return self.search([
-            ('engineering_code', '=', self.engineering_code),
-            ('engineering_state', 'in', [UNDER_MODIFY_STATUS, RELEASED_STATUS])
-        ])
+        return self.search(
+            [
+                ("engineering_code", "=", self.engineering_code),
+                ("engineering_state", "in", [UNDER_MODIFY_STATUS, RELEASED_STATUS]),
+            ]
+        )
 
     def get_all_revision(self):
         self.ensure_one()
-        return self.search([
-            ('engineering_code', '=', self.engineering_code)
-        ], order='engineering_revision DESC')
+        return self.search(
+            [("engineering_code", "=", self.engineering_code)],
+            order="engineering_revision DESC",
+        )
 
     def write(self, vals):
-        if 'engineering_code' in vals and vals[
-            'engineering_code'] not in [False, '-', '']:
-            vals['engineering_code_editable'] = False
+        if "engineering_code" in vals and vals["engineering_code"] not in [
+            False,
+            "-",
+            "",
+        ]:
+            vals["engineering_code_editable"] = False
         else:
             for record in self:
-                if record.engineering_code and record.engineering_code_editable == True:
-                    vals['engineering_code_editable'] = False
+                if record.engineering_code and record.engineering_code_editable:
+                    vals["engineering_code_editable"] = False
         return super(RevisionBaseMixin, self).write(vals)
 
     @api.model_create_multi
     def create(self, vals):
         for record_val in vals:
-            if 'engineering_code' in record_val and record_val[
-                'engineering_code'] not in [False, '-', '']:
-                record_val['engineering_code_editable'] = False
+            if "engineering_code" in record_val and record_val[
+                "engineering_code"
+            ] not in [False, "-", ""]:
+                record_val["engineering_code_editable"] = False
         return super(RevisionBaseMixin, self).create(vals)
 
     def get_display_notification(self, message):
-        return {'type': 'ir.actions.client',
-                'tag': 'display_notification',
-                'params': {
-                    'message': message,
-                    'sticky': False,
-                    'type': 'info',
-                }}
+        return {
+            "type": "ir.actions.client",
+            "tag": "display_notification",
+            "params": {
+                "message": message,
+                "sticky": False,
+                "type": "info",
+            },
+        }
 
     def translate_plm_m2o_name(self, objs, field_name, field_value):
         if field_value:
             for obj in objs:
                 field_def = obj.fields_get(field_name)
-                relation = field_def.get(field_name, {}).get('relation', '')
+                relation = field_def.get(field_name, {}).get("relation", "")
                 if not relation:
                     logging.warning(
                         "PLM Many2one relation on field %s not found" % field_name
                     )
                     continue
                 object_browse_id = None
-                for object_browse_id in self.env[relation].search([
-                    ('name', '=', field_value)
-                ]):
+                for object_browse_id in self.env[relation].search(
+                    [("name", "=", field_value)]
+                ):
                     break
                 if not object_browse_id:
-                    object_browse_id = self.env[relation].create({
-                        'name': field_value
-                    })
+                    object_browse_id = self.env[relation].create({"name": field_value})
                 return object_browse_id.id
         return field_value
 
@@ -534,12 +543,12 @@ class RevisionBaseMixin(models.AbstractModel):
         get all field translated in all available languages
         """
         out = {}
-        obj = self.env[self._name].search([('id', '=', object_id)])
+        obj = self.env[self._name].search([("id", "=", object_id)])
         if obj:
             for field_name in fields:
-                for code in self.env['res.lang'].search([
-                    ('active', '=', True)
-                ]).mapped("code"):
+                for code in (
+                    self.env["res.lang"].search([("active", "=", True)]).mapped("code")
+                ):
                     propKey = f"{field_name}@-@-@{code}"
                     out[propKey] = getattr(obj.with_context(lang=code), field_name)
         return out
@@ -547,17 +556,26 @@ class RevisionBaseMixin(models.AbstractModel):
     @api.model
     def get_possible_status(self):
         out = []
-        for model_id in self.env['ir.model'].sudo().search([
-            ('model', '=', self._name)
-        ]):
-            for filed_id in self.env['ir.model.fields'].sudo().search([
-                ('model_id', '=', model_id.id),
-                ('name', '=', 'engineering_state')
-            ]):
-                for ir_model_fields_selection in self.env[
-                    'ir.model.fields.selection'].sudo().search([
-                    ('field_id', '=', filed_id.id)]):
+        for model_id in (
+            self.env["ir.model"].sudo().search([("model", "=", self._name)])
+        ):
+            for filed_id in (
+                self.env["ir.model.fields"]
+                .sudo()
+                .search(
+                    [("model_id", "=", model_id.id), ("name", "=", "engineering_state")]
+                )
+            ):
+                for ir_model_fields_selection in (
+                    self.env["ir.model.fields.selection"]
+                    .sudo()
+                    .search([("field_id", "=", filed_id.id)])
+                ):
 
-                    out.append((ir_model_fields_selection.name,
-                                ir_model_fields_selection.value))
+                    out.append(
+                        (
+                            ir_model_fields_selection.name,
+                            ir_model_fields_selection.value,
+                        )
+                    )
         return out

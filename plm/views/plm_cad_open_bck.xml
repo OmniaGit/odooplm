@@ -36,7 +36,7 @@
                 <field name="userid" nolabel="1">
  					<filter string="Created by me" icon="terp-personal" domain="[('userid', '=', uid)]" name="cad_open_bck_create_created_by_me"/>
                 </field>
-                <group expand="0" string="Group By...">
+                <group>
                     <filter string="Hostname" icon="terp-personal" domain="[]" context="{'group_by':'hostname'}" name="cad_open_bck_hostname"/>
                     <filter string="Create by Month" icon="terp-personal" domain="[]" context="{'group_by':'create_date'}" name="cad_open_bck_created_month"/>
                     <filter string="Creator" icon="terp-personal" domain="[]" context="{'group_by':'userid'}" name="cad_open_bck_creator"/>

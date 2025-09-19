@@ -71,7 +71,7 @@
                 <field name="userid" nolabel="1">
 					<filter name="created_by_me" string="Created by me" domain="[('userid', '=', uid)]"/>
                 </field>
-                <group expand="0" string="Group By...">
+                <group>
                     <filter name="document_name" string="Document Name" domain="[]" context="{'group_by':'documentid'}"/>
                     <filter name="create_by_month" string="Create by Month" domain="[]" context="{'group_by':'create_date'}"/>
                     <filter name="creator" string="Creator" domain="[]" context="{'group_by':'userid'}"/>

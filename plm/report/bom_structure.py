@@ -24,20 +24,18 @@ Created on Apr 14, 2016
 @author: Daniel Smerghetto
 """
 
-from odoo import api
-from odoo import models
-from operator import itemgetter
-from odoo import _
-import odoo
-import time
 import logging
+from odoo import api, models, _
+from operator import itemgetter
 
 
 def _translate(value):
     return _(value)
 
 
-def get_bom_report(myObject, recursion=False, flat=False, leaf=False, level=1, summarize=False):
+def get_bom_report(
+    myObject, recursion=False, flat=False, leaf=False, level=1, summarize=False
+):
     def getBom(bomLineObj):
         newBom = None
         for bomBws in bomLineObj.related_bom_ids:
@@ -48,21 +46,21 @@ def get_bom_report(myObject, recursion=False, flat=False, leaf=False, level=1, s
 
     def get_out_line_infos(bomLineBrws, productTmplBrws, prodQty):
         res = {
-            'row_bom_line': bomLineBrws,
-            'name': productTmplBrws.engineering_code,
-            'item': bomLineBrws.itemnum,
-            'pname': productTmplBrws.engineering_code,
-            'pdesc': _(productTmplBrws.name),
-            'pcode': bomLineBrws.product_id.default_code,
-            'previ': productTmplBrws.engineering_revision,
-            'pqty': prodQty,
-            'uname': bomLineBrws.product_uom_id.name,
-            'pweight': productTmplBrws.weight,
-            'code': bomLineBrws.product_id.default_code,
-            'level': level,
-            'prodBrws': bomLineBrws.product_id,
-            'prodTmplBrws': productTmplBrws,
-            'lineBrws': bomLineBrws
+            "row_bom_line": bomLineBrws,
+            "name": productTmplBrws.engineering_code,
+            "item": bomLineBrws.itemnum,
+            "pname": productTmplBrws.engineering_code,
+            "pdesc": _(productTmplBrws.name),
+            "pcode": bomLineBrws.product_id.default_code,
+            "previ": productTmplBrws.engineering_revision,
+            "pqty": prodQty,
+            "uname": bomLineBrws.product_uom_id.name,
+            "pweight": productTmplBrws.weight,
+            "code": bomLineBrws.product_id.default_code,
+            "level": level,
+            "prodBrws": bomLineBrws.product_id,
+            "prodTmplBrws": productTmplBrws,
+            "lineBrws": bomLineBrws,
         }
         return res
 
@@ -78,29 +76,33 @@ def get_bom_report(myObject, recursion=False, flat=False, leaf=False, level=1, s
             else:
                 if prodTmlId not in list(leafRes.keys()):
                     resDict = get_out_line_infos(l, productTmplObj, prodQty)
-                    resDict['engineering_code'] = productTmplObj.engineering_code
-                    resDict['level'] = ''
+                    resDict["engineering_code"] = productTmplObj.engineering_code
+                    resDict["level"] = ""
                     leafRes[prodTmlId] = resDict
                 else:
-                    leafRes[prodTmlId]['pqty'] = leafRes[prodTmlId]['pqty'] + prodQty
+                    leafRes[prodTmlId]["pqty"] = leafRes[prodTmlId]["pqty"] + prodQty
 
     if leaf:
         leafRes = {}
         leafComputeRecursion(myObject)
         return list(leafRes.values())
 
-    def summarize_level(bomObj, recursion=False, flat=False, level=1, summarize=False, parentQty=1):
+    def summarize_level(
+        bomObj, recursion=False, flat=False, level=1, summarize=False, parentQty=1
+    ):
         def updateQty(tmplId, qtyToAdd):
             for localIndex, valsList in list(orderDict.items()):
                 count = 0
                 for res in valsList:
-                    tmplBrws = res.get('prodTmplBrws', False)
+                    tmplBrws = res.get("prodTmplBrws", False)
                     if not tmplBrws:
-                        logging.error('Template browse not found printing bom: %r' % (res))
+                        logging.error(
+                            "Template browse not found printing bom: %r" % (res)
+                        )
                         continue
                     if tmplBrws.id == tmplId:
-                        newQty = orderDict[localIndex][count]['pqty'] + qtyToAdd
-                        orderDict[localIndex][count]['pqty'] = newQty
+                        newQty = orderDict[localIndex][count]["pqty"] + qtyToAdd
+                        orderDict[localIndex][count]["pqty"] = newQty
                         return
                     count = count + 1
 
@@ -116,18 +118,33 @@ def get_bom_report(myObject, recursion=False, flat=False, leaf=False, level=1, s
             if recursion or flat:
                 myNewBom = getBom(l)
                 if myNewBom:
-                    children = summarize_level(myNewBom, recursion, flat, level + 1, summarize,
-                                               l.product_qty * parentQty)
+                    children = summarize_level(
+                        myNewBom,
+                        recursion,
+                        flat,
+                        level + 1,
+                        summarize,
+                        l.product_qty * parentQty,
+                    )
             if prodTmlId in levelListed and summarize:
                 qty = l.product_qty
                 updateQty(prodTmlId, qty)
             else:
                 prodQty = l.product_qty
                 res = get_out_line_infos(l, productTmplObj, prodQty)
-                res['engineering_code'] = (bomObj.env['ir.config_parameter'].sudo().get_param(
-                    'REPORT_INDENTATION_KEY') or '') * level + ' ' + (productTmplObj.engineering_code or '')
-                res['children'] = children
-                res['level'] = level
+                res["engineering_code"] = (
+                    (
+                        bomObj.env["ir.config_parameter"]
+                        .sudo()
+                        .get_param("REPORT_INDENTATION_KEY")
+                        or ""
+                    )
+                    * level
+                    + " "
+                    + (productTmplObj.engineering_code or "")
+                )
+                res["children"] = children
+                res["level"] = level
                 levelListed.append(prodTmlId)
                 orderDict[index].append(res)
         return orderDict
@@ -140,12 +157,12 @@ def get_bom_report(myObject, recursion=False, flat=False, leaf=False, level=1, s
         for itemNum in itemNums:
             valsDict = outDict.get(itemNum, {})
             for valDict in valsDict:
-                children = valDict.get('children', {}).copy()
-                localQty = valDict['pqty']
+                children = valDict.get("children", {}).copy()
+                localQty = valDict["pqty"]
                 if flat:
                     localQty = localQty * parentQty
-                    valDict['pqty'] = localQty
-                del valDict['children']
+                    valDict["pqty"] = localQty
+                del valDict["children"]
                 out.append(valDict)
                 getOutList(children, localQty)
 
@@ -178,169 +195,199 @@ def BomSort(myObject):
 
 
 class ReportBomStructureAll(models.AbstractModel):
-    _name = 'report.plm.bom_structure_all'
+    _name = "report.plm.bom_structure_all"
     _description = "Report Bom All Structure"
 
     def get_children(self, myObject, level=0):
-        return get_bom_report(myObject, recursion=True, flat=False, leaf=False, level=1, summarize=False)
+        return get_bom_report(
+            myObject, recursion=True, flat=False, leaf=False, level=1, summarize=False
+        )
 
     def bom_type(self, myObject):
-        result = dict(myObject.fields_get()['type']['selection']).get(myObject.type, '')
+        result = dict(myObject.fields_get()["type"]["selection"]).get(myObject.type, "")
         return _(result)
 
     @api.model
     def _get_report_values(self, docids, data=None):
-        boms = self.env['mrp.bom'].browse(docids)
-        return {'docs': boms,
-                'bom_type': self.bom_type,
-                'get_children': self.get_children}
+        boms = self.env["mrp.bom"].browse(docids)
+        return {
+            "docs": boms,
+            "bom_type": self.bom_type,
+            "get_children": self.get_children,
+        }
 
 
 class ReportBomStructureOne(models.AbstractModel):
-    _name = 'report.plm.bom_structure_one'
-    _description = 'Report PLM Bom Structure'
+    _name = "report.plm.bom_structure_one"
+    _description = "Report PLM Bom Structure"
 
     @api.model
     def render_html(self, docids, data=None):
-        report_obj = self.env['report']
-        report = report_obj._get_report_from_name('plm.bom_structure_one')
+        report_obj = self.env["report"]
+        report = report_obj._get_report_from_name("plm.bom_structure_one")
         docargs = {
-            'doc_model': report.model,
-            'docs': self,
-            'data': data,
-            'doc_ids': docids}
-        return report_obj.render('plm.bom_structure_one', docargs)
+            "doc_model": report.model,
+            "docs": self,
+            "data": data,
+            "doc_ids": docids,
+        }
+        return report_obj.render("plm.bom_structure_one", docargs)
 
     def get_children(self, myObject, level=0):
-        return get_bom_report(myObject, recursion=False, flat=False, leaf=False, level=1, summarize=False)
+        return get_bom_report(
+            myObject, recursion=False, flat=False, leaf=False, level=1, summarize=False
+        )
 
     def bom_type(self, myObject):
-        result = dict(myObject.fields_get()['type']['selection']).get(myObject.type, '')
+        result = dict(myObject.fields_get()["type"]["selection"]).get(myObject.type, "")
         return _(result)
 
     @api.model
     def _get_report_values(self, docids, data=None):
-        boms = self.env['mrp.bom'].browse(docids)
-        return {'docs': boms,
-                'bom_type': self.bom_type,
-                'get_children': self.get_children}
+        boms = self.env["mrp.bom"].browse(docids)
+        return {
+            "docs": boms,
+            "bom_type": self.bom_type,
+            "get_children": self.get_children,
+        }
 
 
 class ReportBomStructureAllSum(models.AbstractModel):
-    _name = 'report.plm.bom_structure_all_sum'
+    _name = "report.plm.bom_structure_all_sum"
     _description = "Report Bom All Structure summarised"
 
     @api.model
     def render_html(self, docids, data=None):
-        report_obj = self.env['report']
-        report = report_obj._get_report_from_name('plm.bom_structure_all_sum')
+        report_obj = self.env["report"]
+        report = report_obj._get_report_from_name("plm.bom_structure_all_sum")
         docargs = {
-            'doc_model': report.model,
-            'docs': self,
-            'data': data,
-            'doc_ids': docids}
-        return report_obj.render('plm.bom_structure_all_sum', docargs)
+            "doc_model": report.model,
+            "docs": self,
+            "data": data,
+            "doc_ids": docids,
+        }
+        return report_obj.render("plm.bom_structure_all_sum", docargs)
 
     def get_children(self, myObject, level=1):
-        return get_bom_report(myObject, recursion=True, flat=False, leaf=False, level=level, summarize=True)
+        return get_bom_report(
+            myObject,
+            recursion=True,
+            flat=False,
+            leaf=False,
+            level=level,
+            summarize=True,
+        )
 
     def bom_type(self, myObject):
-        result = dict(myObject.fields_get()['type']['selection']).get(myObject.type, '')
+        result = dict(myObject.fields_get()["type"]["selection"]).get(myObject.type, "")
         return _(result)
 
     @api.model
     def _get_report_values(self, docids, data=None):
-        boms = self.env['mrp.bom'].browse(docids)
-        return {'docs': boms,
-                'bom_type': self.bom_type,
-                'get_children': self.get_children}
+        boms = self.env["mrp.bom"].browse(docids)
+        return {
+            "docs": boms,
+            "bom_type": self.bom_type,
+            "get_children": self.get_children,
+        }
 
 
 class ReportBomStructureOneSum(models.AbstractModel):
-    _name = 'report.plm.bom_structure_one_sum'
-    _description = 'Report PLM Bom Structure summaraized'
+    _name = "report.plm.bom_structure_one_sum"
+    _description = "Report PLM Bom Structure summaraized"
 
     @api.model
     def render_html(self, docids, data=None):
-        report_obj = self.env['report']
-        report = report_obj._get_report_from_name('plm.bom_structure_one_sum')
+        report_obj = self.env["report"]
+        report = report_obj._get_report_from_name("plm.bom_structure_one_sum")
         docargs = {
-            'doc_model': report.model,
-            'docs': self,
-            'data': data,
-            'doc_ids': docids}
-        return report_obj.render('plm.bom_structure_one_sum', docargs)
+            "doc_model": report.model,
+            "docs": self,
+            "data": data,
+            "doc_ids": docids,
+        }
+        return report_obj.render("plm.bom_structure_one_sum", docargs)
 
     def get_children(self, myObject):
         return get_bom_report(myObject, summarize=True)
 
     def bom_type(self, myObject):
-        result = dict(myObject.fields_get()['type']['selection']).get(myObject.type, '')
+        result = dict(myObject.fields_get()["type"]["selection"]).get(myObject.type, "")
         return _(result)
 
     @api.model
     def _get_report_values(self, docids, data=None):
-        boms = self.env['mrp.bom'].browse(docids)
-        return {'docs': boms,
-                'bom_type': self.bom_type,
-                'get_children': self.get_children}
+        boms = self.env["mrp.bom"].browse(docids)
+        return {
+            "docs": boms,
+            "bom_type": self.bom_type,
+            "get_children": self.get_children,
+        }
 
 
 class ReportBomStructureLevels(models.AbstractModel):
-    _name = 'report.plm.bom_structure_leaves'
-    _description = 'Report Bom Leavs'
+    _name = "report.plm.bom_structure_leaves"
+    _description = "Report Bom Leavs"
 
     @api.model
     def render_html(self, docids, data=None):
-        report_obj = self.env['report']
-        report = report_obj._get_report_from_name('plm.bom_structure_leaves')
+        report_obj = self.env["report"]
+        report = report_obj._get_report_from_name("plm.bom_structure_leaves")
         docargs = {
-            'doc_model': report.model,
-            'docs': self,
-            'data': data,
-            'doc_ids': docids}
-        return report_obj.render('plm.bom_structure_leaves', docargs)
+            "doc_model": report.model,
+            "docs": self,
+            "data": data,
+            "doc_ids": docids,
+        }
+        return report_obj.render("plm.bom_structure_leaves", docargs)
 
     def get_children(self, myObject, level=1):
         return get_bom_report(myObject, leaf=True, level=level, summarize=True)
 
     def bom_type(self, myObject):
-        result = dict(myObject.fields_get()['type']['selection']).get(myObject.type, '')
+        result = dict(myObject.fields_get()["type"]["selection"]).get(myObject.type, "")
         return _(result)
 
     @api.model
     def _get_report_values(self, docids, data=None):
-        boms = self.env['mrp.bom'].browse(docids)
-        return {'docs': boms,
-                'bom_type': self.bom_type,
-                'get_children': self.get_children}
+        boms = self.env["mrp.bom"].browse(docids)
+        return {
+            "docs": boms,
+            "bom_type": self.bom_type,
+            "get_children": self.get_children,
+        }
 
 
 class ReportBomStructureFlat(models.AbstractModel):
-    _name = 'report.plm.bom_structure_flat'
-    _description = 'Report Bom Structure'
+    _name = "report.plm.bom_structure_flat"
+    _description = "Report Bom Structure"
 
     @api.model
     def render_html(self, docids, data=None):
-        report_obj = self.env['report']
-        report = report_obj._get_report_from_name('plm.bom_structure_flat')
+        report_obj = self.env["report"]
+        report = report_obj._get_report_from_name("plm.bom_structure_flat")
         docargs = {
-            'doc_model': report.model,
-            'docs': self,
-            'data': data,
-            'doc_ids': docids}
-        return report_obj.render('plm.bom_structure_flat', docargs)
+            "doc_model": report.model,
+            "docs": self,
+            "data": data,
+            "doc_ids": docids,
+        }
+        return report_obj.render("plm.bom_structure_flat", docargs)
 
     def get_children(self, myObject, level=1):
-        return get_bom_report(myObject, recursion=True, flat=True, leaf=False, level=level, summarize=True)
+        return get_bom_report(
+            myObject, recursion=True, flat=True, leaf=False, level=level, summarize=True
+        )
 
     def bom_type(self, myObject):
-        result = dict(myObject.fields_get()['type']['selection']).get(myObject.type, '')
+        result = dict(myObject.fields_get()["type"]["selection"]).get(myObject.type, "")
         return _(result)
 
     @api.model
     def _get_report_values(self, docids, data=None):
-        boms = self.env['mrp.bom'].browse(docids)
-        return {'docs': boms,
-                'bom_type': self.bom_type,
-                'get_children': self.get_children}
+        boms = self.env["mrp.bom"].browse(docids)
+        return {
+            "docs": boms,
+            "bom_type": self.bom_type,
+            "get_children": self.get_children,
+        }

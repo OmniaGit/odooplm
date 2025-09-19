@@ -53,7 +53,7 @@
                             domain="[('write_uid','=',uid)]"
                             help="Filter on documents changed by me"/>
                 </group>
-                <group expand="0" string="Group By...">
+                <group>
                     <filter name="created_in"
                             string="Created in"
                             domain="[]"
@@ -220,9 +220,9 @@
                                     </div>
                                     <field name="uom_id"
                                            readonly="engineering_state in ['released','obsoleted']"/>
-                                    <field name="uom_po_id"
+                                    <!-- <field name="uom_po_id"
                                            readonly="engineering_state in ['released','obsoleted']"
-                                           groups="base.group_no_one"/>
+                                           groups="base.group_no_one"/> -->
                                 </group>
                                 <group colspan="4" col="4" name="technical_infos_group"
                                        string="Material / Surface / Treatment">
@@ -268,27 +268,29 @@
         <field name="model">product.product</field>
         <field name="inherit_id" ref="product.product_normal_form_view"/>
         <field name="arch" type="xml">
-            <xpath expr="//header" position="inside">
-                <button name="action_release"
-                        type="object"
-                        invisible="engineering_state != 'confirmed'"
-                        string="Release Component"
-                        class="oe_highlight"
-                        groups="plm.group_plm_release_users"/>
-                <button name="action_draft"
-                        type="object"
-                        invisible="engineering_state != 'confirmed'"
-                        string="Correct Component"/>
-                <button name="action_confirm"
-                        type="object"
-                        invisible="engineering_state!='draft'"
-                        string="Confirm Component"
-                        class="oe_highlight"/>
-                <field name="engineering_state"
-                       widget="statusbar"
-                       statusbar_visible="draft,confirmed,released"
-                       statusbar_colors='{"undermodify":"red","obsoleted":"red"}'
-                       readonly="1"/>
+            <xpath expr="//sheet" position="before">
+                <header>
+                    <button name="action_release"
+                            type="object"
+                            invisible="engineering_state != 'confirmed'"
+                            string="Release Component"
+                            class="oe_highlight"
+                            groups="plm.group_plm_release_users"/>
+                    <button name="action_draft"
+                            type="object"
+                            invisible="engineering_state != 'confirmed'"
+                            string="Correct Component"/>
+                    <button name="action_confirm"
+                            type="object"
+                            invisible="engineering_state!='draft'"
+                            string="Confirm Component"
+                            class="oe_highlight"/>
+                    <field name="engineering_state"
+                           widget="statusbar"
+                           statusbar_visible="draft,confirmed,released"
+                           statusbar_colors='{"undermodify":"red","obsoleted":"red"}'
+                           readonly="1"/>
+                </header>
             </xpath>
             <!--
             <xpath expr="//button[@name='action_view_bom']" position="after">
