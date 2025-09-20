@@ -202,6 +202,8 @@ class ProductProduct(models.Model):
 
     kit_bom = fields.Boolean(_("KIT Bom Type"))
 
+    configuration_name = fields.Char("Configuration Name")
+
     def _computeStd(self):
         for product_product_id in self:
             product_product_id.show_std_field1 = False

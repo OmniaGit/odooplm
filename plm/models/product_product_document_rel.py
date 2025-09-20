@@ -48,6 +48,8 @@ class PlmComponentDocumentRel(models.Model):
         # ondelete='cascade'
     )
 
+    configuration_name = fields.Char(related="component_id.configuration_name")
+
     _relation_unique = models.Constraint(
         "unique(component_id, document_id)",
         _("ProductProduct and Irattachment relation has to be unique !"),
