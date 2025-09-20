@@ -88,7 +88,7 @@ class PlmDbthread(models.Model):
                 plm_dbthread_id.error_message = clientException
             self.cleadUpPrevious(document_key, plm_dbthread_id.id)
             return True
-        logging.warning("Try to update %s but not found in the db" % clientArgs[0])
+        logging.warning(f"Try to update {clientArgs[0]} but not found in the db")
         return False
 
     @api.model
