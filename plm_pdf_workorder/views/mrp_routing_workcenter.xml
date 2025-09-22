@@ -9,12 +9,12 @@
                 <xpath expr="//field[@name='bom_product_template_attribute_value_ids']" position="after">
                     <field name="use_plm_docs"/>
                 </xpath>
-                <xpath expr="//page[@name='worksheet']" position="attributes">
+                <xpath expr="//page[@name='checks']" position="attributes">
                     <attribute name="invisible">use_plm_docs == True</attribute>
                 </xpath>
-                <xpath expr="//page[@name='worksheet']" position="after">
-                        <page name="plm_production_doc" string="PLM Production Doc" invisible="use_plm_docs==False">
-                        <field name="production_doc_ids" nolabel="1" mode="kanban"
+                <xpath expr="//page[@name='checks']" position="after">
+                    <page name="plm_production_doc" string="PLM Production Doc" invisible="use_plm_docs==False">
+                        <field name="production_doc_ids" nolabel="1" mode="kanban" add-label="Add"
                                domain="[('is_plm', '=', True), ('is_production_doc','=', True)]"
                                context="{
                                'odooPLM': True,

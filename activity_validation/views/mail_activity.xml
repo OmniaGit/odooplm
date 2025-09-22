@@ -200,13 +200,13 @@
                     <attribute name="invisible">change_activity_type in ['request', 'plm_activity']</attribute>
                 </xpath>
 
-                <xpath expr="//footer/button[@name='action_done_schedule_next']" position="attributes">
-                    <attribute name="invisible">change_activity_type in ['request', 'plm_activity']</attribute>
-                </xpath>
+<!--                <xpath expr="//footer/button[@name='action_done_schedule_next']" position="attributes">-->
+<!--                    <attribute name="invisible">change_activity_type in ['request', 'plm_activity']</attribute>-->
+<!--                </xpath>-->
 
-                <xpath expr="//footer/button[@name='action_done_schedule_next']" position="attributes">
-                    <attribute name="invisible">change_activity_type in ['request', 'plm_activity']</attribute>
-                </xpath>
+<!--                <xpath expr="//footer/button[@name='action_done_schedule_next']" position="attributes">-->
+<!--                    <attribute name="invisible">change_activity_type in ['request', 'plm_activity']</attribute>-->
+<!--                </xpath>-->
 
             </field>
         </record>
@@ -233,7 +233,7 @@
                         <field name="res_name"/>
                         <field name="user_id"/>
                         <field name="activity_type_id"/>
-                <group expand="0" string="Group By">
+                <group>
                 	<filter string="Activity Type" name="group_activity_type" domain="[]" context="{'group_by': 'activity_type_id'}"/>
                 </group>
             </search>

@@ -20,7 +20,7 @@
 ##############################################################################
 {
     "name": "Activity Validation",
-    "version": "18.0.1.0.5",
+    "version": "19.0.1.0.0",
     "author": "OmniaSolutions",
     "website": "https://github.com/OmniaGit/odooplm",
     "category": "Custom",
