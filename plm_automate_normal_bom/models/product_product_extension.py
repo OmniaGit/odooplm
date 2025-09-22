@@ -19,12 +19,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
-'''
-Created on 26 Jul 2016
-
-@author: Daniel Smerghetto
-'''
 import logging
 
 from odoo import api, models
@@ -83,5 +77,3 @@ class ProdProdExtension(models.Model):
             )
         for error in errors:
             logging.warning(error)
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

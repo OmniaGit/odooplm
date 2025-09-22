@@ -12,7 +12,7 @@
                     'partner_id': parent.partner_id,
                     'quantity':product_uom_qty,
                     'pricelist':parent.pricelist_id,
-                    'uom':product_uom,
+                    'uom':product_uom_id,
                     'company_id':parent.company_id,
                     'default_lst_price':price_unit,
                     'default_description_sale': name
@@ -27,7 +27,7 @@
                     'partner_id':parent.partner_id,
                     'quantity':product_uom_qty,
                     'pricelist':parent.pricelist_id,
-                    'uom':product_uom,
+                    'uom':product_uom_id,
                     'company_id': parent.company_id,
                     'sale_latest': True
                     }
@@ -41,7 +41,7 @@
                     'partner_id': parent.partner_id,
                     'quantity':product_uom_qty,
                     'pricelist':parent.pricelist_id,
-                    'uom':product_uom,
+                    'uom':product_uom_id,
                     'company_id':parent.company_id,
                     'default_lst_price':price_unit,
                     'default_description_sale': name

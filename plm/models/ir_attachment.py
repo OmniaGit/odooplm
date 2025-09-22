@@ -1170,9 +1170,9 @@ class IrAttachment(models.Model):
                     [
                         ("engineering_code", "=", ir_attachment_id.name),
                         (
-                            "engineering_revision",
-                            "=",
-                            ir_attachment_id.engineering_revision,
+                                "engineering_revision",
+                                "=",
+                                ir_attachment_id.engineering_revision,
                         ),
                         ("document_type", "in", ["2d", "3d"]),
                     ]
@@ -1347,20 +1347,20 @@ class IrAttachment(models.Model):
                         msg += _(
                             "\t Engineering Name = %r   Engineering Revision = %r   Id = %r\n"
                         ) % (
-                            parent_doc.engineering_code,
-                            parent_doc.engineering_revision,
-                            parent_doc.id,
-                        )
+                                   parent_doc.engineering_code,
+                                   parent_doc.engineering_revision,
+                                   parent_doc.id,
+                               )
                     raise UserError(msg)
-            #
-            # Check Bom relations
-            #
-            for mrp_bom_line_id in mrp_bom_line.search(
-                ["source_id", "=", ir_attachment_id.id]
-            ):
-                raise UserError(
-                    f"Unable to delete the Attachment that is present on the bom {mrp_bom_line_id.bom_id.display_name}"
-                )
+
+            for ir_attachment_id in self:
+                latest_attachment = ir_attachment_id.get_latest_version()[0]
+                for mrp_bom_line_id in mrp_bom_line.search([
+                    ("source_id", "=", latest_attachment.id)
+                ]):
+                    raise UserError(
+                        f"Unable to delete the Attachment that is present on the bom {mrp_bom_line_id.bom_id.display_name}"
+                    )
 
     def unlinkRestorePreviousDocument(self):
         for checkObj in self:
@@ -2190,14 +2190,14 @@ class IrAttachment(models.Model):
             for brwItem in self.search(
                 [
                     (
-                        "engineering_code",
-                        "=",
-                        documentAttribute.get("engineering_code", ""),
+                            "engineering_code",
+                            "=",
+                            documentAttribute.get("engineering_code", ""),
                     ),
                     (
-                        "engineering_revision",
-                        "=",
-                        documentAttribute.get("engineering_revision", -1),
+                            "engineering_revision",
+                            "=",
+                            documentAttribute.get("engineering_revision", -1),
                     ),
                 ]
             ):
@@ -2260,14 +2260,14 @@ class IrAttachment(models.Model):
                 for brwItem in self.search(
                     [
                         (
-                            "engineering_code",
-                            "=",
-                            documentAttribute.get("engineering_code"),
+                                "engineering_code",
+                                "=",
+                                documentAttribute.get("engineering_code"),
                         ),
                         (
-                            "engineering_revision",
-                            "=",
-                            documentAttribute.get("engineering_revision"),
+                                "engineering_revision",
+                                "=",
+                                documentAttribute.get("engineering_revision"),
                         ),
                     ]
                 ):
@@ -2314,14 +2314,14 @@ class IrAttachment(models.Model):
                 for brwItem in productTemplate.search(
                     [
                         (
-                            "engineering_code",
-                            "=",
-                            productAttribute.get("engineering_code"),
+                                "engineering_code",
+                                "=",
+                                productAttribute.get("engineering_code"),
                         ),
                         (
-                            "engineering_revision",
-                            "=",
-                            productAttribute.get("engineering_revision"),
+                                "engineering_revision",
+                                "=",
+                                productAttribute.get("engineering_revision"),
                         ),
                     ]
                 ):
@@ -2936,9 +2936,9 @@ class IrAttachment(models.Model):
             [
                 ("engineering_code", "=", engineering_code),
                 (
-                    "engineering_revision",
-                    "=",
-                    documentAttribute.get("engineering_revision", 0),
+                        "engineering_revision",
+                        "=",
+                        documentAttribute.get("engineering_revision", 0),
                 ),
             ]
         ):
@@ -4217,7 +4217,6 @@ class IrAttachment(models.Model):
                     ):
                         out = obj
         return out
-
 
 #
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

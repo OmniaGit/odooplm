@@ -19,13 +19,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
-"""
-Created on 13 Jun 2016
-
-@author: Daniel Smerghetto
-"""
-
 from odoo import models
 
 

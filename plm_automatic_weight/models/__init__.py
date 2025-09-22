@@ -19,9 +19,5 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-"""
-Created on May 25, 2016
-@author: Daniel Smerghetto
-"""
 from . import product_product
 from . import mrp_bom
