@@ -19,10 +19,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-"""
-Created on Mar 8, 2017
-@author: daniel
-"""
 import base64
 import csv
 import datetime

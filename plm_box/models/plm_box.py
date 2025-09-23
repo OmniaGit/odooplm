@@ -215,7 +215,7 @@ class Plm_box(models.Model):
         """
         Return ids of avaible groups for user
         """
-        return self.env.get("res.groups").search([("users.id", "=", self.env.uid)]).ids
+        return self.env['res.groups'].search([('user_ids', 'in', self.env.uid)]).ids
 
     @api.model
     def setRelatedDocs(self, parentBrws):
@@ -885,6 +885,3 @@ class Plm_box(models.Model):
             outDict["entities"]["document_rel"][
                 str(document.id)
             ] = self.getDocDictValues(document)
-
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

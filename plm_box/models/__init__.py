@@ -19,10 +19,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-"""
-Created on Mar 7, 2017
-@author: daniel
-"""
 from . import plm_box
 from . import ir_attachment
 from . import plm_checkout

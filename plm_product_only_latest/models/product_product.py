@@ -19,10 +19,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-"""
-Created on 25 Aug 2016
-@author: Daniel Smerghetto
-"""
 from odoo import api, models
 from odoo.addons.plm.models.plm_mixin import RELEASED_STATUSES
 
@@ -31,19 +27,20 @@ class ProductProduct(models.Model):
     _inherit = "product.product"
 
     @api.model
-    def name_search(self, name="", args=None, operator="ilike", limit=100):
+    def name_search(self, name="", domain=None, operator="ilike", limit=100):
+        domain = domain or []
         conditional_status = RELEASED_STATUSES.copy()
         config_param = self.env["ir.config_parameter"].sudo()
         conditional_status.extend(
             config_param.get_param("product_only_latest_params", "").split(",")
         )
         if self.env.context.get("produce_latest"):
-            args += [
+            domain += [
                 "|",
                 ("engineering_code", "=", False),
                 ("engineering_state", "in", conditional_status),
             ]
 
         return super(ProductProduct, self).name_search(
-            name=name, args=args, operator=operator, limit=limit
+            name=name, domain=domain, operator=operator, limit=limit
         )

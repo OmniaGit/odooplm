@@ -14,7 +14,7 @@
             <xpath expr="//sheet/notebook/page[1]/field[@name='order_line']/list//field[@name='product_id']"
                    position="attributes">
                 <attribute name="context">{'purchase_latest': True, 'partner_id':parent.partner_id,
-                    'quantity':product_qty,'uom':product_uom, 'company_id': parent.company_id}
+                    'quantity':product_qty,'uom':product_uom_id, 'company_id': parent.company_id}
                 </attribute>
             </xpath>
             <xpath expr="//sheet/notebook/page[1]/field[@name='order_line']/list//field[@name='product_id']"
@@ -23,7 +23,7 @@
                     'purchase_latest': True,
                     'partner_id':parent.partner_id,
                     'quantity':product_qty,
-                    'uom':product_uom,
+                    'uom':product_uom_id,
                     'company_id': parent.company_id}
                 </attribute>
             </xpath>

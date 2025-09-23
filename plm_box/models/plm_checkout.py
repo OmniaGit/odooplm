@@ -19,10 +19,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-"""
-Created on Mar 8, 2017
-@author: daniel
-"""
 from odoo import _, fields, models
 
 
@@ -30,6 +26,3 @@ class Plm_checkout_custom(models.Model):
     _inherit = "plm.checkout"
 
     write_uid = fields.Integer(_("Write User Id"))
-
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -28,6 +28,7 @@ class ProductProduct(models.Model):
 
     @api.model
     def name_search(self, name="", domain=None, operator="ilike", limit=100):
+        domain = domain or []
         conditional_status = RELEASED_STATUSES.copy()
         config_param = self.env["ir.config_parameter"].sudo()
         conditional_status.extend(

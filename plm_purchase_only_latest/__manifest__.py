@@ -21,7 +21,7 @@
 ##############################################################################
 {
     "name": "PLM Purchase Only Latest",
-    "version": "18.0.1.0.0",
+    "version": "19.0.1.0.0",
     "author": "OmniaSolutions",
     "website": "https://odooplm.omniasolutions.website",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
@@ -38,4 +38,4 @@
     "application": False,
     "auto_install": False,
 }
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+
