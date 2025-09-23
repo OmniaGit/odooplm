@@ -2,7 +2,7 @@
 {
     "name": "PLM Auto Translator",
     "author": "OmniaSolutions",
-    "version": "18.0.1.0.0",
+    "version": "19.0.1.0.0",
     "summary": "PLM Auto Translator",
     "website": "https://odooplm.omniasolutions.website",
     "description": """Automatically update translation files for PLM modules""",
@@ -17,6 +17,13 @@
         # views files
         "views/auto_translator_views.xml",
     ],
+    "external_dependencies": {
+        "python": ["googletrans", "polib"],
+        "apt": {
+            "googletrans": "python3-pip",
+            "polib": "python3-polib",
+        },
+    },
     "installable": True,
     "application": True,
     "license": "LGPL-3",

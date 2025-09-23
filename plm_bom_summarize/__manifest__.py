@@ -21,7 +21,7 @@
 ##############################################################################
 {
     "name": "PLM Bom Sumarize",
-    "version": "18.0.1.0.0",
+    "version": "19.0.1.0.1",
     "author": "OmniaSolutions",
     "website": "https://odooplm.omniasolutions.website",
     "category": "Product Lifecycle Management",

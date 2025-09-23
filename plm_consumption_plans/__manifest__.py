@@ -21,7 +21,7 @@
 ##############################################################################
 {
     "name": "PLM Consumption Plans",
-    "version": "18.0.0.0.2",
+    "version": "19.0.1.0.0",
     "author": "OmniaSolutions",
     "website": "https://odooplm.omniasolutions.website",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
