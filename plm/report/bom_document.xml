@@ -23,19 +23,19 @@
 							<tbody>
 								<tr onmouseover="this.style.backgroundColor='#e1e5f4'" onmouseout="this.style.backgroundColor=''">
 									<td class="text-center">
-		                          		<t t-esc="data['level']"/>
+		                          		<t t-out="data['level']"/>
 		                         	</td>
 									<td>
 				                        <div t-attf-class="d-inline-block">
-				                             <a t-attf-href="/web#id={{record_browse.id}}&amp;model={{record_browse._name}}&amp;view_type=form" t-esc="record_browse.name"
+				                             <a t-attf-href="/web#id={{record_browse.id}}&amp;model={{record_browse._name}}&amp;view_type=form" t-out="record_browse.name"
 				                                target="_blank"></a>
 				                        </div>
 		                           	</td>
 		                     		<td>
-		                            	<t t-esc="record_browse.engineering_code"/>
+		                            	<t t-out="record_browse.engineering_code"/>
 		                        	</td>
 		                        	<td style="padding-right: 10px;">
-		                            	<span t-esc="record_browse.engineering_revision" style="padding-right: 10px;"/>
+		                            	<span t-out="record_browse.engineering_revision" style="padding-right: 10px;"/>
 		                        	</td>
 		                        	<t t-set="state" t-value="record_browse.engineering_state"/>
 		                        	<t t-call="plm.docuemnt_state_row"/>
@@ -43,15 +43,15 @@
 		                            	<t t-if="record_browse.linkedcomponents">
 		                                	<t t-set="linked_product" t-value="record_browse.linkedcomponents[0]"/>
 	                                        <div t-attf-class="d-inline-block">
-	                                             <a t-attf-href="/web#id={{linked_product.id}}&amp;model={{linked_product._name}}&amp;view_type=form" t-esc="linked_product.engineering_code"
+	                                             <a t-attf-href="/web#id={{linked_product.id}}&amp;model={{linked_product._name}}&amp;view_type=form" t-out="linked_product.engineering_code"
 	                                                target="_blank"></a>
 	                                        </div>
-	                                        <div t-esc="linked_product.name"/>
+	                                        <div t-out="linked_product.name"/>
 		                          		</t>
 		                        	</td>
                                     <td class="text-center" style="color:red;">
 					                    <t t-if="record_browse.checkout_user">
-					                        <div class="fa fa-lock" t-esc="record_browse.checkout_user"/>
+					                        <div class="fa fa-lock" t-out="record_browse.checkout_user"/>
 					                    </t>
 					                    <t t-else="">
 					                       <div class="fa fa-unlock" style="color:green;"/>
@@ -78,7 +78,7 @@
 			<!-- <t t-set="space_td" t-value="'margin-left: '+ str(record_child_level * 20) + 'px; display: flex; font-weight:bold; color: #008b8b;'"/> -->
 			<tr class="document_report_line" t-att-data-level="record_child_level" onmouseover="this.style.backgroundColor='#e1e5f4'" onmouseout="this.style.backgroundColor=''">
 				<td class="text-center">
-                	<t t-esc="record_child_level"/>
+                	<t t-out="record_child_level"/>
                 </td>
 				<td>
 					<div t-att-style="None">
@@ -93,31 +93,31 @@
 						  	</t>
 						</t>
 		                <div t-attf-class="d-inline-block">
-		                     <a t-attf-href="/web#id={{record_child.id}}&amp;model={{record_child._name}}&amp;view_type=form" t-esc="record_child.name"
+		                     <a t-attf-href="/web#id={{record_child.id}}&amp;model={{record_child._name}}&amp;view_type=form" t-out="record_child.name"
 		                        target="_blank"></a>
 		                </div>
 					</div>
 				</td>
 				<td>
-					<t t-esc="record_child.engineering_code"/>
+					<t t-out="record_child.engineering_code"/>
 				</td>
 				<td >
-					<span t-esc="record_child.engineering_revision" style="text-align:center;padding-right: 10px;"/>
+					<span t-out="record_child.engineering_revision" style="text-align:center;padding-right: 10px;"/>
 				</td>
                 <t t-call="plm.docuemnt_state_row"/>
 				<td>
 					<t t-if="record_child.linkedcomponents">
 	                    <t t-set="linked_product" t-value="record_child.linkedcomponents[0]"/>
 	                    <div t-attf-class="d-inline-block">
-	                         <a t-attf-href="/web#id={{linked_product.id}}&amp;model={{linked_product._name}}&amp;view_type=form" t-esc="linked_product.engineering_code"
+	                         <a t-attf-href="/web#id={{linked_product.id}}&amp;model={{linked_product._name}}&amp;view_type=form" t-out="linked_product.engineering_code"
 	                            target="_blank"></a>
 	                    </div>
-	                    <div t-esc="linked_product.name"/>
+	                    <div t-out="linked_product.name"/>
                  	</t>
 				</td>
                 <td class="text-center" style="color:red;">
                     <t t-if="record_child.checkout_user">
-                        <div class="fa fa-lock" t-esc="record_child.checkout_user"/>
+                        <div class="fa fa-lock" t-out="record_child.checkout_user"/>
                     </t>
                     <t t-else="">
                         <div class="fa fa-unlock" style="color:green;"/>
@@ -127,19 +127,19 @@
                		<img t-att-src="'/plm/ir_attachment_preview/%s' % record_child.id" class="image_document_report" loading="lazy"/>
                	</td>
 			</tr>
-			<div t-esc="child_dict['report_obj'].get_doc_bom(record_child, record_child_level)"/>
+			<div t-out="child_dict['report_obj'].get_doc_bom(record_child, record_child_level)"/>
 		</t>
 	</template>
 
 	<template id="docuemnt_state_row">
           <td class="text-center">
               <b>
-                  <t t-if="state == 'draft'"><span style="color: rgb(110, 51, 197);padding-left: 5px;"><t t-esc="state"/></span></t>
-                  <t t-elif="state == 'confirmed'"><span style="color: blue;padding-left: 5px;"><t t-esc="state"/></span></t>
-                  <t t-elif="state == 'released'"><span style="color: rgba(0, 170, 34, 0.66);padding-left: 5px;"><t t-esc="state"/></span></t>
-                  <t t-elif="state == 'undermodify'"><span style="color: rgb(218, 159, 34);padding-left: 5px;"><t t-esc="state"/></span></t>
-                  <t t-elif="state == 'obsoleted'"><span style="color: rgb(231, 43, 26);padding-left: 5px;"><t t-esc="state"/></span></t>
-                  <t t-else=""><span style="color: black;padding-left: 5px;"><t t-esc="state"/></span></t>
+                  <t t-if="state == 'draft'"><span style="color: rgb(110, 51, 197);padding-left: 5px;"><t t-out="state"/></span></t>
+                  <t t-elif="state == 'confirmed'"><span style="color: blue;padding-left: 5px;"><t t-out="state"/></span></t>
+                  <t t-elif="state == 'released'"><span style="color: rgba(0, 170, 34, 0.66);padding-left: 5px;"><t t-out="state"/></span></t>
+                  <t t-elif="state == 'undermodify'"><span style="color: rgb(218, 159, 34);padding-left: 5px;"><t t-out="state"/></span></t>
+                  <t t-elif="state == 'obsoleted'"><span style="color: rgb(231, 43, 26);padding-left: 5px;"><t t-out="state"/></span></t>
+                  <t t-else=""><span style="color: black;padding-left: 5px;"><t t-out="state"/></span></t>
               </b>
           </td>
 	</template>

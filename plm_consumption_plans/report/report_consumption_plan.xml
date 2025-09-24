@@ -3,7 +3,7 @@
     <template id="report_consumption_plan">
         <h2 style="text-align: center; font-size: 18px; margin-top: 50px;">
             <strong>
-                Plan for assembly &lt;<t t-esc="docs.display_name or docs.default_code or docs.id"/>&gt;
+                Plan for assembly &lt;<t t-out="docs.display_name or docs.default_code or docs.id"/>&gt;
             </strong>
         </h2>
 

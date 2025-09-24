@@ -18,10 +18,6 @@
 #    along with this prograIf not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-'''
-Created on Nov 16, 2019
-@author: mboscolo
-'''
 import json
 import logging
 import xml.etree.cElementTree as ElementTree

@@ -19,10 +19,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-# Matteo Boscolo
-# matteo.boscolo@omniasolutions.eu
-# 19-03-2022
-
 from odoo import _, fields, models
 
 

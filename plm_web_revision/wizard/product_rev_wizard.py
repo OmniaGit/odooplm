@@ -19,12 +19,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
-'''
-Created on 22 Aug 2016
-
-@author: Daniel Smerghetto
-'''
 from odoo.exceptions import UserError
 from odoo import models
 from odoo import fields
@@ -59,16 +53,16 @@ class ProductProductExtended(models.TransientModel):
                 self.common_bom_revision(old_product_template_id, new_product_template_id, 'normal')
             if self.reviseSbom:
                 self.common_bom_revision(old_product_template_id, new_product_template_id, 'spbom')
-            
+
             new_product_id = self.env['product.product'].search([('product_tmpl_id','=', new_product_template_id.id)], limit=1)
-            
+
             return {'name': _('Revised Product'),
                     'view_type': 'tree,form',
                     "view_mode": 'form',
                     'res_model': 'product.product',
                     'res_id': new_product_id.id,
                     'type': 'ir.actions.act_window'}
-            
+
         else:
             logging.error('[action_create_new_revision_by_server] Cannot revise because product_id is %r' % (product_id))
             raise UserError(_('Current component cannot be revised!'))

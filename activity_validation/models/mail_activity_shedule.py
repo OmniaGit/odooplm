@@ -18,10 +18,6 @@
 #    along with this prograIf not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-'''
-Created on Nov 16, 2019
-@author: mboscolo
-'''
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 import ast

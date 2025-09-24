@@ -19,16 +19,12 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-"""
-Created on Mar 30, 2016
-@author: Daniel Smerghetto
-"""
 import base64
 import logging
 from email.policy import default
 
-from odoo import (_, 
-                  fields, 
+from odoo import (_,
+                  fields,
                   models)
 from odoo.exceptions import UserError
 
@@ -175,7 +171,7 @@ class plm_bomChoseLanguage(models.TransientModel):
 
     datas = fields.Binary("Download", readonly=True)
 
-    datas_name = fields.Char("Download file name ", 
-                             size=255, 
+    datas_name = fields.Char("Download file name ",
+                             size=255,
                              readonly=True)
     _defaults = {"bom_type": False}

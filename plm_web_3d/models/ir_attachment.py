@@ -18,10 +18,6 @@
 #    along with this prograIf not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-"""
-Created on 13 Nov 2020
-@author: mboscolo
-"""
 import os
 import urllib.parse
 

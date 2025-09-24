@@ -9,7 +9,7 @@
 					<h2 style="display:inline;"><strong>Missing product structure</strong></h2>
 					<h6>
 						<div href="#" t-att-data-res-id="data['id'].id" t-att-data-model="data['id']._name" class="o_mrp_bom_action" style="color: #008b8b;">
-							<strong><t t-esc="data['id'].display_name"/></strong>
+							<strong><t t-out="data['id'].display_name"/></strong>
 						</div>
 					</h6>
 				</div>
@@ -32,24 +32,24 @@
 							<tbody>
 								<tr>
 									<td class="text-center">
-		                          		<t t-esc="data['level']"/>
+		                          		<t t-out="data['level']"/>
 		                         	</td>
 									<td>
 					                	<div href="#" t-att-data-res-id="record_browse.id" t-att-data-model="record_browse._name" class="o_mrp_bom_action" style="color: #008b8b;">
-											<strong><t t-esc="record_browse.display_name"/></strong>
+											<strong><t t-out="record_browse.display_name"/></strong>
 										</div>
 		                           	</td>
 		                     		<td>
-		                            	<t t-esc="record_browse.engineering_code"/>
+		                            	<t t-out="record_browse.engineering_code"/>
 		                        	</td>
 		                        	<td class="text-center">
-		                            	<t t-esc="record_browse.engineering_revision"/>
+		                            	<t t-out="record_browse.engineering_revision"/>
 		                        	</td>
 		                        	<t t-set="state" t-value="record_browse.engineering_state"/>
 		                        	<t t-call="plm.docuemnt_state_row"/>
 		                        	<td>
 		                            	<t t-if="record_browse.linkedcomponents">
-		                                	<t t-esc="record_browse.linkedcomponents[0].display_name"/>
+		                                	<t t-out="record_browse.linkedcomponents[0].display_name"/>
 		                          		</t>
 		                        	</td>
 		                         	<td class="text-center" style="padding-top: 5px; padding-bottom: 5px;">
@@ -64,7 +64,7 @@
 			</div>
 		</div>
 	</template>
-	
+
 <template id="report_prod_bom_line">
 		<t t-foreach="data['children']" t-as="child_dict">
 			<t t-if="child_dict['visible']">
@@ -74,7 +74,7 @@
 				<t t-set="space_td" t-value="'display: flex; font-weight:bold; color: #008b8b;'"/>
 				<tr class="document_report_line" t-att-data-level="child_dict['level']">
 					<td class="text-center">
-	                	<t t-esc="child_dict['level']"/>
+	                	<t t-out="child_dict['level']"/>
 	                </td>
 					<td>
 						<div t-att-style="None">
@@ -88,43 +88,43 @@
 						    		<label class="o_mrp_bom_unfoldable fa fa-fw fa-arrow-right" style="color: #008b8b; padding-top: 4px; position: relative; right: 8px;"/>
 						  		</t>
 							</t>
-                        	<t t-esc="record_child.display_name"/>
+                        	<t t-out="record_child.display_name"/>
 						</div>
 					</td>
 					<td>
-						<t t-esc="record_child.engineering_code"/>
+						<t t-out="record_child.engineering_code"/>
 					</td>
 					<td class="text-center">
-						<t t-esc="record_child.engineering_revision"/>
+						<t t-out="record_child.engineering_revision"/>
 					</td>
 	                <t t-call="plm.docuemnt_state_row"/>
 					<td>
 						<t t-if="record_child.linkedcomponents">
-	                 	    <t t-esc="record_child.linkedcomponents[0].display_name"/>
+	                 	    <t t-out="record_child.linkedcomponents[0].display_name"/>
 	                 	</t>
 					</td>
 	               	<td class="text-center" style="padding-top: 5px; padding-bottom: 5px;">
-	               		 <img t-att-src="'/plm/ir_attachment_preview/%s' % record_child.id" class="image_document_report" loading="lazy"/>	
+	               		 <img t-att-src="'/plm/ir_attachment_preview/%s' % record_child.id" class="image_document_report" loading="lazy"/>
 	               	</td>
 				</tr>
-				<div t-esc="child_dict['report_obj'].get_doc_prod(child_dict['id'], child_dict['level'], data['items_to_show'], data['id'])"/>
+				<div t-out="child_dict['report_obj'].get_doc_prod(child_dict['id'], child_dict['level'], data['items_to_show'], data['id'])"/>
 			</t>
 		</t>
 	</template>
-	
+
 	<template id="docuemnt_state_row">
           <td class="text-center">
               <b>
-                  <t t-if="state == 'draft'"><span style="color: rgb(110, 51, 197);padding-left: 5px;"><t t-esc="state"/></span></t>
-                  <t t-elif="state == 'confirmed'"><span style="color: blue;padding-left: 5px;"><t t-esc="state"/></span></t>
-                  <t t-elif="state == 'released'"><span style="color: rgba(0, 170, 34, 0.66);padding-left: 5px;"><t t-esc="state"/></span></t>
-                  <t t-elif="state == 'undermodify'"><span style="color: rgb(218, 159, 34);padding-left: 5px;"><t t-esc="state"/></span></t>                                                
-                  <t t-elif="state == 'obsoleted'"><span style="color: rgb(231, 43, 26);padding-left: 5px;"><t t-esc="state"/></span></t>
-                  <t t-else=""><span style="color: black;padding-left: 5px;"><t t-esc="state"/></span></t>
+                  <t t-if="state == 'draft'"><span style="color: rgb(110, 51, 197);padding-left: 5px;"><t t-out="state"/></span></t>
+                  <t t-elif="state == 'confirmed'"><span style="color: blue;padding-left: 5px;"><t t-out="state"/></span></t>
+                  <t t-elif="state == 'released'"><span style="color: rgba(0, 170, 34, 0.66);padding-left: 5px;"><t t-out="state"/></span></t>
+                  <t t-elif="state == 'undermodify'"><span style="color: rgb(218, 159, 34);padding-left: 5px;"><t t-out="state"/></span></t>
+                  <t t-elif="state == 'obsoleted'"><span style="color: rgb(231, 43, 26);padding-left: 5px;"><t t-out="state"/></span></t>
+                  <t t-else=""><span style="color: black;padding-left: 5px;"><t t-out="state"/></span></t>
               </b>
           </td>
 	</template>
-	
+
 	<record id="paperformat_doc_structure" model="report.paperformat">
 	    <field name="name">Paper Format Doc Structure</field>
 	    <field name="default" eval="True"/>

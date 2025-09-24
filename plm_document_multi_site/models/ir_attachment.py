@@ -19,12 +19,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
-'''
-Created on 24 Jul 2017
-
-@author: dsmerghetto
-'''
 from odoo.exceptions import UserError
 from odoo import models
 from odoo import fields

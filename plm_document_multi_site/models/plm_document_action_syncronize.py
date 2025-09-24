@@ -18,11 +18,6 @@
 #    along with this prograIf not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-'''
-Created on Aug 30, 2019
-
-@author: mboscolo
-'''
 import logging
 import datetime
 from odoo import models
