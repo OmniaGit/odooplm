@@ -21,14 +21,14 @@
 ##############################################################################
 {
     "name": "PLM Date Bom",
-    "version": "18.0.1.0.0",
+    "version": "19.0.1.0.0",
     "author": "OmniaSolutions",
     "license": "AGPL-3",
     "website": "https://odooplm.omniasolutions.website",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
     "sequence": 15,
     "summary": "Allow to compute boms due to date",
-    "depends": ["plm"],
+    "depends": ["plm", "plm_web_revision"],
     "data": [
         "security/plm_security.xml",
         "data/ir_cron.xml",

@@ -18,13 +18,7 @@
 #    along with this prograIf not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-"""
-Created on 8 Oct 2021
-
-@author: mboscolo
-"""
 import logging
-
 from odoo import _, fields, models
 from odoo.exceptions import UserError
 
@@ -41,7 +35,7 @@ class mrp_bom_data_compute(models.Model):
                     "Update Bom replacing obsoleted bom lines"
                     " with components at the latest revision."
                 ),
-            ),
+               ),
             ("new_bom", _("Create new bom using last revision of all components.")),
         ],
         _("Compute Type"),

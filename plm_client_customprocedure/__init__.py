@@ -26,3 +26,5 @@ Created on Apr 19, 2017
 @author: Daniel Smerghetto
 '''
 from . import models
+from . import wizards
+

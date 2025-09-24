@@ -12,10 +12,10 @@
                     <field name="output_name_rule"/>
                     <field name="start_format"/>
                     <field name="end_format"/>
-                    <group expand="0" string="Group By...">
-                        <filter string="Category" icon="terp-personal" domain="[]"
-                                context="{'group_by':'product_category'}" name="convert_rule_category"/>
-                    </group>
+<!--                    <group expand="0" string="Group By...">-->
+<!--                        <filter string="Category" icon="terp-personal" domain="[]"-->
+<!--                                context="{'group_by':'product_category'}" name="convert_rule_category"/>-->
+<!--                    </group>-->
                 </search>
             </field>
         </record>
@@ -110,8 +110,8 @@
         <menuitem
             id="plm_convert_rule_menu"
             name="Plm Convert Rule"
-            parent="plm_automated_convertion.menu_plm_submenu_main"
-            groups="plm_automated_convertion.group_plm_convert_view"
+            parent="plm_client_customprocedure.menu_plm_submenu_main"
+            groups="plm_client_customprocedure.group_plm_convert_view"
             action="plm_convert_rule_action"/>
 
     </data>

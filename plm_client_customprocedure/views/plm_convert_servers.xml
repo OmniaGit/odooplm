@@ -93,8 +93,8 @@
         <menuitem
             id="plm_convert_servers_menu"
             name="Plm Convert Servers"
-            parent="plm_automated_convertion.menu_plm_submenu_main"
-            groups="plm_automated_convertion.group_plm_convert_view"
+            parent="plm_client_customprocedure.menu_plm_submenu_main"
+            groups="plm_client_customprocedure.group_plm_convert_view"
             action="plm_convert_servers_action"/>
 
     </data>

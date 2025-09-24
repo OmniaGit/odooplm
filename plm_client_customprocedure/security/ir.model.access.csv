@@ -2,3 +2,4 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 plm_client_customprocedure.access_cad_config,access_cad_config,plm_client_customprocedure.model_cad_config,base.group_user,1,1,1,1
 plm_client_customprocedure.update_property,access_update_property,plm_client_customprocedure.model_update_property,base.group_user,1,1,1,1
 plm_client_customprocedure.odoo_cad_mapping,access_odoo_cad_mapping,plm_client_customprocedure.model_odoo_cad_mapping,base.group_user,1,1,1,1
+plm_client_customprocedure.access_plm_conversion_stack_line,access_plm_conversion_stack_line,plm_client_customprocedure.model_plm_conversion_stack_line,base.group_user,1,1,1,1

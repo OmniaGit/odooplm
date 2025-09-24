@@ -1,2 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-plm_automated_convertion.access_plm_conversion_stack_line,access_plm_conversion_stack_line,plm_automated_convertion.model_plm_conversion_stack_line,base.group_user,1,1,1,1

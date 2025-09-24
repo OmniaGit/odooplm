@@ -19,13 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-"""
-Created on 25/mag/2016
-
-@author: mboscolo
-"""
 import logging
-
 from odoo import _, api, models, fields
 from odoo.exceptions import UserError
 
@@ -104,7 +98,6 @@ class PlmTemporaryCutted(models.TransientModel):
 
     @api.model
     def cutted_part_action(self, bom_line_brws, explosion_action):
-        """ """
         mrp_bom_type_object = self.env.get("mrp.bom")
         mrp_bom_line_type_object = self.env.get("mrp.bom.line")
         if explosion_action == "replace":

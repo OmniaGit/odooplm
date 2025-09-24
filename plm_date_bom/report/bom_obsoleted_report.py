@@ -19,12 +19,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
-"""
-Created on 19 Jul 2016
-
-@author: Daniel Smerghetto
-"""
 from odoo.addons.plm.report.bom_structure import ReportBomStructureAll
 
 

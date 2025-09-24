@@ -20,7 +20,7 @@
     <menuitem
         id="menu_odoo_cad_mapping"
         name="Odoo CAD Mappings"
-        parent="plm_automated_convertion.menu_plm_submenu_main"
+        parent="plm_client_customprocedure.menu_plm_submenu_main"
         action="action_odoo_cad_mapping"
     />
 </odoo>

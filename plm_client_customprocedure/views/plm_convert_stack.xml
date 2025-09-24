@@ -25,10 +25,10 @@
                     <field name="product_category"/>
                     <field name="start_document_id"/>
                     <field name="convrsion_rule" required="1"/>
-                    <group expand="0" string="Group By...">
-                        <filter string="Category" icon="terp-personal" domain="[]"
-                                context="{'group_by':'product_category'}" name="convert_stack_category"/>
-                    </group>
+<!--                    <group expand="0" string="Group By...">-->
+<!--                        <filter string="Category" icon="terp-personal" domain="[]"-->
+<!--                                context="{'group_by':'product_category'}" name="convert_stack_category"/>-->
+<!--                    </group>-->
                 </search>
             </field>
         </record>
@@ -54,17 +54,6 @@
                             <field name="start_document_id" readonly="state == 'done'"/>
 
                             <field name="server_id" invisible="operation_type=='update_Cad'" readonly="state == 'done'"/>
-<!--                            <div>-->
-<!--                                <span>Converted ?</span>-->
-<!--                                <field name="conversion_done"/>-->
-<!--                                <button name="setToConver"-->
-<!--                                        type="object"-->
-<!--                                        help="Re-Active Convertion"-->
-<!--                                        string="Convertion Done"-->
-<!--                                        invisible="conversion_done==False"-->
-<!--                                        icon="fa-arrow-circle-right"-->
-<!--                                        groups="base.group_no_one"/>-->
-<!--                            </div>-->
                         </group>
                         <group name="Convert"
                                invisible="operation_type=='UPDATE'">
@@ -127,14 +116,13 @@
         </record>
 
         <menuitem id="menu_plm_submenu_main" name="PLM Conversion" parent="plm.plm_menu_dictionaries"
-          groups="plm_automated_convertion.group_plm_convert_view" sequence="40"/>
+          groups="plm_client_customprocedure.group_plm_convert_view" sequence="40"/>
 
         <menuitem
             id="plm_convert_stack_menu"
             name="Plm Automated Stack"
-            parent="plm_automated_convertion.menu_plm_submenu_main"
-            groups="plm_automated_convertion.group_plm_convert_view"
+            parent="plm_client_customprocedure.menu_plm_submenu_main"
+            groups="plm_client_customprocedure.group_plm_convert_view"
             action="plm_convert_stack_action"/>
     </data>
 </odoo>
-

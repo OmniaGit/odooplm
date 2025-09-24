@@ -19,14 +19,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-"""
-Created on 18 Jul 2016
-@author: Daniel Smerghetto
-"""
 from . import mrp_bom
 from . import product_product
 from . import mrp_bom_line
 from . import plm_temporary_date_compute
 from . import mrp_production
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

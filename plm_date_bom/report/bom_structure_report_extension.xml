@@ -5,24 +5,24 @@
             <xpath expr="//td[@name='bom_prod_name_value_b']" position="replace">
                 <t t-if="childDict.get('prodTmplBrws').engineering_state == 'obsoleted'">
                     <td name="bom_prod_name_value_b" style="background-color: aliceblue, color:red;">
-                        <span t-esc="childDict.get('pname')"/>
+                        <span t-out="childDict.get('pname')"/>
                     </td>
                 </t>
                 <t t-if="childDict.get('prodTmplBrws').engineering_state != 'obsoleted'">
                     <td name="bom_prod_name_value_b" style="background-color: aliceblue;">
-                        <span t-esc="childDict.get('pname')"/>
+                        <span t-out="childDict.get('pname')"/>
                     </td>
                 </t>
             </xpath>
             <xpath expr="//td[@name='bom_prod_name_value']" position="replace">
                 <t t-if="childDict.get('prodTmplBrws').engineering_state == 'obsoleted'">
                     <td name="bom_prod_name_value" style="color:red;">
-                        <span t-esc="childDict.get('pname')"/>
+                        <span t-out="childDict.get('pname')"/>
                     </td>
                 </t>
                 <t t-if="childDict.get('prodTmplBrws').engineering_state != 'obsoleted'">
                     <td name="bom_prod_name_value">
-                        <span t-esc="childDict.get('pname')"/>
+                        <span t-out="childDict.get('pname')"/>
                     </td>
                 </t>
             </xpath>

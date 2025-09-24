@@ -13,7 +13,6 @@
         <field name="implied_ids" eval="[(4, ref('plm_box.group_plm_box_user'))]"/>
     </record>
 
-
     <!-- model_plm_box -->
     <record id="plm_plm_backupdoc_wizard_view" model="ir.model.access">
         <field name="name">PLM Box</field>

@@ -19,11 +19,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-"""
-Created on 28/mag/2016
-
-@author: mboscolo
-"""
 from odoo import _
 from odoo import api
 from odoo import models

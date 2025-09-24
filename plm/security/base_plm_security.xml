@@ -13,14 +13,14 @@
         <field name="privilege_id" ref="res_groups_privilege_odooplm"/>
         <field name="implied_ids" eval="[(4, ref('mrp.group_mrp_user'))]"/>
     </record>
-    
+
     <!-- Integration User  -->
     <record id="group_plm_integration_user" model="res.groups">
         <field name="name">Integration User</field>
         <field name="privilege_id" ref="res_groups_privilege_odooplm"/>
         <field name="implied_ids" eval="[(4, ref('group_plm_view_user'))]"/>
     </record>
-    
+
     <!-- Administrator  -->
     <record id="group_plm_admin" model="res.groups">
         <field name="name">Administrator</field>
@@ -64,7 +64,7 @@
         <field name="perm_create" eval="0"/>
         <field name="perm_unlink" eval="0"/>
     </record>
-    
+
     <record id="plm_plm_backupdoc_wizard_integration" model="ir.model.access">
         <field name="name">PLM Backupdoc Wizard</field>
         <field name="model_id" ref="model_plm_backupdoc_wizard"/>
@@ -94,7 +94,7 @@
         <field name="perm_create" eval="0"/>
         <field name="perm_unlink" eval="0"/>
     </record>
-    
+
     <record id="plm_temporary_temporary_integration" model="ir.model.access">
         <field name="name">PLM Temporary message</field>
         <field name="model_id" ref="model_plm_temporary"/>
@@ -114,7 +114,7 @@
         <field name="perm_create" eval="0"/>
         <field name="perm_unlink" eval="0"/>
     </record>
-    
+
     <record id="plm_plm_temporary_message_integration" model="ir.model.access">
         <field name="name">PLM Temporary message</field>
         <field name="model_id" ref="model_plm_temporary_message"/>
@@ -143,7 +143,7 @@
         <field name="perm_create" eval="1"/>
         <field name="perm_unlink" eval="1"/>
     </record>
-    
+
     <record id="group_plm_readonly_released_rule_component" model="ir.rule">
         <field name="name">NoWrite / NoDelete PLM Component Released</field>
         <field name="model_id" ref="model_product_product"/>
@@ -155,8 +155,8 @@
         <field name="domain_force" eval="[('engineering_state','not in',['draft', False])]"/>
         <field name="groups" eval="[(4, ref('group_plm_readonly_released'))]"/>
     </record>
-    
-    
+
+
 
 <!-- mrp.bom.line  -->
     <record id="plm_mrp_bom_line_view" model="ir.model.access">
@@ -177,9 +177,9 @@
         <field name="perm_create" eval="1"/>
         <field name="perm_unlink" eval="1"/>
     </record>
-    
-    
-    
+
+
+
 <!-- mrp.bom  -->
     <record id="plm_mrp_bom_view" model="ir.model.access">
         <field name="name">PLM Mrp Bom</field>
@@ -199,7 +199,7 @@
         <field name="perm_create" eval="1"/>
         <field name="perm_unlink" eval="1"/>
     </record>
-    
+
     <record id="group_plm_readonly_released_rule_bom" model="ir.rule">
         <field name="name">NoWrite / NoDelete PLM BOM Released</field>
         <field name="model_id" ref="model_mrp_bom"/>
@@ -212,7 +212,7 @@
         <field name="groups" eval="[(4, ref('group_plm_readonly_released'))]"/>
     </record>
 
-<!-- plm.client  -->    
+<!-- plm.client  -->
     <record id="plm_client_integration" model="ir.model.access">
         <field name="name">PLM Client</field>
         <field name="model_id" ref="model_plm_client"/>
@@ -251,7 +251,7 @@
         <field name="perm_create" eval="1"/>
         <field name="perm_unlink" eval="1"/>
     </record>
-    
+
     <record id="group_plm_readonly_released_rule_document" model="ir.rule">
         <field name="name">NoWrite / NoDelete PLM Document Released</field>
         <field name="model_id" ref="model_ir_attachment"/>
@@ -275,7 +275,7 @@
         <field name="domain_force" eval="[('is_plm','=',True)]"/>
         <field name="groups" eval="[(4, ref('group_plm_view_user'))]"/>
     </record>
-    
+
     <record id="group_plm_admin_plm_document" model="ir.rule">
         <field name="name">Admin rule PLM documnet</field>
         <field name="model_id" ref="model_ir_attachment"/>
@@ -287,7 +287,7 @@
         <field name="domain_force" eval="[('is_plm','=',True)]"/>
         <field name="groups" eval="[(4, ref('group_plm_integration_user'))]"/>
     </record>
-        
+
     <record id="group_non_plm_view_plm_document" model="ir.rule">
         <field name="name">Manage Non PLM Documnet</field>
         <field name="model_id" ref="model_ir_attachment"/>
@@ -299,7 +299,7 @@
         <field name="domain_force" eval="[('is_plm','=',False)]"/>
         <field name="groups" eval="[(4, ref('group_plm_view_user'))]"/>
     </record>
-    
+
     <record id="group_plm_view_released_document" model="ir.rule">
         <field name="name">View only released Documnet</field>
         <field name="model_id" ref="model_ir_attachment"/>
@@ -310,9 +310,9 @@
         <field name="perm_create" eval="0"/>
         <field name="domain_force" eval="[('is_plm','=',True),('engineering_state','in',['released','obsoleted','undermodify'])]"/>
         <field name="groups" eval="[(4, ref('group_plm_release_document'))]"/>
-    </record>    
-    
-    
+    </record>
+
+
 <!-- plm.backupdoc  -->
     <record id="plm_backupdoc_view" model="ir.model.access">
         <field name="name">PLM Back Up Document</field>
@@ -340,10 +340,10 @@
         <field name="perm_create" eval="1"/>
         <field name="perm_unlink" eval="1"/>
     </record>
-    
-    
-    
-    
+
+
+
+
 <!-- plm.checkout  -->
     <record id="plm_checkout_view" model="ir.model.access">
         <field name="name">PLM Check Out</field>
@@ -372,10 +372,10 @@
         <field name="perm_create" eval="1"/>
         <field name="perm_unlink" eval="1"/>
     </record>
-    
-    
-    
-    
+
+
+
+
 <!-- plm.description  -->
     <record id="plm_description_view" model="ir.model.access">
         <field name="name">PLM Description</field>
@@ -404,10 +404,10 @@
         <field name="perm_create" eval="1"/>
         <field name="perm_unlink" eval="1"/>
     </record>
-    
-    
-    
-    
+
+
+
+
 <!-- ir.attachment.relation  -->
     <record id="plm_ir_attachment_relation_view" model="ir.model.access">
         <field name="name">PLM Document relation</field>
@@ -459,10 +459,10 @@
         <field name="perm_create" eval="1"/>
         <field name="perm_unlink" eval="1"/>
     </record>
-    
-    
-    
-    
+
+
+
+
 <!-- plm.treatment  -->
    <record id="plm_treatment_view" model="ir.model.access">
        <field name="name">PLM Treatment</field>
@@ -491,9 +491,9 @@
        <field name="perm_create" eval="1"/>
        <field name="perm_unlink" eval="1"/>
    </record>
-   
-   
-   
+
+
+
 <!-- plm.material  -->
     <record id="plm_material_view" model="ir.model.access">
         <field name="name">PLM Material</field>
@@ -522,9 +522,9 @@
         <field name="perm_create" eval="1"/>
         <field name="perm_unlink" eval="1"/>
     </record>
-    
-    
-    
+
+
+
 <!-- plm.component.document.rel  -->
     <record id="plm_component_document_rel_view" model="ir.model.access">
         <field name="name">PLM Product Document Rel</field>
@@ -544,9 +544,9 @@
         <field name="perm_create" eval="1"/>
         <field name="perm_unlink" eval="1"/>
     </record>
-    
-    
-    
+
+
+
 <!-- report.plmcomponent  -->
     <record id="plm_report_plm_component_view" model="ir.model.access">
         <field name="name">PLM Report Component</field>
@@ -601,7 +601,7 @@
         <field name="perm_create" eval="1"/>
         <field name="perm_unlink" eval="1"/>
     </record>
-    
+
 <!-- plm.dbthread  -->
 
     <record id="plm.dbthread" model="ir.model.access">
@@ -686,7 +686,7 @@
         <field name="perm_create" eval="0"/>
         <field name="perm_unlink" eval="0"/>
     </record>
-    
+
     <record id="plm_access_permission" model="ir.model.access">
         <field name="name">PLM Act Window View</field>
         <field name="model_id" ref="plm.model_plm_access"/>

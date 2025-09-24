@@ -19,12 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-"""
-Created on 18 Jul 2016
-@author: Daniel Smerghetto
-"""
 import logging
-
 from odoo import _, api, fields, models
 
 
@@ -144,7 +139,7 @@ class mrp_bom_extension_data(models.Model):
                         if recursion(bomBrwsChild):
                             return True
 
-        res = super(mrp_bom_extension_data, self).create(vals)
+        res = super().create(vals)
         for r in res:
             bomType = r.type
             if bomType != "ebom":
@@ -154,7 +149,7 @@ class mrp_bom_extension_data(models.Model):
         return res
 
     def write(self, vals):
-        res = super(mrp_bom_extension_data, self).write(vals)
+        res = super().write(vals)
         bom_line_ids = vals.get("bom_line_ids", [])
         for bom_id in self:
             if bom_id.type != "ebom":

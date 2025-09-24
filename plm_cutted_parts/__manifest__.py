@@ -21,14 +21,14 @@
 ##############################################################################
 {
     "name": "PLM Cutted Parts",
-    "version": "18.0.2.0.0",
+    "version": "19.0.1.0.0",
     "author": "OmniaSolutions",
     "website": "https://odooplm.omniasolutions.website",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
     "sequence": 15,
     "summary": "Manage bom explosion for cutted parts",
     "license": "AGPL-3",
-    "depends": ["mrp", "plm"],
+    "depends": ["mrp", "plm", "plm_automate_normal_bom"],
     "data": [
         "security/base_plm_security.xml",
         "report/mrp_bom.xml",
