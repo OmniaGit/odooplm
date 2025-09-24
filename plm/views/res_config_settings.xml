@@ -156,15 +156,15 @@
                         </block>
 
                         <block title="Conversion Server" name="Conversion Server">
-                            <!-- <setting>
+                            <setting>
                                 <field name="conversion_server_ip"/>
-                            </setting> -->
-                            <!-- <setting>
+                            </setting>
+                            <setting>
                                 <field name="conversion_server_protocol"/>
-                            </setting> -->
-                            <!-- <setting>
+                            </setting>
+                            <setting>
                                 <field name="conversion_server_port"/>
-                            </setting> -->
+                            </setting>
                         </block>
                     </app>
                 </xpath>

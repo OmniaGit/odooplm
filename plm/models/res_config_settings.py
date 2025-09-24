@@ -92,6 +92,11 @@ class PlmConfigSettings(models.TransientModel):
         config_parameter="plm.install_consumption_plan_feature",
     )
 
+    conversion_server_ip = fields.Char(string='Server Ip', config_parameter="plm.conversion_server_ip")
+    conversion_server_protocol = fields.Char(string='Server Protocol',
+                                             config_parameter="plm.conversion_server_protocol")
+    conversion_server_port = fields.Char(string='Server Port', config_parameter="plm.conversion_server_port")
+
     @api.model
     def get_values(self):
         res = super().get_values()
