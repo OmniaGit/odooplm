@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-
         <record model="ir.ui.view" id="plm_convert_rule_search">
             <field name="name">plm.convert.rule.search</field>
             <field name="model">plm.convert.rule</field>
@@ -12,10 +11,10 @@
                     <field name="output_name_rule"/>
                     <field name="start_format"/>
                     <field name="end_format"/>
-<!--                    <group expand="0" string="Group By...">-->
-<!--                        <filter string="Category" icon="terp-personal" domain="[]"-->
-<!--                                context="{'group_by':'product_category'}" name="convert_rule_category"/>-->
-<!--                    </group>-->
+                    <group>
+                        <filter string="Category" icon="terp-personal" domain="[]"
+                                context="{'group_by':'product_category'}" name="convert_rule_category"/>
+                    </group>
                 </search>
             </field>
         </record>

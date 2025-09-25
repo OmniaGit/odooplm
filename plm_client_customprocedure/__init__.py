@@ -19,12 +19,5 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
-'''
-Created on Apr 19, 2017
-
-@author: Daniel Smerghetto
-'''
 from . import models
 from . import wizards
-

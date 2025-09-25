@@ -18,11 +18,6 @@
 #    along with this prograIf not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-"""
-Created on Sep 7, 2019
-
-@author: mboscolo
-"""
 import base64
 import logging
 import os

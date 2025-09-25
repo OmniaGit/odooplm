@@ -18,10 +18,6 @@
 #    along with this prograIf not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-"""
-Created on 5 May 2022
-@author: mboscolo
-"""
 import os
 import subprocess
 import tempfile
@@ -143,3 +139,4 @@ def convert(cad_excenge_installation_path, from_file, to_format):
         )
     return to_file
     # ExchangerConv -i test.jt -e test.png
+

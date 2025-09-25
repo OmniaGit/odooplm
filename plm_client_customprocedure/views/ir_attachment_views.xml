@@ -6,10 +6,9 @@
         <field name="priority" eval="1"/>
         <field name="inherit_id" ref="plm.view_attachment_form_plm_hinerit"/>
         <field name="arch" type="xml">
-             <xpath expr="//sheet/div[@name='button_box']" position="inside">
-
-                    <button class="oe_stat_button" icon="fa-cog" type="object" name="action_open_cad_config" string="CAD Configurations"/>
-
+            <xpath expr="//sheet/div[@name='button_box']" position="inside">
+                <button class="oe_stat_button" icon="fa-cog" type="object" name="action_open_cad_config"
+                        string="CAD Configurations"/>
             </xpath>
         </field>
     </record>
@@ -21,5 +20,65 @@
         <field name="binding_view_types">form</field>
         <field name="state">code</field>
         <field name="code">action = model.open_ir_attachment_wizard_config()</field>
+    </record>
+    <record id="view_attachment_form_plm_convert_hinerit" model="ir.ui.view">
+        <field name="name">ir.attachment.convert</field>
+        <field name="model">ir.attachment</field>
+        <field name="priority" eval="1"/>
+        <field name="inherit_id" ref="plm.view_attachment_form_plm_hinerit"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='is_plm']" position="before">
+                <field name="is_converted_document" groups="base.group_no_one"/>
+                <field name="source_convert_document" readonly="True"/>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="Converted Documents">
+                    <field name="converted_documents" readonly="True"/>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="plm_batch_convertion_ir_attachment" model="ir.ui.view">
+        <field name="name">plm.batch.convertion.ir.attachment</field>
+        <field name="model">ir.attachment</field>
+        <field name="inherit_id" ref="plm.ir_attachment_list"/>
+        <field name="priority" eval="3"/>
+        <field name="arch" type="xml">
+            <field name="engineering_code" position="before">
+                <button icon="fa-openid" string="Convert" name="show_convert_wizard" type="object"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="document_kanban_view_hinerit" model="ir.ui.view">
+        <field name="name">ir.attachment.convert</field>
+        <field name="model">ir.attachment</field>
+        <field name="priority" eval="1"/>
+        <field name="inherit_id" ref="plm.document_kanban_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//td[@name='attachment_button_box']" position="inside">
+                <button name="show_convert_wizard" type="object" class="btn btn-primary btn-sm ms-1"
+                        context="{'attachment_id': id}">
+                    <i class="fa fa-openid"></i>
+                    Convert
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="document_form_view_hinerit" model="ir.ui.view">
+        <field name="name">ir.attachment.convert</field>
+        <field name="model">ir.attachment</field>
+        <field name="priority" eval="1"/>
+        <field name="inherit_id" ref="plm.view_attachment_form_plm_hinerit"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="show_convert_wizard" type="object" class="btn btn-primary">
+                    <i class="fa fa-openid"></i>
+                    Convert
+                </button>
+            </xpath>
+        </field>
     </record>
 </odoo>

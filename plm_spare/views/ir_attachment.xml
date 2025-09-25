@@ -7,7 +7,7 @@
         <field name="arch" type="xml">
             <xpath expr="//table/tr" position="inside">
                 <td>
-                    <span>Spare Part:</span>
+                    <span style="font-size: 13px;">Spare Part:</span>
                     <field name="used_for_spare" widget="boolean_toggle" readonly="context.get('readonly', False)"/>
                 </td>
             </xpath>

@@ -58,12 +58,12 @@
                 <field name="cad_name"/>
                 <field name="server_id"/>
                 <filter string="Available" name="available" domain="[('available', '=', True)]"/>
-<!--                <group expand="0" string="Group By">-->
-<!--                    <filter string="Start Format" name="group_by_start_format" context="{'group_by': 'start_format'}"/>-->
-<!--                    <filter string="End Format" name="group_by_end_format" context="{'group_by': 'end_format'}"/>-->
-<!--                    <filter string="CAD Name" name="group_by_cad_name" context="{'group_by': 'cad_name'}"/>-->
-<!--                    <filter string="Server" name="group_by_server" context="{'group_by': 'server_id'}"/>-->
-<!--                </group>-->
+                <group>
+                    <filter string="Start Format" name="group_by_start_format" context="{'group_by': 'start_format'}"/>
+                    <filter string="End Format" name="group_by_end_format" context="{'group_by': 'end_format'}"/>
+                    <filter string="CAD Name" name="group_by_cad_name" context="{'group_by': 'cad_name'}"/>
+                    <filter string="Server" name="group_by_server" context="{'group_by': 'server_id'}"/>
+                </group>
             </search>
         </field>
     </record>

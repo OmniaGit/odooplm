@@ -190,7 +190,6 @@ class Plm_box(models.Model):
         return super(Plm_box, self).write(vals)
 
     def action_add_view_dox_document(self):
-
         return {
             "type": "ir.actions.act_window",
             "name": "Attachments",
@@ -200,6 +199,7 @@ class Plm_box(models.Model):
             "domain": [("id", "in", self.document_rel.ids)],
             "context": {
                 "default_plm_box_id": self.id,
+                "default_is_plm_box": True
             },
         }
 

@@ -25,10 +25,10 @@
                     <field name="product_category"/>
                     <field name="start_document_id"/>
                     <field name="convrsion_rule" required="1"/>
-<!--                    <group expand="0" string="Group By...">-->
-<!--                        <filter string="Category" icon="terp-personal" domain="[]"-->
-<!--                                context="{'group_by':'product_category'}" name="convert_stack_category"/>-->
-<!--                    </group>-->
+                    <group>
+                        <filter string="Category" icon="terp-personal" domain="[]"
+                                context="{'group_by':'product_category'}" name="convert_stack_category"/>
+                    </group>
                 </search>
             </field>
         </record>

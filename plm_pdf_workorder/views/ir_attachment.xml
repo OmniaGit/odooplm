@@ -18,7 +18,7 @@
         <field name="arch" type="xml">
             <xpath expr="//table/tr" position="inside">
                 <td>
-                    <span>Prod Doc:</span>
+                    <span style="font-size: 13px;">Prod Doc:</span>
                     <field name="is_production_doc" widget="boolean_toggle" readonly="context.get('readonly', False)"/>
                 </td>
                 <field name="doc_seq" invisible="1"/>
