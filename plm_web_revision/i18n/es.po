@@ -4,18 +4,16 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 15.0+e\n"
+"Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-25 16:39+0000\n"
-"PO-Revision-Date: 2022-03-25 17:50+0100\n"
+"POT-Creation-Date: 2025-09-25 12:25+0000\n"
+"PO-Revision-Date: 2025-09-25 12:25+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
+"Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
-"Language: es\n"
-"X-Generator: Poedit 2.0.6\n"
 
 #. module: plm_web_revision
 #: model_terms:ir.ui.view,arch_db:plm_web_revision.ir_attachment_new_revision
@@ -61,14 +59,16 @@ msgid "Creation of New Revision"
 msgstr "Creación de Nueva Revisión"
 
 #. module: plm_web_revision
-#: code:addons/plm_web_revision/models/product_product.py:0
-#, python-format
+#. odoo-python
+#: code:addons/plm_web_revision/wizard/product_rev_wizard.py:0
+#: code:addons/plm_web_revision/wizards/product_rev_wizard.py:0
 msgid "Current component cannot be revised!"
 msgstr "El componente actual no se puede revisar!"
 
 #. module: plm_web_revision
-#: code:addons/plm_web_revision/models/ir_attachment.py:0
-#, python-format
+#. odoo-python
+#: code:addons/plm_web_revision/wizard/document_rev_wizard.py:0
+#: code:addons/plm_web_revision/wizards/document_rev_wizard.py:0
 msgid "Current document cannot be revised!"
 msgstr "El documento actual no se puede revisar!"
 
@@ -79,9 +79,10 @@ msgid "Display Name"
 msgstr "Nombre de Visualización"
 
 #. module: plm_web_revision
-#: code:addons/plm_web_revision/models/product_product.py:0
+#. odoo-python
+#: code:addons/plm_web_revision/wizard/product_rev_wizard.py:0
+#: code:addons/plm_web_revision/wizards/product_rev_wizard.py:0
 #: model:ir.model.fields,field_description:plm_web_revision.field_product_rev_wizard__reviseDocument
-#, python-format
 msgid "Document Revision"
 msgstr "Revisión de Documentos"
 
@@ -91,15 +92,24 @@ msgid "Document Revision Wizard"
 msgstr "Asistente de Revisión de Documentos"
 
 #. module: plm_web_revision
-#: code:addons/plm_web_revision/models/ir_attachment.py:0
-#, python-format
-msgid "Document cannot be revised because the document type is a CAD type document!"
+#. odoo-python
+#: code:addons/plm_web_revision/wizard/document_rev_wizard.py:0
+msgid ""
+"Document cannot be revised because the document type is a CAD type document!"
 msgstr "El documento no se puede revisar porque el tipo de documento es un documento de tipo CAD!"
 
 #. module: plm_web_revision
-#: code:addons/plm_web_revision/models/product_product.py:0
+#. odoo-python
+#: code:addons/plm_web_revision/wizards/document_rev_wizard.py:0
+msgid ""
+"Document cannot be revised because the documenttype is a CAD type document!"
+msgstr ""
+
+#. module: plm_web_revision
+#. odoo-python
+#: code:addons/plm_web_revision/wizard/product_rev_wizard.py:0
+#: code:addons/plm_web_revision/wizards/product_rev_wizard.py:0
 #: model:ir.model.fields,field_description:plm_web_revision.field_product_rev_wizard__reviseEbom
-#, python-format
 msgid "Engineering Bom Revision"
 msgstr "Revisión de la Bom de Ingeniería"
 
@@ -108,12 +118,6 @@ msgstr "Revisión de la Bom de Ingeniería"
 #: model:ir.model.fields,field_description:plm_web_revision.field_product_rev_wizard__id
 msgid "ID"
 msgstr "ID"
-
-#. module: plm_web_revision
-#: model:ir.model.fields,field_description:plm_web_revision.field_document_rev_wizard____last_update
-#: model:ir.model.fields,field_description:plm_web_revision.field_product_rev_wizard____last_update
-msgid "Last Modified on"
-msgstr "Última Modificación el"
 
 #. module: plm_web_revision
 #: model:ir.model.fields,field_description:plm_web_revision.field_document_rev_wizard__write_uid
@@ -128,30 +132,40 @@ msgid "Last Updated on"
 msgstr "Ultima Actualización en"
 
 #. module: plm_web_revision
-#: code:addons/plm_web_revision/models/product_product.py:0
+#: model:ir.model.fields,field_description:plm_web_revision.field_document_rev_wizard____last_update
+#: model:ir.model.fields,field_description:plm_web_revision.field_product_rev_wizard____last_update
+msgid "Last Modified on"
+msgstr "Última Modificación el"
+
+#. module: plm_web_revision
+#. odoo-python
+#: code:addons/plm_web_revision/wizard/product_rev_wizard.py:0
+#: code:addons/plm_web_revision/wizards/product_rev_wizard.py:0
 #: model:ir.model.fields,help:plm_web_revision.field_product_rev_wizard__reviseEbom
-#, python-format
 msgid "Make new revision of the linked Engineering BOM ?"
 msgstr "Hacer una nueva revisión de la BOM de Ingeniería vinculada?"
 
 #. module: plm_web_revision
-#: code:addons/plm_web_revision/models/product_product.py:0
+#. odoo-python
+#: code:addons/plm_web_revision/wizard/product_rev_wizard.py:0
+#: code:addons/plm_web_revision/wizards/product_rev_wizard.py:0
 #: model:ir.model.fields,help:plm_web_revision.field_product_rev_wizard__reviseNbom
-#, python-format
 msgid "Make new revision of the linked Normal BOM ?"
 msgstr "Hacer una nueva revisión de la BOM Normal vinculada?"
 
 #. module: plm_web_revision
-#: code:addons/plm_web_revision/models/product_product.py:0
+#. odoo-python
+#: code:addons/plm_web_revision/wizard/product_rev_wizard.py:0
+#: code:addons/plm_web_revision/wizards/product_rev_wizard.py:0
 #: model:ir.model.fields,help:plm_web_revision.field_product_rev_wizard__reviseSbom
-#, python-format
 msgid "Make new revision of the linked Spare BOM ?"
 msgstr "Hacer una nueva revisión de la BOM de Repuesto vinculada?"
 
 #. module: plm_web_revision
-#: code:addons/plm_web_revision/models/product_product.py:0
+#. odoo-python
+#: code:addons/plm_web_revision/wizard/product_rev_wizard.py:0
+#: code:addons/plm_web_revision/wizards/product_rev_wizard.py:0
 #: model:ir.model.fields,help:plm_web_revision.field_product_rev_wizard__reviseDocument
-#, python-format
 msgid "Make new revision of the linked document ?"
 msgstr "Hacer una nueva revisión del documento vinculado?"
 
@@ -166,26 +180,29 @@ msgid "New Revision"
 msgstr "Nueva Revisión"
 
 #. module: plm_web_revision
-#: code:addons/plm_web_revision/models/product_product.py:0
+#. odoo-python
+#: code:addons/plm_web_revision/wizard/product_rev_wizard.py:0
+#: code:addons/plm_web_revision/wizards/product_rev_wizard.py:0
 #: model:ir.model.fields,field_description:plm_web_revision.field_product_rev_wizard__reviseNbom
-#, python-format
 msgid "Normal Bom Revision"
 msgstr "Revisión de Bom Normal"
 
 #. module: plm_web_revision
 #: model:ir.model,name:plm_web_revision.model_product_rev_wizard
-msgid "Product Revision wizard"
+msgid "Product Revision wizards"
 msgstr "Asistente de Revisión de Productos"
 
 #. module: plm_web_revision
-#: code:addons/plm_web_revision/models/ir_attachment.py:0
-#, python-format
+#. odoo-python
+#: code:addons/plm_web_revision/wizard/document_rev_wizard.py:0
+#: code:addons/plm_web_revision/wizards/document_rev_wizard.py:0
 msgid "Revised Document"
 msgstr "Documento Revisado"
 
 #. module: plm_web_revision
-#: code:addons/plm_web_revision/models/product_product.py:0
-#, python-format
+#. odoo-python
+#: code:addons/plm_web_revision/wizard/product_rev_wizard.py:0
+#: code:addons/plm_web_revision/wizards/product_rev_wizard.py:0
 msgid "Revised Product"
 msgstr "Producto Revisado"
 
@@ -203,8 +220,9 @@ msgid "Something wrong happens during new document revision process."
 msgstr "Ocurre algo incorrecto durante el proceso de revisión de un nuevo documento."
 
 #. module: plm_web_revision
-#: code:addons/plm_web_revision/models/product_product.py:0
+#. odoo-python
+#: code:addons/plm_web_revision/wizard/product_rev_wizard.py:0
+#: code:addons/plm_web_revision/wizards/product_rev_wizard.py:0
 #: model:ir.model.fields,field_description:plm_web_revision.field_product_rev_wizard__reviseSbom
-#, python-format
 msgid "Spare Bom Revision"
 msgstr "Revisión de Bom de Repuesto"

@@ -4,21 +4,21 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 15.0+e\n"
+"Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-02-02 11:45+0000\n"
-"PO-Revision-Date: 2022-02-02 14:11+0100\n"
+"POT-Creation-Date: 2025-09-25 10:38+0000\n"
+"PO-Revision-Date: 2025-09-25 10:38+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
+"Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
-"Language: it\n"
-"X-Generator: Poedit 2.0.6\n"
 
 #. module: plm_breakages
 #: model:ir.model.fields,field_description:plm_breakages.field_mrp_bom__breakages_count
+#: model:ir.model.fields,field_description:plm_breakages.field_mrp_bom_line__breakages_count
+#: model:ir.model.fields,field_description:plm_breakages.field_mrp_production__breakages_count
 #: model:ir.model.fields,field_description:plm_breakages.field_product_product__breakages_count
 msgid "# Breakages"
 msgstr "# Rotture"
@@ -39,7 +39,11 @@ msgid "Bill of Material"
 msgstr "Distinta base"
 
 #. module: plm_breakages
-#: model_terms:ir.ui.view,arch_db:plm_breakages.breakages_pivot_view
+#: model:ir.model,name:plm_breakages.model_mrp_bom_line
+msgid "Bill of Material Line"
+msgstr "Riga distinta base"
+
+#. module: plm_breakages
 #: model_terms:ir.ui.view,arch_db:plm_breakages.plm_mrp_bom_form_view_inherit
 #: model_terms:ir.ui.view,arch_db:plm_breakages.plm_product_product_normal_form_view_inherit
 msgid "Breakages"
@@ -51,12 +55,23 @@ msgid "Breakages Form"
 msgstr "Modulo Rotture"
 
 #. module: plm_breakages
-#: model_terms:ir.ui.view,arch_db:plm_breakages.breakages_tree_view
-msgid "Breakages Tree"
-msgstr "Albero di rotture"
+#: model_terms:ir.ui.view,arch_db:plm_breakages.breakages_list_view
+msgid "Breakages list"
+msgstr "Breakages list"
+
+#. module: plm_breakages
+#: model_terms:ir.ui.view,arch_db:plm_breakages.breakages_search
+msgid "Changed by"
+msgstr ""
+
+#. module: plm_breakages
+#: model_terms:ir.ui.view,arch_db:plm_breakages.plm_product_product_normal_form_view_inherit
+msgid "Create Breakages"
+msgstr ""
 
 #. module: plm_breakages
 #: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__create_uid
+#: model_terms:ir.ui.view,arch_db:plm_breakages.breakages_search
 msgid "Created by"
 msgstr "Creato da"
 
@@ -76,14 +91,24 @@ msgid "Date"
 msgstr "Data"
 
 #. module: plm_breakages
+#: model_terms:ir.ui.view,arch_db:plm_breakages.breakages_form_view
+msgid "Description"
+msgstr ""
+
+#. module: plm_breakages
+#: model:ir.model.fields,field_description:plm_breakages.field_mrp_bom__display_name
+#: model:ir.model.fields,field_description:plm_breakages.field_mrp_bom_line__display_name
+#: model:ir.model.fields,field_description:plm_breakages.field_mrp_production__display_name
 #: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__display_name
+#: model:ir.model.fields,field_description:plm_breakages.field_product_product__display_name
 msgid "Display Name"
 msgstr "Nome visualizzato"
 
 #. module: plm_breakages
 #: model:ir.model.fields,help:plm_breakages.field_plm_breakages__tracking
 msgid "Ensure the traceability of a storable product in your warehouse."
-msgstr "Garantisci la tracciabilità di un prodotto stoccabile nel tuo magazzino."
+msgstr ""
+"Garantisci la tracciabilità di un prodotto stoccabile nel tuo magazzino."
 
 #. module: plm_breakages
 #: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__message_follower_ids
@@ -96,18 +121,36 @@ msgid "Followers (Partners)"
 msgstr "Followers (Partners)"
 
 #. module: plm_breakages
+#: model_terms:ir.ui.view,arch_db:plm_breakages.breakages_search
+msgid "For Date"
+msgstr ""
+
+#. module: plm_breakages
+#: model_terms:ir.ui.view,arch_db:plm_breakages.breakages_search
+msgid "For Product"
+msgstr ""
+
+#. module: plm_breakages
+#: model_terms:ir.ui.view,arch_db:plm_breakages.breakages_graph_view
+msgid "Graph"
+msgstr ""
+
+#. module: plm_breakages
 #: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__has_message
 msgid "Has Message"
 msgstr "Ha un messaggio"
 
 #. module: plm_breakages
+#: model:ir.model.fields,field_description:plm_breakages.field_mrp_bom__id
+#: model:ir.model.fields,field_description:plm_breakages.field_mrp_bom_line__id
+#: model:ir.model.fields,field_description:plm_breakages.field_mrp_production__id
 #: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__id
+#: model:ir.model.fields,field_description:plm_breakages.field_product_product__id
 msgid "ID"
 msgstr "ID"
 
 #. module: plm_breakages
 #: model:ir.model.fields,help:plm_breakages.field_plm_breakages__message_needaction
-#: model:ir.model.fields,help:plm_breakages.field_plm_breakages__message_unread
 msgid "If checked, new messages require your attention."
 msgstr "Se selezionato, i nuovi messaggi richiedono la tua attenzione."
 
@@ -123,9 +166,9 @@ msgid "Is Follower"
 msgstr "E' Follower"
 
 #. module: plm_breakages
-#: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages____last_update
-msgid "Last Modified on"
-msgstr "Ultima modifica il"
+#: model_terms:ir.ui.view,arch_db:plm_breakages.breakages_search
+msgid "Last Month"
+msgstr ""
 
 #. module: plm_breakages
 #: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__write_uid
@@ -133,9 +176,29 @@ msgid "Last Updated by"
 msgstr "Ultimo aggiornamento di"
 
 #. module: plm_breakages
+#: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages____last_update
+msgid "Last Modified on"
+msgstr "Ultima modifica il"
+
+#. module: plm_breakages
 #: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__write_date
 msgid "Last Updated on"
 msgstr "Ultimo aggiornamento il"
+
+#. module: plm_breakages
+#: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__message_main_attachment_id
+msgid "Main Attachment"
+msgstr "Allegato principale"
+
+#. module: plm_breakages
+#: model_terms:ir.ui.view,arch_db:plm_breakages.breakages_search
+msgid "Last Week"
+msgstr ""
+
+#. module: plm_breakages
+#: model_terms:ir.ui.view,arch_db:plm_breakages.breakages_search
+msgid "Last Year"
+msgstr ""
 
 #. module: plm_breakages
 #: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__lot_number
@@ -143,9 +206,9 @@ msgid "Lot/Serial Number"
 msgstr "Lotto/Numero di serie"
 
 #. module: plm_breakages
-#: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__message_main_attachment_id
-msgid "Main Attachment"
-msgstr "Allegato principale"
+#: model:ir.model,name:plm_breakages.model_mrp_production
+msgid "Manufacturing Order"
+msgstr "Ordine di produzione"
 
 #. module: plm_breakages
 #: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__message_has_error
@@ -179,7 +242,7 @@ msgstr "Numero di errori"
 
 #. module: plm_breakages
 #: model:ir.model.fields,help:plm_breakages.field_plm_breakages__message_needaction_counter
-msgid "Number of messages which requires an action"
+msgid "Number of messages requiring action"
 msgstr "Numero di messaggi che richiedono un'azione"
 
 #. module: plm_breakages
@@ -188,9 +251,16 @@ msgid "Number of messages with delivery error"
 msgstr "Numero di messaggi con errore di consegna"
 
 #. module: plm_breakages
-#: model:ir.model.fields,help:plm_breakages.field_plm_breakages__message_unread_counter
-msgid "Number of unread messages"
-msgstr "Numero di messaggi non letti"
+#: model_terms:ir.ui.view,arch_db:plm_breakages.plm_breackage_plm_bom_form_view_inherit
+msgid "Open Brackages"
+msgstr ""
+
+#. module: plm_breakages
+#: model_terms:ir.ui.view,arch_db:plm_breakages.plm_mrp_bom_form_view_inherit
+#: model_terms:ir.ui.view,arch_db:plm_breakages.plm_mrp_production_form_view_inherit
+#: model_terms:ir.ui.view,arch_db:plm_breakages.plm_product_product_normal_form_view_inherit
+msgid "Open Breakages"
+msgstr ""
 
 #. module: plm_breakages
 #: model:ir.model,name:plm_breakages.model_plm_breakages
@@ -203,23 +273,40 @@ msgid "Parent"
 msgstr "Genitore"
 
 #. module: plm_breakages
-#: model:ir.model,name:plm_breakages.model_product_product
+#: model_terms:ir.ui.view,arch_db:plm_breakages.breakages_pivot_view
+msgid "Pivot"
+msgstr ""
+
+#. module: plm_breakages
 #: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__product_id
 msgid "Product"
 msgstr "Prodotto"
 
 #. module: plm_breakages
+#: model:ir.actions.act_window,name:plm_breakages.breakages_form_view_action
 #: model:ir.actions.act_window,name:plm_breakages.breakages_menu_action
 #: model:ir.ui.menu,name:plm_breakages.breakages_menu
 msgid "Product Breakages"
 msgstr "Rotture del prodotto"
 
 #. module: plm_breakages
+#: model:ir.model,name:plm_breakages.model_product_product
+msgid "Product Product"
+msgstr "Variante prodotto"
+
+#. module: plm_breakages
+#. odoo-python
 #: code:addons/plm_breakages/models/mrp_bom.py:0
+#: code:addons/plm_breakages/models/mrp_bom_line.py:0
+#: code:addons/plm_breakages/models/mrp_production.py:0
 #: code:addons/plm_breakages/models/product_product.py:0
-#, python-format
 msgid "Products"
 msgstr "Prodotti"
+
+#. module: plm_breakages
+#: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__rating_ids
+msgid "Ratings"
+msgstr ""
 
 #. module: plm_breakages
 #: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__message_has_sms_error
@@ -227,19 +314,25 @@ msgid "SMS Delivery error"
 msgstr "Errore di consegna SMS"
 
 #. module: plm_breakages
-#: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__tracking
-msgid "Tracking"
-msgstr "Tracciamento"
-
-#. module: plm_breakages
 #: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__message_unread
 msgid "Unread Messages"
 msgstr "Messaggi non letti"
 
 #. module: plm_breakages
+#: model_terms:ir.ui.view,arch_db:plm_breakages.plm_mrp_production_form_view_inherit
+msgid ""
+"There are some brakages on your manufactory order click in order to see it"
+msgstr ""
+
+#. module: plm_breakages
 #: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__message_unread_counter
 msgid "Unread Messages Counter"
 msgstr "Contatore messaggi non letti"
+
+#. module: plm_breakages
+#: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__tracking
+msgid "Tracking"
+msgstr "Tracciamento"
 
 #. module: plm_breakages
 #: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__website_message_ids
@@ -250,3 +343,12 @@ msgstr "Messaggi del sito web"
 #: model:ir.model.fields,help:plm_breakages.field_plm_breakages__website_message_ids
 msgid "Website communication history"
 msgstr "Cronologia delle comunicazioni del sito web"
+
+#. module: plm_breakages
+#. odoo-python
+#: code:addons/plm_breakages/models/mrp_bom.py:0
+#: code:addons/plm_breakages/models/mrp_bom_line.py:0
+#: code:addons/plm_breakages/models/mrp_production.py:0
+#: code:addons/plm_breakages/models/product_product.py:0
+msgid "product_id"
+msgstr ""

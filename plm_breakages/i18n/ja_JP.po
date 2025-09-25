@@ -4,21 +4,21 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 15.0+e\n"
+"Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-22 09:16+0000\n"
-"PO-Revision-Date: 2022-03-22 10:28+0100\n"
+"POT-Creation-Date: 2025-09-25 10:49+0000\n"
+"PO-Revision-Date: 2025-09-25 10:49+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
+"Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
-"Language: ja_JP\n"
-"X-Generator: Poedit 2.0.6\n"
 
 #. module: plm_breakages
 #: model:ir.model.fields,field_description:plm_breakages.field_mrp_bom__breakages_count
+#: model:ir.model.fields,field_description:plm_breakages.field_mrp_bom_line__breakages_count
+#: model:ir.model.fields,field_description:plm_breakages.field_mrp_production__breakages_count
 #: model:ir.model.fields,field_description:plm_breakages.field_product_product__breakages_count
 msgid "# Breakages"
 msgstr "＃故障"
@@ -39,6 +39,11 @@ msgid "Bill of Material"
 msgstr "部品表"
 
 #. module: plm_breakages
+#: model:ir.model,name:plm_breakages.model_mrp_bom_line
+msgid "Bill of Material Line"
+msgstr "部品表明細"
+
+#. module: plm_breakages
 #: model_terms:ir.ui.view,arch_db:plm_breakages.plm_mrp_bom_form_view_inherit
 #: model_terms:ir.ui.view,arch_db:plm_breakages.plm_product_product_normal_form_view_inherit
 msgid "Breakages"
@@ -50,14 +55,19 @@ msgid "Breakages Form"
 msgstr "破損フォーム"
 
 #. module: plm_breakages
-#: model_terms:ir.ui.view,arch_db:plm_breakages.breakages_tree_view
-msgid "Breakages Tree"
-msgstr "破損木"
+#: model_terms:ir.ui.view,arch_db:plm_breakages.breakages_list_view
+msgid "Breakages list"
+msgstr ""
 
 #. module: plm_breakages
 #: model_terms:ir.ui.view,arch_db:plm_breakages.breakages_search
 msgid "Changed by"
 msgstr "によって変更されました"
+
+#. module: plm_breakages
+#: model_terms:ir.ui.view,arch_db:plm_breakages.plm_product_product_normal_form_view_inherit
+msgid "Create Breakages"
+msgstr ""
 
 #. module: plm_breakages
 #: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__create_uid
@@ -81,9 +91,18 @@ msgid "Date"
 msgstr "日にち"
 
 #. module: plm_breakages
+#: model_terms:ir.ui.view,arch_db:plm_breakages.breakages_form_view
+msgid "Description"
+msgstr ""
+
+#. module: plm_breakages
+#: model:ir.model.fields,field_description:plm_breakages.field_mrp_bom__display_name
+#: model:ir.model.fields,field_description:plm_breakages.field_mrp_bom_line__display_name
+#: model:ir.model.fields,field_description:plm_breakages.field_mrp_production__display_name
 #: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__display_name
+#: model:ir.model.fields,field_description:plm_breakages.field_product_product__display_name
 msgid "Display Name"
-msgstr "ディスプレイ名"
+msgstr "表示名"
 
 #. module: plm_breakages
 #: model:ir.model.fields,help:plm_breakages.field_plm_breakages__tracking
@@ -116,23 +135,26 @@ msgid "Graph"
 msgstr "グラフ"
 
 #. module: plm_breakages
-#: model_terms:ir.ui.view,arch_db:plm_breakages.breakages_search
-msgid "Group By..."
-msgstr "グループ化..."
-
-#. module: plm_breakages
 #: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__has_message
 msgid "Has Message"
 msgstr "メッセージがあります"
 
 #. module: plm_breakages
+#: model:ir.model.fields,field_description:plm_breakages.field_mrp_bom__id
+#: model:ir.model.fields,field_description:plm_breakages.field_mrp_bom_line__id
+#: model:ir.model.fields,field_description:plm_breakages.field_mrp_production__id
 #: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__id
+#: model:ir.model.fields,field_description:plm_breakages.field_product_product__id
 msgid "ID"
 msgstr "ID"
 
 #. module: plm_breakages
+#: model_terms:ir.ui.view,arch_db:plm_breakages.breakages_search
+msgid "Group By..."
+msgstr "グループ化..."
+
+#. module: plm_breakages
 #: model:ir.model.fields,help:plm_breakages.field_plm_breakages__message_needaction
-#: model:ir.model.fields,help:plm_breakages.field_plm_breakages__message_unread
 msgid "If checked, new messages require your attention."
 msgstr "チェックされている場合、新しいメッセージには注意が必要です."
 
@@ -148,14 +170,14 @@ msgid "Is Follower"
 msgstr "フォロワーは"
 
 #. module: plm_breakages
-#: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages____last_update
-msgid "Last Modified on"
-msgstr "最終変更日"
-
-#. module: plm_breakages
 #: model_terms:ir.ui.view,arch_db:plm_breakages.breakages_search
 msgid "Last Month"
 msgstr "先月"
+
+#. module: plm_breakages
+#: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages____last_update
+msgid "Last Modified on"
+msgstr "最終変更日"
 
 #. module: plm_breakages
 #: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__write_uid
@@ -186,6 +208,11 @@ msgstr "ロット/シリアル番号"
 #: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__message_main_attachment_id
 msgid "Main Attachment"
 msgstr "メインアタッチメント"
+
+#. module: plm_breakages
+#: model:ir.model,name:plm_breakages.model_mrp_production
+msgid "Manufacturing Order"
+msgstr "製造オーダ"
 
 #. module: plm_breakages
 #: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__message_has_error
@@ -219,6 +246,11 @@ msgstr "エラーの数"
 
 #. module: plm_breakages
 #: model:ir.model.fields,help:plm_breakages.field_plm_breakages__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "アクションが必要なメッセージの数"
+
+#. module: plm_breakages
+#: model:ir.model.fields,help:plm_breakages.field_plm_breakages__message_needaction_counter
 msgid "Number of messages which requires an action"
 msgstr "アクションが必要なメッセージの数"
 
@@ -228,9 +260,26 @@ msgid "Number of messages with delivery error"
 msgstr "配信エラーのあるメッセージの数"
 
 #. module: plm_breakages
+#: model_terms:ir.ui.view,arch_db:plm_breakages.plm_breackage_plm_bom_form_view_inherit
+msgid "Open Brackages"
+msgstr ""
+
+#. module: plm_breakages
+#: model_terms:ir.ui.view,arch_db:plm_breakages.plm_mrp_bom_form_view_inherit
+#: model_terms:ir.ui.view,arch_db:plm_breakages.plm_mrp_production_form_view_inherit
+#: model_terms:ir.ui.view,arch_db:plm_breakages.plm_product_product_normal_form_view_inherit
+msgid "Open Breakages"
+msgstr ""
+
+#. module: plm_breakages
 #: model:ir.model.fields,help:plm_breakages.field_plm_breakages__message_unread_counter
 msgid "Number of unread messages"
 msgstr "未読メッセージの数"
+
+#. module: plm_breakages
+#: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__message_unread_counter
+msgid "Unread Messages Counter"
+msgstr "未読メッセージカウンター"
 
 #. module: plm_breakages
 #: model:ir.model,name:plm_breakages.model_plm_breakages
@@ -248,22 +297,34 @@ msgid "Pivot"
 msgstr "ピボット"
 
 #. module: plm_breakages
-#: model:ir.model,name:plm_breakages.model_product_product
 #: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__product_id
 msgid "Product"
 msgstr "プロダクト"
 
 #. module: plm_breakages
+#: model:ir.actions.act_window,name:plm_breakages.breakages_form_view_action
 #: model:ir.actions.act_window,name:plm_breakages.breakages_menu_action
 #: model:ir.ui.menu,name:plm_breakages.breakages_menu
 msgid "Product Breakages"
 msgstr "製品の破損"
 
 #. module: plm_breakages
+#: model:ir.model,name:plm_breakages.model_product_product
+msgid "Product Product"
+msgstr "プロダクトバリアント"
+
+#. module: plm_breakages
+#. odoo-python
 #: code:addons/plm_breakages/models/mrp_bom.py:0
+#: code:addons/plm_breakages/models/mrp_bom_line.py:0
+#: code:addons/plm_breakages/models/mrp_production.py:0
 #: code:addons/plm_breakages/models/product_product.py:0
-#, python-format
 msgid "Products"
+msgstr ""
+
+#. module: plm_breakages
+#: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__rating_ids
+msgid "Ratings"
 msgstr "製品"
 
 #. module: plm_breakages
@@ -272,19 +333,15 @@ msgid "SMS Delivery error"
 msgstr "SMS配信エラー"
 
 #. module: plm_breakages
+#: model_terms:ir.ui.view,arch_db:plm_breakages.plm_mrp_production_form_view_inherit
+msgid ""
+"There are some brakages on your manufactory order click in order to see it"
+msgstr ""
+
+#. module: plm_breakages
 #: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__tracking
 msgid "Tracking"
 msgstr "追跡"
-
-#. module: plm_breakages
-#: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__message_unread
-msgid "Unread Messages"
-msgstr "未読メッセージ"
-
-#. module: plm_breakages
-#: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__message_unread_counter
-msgid "Unread Messages Counter"
-msgstr "未読メッセージカウンター"
 
 #. module: plm_breakages
 #: model:ir.model.fields,field_description:plm_breakages.field_plm_breakages__website_message_ids
@@ -295,3 +352,12 @@ msgstr "ウェブサイトメッセージ"
 #: model:ir.model.fields,help:plm_breakages.field_plm_breakages__website_message_ids
 msgid "Website communication history"
 msgstr "ウェブサイトの通信履歴"
+
+#. module: plm_breakages
+#. odoo-python
+#: code:addons/plm_breakages/models/mrp_bom.py:0
+#: code:addons/plm_breakages/models/mrp_bom_line.py:0
+#: code:addons/plm_breakages/models/mrp_production.py:0
+#: code:addons/plm_breakages/models/product_product.py:0
+msgid "product_id"
+msgstr ""
