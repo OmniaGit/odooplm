@@ -6,16 +6,11 @@
             <field name="model">plm.breakages</field>
             <field name="inherit_id" ref="plm_breakages.breakages_form_view"/>
             <field name="arch" type="xml">
-                <field name="notes" position="replace">
-                    <notebook>
-                        <page string="Notes">
-                            <field name="notes" nolabel="1" widget="html"/>
-                        </page>
-                        <page string="Ticket">
-                            <field name="ticket_ids" nolabel="1"/>
-                        </page>
-                    </notebook>
-                </field>
+                 <xpath expr="//notebook" position="inside">
+                     <page string="Ticket">
+                         <field name="ticket_ids" nolabel="1"/>
+                     </page>
+                 </xpath>
             </field>
         </record>
     </data>
