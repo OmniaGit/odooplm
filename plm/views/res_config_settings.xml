@@ -154,18 +154,6 @@
                                 <field name="install_consumption_plan_feature"/>
                             </setting>
                         </block>
-
-                        <block title="Conversion Server" name="Conversion Server">
-                            <setting>
-                                <field name="conversion_server_ip"/>
-                            </setting>
-                            <setting>
-                                <field name="conversion_server_protocol"/>
-                            </setting>
-                            <setting>
-                                <field name="conversion_server_port"/>
-                            </setting>
-                        </block>
                     </app>
                 </xpath>
             </field>

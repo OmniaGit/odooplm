@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    OmniaSolutions, ERP-PLM-CAD Open Source Solutions
-#    Copyright (C) 2011-2022 https://OmniaSolutions.website
+#    Copyright (C) 2011-2019 https://OmniaSolutions.website
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -47,15 +47,12 @@ class UpdateProperty(models.Model):
     def action_fetch_cad_data(self):
         # conversion_wizard_id = False
         IrConfig = self.env['ir.config_parameter'].sudo()
-        conversion_server_ip = IrConfig.get_param('conversion_server_ip')
 
+        conversion_server_ip = IrConfig.get_param('conversion_server_ip')
         conversion_server_port = IrConfig.get_param('conversion_server_port')
         conversion_server_protocol = IrConfig.get_param('conversion_server_protocol', default='http')
-        conversion_server_ip = conversion_server_ip
-        conversion_server_port = conversion_server_port
 
         serverName = f"{conversion_server_protocol}://{conversion_server_ip}:{conversion_server_port}"
-
         url = f"{serverName}/odooplm/api/v1.0/get_properties"
 
         file_name = self.attachment_id.name

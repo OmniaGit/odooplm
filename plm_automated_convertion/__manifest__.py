@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution
-#    Copyright (C) 2010-2021 OmniaSolutions (<https://www.omniasolutions.website>).
+#    Copyright (C) 2010-2022 OmniaSolutions (<https://www.omniasolutions.website>).
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -20,26 +20,32 @@
 #
 ##############################################################################
 {
-    "name": "PLM Client Custom Procedure",
+    "name": "Product Lifecycle Management Batch conversion",
     "version": "19.0.1.0.0",
     "author": "OmniaSolutions",
     "website": "https://odooplm.omniasolutions.website",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
     "sequence": 15,
-    "summary": "PLM Client Custom Procedure",
     "license": "AGPL-3",
-    "depends": ["plm", "plm_automated_convertion"],
+    "summary": "CAD editors batch conversion tool",
+    "depends": ["plm"],
     "data": [
-        "security/ir.model.access.csv",
+        "security/security.xml",
         "data/ir_cron.xml",
-        "views/res_users.xml",
-        "views/res_groups.xml",
-        "views/ir_attachment_views.xml",
-        "views/cad_config_views.xml",
-        "views/property_update_wizard.xml",
-        "views/odoo_cad_mapping_views.xml",
-        "views/plm_convert_stack.xml",
+        "data/ir_action_server.xml",
+        "data/data.xml",
+        "wizards/plm_convert.xml",
+        "view/ir_attachment.xml",
+        "view/plm_convert_format_views.xml",
+        "view/plm_convert_stack.xml",
+        "view/plm_convert_servers.xml",
+        "view/plm_convert_rule.xml",
+        "view/res_config_settings_views.xml",
+
     ],
+    "external_dependencies": {
+        "python": ["ezdxf", "matplotlib", "cadquery", "numpy-stl"]
+    },
     "installable": True,
     "application": False,
     "auto_install": False,

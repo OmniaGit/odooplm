@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="plm_convert_stack_search">
+            <field name="name">plm.convert.stack.search</field>
+            <field name="model">plm.convert.stack</field>
+            <field name="priority" eval="1"/>
+            <field name="arch" type="xml">
+                <search string="Plm Convert Stack">
+                    <filter icon="terp-go-month"
+                            string="Converted"
+                            separator="1"
+                            name="done_conversions"
+                            domain="[('conversion_done','=', True)]"/>
+                    <filter icon="terp-go-month"
+                            string="Not Converted"
+                            separator="1"
+                            name="not_conversions"
+                            domain="[('conversion_done','=', False)]"/>
+                    <filter icon="terp-go-month"
+                            string="Errors"
+                            separator="1"
+                            name="plm_convert_errors"
+                            domain="[('error_string','not in', [False, ''])]"/>
+                    <field name="product_category"/>
+                    <field name="start_document_id"/>
+                    <field name="convrsion_rule" required="1"/>
+                    <group>
+                        <filter string="Category" icon="terp-personal" domain="[]"
+                                context="{'group_by':'product_category'}" name="convert_stack_category"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="plm_convert_stack_form">
+            <field name="name">plm.convert.stack.form</field>
+            <field name="model">plm.convert.stack</field>
+            <field name="arch" type="xml">
+                <form string="Plm Convert Stack">
+                    <header>
+                        <field name="state" widget="statusbar"/>
+                        <button name="convert" type="object"
+                                string="Conversion" class="btn btn-primary"
+                                invisible="state == 'done'"
+                        />
+                    </header>
+                    <sheet>
+                        <group>
+                            <field name="sequence" groups="base.group_no_one" readonly="state == 'done'"/>
+                            <field name="write_date" groups="base.group_no_one"/>
+                            <field name="operation_type" readonly="state == 'done'"/>
+                            <field name="product_id" readonly="state == 'done'"/>
+                            <field name="start_document_id" readonly="state == 'done'"/>
+
+                            <field name="server_id" invisible="operation_type=='update_Cad'" readonly="state == 'done'"/>
+<!--                            <div>-->
+<!--                                <span>Converted ?</span>-->
+<!--                                <field name="conversion_done"/>-->
+<!--                                <button name="setToConver"-->
+<!--                                        type="object"-->
+<!--                                        help="Re-Active Convertion"-->
+<!--                                        string="Convertion Done"-->
+<!--                                        invisible="conversion_done==False"-->
+<!--                                        icon="fa-arrow-circle-right"-->
+<!--                                        groups="base.group_no_one"/>-->
+<!--                            </div>-->
+                        </group>
+                        <group name="Convert"
+                               invisible="operation_type=='UPDATE'">
+                            <field name="convrsion_rule" required="1" invisible="operation_type=='update_Cad'" readonly="state == 'done'"/>
+                            <field name="product_category" invisible="operation_type=='update_Cad'"/>
+                            <field name="end_document_id" readonly="True" invisible="operation_type=='update_Cad'"/>
+                            <field name="output_name_rule" invisible="operation_type=='update_Cad'" readonly="state == 'done'"/>
+                        </group>
+                        <div style="background-color: #f49390;color: white;font-weight: bold;"
+                             invisible="error_string in ['',False]">
+                            <field name="error_string" readonly="True"/>
+                        </div>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="plm_convert_stack_list">
+            <field name="name">plm.convert.stack.list</field>
+            <field name="model">plm.convert.stack</field>
+            <field name="priority" eval="1"/>
+            <field name="arch" type="xml">
+                <list string="Plm Convert Stack">
+                    <field name="sequence" widget="handle"/>
+                    <field name="operation_type"/>
+                    <field name="convrsion_rule" required="1"/>
+                    <field name="product_category"/>
+                    <field name="start_document_id"/>
+                    <field name="end_document_id"/>
+                    <field name="server_id"/>
+                    <field name="conversion_done"/>
+                    <button name="setToConver" type="object"
+                            string="Set Conversion" icon="fa-arrow-circle-right"
+                            invisible="conversion_done == False"/>
+                    <field name="error_string"/>
+                    <field name="write_date"/>
+                </list>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="plm_convert_stack_action">
+            <field name="name">Plm Convert Stack</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">plm.convert.stack</field>
+            <field name="view_id" ref="plm_convert_stack_list"/>
+            <field name="search_view_id" ref="plm_convert_stack_search"/>
+        </record>
+
+        <menuitem id="menu_plm_submenu_main" name="PLM Conversion" parent="plm.plm_menu_dictionaries"
+          groups="plm_automated_convertion.group_plm_convert_view" sequence="40"/>
+
+        <menuitem
+            id="plm_convert_stack_menu"
+            name="Plm Automated Stack"
+            parent="plm_automated_convertion.menu_plm_submenu_main"
+            groups="plm_automated_convertion.group_plm_convert_view"
+            action="plm_convert_stack_action"/>
+    </data>
+</odoo>

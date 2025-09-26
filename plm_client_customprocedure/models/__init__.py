@@ -25,9 +25,6 @@ from . import cad_config
 from . import ir_attachment
 from . import update_property_wizard
 from . import odoo_cad_mapping
-from . import plm_convert_rule
-from . import plm_convert_format
-from . import plm_convert_servers
-from . import plm_convert_stack
 from . import product_product
 from . import plm_conversion_stack_line
+from . import plm_convert_stack

@@ -1,0 +1,140 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* plm_automated_convertion
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 15.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-02-02 10:11+0000\n"
+"PO-Revision-Date: 2022-02-02 11:20+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: ja_JP\n"
+"X-Generator: Poedit 2.0.6\n"
+
+#. module: plm_automated_convertion
+#: model:ir.model,name:plm_automated_convertion.model_ir_attachment
+msgid "Attachment"
+msgstr "添付"
+
+#. module: plm_automated_convertion
+#: model_terms:ir.ui.view,arch_db:plm_automated_convertion.act_plm_convert_form
+msgid "Cancel"
+msgstr "キャンセル"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert__targetFormat
+msgid "Conversion Format"
+msgstr "変換フォーマット"
+
+#. module: plm_automated_convertion
+#: model_terms:ir.ui.view,arch_db:plm_automated_convertion.plm_batch_convertion_ir_attachment
+msgid "Convert"
+msgstr "変換"
+
+#. module: plm_automated_convertion
+#: model:ir.actions.act_window,name:plm_automated_convertion.act_view_doc_convert
+msgid "Convert File"
+msgstr "ファイルを変換する"
+
+#. module: plm_automated_convertion
+#: model_terms:ir.ui.view,arch_db:plm_automated_convertion.act_plm_convert_form
+msgid "Convert Form"
+msgstr "フォームの変換"
+
+#. module: plm_automated_convertion
+#: model_terms:ir.ui.view,arch_db:plm_automated_convertion.act_plm_convert_form
+msgid "Convert and Downlaod"
+msgstr "変換してダウンロード"
+
+#. module: plm_automated_convertion
+#: model_terms:ir.ui.view,arch_db:plm_automated_convertion.act_plm_convert_form
+msgid "Convert to folder"
+msgstr "フォルダに変換"
+
+#. module: plm_automated_convertion
+#: model_terms:ir.ui.view,arch_db:plm_automated_convertion.act_plm_convert_form
+msgid "Converted File"
+msgstr "変換されたファイル"
+
+#. module: plm_automated_convertion
+#: model_terms:ir.ui.view,arch_db:plm_automated_convertion.act_plm_convert_form
+msgid "Convertion Format"
+msgstr "変換フォーマット"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert__create_uid
+msgid "Created by"
+msgstr "によって作成された"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert__create_date
+msgid "Created on"
+msgstr "で作成"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert__display_name
+msgid "Display Name"
+msgstr "表示名"
+
+#. module: plm_automated_convertion
+#: model_terms:ir.ui.view,arch_db:plm_automated_convertion.act_plm_convert_form
+msgid "Documento Origine"
+msgstr "原産地文書"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert__downloadDatas
+msgid "Download"
+msgstr "ダウンロード"
+
+#. module: plm_automated_convertion
+#: code:addons/plm_automated_convertion/modules/plm_temporary.py:0
+#, python-format
+msgid "File Converted"
+msgstr "変換されたファイル"
+
+#. module: plm_automated_convertion
+#: code:addons/plm_automated_convertion/modules/plm_temporary.py:0
+#, python-format
+msgid "File Converted check the shared folder"
+msgstr "変換されたファイルは共有フォルダを確認します"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert__id
+msgid "ID"
+msgstr "ID"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert____last_update
+msgid "Last Modified on"
+msgstr "最終更新日"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert__write_uid
+msgid "Last Updated by"
+msgstr "最終更新者"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert__write_date
+msgid "Last Updated on"
+msgstr "最終更新日"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert__datas_fname
+msgid "New File name"
+msgstr "新しいファイル名"
+
+#. module: plm_automated_convertion
+#: model:ir.model.fields,field_description:plm_automated_convertion.field_plm_convert__document_id
+msgid "Related Document"
+msgstr "関連資料"
+
+#. module: plm_automated_convertion
+#: model:ir.model,name:plm_automated_convertion.model_plm_convert
+msgid "Temp Class for batch converter"
+msgstr "バッチコンバータの温度クラス"
