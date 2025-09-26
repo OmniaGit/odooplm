@@ -4,18 +4,16 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 15.0+e\n"
+"Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-02-08 13:41+0000\n"
-"PO-Revision-Date: 2022-02-08 14:49+0100\n"
+"POT-Creation-Date: 2025-09-26 12:16+0000\n"
+"PO-Revision-Date: 2025-09-26 12:16+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
+"Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
-"Language: it\n"
-"X-Generator: Poedit 2.0.6\n"
 
 #. module: plm_web_3d
 #: model_terms:ir.ui.view,arch_db:plm_web_3d.main_treejs_view
@@ -24,8 +22,20 @@ msgstr "<b>Informazioni sul documento</b>"
 
 #. module: plm_web_3d
 #: model_terms:ir.ui.view,arch_db:plm_web_3d.main_treejs_view
+msgid "<b>Document Structure</b>"
+msgstr ""
+
+#. module: plm_web_3d
+#: model_terms:ir.ui.view,arch_db:plm_web_3d.main_treejs_view
 msgid "<b>Product Information</b>"
 msgstr "<b>Informazioni sul prodotto</b>"
+
+#. module: plm_web_3d
+#: model_terms:ir.ui.view,arch_db:plm_web_3d.plm_web_3d_plm_document_kanban_view
+msgid ""
+"<i class=\"fa fa-cube\"/>\n"
+"                    3D Web"
+msgstr ""
 
 #. module: plm_web_3d
 #: model_terms:ir.ui.view,arch_db:plm_web_3d.main_treejs_view
@@ -36,6 +46,30 @@ msgstr "<i class=\"fa fa-home\"/>Adatta"
 #: model_terms:ir.ui.view,arch_db:plm_web_3d.main_treejs_view
 msgid "<i class=\"fa fa-save\"/>Save"
 msgstr "<i class=\"fa fa-save\"/>Salva"
+
+#. module: plm_web_3d
+#: model_terms:ir.ui.view,arch_db:plm_web_3d.main_treejs_view
+msgid ""
+"<select name=\"webgl_background\" id=\"webgl_background\">\n"
+"                                            <option value=\"tecnical\">Tecnical</option>\n"
+"                                            <option value=\"room1\">Room 1</option>\n"
+"                                            <option value=\"room2\">Room 2</option>\n"
+"                                            <option value=\"outdoor\">Outdoor 1</option>\n"
+"                                            <option value=\"workshop1\">WorkShop 1</option>\n"
+"                                            <option value=\"workshop2\">WorkShop 2</option>\n"
+"                                            <option value=\"workshop3\">WorkShop 3</option>\n"
+"                                        </select>"
+msgstr ""
+
+#. module: plm_web_3d
+#: model_terms:ir.ui.view,arch_db:plm_web_3d.main_treejs_view
+msgid "Tecnical"
+msgstr "Tecnica"
+
+#. module: plm_web_3d
+#: model_terms:ir.ui.view,arch_db:plm_web_3d.plm_web_3d_plm_document_kanban_view
+msgid "WebGl <i class=\"fa fa-cube\"/>"
+msgstr "WebGl <i class=\"fa fa-cube\"/>"
 
 #. module: plm_web_3d
 #: model_terms:ir.ui.view,arch_db:plm_web_3d.plm_web_3d_plm_view_attachment_form_plm_hinerit
@@ -54,7 +88,11 @@ msgstr "Sfondo:"
 
 #. module: plm_web_3d
 #: model:ir.model.fields,help:plm_web_3d.field_ir_attachment__has_web3d
-#: model:ir.model.fields,help:plm_web_3d.field_mrp_document__has_web3d
+#: model:ir.model.fields,help:plm_web_3d.field_product_document__has_web3d
+msgid "Check if this document has related 3d web document"
+msgstr "Controlla se questo documento ha reletato il documento Web 3D"
+
+#. module: plm_web_3d
 #: model:ir.model.fields,help:plm_web_3d.field_plm_component_document_rel__has_web3d
 msgid "Check if this document has releted 3d web document"
 msgstr "Controlla se questo documento ha reletato il documento Web 3D"
@@ -70,8 +108,19 @@ msgid "Component Document Relations"
 msgstr "Relazioni Componente Documento"
 
 #. module: plm_web_3d
+#: model:ir.model.fields,field_description:plm_web_3d.field_ir_attachment__display_name
+#: model:ir.model.fields,field_description:plm_web_3d.field_plm_component_document_rel__display_name
+msgid "Display Name"
+msgstr "Nome visualizzato"
+
+#. module: plm_web_3d
+#: model_terms:ir.ui.view,arch_db:plm_web_3d.main_treejs_view
+msgid "Explosion:"
+msgstr ""
+
+#. module: plm_web_3d
 #: model:ir.model.fields,field_description:plm_web_3d.field_ir_attachment__has_web3d
-#: model:ir.model.fields,field_description:plm_web_3d.field_mrp_document__has_web3d
+#: model:ir.model.fields,field_description:plm_web_3d.field_product_document__has_web3d
 msgid "Has 3d Web link"
 msgstr "Ha un collegamento Web 3D"
 
@@ -79,6 +128,22 @@ msgstr "Ha un collegamento Web 3D"
 #: model:ir.model.fields,field_description:plm_web_3d.field_plm_component_document_rel__has_web3d
 msgid "Has Web3d"
 msgstr "Ha Web3d"
+
+#. module: plm_web_3d
+#: model_terms:ir.ui.view,arch_db:plm_web_3d.main_treejs_view
+msgid "Hide"
+msgstr ""
+
+#. module: plm_web_3d
+#: model:ir.model.fields,field_description:plm_web_3d.field_ir_attachment__id
+#: model:ir.model.fields,field_description:plm_web_3d.field_plm_component_document_rel__id
+msgid "ID"
+msgstr ""
+
+#. module: plm_web_3d
+#: model:ir.model,name:plm_web_3d.model_ir_attachment
+msgid "Ir Attachment"
+msgstr "Allegato"
 
 #. module: plm_web_3d
 #: model_terms:ir.ui.view,arch_db:plm_web_3d.main_treejs_view
@@ -100,10 +165,11 @@ msgstr "Sala 1"
 msgid "Room 2"
 msgstr "Sala 2"
 
+
 #. module: plm_web_3d
 #: model_terms:ir.ui.view,arch_db:plm_web_3d.main_treejs_view
-msgid "Tecnical"
-msgstr "Tecnica"
+msgid "Search Here !!"
+msgstr ""
 
 #. module: plm_web_3d
 #: model_terms:ir.ui.view,arch_db:plm_web_3d.main_treejs_view
@@ -116,9 +182,39 @@ msgid "Transparency:"
 msgstr "Trasparenza:"
 
 #. module: plm_web_3d
-#: model_terms:ir.ui.view,arch_db:plm_web_3d.plm_web_3d_plm_document_kanban_view
-msgid "WebGl <i class=\"fa fa-cube\"/>"
-msgstr "WebGl <i class=\"fa fa-cube\"/>"
+#: model_terms:ir.ui.view,arch_db:plm_web_3d.main_treejs_view
+msgid "Un-Hide"
+msgstr ""
+
+#. module: plm_web_3d
+#: model_terms:ir.ui.view,arch_db:plm_web_3d.main_treejs_view
+msgid "back"
+msgstr ""
+
+#. module: plm_web_3d
+#: model_terms:ir.ui.view,arch_db:plm_web_3d.main_treejs_view
+msgid "bottom"
+msgstr ""
+
+#. module: plm_web_3d
+#: model_terms:ir.ui.view,arch_db:plm_web_3d.main_treejs_view
+msgid "front"
+msgstr ""
+
+#. module: plm_web_3d
+#: model_terms:ir.ui.view,arch_db:plm_web_3d.main_treejs_view
+msgid "left"
+msgstr ""
+
+#. module: plm_web_3d
+#: model_terms:ir.ui.view,arch_db:plm_web_3d.main_treejs_view
+msgid "right"
+msgstr ""
+
+#. module: plm_web_3d
+#: model_terms:ir.ui.view,arch_db:plm_web_3d.main_treejs_view
+msgid "top"
+msgstr ""
 
 #. module: plm_web_3d
 #: model_terms:ir.ui.view,arch_db:plm_web_3d.main_treejs_view

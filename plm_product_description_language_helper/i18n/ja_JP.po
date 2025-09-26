@@ -4,18 +4,16 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 15.0+e\n"
+"Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-02-08 08:28+0000\n"
-"PO-Revision-Date: 2022-02-08 09:30+0100\n"
+"POT-Creation-Date: 2025-09-26 09:43+0000\n"
+"PO-Revision-Date: 2025-09-26 09:43+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
+"Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
-"Language: ja_JP\n"
-"X-Generator: Poedit 2.0.6\n"
 
 #. module: plm_product_description_language_helper
 #: code:addons/plm_product_description_language_helper/models/plm_description_extension.py:0
@@ -27,11 +25,16 @@ msgid "Allow to specify a unit measure or a label for the feature."
 msgstr "フィーチャーの単位またはラベルを指定できます."
 
 #. module: plm_product_description_language_helper
-#: code:addons/plm_product_description_language_helper/models/plm_description_extension.py:0
-#: model:ir.model.fields,field_description:plm_product_description_language_helper.field_plm_description__name
-#, python-format
-msgid "Note to Description"
-msgstr "説明への注記"
+#: model:ir.model.fields,field_description:plm_product_description_language_helper.field_plm_description__display_name
+#: model:ir.model.fields,field_description:plm_product_description_language_helper.field_product_product__display_name
+msgid "Display Name"
+msgstr "表示名"
+
+#. module: plm_product_description_language_helper
+#: model:ir.model.fields,field_description:plm_product_description_language_helper.field_plm_description__id
+#: model:ir.model.fields,field_description:plm_product_description_language_helper.field_product_product__id
+msgid "ID"
+msgstr "ID"
 
 #. module: plm_product_description_language_helper
 #: model:ir.model,name:plm_product_description_language_helper.model_plm_description
@@ -40,13 +43,11 @@ msgstr "PLMの説明"
 
 #. module: plm_product_description_language_helper
 #: model:ir.model,name:plm_product_description_language_helper.model_product_product
-msgid "Product"
-msgstr "プロダクト"
+msgid "Product Product"
+msgstr "プロダクトバリアント"
 
 #. module: plm_product_description_language_helper
-#: code:addons/plm_product_description_language_helper/models/plm_description_extension.py:0
 #: model:ir.model.fields,field_description:plm_product_description_language_helper.field_plm_description__description
-#, python-format
 msgid "Standard Description"
 msgstr "標準の説明"
 
