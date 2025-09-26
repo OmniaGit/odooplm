@@ -2419,9 +2419,7 @@ class IrAttachment(models.Model):
         host_name = clientArg[1]
         host_pws = clientArg[2]
         #
-        configuration_name=False
-        #
-        # Se the onfiguration on the product
+        # Set the configuration on the product
         #
         if len(clientArg)==4:
             component_props['configuration_name'] = clientArg[3]
