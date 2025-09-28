@@ -29,12 +29,12 @@ from odoo import _, api, fields, models
 class ResUsers(models.Model):
     _inherit = 'res.users'
 
-    custom_procedure = fields.Binary(string=_('Client CustomProcedure'))
-    custom_procedure_fname = fields.Char(_("CustomProcedure File name"))
-    custom_read_content = fields.Text(_('Custom Read Content'))
+    custom_procedure = fields.Binary(string='Client CustomProcedure')
+    custom_procedure_fname = fields.Char("CustomProcedure File name")
+    custom_read_content = fields.Text('Custom Read Content')
 
-    custom_multicad = fields.Binary(string=_('Client Multicad'))
-    custom_multicad_fname = fields.Char(_("Multicad File name"))
+    custom_multicad = fields.Binary(string='Client Multicad')
+    custom_multicad_fname = fields.Char("Multicad File name")
     custom_multicad_content = fields.Text('Custom Multicad Content')
 
     def write(self, vals):

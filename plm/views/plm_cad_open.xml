@@ -36,6 +36,7 @@
                     <filter string="Create by Month" icon="terp-personal" domain="[]" context="{'group_by':'create_date'}" name="cad_open_created_month"/>
                     <filter string="Creator" icon="terp-personal" domain="[]" context="{'group_by':'userid'}" name="cad_open_creator"/>
                     <filter string="Document" icon="terp-personal" domain="[]" context="{'group_by':'document_id'}" name="cad_open_document"/>
+                    <filter string="dbThread" icon="terp-personal" domain="[]" context="{'group_by':'dbThread'}" name="cad_dbThread"/>
                 </group>
             </search>
      	</field>
@@ -55,6 +56,7 @@
 	                <field name="pws_path"/>
 	                <field name="hostname"/>
 	                <field name="operation_type"/>
+	                <field name="dbThread"/>
 	                <field name="create_date"/>
                 </group>
                	</sheet> 
@@ -76,6 +78,7 @@
                 <field name="plm_backup_doc_id" select="1"/>
                 <field name="hostname"/>
                 <field name="operation_type"/>
+                <field name="dbThread"/>
                 <field name="create_date"/>
             </list>
         </field>

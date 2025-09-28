@@ -104,7 +104,10 @@ class UploadDocument(Controller):
             ir_attachment_id.write(to_write)
             ir_attachment_id.sudo().update_component_preview()
             ir_attachment_id.setupCadOpen(
-                kw.get("hostname", ""), kw.get("hostpws", ""), operation_type="save"
+                kw.get("hostname", ""),
+                kw.get("hostpws", ""), 
+                operation_type="save",
+                dbThread=kw.get('dbThread')
             )
             logging.info("upload %r" % (doc_id))
             return Response("Upload succeeded", status=200)

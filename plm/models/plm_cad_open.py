@@ -43,6 +43,7 @@ class PlmCadOpen(models.Model):
     pws_path = fields.Char("PWS Path")
     hostname = fields.Char("Hostname")
     operation_type = fields.Char("Operation Type", index=True)
+    dbThread = fields.Char("Related Db Thread", index=True)
 
     @api.model
     def getLastCadOpenByUser(self, doc_id, user_id):

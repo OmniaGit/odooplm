@@ -2871,7 +2871,14 @@ class IrAttachment(models.Model):
         component_props, document_props, dbThread = clientArg[0]
         host_name = clientArg[1]
         host_pws = clientArg[2]
+        #
+        # Set the configuration on the product
+        #
+        if len(clientArg)==4:
+            component_props['configuration_name'] = clientArg[3]
+        #
         #  generate component
+        #
         product_product_id = (
             self.env["product.product"]
             .with_context(plm_saving_context=clientArg)
@@ -2977,7 +2984,11 @@ class IrAttachment(models.Model):
             )
         return False
 
-    def setupCadOpen(self, hostname="", pws_path="", operation_type=""):
+    def setupCadOpen(self, 
+                     hostname="", 
+                     pws_path="", 
+                     operation_type="",
+                     dbThread=""):
         plm_cad_open = self.env["plm.cad.open"].sudo()
         if hostname and pws_path:
             for doc_id in self:
@@ -2993,13 +3004,21 @@ class IrAttachment(models.Model):
                         "pws_path": pws_path,
                         "hostname": hostname,
                         "operation_type": operation_type,
+                        'dbThread': dbThread,
                     }
                 )
                 return plm_cad_open_brws
         return plm_cad_open
 
-    def setupCadOpenRPC(self, hostname="", pws_path="", operation_type=""):
-        ret = self.setupCadOpen(hostname, pws_path, operation_type)
+    def setupCadOpenRPC(self, 
+                        hostname="", 
+                        pws_path="", 
+                        operation_type="", 
+                        dbThread=""):
+        ret = self.setupCadOpen(hostname, 
+                                pws_path, 
+                                operation_type,
+                                dbThread)
         return ret.ids
 
     @api.model
@@ -3867,14 +3886,17 @@ class IrAttachment(models.Model):
         def _recursion(cad_structure):
             #
             parent_attrs, children_attrs_structure = cad_structure
-            configuration_name = parent_attrs.get("product", {}).get(
-                "CONFIGURATION_NAME", ""
-            )
-            product_product_id, attachment_id = self._GetproductDocumentID(
-                tuple(parent_attrs.values())
-            )
-            parent_attrs = self.get_clone_info_attr(attachment_id, product_product_id)
-            parent_attrs["CONFIGURATION_NAME"] = configuration_name
+            product_product_id, attachment_id = self._GetproductDocumentID(tuple(parent_attrs.values()))
+            out_parent_attrs = self.get_clone_info_attr(attachment_id,
+                                                        product_product_id)
+            out_parent_attrs['CONFIGURATION_NAME'] = parent_attrs.get('product',{}).get('CONFIGURATION_NAME','')
+            out_parent_attrs['CONFIGURATIONS'] = parent_attrs.get('product',{}).get('CONFIGURATIONS',[])
+            out_parent_attrs['CONFIGURATIONS_ATTRIBUTES']={}
+            for config_name, config_attrs in parent_attrs.get('product',{}).get('CONFIGURATIONS_ATTRIBUTES',{}).items():
+                config_product_product_id, config_attachment_id = self._GetproductDocumentID(tuple(parent_attrs.values()))
+                config_out_parent_attrs = self.get_clone_info_attr(config_attachment_id,
+                                                                   config_product_product_id)
+                out_parent_attrs['CONFIGURATIONS_ATTRIBUTES'][config_name] = config_out_parent_attrs.get('product')
             #
             # Collect missing layout
             #
@@ -4044,12 +4066,15 @@ class IrAttachment(models.Model):
                 )
             out_attachment_value["engineering_revision"] = 0
             #
-            _, exte = os.path.splitext(out_attachment_value["name"])
+            if "INTEGRATION_FILE_EXTE" in out_attachment_value:
+                exte = out_attachment_value["INTEGRATION_FILE_EXTE"]
+            else:
+                _, exte = os.path.splitext(out_attachment_value["INTEGRATION_ORIG_FILE_PATH"])
             out_attachment_value["name"] = (
                 f"{out_attachment_value['engineering_code']}{exte}"
             )
         #
-        del out_attachment_value["id"]
+        if "id" in out_attachment_value: del out_attachment_value["id"]
         #
         return json.dumps(out_attachment_value)
 
