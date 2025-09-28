@@ -113,7 +113,7 @@ class ResUsers(models.Model):
                 return sudo_user_id.custom_procedure, CLINET_FILE_NAME
             else:
                 logging.info(f"Custom procedure not found for user {sudo_user_id.display_name}")
-                for group_id in sudo_user_id.groups_id.filtered(lambda x :x.custom_procedure!=False):
+                for group_id in sudo_user_id.group_ids.filtered(lambda x :x.custom_procedure!=False):
                     return group_id.custom_procedure, CLINET_FILE_NAME
                 logging.warning(f"No user related groups contain custom procedure {sudo_user_id.display_name}")
         logging.warning("Unable to get custom procedure")
