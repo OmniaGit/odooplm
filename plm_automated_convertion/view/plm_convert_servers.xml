@@ -96,7 +96,5 @@
             parent="plm_automated_convertion.menu_plm_submenu_main"
             groups="plm_automated_convertion.group_plm_convert_view"
             action="plm_convert_servers_action"/>
-
     </data>
 </odoo>
-

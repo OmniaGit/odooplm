@@ -73,19 +73,6 @@
                             <field name="end_document_id" readonly="True" invisible="operation_type=='update_Cad'"/>
                             <field name="output_name_rule" invisible="operation_type=='update_Cad'" readonly="state == 'done'"/>
                         </group>
-                        <notebook>
-                            <page string="Update Details">
-                                <field name="conversion_line_ids" readonly="state == 'done'">
-                                    <list editable="bottom">
-                                        <field name="model_id"/>
-                                        <field name="field_id" />
-                                        <field name="cad_field"/>
-                                        <field name="old_value"/>
-                                        <field name="new_value"/>
-                                    </list>
-                                </field>
-                            </page>
-                        </notebook>
                         <div style="background-color: #f49390;color: white;font-weight: bold;"
                              invisible="error_string in ['',False]">
                             <field name="error_string" readonly="True"/>
@@ -137,4 +124,3 @@
             action="plm_convert_stack_action"/>
     </data>
 </odoo>
-

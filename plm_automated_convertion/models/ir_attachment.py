@@ -425,6 +425,3 @@ class ir_attachment(models.Model):
         ret = super(ir_attachment, self).write(vals)
         self.createPreviewStack()
         return ret
-
-
-

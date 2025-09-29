@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-
         <record model="ir.ui.view" id="plm_convert_rule_search">
             <field name="name">plm.convert.rule.search</field>
             <field name="model">plm.convert.rule</field>
@@ -113,7 +112,5 @@
             parent="plm_automated_convertion.menu_plm_submenu_main"
             groups="plm_automated_convertion.group_plm_convert_view"
             action="plm_convert_rule_action"/>
-
     </data>
 </odoo>
-

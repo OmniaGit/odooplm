@@ -21,14 +21,14 @@
 ##############################################################################
 {
     "name": "PLM Client Custom Procedure",
-    "version": "18.0.1.1.0",
+    "version": "18.0.1.0.0",
     "author": "OmniaSolutions",
     "website": "https://odooplm.omniasolutions.website",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
     "sequence": 15,
     "summary": "PLM Client Custom Procedure",
     "license": "AGPL-3",
-    "depends": ["plm"],
+    "depends": ["plm", "plm_automated_convertion"],
     "data": [
         "security/ir.model.access.csv",
         "data/ir_cron.xml",
@@ -38,6 +38,7 @@
         "views/cad_config_views.xml",
         "views/property_update_wizard.xml",
         "views/odoo_cad_mapping_views.xml",
+        "views/plm_convert_stack.xml",
     ],
     "installable": True,
     "application": False,

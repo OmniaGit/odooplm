@@ -1,0 +1,22 @@
+<odoo>
+    <record id="view_plm_settings_inherit_conversion" model="ir.ui.view">
+        <field name="name">plm.settings.inherit.conversion</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="plm.view_plm_settings"/>
+        <field name="arch" type="xml">
+            <xpath expr="//block[@name='plm_other']" position="after">
+                <block title="Conversion Server" name="plm_conversion_server">
+                    <setting>
+                        <field name="conversion_server_ip"/>
+                    </setting>
+                    <setting>
+                        <field name="conversion_server_protocol"/>
+                    </setting>
+                    <setting>
+                        <field name="conversion_server_port"/>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>

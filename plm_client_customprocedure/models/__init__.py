@@ -19,13 +19,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
-'''
-Created on Apr 19, 2017
-
-@author: daniel
-'''
-
 from . import res_users
 from . import res_groups
 from . import cad_config
@@ -33,4 +26,5 @@ from . import ir_attachment
 from . import update_property_wizard
 from . import odoo_cad_mapping
 from . import product_product
-# from . import plm_conversion_stack_line
+from . import plm_conversion_stack_line
+from . import plm_convert_stack

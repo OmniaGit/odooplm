@@ -9,21 +9,8 @@
                     <group colspan="4" col="4">
                         <field string="Document Of Origin" name="document_id" readonly="1"/>
                         <field name="extention" invisible="1"/>
-<!--                        <field name="id" invisible="1"/>-->
                         <field string="Convertion Format" name="targetFormat"
                                domain="[('start_format', '=', extention), ('available', '=', True)]"/>
-<!--                        <field name="cad_config_id" domain="[('plm_convert_id','=', id)]"/>-->
-<!--                        <notebook invisible="not cad_config_id">-->
-<!--                            <page string="Properties">-->
-<!--                                <field name="cad_config_line_ids">-->
-<!--                                    <list create="0" editable="top" delete="0">-->
-<!--                                        <field name="key" readonly="1"/>-->
-<!--                                        <field name="value"/>-->
-<!--                                    </list>-->
-<!--                                </field>-->
-<!--                            </page>-->
-<!--                        </notebook>-->
-
                     </group>
                     <footer>
                         <button string="Cancel" special="cancel"/>

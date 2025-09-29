@@ -19,13 +19,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
-'''
-Created on Apr 19, 2017
-
-@author: daniel
-'''
-
 import logging
 import base64
 import tempfile
