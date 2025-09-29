@@ -4,18 +4,16 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 15.0+e\n"
+"Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-25 13:42+0000\n"
-"PO-Revision-Date: 2022-03-25 15:22+0100\n"
+"POT-Creation-Date: 2025-09-29 12:12+0000\n"
+"PO-Revision-Date: 2025-09-29 12:12+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
+"Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
-"Language: es\n"
-"X-Generator: Poedit 2.0.6\n"
 
 #. module: plm_document_multi_site
 #: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__action
@@ -28,9 +26,9 @@ msgid "Action Needed"
 msgstr "Accion Necesaria"
 
 #. module: plm_document_multi_site
-#: model_terms:ir.ui.view,arch_db:plm_document_multi_site.plm_document_action_syncronize_tree
+#: model_terms:ir.ui.view,arch_db:plm_document_multi_site.plm_document_action_syncronize_list
 msgid "Actions"
-msgstr "Acciones"
+msgstr "Acción"
 
 #. module: plm_document_multi_site
 #: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__activity_ids
@@ -51,11 +49,6 @@ msgstr "Estado de Actividad"
 #: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__activity_type_icon
 msgid "Activity Type Icon"
 msgstr "Icono de Tipo de Actividad"
-
-#. module: plm_document_multi_site
-#: model:ir.model,name:plm_document_multi_site.model_ir_attachment
-msgid "Attachment"
-msgstr "Archivo adjunto"
 
 #. module: plm_document_multi_site
 #: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_attachment_count
@@ -85,10 +78,11 @@ msgid "DO Sync."
 msgstr "HACER Sincronizar."
 
 #. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_ir_attachment__display_name
 #: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__display_name
 #: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_remote_server__display_name
 msgid "Display Name"
-msgstr "Nombre de Visualización"
+msgstr "Nombre para mostrar"
 
 #. module: plm_document_multi_site
 #: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_follower_ids
@@ -111,6 +105,7 @@ msgid "Has Message"
 msgstr "Tiene Mensaje"
 
 #. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_ir_attachment__id
 #: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__id
 #: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_remote_server__id
 msgid "ID"
@@ -128,7 +123,6 @@ msgstr "Icono para indicar una actividad de excepción."
 
 #. module: plm_document_multi_site
 #: model:ir.model.fields,help:plm_document_multi_site.field_plm_document_action_syncronize__message_needaction
-#: model:ir.model.fields,help:plm_document_multi_site.field_plm_document_action_syncronize__message_unread
 msgid "If checked, new messages require your attention."
 msgstr "Si está marcado, los nuevos mensajes requieren su atención."
 
@@ -139,15 +133,14 @@ msgid "If checked, some messages have a delivery error."
 msgstr "Si está marcada, algunos mensajes tienen un error de entrega."
 
 #. module: plm_document_multi_site
+#: model:ir.model,name:plm_document_multi_site.model_ir_attachment
+msgid "Ir Attachment"
+msgstr "Archivo adjunto"
+
+#. module: plm_document_multi_site
 #: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_is_follower
 msgid "Is Follower"
 msgstr "Es Follower"
-
-#. module: plm_document_multi_site
-#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize____last_update
-#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_remote_server____last_update
-msgid "Last Modified on"
-msgstr "Última Modificación el"
 
 #. module: plm_document_multi_site
 #: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__write_uid
@@ -160,6 +153,12 @@ msgstr "Última Actualización por"
 #: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_remote_server__write_date
 msgid "Last Updated on"
 msgstr "Ultima Actualización en"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize____last_update
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_remote_server____last_update
+msgid "Last Modified on"
+msgstr "Última Modificación el"
 
 #. module: plm_document_multi_site
 #: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_remote_server__login
@@ -187,7 +186,7 @@ msgid "My Activity Deadline"
 msgstr "Mi Actividad Fecha Límite"
 
 #. module: plm_document_multi_site
-#: model_terms:ir.ui.view,arch_db:plm_document_multi_site.view_plm_ir_attachment_tree_hinerit
+#: model_terms:ir.ui.view,arch_db:plm_document_multi_site.view_plm_ir_attachment_list_hinerit
 msgid "N.S"
 msgstr "N.S"
 
@@ -218,6 +217,11 @@ msgstr "Número de Errores"
 
 #. module: plm_document_multi_site
 #: model:ir.model.fields,help:plm_document_multi_site.field_plm_document_action_syncronize__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "Número de mensajes que requieren una acción"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,help:plm_document_multi_site.field_plm_document_action_syncronize__message_needaction_counter
 msgid "Number of messages which requires an action"
 msgstr "Número de mensajes que requieren una acción"
 
@@ -228,18 +232,28 @@ msgstr "Número de mensajes con error de entrega"
 
 #. module: plm_document_multi_site
 #: model:ir.model.fields,help:plm_document_multi_site.field_ir_attachment__count_plm_document_action_syncronize
-#: model:ir.model.fields,help:plm_document_multi_site.field_mrp_document__count_plm_document_action_syncronize
+#: model:ir.model.fields,help:plm_document_multi_site.field_product_document__count_plm_document_action_syncronize
 msgid ""
 "Number of syncronization action to be performed in order to have the "
 "document aligned in all the servers"
 msgstr ""
-"Número de acciones de sincronización a realizar para tener el "
-"documento alineado en todos los servidores"
+"Número de acciones de sincronización a realizar para tener el documento "
+"alineado en todos los servidores"
 
 #. module: plm_document_multi_site
 #: model:ir.model.fields,help:plm_document_multi_site.field_plm_document_action_syncronize__message_unread_counter
 msgid "Number of unread messages"
 msgstr "Número de mensajes no leídos"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_unread_counter
+msgid "Unread Messages Counter"
+msgstr "Contador de Mensajes no Leídos"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_unread
+msgid "Unread Messages"
+msgstr "Mensajes no Leídos"
 
 #. module: plm_document_multi_site
 #: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_remote_server__password
@@ -249,7 +263,7 @@ msgstr "Contraseña"
 #. module: plm_document_multi_site
 #: model:ir.model,name:plm_document_multi_site.model_plm_document_action_syncronize
 #: model:ir.model.fields,field_description:plm_document_multi_site.field_ir_attachment__plm_document_action_syncronize_ids
-#: model:ir.model.fields,field_description:plm_document_multi_site.field_mrp_document__plm_document_action_syncronize_ids
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_product_document__plm_document_action_syncronize_ids
 msgid "Plm Document Action Syncronize"
 msgstr "Plm Documento Acción Sincronizar"
 
@@ -269,6 +283,11 @@ msgid "Push"
 msgstr "Empujar"
 
 #. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__rating_ids
+msgid "Ratings"
+msgstr ""
+
+#. module: plm_document_multi_site
 #: model:ir.actions.act_window,name:plm_document_multi_site.plm_remote_server_action
 #: model:ir.ui.menu,name:plm_document_multi_site.menu_plm_action_remote_server_form
 msgid "Remote Server"
@@ -286,7 +305,7 @@ msgstr "Ejecutar Sincronización de Documentos "
 
 #. module: plm_document_multi_site
 #: model:ir.model.fields,field_description:plm_document_multi_site.field_ir_attachment__count_plm_document_action_syncronize
-#: model:ir.model.fields,field_description:plm_document_multi_site.field_mrp_document__count_plm_document_action_syncronize
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_product_document__count_plm_document_action_syncronize
 msgid "S.N"
 msgstr "S.N"
 
@@ -306,19 +325,19 @@ msgid "Server Name"
 msgstr "Nombre del Servidor"
 
 #. module: plm_document_multi_site
-#: model:ir.model.constraint,message:plm_document_multi_site.constraint_plm_remote_server_name
-msgid "Server name must be unique !!!"
-msgstr "El nombre del servidor debe ser único !!!"
-
-#. module: plm_document_multi_site
 #: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__plm_remote_server_id
 msgid "Server to perform the Update"
 msgstr "Servidor para Realizar la Actualización"
 
 #. module: plm_document_multi_site
-#: model_terms:ir.ui.view,arch_db:plm_document_multi_site.plm_remote_server_tree
+#: model_terms:ir.ui.view,arch_db:plm_document_multi_site.plm_remote_server_list
 msgid "Servers"
-msgstr "Servidor"
+msgstr "Servers"
+
+#. module: plm_document_multi_site
+#: model:ir.model.constraint,message:plm_document_multi_site.constraint_plm_remote_server_name
+msgid "Server name must be unique !!!"
+msgstr "El nombre del servidor debe ser único !!!
 
 #. module: plm_document_multi_site
 #: model:ir.model.fields,help:plm_document_multi_site.field_plm_document_action_syncronize__activity_state
@@ -334,8 +353,8 @@ msgstr ""
 "Planeado: Actividades futuras."
 
 #. module: plm_document_multi_site
+#. odoo-python
 #: code:addons/plm_document_multi_site/models/ir_attachment.py:0
-#, python-format
 msgid "Sync.Actions"
 msgstr "Acciones de Sincronización"
 
@@ -356,8 +375,6 @@ msgstr "La sincronización está hecha?"
 
 #. module: plm_document_multi_site
 #: model:ir.actions.server,name:plm_document_multi_site.ir_cron_syncronize_ir_actions_server
-#: model:ir.cron,cron_name:plm_document_multi_site.ir_cron_syncronize
-#: model:ir.cron,name:plm_document_multi_site.ir_cron_syncronize
 msgid "Syncronize"
 msgstr "Sincronizar"
 
@@ -378,20 +395,10 @@ msgid "Type of the exception activity on record."
 msgstr "Tipo de actividad de excepción registrada."
 
 #. module: plm_document_multi_site
+#. odoo-python
 #: code:addons/plm_document_multi_site/models/ir_attachment.py:0
-#, python-format
 msgid "Unable to check-Out a document that is not syncronized"
 msgstr "Incapaz de check-Out un documento que no está sincronizado"
-
-#. module: plm_document_multi_site
-#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_unread
-msgid "Unread Messages"
-msgstr "Mensajes no Leídos"
-
-#. module: plm_document_multi_site
-#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_unread_counter
-msgid "Unread Messages Counter"
-msgstr "Contador de Mensajes no Leídos"
 
 #. module: plm_document_multi_site
 #: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__website_message_ids
@@ -402,3 +409,9 @@ msgstr "Mensajes del Sitio Web"
 #: model:ir.model.fields,help:plm_document_multi_site.field_plm_document_action_syncronize__website_message_ids
 msgid "Website communication history"
 msgstr "Historial de comunicación del Sitio Web"
+
+#. module: plm_document_multi_site
+#. odoo-python
+#: code:addons/plm_document_multi_site/models/ir_attachment.py:0
+msgid "id"
+msgstr "id"

@@ -4,18 +4,90 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 15.0+e\n"
+"Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-02-08 08:11+0000\n"
-"PO-Revision-Date: 2022-02-08 09:13+0100\n"
+"POT-Creation-Date: 2025-09-29 10:01+0000\n"
+"PO-Revision-Date: 2025-09-29 10:01+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
+"Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
-"Language: zh_HK\n"
-"X-Generator: Poedit 2.0.6\n"
+
+#. module: plm_pdf_workorder
+#: model_terms:ir.ui.view,arch_db:plm_pdf_workorder.plm_pdf_workorder_plm_document_kanban_view
+msgid ""
+"<i class=\"fa fa-file-pdf-o\"/>\n"
+"                    PDF"
+msgstr ""
+
+#. module: plm_pdf_workorder
+#: model_terms:ir.ui.view,arch_db:plm_pdf_workorder.plm_pdf_workorder_plm_document_kanban_view
+msgid "<span style=\"font-size: 13px;\">Prod Doc:</span>"
+msgstr ""
+
+#. module: plm_pdf_workorder
+#: model_terms:ir.ui.view,arch_db:plm_pdf_workorder.plm_mrp_routing_workcenter_form_view
+msgid "Add"
+msgstr ""
+
+#. module: plm_pdf_workorder
+#: model:ir.model.fields,field_description:plm_pdf_workorder.field_ir_attachment__display_name
+#: model:ir.model.fields,field_description:plm_pdf_workorder.field_mrp_routing_workcenter__display_name
+#: model:ir.model.fields,field_description:plm_pdf_workorder.field_mrp_workorder__display_name
+msgid "Display Name"
+msgstr "顯示名稱"
+
+#. module: plm_pdf_workorder
+#: model:ir.model.fields,field_description:plm_pdf_workorder.field_ir_attachment__doc_seq
+#: model:ir.model.fields,field_description:plm_pdf_workorder.field_product_document__doc_seq
+msgid "Doc Sequence"
+msgstr ""
+
+#. module: plm_pdf_workorder
+#: model:ir.model.fields,field_description:plm_pdf_workorder.field_ir_attachment__id
+#: model:ir.model.fields,field_description:plm_pdf_workorder.field_mrp_routing_workcenter__id
+#: model:ir.model.fields,field_description:plm_pdf_workorder.field_mrp_workorder__id
+msgid "ID"
+msgstr "識別號"
+
+#. module: plm_pdf_workorder
+#: model:ir.model,name:plm_pdf_workorder.model_ir_attachment
+msgid "Ir Attachment"
+msgstr "附件"
+
+#. module: plm_pdf_workorder
+#: model_terms:ir.ui.view,arch_db:plm_pdf_workorder.plm_mrp_routing_workcenter_form_view
+#: model_terms:ir.ui.view,arch_db:plm_pdf_workorder.plm_mrp_workorder_view_form_tablet
+msgid "PLM Production Doc"
+msgstr ""
+
+#. module: plm_pdf_workorder
+#: model_terms:ir.ui.view,arch_db:plm_pdf_workorder.plm_pdf_show_document_attachment
+msgid "Plm PDF"
+msgstr ""
+
+#. module: plm_pdf_workorder
+#: model:ir.model.fields,field_description:plm_pdf_workorder.field_mrp_routing_workcenter__production_doc_ids
+#: model:ir.model.fields,field_description:plm_pdf_workorder.field_mrp_workorder__production_doc_ids
+msgid "Production Doc"
+msgstr ""
+
+#. module: plm_pdf_workorder
+#: model:ir.model.fields,field_description:plm_pdf_workorder.field_ir_attachment__is_production_doc
+#: model:ir.model.fields,field_description:plm_pdf_workorder.field_product_document__is_production_doc
+msgid "Production Document"
+msgstr ""
+
+#. module: plm_pdf_workorder
+#. odoo-python
+#: code:addons/plm_pdf_workorder/models/mrp_routing_workcenter.py:0
+#: code:addons/plm_pdf_workorder/models/mrp_workorder.py:0
+#: model:ir.model.fields,field_description:plm_pdf_workorder.field_mrp_routing_workcenter__use_plm_docs
+#: model:ir.model.fields,field_description:plm_pdf_workorder.field_mrp_workorder__use_plm_docs
+msgid "Use PLM Docs"
+msgstr ""
 
 #. module: plm_pdf_workorder
 #: model_terms:ir.ui.view,arch_db:plm_pdf_workorder.mrp_workorder_view_form_tablet_pdf_workorder
@@ -52,9 +124,9 @@ msgstr "使用 PLM PDF"
 #. module: plm_pdf_workorder
 #: model:ir.model,name:plm_pdf_workorder.model_mrp_routing_workcenter
 msgid "Work Center Usage"
-msgstr "工作中心使用情况"
+msgstr "工作中心使用情況"
 
 #. module: plm_pdf_workorder
 #: model:ir.model,name:plm_pdf_workorder.model_mrp_workorder
 msgid "Work Order"
-msgstr ""
+msgstr "工單"
