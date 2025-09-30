@@ -140,7 +140,7 @@ class Batch {
                 res[ind] = arr[i];
                 res[ind+1] = arr[i+1];
                 res[ind+2] = 0.0;
-                ind=ind+3;                
+                ind=ind+3;
             }
             return res;
         }
