@@ -4,18 +4,16 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 15.0+e\n"
+"Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-22 13:24+0000\n"
-"PO-Revision-Date: 2022-03-22 14:40+0100\n"
+"POT-Creation-Date: 2025-09-30 05:22+0000\n"
+"PO-Revision-Date: 2025-09-30 05:22+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
+"Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
-"Language: zh_HK\n"
-"X-Generator: Poedit 2.0.6\n"
 
 #. module: plm_document_multi_site
 #: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__action
@@ -28,7 +26,7 @@ msgid "Action Needed"
 msgstr "需要采取的行动"
 
 #. module: plm_document_multi_site
-#: model_terms:ir.ui.view,arch_db:plm_document_multi_site.plm_document_action_syncronize_tree
+#: model_terms:ir.ui.view,arch_db:plm_document_multi_site.plm_document_action_syncronize_list
 msgid "Actions"
 msgstr "行动"
 
@@ -85,10 +83,11 @@ msgid "DO Sync."
 msgstr "做同步."
 
 #. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_ir_attachment__display_name
 #: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__display_name
 #: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_remote_server__display_name
 msgid "Display Name"
-msgstr "显示姓名"
+msgstr "顯示名稱"
 
 #. module: plm_document_multi_site
 #: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_follower_ids
@@ -111,10 +110,11 @@ msgid "Has Message"
 msgstr "有留言"
 
 #. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_ir_attachment__id
 #: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__id
 #: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_remote_server__id
 msgid "ID"
-msgstr "ID"
+msgstr "識別號"
 
 #. module: plm_document_multi_site
 #: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__activity_exception_icon
@@ -128,7 +128,6 @@ msgstr "指示异常活动的图标."
 
 #. module: plm_document_multi_site
 #: model:ir.model.fields,help:plm_document_multi_site.field_plm_document_action_syncronize__message_needaction
-#: model:ir.model.fields,help:plm_document_multi_site.field_plm_document_action_syncronize__message_unread
 msgid "If checked, new messages require your attention."
 msgstr "如果选中，则需要您注意新消息."
 
@@ -137,6 +136,11 @@ msgstr "如果选中，则需要您注意新消息."
 #: model:ir.model.fields,help:plm_document_multi_site.field_plm_document_action_syncronize__message_has_sms_error
 msgid "If checked, some messages have a delivery error."
 msgstr "如果选中，则某些邮件会出现传递错误."
+
+#. module: plm_document_multi_site
+#: model:ir.model,name:plm_document_multi_site.model_ir_attachment
+msgid "Ir Attachment"
+msgstr "附件"
 
 #. module: plm_document_multi_site
 #: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_is_follower
@@ -167,14 +171,14 @@ msgid "Login"
 msgstr "登录"
 
 #. module: plm_document_multi_site
-#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_main_attachment_id
-msgid "Main Attachment"
-msgstr "主要的依恋"
-
-#. module: plm_document_multi_site
 #: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_has_error
 msgid "Message Delivery error"
 msgstr "消息传递错误"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_main_attachment_id
+msgid "Main Attachment"
+msgstr "主要的依恋"
 
 #. module: plm_document_multi_site
 #: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_ids
@@ -187,7 +191,7 @@ msgid "My Activity Deadline"
 msgstr "我的活动截止日期"
 
 #. module: plm_document_multi_site
-#: model_terms:ir.ui.view,arch_db:plm_document_multi_site.view_plm_ir_attachment_tree_hinerit
+#: model_terms:ir.ui.view,arch_db:plm_document_multi_site.view_plm_ir_attachment_list_hinerit
 msgid "N.S"
 msgstr "N.S"
 
@@ -222,13 +226,18 @@ msgid "Number of messages which requires an action"
 msgstr "需要操作的消息数"
 
 #. module: plm_document_multi_site
+#: model:ir.model.fields,help:plm_document_multi_site.field_plm_document_action_syncronize__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "需要操作的消息数"
+
+#. module: plm_document_multi_site
 #: model:ir.model.fields,help:plm_document_multi_site.field_plm_document_action_syncronize__message_has_error_counter
 msgid "Number of messages with delivery error"
 msgstr "有传递错误的消息数"
 
 #. module: plm_document_multi_site
 #: model:ir.model.fields,help:plm_document_multi_site.field_ir_attachment__count_plm_document_action_syncronize
-#: model:ir.model.fields,help:plm_document_multi_site.field_mrp_document__count_plm_document_action_syncronize
+#: model:ir.model.fields,help:plm_document_multi_site.field_product_document__count_plm_document_action_syncronize
 msgid ""
 "Number of syncronization action to be performed in order to have the "
 "document aligned in all the servers"
@@ -245,9 +254,19 @@ msgid "Password"
 msgstr "密码"
 
 #. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_unread
+msgid "Unread Messages"
+msgstr "未读消息"
+
+#. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_unread_counter
+msgid "Unread Messages Counter"
+msgstr "未读消息计数器"
+
+#. module: plm_document_multi_site
 #: model:ir.model,name:plm_document_multi_site.model_plm_document_action_syncronize
 #: model:ir.model.fields,field_description:plm_document_multi_site.field_ir_attachment__plm_document_action_syncronize_ids
-#: model:ir.model.fields,field_description:plm_document_multi_site.field_mrp_document__plm_document_action_syncronize_ids
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_product_document__plm_document_action_syncronize_ids
 msgid "Plm Document Action Syncronize"
 msgstr "Plm 文档操作同步"
 
@@ -267,6 +286,11 @@ msgid "Push"
 msgstr "推"
 
 #. module: plm_document_multi_site
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__rating_ids
+msgid "Ratings"
+msgstr ""
+
+#. module: plm_document_multi_site
 #: model:ir.actions.act_window,name:plm_document_multi_site.plm_remote_server_action
 #: model:ir.ui.menu,name:plm_document_multi_site.menu_plm_action_remote_server_form
 msgid "Remote Server"
@@ -284,7 +308,7 @@ msgstr "运行文档同步"
 
 #. module: plm_document_multi_site
 #: model:ir.model.fields,field_description:plm_document_multi_site.field_ir_attachment__count_plm_document_action_syncronize
-#: model:ir.model.fields,field_description:plm_document_multi_site.field_mrp_document__count_plm_document_action_syncronize
+#: model:ir.model.fields,field_description:plm_document_multi_site.field_product_document__count_plm_document_action_syncronize
 msgid "S.N"
 msgstr "S.N"
 
@@ -314,7 +338,7 @@ msgid "Server to perform the Update"
 msgstr "执行更新的服务器"
 
 #. module: plm_document_multi_site
-#: model_terms:ir.ui.view,arch_db:plm_document_multi_site.plm_remote_server_tree
+#: model_terms:ir.ui.view,arch_db:plm_document_multi_site.plm_remote_server_list
 msgid "Servers"
 msgstr "服务器"
 
@@ -332,8 +356,8 @@ msgstr ""
 "计划中：未来的活动."
 
 #. module: plm_document_multi_site
+#. odoo-python
 #: code:addons/plm_document_multi_site/models/ir_attachment.py:0
-#, python-format
 msgid "Sync.Actions"
 msgstr "同步动作"
 
@@ -354,8 +378,6 @@ msgstr "同步完成了吗？"
 
 #. module: plm_document_multi_site
 #: model:ir.actions.server,name:plm_document_multi_site.ir_cron_syncronize_ir_actions_server
-#: model:ir.cron,cron_name:plm_document_multi_site.ir_cron_syncronize
-#: model:ir.cron,name:plm_document_multi_site.ir_cron_syncronize
 msgid "Syncronize"
 msgstr "同步"
 
@@ -376,20 +398,10 @@ msgid "Type of the exception activity on record."
 msgstr "记录的异常活动的类型."
 
 #. module: plm_document_multi_site
+#. odoo-python
 #: code:addons/plm_document_multi_site/models/ir_attachment.py:0
-#, python-format
 msgid "Unable to check-Out a document that is not syncronized"
 msgstr "无法签出未同步的文档"
-
-#. module: plm_document_multi_site
-#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_unread
-msgid "Unread Messages"
-msgstr "未读消息"
-
-#. module: plm_document_multi_site
-#: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__message_unread_counter
-msgid "Unread Messages Counter"
-msgstr "未读消息计数器"
 
 #. module: plm_document_multi_site
 #: model:ir.model.fields,field_description:plm_document_multi_site.field_plm_document_action_syncronize__website_message_ids
@@ -400,3 +412,9 @@ msgstr "网站留言"
 #: model:ir.model.fields,help:plm_document_multi_site.field_plm_document_action_syncronize__website_message_ids
 msgid "Website communication history"
 msgstr "网站交流历史"
+
+#. module: plm_document_multi_site
+#. odoo-python
+#: code:addons/plm_document_multi_site/models/ir_attachment.py:0
+msgid "id"
+msgstr "id"

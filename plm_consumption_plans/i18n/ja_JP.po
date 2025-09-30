@@ -1,0 +1,197 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* plm_consumption_plans
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-09-30 06:26+0000\n"
+"PO-Revision-Date: 2025-09-30 06:26+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: plm_consumption_plans
+#: model_terms:ir.ui.view,arch_db:plm_consumption_plans.report_consumption_plan
+msgid "&gt;"
+msgstr ""
+
+#. module: plm_consumption_plans
+#: model_terms:ir.ui.view,arch_db:plm_consumption_plans.report_consumption_plan
+msgid "<strong>Plan</strong>"
+msgstr ""
+
+#. module: plm_consumption_plans
+#: model_terms:ir.ui.view,arch_db:plm_consumption_plans.report_consumption_plan
+msgid "<strong>Product description</strong>"
+msgstr ""
+
+#. module: plm_consumption_plans
+#: model_terms:ir.ui.view,arch_db:plm_consumption_plans.report_consumption_plan
+msgid "<strong>Product name</strong>"
+msgstr ""
+
+#. module: plm_consumption_plans
+#: model_terms:ir.ui.view,arch_db:plm_consumption_plans.report_consumption_plan
+msgid "<strong>State</strong>"
+msgstr ""
+
+#. module: plm_consumption_plans
+#: model:ir.model,name:plm_consumption_plans.model_mrp_bom_line
+msgid "Bill of Material Line"
+msgstr "部品表明細"
+
+#. module: plm_consumption_plans
+#: model:ir.actions.report,name:plm_consumption_plans.report_action_consumption_plan
+#: model:ir.actions.report,name:plm_consumption_plans.report_action_consumption_plan_product_variant
+msgid "Consumption Plan Report"
+msgstr ""
+
+#. module: plm_consumption_plans
+#: model:ir.model.fields,field_description:plm_consumption_plans.field_mrp_bom_line__template_consumption_plan_ids
+#: model:ir.model.fields,field_description:plm_consumption_plans.field_product_product__template_consumption_plan_ids
+#: model:ir.model.fields,field_description:plm_consumption_plans.field_product_template__template_consumption_plan_ids
+#: model_terms:ir.ui.view,arch_db:plm_consumption_plans.ni_product_normal_form_view
+#: model_terms:ir.ui.view,arch_db:plm_consumption_plans.ni_product_template_only_form_view
+#: model_terms:ir.ui.view,arch_db:plm_consumption_plans.view_mrp_bom_line_inherit_consumption_plan
+msgid "Consumption Plans"
+msgstr ""
+
+#. module: plm_consumption_plans
+#: model:ir.model,name:plm_consumption_plans.model_consumption_state
+#: model:ir.model.fields,field_description:plm_consumption_plans.field_consumption_state__name
+msgid "Consumption State"
+msgstr ""
+
+#. module: plm_consumption_plans
+#: model:ir.actions.act_window,name:plm_consumption_plans.action_consumption_states
+#: model:ir.ui.menu,name:plm_consumption_plans.menu_consumption_states
+msgid "Consumption States"
+msgstr ""
+
+#. module: plm_consumption_plans
+#: model:ir.model.fields,field_description:plm_consumption_plans.field_template_consumption_plan__consumption_state_id
+msgid "Consumption_state_id"
+msgstr ""
+
+#. module: plm_consumption_plans
+#: model_terms:ir.actions.act_window,help:plm_consumption_plans.action_template_consumption_plan
+msgid "Create your first consumption plan Template."
+msgstr ""
+
+#. module: plm_consumption_plans
+#: model_terms:ir.actions.act_window,help:plm_consumption_plans.action_consumption_states
+msgid "Create your first consumption states."
+msgstr ""
+
+#. module: plm_consumption_plans
+#: model:ir.model.fields,field_description:plm_consumption_plans.field_consumption_state__create_uid
+#: model:ir.model.fields,field_description:plm_consumption_plans.field_template_consumption_plan__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: plm_consumption_plans
+#: model:ir.model.fields,field_description:plm_consumption_plans.field_consumption_state__create_date
+#: model:ir.model.fields,field_description:plm_consumption_plans.field_template_consumption_plan__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: plm_consumption_plans
+#: model:ir.model.fields,field_description:plm_consumption_plans.field_consumption_state__display_name
+#: model:ir.model.fields,field_description:plm_consumption_plans.field_mrp_bom_line__display_name
+#: model:ir.model.fields,field_description:plm_consumption_plans.field_product_product__display_name
+#: model:ir.model.fields,field_description:plm_consumption_plans.field_product_template__display_name
+#: model:ir.model.fields,field_description:plm_consumption_plans.field_template_consumption_plan__display_name
+msgid "Display Name"
+msgstr "表示名"
+
+#. module: plm_consumption_plans
+#: model:ir.model.fields,field_description:plm_consumption_plans.field_template_consumption_plan__time_span
+msgid "Hours"
+msgstr ""
+
+#. module: plm_consumption_plans
+#: model:ir.model.fields,field_description:plm_consumption_plans.field_consumption_state__id
+#: model:ir.model.fields,field_description:plm_consumption_plans.field_mrp_bom_line__id
+#: model:ir.model.fields,field_description:plm_consumption_plans.field_product_product__id
+#: model:ir.model.fields,field_description:plm_consumption_plans.field_product_template__id
+#: model:ir.model.fields,field_description:plm_consumption_plans.field_template_consumption_plan__id
+msgid "ID"
+msgstr ""
+
+#. module: plm_consumption_plans
+#: model:ir.model.fields,help:plm_consumption_plans.field_product_product__is_independent_consumption_plan
+#: model:ir.model.fields,help:plm_consumption_plans.field_product_template__is_independent_consumption_plan
+msgid ""
+"If enabled, the BoM line has its own consumption plans and changes here "
+"won’t affect the product."
+msgstr ""
+
+#. module: plm_consumption_plans
+#: model:ir.model.fields,field_description:plm_consumption_plans.field_product_product__is_independent_consumption_plan
+#: model:ir.model.fields,field_description:plm_consumption_plans.field_product_template__is_independent_consumption_plan
+msgid "Independent Consumption Plan"
+msgstr ""
+
+#. module: plm_consumption_plans
+#: model:ir.model.fields,field_description:plm_consumption_plans.field_consumption_state__write_uid
+#: model:ir.model.fields,field_description:plm_consumption_plans.field_template_consumption_plan__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: plm_consumption_plans
+#: model:ir.model.fields,field_description:plm_consumption_plans.field_consumption_state__write_date
+#: model:ir.model.fields,field_description:plm_consumption_plans.field_template_consumption_plan__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: plm_consumption_plans
+#: model:ir.model.fields,field_description:plm_consumption_plans.field_template_consumption_plan__name
+msgid "Name"
+msgstr ""
+
+#. module: plm_consumption_plans
+#: model_terms:ir.ui.view,arch_db:plm_consumption_plans.report_consumption_plan
+msgid "Plan for assembly &lt;"
+msgstr ""
+
+#. module: plm_consumption_plans
+#: model:ir.actions.server,name:plm_consumption_plans.action_generate_report_consumption_plan
+#: model:ir.actions.server,name:plm_consumption_plans.action_generate_report_consumption_plan_product_variant
+msgid "Print Consumption Plan"
+msgstr ""
+
+#. module: plm_consumption_plans
+#: model:ir.model,name:plm_consumption_plans.model_product_product
+msgid "Product Product"
+msgstr "プロダクトバリアント"
+
+#. module: plm_consumption_plans
+#: model:ir.model,name:plm_consumption_plans.model_product_template
+msgid "Product Template"
+msgstr "プロダクト"
+
+#. module: plm_consumption_plans
+#: model:ir.model.fields,field_description:plm_consumption_plans.field_template_consumption_plan__product_template_ids
+msgid "Product Templates"
+msgstr ""
+
+#. module: plm_consumption_plans
+#: model:ir.model.fields,field_description:plm_consumption_plans.field_template_consumption_plan__product_ids
+msgid "Products"
+msgstr ""
+
+#. module: plm_consumption_plans
+#: model:ir.model,name:plm_consumption_plans.model_template_consumption_plan
+msgid "Template Comsumption Plan"
+msgstr ""
+
+#. module: plm_consumption_plans
+#: model:ir.actions.act_window,name:plm_consumption_plans.action_template_consumption_plan
+#: model:ir.ui.menu,name:plm_consumption_plans.menu_template_consumption_plans
+msgid "Template Consumption Plans"
+msgstr ""

@@ -1,0 +1,188 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* plm_workflow_custom_action
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-09-29 09:05+0000\n"
+"PO-Revision-Date: 2025-09-29 09:05+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: plm_workflow_custom_action
+#: model:ir.model.fields,field_description:plm_workflow_custom_action.field_plm_automatedwfaction__name
+msgid "Action Name"
+msgstr ""
+
+#. module: plm_workflow_custom_action
+#: model:ir.model.fields.selection,name:plm_workflow_custom_action.selection__plm_automatedwfaction__before_after__after
+msgid "After"
+msgstr ""
+
+#. module: plm_workflow_custom_action
+#: model:ir.model.fields,field_description:plm_workflow_custom_action.field_plm_automatedwfaction__apply_to
+msgid "Apply To"
+msgstr ""
+
+#. module: plm_workflow_custom_action
+#: model:ir.model.fields,help:plm_workflow_custom_action.field_plm_automatedwfaction__apply_to
+msgid "Apply this action to the workflow model"
+msgstr ""
+
+#. module: plm_workflow_custom_action
+#: model:ir.model.fields.selection,name:plm_workflow_custom_action.selection__plm_automatedwfaction__apply_to__ir_attachment
+msgid "Attachment"
+msgstr ""
+
+#. module: plm_workflow_custom_action
+#: model:ir.model.fields.selection,name:plm_workflow_custom_action.selection__plm_automatedwfaction__before_after__before
+msgid "Before"
+msgstr ""
+
+#. module: plm_workflow_custom_action
+#: model:ir.model.fields,field_description:plm_workflow_custom_action.field_plm_automatedwfaction__child_ids
+msgid "Child Actions"
+msgstr ""
+
+#. module: plm_workflow_custom_action
+#: model:ir.model.fields,help:plm_workflow_custom_action.field_plm_automatedwfaction__child_ids
+msgid ""
+"Child server actions that will be executed.Note that the last return "
+"returned action value will be used as global return value."
+msgstr ""
+
+#. module: plm_workflow_custom_action
+#: model:ir.model.fields.selection,name:plm_workflow_custom_action.selection__plm_automatedwfaction__from_state__confirmed
+#: model:ir.model.fields.selection,name:plm_workflow_custom_action.selection__plm_automatedwfaction__to_state__confirmed
+msgid "Confirmed"
+msgstr ""
+
+#. module: plm_workflow_custom_action
+#: model:ir.model.fields,field_description:plm_workflow_custom_action.field_plm_automatedwfaction__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: plm_workflow_custom_action
+#: model:ir.model.fields,field_description:plm_workflow_custom_action.field_plm_automatedwfaction__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: plm_workflow_custom_action
+#: model:ir.model.fields,field_description:plm_workflow_custom_action.field_ir_attachment__display_name
+#: model:ir.model.fields,field_description:plm_workflow_custom_action.field_plm_automatedwfaction__display_name
+#: model:ir.model.fields,field_description:plm_workflow_custom_action.field_product_template__display_name
+msgid "Display Name"
+msgstr "Nome visualizzato"
+
+#. module: plm_workflow_custom_action
+#: model:ir.model.fields,field_description:plm_workflow_custom_action.field_plm_automatedwfaction__domain
+msgid "Domain"
+msgstr ""
+
+#. module: plm_workflow_custom_action
+#: model:ir.model.fields.selection,name:plm_workflow_custom_action.selection__plm_automatedwfaction__from_state__draft
+#: model:ir.model.fields.selection,name:plm_workflow_custom_action.selection__plm_automatedwfaction__to_state__draft
+msgid "Draft"
+msgstr ""
+
+#. module: plm_workflow_custom_action
+#: model:ir.model.fields,field_description:plm_workflow_custom_action.field_plm_automatedwfaction__from_state
+msgid "From Stare"
+msgstr ""
+
+#. module: plm_workflow_custom_action
+#: model:ir.model.fields,field_description:plm_workflow_custom_action.field_ir_attachment__id
+#: model:ir.model.fields,field_description:plm_workflow_custom_action.field_plm_automatedwfaction__id
+#: model:ir.model.fields,field_description:plm_workflow_custom_action.field_product_template__id
+msgid "ID"
+msgstr ""
+
+#. module: plm_workflow_custom_action
+#: model:ir.model,name:plm_workflow_custom_action.model_ir_attachment
+msgid "Ir Attachment"
+msgstr "Allegato"
+
+#. module: plm_workflow_custom_action
+#: model:ir.model.fields,field_description:plm_workflow_custom_action.field_plm_automatedwfaction__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: plm_workflow_custom_action
+#: model:ir.model.fields,field_description:plm_workflow_custom_action.field_plm_automatedwfaction__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: plm_workflow_custom_action
+#: model:ir.model.fields.selection,name:plm_workflow_custom_action.selection__plm_automatedwfaction__from_state__obsoleted
+#: model:ir.model.fields.selection,name:plm_workflow_custom_action.selection__plm_automatedwfaction__to_state__obsoleted
+msgid "Obsoleted"
+msgstr ""
+
+#. module: plm_workflow_custom_action
+#: model:ir.model.fields,field_description:plm_workflow_custom_action.field_plm_automatedwfaction__before_after
+msgid "Perform"
+msgstr ""
+
+#. module: plm_workflow_custom_action
+#: model:ir.model,name:plm_workflow_custom_action.model_plm_automatedwfaction
+msgid "Plm Automated Work Flow Actions"
+msgstr ""
+
+#. module: plm_workflow_custom_action
+#: model_terms:ir.ui.view,arch_db:plm_workflow_custom_action.plm_automatedwfaction_form
+msgid "Plm Workflow Actions"
+msgstr ""
+
+#. module: plm_workflow_custom_action
+#: model:ir.model.fields.selection,name:plm_workflow_custom_action.selection__plm_automatedwfaction__apply_to__product_product
+msgid "Product"
+msgstr ""
+
+#. module: plm_workflow_custom_action
+#: model:ir.model,name:plm_workflow_custom_action.model_product_template
+msgid "Product Template"
+msgstr "Prodotto"
+
+#. module: plm_workflow_custom_action
+#: model:ir.model.fields.selection,name:plm_workflow_custom_action.selection__plm_automatedwfaction__from_state__released
+#: model:ir.model.fields.selection,name:plm_workflow_custom_action.selection__plm_automatedwfaction__to_state__released
+msgid "Released"
+msgstr ""
+
+#. module: plm_workflow_custom_action
+#: model:ir.model.fields,field_description:plm_workflow_custom_action.field_plm_automatedwfaction__to_state
+msgid "To State"
+msgstr ""
+
+#. module: plm_workflow_custom_action
+#: model:ir.model.fields.selection,name:plm_workflow_custom_action.selection__plm_automatedwfaction__from_state__undermodify
+#: model:ir.model.fields.selection,name:plm_workflow_custom_action.selection__plm_automatedwfaction__to_state__undermodify
+msgid "UnderModify"
+msgstr ""
+
+#. module: plm_workflow_custom_action
+#: model:ir.actions.act_window,name:plm_workflow_custom_action.plm_action_workflow_action
+msgid "WorkFlow Actions"
+msgstr ""
+
+#. module: plm_workflow_custom_action
+#: model:ir.ui.menu,name:plm_workflow_custom_action.plm_wf_actions
+msgid "Workflow Actions"
+msgstr ""
+
+#. module: plm_workflow_custom_action
+#: model:ir.model.fields,help:plm_workflow_custom_action.field_plm_automatedwfaction__domain
+msgid "specifie the domain of the action"
+msgstr ""
+
+#. module: plm_workflow_custom_action
+#: model:ir.model.fields,help:plm_workflow_custom_action.field_plm_automatedwfaction__before_after
+msgid ""
+"you can choose to perform the action before or after the workflow action"
+msgstr ""
