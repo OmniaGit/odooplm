@@ -1,160 +1,151 @@
-/** @odoo-module */
-import {registry} from "@web/core/registry";
-import { _t } from "@web/core/l10n/translation";
+/** @odoo-module **/
 
-import {Many2OneField, many2OneField, extractM2OFieldProps, buildM2OFieldDescription, m2oSupportedOptions} from "@web/views/fields/many2one/many2one_field";
-import {onWillUpdateProps} from "@odoo/owl";
+import { registry } from "@web/core/registry";
+import { buildM2OFieldDescription, Many2OneField } from "@web/views/fields/many2one/many2one_field";
 import { Many2One } from "@web/views/fields/many2one/many2one";
-import {
-    many2OneAvatarUserField,
-    Many2OneAvatarUserField,
-} from "@mail/views/web/fields/many2one_avatar_user_field/many2one_avatar_user_field";
-import { Component, useState, useEffect } from "@odoo/owl";
+import { useService } from "@web/core/utils/hooks";
+import { onWillUpdateProps, useState } from "@odoo/owl";
 
-
-
-export class PlmMany2oneWidget extends Component {
-
-    static template = "plm.PlmMany2oneWidget";
+export class CustomImageM2oField extends Many2One {
     static props = {
-        ...Many2OneField.props,
-        options: {type: Object, optional: true},
+        ...Many2One.props,
     };
-    static defaultProps = {
-        ...Many2OneField.defaultProps,
-        options: false,
+    static components = {
+        ...Many2One.components,
     };
+    get many2XAutocompleteProps() {
+        const props = super.many2XAutocompleteProps;
+        return { ...props };
+    }
+}
+
+export class Many2OnePlmField extends Many2OneField {
+    static template = "plm.CustomImageM2oField";
+    static components = {
+        ...Many2OneField.components,
+        Many2One: CustomImageM2oField,
+    };
+
+    getRelationModel() {
+        const relFromConfig = this.props?.record?.model?.root?.model?.config?.fields?.[this.props.name]?.relation;
+        const relFromField = this.props?.field?.relation;
+        return relFromConfig || relFromField;
+    }
 
     async setup() {
         super.setup();
-        this.imageData = false;
         this.relatedField = false;
         this.imageToolTipData = false;
+        this.actionService = useService("action");
+        this.state = useState({ imageData: false });
+
         onWillUpdateProps(async (nextProps) => {
-            this.imageData = false;
+            this.state.imageData = false;
             this.imageToolTipData = false;
-            let fieldName = nextProps.name;
-            if (nextProps && nextProps.record && nextProps.record.data && nextProps.record.data[fieldName] && nextProps.record.data[fieldName].length != 0) {
-                let imageData = await this.env.model.orm.call("product.template", "search_read", [], {
-                    domain: [["id", "=", nextProps.record.data[fieldName][0]]],
-                    fields: [nextProps.options.image_field],
-                });
-                if (imageData && imageData.length != 0 && imageData[0][nextProps.options.image_field]) {
-                    this.imageData = "data:image/png;base64, " + imageData[0][nextProps.options.image_field];
-                    this.imageToolTipData = JSON.stringify({"url": this.imageData});
-                    this.render();
+
+            const fieldName = nextProps?.name;
+            const value = nextProps?.record?.data?.[fieldName];
+            const imageField = "image_1920";
+            const linkedField = "linkeddocuments";
+
+            let recordId = null;
+            if (Array.isArray(value) && value.length > 0) {
+                recordId = value[0];
+            } else if (value && typeof value === "object" && value.id) {
+                recordId = value.id;
+            } else {
+                // no-op
+            }
+
+            const model = this.getRelationModel();
+
+            if (recordId && imageField && model) {
+                const imageData = await this.env.model.orm.call(
+                    model,
+                    "search_read",
+                    [],
+                    {
+                        domain: [["id", "=", recordId]],
+                        fields: [imageField],
+                    }
+                );
+
+                if (imageData?.length && imageData[0][imageField]) {
+                    this.state.imageData = "data:image/png;base64," + imageData[0][imageField];
+                    this.imageToolTipData = JSON.stringify({ url: this.state.imageData });
                 }
             }
         });
-        console.log("\n\n\n", "thiss-------->>>>>>>>>", this, "\n\n\n")
-        if (this.props && this.props.record && this.props.record.data && this.props.record.data[this.props.name] && this.props.record.data[this.props.name].length != 0) {
 
-            let imageData = await this.env.model.orm.call("product.template", "search_read", [], {
-                domain: [["id", "=", this.props.record.data[this.props.name][0]]],
-                fields: [this.props.options.image_field],
-            });
-            this.relatedField = await this.env.model.orm.call("product.template", "search_read", [], {
-                domain: [["id", "=", this.props.record.data[this.props.name][0]]],
-                fields: [this.props.options.linked_field],
-            });
-            if (imageData && imageData.length != 0 && imageData[0][this.props.options.image_field]) {
-                this.imageData = "data:image/png;base64, " + imageData[0][this.props.options.image_field];
-                this.imageToolTipData = JSON.stringify({"url": this.imageData});
-                this.render();
+        // Initial load
+        const value = this.props?.record?.data?.[this.props.name];
+        const imageField = "image_1920";
+        const linkedField = "linkeddocuments";
+
+        let recordId = null;
+        if (Array.isArray(value) && value.length > 0) {
+            recordId = value[0];
+        } else if (value && typeof value === "object" && value.id) {
+            recordId = value.id;
+        } else {
+            // no-op
+        }
+
+        const model = this.getRelationModel();
+
+        if (recordId && (imageField || linkedField) && model) {
+            // Load image
+            if (imageField) {
+                const imageData = await this.env.model.orm.call(
+                    model,
+                    "search_read",
+                    [],
+                    {
+                        domain: [["id", "=", recordId]],
+                        fields: [imageField],
+                    }
+                );
+                if (imageData?.length && imageData[0][imageField]) {
+                    this.state.imageData = "data:image/png;base64," + imageData[0][imageField];
+                    this.imageToolTipData = JSON.stringify({ url: this.state.imageData });
+                }
+            }
+
+            // Load linked field
+            if (linkedField) {
+                this.relatedField = await this.env.model.orm.call(
+                    model,
+                    "search_read",
+                    [],
+                    {
+                        domain: [["id", "=", recordId]],
+                        fields: [linkedField],
+                    }
+                );
             }
         }
     }
 
     async onImageClicked(event) {
-        event.stopPropagation(); // It stops the event from triggering any additional event handlers
-        let selectedProductId = this.props.record.data.product_id[0];
-        let relatedFieldName = this.props.options.linked_field;
-        let model = this.props.record.model.root.model.config.fields[this.props.name].relation;
-        let action_open_linked_field = await this.props.record.model.orm.call(model, "action_open_linked_field", [selectedProductId, relatedFieldName]);
-        return this.action.doAction(action_open_linked_field);
+        event.stopPropagation();
+        const productId = this.props?.record?.data?.product_tmpl_id?.id;
+        const relatedFieldName = "linkeddocuments";
+        if (!productId || !relatedFieldName) {
+            return;
+        }
+        const model =
+            this.props.record.model.root.model.config.fields[this.props.name].relation;
+        const action_open_linked_field = await this.props.record.model.orm.call(
+            model,
+            "action_open_linked_field",
+            [productId, "linkeddocuments"]
+        );
+        return this.actionService.doAction(action_open_linked_field);
     }
 }
 
-export const plmMany2oneField = {
-    ...buildM2OFieldDescription(PlmMany2oneWidget),
-    extractProps({ options }) {
-        const props = extractM2OFieldProps(...arguments);
-        props.options = options;
-        return props;
-    },
+export const many2OnePlmField = {
+    ...buildM2OFieldDescription(Many2OnePlmField),
 };
-registry.category("fields").add("plm_many2one_image", plmMany2oneField);
 
-
-// -----------------------------------------------------
-// export class PlmMany2oneWidget extends Component {
-
-//     static template = "plm.PlmMany2oneWidget";
-//     static props = {
-//         ...Many2OneField.props,
-//         options: {type: Object, optional: true},
-//     };
-//     static defaultProps = {
-//         ...Many2OneField.defaultProps,
-//         options: false,
-//     };
-
-//     async setup() {
-//         super.setup();
-//         this.imageData = false;
-//         this.relatedField = false;
-//         this.imageToolTipData = false;
-//         onWillUpdateProps(async (nextProps) => {
-//             this.imageData = false;
-//             this.imageToolTipData = false;
-//             let fieldName = nextProps.name;
-//             if (nextProps && nextProps.record && nextProps.record.data && nextProps.record.data[fieldName] && nextProps.record.data[fieldName].length != 0) {
-//                 let imageData = await this.env.model.orm.call("product.template", "search_read", [], {
-//                     domain: [["id", "=", nextProps.record.data[fieldName][0]]],
-//                     fields: [nextProps.options.image_field],
-//                 });
-//                 if (imageData && imageData.length != 0 && imageData[0][nextProps.options.image_field]) {
-//                     this.imageData = "data:image/png;base64, " + imageData[0][nextProps.options.image_field];
-//                     this.imageToolTipData = JSON.stringify({"url": this.imageData});
-//                     this.render();
-//                 }
-//             }
-//         });
-//         console.log("\n\n\n", "thiss-------->>>>>>>>>", this, "\n\n\n")
-//         if (this.props && this.props.record && this.props.record.data && this.props.record.data[this.props.name] && this.props.record.data[this.props.name].length != 0) {
-
-//             let imageData = await this.env.model.orm.call("product.template", "search_read", [], {
-//                 domain: [["id", "=", this.props.record.data[this.props.name][0]]],
-//                 fields: [this.props.options.image_field],
-//             });
-//             this.relatedField = await this.env.model.orm.call("product.template", "search_read", [], {
-//                 domain: [["id", "=", this.props.record.data[this.props.name][0]]],
-//                 fields: [this.props.options.linked_field],
-//             });
-//             if (imageData && imageData.length != 0 && imageData[0][this.props.options.image_field]) {
-//                 this.imageData = "data:image/png;base64, " + imageData[0][this.props.options.image_field];
-//                 this.imageToolTipData = JSON.stringify({"url": this.imageData});
-//                 this.render();
-//             }
-//         }
-//     }
-
-//     async onImageClicked(event) {
-//         event.stopPropagation(); // It stops the event from triggering any additional event handlers
-//         let selectedProductId = this.props.record.data.product_id[0];
-//         let relatedFieldName = this.props.options.linked_field;
-//         let model = this.props.record.model.root.model.config.fields[this.props.name].relation;
-//         let action_open_linked_field = await this.props.record.model.orm.call(model, "action_open_linked_field", [selectedProductId, relatedFieldName]);
-//         return this.action.doAction(action_open_linked_field);
-//     }
-// }
-
-// export const plmMany2oneField = {
-//     ...buildM2OFieldDescription(PlmMany2oneWidget),
-//     extractProps({ options }) {
-//         const props = extractM2OFieldProps(...arguments);
-//         props.options = options;
-//         return props;
-//     },
-// };
-// registry.category("fields").add("plm_many2one_image", plmMany2oneField);
+registry.category("fields").add("plm_many2one_image", many2OnePlmField);

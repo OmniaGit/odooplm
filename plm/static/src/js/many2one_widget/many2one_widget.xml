@@ -1,32 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<templates id="template" xml:space="preserve">
-    <t t-name="plm.PlmMany2oneWidget" t-inherit="web.Many2One">
-<!--        plm_many2one_widget for form view -->
-        <xpath expr="//div[hasclass('o_field_many2one_selection')]/Many2XAutocomplete" position="before">
-            <span t-if="imageData" style="padding:0px 10px 0px 0px;">
+<templates xml:space="preserve">
+    <t t-name="plm.CustomImageM2oField">
+        <div class="d-flex align-items-center gap-1">
+            <span t-if="state.imageData" style="padding:0px 30px 0px 0px;">
                 <img data-tooltip-template="web.ImageZoomTooltip"
                      t-att-data-tooltip-info="imageToolTipData"
-                     style="width:30px;height:30px" t-att-src="imageData"
+                     style="width:30px;height:30px" t-att-src="state.imageData"
                      t-on-click="onImageClicked"/>
             </span>
-            <span t-else="" style="padding:0px 10px 0px 0px;" class="plm_m2o_avatar">
+            <span t-else="" style="padding:0px 15px 0px 0px;" class="plm_m2o_avatar">
                 <div class="fa fa-folder-open" t-on-click="onImageClicked"
                      style="font-size: 20px; width:30px;height:30px"/>
             </span>
-        </xpath>
-        <!--        plm_many2one_widget for list view -->
-        <xpath expr="//t[@t-if='props.canOpen']" position="before">
-            <span t-if="imageData" style="padding:0px 10px 0px 0px;" class="plm_m2o_avatar">
-                  <img data-tooltip-template="web.ImageZoomTooltip"
-                       t-att-data-tooltip-info="imageToolTipData"
-                       style="width:30px;height:30px" t-att-src="imageData"
-                       t-on-click="onImageClicked"/>
-            </span>
-            <span t-else="" style="padding:0px 10px 0px 0px;" class="plm_m2o_avatar">
-                <div class="fa fa-folder-open" t-on-click="onImageClicked"
-                     style="font-size: 20px; width:30px;height:30px"/>
-            </span>
-        </xpath>
+            <t t-if="!props.canOpen">
+                <span t-if="state.imageData" style="padding:0px 20px 0px 0px;" class="plm_m2o_avatar">
+                      <img data-tooltip-template="web.ImageZoomTooltip"
+                           t-att-data-tooltip-info="imageToolTipData"
+                           style="width:30px;height:30px" t-att-src="state.imageData"
+                           t-on-click="onImageClicked"/>
+                </span>
+                <span t-else="" style="padding:0px 25px 0px 0px;" class="plm_m2o_avatar">
+                    <div class="fa fa-folder-open" t-on-click="onImageClicked"
+                         style="font-size: 20px; width:30px;height:30px"/>
+                </span>
+            </t>
+            <Many2One t-props="this.m2oProps"/>
+        </div>
     </t>
 </templates>
