@@ -178,10 +178,26 @@ class PlmDocumentRelations(models.Model):
                      ('link_kind', '=', linkType)]).unlink()
 
     def is_2d_ok(self, from_ir_attachment_id):
-        for relation_id in self.search(["|",('parent_id','=',from_ir_attachment_id.id),
-                                            ('child_id','=',from_ir_attachment_id.id),
-                                            ('link_kind', '=', 'LyTree')
-                                        ]):
+        all_attachment = self.search(["|",
+                                      ("parent_id", "=", from_ir_attachment_id.id),
+                                      ("child_id", "=", from_ir_attachment_id.id),
+                                      ("link_kind", "=", "LyTree"),])
+        #
+        # check cad saves if the are from the some cad save operation we do not need to check the time save
+        # item that are of the save cad save operation with the some dbthread are supposed to be done by the same 
+        # save operation
+        #
+        getLastCadSave = self.env['plm.cad.open'].getLastCadSave
+        db_threads = []
+        for attachment_relation in all_attachment:
+            db_threads.append(getLastCadSave(attachment_relation.parent_id).dbThread)
+            db_threads.append(getLastCadSave(attachment_relation.child_id).dbThread)
+        if len(set(db_threads))==1:
+            return True
+        #
+        # check the time save
+        #
+        for relation_id in all_attachment:
             if relation_id.parent_id.document_type=='2d' and relation_id.child_id.document_type in ['3d','pr']:
                 if relation_id.parent_id.getLastCadSave() < relation_id.child_id.getLastCadSave():
                     return False
