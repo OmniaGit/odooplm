@@ -57,7 +57,6 @@ class PlmConversionStackLine(models.Model):
 
     @api.onchange('product_id', 'model_id', 'field_id')
     def _onchange_old_value(self):
-
         for line in self:
             if line.product_id.id and line.field_id:
                 product = self.env['product.product'].browse(line.product_id.id)

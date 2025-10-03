@@ -38,7 +38,7 @@ from odoo.addons.plm.models.plm_mixin import (
     OBSOLATED_STATUS,
     START_STATUS,
 )
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
 _logger = logging.getLogger(__name__)
@@ -1205,7 +1205,7 @@ class IrAttachment(models.Model):
                         ("name", "not ilike", vals["name"]),
                     ]
                 ):
-                    raise Exception(
+                    raise ValidationError(
                         _(
                             f"You are trying to create a new attachment [{vals['name']}] with the some engineering code [{vals['engineering_code']}]"
                         )

@@ -78,8 +78,8 @@
             "plm/static/src/js/mrp_bom_overview_line.js",
             "plm/static/src/xml/mrp_bom_overview_table_inherit.xml",
             # many2one Widget
-            # "plm/static/src/js/many2one_widget/many2one_widget.js",
-            # "plm/static/src/js/many2one_widget/many2one_widget.xml",
+            "plm/static/src/js/many2one_widget/many2one_widget.js",
+            "plm/static/src/js/many2one_widget/many2one_widget.xml",
         ],
         "web.report_assets_common": [
             "plm/static/src/scss/document_bom.scss",

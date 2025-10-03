@@ -156,9 +156,7 @@
                         title="Open Related Boms"
                         class="btn btn-sm oe_stat_button"
                         invisible="hasChildBoms==False"/>
-                <field name="product_id" 
-                       widget="plm_many2one_image" 
-                       options="{'image_field':'image_1920','linked_field':'linkeddocuments'}"/>
+                <field name="product_id" widget="plm_many2one_image" options="{'image_field':'image_1920','linked_field':'linkeddocuments'}"/>
             </xpath>
             <xpath expr="//field[@name='bom_line_ids']/list/field[@name='product_id']" position="after">
                 <field name="description" readonly="True"/>
