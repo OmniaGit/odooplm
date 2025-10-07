@@ -633,7 +633,13 @@ class IrAttachment(models.Model):
                         out = False
         return out
 
-    def _data_check_files(self, targetIds, listedFiles=(), forceFlag=False, retDict=False, hostname='', hostpws=''):
+    def _data_check_files(self, 
+                          targetIds, 
+                          listedFiles=(), 
+                          forceFlag=False, 
+                          retDict=False, 
+                          hostname='', 
+                          hostpws=''):
         result = []
         listfiles = []
         if len(listedFiles) > 0:
@@ -646,7 +652,9 @@ class IrAttachment(models.Model):
                 if forceFlag:
                     isNewer = True
                 else:
-                    isNewer = objDoc.checkNewer()
+                    isNewer = objDoc.checkNewer(hostname,
+                                                hostpws
+                                                )
                 collectable = isNewer and not isCheckedOutToMe
             else:
                 collectable = True
@@ -2598,10 +2606,16 @@ class IrAttachment(models.Model):
                 break
         return product_product_id, plm_document_id
 
-    def checkNewer(self):
+    def checkNewer(self,
+                   hostname='',
+                   hostpws=''):
         self.ensure_one()
         for document in self:
             plm_cad_open = self.sudo().env['plm.cad.open'].getLastCadSave(document)
+            if plm_cad_open.hostname and plm_cad_open.hostname.lower()!=hostname.lower():
+                return True
+            if plm_cad_open.pws_path and plm_cad_open.pws_path.lower()!=hostpws.lower():
+                return True
             last_bck = self.env['plm.backupdoc'].getLastBckDocument(document)
             if plm_cad_open.plm_backup_doc_id.id != last_bck.id:
                 return True
@@ -3455,8 +3469,13 @@ class IrAttachment(models.Model):
                     'engineering_code'] = f"{self.env['ir.sequence'].next_by_code('ir.attachment.progress')}"
             out_attachment_value['engineering_revision'] = 0
             #
-            _, exte = os.path.splitext(out_attachment_value['name'])
-            out_attachment_value['name'] = f"{out_attachment_value['engineering_code']}{exte}"
+            if "INTEGRATION_FILE_EXTE" in out_attachment_value:
+                exte = out_attachment_value["INTEGRATION_FILE_EXTE"]
+            else:
+                _, exte = os.path.splitext(out_attachment_value["INTEGRATION_ORIG_FILE_PATH"])
+            out_attachment_value["name"] = (
+                f"{out_attachment_value['engineering_code']}{exte}"
+            )
         #
         del out_attachment_value['id']
         #

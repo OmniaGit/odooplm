@@ -47,8 +47,6 @@ class PlmComponentDocumentRel(models.Model):
                                   required=True,
                                   # ondelete='cascade'
                                   )
-    
-    configuration_name = fields.Char(related="component_id.configuration_name")
 
     _sql_constraints = [
         ('relation_unique',
