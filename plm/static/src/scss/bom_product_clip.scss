@@ -1,0 +1,4 @@
+/* Fix text-overflow typo from eclip → clip */
+.o_list_renderer .o_list_table tbody > tr > td:not(.o_list_record_selector):not(.o_handle_cell):not(.o_list_button):not(.o_list_record_remove):not(.o_list_record_open_form_view) {
+    text-overflow: clip !important;
+}

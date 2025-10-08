@@ -79,6 +79,7 @@
             "plm/static/src/css/color_fields_tree.css",
             "plm/static/src/js/mrp_bom_overview_line.js",
             "plm/static/src/xml/mrp_bom_overview_table_inherit.xml",
+            "plm/static/src/scss/bom_product_clip.scss",
 
             # many2one Widget
             "plm/static/src/js/many2one_widget/many2one_widget.js",
