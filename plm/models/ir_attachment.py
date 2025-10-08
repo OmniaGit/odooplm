@@ -653,8 +653,7 @@ class IrAttachment(models.Model):
                     isNewer = True
                 else:
                     isNewer = objDoc.checkNewer(hostname,
-                                                hostpws
-                                                )
+                                                hostpws)
                 collectable = isNewer and not isCheckedOutToMe
             else:
                 collectable = True

@@ -1823,7 +1823,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                 result.append(res)
                 continue
             elif prod.engineering_code:
-                eng_code = '[%s_%s] %s' % (prod.engineering_code, prod.engineering_revision, eng_code)
+                eng_code = f'[{prod.engineering_code}_{prod.engineering_revision}] {eng_code}'
             result.append((prod.id, eng_code))
         return result
 
