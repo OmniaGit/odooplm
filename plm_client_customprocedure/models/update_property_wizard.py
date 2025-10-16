@@ -60,7 +60,15 @@ class UpdateProperty(models.Model):
         files = {
             'file': (file_name, binary_data, 'application/octet-stream')
         }
-        response = requests.post(url, files=files)
+        try:
+            response = requests.post(url, files=files, timeout=20)
+        except requests.exceptions.ConnectionError:
+            raise UserError(
+                "Unable to connect to the CAD Server. Please check the server IP/Port and try again.")
+        except requests.exceptions.Timeout:
+            raise UserError("The request to the CAD Conversion Server timed out. Please try again later.")
+
+
         if response.status_code == 200:
             try:
                 result = response.json()
