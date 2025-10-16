@@ -98,11 +98,10 @@
                              and is in the latest revision for Manufacturing.">
                                 <field name="module_plm_product_only_latest"/>
                             </setting>
-                            <!-- <setting help="Add the capability to update the manufacturing order from a revised BOM
-                             **** ATTENTION **** This module depends on plm_mrp_bom_update from:
-                            git clone -b 16.0 https://github.com/OmniaSolutions/odooAddons.git.">
-                                <field name="module_plm_mrp_bom_update"/>
-                            </setting> -->
+                            <setting help="Add the capability to see the PLM documents inside Shop Flor manufactory
+                             **** ATTENTION **** This module depend on the enterprise module Shop Flor">
+                                <field name="module_plm_pdf_workorder_enterprise"/>
+                            </setting>
                         </block>
                         <block title="Sales" name="plm_sales" groups="plm.group_plm_admin">
                             <setting help="This module adds permissions to sale module allowing

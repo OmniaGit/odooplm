@@ -143,7 +143,7 @@ class BookCollector(object):
                     except Exception as ex:
                         logging.warning(ex)
                         logging.warning(
-                            "advancedPlmReportEngine function not implemented in plm.document object"
+                            "advancedPlmReportEngine function not implemented in ir.attachment object"
                         )
                     canvas.showPage()
                     canvas.save()

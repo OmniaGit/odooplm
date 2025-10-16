@@ -21,7 +21,7 @@
 ##############################################################################
 {
     "name": "PLM Report PDF Workorder Enterprise",
-    "version": "18.0.2.0.0",
+    "version": "19.0.1.0.0",
     "author": "OmniaSolutions",
     "website": "https://odooplm.omniasolutions.website",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
@@ -35,7 +35,6 @@
                 "mrp_workorder"],
     "assets": {
         "web.assets_backend": [
-            "plm_pdf_workorder_enterprise/static/src/mrpWorksheet.js",
             "plm_pdf_workorder_enterprise/static/src/mrpDisplayRecord.xml",
         ]
     },

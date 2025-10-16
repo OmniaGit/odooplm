@@ -29,14 +29,13 @@ class MrpWorkorder(models.Model):
         view_id = self.env["ir.model.data"]._xmlid_to_res_id(
             "plm.document_kanban_view"
         )
+        available_doc_ids = self.product_id.linkeddocuments.filtered("").filtered(lambda x: x.is_production_doc).ids
         ctx = self.env.context.copy()
-        domain = [('is_plm', '=', True),
-                  ('is_production_doc', '=', True),
-                  ('id', 'in', self.production_doc_ids.ids)]
+        domain = [('id', 'in', available_doc_ids)]
         ctx.update({
             "create": False,
             "delete": False,
-            'default_res_ids': self.production_doc_ids.ids,
+            'default_res_ids': available_doc_ids,
             'readonly': True
         })
 

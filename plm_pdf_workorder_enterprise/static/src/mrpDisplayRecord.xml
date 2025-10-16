@@ -1,23 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
-
-    <t t-inherit="mrp_workorder.MrpDisplayRecord" t-inherit-mode="extension">
-        <xpath expr="//div[hasclass('o_mrp_display_record')]//ul[hasclass('list-group')]//MrpWorksheet" position="after">
-            <PlmMrpWorksheet record="props.record" clickable="true"/>
+    <t t-inherit="mrp_workorder.MrpDisplayMenuDialog" t-inherit-mode="extension">
+        <xpath expr="//div[@name='block']" position="before">
+            <div class="col-6 p-1" t-if="props.record.resModel === 'mrp.workorder'">
+                <button class="d-flex flex-column gap-1 btn btn-secondary fs-3 w-100 h-100 py-3"
+                        t-on-click="() => this.callAction('action_open_workorder_kanban')">
+                    <i class="fa fa-sticky-note-o"/>Plm WorkSheets
+                </button>
+            </div>
         </xpath>
     </t>
-
-    <t t-name="plm_pdf_workorder_enterprise.MrpWorksheet" t-inherit="mrp_workorder.MrpWorksheet" t-inherit-mode="primary">
-        <xpath expr="//li" position="replace">
-             <li t-if="showPlmDocCheck"
-                 t-on-click="clicked"
-                 class="o_mrp_record_line list-group-item d-flex justify-content-between align-items-center">
-                <span >Plm WorkSheet</span>
-                 <div class="btn">
-                    <i class="fa fa-lg fa-lightbulb-o"/>
-                </div>
-             </li>
-        </xpath>
-    </t>
-
 </templates>
