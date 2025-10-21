@@ -2186,7 +2186,14 @@ class PlmDocument(models.Model):
         component_props, document_props, dbThread = clientArg[0]
         host_name = clientArg[1]
         host_pws = clientArg[2]
+        #
+        # Set the configuration on the product
+        #
+        if len(clientArg)==4:
+            component_props['configuration_name'] = clientArg[3]
+        #
         #  generate component
+        #
         product_product_id = self.env['product.product'].createFromProps(component_props)
         if not product_product_id:
             logging.warning("Unable to create / get product_product from %s" % component_props)
@@ -2899,8 +2906,16 @@ class PlmDocument(models.Model):
             #
             parent_attrs, children_attrs_structure = cad_structure
             product_product_id, attachment_id = self._GetproductDocumentID(tuple(parent_attrs.values()))
-            parent_attrs = self.get_clone_info_attr(attachment_id,
-                                                    product_product_id)
+            out_parent_attrs = self.get_clone_info_attr(attachment_id,
+                                                        product_product_id)
+            out_parent_attrs['CONFIGURATION_NAME'] = parent_attrs.get('product',{}).get('CONFIGURATION_NAME','')
+            out_parent_attrs['CONFIGURATIONS'] = parent_attrs.get('product',{}).get('CONFIGURATIONS',[])
+            out_parent_attrs['CONFIGURATIONS_ATTRIBUTES']={}
+            for config_name, config_attrs in parent_attrs.get('product',{}).get('CONFIGURATIONS_ATTRIBUTES',{}).items():
+                config_product_product_id, config_attachment_id = self._GetproductDocumentID(tuple(parent_attrs.values()))
+                config_out_parent_attrs = self.get_clone_info_attr(config_attachment_id,
+                                                                   config_product_product_id)
+                out_parent_attrs['CONFIGURATIONS_ATTRIBUTES'][config_name] = config_out_parent_attrs.get('product')
             #
             # Collect missing layout
             #
@@ -2961,7 +2976,7 @@ class PlmDocument(models.Model):
                           args):
         #
         SUPPORT_MAIN_PRODUCT_ATTRIBUTES = [
-            'CONFIGURATION_NAME',
+            'CONFIGURATION_NAME', 
             'CONFIGURATIONS',
             'INTEGRATION_FILE_TYPE',
             ]
@@ -3005,7 +3020,7 @@ class PlmDocument(models.Model):
     @api.model
     def GetCloneDocumentValues(self, args):
         """
-            return the new attributes to be used for cloning the document
+        return the new attributes to be used for cloning the document
         """
         old_product_attrs, old_attachment_attrs, new_product_attrs = args
         out_attachment_value = json.loads(old_attachment_attrs)
@@ -3014,23 +3029,32 @@ class PlmDocument(models.Model):
             #
             # If you implement the customGetCloneDocumentValues this call will be used to customize the value of the new cloned document from the client clone action
             #
-            out_attachment_value=self.customGetCloneDocumentValues(out_attachment_value,
-                                                                   json.loads(old_product_attrs),
-                                                                   new_product_attrs)
+            out_attachment_value = self.customGetCloneDocumentValues(
+                out_attachment_value, json.loads(old_product_attrs), new_product_attrs
+            )
         else:
             #
-            engineering_code = new_product_attrs.get('engineering_code','')
+            engineering_code = new_product_attrs.get("engineering_code", "")
             if engineering_code:
-                out_attachment_value['engineering_document_name'] = f"{engineering_code}-{self.env['ir.sequence'].next_by_code('ir.attachment.progress')}"
+                out_attachment_value["engineering_code"] = (
+                    f"{engineering_code}-{self.env['ir.sequence'].next_by_code('ir.attachment.progress')}"
+                )
             else:
-                out_attachment_value['engineering_document_name'] = f"{self.env['ir.sequence'].next_by_code('ir.attachment.progress')}"
+                out_attachment_value["engineering_code"] = (
+                    f"{self.env['ir.sequence'].next_by_code('ir.attachment.progress')}"
+                )
+            out_attachment_value["engineering_revision"] = 0
             #
-            _, exte = os.path.splitext(out_attachment_value['name'])
-            out_attachment_value['name'] = f"{out_attachment_value['engineering_document_name']}{exte}"
+            if "INTEGRATION_FILE_EXTE" in out_attachment_value:
+                exte = out_attachment_value["INTEGRATION_FILE_EXTE"]
+            else:
+                _, exte = os.path.splitext(out_attachment_value["INTEGRATION_ORIG_FILE_PATH"])
+            out_attachment_value["name"] = (
+                f"{out_attachment_value['engineering_code']}{exte}"
+            )
         #
-        del out_attachment_value['id']
+        if "id" in out_attachment_value: del out_attachment_value["id"]
         #
-        out_attachment_value['revisionid']=0
         return json.dumps(out_attachment_value)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
