@@ -74,7 +74,8 @@ class ProductTemplate(models.Model):
                                          )
     kit_bom = fields.Boolean(_('KIT Bom Type'))
 
-    linkeddocuments = fields.Many2many(related="product_variant_id.linkeddocuments")
+    linkeddocuments = fields.Many2many(related="product_variant_id.linkeddocuments",
+                                       depends=["product_variant_ids.linkeddocuments"])
 
     def action_open_linked_field(self, related_field):
         product_id = self.env['product.product'].browse(self.id)
