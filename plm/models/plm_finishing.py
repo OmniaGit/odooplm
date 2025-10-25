@@ -34,16 +34,16 @@ class PlmFinishing(models.Model):
     _name = "plm.finishing"
     _description = "Surface Finishing"
 
-    name = fields.Char(_('Specification'),
+    name = fields.Char('Specification',
                        required=True,
                        translate=True)
-    description = fields.Char(_('Description'),
+    description = fields.Char('Description',
                               size=128)
-    sequence = fields.Integer(_('Sequence'),
-                              help=_("Gives the sequence order when displaying a list of product categories."))
+    sequence = fields.Integer('Sequence',
+                              help="Gives the sequence order when displaying a list of product categories.")
 
     _sql_constraints = [
-        ('name_uniq', 'unique(name)', _('Surface Finishing has to be unique !')),
+        ('name_uniq', 'unique(name)', 'Surface Finishing has to be unique !'),
     ]
 
     def copy(self, default=None):

@@ -65,20 +65,20 @@ class plm_missing_bom(models.TransientModel):
     _name = "plm.missing.bom"
     _description = "BoM Missing Objects"
 
-    bom_id = fields.Many2one("plm.compare.bom", _("BoM"), ondelete="cascade")
-    bom_idrow = fields.Many2one("mrp.bom.line", _("BoM Line"), ondelete="cascade")
-    part_id = fields.Many2one("product.product", _("Part"), ondelete="cascade")
+    bom_id = fields.Many2one("plm.compare.bom", "BoM", ondelete="cascade")
+    bom_idrow = fields.Many2one("mrp.bom.line", "BoM Line", ondelete="cascade")
+    part_id = fields.Many2one("product.product", "Part", ondelete="cascade")
     revision = fields.Integer(
-        related="part_id.engineering_revision", string=_("Rev."), store=False
+        related="part_id.engineering_revision", string="Rev.", store=False
     )
     description = fields.Char(
-        related="part_id.name", string=_("Description"), store=False
+        related="part_id.name", string="Description", store=False
     )
     itemnum = fields.Integer(
-        related="bom_idrow.itemnum", string=_("Cad Pos."), store=False
+        related="bom_idrow.itemnum", string="Cad Pos.", store=False
     )
-    itemqty = fields.Float(string=_("Quantity"), digits=(16, 3))
-    reason = fields.Char(string=_("Difference"), size=32)
+    itemqty = fields.Float(string="Quantity", digits=(16, 3))
+    reason = fields.Char(string="Difference", size=32)
 
     def delete_bom_line(self):
         self.bom_id.to_update = True
@@ -116,20 +116,20 @@ class plm_adding_bom(models.TransientModel):
     _name = "plm.adding.bom"
     _description = "BoM Adding Objects"
 
-    bom_id = fields.Many2one("plm.compare.bom", _("BoM"), ondelete="cascade")
-    bom_idrow = fields.Many2one("mrp.bom.line", _("BoM Line"), ondelete="cascade")
-    part_id = fields.Many2one("product.product", _("Part"), ondelete="cascade")
+    bom_id = fields.Many2one("plm.compare.bom", "BoM", ondelete="cascade")
+    bom_idrow = fields.Many2one("mrp.bom.line", "BoM Line", ondelete="cascade")
+    part_id = fields.Many2one("product.product", "Part", ondelete="cascade")
     revision = fields.Integer(
-        related="part_id.engineering_revision", string=_("Rev."), store=False
+        related="part_id.engineering_revision", string="Rev.", store=False
     )
     description = fields.Char(
-        related="part_id.name", string=_("Description"), store=False
+        related="part_id.name", string="Description", store=False
     )
     itemnum = fields.Integer(
-        related="bom_idrow.itemnum", string=_("Cad Pos."), store=False
+        related="bom_idrow.itemnum", string="Cad Pos.", store=False
     )
-    itemqty = fields.Float(string=_("Quantity"), digits=(16, 3))
-    reason = fields.Char(string=_("Difference"), size=32)
+    itemqty = fields.Float(string="Quantity", digits=(16, 3))
+    reason = fields.Char(string="Difference", size=32)
 
     def delete_bom_line(self):
         self.bom_id.to_update = True
@@ -167,11 +167,11 @@ class plm_compare_bom(models.TransientModel):
     _name = "plm.compare.bom"
     _description = "BoM Comparison"
 
-    name = fields.Char(_("Part Number"), size=64)
+    name = fields.Char("Part Number", size=64)
     bom_id1 = fields.Many2one(
-        "mrp.bom", string=_("BoM 1"), required=True, ondelete="cascade"
+        "mrp.bom", string="BoM 1", required=True, ondelete="cascade"
     )
-    type_id1 = fields.Selection(related="bom_id1.type", string=_("BoM Type 1"))
+    type_id1 = fields.Selection(related="bom_id1.type", string="BoM Type 1")
     part_id1 = fields.Many2one(
         "product.template",
         related="bom_id1.product_tmpl_id",
@@ -179,13 +179,13 @@ class plm_compare_bom(models.TransientModel):
         ondelete="cascade",
     )
     revision1 = fields.Integer(
-        related="part_id1.engineering_revision", string=_("Revision 1"), store=False
+        related="part_id1.engineering_revision", string="Revision 1", store=False
     )
     description1 = fields.Char(
-        related="part_id1.name", string=_("Description 1"), store=False
+        related="part_id1.name", string="Description 1", store=False
     )
-    bom_id2 = fields.Many2one("mrp.bom", _("BoM 2"), required=True, ondelete="cascade")
-    type_id2 = fields.Selection(related="bom_id2.type", string=_("BoM Type 2"))
+    bom_id2 = fields.Many2one("mrp.bom", "BoM 2", required=True, ondelete="cascade")
+    type_id2 = fields.Selection(related="bom_id2.type", string="BoM Type 2")
     part_id2 = fields.Many2one(
         "product.template",
         related="bom_id2.product_tmpl_id",
@@ -193,21 +193,21 @@ class plm_compare_bom(models.TransientModel):
         ondelete="cascade",
     )
     revision2 = fields.Integer(
-        related="part_id2.engineering_revision", string=_("Revision 2"), store=False
+        related="part_id2.engineering_revision", string="Revision 2", store=False
     )
     description2 = fields.Char(
-        related="part_id2.name", string=_("Description 2"), store=False
+        related="part_id2.name", string="Description 2", store=False
     )
-    anotinb = fields.One2many("plm.adding.bom", "bom_id", _("BoM Adding"))
-    bnotina = fields.One2many("plm.missing.bom", "bom_id", _("BoM Missing"))
+    anotinb = fields.One2many("plm.adding.bom", "bom_id", "BoM Adding")
+    bnotina = fields.One2many("plm.missing.bom", "bom_id", "BoM Missing")
     compute_type = fields.Selection([
-        ("only_product", _("Compare Only Product Existence")),
-        ("num_qty", _("Compare By Item Number and Quantity")),
-        ("summarized", _("Compare Product Quantity"))
-    ], default="only_product", string=_("Compare type"))
+        ("only_product", "Compare Only Product Existence"),
+        ("num_qty", "Compare By Item Number and Quantity"),
+        ("summarized", "Compare Product Quantity")
+    ], default="only_product", string="Compare type")
 
     bom_line_id_to_delete = fields.Many2many(
-        "mrp.bom.line", string=_("BoM Line to Delete")
+        "mrp.bom.line", string="BoM Line to Delete"
     )
 
     to_update = fields.Boolean("Bom need to be updated", default=False)

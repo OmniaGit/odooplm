@@ -40,18 +40,18 @@ class ProductTemplate(models.Model):
     engineering_material = fields.Char('Cad Raw Material',
                                        size=128,
                                        required=False,
-                                       help=_("Raw material for current product, only description for titleblock."))
+                                       help="Raw material for current product, only description for titleblock.")
     engineering_surface = fields.Char(
-        _('Cad Surface Finishing'),
+        'Cad Surface Finishing',
         size=128,
         required=False,
-        help=_("Surface finishing for current product, only description for titleblock.")
+        help="Surface finishing for current product, only description for titleblock."
     )
 
     engineering_treatment = fields.Char('Cad Thermal Treatment',
                                         size=128,
                                         required=False,
-                                        help=_("Thermal treatment for current product, only description for titleblock."))
+                                        help="Thermal treatment for current product, only description for titleblock.")
 
 
     #   ####################################    Overload to set default values    ####################################
@@ -72,7 +72,7 @@ class ProductTemplate(models.Model):
                                          default=True,
                                          compute=lambda self: self._compute_eng_code_editable()
                                          )
-    kit_bom = fields.Boolean(_('KIT Bom Type'))
+    kit_bom = fields.Boolean('KIT Bom Type')
 
     linkeddocuments = fields.Many2many(related="product_variant_id.linkeddocuments")
 

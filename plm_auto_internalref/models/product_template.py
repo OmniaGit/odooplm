@@ -50,6 +50,8 @@ class ProductTemplateExtension(models.Model):
                                                                               product_template_id)
             if new_default_code :
                 vals['default_code'] = new_default_code
+                if product_template_id.product_variant_id.default_code!=new_default_code:
+                    product_template_id.product_variant_id.default_code=new_default_code
         return super(ProductTemplateExtension, self).write(vals)
 
 

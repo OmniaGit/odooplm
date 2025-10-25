@@ -51,26 +51,26 @@ class IrAttachment(models.Model):
     _description = "Ir Attachment"
     _inherit = ['ir.attachment', 'revision.plm.mixin']
 
-    printout = fields.Binary(_('Printout Content'),
-                             help=_("Print PDF content."))
-    printout_name = fields.Char(_('Printout Name'), compute="_getPrintoutName")
-    preview = fields.Image(_('Preview Content'),
+    printout = fields.Binary('Printout Content',
+                             help="Print PDF content.")
+    printout_name = fields.Char('Printout Name', compute="_getPrintoutName")
+    preview = fields.Image('Preview Content',
                            max_width=1920,
                            max_height=1920,
                            attachment=False)
 
-    checkout_user = fields.Char(string=_("Checked-Out to"),
+    checkout_user = fields.Char(string="Checked-Out to",
                                 compute='_get_checkout_state')
     
     
-    is_checkout = fields.Boolean(_('Is Checked-Out'),
+    is_checkout = fields.Boolean('Is Checked-Out',
                                  compute='_is_checkout',
                                  store=False)
     linkedcomponents = fields.Many2many('product.product',
                                         'plm_component_document_rel',
                                         'document_id',
                                         'component_id',
-                                        _('Linked Parts'),
+                                        'Linked Parts',
                                         ondelete='cascade')
     is_linkedcomponents = fields.Boolean('Is Linked Components',
                                          compute='_compute_linkedcomponents')
@@ -81,18 +81,18 @@ class IrAttachment(models.Model):
                           compute='_compute_datas',
                           inverse='_inverse_datas')
 
-    document_type = fields.Selection([('other', _('Other')),
-                                      ('2d', _('2D')),
-                                      ('3d', _('3D')),
-                                      ('pr', _('Presentation')),
+    document_type = fields.Selection([('other', 'Other'),
+                                      ('2d', '2D'),
+                                      ('3d', '3D'),
+                                      ('pr', 'Presentation'),
                                       ],
                                      compute='_compute_document_type',
                                      store=True,
-                                     string=_('Document Type'))
-    desc_modify = fields.Text(_('Modification Description'), default='')
+                                     string='Document Type')
+    desc_modify = fields.Text('Modification Description', default='')
     is_plm = fields.Boolean('Is A Plm Document',
-                            help=_(
-                                "If the flag is set, the document is managed by the plm module, and imply its backup at each save and the visibility on some views."))
+                            help=
+                                "If the flag is set, the document is managed by the plm module, and imply its backup at each save and the visibility on some views.")
     attachment_revision_count = fields.Integer(compute='_attachment_revision_count')
     first_source_path = fields.Char("Source path of the first time save")
     cad_name = fields.Char("Cad Name")
@@ -104,7 +104,7 @@ class IrAttachment(models.Model):
                                           compute="_compute_must_update_from_cad",
                                           help="""When this flag is enabled the 2d document must be updated in order to guaranteey the update betwin 2d and 3d document""")
     preview_related = fields.Image(max_height=1920, max_width=1920,
-                                   string=_("Child Parent Preview"))
+                                   string="Child Parent Preview")
 
 
     def _compute_must_update_from_cad(self):

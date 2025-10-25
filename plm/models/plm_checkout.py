@@ -38,17 +38,17 @@ class PlmCheckout(models.Model):
     _description = 'Document that are locked from someone'
 
     userid = fields.Many2one('res.users',
-                             _('Related User'),
+                             'Related User',
                              index=True,
                              ondelete='cascade')
-    hostname = fields.Char(_('hostname'),
+    hostname = fields.Char('hostname',
                            index=True,
                            size=64)
-    hostpws = fields.Char(_('PWS Directory'),
+    hostpws = fields.Char('PWS Directory',
                           index=True,
                           size=1024)
     documentid = fields.Many2one('ir.attachment',
-                                 _('Related Document'),
+                                 'Related Document',
                                  index=True,
                                  ondelete='cascade')
     rel_doc_rev = fields.Integer(related='documentid.engineering_revision',
@@ -58,7 +58,7 @@ class PlmCheckout(models.Model):
     preview = fields.Binary(related='documentid.preview')
 
     _sql_constraints = [
-        ('documentid', 'unique (documentid)', _('The documentid must be unique !'))
+        ('documentid', 'unique (documentid)', 'The documentid must be unique !')
     ]
 
     

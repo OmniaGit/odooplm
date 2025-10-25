@@ -42,11 +42,12 @@ CONFIRMED_STATUS = 'confirmed'
 RELEASED_STATUS = 'released'
 OBSOLATED_STATUS = 'obsoleted'
 UNDER_MODIFY_STATUS = 'undermodify'
-USED_STATES = [(START_STATUS, _('Draft')),
-               (CONFIRMED_STATUS, _('Confirmed')),
-               (RELEASED_STATUS, _('Released')),
-               (UNDER_MODIFY_STATUS, _('UnderModify')),
-               (OBSOLATED_STATUS, _('Obsoleted'))]
+#
+USED_STATES = [(START_STATUS, lambda x : _('Draft')),
+               (CONFIRMED_STATUS, lambda x : _('Confirmed')),
+               (RELEASED_STATUS, lambda x : _('Released')),
+               (UNDER_MODIFY_STATUS, lambda x : _('UnderModify')),
+               (OBSOLATED_STATUS, lambda x : _('Obsoleted'))]
 #
 RELEASED_STATUSES = [RELEASED_STATUS, UNDER_MODIFY_STATUS]
 #
@@ -98,20 +99,20 @@ class RevisionBaseMixin(models.AbstractModel):
     )
     # workflow filed to manage revision information
     engineering_release_date = fields.Datetime(
-        _('Release date'),
+        'Release date',
         tracking=True
     )
     engineering_release_user = fields.Many2one(
         'res.users',
-        string=_("Release User")
+        string="Release User"
     )
     engineering_workflow_date = fields.Datetime(
-        _('Workflow date'),
+        'Workflow date',
         tracking=True
     )
     engineering_workflow_user = fields.Many2one(
         'res.users',
-        string=_("Workflow User")
+        string="Workflow User"
     )
     engineering_writable = fields.Boolean(
         'Writable',
@@ -123,10 +124,10 @@ class RevisionBaseMixin(models.AbstractModel):
     )
     engineering_revision_user = fields.Many2one(
         'res.users',
-        string=_("User Revision")
+        string="User Revision"
     )
     engineering_revision_date = fields.Datetime(
-        string=_('Datetime Revision')
+        string='Datetime Revision'
     )
     engineering_branch_parent_id = fields.Integer('Parent branch')
     engineering_sub_revision_letter = fields.Char("Sub revision path")

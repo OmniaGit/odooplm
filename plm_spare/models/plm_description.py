@@ -33,7 +33,7 @@ class PlmDescriptionExtension(models.Model):
 
     bom_tmpl = fields.Many2one(
         "mrp.bom",
-        _("Choose a BoM"),
+        "Choose a BoM",
         change_default=True,
-        help=_("Select a  BoM as template to drive building Spare BoM."),
+        help="Select a  BoM as template to drive building Spare BoM.",
     )

@@ -34,16 +34,16 @@ class PlmMaterial(models.Model):
     _name = "plm.material"
     _description = "PLM Materials"
 
-    name = fields.Char(_('Designation'),
+    name = fields.Char('Designation',
                        required=True,
                        translate=True)
-    description = fields.Char(_('Description'),
+    description = fields.Char('Description',
                               size=128)
-    sequence = fields.Integer(_('Sequence'),
-                              help=_("Gives the sequence order when displaying a list of product categories."))
+    sequence = fields.Integer('Sequence',
+                              help="Gives the sequence order when displaying a list of product categories.")
 
     _sql_constraints = [
-        ('name_uniq', 'unique(name)', _('Raw Material has to be unique !')),
+        ('name_uniq', 'unique(name)', 'Raw Material has to be unique !'),
     ]
 
     def copy(self, default=None):

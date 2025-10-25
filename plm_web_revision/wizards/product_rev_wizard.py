@@ -35,21 +35,17 @@ class ProductProductExtended(models.TransientModel):
     _name = "product.rev_wizard"
     _description = "Product Revision wizards"
 
-    reviseDocument = fields.Boolean(
-        _("Document Revision"), help=_("""Make new revision of the linked document ?""")
-    )
-    reviseEbom = fields.Boolean(
-        _("Engineering Bom Revision"),
-        help=_("""Make new revision of the linked Engineering BOM ?"""),
-    )
-    reviseNbom = fields.Boolean(
-        _("Normal Bom Revision"),
-        help=_("""Make new revision of the linked Normal BOM ?"""),
-    )
-    reviseSbom = fields.Boolean(
-        _("Spare Bom Revision"),
-        help=_("""Make new revision of the linked Spare BOM ?"""),
-    )
+    reviseDocument = fields.Boolean("Document Revision", 
+                                    help="""Make new revision of the linked document ?""")
+    
+    reviseEbom = fields.Boolean("Engineering Bom Revision",
+                                help="""Make new revision of the linked Engineering BOM ?""")
+    
+    reviseNbom = fields.Boolean("Normal Bom Revision",
+                                help="""Make new revision of the linked Normal BOM ?""")
+    
+    reviseSbom = fields.Boolean("Spare Bom Revision",
+                                help="""Make new revision of the linked Spare BOM ?""")
 
     def action_create_new_revision_by_server(self):
         product_id = self.env.context.get("active_id", False)

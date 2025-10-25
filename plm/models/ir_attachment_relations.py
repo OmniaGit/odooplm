@@ -30,66 +30,66 @@ class PlmDocumentRelations(models.Model):
     _description = "Relation between document used for cad file structure"
 
     parent_preview = fields.Binary(related="parent_id.preview",
-                                   string=_("Parent Preview"),
+                                   string="Parent Preview",
                                    store=False)
     parent_state = fields.Selection(related="parent_id.engineering_state",
-                                    string=_("Parent Status"),
+                                    string="Parent Status",
                                     store=False)
     parent_revision = fields.Integer(related="parent_id.engineering_revision",
-                                     string=_("Parent Revision"),
+                                     string="Parent Revision",
                                      store=False)
     parent_linked = fields.Boolean(related="parent_id.is_linkedcomponents",
-                                    string=_("Parent Linked Components"),
+                                    string="Parent Linked Components",
                                     store=False)
     parent_type = fields.Selection(related="parent_id.document_type",
-                                    string=_("Parent Document Type"),
+                                    string="Parent Document Type",
                                     store=False)
     child_preview = fields.Binary(related="child_id.preview",
-                                  string=_("Child Preview"),
+                                  string="Child Preview",
                                   store=False)
     child_state = fields.Selection(related="child_id.engineering_state",
-                                   string=_("Child Status"),
+                                   string="Child Status",
                                    store=False)
     child_revision = fields.Integer(related="child_id.engineering_revision",
-                                    string=_("Child Revision"),
+                                    string="Child Revision",
                                     store=False)
     child_linked = fields.Boolean(related="child_id.is_linkedcomponents",
-                                    string=_("Child Linked Components"),
+                                    string="Child Linked Components",
                                     store=False)
     child_type = fields.Selection(related="child_id.document_type",
-                                    string=_("Child Document Type"),
+                                    string="Child Document Type",
                                     store=False)
     parent_id = fields.Many2one('ir.attachment',
-                                _('Related parent document'),
+                                'Related parent document',
                                 ondelete='cascade',
                                 index=True,)
     child_id = fields.Many2one('ir.attachment',
-                               _('Related child document'),
+                               'Related child document',
                                ondelete='cascade',
                                index=True)
-    configuration = fields.Char(_('Configuration Name'),
+    configuration = fields.Char('Configuration Name',
                                 size=1024,
                                 index=True)
-    link_kind = fields.Char(_('Kind of Link'),      # LyTree | HiTree | RfTree | PkgTree
+    link_kind = fields.Char('Kind of Link',      # LyTree | HiTree | RfTree | PkgTree
                             default='HiTree',
                             size=64,
                             required=True)
-    create_date = fields.Datetime(_('Date Created'),
+    create_date = fields.Datetime('Date Created',
                                   readonly=True)
     #  TODO: To remove userid field for version 10
     userid = fields.Many2one('res.users',
-                             _('CheckOut User'),
+                             'CheckOut User',
                              default=False,
                              readonly=True)
     notes = fields.Char(string="Notes: ")
     preview_related = fields.Image(compute="_compute_preview_related",
                                    store=True, attachment=False,
                                    max_height=1920, max_width=1920,
-                                   string=_("Child Parent Preview"))
+                                   string="Child Parent Preview")
 
     _sql_constraints = [
-    ('relation_uniq', 'unique (parent_id,child_id,link_kind)', _('The Document Relation must be unique !')),
-    ('parent_child_check', 'CHECK (parent_id <> child_id)', _('Parent child product must be different !'))
+    ('relation_uniq', 'unique (parent_id,child_id,link_kind)', 'The Document Relation must be unique !'),
+    ('parent_child_check', 'CHECK (parent_id <> child_id)', 'Parent child product must be different !')
     ]
 
     @api.depends('parent_id.preview', 'link_kind', 'child_id')
@@ -181,8 +181,8 @@ class PlmDocumentRelations(models.Model):
                               ('link_kind', '=', link_kind)]):
             return True
         self.create({'parent_id': parent_ir_attachment_id,
-                     'child_id': child_ir_attachment_id,
-                     'link_kind': link_kind})
+                         'child_id': child_ir_attachment_id,
+                         'link_kind': link_kind})
         return True
 
     @api.model

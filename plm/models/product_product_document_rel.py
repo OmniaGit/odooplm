@@ -37,13 +37,13 @@ class PlmComponentDocumentRel(models.Model):
 
 
     component_id = fields.Many2one('product.product',
-                                   _('Linked Component'),
+                                   'Linked Component',
                                    required=True,
                                    # ondelete='cascade'
                                    )
 
     document_id = fields.Many2one('ir.attachment',
-                                  _('Linked Document'),
+                                  'Linked Document',
                                   required=True,
                                   # ondelete='cascade'
                                   )
@@ -51,7 +51,7 @@ class PlmComponentDocumentRel(models.Model):
     _sql_constraints = [
         ('relation_unique',
          'unique(component_id, document_id)',
-         _('ProductProduct and Irattachment relation has to be unique !')),
+         'ProductProduct and Irattachment relation has to be unique !'),
     ]
 
     @api.model

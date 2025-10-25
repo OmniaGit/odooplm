@@ -41,7 +41,7 @@ class AvailableTypes(models.TransientModel):
     _name = "pack_and_go_types"
     _description = "Description of pack and go"
 
-    name = fields.Char(_("Name"))
+    name = fields.Char("Name")
     pack_and_go_view_id = fields.Many2one("pack_and_go_view")
 
 
@@ -64,26 +64,26 @@ class AdvancedPackView(models.TransientModel):
         for row in self:
             row.doc_file_name = row.document_id.name
 
-    component_id = fields.Many2one("product.template", _("Component"))
-    document_id = fields.Many2one("ir.attachment", _("Document"))
-    comp_rev = fields.Integer(_("Component Revision"))
+    component_id = fields.Many2one("product.template", "Component")
+    document_id = fields.Many2one("ir.attachment", "Document")
+    comp_rev = fields.Integer("Component Revision")
     comp_description = fields.Char(compute="_getComponentDescription")
-    doc_rev = fields.Integer(_("Document Revision"))
+    doc_rev = fields.Integer("Document Revision")
     document_description = fields.Char(compute="_getDocumentDescription")
     doc_file_name = fields.Char(compute="_getDocumentFileName")
-    preview = fields.Binary(_("Preview Content"))
+    preview = fields.Binary("Preview Content")
     # Don't change keys because are used in a lower check in this file
     doc_type = fields.Selection(
         [
-            ("2d", _("2D")),
-            ("3d", _("3D")),
-            ("other", _("Other")),
-            ("pdf", _("PDF")),
+            ("2d", "2D"),
+            ("3d", "3D"),
+            ("other", "Other"),
+            ("pdf", "PDF"),
         ],
-        _("Document Type"),
+        "Document Type",
     )
-    available_types = fields.Many2one("pack_and_go_types", _("Types"))
-    pack_and_go_id = fields.Many2one("pack.and_go", _("Pack and go id"))
+    available_types = fields.Many2one("pack_and_go_types", "Types")
+    pack_and_go_id = fields.Many2one("pack.and_go", "Pack and go id")
 
 
 class PackAndGo(models.TransientModel):
@@ -105,7 +105,7 @@ class PackAndGo(models.TransientModel):
 
     component_id = fields.Many2one(
         "product.template",
-        _("Component"),
+        "Component",
         default=setComponentFromContext,
         required=True,
     )
@@ -113,23 +113,23 @@ class PackAndGo(models.TransientModel):
     type = fields.Selection(
         [("url", "URL"), ("binary", "File")],
         "Type",
-        help=_("You can either upload a file from your computer or"
-               " copy/paste an internet link to your file"),
+        help="You can either upload a file from your computer or"
+               " copy/paste an internet link to your file",
         required=True,
         change_default=True,
         default="binary",
     )
     export_type = fields.Selection(
         [
-            ("2d", _("2D")),
-            ("3d", _("3D")),
-            ("pdf", _("PDF")),
-            ("2dpdf", _("2D + PDF")),
-            ("3dpdf", _("3D + PDF")),
-            ("3d2d", _("3D + 2D")),
-            ("all", _("2D + 3D + PDF")),
+            ("2d", "2D"),
+            ("3d", "3D"),
+            ("pdf", "PDF"),
+            ("2dpdf", "2D + PDF"),
+            ("3dpdf", "3D + PDF"),
+            ("3d2d", "3D + 2D"),
+            ("all", "2D + 3D + PDF"),
         ],
-        _("Export Type"),
+        "Export Type",
         default="all",
     )
     export_3d = fields.Many2many(
@@ -137,40 +137,40 @@ class PackAndGo(models.TransientModel):
         "export3d_pack",
         "pack_view_id",
         "pack_and_go_id",
-        _("Select 3D Rows to export"),
+        "Select 3D Rows to export",
     )
     export_2d = fields.Many2many(
         "pack_and_go_view",
         "export2d_pack",
         "pack_view_id",
         "pack_and_go_id",
-        _("Select 2D Rows to export"),
+        "Select 2D Rows to export",
     )
     export_pdf = fields.Many2many(
         "pack_and_go_view",
         "exportpdf_pack",
         "pack_view_id",
         "pack_and_go_id",
-        _("Select PDF Rows to export"),
+        "Select PDF Rows to export",
     )
     export_other = fields.Many2many(
         "pack_and_go_view",
         "exportother_pack",
         "pack_view_id",
         "pack_and_go_id",
-        _("Select Rows to export"),
+        "Select Rows to export",
     )
 
-    force_types_3d = fields.Many2one("pack_and_go_types", _("Force 3D Types"))
-    force_types_2d = fields.Many2one("pack_and_go_types", _("Force 2D Types"))
+    force_types_3d = fields.Many2one("pack_and_go_types", "Force 3D Types")
+    force_types_2d = fields.Many2one("pack_and_go_types", "Force 2D Types")
 
     convertion_server_available = fields.Boolean(
-        _("Conversion server available"), default=False
+        "Conversion server available", default=False
     )
     datas = fields.Binary(string="Download")
     datas_fname = fields.Char(string="File Name")
     create_subfolder_by_category = fields.Boolean(
-        _("Create subfolder by category"),
+        "Create subfolder by category",
         help="""
         Create inside the zip a folder structure that is equal
         to the product category assing to each product
@@ -183,7 +183,7 @@ class PackAndGo(models.TransientModel):
             ("ALL_LEVEL", "All Level"),
             ("LEAF", "Leaf"),
         ],
-        _("Bom computation mode"),
+        "Bom computation mode",
         default="ALL_LEVEL",
     )
 
@@ -205,7 +205,7 @@ class PackAndGo(models.TransientModel):
             "INTERNAL_REFERENCE_DESCRIPTION",
             "Product internal reference and description",
         )],
-        string=_("File name computation"),
+        string="File name computation",
         default="FILE_NAME",
         help="""
         File name inside zip folder
@@ -233,8 +233,8 @@ class PackAndGo(models.TransientModel):
     """,
     )
     bom_version = fields.Selection(
-        [("ONLY_RELEASED", _("Released")), ("LATEST", _("Latest"))],
-        string=_("Product-Document version"),
+        [("ONLY_RELEASED", "Released"), ("LATEST", "Latest")],
+        string="Product-Document version",
         default="LATEST",
         help="""Chose the status of the document that you would like to extract""",
     )

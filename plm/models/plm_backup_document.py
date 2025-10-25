@@ -44,22 +44,22 @@ class PlmBackupDocument(models.Model):
     _description = "manage your document back up"
 
     userid = fields.Many2one('res.users',
-                             _('Related User'))
-    existingfile = fields.Char(_('Physical Document Location'),
+                             'Related User')
+    existingfile = fields.Char('Physical Document Location',
                                size=1024)
     documentid = fields.Many2one('ir.attachment',
-                                 _('Related Document'))
+                                 'Related Document')
     engineering_revision = fields.Integer(related="documentid.engineering_revision",
-                                string=_("Revision"),
+                                string="Revision",
                                 store=True)
     engineering_state = fields.Selection(related="documentid.engineering_state",
-                                         string=_("Status"),
+                                         string="Status",
                                          store=True)
     document_name = fields.Char(related="documentid.engineering_code",
-                                string=_("Stored Name"),
+                                string="Stored Name",
                                 store=True)
-    printout = fields.Binary(_('Printout Content'))
-    preview = fields.Binary(_('Preview Content'))
+    printout = fields.Binary('Printout Content')
+    preview = fields.Binary('Preview Content')
     orig_data_fstore = fields.Char(string="Original FStore Name")
 
     def name_get(self):

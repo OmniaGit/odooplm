@@ -35,16 +35,16 @@ class PlmTreatment(models.Model):
     _name = "plm.treatment"
     _description = "Thermal Treatment"
 
-    name = fields.Char(_('Specification'),
+    name = fields.Char('Specification',
                        required=True,
                        translate=True)
-    description = fields.Char(_('Description'),
+    description = fields.Char('Description',
                               size=128)
-    sequence = fields.Integer(_('Sequence'),
-                              help=_("Gives the sequence order when displaying a list of product categories."))
+    sequence = fields.Integer('Sequence',
+                              help="Gives the sequence order when displaying a list of product categories.")
 
     _sql_constraints = [
-        ('name_uniq', 'unique(name)', _('Thermal Treatment has to be unique !')),
+        ('name_uniq', 'unique(name)', 'Thermal Treatment has to be unique !'),
     ]
     
     def copy(self, default=None):

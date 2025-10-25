@@ -69,34 +69,34 @@ class MrpBomExtension(models.Model):
             bom_obj.father_complete_ids = self.env['mrp.bom'].browse(list(set(result)))
 
     engineering_state = fields.Selection(related="product_id.engineering_state",
-                                         string=_("Status"),
-                                         help=_("The status of the product in its LifeCycle."),
+                                         string="Status",
+                                         help="The status of the product in its LifeCycle.",
                                          store=False)
 
     description = fields.Char(related="product_tmpl_id.name",
-                              string=_("Description"),
+                              string="Description",
                               store=False)
     father_complete_ids = fields.Many2many('mrp.bom',
                                            compute=_father_compute,
-                                           string=_("BoM Hierarchy"),
+                                           string="BoM Hierarchy",
                                            store=False)
-    create_date = fields.Datetime(_('Creation Date'),
+    create_date = fields.Datetime('Creation Date',
                                   readonly=True)
     source_id = fields.Many2one('ir.attachment',
                                 'engineering_code',
                                 ondelete='no action',
                                 readonly=True,
                                 index=True,
-                                help=_('This is the document object that declares this BoM.'))
-    type = fields.Selection(selection_add=[('normal', _('Normal BoM'))], required=True)
+                                help='This is the document object that declares this BoM.')
+    type = fields.Selection(selection_add=[('normal', 'Normal BoM')], required=True)
     weight_net = fields.Float('Weight',
                               digits='Stock Weight',
-                              help=_("The BoM net weight in Kg."),
+                              help="The BoM net weight in Kg.",
                               default=0.0)
 
     engineering_revision = fields.Integer(related="product_tmpl_id.engineering_revision",
-                                          string=_("Revision"),
-                                          help=_("The revision of the product."),
+                                          string="Revision",
+                                          help="The revision of the product.",
                                           store=True)
 
     bom_revision_count = fields.Integer(related='product_tmpl_id.engineering_revision_count')
