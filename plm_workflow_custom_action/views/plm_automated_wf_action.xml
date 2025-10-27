@@ -9,11 +9,17 @@
                 <sheet>
                     <group>
                         <field name="name"/>
-                        <field name="from_state"/>
-                        <field name="to_state"/>
                         <field name="apply_to"/>
                         <field name="before_after"/>
                         <field name="domain"/>
+                        
+                        <field name="attachment_from_state" invisible="apply_to=='product.product'"/>
+                        <field name="attachment_to_state" invisible="apply_to=='product.product'"/>
+                        <field name="product_from_state" invisible="apply_to=='ir.attachment'"/>
+                        <field name="product_to_state" invisible="apply_to=='ir.attachment'"/>
+                        
+                        <field name="from_state" invisible="True"/>
+                        <field name="to_state" invisible="True"/>
                     </group>
                     <group>
                         <field name="child_ids"/>

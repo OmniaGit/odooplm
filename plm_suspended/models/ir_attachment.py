@@ -26,16 +26,12 @@ Created on 30 Aug 2016
 @author: Daniel Smerghetto
 """
 from odoo import _, api, fields, models
-from odoo.addons.plm.models.plm_mixin import USED_STATES
-
-USED_STATES.append(("suspended", _("Suspended")))
-
 
 class PlmDocumentExtension(models.Model):
     _inherit = "ir.attachment"
 
     engineering_state = fields.Selection(
-        USED_STATES,
+        selection_add([("suspended", "Suspended")]),
         string="Status",
         readonly=True,
         default="draft",

@@ -110,6 +110,7 @@ from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
 class PLMAccessObject(models.Model):
     _name = "plm.access"
+    _description = "Min access module for the plm attachment"
     name = fields.Char("Name")
 
 class PlmClient(models.TransientModel):

@@ -43,12 +43,6 @@ RELEASED_STATUS = 'released'
 OBSOLATED_STATUS = 'obsoleted'
 UNDER_MODIFY_STATUS = 'undermodify'
 #
-USED_STATES = [(START_STATUS, lambda x : _('Draft')),
-               (CONFIRMED_STATUS, lambda x : _('Confirmed')),
-               (RELEASED_STATUS, lambda x : _('Released')),
-               (UNDER_MODIFY_STATUS, lambda x : _('UnderModify')),
-               (OBSOLATED_STATUS, lambda x : _('Obsoleted'))]
-#
 RELEASED_STATUSES = [RELEASED_STATUS, UNDER_MODIFY_STATUS]
 #
 PLM_NO_WRITE_STATE = [CONFIRMED_STATUS,
@@ -92,7 +86,11 @@ class RevisionBaseMixin(models.AbstractModel):
         default="A"
     )
     engineering_state = fields.Selection(
-        USED_STATES,
+        [(START_STATUS, 'Draft'),
+         (CONFIRMED_STATUS, 'Confirmed'),
+         (RELEASED_STATUS, 'Released'),
+         (UNDER_MODIFY_STATUS,'UnderModify'),
+         (OBSOLATED_STATUS, 'Obsoleted')],
         string="Engineering Status",
         default='draft',
         tracking=True

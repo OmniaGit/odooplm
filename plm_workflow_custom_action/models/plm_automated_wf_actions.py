@@ -24,8 +24,7 @@ Created on 24 Apr 2023
 """
 import json
 
-from odoo import fields, models
-from odoo.addons.plm.models.plm_mixin import USED_STATES
+from odoo import fields, models, api
 
 
 class PlmAutomatedWFAction(models.Model):
@@ -33,8 +32,39 @@ class PlmAutomatedWFAction(models.Model):
     _description = "Plm Automated Work Flow Actions"
 
     name = fields.Char("Action Name")
-    from_state = fields.Selection(USED_STATES, string="From Stare")
-    to_state = fields.Selection(USED_STATES, string="To State")
+
+    def get_selection_attachment(self):
+        attach = self.env["ir.attachment"] 
+        sel = attach._fields['engineering_state'].selection
+        return sel if isinstance(sel, list) else sel(attach)
+    
+    def get_selection_product(self):
+        pp = self.env["product.product"]
+        sel = pp._fields['engineering_state'].selection
+        return sel if isinstance(sel, list) else sel(pp)
+    #
+    attachment_from_state = fields.Selection(get_selection_attachment,
+                                             string="From Stare")
+    attachment_to_state = fields.Selection(get_selection_attachment,
+                                           string="To State")
+    product_from_state = fields.Selection(get_selection_product,
+                                             string="From Stare")
+    product_to_state = fields.Selection(get_selection_product,
+                                           string="To State")
+    #
+    @api.onchange("attachment_from_state","attachment_to_state")
+    def update_state_from_attachment(self):
+        self.from_state = self.attachment_from_state
+        self.to_state = self.attachment_to_state
+    #
+    @api.onchange("product_from_state","product_to_state")
+    def update_state_from_product(self):
+        self.from_state = self.product_from_state
+        self.to_state = self.product_to_state 
+    #
+    from_state = fields.Char(string="From Stare")
+    to_state = fields.Char(string="To State")
+
     before_after = fields.Selection([
         ("before", "Before"),
         ("after", "After")], string="Perform",
@@ -47,7 +77,8 @@ class PlmAutomatedWFAction(models.Model):
         help="Apply this action to the workflow model",
     )
 
-    domain = fields.Char("Domain", help="""specifie the domain of the action""")
+    domain = fields.Char("Domain", 
+                         help="""specifie the domain of the action""")
 
     child_ids = fields.Many2many(
         "ir.actions.server",
