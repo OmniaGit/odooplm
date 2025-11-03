@@ -1,4 +1,3 @@
-##############################################################################
 #
 #    OmniaSolutions, Your own solutions
 #    Copyright (C) 2010 OmniaSolutions (<https://www.omniasolutions.website>). All Rights Reserved
@@ -2858,15 +2857,15 @@ class IrAttachment(models.Model):
             doc_3d_ids += root_id
             doc_3d_ids += self.browse(self.getRelatedHiTree(root_id.id,
                                                             recursion=True,
-                                                           getRftree=True,
-                                                           getOnyChkOut=True))
+                                                            getRftree=True,
+                                                            getOnyChkOut=True))
         else:
             doc_2d_ids += root_id
             for doc_id in doc_3d_ids:
                 doc_3d_ids += self.browse(self.getRelatedHiTree(doc_id.id,
                                                                 recursion=True,
-                                                               getRftree=True,
-                                                               getOnyChkOut=True))
+                                                                getRftree=True,
+                                                                getOnyChkOut=True))
         for doc_3d_id in doc_3d_ids:
             doc_2d_ids+= self.browse(list(set(self.getRelatedLyTree(doc_3d_id.id,
                                                                     getOnyChkOut=True))))
@@ -2896,6 +2895,7 @@ class IrAttachment(models.Model):
         """
         make the check for the check-in operation
         """
+        raise DeprecationWarning("this function must be cancelled in the 20 version")
         out = {
             'to_check_in': [],
             'to_ask': [],
@@ -3110,6 +3110,8 @@ class IrAttachment(models.Model):
             doc_fields['err_msg'] = ''
             doc_name = doc_fields.get('engineering_code', '')
             doc_rev = doc_fields.get('engineering_revision', 0)
+            hostname =doc_fields.get('HOST_NAME', '')
+            hostpws  =doc_fields.get('HOST_PWS', '')
             document_ids = self.search([
                 ('engineering_code', '=', doc_name),
                 ('engineering_revision', '=', doc_rev)
@@ -3128,7 +3130,8 @@ class IrAttachment(models.Model):
                     continue
                 is_check_in = doc_id.ischecked_in()
                 if is_check_in:
-                    newer_in_odoo = doc_id.checkNewer()
+                    newer_in_odoo = doc_id.checkNewer(hostname,
+                                                      hostpws)
                     if newer_in_odoo:
                         doc_fields['checkout'] = False
                         doc_fields['newer'] = True
