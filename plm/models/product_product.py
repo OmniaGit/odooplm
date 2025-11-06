@@ -890,9 +890,11 @@ class PlmComponent(models.Model):
                 defaults['release_date'] = datetime.now()
                 product_product_id.write(defaults)
                 #
-                # wotk on product.template
+                # Work on product.template
                 #
                 product_template_id = product_product_id.product_tmpl_id
+                del defaults['release_user']
+                del defaults['release_date']
                 product_template_id.write(defaults)
                 #
                 # Notifie on chatter
