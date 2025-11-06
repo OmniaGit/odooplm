@@ -60,13 +60,13 @@ class ProductProductExtension(models.Model):
         engineering_revision = vals.get('engineering_revision', 0)
         default_code = vals.get('default_code')
         if product_product_ids:
-            for product_product_id in product_product_ids: #suppose write operation
+            for product_product_id in product_product_ids: # suppose write operation
                 if not engineering_code:
                     engineering_code = product_product_id.engineering_code
                 if not engineering_revision:
                     engineering_revision = product_product_id.engineering_revision
                 if not default_code:
-                    default_code = product_product_id.default_code            
+                    default_code = product_product_id.default_code
         if in_revision and engineering_code and engineering_code != '-':
             out = self.getDefaultCodeTemplate % (engineering_code, engineering_revision)
         if engineering_code and not default_code and engineering_code != '-':

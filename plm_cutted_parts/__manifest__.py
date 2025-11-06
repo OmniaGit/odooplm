@@ -28,7 +28,7 @@
     "summary": "Manage bom explosion for cutted parts",
     "images": [],
     "license": "AGPL-3",
-    "depends": ["plm", "plm_engineering"],
+    "depends": ["plm"],
     "data": [
         "views/product.xml",
         "views/mrp_bom_lines.xml",

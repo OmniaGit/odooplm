@@ -3023,25 +3023,121 @@ class PlmDocument(models.Model):
             #
             engineering_code = new_product_attrs.get("engineering_code", "")
             if engineering_code:
-                out_attachment_value["engineering_code"] = (
+                out_attachment_value["engineering_document_name"] = (
                     f"{engineering_code}-{self.env['ir.sequence'].next_by_code('ir.attachment.progress')}"
                 )
             else:
-                out_attachment_value["engineering_code"] = (
+                out_attachment_value["engineering_document_name"] = (
                     f"{self.env['ir.sequence'].next_by_code('ir.attachment.progress')}"
                 )
-            out_attachment_value["engineering_revision"] = 0
+            out_attachment_value["revisionid"] = 0
             #
             if "INTEGRATION_FILE_EXTE" in out_attachment_value:
                 exte = out_attachment_value["INTEGRATION_FILE_EXTE"]
             else:
                 _, exte = os.path.splitext(out_attachment_value["INTEGRATION_ORIG_FILE_PATH"])
             out_attachment_value["name"] = (
-                f"{out_attachment_value['engineering_code']}{exte}"
+                f"{out_attachment_value['engineering_document_name']}{exte}"
             )
         #
         if "id" in out_attachment_value: del out_attachment_value["id"]
         #
         return json.dumps(out_attachment_value)
+
+    def browseLastRev(self):
+        self.ensure_one()
+        out = self.search([('engineering_document_name', '=', self.engineering_document_name)],
+                          order='revisionid DESC',
+                          limit=1)
+        for obj in out:
+            return obj
+        return out
+
+    def computeDownloadStatus(self,
+                              hostname,
+                              pws_path,
+                              latest=False):
+        """
+            compute ir_attachment data suitable for client
+            :hostname host name
+            :pws_path path to Private Work Space folder
+            :latest get the latest version of the files
+            :return: list of ir_attachment properties as dictionary [{<property>}]
+                    {
+                    id
+                    code
+                    revision
+                    file_name
+                    write_date
+                    is_library
+                    library_path
+                    is_out_by_me
+                    check_out_user_name
+                    collectable
+                    isCheckedOutToMe
+                    engineering_writable
+                    check_out_user
+                    state
+                    zip_ids
+                    is_last_version
+                    }
+        """
+        out = []
+        computed = []
+        for ir_attachment_id in self:
+            #
+            if latest:
+                ir_attachment_id = ir_attachment_id.get_latest_version()[0]
+            #
+            active_attachment_id = ir_attachment_id.id
+            if active_attachment_id in computed:
+                continue
+            computed.append(active_attachment_id)
+            #
+            is_collectable = False
+            isCheckedOutToMe, checkOutUser = ir_attachment_id.checkoutByMeWithUser()
+            if not isCheckedOutToMe:
+                is_collectable = ir_attachment_id.isCollectable(hostname,
+                                                                pws_path)
+            #
+            out_dict = ir_attachment_id.get_open_attachment_data_out()
+            out_dict.update({
+                        'collectable': is_collectable,
+                        'isCheckedOutToMe': isCheckedOutToMe,
+                        'engineering_writable': isCheckedOutToMe,
+                        'check_out_user': checkOutUser,
+                        'state': ir_attachment_id.state,
+                        'zip_ids': self.getRelatedPkgTree(active_attachment_id),
+                        'is_last_version': ir_attachment_id.isLatestRevision(),
+                        })
+            out.append(out_dict)
+        return out
+
+    def get_open_attachment_data_out(self):
+        self.ensure_one()
+        return {
+            'id':self.id,
+            'code': self.engineering_document_name,
+            'revision': self.revisionid,
+            'file_name': self.name,
+            'write_date': self.write_date.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
+            'is_library': self.is_library,
+            'library_path':'',
+            'is_out_by_me': self.isCheckedOutByMe(),
+            'check_out_user_name':self.checkout_user,
+            }
+
+    def isCollectable(self, hostname, pws_path):
+        self.ensure_one()
+        out = True
+        if self.isCheckedOutByMe(): out = False
+        plm_cad_open = self.sudo().env['plm.cad.open'].getLastCadOpenByUser(self, self.env.user)
+        if plm_cad_open:
+            if plm_cad_open.hostname == hostname and plm_cad_open.pws_path == pws_path:
+                last_revision_id = self.browseLastRev()
+                if last_revision_id != last_revision_id:
+                    if last_revision_id.isCheckedOutByMe():
+                        out = False
+        return out
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

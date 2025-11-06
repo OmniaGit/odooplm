@@ -1296,7 +1296,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
         new_revision = self.env.context.get('new_revision', False)
         if self.env.context.get('odooPLM', False) and not new_revision:
             for product_product_id in self:
-                if not product_product_id.engineering_code:  
+                if not product_product_id.engineering_code:
                     raise UserError("Missing engineering code for plm data")
         return True
 
