@@ -527,17 +527,41 @@ class IrAttachment(models.Model):
     
     def computeDownloadStatus(self,
                               hostname,
-                              pws_path):
+                              pws_path,
+                              latest=False):
         """
-            compute ir_attachment data suitable for client 
+            compute ir_attachment data suitable for client
             :hostname host name
             :pws_path path to Private Work Space folder
+            :latest get the latest version of the files
             :return: list of ir_attachment properties as dictionary [{<property>}]
+                    {
+                    id
+                    code
+                    revision
+                    file_name
+                    write_date
+                    is_library
+                    library_path
+                    is_out_by_me
+                    check_out_user_name
+                    collectable
+                    isCheckedOutToMe
+                    engineering_writable
+                    check_out_user
+                    state
+                    zip_ids
+                    is_last_version
+                    }
         """
         out = []
         computed = []
         for ir_attachment_id in self:
-            active_attachment_id = ir_attachment_id.id 
+            #
+            if latest:
+                ir_attachment_id = ir_attachment_id.get_latest_version()[0]
+            #
+            active_attachment_id = ir_attachment_id.id
             if active_attachment_id in computed:
                 continue
             computed.append(active_attachment_id)
@@ -547,20 +571,34 @@ class IrAttachment(models.Model):
             if not isCheckedOutToMe:
                 is_collectable = ir_attachment_id.isCollectable(hostname,
                                                                 pws_path)
-            #   
-            out.append({'id': active_attachment_id,
+            #
+            out_dict = ir_attachment_id.get_open_attachment_data_out()
+            out_dict.update({
                         'collectable': is_collectable,
                         'isCheckedOutToMe': isCheckedOutToMe,
                         'engineering_writable': isCheckedOutToMe,
-                        'file_name': ir_attachment_id.name,
-                        'write_date': ir_attachment_id.write_date,
                         'check_out_user': checkOutUser,
                         'state': ir_attachment_id.engineering_state,
                         'zip_ids': self.getRelatedPkgTree(active_attachment_id),
                         'is_last_version': ir_attachment_id.isLatestRevision(),
                         })
-        return out                     
-    
+            out.append(out_dict)
+        return out
+
+    def get_open_attachment_data_out(self):
+        self.ensure_one()
+        return {
+            'id':self.id,
+            'code': self.engineering_code,
+            'revision': self.engineering_revision,
+            'file_name': self.name,
+            'write_date': self.write_date.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
+            'is_library': self.is_library,
+            'library_path':self.library_path,
+            'is_out_by_me': self.isCheckedOutByMe(),
+            'check_out_user_name':self.checkout_user,
+            }
+        
     def isCollectable(self, hostname, pws_path):
         self.ensure_one()
         out = True
@@ -3386,4 +3424,48 @@ class IrAttachment(models.Model):
                     'product':product_dict
                 }
 
+    @api.model
+    def getRelatedHiTreeNew(self,
+                            recursion=True, 
+                            getRftree=False,
+                            getOnyChkOut=False,
+                            latest=False):
+        '''
+            Get children HiTree documents
+        '''
+        #
+        self.ensure_one()
+        #
+        out = {"data":self.env['ir.attachment']}
+        #
+        def _getRelatedHiTree(attachment_id, 
+                              recursion, 
+                              getRftree):
+            if latest:
+                attachment_id=attachment_id.get_latest_version()[0]
+            children_attachment_ids = self.env['ir.attachment.relation'].search([
+                                                        ('link_kind', '=', 'HiTree'),
+                                                        ('parent_id', '=', attachment_id.id)])
+            for child_attachment_id in children_attachment_ids:
+                child_id = child_attachment_id.child_id
+                if latest:
+                    child_id=child_id.get_latest_version()[0]
+                if child_id.id in out['data'].ids:
+                    logging.warning('Document %r document already found' % (child_id))
+                    continue
+                out['data']+=child_id
+                if recursion:
+                    _getRelatedHiTree(child_id,
+                                      recursion,
+                                      getRftree)
+            if getRftree:
+                for obj in self.getRelatedRfTreeNew(recursion=True, 
+                                                    evaluated=[],
+                                                    latest=latest):
+                    out['data']+=obj
+        _getRelatedHiTree(self, 
+                          recursion, 
+                          getRftree)
+        return out['data']
+    
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

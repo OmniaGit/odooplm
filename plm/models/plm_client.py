@@ -114,8 +114,11 @@ class PlmClient(models.TransientModel):
     _name = "plm.client"
     _description = "PLM Client Support object"
 
-    @api.model
-    def getFileStructure(self, ir_attachemnt_id, hostname, pws_path):
+    def getFileStructure(self, 
+                         ir_attachemnt_id, 
+                         hostname, 
+                         pws_path,
+                         latest=False):
         """
         get all the relation of the passed attachment and their status
         :ir_attachment_id int id of object ir_attachment
