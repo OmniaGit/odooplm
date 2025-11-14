@@ -661,7 +661,7 @@ class IrAttachment(models.Model):
                 objDatas = objDoc.datas
             except Exception as ex:
                 logging.error(
-                    'Document with "id": %s  and "engineering_code": %s may contains no data!!         Exception: %s' % (
+                    'Document with "id": %s  and "engineering_code": %s may contains no data!! Exception: %s' % (
                         outId, objDoc.engineering_code, ex))
             if (objDoc.file_size < 1) and (objDatas):
                 file_size = len(objDoc.datas)
