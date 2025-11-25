@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="group_plm_purchase_portal_user" model="res.groups">
+        <field name="name">Purchase Portal user</field>
+        <field name="category_id" ref="plm.odooplm_module_category"/>
+    </record>
+</odoo>

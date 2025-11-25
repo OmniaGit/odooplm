@@ -33,7 +33,7 @@
     "depends": ["plm", "purchase"],
     "data": [
         # security
-        "security/ir.model.access.csv",
+        "security/data.xml",
 
         # views
         "views/portal_templates.xml",
