@@ -113,7 +113,7 @@ function togleBackgound(){
 
 function tecnicalBckground(){
 	objectAxesHelper.visible=true;
-	planeMeshFloar = new THREE.Mesh( new THREE.PlaneBufferGeometry( 2000, 2000 ),
+	planeMeshFloar = new THREE.Mesh( new THREE.PlaneGeometry( 2000, 2000 ),
 			new THREE.MeshPhongMaterial( { color: 0x999999, depthWrite: false } ) );
 	planeGrid = new THREE.GridHelper( 200, 40, 0x000000, 0x000000 );
 	planeMeshFloar.rotation.x = - Math.PI / 2;
