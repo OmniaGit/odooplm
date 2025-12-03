@@ -62,14 +62,10 @@ class PortalPurchaseDownload(http.Controller):
 
 
 def clean_filename(name):
-    """
-    Remove or replace characters that cause zip subfolders.
-    Allowed: A-Z a-z 0-9 _ - .
-    Everything else → _
-    """
-    name = name.replace(" ", "_")
+    if not name:
+        return "_"
+    name = str(name).replace(" ", "_")
     return re.sub(r"[^A-Za-z0-9_\-\.]", "_", name)
-
 
 class PurchaseZipDownload(http.Controller):
 
@@ -112,7 +108,7 @@ class PurchaseZipDownload(http.Controller):
         in_file = io.BytesIO(resp.content)
         wb = load_workbook(filename=in_file)
 
-        for sheet_name in ["Purchase Parts list", "Bolts list"]:
+        for sheet_name in ["Purchase Part list", "Bolts list"]:
             if sheet_name in wb.sheetnames:
                 wb.remove(wb[sheet_name])
 
