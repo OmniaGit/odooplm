@@ -7,19 +7,9 @@
         </xpath>
         <xpath expr="//section[@id='details']//table[@id='purchase_order_table']//tbody//td[@id='product_name']"
                position="after">
+            <t t-set="doc" t-value="line.product_id.linkeddocuments.filtered(lambda a: a.document_type == '2d')[:1]"/>
             <td>
-                <!-- If BG product type → ZIP download button -->
-                <t t-if="line.product_id.product_tmpl_id.eng_product_type == 'BG' and request.env.user.has_group('plm_purchase_share.group_plm_purchase_portal_user')">
-                    <a t-att-href="'/my/purchase/%s/download_docs/%s' % (order.id, line.product_id.id)"
-                       class="btn btn-primary"
-                       style="width:50px; height:40px;"
-                       target="_blank">
-                        <i class="fa fa-file-archive-o"></i>
-                    </a>
-                </t>
-
-                <!-- If NOT BG → normal PLM report download -->
-                <t t-if="line.product_id.product_tmpl_id.eng_product_type != 'BG' and request.env.user.has_group('plm_purchase_share.group_plm_purchase_portal_user')">
+                <t t-if="doc and request.env.user.has_group('omnia_custom.ni_portal_internal')">
                     <a t-att-href="'/report/html/plm.product_production_pdf_latest/%s' % line.product_id.id"
                        class="btn btn-primary"
                        style="width:50px; height:40px;"
@@ -33,7 +23,7 @@
 
     <template id="plm_portal_my_purchase_order" inherit_id="purchase.portal_my_purchase_order" active="True">
         <xpath expr="//a[@id='print_invoice_report']" position="after">
-            <t t-if="request.env.user.has_group('plm_purchase_share.group_plm_purchase_portal_user')">
+            <t t-if="request.env.user.has_group('omnia_custom.ni_portal_internal')">
                 <a
                     class="btn btn-primary"
                     t-att-href="'/my/purchase/%s/download_docs' % order.id"
