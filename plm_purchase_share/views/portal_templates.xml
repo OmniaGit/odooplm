@@ -9,7 +9,7 @@
                position="after">
             <t t-set="doc" t-value="line.product_id.linkeddocuments.filtered(lambda a: a.document_type == '2d')[:1]"/>
             <td>
-                <t t-if="doc and request.env.user.has_group('omnia_custom.ni_portal_internal')">
+                <t t-if="doc and request.env.user.has_group('plm_purchase_share.group_plm_purchase_portal_user')">
                     <a t-att-href="'/report/html/plm.product_production_pdf_latest/%s' % line.product_id.id"
                        class="btn btn-primary"
                        style="width:50px; height:40px;"
@@ -23,7 +23,7 @@
 
     <template id="plm_portal_my_purchase_order" inherit_id="purchase.portal_my_purchase_order" active="True">
         <xpath expr="//a[@id='print_invoice_report']" position="after">
-            <t t-if="request.env.user.has_group('omnia_custom.ni_portal_internal')">
+            <t t-if="request.env.user.has_group('plm_purchase_share.group_plm_purchase_portal_user')">
                 <a
                     class="btn btn-primary"
                     t-att-href="'/my/purchase/%s/download_docs' % order.id"
