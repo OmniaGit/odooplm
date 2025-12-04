@@ -30,7 +30,7 @@
     "description": """
         Allow to download documents from the portal.
         """,
-    "depends": ["plm", "purchase"],
+    "depends": ["plm", "purchase", "portal"],
     "data": [
         # security
         "security/data.xml",

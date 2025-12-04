@@ -8,7 +8,7 @@
         <xpath expr="//section[@id='details']//table[@id='purchase_order_table']//tbody//td[@id='product_name']"
                position="after">
             <t t-set="doc" t-value="line.product_id.linkeddocuments.filtered(lambda a: a.document_type == '2d')[:1]"/>
-            <td>
+            <td id="single_product_download">
                 <t t-if="doc and request.env.user.has_group('plm_purchase_share.group_plm_purchase_portal_user')">
                     <a t-att-href="'/report/html/plm.product_production_pdf_latest/%s' % line.product_id.id"
                        class="btn btn-primary"
@@ -25,6 +25,7 @@
         <xpath expr="//a[@id='print_invoice_report']" position="after">
             <t t-if="request.env.user.has_group('plm_purchase_share.group_plm_purchase_portal_user')">
                 <a
+                    id="all_product_download"
                     class="btn btn-primary"
                     t-att-href="'/my/purchase/%s/download_docs' % order.id"
                     target="_blank">
