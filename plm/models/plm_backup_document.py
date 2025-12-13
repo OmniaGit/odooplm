@@ -93,7 +93,8 @@ class PlmBackupDocument(models.Model):
                         os.chmod(fullname, stat.S_IWRITE)
                         os.unlink(fullname)
                     else:
-                        logging.warning("unlink : Unable to remove the document (" + str(plm_backup_document_id.documentid.name) + "-" + str(plm_backup_document_id.documentid.revisionid) + ") from backup set. You can't change writable flag.")
+                        logging.warning("unlink : Unable to remove the document %r from backup set. File Not Found." % fullname)
+                        continue
                 else:
                     logging.warning('Prevent to delete the active File %r' % attachment_store_fname)
                     continue
