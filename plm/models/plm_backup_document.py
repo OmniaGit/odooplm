@@ -102,7 +102,6 @@ class PlmBackupDocument(models.Model):
                             logging.warning("unlink : file %r removed from file sistem." % fullname)
                         else:
                             logging.warning("unlink : Unable to remove the document %r from backup set. File Not Found." % fullname)
-                            continue
                 else:
                     logging.warning('Prevent to delete the active File %r' % attachment_store_fname)
                     continue
