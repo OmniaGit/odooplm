@@ -175,8 +175,10 @@ class PlmBackupDocument(models.Model):
         moved_count = 0
         not_moved_count = 0
         error_count = 0
+        file_counted = 0
         for path in glob.glob(r"%s/**/*" % file_store,recursive=True):
             if not os.path.isdir(path): 
+                file_counted+=1
                 if self.env['ir.attachment'].search_count([("store_fname",'ilike',os.path.basename(path))]):
                     not_moved_count+=1
                     continue
@@ -191,7 +193,9 @@ class PlmBackupDocument(models.Model):
                     if not os.path.exists(new_base_dir):
                         os.makedirs(new_base_dir)
                     dst = os.path.join(new_base_dir, os.path.basename(path))
-                    logging.info("Moving %s to %s" % (path, dst))
+                    logging.info("Moving %s of total of %s from %s to %s" % (file_counted,
+                                                                             moved_count,
+                                                                             path, dst))
                     shutil.move(path, dst)
                     moved_count+=1
                 except Exception as ex:
