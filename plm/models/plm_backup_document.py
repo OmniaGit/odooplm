@@ -86,8 +86,8 @@ class PlmBackupDocument(models.Model):
             if plm_backup_document_id.documentid:
                 attachment_store_fname = plm_backup_document_id.documentid.store_fname
                 #
-                bck_strore_fname= plm_backup_document_id.orig_data_fstore
-                if attachment_store_fname != bck_strore_fname:
+                bck_strore_fname = plm_backup_document_id.orig_data_fstore
+                if bck_strore_fname and attachment_store_fname != bck_strore_fname:
                     fullname = os.path.join(documentType._filestore(), bck_strore_fname)
                     if os.path.exists(fullname):
                         os.chmod(fullname, stat.S_IWRITE)
