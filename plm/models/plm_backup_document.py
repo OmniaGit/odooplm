@@ -164,7 +164,7 @@ class PlmBackupDocument(models.Model):
                     except Exception as ex:
                         logging.error("Unable to delte file %s  for %s)" % (path,ex))
                     
-    def MoveMissingFile(self, to_folder):
+    def MoveMissingFile(self, to_folder, max_size=0):
         """
         clean missig file from filesotore
         """
@@ -176,6 +176,7 @@ class PlmBackupDocument(models.Model):
         not_moved_count = 0
         error_count = 0
         file_counted = 0
+        moved_size = 0.0
         for path in glob.glob(r"%s/**/*" % file_store,recursive=True):
             if not os.path.isdir(path): 
                 file_counted+=1
@@ -189,13 +190,19 @@ class PlmBackupDocument(models.Model):
                     not_moved_count+=1
                     continue
                 try:
+                    moved_size+=os.path.getsize(path)
+                    if max_size:
+                        if moved_size>=max_size:
+                            logging.info("Reached the max size %r" % max_size)
+                            break
                     new_base_dir = os.path.join(to_folder, os.path.basename(os.path.dirname(path)))
                     if not os.path.exists(new_base_dir):
                         os.makedirs(new_base_dir)
                     dst = os.path.join(new_base_dir, os.path.basename(path))
-                    logging.info("Moving %s of total of %s from %s to %s" % (file_counted,
-                                                                             moved_count,
-                                                                             path, dst))
+                    logging.info("Moving %s Bites %s of total of %s from %s to %s" % (moved_size,
+                                                                                      file_counted,
+                                                                                      moved_count,
+                                                                                      path, dst))
                     shutil.move(path, dst)
                     moved_count+=1
                 except Exception as ex:
