@@ -84,16 +84,18 @@ class PlmBackupDocument(models.Model):
                     logging.warning("unlink : Unable to remove the required documents. You aren't authorized in this context.")
                     raise UserError(_("Unable to remove the required document.\n You aren't authorized in this context."))
             if plm_backup_document_id.documentid:
-                currentname = plm_backup_document_id.documentid.store_fname
-                if plm_backup_document_id.existingfile != currentname:
-                    fullname = os.path.join(documentType._get_filestore(), plm_backup_document_id.existingfile)
+                attachment_store_fname = plm_backup_document_id.documentid.store_fname
+                #
+                bck_strore_fname= plm_backup_document_id.orig_data_fstore
+                if attachment_store_fname != bck_strore_fname:
+                    fullname = os.path.join(documentType._filestore(), bck_strore_fname)
                     if os.path.exists(fullname):
                         os.chmod(fullname, stat.S_IWRITE)
                         os.unlink(fullname)
                     else:
                         logging.warning("unlink : Unable to remove the document (" + str(plm_backup_document_id.documentid.name) + "-" + str(plm_backup_document_id.documentid.revisionid) + ") from backup set. You can't change writable flag.")
                 else:
-                    logging.warning('Prevent to delete the active File %r' % currentname)
+                    logging.warning('Prevent to delete the active File %r' % attachment_store_fname)
                     continue
             super(PlmBackupDocument, plm_backup_document_id).unlink()
 
@@ -120,8 +122,7 @@ class PlmBackupDocument(models.Model):
                 full_name = os.path.join(file_store, bck.existingfile)
                 if not os.path.exists(full_name):
                     bck.unlink()
-            
-            
+
     def AutoCleanup(self):
         """
             Cleans automatically copies to be restored
@@ -129,9 +130,17 @@ class PlmBackupDocument(models.Model):
         self.cleanNoFileBck()
         daysTokeepSafe=90
         for ir_attachment in self.env['ir.attachment'].search([('document_type','in',['3d','2d','other'])]):
-            for plm_backupdoc_id in self.getAllBck(ir_attachment, daysTokeepSafe):
-                plm_backupdoc_id.unlink()
-    
+            self.CleanSingleAttachment(ir_attachment, daysTokeepSafe)
+            
+    def CleanSingleAttachment(self, 
+                              ir_attachment_id,
+                              daysTokeepSafe=90):
+        """
+        delete all bck document from current attachment
+        """
+        for plm_backupdoc_id in self.getAllBck(ir_attachment_id, daysTokeepSafe):
+            plm_backupdoc_id.unlink()
+
     def CleanMissingFile(self):
         """
         clean missig file from filesotore

@@ -2117,7 +2117,14 @@ class PlmDocument(models.Model):
         component_props, document_props, dbThread = clientArg[0]
         host_name = clientArg[1]
         host_pws = clientArg[2]
-        #  generate document
+        #
+        # Set the configuration on the product
+        #
+        if len(clientArg)==4:
+            component_props['configuration_name'] = clientArg[3]
+        #
+        #  generate component
+        #
         ir_attachment_id, action = self.env['ir.attachment'].createFromProps(document_props,
                                                                              dbThread,
                                                                              host_name,

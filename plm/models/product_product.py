@@ -170,6 +170,8 @@ class PlmComponent(models.Model):
     # integration users can't create products if in changed values there is std_description
     revision_count = fields.Integer(compute='_revisions_count')
 
+    configuration_name = fields.Char("Configuration Name")
+
     @api.multi
     def _revisions_count(self):
         """

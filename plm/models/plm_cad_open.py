@@ -43,6 +43,7 @@ class PlmCadOpen(models.Model):
     hostname = fields.Char(_('Hostname'))
     operation_type = fields.Char(_('Operation Type'), index=True)
     checksum = fields.Char(string="Checksum/SHA1", size=40, index=True, readonly=True)
+    dbThread = fields.Char("Related Db Thread", index=True)
 
     def setChecksum(self, vals):
         doc_id = vals.get('document_id')
