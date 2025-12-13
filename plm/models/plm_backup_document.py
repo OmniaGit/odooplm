@@ -172,20 +172,35 @@ class PlmBackupDocument(models.Model):
         import shutil
         file_store = self.env['ir.attachment']._filestore()
         logging.info("Start checking filestore %s " % file_store)
+        moved_count = 0
+        not_moved_count = 0
+        error_count = 0
         for path in glob.glob(r"%s/**/*" % file_store,recursive=True):
-            if not os.path.isdir(path):
-                if not self.env['ir.attachment'].search_count([("store_fname",'ilike',os.path.basename(path))]):
-                    try:
-                        new_base_dir = os.path.join(to_folder, os.path.basename(os.path.dirname(path)))
-                        if not os.path.exists(new_base_dir):
-                            os.makedirs(new_base_dir)
-                        dst = os.path.join(new_base_dir, os.path.basename(path))
-                        logging.info("Moving %s to %s" % (path, dst))
-                        shutil.move(path, dst)
-                    except Exception as ex:
-                        logging.error("Unable to delte file %s  for %s)" % (path,ex))
-        logging.info("Done Checking filestore")
-                        
+            if not os.path.isdir(path): 
+                if self.env['ir.attachment'].search_count([("store_fname",'ilike',os.path.basename(path))]):
+                    not_moved_count+=1
+                    continue
+                if self.search_count([("existingfile",'ilike',os.path.basename(path))]):
+                    not_moved_count+=1
+                    continue
+                if self.search_count([("orig_data_fstore",'ilike',os.path.basename(path))]):
+                    not_moved_count+=1
+                    continue
+                try:
+                    new_base_dir = os.path.join(to_folder, os.path.basename(os.path.dirname(path)))
+                    if not os.path.exists(new_base_dir):
+                        os.makedirs(new_base_dir)
+                    dst = os.path.join(new_base_dir, os.path.basename(path))
+                    logging.info("Moving %s to %s" % (path, dst))
+                    shutil.move(path, dst)
+                    moved_count+=1
+                except Exception as ex:
+                    error_count+=1
+                    logging.error("Unable to delte file %s  for %s)" % (path,ex))
+        logging.info("Done Checking filestore Moved %r not Moved %r error %s" % (moved_count,
+                                                                                 not_moved_count,
+                                                                                 error_count) )
+
 class BackupDocWizard(osv.osv.osv_memory):
     """
         This class is called from an action in xml located in plm.backupdoc.
