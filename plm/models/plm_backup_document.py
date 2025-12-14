@@ -199,10 +199,12 @@ class PlmBackupDocument(models.Model):
                     if not os.path.exists(new_base_dir):
                         os.makedirs(new_base_dir)
                     dst = os.path.join(new_base_dir, os.path.basename(path))
-                    logging.info("Moving %s Bites %s of total of %s from %s to %s" % (moved_size,
-                                                                                      file_counted,
-                                                                                      moved_count,
-                                                                                      path, dst))
+                    logging.info("Working on %s file Moving %s Bites %s of total of %s from %s to %s" % (file_counted,
+                                                                                                          moved_size,
+                                                                                                          file_counted,
+                                                                                                          moved_count,
+                                                                                                          path, 
+                                                                                                          dst))
                     shutil.move(path, dst)
                     moved_count+=1
                 except Exception as ex:
