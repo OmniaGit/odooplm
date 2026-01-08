@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    OmniaSolutions, Open Source Management Solution
-#    Copyright (C) 2010-2021 OmniaSolutions (<http://www.omniasolutions.eu>).
+#    Copyright (C) 2010-2011 OmniaSolutions (<http://www.omniasolutions.eu>). All Rights Reserved
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -19,24 +19,20 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-{
-    "name": "Plm Pack and Go",
-    "version": "19.0.1.0.1",
-    "author": "OmniaSolutions",
-    "website": "https://odooplm.omniasolutions.website",
-    "category": "Manufacturing/Product Lifecycle Management (PLM)",
-    "sequence": 15,
-    "summary": "Download BOM structure files from a component",
-    "license": "AGPL-3",
-    "depends": ["plm"],
-    "external_dependencies": {"python": ["base64io"]},
-    "data": [
-        "security/plm_security.xml",
-        "data/ir_parameters.xml",
-        "wizard/pack_and_go.xml",
-        "wizard/pack_and_go_view.xml",
-    ],
-    "installable": True,
-    "application": False,
-    "auto_install": False,
-}
+"""
+Created on Mar 30, 2016
+
+@author: Daniel Smerghetto
+"""
+import logging
+from odoo import _, fields, models
+
+_logger = logging.getLogger(__name__)
+
+
+class AvailableTypes(models.TransientModel):
+    _name = "pack_and_go_types"
+    _description = "Description of pack and go"
+
+    name = fields.Char(_("Name"))
+    pack_and_go_view_id = fields.Many2one("pack_and_go_view")

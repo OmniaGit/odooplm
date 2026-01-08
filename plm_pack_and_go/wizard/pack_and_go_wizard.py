@@ -30,60 +30,14 @@ import os
 import shutil
 import tempfile
 import requests
+import zipfile
+import base64
 
-from odoo import _, api, fields, models
+from odoo import _, fields, models
 from odoo.exceptions import UserError
+from io import BytesIO
 
 _logger = logging.getLogger(__name__)
-
-
-class AvailableTypes(models.TransientModel):
-    _name = "pack_and_go_types"
-    _description = "Description of pack and go"
-
-    name = fields.Char(_("Name"))
-    pack_and_go_view_id = fields.Many2one("pack_and_go_view")
-
-
-class AdvancedPackView(models.TransientModel):
-    _name = "pack_and_go_view"
-    _description = "Manage pack view for exporting"
-
-    @api.model
-    def _getComponentDescription(self):
-        for row in self:
-            row.comp_description = row.component_id.name
-
-    @api.model
-    def _getDocumentDescription(self):
-        for row in self:
-            row.document_description = row.document_id.name
-
-    @api.model
-    def _getDocumentFileName(self):
-        for row in self:
-            row.doc_file_name = row.document_id.name
-
-    component_id = fields.Many2one("product.template", _("Component"))
-    document_id = fields.Many2one("ir.attachment", _("Document"))
-    comp_rev = fields.Integer(_("Component Revision"))
-    comp_description = fields.Char(compute="_getComponentDescription")
-    doc_rev = fields.Integer(_("Document Revision"))
-    document_description = fields.Char(compute="_getDocumentDescription")
-    doc_file_name = fields.Char(compute="_getDocumentFileName")
-    preview = fields.Binary(_("Preview Content"))
-    # Don't change keys because are used in a lower check in this file
-    doc_type = fields.Selection(
-        [
-            ("2d", _("2D")),
-            ("3d", _("3D")),
-            ("other", _("Other")),
-            ("pdf", _("PDF")),
-        ],
-        _("Document Type"),
-    )
-    available_types = fields.Many2one("pack_and_go_types", _("Types"))
-    pack_and_go_id = fields.Many2one("pack.and_go", _("Pack and go id"))
 
 
 class PackAndGo(models.TransientModel):
@@ -232,6 +186,7 @@ class PackAndGo(models.TransientModel):
       Native file must keep the original name in order to reopened without any problem.
     """,
     )
+
     bom_version = fields.Selection(
         [("ONLY_RELEASED", _("Released")), ("LATEST", _("Latest"))],
         string=_("Product-Document version"),
@@ -438,12 +393,11 @@ class PackAndGo(models.TransientModel):
         """
         Clear all pack and go views
         """
-        for objBrwsList in self:
-            objBrwsList.export_3d = False
-            objBrwsList.export_2d = False
-            objBrwsList.export_pdf = False
-            objBrwsList.export_other = False
-            objBrwsList.datas = False
+        packAndGoViewObj = self.env["pack_and_go_view"]
+        objBrwsList = packAndGoViewObj.search([])
+        objBrwsList.unlink()
+        packList = self.search([("id", "!=", self.id)])
+        packList.sudo().unlink()
 
     def getAllAvailableTypes(self):
         """
@@ -606,14 +560,20 @@ class PackAndGo(models.TransientModel):
 
     def exportSingle(self, lineBrws, outZipFile):
         ir_attachment_id = lineBrws.document_id
+        if not ir_attachment_id or not ir_attachment_id.store_fname:
+            logging.error(
+                f"Attachment missing or store_fname is None for document ID {getattr(ir_attachment_id, 'id', 'N/A')}"
+            )
+            return
+
         fromFile = ir_attachment_id._full_path(ir_attachment_id.store_fname)
         outFilePath = self.computeDocName(lineBrws, outZipFile, compute_file_name=False)
+
         if os.path.exists(fromFile):
             shutil.copyfile(fromFile, outFilePath)
         else:
             logging.error(
-                "Unable to export file from document ID %r. File %r does not exists."
-                % (ir_attachment_id.id, fromFile)
+                f"Unable to export file from document ID {ir_attachment_id.id}. File {fromFile} does not exist."
             )
 
     def exportConverted(self, line_wizard_brows):
@@ -640,7 +600,11 @@ class PackAndGo(models.TransientModel):
                 "Unable to convert correctly file %r, does not exists" % (filePath)
             )
             return
-        outFilePath = os.path.join(outZipFile, os.path.basename(filePath))
+        outFilePath = os.path.join(
+            self.env.context.get('outZipFile', os.path.dirname(filePath)),
+            os.path.basename(filePath)
+        )
+
         shutil.copyfile(filePath, outFilePath)
 
     def action_export_zip(self):
@@ -692,16 +656,16 @@ class PackAndGo(models.TransientModel):
         }
 
     def get_steram(self, file_name):
-        import io
-        from base64io import Base64IO
-
-        target = io.BytesIO()
-        with open(file_name, "rb") as source:
-            with Base64IO(target) as encoded_target:
-                for line in source:
-                    encoded_target.write(line)
-        target.seek(0)
-        return target.read()
+        """
+        Read a file from filesystem and return base64-encoded content.
+        This is suitable for Odoo Binary fields (fields.Binary).
+        """
+        if not file_name or not os.path.exists(file_name):
+            _logger.error("File not found: %s", file_name)
+            return False
+        with open(file_name, "rb") as file_obj:
+            file_content = file_obj.read()
+        return base64.b64encode(file_content)
 
     def getFileExtension(self, docBrws):
         fileExtension = ""
@@ -809,4 +773,98 @@ class PackAndGo(models.TransientModel):
                             out[product_product_id].append(ref_ir_attachment_id)
         return out
 
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+    def action_create_zip_checkout(self):
+        active_ids = self.env.context.get('active_ids')
+        products = self.env['product.product'].browse(active_ids)
+
+        user = self.env.user
+        now = fields.Datetime.now()
+
+        # Containers
+        ir_attachment_data = []
+        product_data = []
+        relation_data = []
+        component_doc_data = []
+
+        zip_buffer = BytesIO()
+        with zipfile.ZipFile(zip_buffer, 'w') as zip_file:
+            all_attachment_ids = []
+
+            for product in products:
+
+                product_data.append({
+                    'id': product.id,
+                    'name': product.name,
+                    'engineering_code': product.engineering_code,
+                    'engineering_revision': product.engineering_revision,
+                })
+
+                for attach in product.linkeddocuments:
+                    content = attach.preview or attach.datas  # fallback to datas if preview is empty
+
+                    if content and isinstance(content, (str, bytes)):
+                        try:
+                            zip_file.writestr(attach.name or f"file_{attach.id}", base64.b64decode(content))
+                        except Exception as e:
+                            _logger.warning(f"Could not write file {attach.name}: {e}")
+                    else:
+                        _logger.warning(f"Attachment {attach.name} has no valid preview or datas content.")
+
+                    ir_attachment_data.append({
+                        'id': attach.id,
+                        'name': attach.name,
+                        'engineering_code': attach.engineering_code,
+                        'engineering_revision': attach.engineering_revision,
+                    })
+                    all_attachment_ids.append(attach.id)
+
+            rels = self.env['ir.attachment.relation'].search([
+                ('parent_id', 'in', all_attachment_ids),
+                ('child_id', 'in', all_attachment_ids)
+            ])
+            for rel in rels:
+                relation_data.append({
+                    'link_kind': rel.link_kind,
+                    'parent_id': rel.parent_id.id,
+                    'child_id': rel.child_id.id,
+                })
+
+            comp_rels = self.env['plm.component.document.rel'].search([
+                ('document_id', 'in', all_attachment_ids)
+            ])
+            for rel in comp_rels:
+                component_doc_data.append({
+                    'document_id': rel.document_id.id,
+                    'component_id': rel.component_id.id,
+                    'line_id': rel.id,
+                })
+
+            json_data = {
+                'user_id': user.id,
+                'user_name': user.name,
+                'date': now.isoformat(),
+                'ir_attachment': ir_attachment_data,
+                'product_product': product_data,
+                'ir_attachment_relation': relation_data,
+                'plm_component_document_rel': component_doc_data,
+            }
+
+            zip_file.writestr('exported_data.json', json.dumps(json_data, indent=4))
+
+        # Save ZIP to temporary attachment
+        zip_buffer.seek(0)
+        zip_data = base64.b64encode(zip_buffer.read())
+
+        attachment = self.env['ir.attachment'].create({
+            'name': '%s_Export.zip' % products.default_code,
+            'type': 'binary',
+            'datas': zip_data,
+            'mimetype': 'application/zip',
+        })
+
+        # Trigger file download with static name
+        return {
+            'type': 'ir.actions.act_url',
+            'url': f'/web/content/{attachment.id}?download=true&filename={products.default_code}_Export.zip',
+            'target': 'self',
+        }
