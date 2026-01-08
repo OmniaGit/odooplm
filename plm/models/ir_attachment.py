@@ -116,6 +116,7 @@ class IrAttachment(models.Model):
         "Must Update form CAD",
         compute="_compute_must_update_from_cad",
         help="""When this flag is enabled the 2d document must be updated in order to guaranteey the update betwin 2d and 3d document""",
+        store=True,
     )
     preview_related = fields.Image(
         max_height=1920, max_width=1920, string=_("Child Parent Preview")

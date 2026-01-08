@@ -331,6 +331,9 @@
                         string="Has Error"
                         domain="[('has_error','=',True)]"
                         help="Filter on documents with error"/>
+                <filter name="must_update_from_cad"
+                        string="Must Update from CAD"
+                        domain="[('must_update_from_cad','=',True)]"/>
                 <separator orientation="vertical"/>
                 <group>
                     <field name="create_uid"/>
