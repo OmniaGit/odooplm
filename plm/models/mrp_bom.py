@@ -777,10 +777,23 @@ class MrpBomExtension(models.Model):
                 'domain': [('id', 'in', bom_ids.ids)],
                 'context': {}}
 
-    def saveRelationNewGetBom(self, product_tmpl_id, bomType, parent_product_product_id):
-        return self._saveRelationNewGetBom(product_tmpl_id, bomType, parent_product_product_id)
+    def saveRelationNewGetBom(self, 
+                              product_tmpl_id, 
+                              bomType, 
+                              parent_product_product_id,
+                              n_child_row = 1, # default is 1 for back compatibility
+                              ): 
+        return self._saveRelationNewGetBom(product_tmpl_id, 
+                                           bomType, 
+                                           parent_product_product_id,
+                                           n_child_row)
 
-    def _saveRelationNewGetBom(self, product_tmpl_id, bomType, parent_product_product_id):
+    def _saveRelationNewGetBom(self, 
+                               product_tmpl_id, 
+                               bomType, 
+                               parent_product_product_id, 
+                               n_child_row = 1, # default is 1 for back compatibility
+                               ):
         prod_template = self.env['product.template'].browse(product_tmpl_id)
         if parent_product_product_id.kit_bom:
             bomType = 'phantom'
@@ -794,7 +807,7 @@ class MrpBomExtension(models.Model):
         for mrp_bom_id in self.search([('product_tmpl_id', '=', product_tmpl_id),
                                        ('type', '=', bomType)]):
             mrp_bom_found_id = mrp_bom_id
-        if not mrp_bom_found_id:
+        if not mrp_bom_found_id and n_child_row>0:
             if product_tmpl_id:
                 mrp_bom_found_id = self.create({'product_tmpl_id': product_tmpl_id,
                                                 'product_id': parent_product_product_id.id,
@@ -832,7 +845,10 @@ class MrpBomExtension(models.Model):
             product_tmpl_id = parent_product_product_id.product_tmpl_id.id
             ir_attachment_relation.removeChildRelation(parent_ir_attachment_id)  # perform default unlink to HiTree, need to perform RfTree also
             ir_attachment_relation.removeChildRelation(parent_ir_attachment_id, linkType='RfTree')
-            mrp_bom_found_id = self.saveRelationNewGetBom(product_tmpl_id, bomType, parent_product_product_id)
+            mrp_bom_found_id = self.saveRelationNewGetBom(product_tmpl_id, 
+                                                          bomType, 
+                                                          parent_product_product_id,
+                                                          len(childrenOdooTuple))
             if mrp_bom_found_id:
                 mrp_bom_found_id.delete_child_row(parent_ir_attachment_id)
             #
@@ -846,7 +862,9 @@ class MrpBomExtension(models.Model):
                                        relationAttributes, 
                                        mrp_bom_found_id):
                     continue
-                if mrp_bom_found_id and not relationAttributes.get('EXCLUDE', False) and product_product_id:
+                if relationAttributes.get('EXCLUDE', False):
+                    continue
+                if mrp_bom_found_id and product_product_id:
                     key = f"{product_product_id}_{parent_ir_attachment_id}"
                     if relationAttributes.get('CUTTED_COMP'):
                         position=relationAttributes.get('POSITION')

@@ -40,7 +40,6 @@ def getDocumentStream(docRepository, objDoc):
         logging.error("getFileStream : Exception (%s)reading  stream on file : %s." % (str(ex), objDoc.name))
     return content
 
-
 class BookCollector(object):
     def __init__(self, jumpFirst=True, customText=False, bottomHeight=20, poolObj=None):
         """
@@ -235,3 +234,26 @@ def paperFormat(_boundingBox):
             paper = 4                                     # Format A4
             return (orientation, paper)
         return (orientation, paper)
+
+def extract_page_name(file_orig,
+                      name):
+    BASE_NAME = os.path.dirname(file_orig)
+    reader = pyPdf.PdfFileReader(file_orig) # path to PDF
+
+    for i, outline in enumerate(reader.getOutlines()):
+        
+        if isinstance(outline,dict) and outline.get('/Type')=='/Fit':
+            page_number = reader.getDestinationPageNumber(outline)
+            page_title = outline.title
+            if page_title==name:
+                print(f"Extracting {page_number} on page: {page_title}")
+                writer = pyPdf.PdfFileWriter()
+                page = reader.getPage(page_number)
+                writer.addPage(page)
+                file_path = os.path.join(BASE_NAME, f"{page_title}.pdf")
+                print(f"Generate pdf {file_path}")
+                with open(file_path, "wb") as output:
+                    writer.write(output)
+                print("Page generated")
+                break
+    

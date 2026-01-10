@@ -1093,11 +1093,6 @@ class ProductProduct(models.Model):
                 return self.readMany2oneFields(res, fields)
             return super().read(fields=fields, load=load)
         except Exception as ex:
-            if isinstance(ex, AccessError) and 'sale.report' in ex.name:
-                return """
-Your user does not have enough permissions to make this operation. Error: \n
-%r\n
-Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fix module to solve the problem.""" % (ex)
             raise ex
 
     def fieldsToKeep(self, to_write=[]):

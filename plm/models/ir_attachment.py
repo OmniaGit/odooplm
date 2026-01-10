@@ -38,12 +38,10 @@ from pickle import FALSE
 
 _logger = logging.getLogger(__name__)
 
-
 def random_name():
     random.seed()
     d = [random.choice(string.ascii_letters) for _x in range(20)]
     return "".join(d)
-
 
 class IrAttachment(models.Model):
     _name = 'ir.attachment'
@@ -1346,7 +1344,15 @@ class IrAttachment(models.Model):
             ir_attachment_id.document_rel_count = ir_attachment_relation.search_count(['|',
                                                                                        ('parent_id', '=', ir_a_id),
                                                                                        ('child_id', '=', ir_a_id)])
-
+    def getRelatedLayouts(self):
+        out = self.env['ir.attachment']
+        ir_attachment_relation = self.env['ir.attachment.relation']
+        for ir_attachment_id in self:
+            for relation in ir_attachment_relation.search([('child_id', '=', ir_attachment_id.id)]): 
+                if f"{relation.parent_id.document_type}".upper()=='2D':
+                    out+= relation.parent_id
+        return out
+                    
     def _compute_linkedcomponents(self):
         for record in self:
             if record.linkedcomponents:
@@ -2436,21 +2442,28 @@ class IrAttachment(models.Model):
             component_props)
         if not product_product_id:
             logging.warning("Unable to create / get product_product from %s" % component_props)
-        #  generate document
+        #
+        #  Generate document
+        #
         ir_attachment_id, action = self.env['ir.attachment'].with_context(plm_saving_context=clientArg).createFromProps(
-            document_props,
-            dbThread,
-            host_name,
-            host_pws)
+                                            document_props,
+                                            dbThread,
+                                            host_name,
+                                            host_pws)
         if not ir_attachment_id:
             logging.warning("Unable to create / get ir_attachment from %s" % document_props)
-        #  generate link
+        #
+        #  |Generate link
+        #
         if product_product_id and ir_attachment_id:
             self.env['plm.component.document.rel'].createFromIds(product_product_id,
                                                                  ir_attachment_id)
         else:
             logging.warning("Unable to generate link from product: %s document: %s Thread %s" % (
             product_product_id, ir_attachment_id, dbThread))
+        #
+        # Out
+        #
         return (action,
                 product_product_id.id if product_product_id else False,
                 ir_attachment_id.id if ir_attachment_id else False)
@@ -2484,7 +2497,10 @@ class IrAttachment(models.Model):
             break
         documentAttribute['is_library'] = documentAttribute.get('IS_LIBRARY', '')
         documentAttribute['library_path'] = documentAttribute.get('LIBRARY_PATH', '')
-        if found:  # write
+        #
+        # write
+        #
+        if found:  
             if ir_attachemnt_id.engineering_state not in [RELEASED_STATUS, OBSOLATED_STATUS]:
                 if ir_attachemnt_id.needUpdate():
                     ir_attachemnt_id.write(documentAttribute)
@@ -2493,7 +2509,10 @@ class IrAttachment(models.Model):
                     action = 'jump'
             else:
                 action = 'jump'
-        else:  # create
+        #
+        # create
+        #
+        else:  
             documentAttribute['first_source_path'] = documentAttribute.get('INTEGRATION_ORIG_FILE_PATH', '')
             documentAttribute['cad_name'] = documentAttribute.get('CAD_NAME', '')
             ir_attachemnt_id = ir_attachemnt_id.create(documentAttribute)
@@ -2538,7 +2557,7 @@ class IrAttachment(models.Model):
         plm_dbthread = self.env['plm.dbthread']
         actualdbThred = int(dbTheread)
         for ir_attachment_id in self:
-            key = "%s_%s" % (ir_attachment_id.engineering_code, ir_attachment_id.engineering_revision)
+            key = f"{ir_attachment_id.engineering_code}_{ir_attachment_id.engineering_revision}"
             threadCodelist = plm_dbthread.search([('documement_name_version', '=', key),
                                                   ('done', '=', False)]).mapped(lambda x: int(x.threadCode))
             if len(threadCodelist):
@@ -3444,6 +3463,89 @@ class IrAttachment(models.Model):
         #
 
         return json.dumps(out)
+    
+    def getDocumentChechOutDict(self, document_id):
+        out_template = {'id':0,
+                        'document_name':'', 
+                        'document_revision':0, 
+                        'workflow':'',
+                        'type':'', 
+                        'layouts' : [],
+                        'file_name':'',
+                        'message': 'template',
+                        'check_in_out_flag': {'in': False,
+                                              'out':False,
+                                              'out_user': {}},
+            }
+        out_data = copy.copy(out_template)
+        if document_id:
+            out_data['id'] = document_id.id
+            out_data['document_name'] = document_id.engineering_code
+            out_data['document_revision'] = document_id.engineering_revision
+            out_data['file_name']= document_id.name
+            out_data['workflow'] = document_id.engineering_state
+            out_data['type'] = document_id.document_type.upper()
+            out_data['layouts'] = document_id.getLayoutsCheckInOutState()
+            out_data['message'] = "Found"
+            out_data['check_in_out_flag'] = document_id.getCheckInOutFlag()
+        return out_data
+        
+    @api.model
+    def getCheckOutInState(self,
+                          args):
+        """
+        :args data in {'engineering_code':, 'engineering_revision':, 'file-readonly_flag':}
+        :return:   [{'document_name':, 
+                     'document_revision':, 
+                     'type':, 
+                     'file_name':,
+                     'workflow':,
+                     'layouts' : [<some -structure>],
+                     'message': '',
+                     'check_in_out_flag': {'in': True/False,
+                                           'out':True/False,
+                                           'out_user': {'name':'<odoo_user>',
+                                                        'machine':'<machine_name>',
+                                                        'pws_path':<pws_checkout_path>}
+                                                        'workflow':<status>,
+                                                    }},
+                    
+         
+        """
+        out = []
+        for document_attributes in json.loads(args[0]):
+            document_id = self.getDocumentBrws(document_attributes)
+            out.append(self.getDocumentChechOutDict(document_id))
+        #
+        return json.dumps(out)
+    
+    def getLayoutsCheckInOutState(self):
+        self.ensure_one()
+        out=[]
+        for layout_id in self.getRelatedLayouts():
+            out.append(self.getDocumentChechOutDict(layout_id))
+        return out
+
+    def getOutUserInfo(self):
+        self.ensure_one()
+        checkoutBrwsList = self.env['plm.checkout'].search([('documentid', '=', self.id)])
+        for checkOutBrws in checkoutBrwsList:
+            return  {'name': self.getUserSign(checkOutBrws.userid.id),
+                     'machine': checkOutBrws.hostname,
+                     'pws_path':checkOutBrws.hostpws,
+                     }
+        return  {'name': '',
+                 'machine': '',
+                 'pws_path':'',
+                 }
+
+    def getCheckInOutFlag(self):
+        self.ensure_one()
+        return {
+            'in': not self.is_checkout,
+            'out':self.is_checkout,
+            'out_user': self.getOutUserInfo()
+            }
 
     @api.model
     def GetCloneDocumentValues(self, args):
