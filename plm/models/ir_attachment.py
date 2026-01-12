@@ -2232,7 +2232,7 @@ class IrAttachment(models.Model):
         out = self.env[self._name]
         for doc_dict in docVals:
             docName = doc_dict.get('engineering_code', '')
-            docRev = doc_dict.get('engineering_revision', None)
+            docRev = doc_dict.get('engineering_revision', 0)
             if not docName or docRev is None:
                 continue
             for ir_attachment_id in self.search([('engineering_code', '=', docName),

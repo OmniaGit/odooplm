@@ -112,8 +112,10 @@ class PlmComponent(models.Model):
             if bom_id:
                 bom_id.product_tmpl_id.product_variant_id.on_change_automatic_compute()
 
-    @api.onchange('automatic_compute_selection', 'weight_cad',
-                  'weight_additional', 'weight_n_bom_computed')
+    @api.onchange('automatic_compute_selection', 
+                  'weight_cad',
+                  'weight_additional', 
+                  'weight_n_bom_computed')
     def on_change_automatic_compute(self):
         """
             Compute weight due to selection choice
