@@ -863,21 +863,20 @@ class MrpBomExtension(models.Model):
                                        mrp_bom_found_id):
                     continue
                 if relationAttributes.get('EXCLUDE', False):
-                    continue
-                if mrp_bom_found_id and product_product_id:
-                    key = f"{product_product_id}_{parent_ir_attachment_id}"
-                    if relationAttributes.get('CUTTED_COMP'):
-                        position=relationAttributes.get('POSITION')
-                        key = f"{key}_{position}"
-                    if summarize_bom and key in cache_row:
-                        cache_row[key].product_qty += relationAttributes.get('product_qty', 1)
-                    else:
-                        mrp_bom_line_id = mrp_bom_found_id.add_child_row(product_product_id,
-                                                                         parent_ir_attachment_id,
-                                                                         relationAttributes,
-                                                                         bomType)
-                        if summarize_bom:
-                            cache_row[key] = mrp_bom_line_id
+                    if mrp_bom_found_id and product_product_id:
+                        key = f"{product_product_id}_{parent_ir_attachment_id}"
+                        if relationAttributes.get('CUTTED_COMP'):
+                            position=relationAttributes.get('POSITION')
+                            key = f"{key}_{position}"
+                        if summarize_bom and key in cache_row:
+                            cache_row[key].product_qty += relationAttributes.get('product_qty', 1)
+                        else:
+                            mrp_bom_line_id = mrp_bom_found_id.add_child_row(product_product_id,
+                                                                             parent_ir_attachment_id,
+                                                                             relationAttributes,
+                                                                             bomType)
+                            if summarize_bom:
+                                cache_row[key] = mrp_bom_line_id
                 link_kind = relationAttributes.get('link_kind', 'HiTree')
                 if relationAttributes.get('RAW_COMP'):
                     link_kind = 'RfTree'

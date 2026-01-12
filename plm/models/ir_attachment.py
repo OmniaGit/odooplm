@@ -98,13 +98,15 @@ class IrAttachment(models.Model):
     library_path = fields.Char("File library path")
 
     must_update_from_cad = fields.Boolean("Must Update form CAD",
-                                        compute="_compute_must_update_from_cad",
-                                        help="""When this flag is enabled the 2d document must be updated in order to guaranteey the update betwin 2d and 3d document""",
-                                        store=True)
-    preview_related = fields.Image(max_height=1920, max_width=1920,
+                                          compute="_compute_must_update_from_cad",
+                                          help="""When this flag is enabled the 2d document must be updated in order to guaranteey the update betwin 2d and 3d document""",
+                                          store=True)
+    
+    preview_related = fields.Image(max_height=1920, 
+                                   max_width=1920,
                                    string="Child Parent Preview")
 
-
+    @api.depends("datas")
     def _compute_must_update_from_cad(self):
         ir_attachment_relation = self.env['ir.attachment.relation']
         for ir_attachment in self:
@@ -2440,9 +2442,9 @@ class IrAttachment(models.Model):
         #  generate component
         #
         product_product_id = self.env['product.product'].with_context(plm_saving_context=clientArg).createFromProps(
-            component_props)
+                                                        component_props)
         if not product_product_id:
-            logging.warning("Unable to create / get product_product from %s" % component_props)
+            logging.warning(f"Unable to create / get product_product from {component_props}" )
         #
         #  Generate document
         #
@@ -2452,16 +2454,15 @@ class IrAttachment(models.Model):
                                             host_name,
                                             host_pws)
         if not ir_attachment_id:
-            logging.warning("Unable to create / get ir_attachment from %s" % document_props)
+            logging.warning(f"Unable to create / get ir_attachment from {document_props}")
         #
-        #  |Generate link
+        #  Generate link
         #
         if product_product_id and ir_attachment_id:
             self.env['plm.component.document.rel'].createFromIds(product_product_id,
                                                                  ir_attachment_id)
         else:
-            logging.warning("Unable to generate link from product: %s document: %s Thread %s" % (
-            product_product_id, ir_attachment_id, dbThread))
+            logging.warning(f"Unable to generate link from product: {product_product_id} document: {ir_attachment_id} Thread {dbThread}")
         #
         # Out
         #
