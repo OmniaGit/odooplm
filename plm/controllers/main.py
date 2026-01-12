@@ -83,7 +83,10 @@ class UploadDocument(Controller):
             ir_attachment_id = request.env['ir.attachment'].browse(doc_id)
             ir_attachment_id.write(to_write)
             ir_attachment_id.sudo().update_component_preview()
-            ir_attachment_id.setupCadOpen(kw.get('hostname', ''), kw.get('hostpws', ''), operation_type='save')
+            ir_attachment_id.setupCadOpen(hostname=kw.get('hostname', ''), 
+                                          pws_path=kw.get('hostpws', ''), 
+                                          operation_type='save',
+                                          dbthread=kw.get('dbThread', ''))
             logging.info('upload %r' % (doc_id))
             return Response('Upload succeeded', status=200)
         logging.info('no upload %r' % (doc_id))

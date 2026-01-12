@@ -98,23 +98,26 @@ class IrAttachment(models.Model):
     library_path = fields.Char("File library path")
 
     must_update_from_cad = fields.Boolean("Must Update form CAD",
-                                          compute="_compute_must_update_from_cad",
+                                          #compute="_compute_must_update_from_cad",
                                           help="""When this flag is enabled the 2d document must be updated in order to guaranteey the update betwin 2d and 3d document""",
-                                          store=True)
+                                          #store=True
+                                          )
     
     preview_related = fields.Image(max_height=1920, 
                                    max_width=1920,
                                    string="Child Parent Preview")
 
-    @api.depends("datas")
-    def _compute_must_update_from_cad(self):
-        ir_attachment_relation = self.env['ir.attachment.relation']
-        for ir_attachment in self:
-            ir_attachment.must_update_from_cad = False
-            if ir_attachment.document_type == '2d':
-                ir_attachment.must_update_from_cad = not ir_attachment_relation.is_2d_ok(ir_attachment)
-            elif ir_attachment.document_type == 'pr':
-                ir_attachment.must_update_from_cad = not ir_attachment_relation.is_pr_ok(ir_attachment)
+    # @api.depends("datas")
+    # def _compute_must_update_from_cad(self):
+    #     ir_attachment_relation = self.env['ir.attachment.relation']
+    #     for ir_attachment in self:
+    #         ir_attachment.must_update_from_cad = False
+    #         for layout in ir_attachment.getRelatedLayouts():
+    #             layout.must_update_from_cad = True
+            # if ir_attachment.document_type == '2d':
+            #     ir_attachment.must_update_from_cad = not ir_attachment_relation.is_2d_ok(ir_attachment)
+            # elif ir_attachment.document_type == 'pr':
+            #     ir_attachment.must_update_from_cad = not ir_attachment_relation.is_pr_ok(ir_attachment)
 
     def _getPrintoutName(self):
         for ir_attachment_id in self:
@@ -1099,6 +1102,8 @@ class IrAttachment(models.Model):
         #
         self.check_unique()
         #
+        self.assign_must_update_flag(only_layout=True)
+        #
         return res
 
     def read(self, fields=[], load='_classic_read', *k, **kw):
@@ -1292,6 +1297,38 @@ class IrAttachment(models.Model):
         self.env['plm.checkout'].browse(checkOutId).unlink()
         return self.id
 
+    def assign_must_update_flag(self,
+                                only_layout=False):
+        cad_open_obj = self.env['plm.cad.open']
+        for attachment_id in self:
+            plm_cad_open = cad_open_obj.getLastCadSave(attachment_id)
+            db_thread = plm_cad_open.dbThread
+            source_date = plm_cad_open.write_date
+            if attachment_id.document_type=='3d':
+                for layout_attachment_id in attachment_id.getRelatedLayouts():
+                    child_plm_cad_open = cad_open_obj.getLastCadSave(layout_attachment_id)
+                    child_db_thread = child_plm_cad_open.dbThread
+                    if db_thread not in ['', False] and child_db_thread not in ['', False]:
+                        if db_thread == child_db_thread:
+                            layout_attachment_id.must_update_from_cad = False
+                            continue
+                    if child_plm_cad_open.write_date<source_date:
+                        layout_attachment_id.must_update_from_cad = True
+                    else:
+                        layout_attachment_id.must_update_from_cad = False
+            elif attachment_id.document_type=='2d' and not only_layout:
+                for ref_attachment_id in attachment_id.getRelatedModels():
+                    child_plm_cad_open = cad_open_obj.getLastCadSave(ref_attachment_id)
+                    child_db_thread = child_plm_cad_open.dbThread
+                    if db_thread not in ['', False] and child_db_thread not in ['', False]:
+                        if db_thread == child_db_thread:
+                            attachment_id.must_update_from_cad = False
+                            continue                    
+                    if cad_open_obj.getLastCadSave(ref_attachment_id).write_date<source_date:
+                        attachment_id.must_update_from_cad = False
+                    else:
+                        attachment_id.must_update_from_cad = True
+
     @api.model
     def _is_checkout(self):
         for ir_attachment_id in self:
@@ -1355,7 +1392,16 @@ class IrAttachment(models.Model):
                 if f"{relation.parent_id.document_type}".upper()=='2D':
                     out+= relation.parent_id
         return out
-                    
+
+    def getRelatedModels(self):
+        out = self.env['ir.attachment']
+        ir_attachment_relation = self.env['ir.attachment.relation']
+        for ir_attachment_id in self:
+            for relation in ir_attachment_relation.search([('parent_id', '=', ir_attachment_id.id)]): 
+                if f"{relation.child_id.document_type}".upper()=='3D':
+                    out+= relation.child_id
+        return out
+                        
     def _compute_linkedcomponents(self):
         for record in self:
             if record.linkedcomponents:
@@ -2528,7 +2574,11 @@ class IrAttachment(models.Model):
                                                     limit=1)
         return False
 
-    def setupCadOpen(self, hostname='', pws_path='', operation_type=''):
+    def setupCadOpen(self, 
+                     hostname='', 
+                     pws_path='', 
+                     operation_type='', 
+                     dbthread=''):
         plm_cad_open = self.env['plm.cad.open'].sudo()
         if hostname and pws_path:
             for doc_id in self:
@@ -2540,6 +2590,7 @@ class IrAttachment(models.Model):
                     'document_id': doc_id.id,
                     'pws_path': pws_path,
                     'hostname': hostname,
+                    'dbThread':dbthread,
                     'operation_type': operation_type
                 })
                 return plm_cad_open_brws
