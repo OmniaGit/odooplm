@@ -621,7 +621,7 @@
         <field name="res_model">ir.attachment</field>
         <field name="view_mode">kanban,graph,list,form</field>
         <field name="search_view_id" ref="plm.ir_attachment_search"></field>
-        <field name="context">{"odooPLM":True,"search_default_must_update_from_cad":1}</field>
+        <field name="context">{"odooPLM":True}</field>
         <field name="domain">[('is_plm', '=', True)]</field>
         <field name="view_ids"
                eval="[(5, 0, 0),
