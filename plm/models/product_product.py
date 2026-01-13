@@ -870,9 +870,10 @@ class ProductProduct(models.Model):
                     )
         return list(set(docIDs))
 
-    def _action_ondocuments(
-        self, action_name, include_statuses=[], check_in_check=True
-    ):
+    def _action_ondocuments(self, 
+                            action_name, 
+                            include_statuses=[], 
+                            check_in_check=True):
         """
         move workflow on documents having the same state of component
         """
@@ -1092,8 +1093,9 @@ class ProductProduct(models.Model):
                             recursive,
                             check_in_check=check_in_check,
                         )
-                product_product_id._action_ondocuments(
-                    status, include_statuses, check_in_check=check_in_check
+                product_product_id._action_ondocuments(status, 
+                                                       include_statuses, 
+                                                       check_in_check=check_in_check
                 )
                 product_product_id.product_tmpl_id.move_to_state(status)
             return True

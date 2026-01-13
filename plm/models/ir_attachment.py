@@ -731,7 +731,8 @@ class IrAttachment(models.Model):
                 if forceFlag:
                     isNewer = True
                 else:
-                    isNewer = objDoc.checkNewer()
+                    isNewer = objDoc.checkNewer(hostname,
+                                                hostpws)
                 collectable = isNewer and not isCheckedOutToMe
             else:
                 collectable = True
@@ -3110,11 +3111,17 @@ class IrAttachment(models.Model):
                 break
         return product_product_id, plm_document_id
 
-    def checkNewer(self):
+    def checkNewer(self,
+                   hostname='',
+                   hostpws=''):
         self.ensure_one()
         for document in self:
-            plm_cad_open = self.sudo().env["plm.cad.open"].getLastCadSave(document)
-            last_bck = self.env["plm.backupdoc"].getLastBckDocument(document)
+            plm_cad_open = self.sudo().env['plm.cad.open'].getLastCadSave(document)
+            if plm_cad_open.hostname and plm_cad_open.hostname.lower()!=hostname.lower():
+                return True
+            if plm_cad_open.pws_path and plm_cad_open.pws_path.lower()!=hostpws.lower():
+                return True
+            last_bck = self.env['plm.backupdoc'].getLastBckDocument(document)
             if plm_cad_open.plm_backup_doc_id.id != last_bck.id:
                 return True
         return False
@@ -3426,6 +3433,7 @@ class IrAttachment(models.Model):
         """
         make the check for the check-in operation
         """
+        raise DeprecationWarning("this function must be cancelled in the 20 version")
         out = {
             "to_check_in": [],
             "to_ask": [],
@@ -3663,6 +3671,8 @@ class IrAttachment(models.Model):
             doc_fields["err_msg"] = ""
             doc_name = doc_fields.get("engineering_code", "")
             doc_rev = doc_fields.get("engineering_revision", 0)
+            hostname =doc_fields.get('HOST_NAME', '')
+            hostpws  =doc_fields.get('HOST_PWS', '')
             document_ids = self.search(
                 [
                     ("engineering_code", "=", doc_name),
@@ -3686,7 +3696,8 @@ class IrAttachment(models.Model):
                     continue
                 is_check_in = doc_id.ischecked_in()
                 if is_check_in:
-                    newer_in_odoo = doc_id.checkNewer()
+                    newer_in_odoo = doc_id.checkNewer(hostname,
+                                                      hostpws)
                     if newer_in_odoo:
                         doc_fields["checkout"] = False
                         doc_fields["newer"] = True

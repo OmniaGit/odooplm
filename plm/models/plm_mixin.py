@@ -484,6 +484,17 @@ class RevisionBaseMixin(models.AbstractModel):
             order="engineering_revision DESC",
         )
 
+    def get_last_version(self, engineering_code):
+        """
+        Get the latest version of the part named
+        :engineering_code Last version of the object
+        """
+        return self.search(
+            [("engineering_code", "=", engineering_code)],
+            order="engineering_revision DESC",
+            limit=1
+            )
+
     def write(self, vals):
         if "engineering_code" in vals and vals["engineering_code"] not in [
             False,

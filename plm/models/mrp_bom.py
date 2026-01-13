@@ -31,6 +31,13 @@ import sys
 from odoo import models, fields, api, _
 from odoo.osv.expression import AND
 
+from odoo.addons.plm.models.plm_mixin import (
+    PLM_NO_WRITE_STATE,
+    RELEASED_STATUS,
+    CONFIRMED_STATUS,
+    OBSOLATED_STATUS,
+    START_STATUS,
+)
 
 class MrpBomExtension(models.Model):
     _name = "mrp.bom"
@@ -824,6 +831,13 @@ class MrpBomExtension(models.Model):
                 {"source_id": False, "name": new_bom_brws.product_tmpl_id.name}
             )
         return new_bom_brws
+
+    def unlink(self):
+        for mrp_bom in self:
+            if mrp_bom.product_tmpl_id.engineering_code:
+                if mrp_bom.product_tmpl_id.engineering_state!=START_STATUS: 
+                    raise UserError(f"the bom {mrp_bom.product_tmpl_id.engineering_code} must be in state {START_STATUS} to be delated")
+        return super(MrpBomExtension, self).unlink()
 
     def delete_child_row(self, document_id):
         """
