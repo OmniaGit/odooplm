@@ -2593,6 +2593,7 @@ class IrAttachment(models.Model):
                     'dbThread':dbthread,
                     'operation_type': operation_type
                 })
+                doc_id.assign_must_update_flag()
                 return plm_cad_open_brws
         return plm_cad_open
 

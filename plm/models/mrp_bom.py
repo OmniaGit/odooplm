@@ -862,7 +862,7 @@ class MrpBomExtension(models.Model):
                                        relationAttributes, 
                                        mrp_bom_found_id):
                     continue
-                if relationAttributes.get('EXCLUDE', False):
+                if not relationAttributes.get('EXCLUDE', False):
                     if mrp_bom_found_id and product_product_id:
                         key = f"{product_product_id}_{parent_ir_attachment_id}"
                         if relationAttributes.get('CUTTED_COMP'):
