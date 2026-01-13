@@ -3,7 +3,8 @@ import base64
 from io import BytesIO
 import logging
 from reportlab.pdfgen import canvas
-from PyPDF2 import PdfFileWriter, PdfFileReader
+from odoo.tools.pdf import PdfFileReader, PdfFileWriter
+
 from datetime import datetime
 from dateutil import tz
 
