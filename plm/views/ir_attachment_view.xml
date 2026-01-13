@@ -331,6 +331,9 @@
                         string="Has Error"
                         domain="[('has_error','=',True)]"
                         help="Filter on documents with error"/>
+                <filter name="must_update_from_cad"
+                        string="Must Update from CAD"
+                        domain="[('must_update_from_cad','=',True)]"/>
                 <separator orientation="vertical"/>
                 <group>
                     <field name="create_uid"/>
@@ -618,7 +621,7 @@
         <field name="res_model">ir.attachment</field>
         <field name="view_mode">kanban,graph,list,form</field>
         <field name="search_view_id" ref="plm.ir_attachment_search"></field>
-        <field name="context">{"odooPLM":True}</field>
+        <field name="context">{"odooPLM":True,"search_default_must_update_from_cad":1}</field>
         <field name="domain">[('is_plm', '=', True)]</field>
         <field name="view_ids"
                eval="[(5, 0, 0),

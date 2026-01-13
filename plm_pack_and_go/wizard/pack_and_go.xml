@@ -122,6 +122,7 @@
                                 name="action_export_zip"
                                 invisible="show_create_zip==False"
                                 type="object"/>
+                        <button string="Create zip archive checkout" name="action_create_zip_checkout" class="btn-primary" type="object"/>
                     </footer>
                 </form>
             </field>
@@ -136,41 +137,5 @@
             <field name="target">new</field>
         </record>
 
-        <record id="view_pack_and_go_view_form" model="ir.ui.view">
-            <field name="name">pack.and.go.view.form</field>
-            <field name="model">pack_and_go_view</field>
-            <field name="arch" type="xml">
-                <form>
-                    <sheet>
-                        <group>
-                            <field
-                                name="preview"
-                                widget="image"
-                                readonly="1"
-                                nolabel="1"
-                                colspan="2"
-                                options="{'size':[400,400]}"/>
-                            <field name="component_id" readonly="True"/>
-                            <field name="comp_rev" readonly="True"/>
-                            <field name="document_id" readonly="True"/>
-                            <field name="doc_rev" readonly="True"/>
-                        </group>
-                    </sheet>
-                </form>
-            </field>
-        </record>
-
-        <record id="view_pack_and_go_view_list" model="ir.ui.view">
-            <field name="name">pack.and.go.view.list</field>
-            <field name="model">pack_and_go_view</field>
-            <field name="arch" type="xml">
-                <list>
-                    <field name="component_id"/>
-                    <field name="comp_rev"/>
-                    <field name="document_id"/>
-                    <field name="doc_rev"/>
-                </list>
-            </field>
-        </record>
     </data>
 </odoo>
