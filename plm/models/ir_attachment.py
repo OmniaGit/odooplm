@@ -35,6 +35,7 @@ from odoo.addons.plm.models.plm_mixin import (PLM_NO_WRITE_STATE, RELEASED_STATU
 from odoo.exceptions import UserError
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 from pickle import FALSE
+from werkzeug.debug import get_machine_id
 
 _logger = logging.getLogger(__name__)
 
@@ -3315,6 +3316,38 @@ class IrAttachment(models.Model):
             break
         return vals
 
+    def getDocBomFlat(self,
+                      latest=False):
+        """
+        gat a flat bom list of all the document
+        :latest get the latest code
+        :return: [ir_attachment]
+        """
+        self.ensure_one()
+        latest_version = self.get_latest_version()
+        if latest:
+            root_id = latest_version
+        else:
+            root_id = self
+        out = [(root_id, latest_version)]
+        check = [root_id]
+        children_list = []
+        if root_id.document_type.upper() in ['2D']:
+            for root_model_attachment_id in root_id.getRelatedOneLevelLinks(root_id.id,
+                                                                        ['LyTree', 'RfTree']):
+                    for model_child_id, model_child_latest_id in self.browse(root_model_attachment_id).getDocBomFlat(latest):
+                        if model_child_id not in check:
+                            out.append((model_child_id,
+                                        model_child_latest_id))
+        else:
+            for child_id in root_id.getRelatedOneLevelLinks(root_id.id,
+                                                         ['HiTree','RfTree']):
+                for child_root_id, child_latest_version in self.browse(child_id).getDocBomFlat(latest):
+                    if child_root_id not in check:
+                        out.append((child_root_id,
+                                    child_latest_version))
+        return out
+
     @api.model
     def sent_check_out_requests(self, document_id):
         """
@@ -3585,11 +3618,11 @@ class IrAttachment(models.Model):
         checkoutBrwsList = self.env['plm.checkout'].search([('documentid', '=', self.id)])
         for checkOutBrws in checkoutBrwsList:
             return  {'name': self.getUserSign(checkOutBrws.userid.id),
-                     'machine': checkOutBrws.hostname,
+                     'hostname': checkOutBrws.hostname,
                      'pws_path':checkOutBrws.hostpws,
                      }
         return  {'name': '',
-                 'machine': '',
+                 'hostname': '',
                  'pws_path':'',
                  }
 
@@ -3799,6 +3832,107 @@ class IrAttachment(models.Model):
                                                         evaluated,
                                                         latest):
                         out = obj
+        return out
+
+    def get_last_cad_save_date(self):
+        """
+        return the last cad save date for te given attachemnt
+        if the cad save is not present
+        we use the attachemnt write_date
+        """
+        last_write_date = self.sudo().env['plm.cad.open'].getLastCadSave(self).write_date
+        if not last_write_date:
+            last_write_date = self.write_date
+        return last_write_date
+
+    def get_retated_product_Template_dict(self, 
+                                          latest_version=False):
+
+            
+
+            
+        def fill_up_product(product_product_id):
+            def fill_up_product_row(product_product_id):
+                product_tmpl_id = product_product_id.product_tmpl_id
+                out = {
+                    'ent_id':product_tmpl_id.id,
+                    'engineering_code': product_tmpl_id.engineering_code,
+                    'engineering_revision': product_tmpl_id.engineering_revision,
+                    'configuration_name':product_product_id.configuration_name,
+                    'name': product_tmpl_id.name
+                    }
+                        
+            out = {'selected': fill_up_product_row(product_product_id)}
+            if latest_version:
+                latest_tmpl_product = product_product_id.product_tmpl_id.get_latest_version()
+                out['last'] = fill_up_product_row(latest_tmpl_product.product_variant_id)
+            return out
+        #
+        out={}
+        for product_id in self.linkedcomponents:
+            out[product_id.id] = fill_up_product(product_id)
+        return out
+
+    def get_download_dict(self, 
+                          latest_attachment_id,
+                          latest):
+        self.ensure_one()
+        def get_attachment_dict(ent_id,
+                                latest):
+            return {
+                'name': ent_id.name,
+                'ent_id': ent_id.id,
+                'engineering_code': ent_id.engineering_code,
+                'engineering_revision': ent_id.engineering_revision,
+                'is_library': ent_id.is_library,
+                'related_products': ent_id.get_retated_product_Template_dict(latest),
+                #
+                'flags': self.getCheckInOutFlag(),
+                'last_update': self.get_last_cad_save_date().strftime(DEFAULT_SERVER_DATETIME_FORMAT),
+                }
+        #
+        out = {
+            'request_document': get_attachment_dict(self,
+                                                    latest)
+            }
+        #
+        if not latest and self.id!=latest_attachment_id.id:
+            out['last_revision_document'] = get_attachment_dict(latest_attachment_id,
+                                                                latest)
+        return out
+
+    def download_structure(self,
+                           latest=False):
+        """
+        get all the data from the document in order to be able to understed how to download it
+        :latest get the latest document structure
+        :return: ['request_document':{
+                                     name: '',
+                                     ent_id: Int,
+                                     engineering_code: str,
+                                     engineering_revison: Int,
+                                     flags:{in:True/False
+                                           out:True/False
+                                           out_user:{'name': '',
+                                                     'machine': '',
+                                                     'pws_path':''
+                                                    }
+                                           }
+                                     }
+                    #
+                    # this is optional and the structure is like above 
+                    # ** we add this structure only if the request is not latest ** 
+                    #
+                  'last_revision_document' {--^--} 
+                 ] 
+        """
+        out=[]
+        #
+        self.ensure_one()
+        #
+        for source_attachment_id, latest_attachment_id in self.getDocBomFlat(latest):
+            out.append(source_attachment_id.get_download_dict(latest_attachment_id,
+                                                              latest))
         return out
 #
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

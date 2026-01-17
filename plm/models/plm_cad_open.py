@@ -62,7 +62,7 @@ class PlmCadOpen(models.Model):
             ], order='create_date DESC', limit=1):
             return plm_cad_open
         return self
-    
+
     @api.model
     def run_clean_cad_open_bck_scheduler(self):
         logging.info('Start Cad open Clean Scheduler')

@@ -1953,6 +1953,9 @@ class ProductProduct(models.Model):
             "context": ctx,
         }
 
+    @api.model
+    def search_last_revision(self, engineering_code):
+        return self.env['product.template'].search_last_revision(engineering_code)
 
 class PlmTemporayMessage(models.TransientModel):
     _name = "plm.temporary.message"
@@ -1995,3 +1998,5 @@ class ProductProductDashboard(models.Model):
                     (SELECT count(*) FROM product_template WHERE engineering_state = 'obsoleted' and  engineering_code<>'') AS count_component_obsoleted
              )
         """)
+
+

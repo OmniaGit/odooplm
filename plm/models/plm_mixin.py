@@ -560,3 +560,14 @@ class RevisionBaseMixin(models.AbstractModel):
                     out.append((ir_model_fields_selection.name,
                                 ir_model_fields_selection.value))
         return out
+    
+    @api.model
+    def search_last_revision(self, 
+                             engineering_code):
+        for item in self.search([('engineering_code','=', engineering_code)],
+                                order='engineering_revision DESC', 
+                                limit=1):
+            
+            return (item.engineering_code,
+                    item.engineering_revision)
+        return False, False

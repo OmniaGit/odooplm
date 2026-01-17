@@ -92,6 +92,64 @@ class UploadDocument(Controller):
         logging.info('no upload %r' % (doc_id))
         return Response('Failed upload', status=400)
 
+    @route('/plm/download_structure', 
+           type='http', 
+           auth='user', 
+           methods=['GET'])
+    @webservice
+    def plm_download_structure(self, 
+                               attachment_id,
+                               mode='active'):
+        """
+        get all the data from the document in order to be able to understed how to download it
+        :attachment_id int ir_attachment id
+        :mode if latest value is passed get the latest version
+        get all the data from the document in order to be able to understed how to download it
+        :return: ['request_document':{
+                                     name: '',
+                                     ent_id: Int,
+                                     engineering_code: str,
+                                     engineering_revison: Int,
+                                     flags:{in:True/False
+                                           out:True/False
+                                           out_user:{'name': '',
+                                                     'machine': '',
+                                                     'pws_path':''
+                                                    }
+                                           }
+                                     }
+                    #
+                    # this is optional and the structure is like above 
+                    # ** we add this structure only if the request is not latest ** 
+                    #
+                  'last_revision_document' {--^--} 
+                 ] 
+        """
+        latest=False
+        if mode=='latest':
+            latest=True
+        for ir_attachment_id in request.env['ir.attachment'].search([('id','=', attachment_id)]):
+            return Response(json.dumps(ir_attachment_id.download_structure(latest)))
+        raise Exception(f"Attachment with id {attachment_id} not found")
+
+    @route('/plm/download', 
+           type='http', 
+           auth='user', 
+           methods=['GET'])
+    @webservice
+    def plm_download(self, 
+                     attachment_id):
+        """
+        downlaod an odoo attachemnt
+        :attachemnt_id internal odoo id for the given attachment
+        :return: file request
+        """
+        for ir_attachment_id in request.env['ir.attachment'].search([('id','=', attachment_id)]):
+            return request.env['ir.binary']._get_stream_from(ir_attachment_id,
+                                                             field_name='datas').get_response()
+        return Response(status=500, 
+                        qcontext=f"Attachment {attachment_id} not found")
+
     @route('/plm_document_upload/download', type='http', auth='user', methods=['GET'])
     @webservice
     def download(self,
@@ -182,7 +240,8 @@ class UploadDocument(Controller):
                                                               'link_kind': 'PkgTree'})
             return Response('Zip Upload succeeded', status=200)
         logging.info('Zip no upload %r' % (attachment_id))
-        return Response('Zip Failed upload', status=400)
+        return Response('Zip Failed upload', 
+                        status=400)
 
     @route('/plm_document_upload/get_zip_archive', type='http', auth='user', methods=['get'], csrf=False)
     @webservice
