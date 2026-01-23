@@ -71,14 +71,15 @@
             <list string="Plm Cad Open" create="false" edit="false" decoration-success="operation_type == 'save'"
             														decoration-info="operation_type == 'open'"
             														decoration-warning="operation_type == 'check-out'">
-                <field name="userid" select="1"/>
-                <field name="document_id" select="1"/>
-                <field name="rel_doc_rev"/>
-                <field name="plm_backup_doc_id" select="1"/>
-                <field name="hostname"/>
-                <field name="operation_type"/>
-                <field name="dbThread"/> 
                 <field name="create_date"/>
+                <field name="operation_type"/>
+                <field name="document_id"/>
+                <field name="userid"/>
+                <field name="rel_doc_rev"/>
+                <field name="hostname"/>
+                <field name="pws_path"/>
+                <field name="dbThread"/> 
+                <field name="plm_backup_doc_id"/>
             </list>
         </field>
     </record>

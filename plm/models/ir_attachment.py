@@ -19,23 +19,24 @@
 import copy
 import json
 #
-import logging
 import os
+import time
 import random
 import shutil
 import string
+import logging
 from datetime import datetime
 
-import odoo.tools as tools
-import time
 from odoo import _, api, fields, models, SUPERUSER_ID
-from odoo.addons.plm.models.plm_mixin import (PLM_NO_WRITE_STATE, RELEASED_STATUS,
-                                              CONFIRMED_STATUS, OBSOLATED_STATUS,
+from odoo.addons.plm.models.plm_mixin import (PLM_NO_WRITE_STATE, 
+                                              RELEASED_STATUS,
+                                              CONFIRMED_STATUS, 
+                                              OBSOLATED_STATUS,
+                                              UNDER_MODIFY_STATUS,
                                               START_STATUS)
 from odoo.exceptions import UserError
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 from pickle import FALSE
-from werkzeug.debug import get_machine_id
 
 _logger = logging.getLogger(__name__)
 
@@ -623,19 +624,6 @@ class IrAttachment(models.Model):
             'is_out_by_me': self.isCheckedOutByMe(),
             'check_out_user_name':self.checkout_user,
             }
-
-    def isCollectable(self, hostname, pws_path):
-        self.ensure_one()
-        out = True
-        if self.isCheckedOutByMe(): out = False
-        plm_cad_open = self.sudo().env['plm.cad.open'].getLastCadOpenByUser(self, self.env.user)
-        if plm_cad_open:
-            if plm_cad_open.hostname == hostname and plm_cad_open.pws_path == pws_path:
-                last_revision_id = self.browseLastRev()
-                if last_revision_id != last_revision_id:
-                    if last_revision_id.isCheckedOutByMe():
-                        out = False
-        return out
 
     def _data_check_files(self, 
                           targetIds, 
@@ -1564,7 +1552,25 @@ class IrAttachment(models.Model):
         for checkoutBrws in checkoutBrwsList:
             return checkoutBrws.id
         return False
-
+    
+    def isCheckedOutByMeOr(self,
+                            host_name,
+                            host_pws):
+        checkoutBrwsList = self.env['plm.checkout'].search(
+            [('documentid', '=', self.id), 
+             ('userid', '=', self.env.uid),
+             ('hostname', '=', host_name),
+             ('hostpws', '=', host_pws)
+             ])
+        for checkoutBrws in checkoutBrwsList:
+            return (True, checkoutBrws)
+        for checkoutBrws in self.env['plm.checkout'].search(
+            [('documentid', '=', self.id), 
+             ('userid', '=', self.env.uid),
+             ]):
+            return (False, checkoutBrws) 
+        return False, False
+    
     def checkoutByMeWithUser(self):
         isCheckedOutToMe = False
         checkOutUser = ''
@@ -2161,22 +2167,29 @@ class IrAttachment(models.Model):
     @api.model
     def clientCanCheckOut(self, doc_attrs):
         for attachment_id in self.getDocumentBrws(doc_attrs):
-            return attachment_id.canCheckOut1()
+            return attachment_id.canCheckOut1(doc_attrs[0]['HOST_NAME'],
+                                              doc_attrs[0]['HOST_PWS'])
         return False, 'not_found', f'File Not found from attributes {doc_attrs}'
 
-    def canCheckOut1(self):
+    def canCheckOut1(self,
+                     host_name='',
+                     host_pws=''):
         for docBrws in self:
-            if docBrws.isCheckedOutByMe():
-                msg = _(f"Unable to check-Out document {docBrws.name} that is already checked Out By {docBrws.checkout_user}")
-                return docBrws.id, 'check_out_by_me', msg
-            if docBrws.is_checkout:
-                msg = _(f"Unable to check-Out document {docBrws.name} that is already checked IN by user {docBrws.checkout_user}")
-                return docBrws.id, 'check_out_by_user', msg
             if docBrws.engineering_state not in [START_STATUS, False]:
                 msg = _(f"Unable to check-Out document {docBrws.name} that is in state {docBrws.engineering_state}")
                 return docBrws.id, 'check_out_released', msg
-            return docBrws.id, 'check_in', ''
-        raise Exception()
+            check_out, check_out_browser = docBrws.isCheckedOutByMeOr(host_name,
+                                                                      host_pws) 
+            if check_out:
+                msg = _(f"Unable to check-Out document {docBrws.name} that is already checked Out By {docBrws.checkout_user}")
+                return docBrws.id, 'check_out_by_me', msg
+            else:
+                if check_out_browser:
+                    msg = _(f"Unable to check-Out document {docBrws.name} that is already checked out by user {docBrws.checkout_user} on {host_name}, {host_pws}")
+                    return docBrws.id, 'check_out_by_user', msg
+                else:
+                    return docBrws.id, 'check_in', ''
+        raise Exception("canCheckOut1 Case not supported")
 
     def canCheckOut(self, showError=False):
         for docBrws in self:
@@ -3324,37 +3337,60 @@ class IrAttachment(models.Model):
         :return: [ir_attachment]
         """
         self.ensure_one()
-        latest_version = self.get_latest_version()
+        #
         if latest:
-            root_id = latest_version
+            root_id = self.get_latest_version()
         else:
             root_id = self
-        out = [(root_id, latest_version)]
+        #
+        out = [root_id]
         check = [root_id]
         children_list = []
         if root_id.document_type.upper() in ['2D']:
             for root_model_attachment_id in root_id.getRelatedOneLevelLinks(root_id.id,
-                                                                        ['LyTree', 'RfTree']):
-                    for model_child_id, model_child_latest_id in self.browse(root_model_attachment_id).getDocBomFlat(latest):
+                                                                            ['LyTree', 'RfTree']):
+                    for model_child_id in self.browse(root_model_attachment_id).getDocBomFlat(latest):
                         if model_child_id not in check:
-                            out.append((model_child_id,
-                                        model_child_latest_id))
+                            out.append(model_child_id)
         else:
             for child_id in root_id.getRelatedOneLevelLinks(root_id.id,
-                                                         ['HiTree','RfTree']):
-                for child_root_id, child_latest_version in self.browse(child_id).getDocBomFlat(latest):
+                                                            ['HiTree','RfTree']):
+                for child_root_id in self.browse(child_id).getDocBomFlat(latest):
                     if child_root_id not in check:
-                        out.append((child_root_id,
-                                    child_latest_version))
+                        out.append(child_root_id)
+        return out
+
+    def getDocBomFlatSql(self):
+        """
+        gat a flat bom list of all the document
+        :return: [ir_attachment]
+        """
+        self.ensure_one()
+        #
+        out = [self]
+        #
+        to_compute = ['RfTree']
+        if self.document_type.upper() in ['2D']:
+            to_compute.append('LyTree')
+        else:
+            to_compute.append('HiTree')
+        #
+        for link_kind in to_compute:
+            for related_attachment_id in self.get_all_relation_flat_structure_sql(link_kind):
+                out.append(related_attachment_id)
         return out
 
     @api.model
-    def sent_check_out_requests(self, document_id):
+    def sent_check_out_requests(self, 
+                                document_id,
+                                host_name,
+                                host_pws):
         """
         create an activity on document asking to check-out the document
         """
         for ir_attachment_id in self.browse([document_id]):
-            _id, action, _message = ir_attachment_id.canCheckOut1()
+            _id, action, _message = ir_attachment_id.canCheckOut1(host_name,
+                                                                  host_pws)
             if action == 'check_out_by_user':
                 res_user_id = ir_attachment_id._getCheckOutUser()
                 message = _(f"User {self.env.user.display_name} request this document for make some modification")
@@ -3842,97 +3878,217 @@ class IrAttachment(models.Model):
         """
         last_write_date = self.sudo().env['plm.cad.open'].getLastCadSave(self).write_date
         if not last_write_date:
-            last_write_date = self.write_date
+            last_write_date = datetime.strptime("01/01/2000 0:0:0", '%d/%m/%Y %H:%M:%S')
         return last_write_date
 
-    def get_retated_product_Template_dict(self, 
-                                          latest_version=False):
+    def get_last_my_open(self):
+        last_open_date = self.sudo().env['plm.cad.open'].getLastCadOpenByUser(self,
+                                                                              self.env.user).write_date
+        if not last_open_date:
+            last_open_date = self.write_date
+        return last_open_date
 
-            
-
-            
+    def get_retated_product_Template_dict(self):
+        """
+        get the product related as simple dicrionary
+        """
         def fill_up_product(product_product_id):
             def fill_up_product_row(product_product_id):
                 product_tmpl_id = product_product_id.product_tmpl_id
-                out = {
-                    'ent_id':product_tmpl_id.id,
-                    'engineering_code': product_tmpl_id.engineering_code,
-                    'engineering_revision': product_tmpl_id.engineering_revision,
-                    'configuration_name':product_product_id.configuration_name,
-                    'name': product_tmpl_id.name
-                    }
-                        
-            out = {'selected': fill_up_product_row(product_product_id)}
-            if latest_version:
-                latest_tmpl_product = product_product_id.product_tmpl_id.get_latest_version()
-                out['last'] = fill_up_product_row(latest_tmpl_product.product_variant_id)
-            return out
+                return {
+                        'ent_id':product_tmpl_id.id,
+                        'engineering_code': product_tmpl_id.engineering_code,
+                        'engineering_revision': product_tmpl_id.engineering_revision,
+                        'configuration_name':product_product_id.configuration_name,
+                        'name': product_tmpl_id.name
+                        }
         #
         out={}
         for product_id in self.linkedcomponents:
             out[product_id.id] = fill_up_product(product_id)
         return out
 
-    def get_download_dict(self, 
-                          latest_attachment_id,
-                          latest):
+    def isDownloadabeFromServer(self):
         self.ensure_one()
-        def get_attachment_dict(ent_id,
-                                latest):
-            return {
-                'name': ent_id.name,
-                'ent_id': ent_id.id,
-                'engineering_code': ent_id.engineering_code,
-                'engineering_revision': ent_id.engineering_revision,
-                'is_library': ent_id.is_library,
-                'related_products': ent_id.get_retated_product_Template_dict(latest),
+        is_last_version = not self.engineering_state not in [OBSOLATED_STATUS,
+                                                             UNDER_MODIFY_STATUS]
+        if is_last_version:
+            if self.isCollectable:
+                return True
+            return False
+        else:
+            last_version = self.get_latest_version()
+            if last_version.isCollectable:
+                return False
+            return True
+    
+    def is_open_by_me(self,
+                      hostname, 
+                      pws_path):
+        #
+        obj_plm_cad_open = self.sudo().env['plm.cad.open']
+        #
+        last_open=False
+        for last_open in obj_plm_cad_open.search([
+                                    ('document_id','=', self.id),
+                                    ('operation_type', '=', 'open'),
+                                    ('pws_path', '=', pws_path),
+                                    ('hostname', '=', hostname),
+                                    ('userid', '=', self.env.user.id)
+                                    ]
+                                    ,order='create_date DESC', limit=1):
+            break
+        #
+        if last_open:
+            if obj_plm_cad_open.search_count([
+                                        ('document_id','=', self.id),
+                                        ('operation_type', '=', 'save'),
+                                        ('create_date','>',last_open.create_date)]):
                 #
-                'flags': self.getCheckInOutFlag(),
-                'last_update': self.get_last_cad_save_date().strftime(DEFAULT_SERVER_DATETIME_FORMAT),
-                }
+                # save from other user
+                #
+                return False
+            else:
+                if obj_plm_cad_open.search_count([
+                                            ('engineering_code','=', self.engineering_code),
+                                            ('rel_doc_rev','!=', self.engineering_revision),
+                                            ('operation_type', '=', 'open'),
+                                            ('pws_path', '=', pws_path),
+                                            ('hostname', '=', hostname),
+                                            ('userid', '=', self.env.user.id),
+                                            ('create_date','>',last_open.create_date)]):
+                    #
+                    # open from me in some folder in different version 
+                    #
+                    return False
         #
-        out = {
-            'request_document': get_attachment_dict(self,
-                                                    latest)
+        # never open the file
+        #
+        return True
+
+    def isCollectableNew(self,
+                         hostname,
+                         pws_path):
+        self.ensure_one()
+        is_latest_version = self.engineering_state not in [OBSOLATED_STATUS,
+                                                           UNDER_MODIFY_STATUS]
+        if is_latest_version:
+            if self.isCheckedOutByMe():
+                return "CHECK-OUT"
+            if self.is_open_by_me(hostname,
+                                  pws_path):
+                return "DOWNLOAD-ALLOW-FORCE"
+            return "DOWNLOAD"
+        else:
+            last_revision_id = self.browseLastRev()
+            if last_revision_id.id !=self.id:
+                #
+                # latest version is present
+                #
+                if last_revision_id.isCheckedOutByMe():
+                    return "CHECK-OUT-LATEST"
+                return "DOWNLOAD"
+            else:
+                if self.is_open_by_me(hostname,
+                                      pws_path):
+                    return "DOWNLOAD-ALLOW-FORCE"
+                return "DOWNLOAD"
+
+    def get_download_dict(self, 
+                          hostname,
+                          pws_path):
+        """
+        get a suitable dictionary that is used by the client in order to support the open feature
+        :hostname name of the host client machine that is asking for the attachment
+        :psw_path name of the host pws path of machine that is asking for the attachment
+        """
+        self.ensure_one()
+        return {
+            'name': self.name,
+            'ent_id': self.id,
+            'engineering_code': self.engineering_code,
+            'engineering_revision': self.engineering_revision,
+            'is_library': self.is_library,
+            'library_path': self.library_path,
+            'related_products': self.get_retated_product_Template_dict(),
+            #
+            'flags': self.getCheckInOutFlag(),
+            'last_update': self.get_last_cad_save_date().strftime(DEFAULT_SERVER_DATETIME_FORMAT),
+            'last_my_open': self.get_last_my_open().strftime(DEFAULT_SERVER_DATETIME_FORMAT),
+            'is_downloadable': self.isCollectableNew(hostname, 
+                                                     pws_path),
+            'is_last_revision': True if self.engineering_state not in [OBSOLATED_STATUS,
+                                                                         UNDER_MODIFY_STATUS] else False
             }
-        #
-        if not latest and self.id!=latest_attachment_id.id:
-            out['last_revision_document'] = get_attachment_dict(latest_attachment_id,
-                                                                latest)
-        return out
+
+    def get_all_relation_flat_structure_sql(self, 
+                                            link_kind='HiTree'):
+        """
+        smart and fast way to get the document structure
+        this function dose not allow to work on latest version
+        :link_kind kind of link to get the doc bom
+        :return: [browserecord(ir.attachment),..]
+        """
+        sql = f"""
+        WITH RECURSIVE pops (parent_id) AS (
+            SELECT  parent_id,child_id
+            FROM    ir_attachment_relation
+            WHERE   link_kind ='{link_kind}'
+
+            UNION ALL
+
+            SELECT  p.parent_id,t0.child_id
+            FROM    ir_attachment_relation p
+            INNER JOIN pops t0 
+            ON t0.parent_id = p.child_id
+            )
+         SELECT distinct on (child_id) child_id
+         FROM  pops
+         where parent_id={self.id}
+        """
+        self.env.cr.execute(sql)
+        return self.browse([row[0] for row in self.env.cr.fetchall()])
 
     def download_structure(self,
+                           hostname,
+                           hostpws,
                            latest=False):
         """
         get all the data from the document in order to be able to understed how to download it
         :latest get the latest document structure
-        :return: ['request_document':{
-                                     name: '',
-                                     ent_id: Int,
-                                     engineering_code: str,
-                                     engineering_revison: Int,
-                                     flags:{in:True/False
-                                           out:True/False
-                                           out_user:{'name': '',
-                                                     'machine': '',
-                                                     'pws_path':''
-                                                    }
-                                           }
-                                     }
-                    #
-                    # this is optional and the structure is like above 
-                    # ** we add this structure only if the request is not latest ** 
-                    #
-                  'last_revision_document' {--^--} 
-                 ] 
+        :return: (
+                    [{  name: '',
+                     ent_id: Int,
+                     engineering_code: str,
+                     engineering_revison: Int,
+                     flags:{in:True/False
+                           out:True/False
+                           out_user:{'name': '',
+                                     'machine': '',
+                                     'pws_path':''
+                                    }
+                           }
+                    'related_products': []
+                    'last_update': datetime
+                    'last_my_open': datetime
+                    'is_downloadable': Boolean
+                    'is_last_revision':Boolean
+                     }
+                 ])
         """
         out=[]
         #
         self.ensure_one()
         #
-        for source_attachment_id, latest_attachment_id in self.getDocBomFlat(latest):
-            out.append(source_attachment_id.get_download_dict(latest_attachment_id,
-                                                              latest))
+        if latest:
+            out_main_id = self.get_latest_version().id
+            for document_id in self.getDocBomFlat(latest):
+                out.append(document_id.get_download_dict(hostname,
+                                                         hostpws))
+        else:
+            for document_id in self.getDocBomFlatSql():
+                out.append(document_id.get_download_dict(hostname,
+                                                         hostpws))
         return out
 #
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

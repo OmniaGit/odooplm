@@ -99,37 +99,48 @@ class UploadDocument(Controller):
     @webservice
     def plm_download_structure(self, 
                                attachment_id,
+                               hostname,
+                               hostpws,
                                mode='active'):
         """
         get all the data from the document in order to be able to understed how to download it
         :attachment_id int ir_attachment id
+        :hostname host name where the request came
+        :hostpws host pws where tehe request came
         :mode if latest value is passed get the latest version
-        get all the data from the document in order to be able to understed how to download it
-        :return: ['request_document':{
-                                     name: '',
-                                     ent_id: Int,
-                                     engineering_code: str,
-                                     engineering_revison: Int,
-                                     flags:{in:True/False
-                                           out:True/False
-                                           out_user:{'name': '',
-                                                     'machine': '',
-                                                     'pws_path':''
-                                                    }
-                                           }
-                                     }
-                    #
-                    # this is optional and the structure is like above 
-                    # ** we add this structure only if the request is not latest ** 
-                    #
-                  'last_revision_document' {--^--} 
-                 ] 
+                get all the data from the document in order to be able to understed how to download it
+        :return: (
+                    <attachmen_id used for download>,
+                    [{  name: '',
+                     ent_id: Int,
+                     engineering_code: str,
+                     engineering_revison: Int,
+                     flags:{in:True/False
+                           out:True/False
+                           out_user:{'name': '',
+                                     'machine': '',
+                                     'pws_path':''
+                                    }
+                           }
+                    'related_products': []
+                    'last_update': datetime
+                    'last_my_open': datetime
+                    'is_downloadable': Boolean
+                    'is_last_revision':Boolean
+                     }
+                 ] )
         """
         latest=False
         if mode=='latest':
             latest=True
         for ir_attachment_id in request.env['ir.attachment'].search([('id','=', attachment_id)]):
-            return Response(json.dumps(ir_attachment_id.download_structure(latest)))
+            try:
+                return Response(json.dumps(ir_attachment_id.download_structure(hostname,
+                                                                               hostpws,
+                                                                               latest)))
+            except Exception as ex:
+                logging.error(ex)
+                raise ex
         raise Exception(f"Attachment with id {attachment_id} not found")
 
     @route('/plm/download', 

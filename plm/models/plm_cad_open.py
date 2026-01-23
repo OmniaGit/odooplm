@@ -28,7 +28,7 @@ from odoo import models
 from odoo import fields
 from odoo import api
 from odoo import _
-
+from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
 class PlmCadOpen(models.Model):
     _name = "plm.cad.open"
@@ -39,17 +39,61 @@ class PlmCadOpen(models.Model):
     userid = fields.Many2one('res.users', 'Related User', index=True)
     document_id = fields.Many2one('ir.attachment', 'Related Document', index=True)
     rel_doc_rev = fields.Integer(related='document_id.engineering_revision', string="Revision", store=True)
+    engineering_code = fields.Char(related='document_id.engineering_code', string="Code", store=True)
     pws_path = fields.Char('PWS Path')
     hostname = fields.Char('Hostname')
     operation_type = fields.Char('Operation Type', index=True)
 
     dbThread = fields.Char("Related Db Thread", index=True)
 
+    def get_full_location(self):
+        return {
+                'pws_path': self.pws_path,
+                'hostname': self.hostname,
+                'operation_type': self.operation_type,
+                'write_date': self.writr_date.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+            } 
+
+    @api.model
+    def isClientFileUpdated(self, 
+                            doc_id, 
+                            user_id):
+        last_cad_open=False
+        for last_cad_open in self.search([
+            ('engineering_code', '=', doc_id.engineering_code),
+            ('operation_type', '=', ['open','save']),
+            ], order='create_date DESC', limit=1):
+            break
+        if last_cad_open:
+            if last_cad_open.userid.id==user_id.id and \
+                last_cad_open.rel_doc_rev==doc_id.engineering_revision:
+                return True
+            else:
+                write_date = last_cad_open.write_date
+                if self.search_count([('engineering_code', '=', doc_id.engineering_code),
+                                      ('rel_doc_rev', '!=', doc_id.engineering_revision),
+                                      ('operation_type', '=', ['save']),
+                                      ('userid', '!=', user_id.id),
+                                      ('write_date','>', write_date),
+                                      ]):
+                    return True
+                if self.search_count([('engineering_code', '=', doc_id.engineering_code),
+                                      ('rel_doc_rev', '!=', doc_id.engineering_revision),
+                                      ('operation_type', '=', ['open']),
+                                      ('userid', '=', user_id.id),
+                                      ('write_date','>', write_date),
+                                      ]):
+                    return True
+                return False
+        else:
+            return True
+
     @api.model
     def getLastCadOpenByUser(self, doc_id, user_id):
         for plm_cad_open in self.search([
             ('document_id', '=', doc_id.id),
             ('userid', '=', user_id.id),
+            ('operation_type', '=', 'open'),
             ], order='create_date DESC', limit=1):
             return plm_cad_open
         return self

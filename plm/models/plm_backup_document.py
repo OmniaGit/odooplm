@@ -41,6 +41,7 @@ class PlmBackupDocument(models.Model):
         Only administrator is allowed to remove elements by this table
     """
     _name = 'plm.backupdoc'
+    
     _description = "manage your document back up"
 
     userid = fields.Many2one('res.users',
@@ -62,15 +63,15 @@ class PlmBackupDocument(models.Model):
     preview = fields.Binary('Preview Content')
     orig_data_fstore = fields.Char(string="Original FStore Name")
 
-    def name_get(self):
-        result = []
-        for r in self:
-            if r.documentid and r.userid:
-                name = "%s - R:%s - [%s]" % (r.documentid.engineering_code, r.documentid.engineering_revision, r.userid.display_name)
-            else:
-                name = "Error"
-            result.append((r.id, name))
-        return result
+    @api.depends('document_name')
+    def _compute_display_name(self):
+        """
+        Compute a custom display name for Purchase Orders.
+        If context has 'show_vendor', it includes the vendor name.
+        Otherwise, only the order name is shown.
+        """
+        for rec in self:
+            rec.display_name = f"{rec.documentid.engineering_code} - Rev. :{rec.documentid.engineering_revision} - [{rec.userid.display_name}]"
 
     def remaining_unlink(self):
         super(PlmBackupDocument, self).unlink()

@@ -35,7 +35,7 @@ class PlmDocumentExtension(models.Model):
         string="Status",
         readonly=True,
         default="draft",
-        help=_("The status of the product."),
+        help="The status of the product.",
     )
     old_state = fields.Char(name="Old Status")
 

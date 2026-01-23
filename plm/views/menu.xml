@@ -77,7 +77,7 @@
 	    	sequence="15"
 	    	groups="plm.group_plm_admin,base.group_no_one"
 	    />
-
+    
     <menuitem
         name="CAD Opens Bck"
         action="plm.action_plm_cad_open_bck"

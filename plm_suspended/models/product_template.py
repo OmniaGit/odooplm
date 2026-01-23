@@ -32,6 +32,6 @@ class ProductTemplate(models.Model):
     _inherit = "product.template"
 
     engineering_state = fields.Selection(
-        selection_add=[("suspended", _("Suspended"))]
+        selection_add=[("suspended", "Suspended")]
     )
-    old_state = fields.Char(size=128, name=_("Old Status"))
+    old_state = fields.Char(size=128, name="Old Status")
