@@ -26,7 +26,7 @@ import shutil
 import string
 import logging
 from datetime import datetime
-
+import odoo.tools as tools
 from odoo import _, api, fields, models, SUPERUSER_ID
 from odoo.addons.plm.models.plm_mixin import (PLM_NO_WRITE_STATE, 
                                               RELEASED_STATUS,
