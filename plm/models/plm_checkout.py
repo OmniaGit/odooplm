@@ -26,7 +26,7 @@ Created on 25 Aug 2016
 """
 import logging
 
-from odoo import models, fields, api, _
+from odoo import _, models, fields, api
 from odoo.exceptions import UserError
 
 
@@ -86,25 +86,13 @@ class PlmCheckout(models.Model):
             docBrws = self.env["ir.attachment"].browse(vals_dict["documentid"])
             values = {"engineering_writable": True}
             if not docBrws.sudo(True).write(values):
-                logging.warning(
-                    "create : Unable to check-out the required document ("
-                    + str(docBrws.engineering_code)
-                    + "-"
-                    + str(docBrws.engineering_revision)
-                    + ")."
-                )
-                raise UserError(
-                    _(
-                        "Unable to check-out the required document ("
-                        + str(docBrws.engineering_code)
-                        + "-"
-                        + str(docBrws.engineering_revision)
-                        + ")."
-                    )
-                )
+                msg = f"create : Unable to check-out the required document {docBrws.engineering_code} - {docBrws.engineering_revision}"
+                logging.warning(msg)
+                raise UserError(msg)
             self._adjustRelations([docBrws.id])
         newCheckoutBrws = super().create(vals)
-        docBrws.message_post(body=_("Checked-Out ID %r" % (newCheckoutBrws.id)))
+        newCheckoutBrws.documentid.assign_must_update_flag()
+        docBrws.message_post(body=_(f'Checked-Out ID {newCheckoutBrws.id}' ))
         return newCheckoutBrws
 
     def unlink(self):
@@ -142,7 +130,5 @@ class PlmCheckout(models.Model):
         if dummy:
             for doc_id in documentType.browse(docids):
                 doc_id.message_post(body=_("Checked-In"))
+                doc_id.assign_must_update_flag()
         return dummy
-
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

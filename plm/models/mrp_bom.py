@@ -39,6 +39,7 @@ from odoo.addons.plm.models.plm_mixin import (
     START_STATUS,
 )
 
+
 class MrpBomExtension(models.Model):
     _name = "mrp.bom"
     _inherit = "mrp.bom"
@@ -508,12 +509,12 @@ class MrpBomExtension(models.Model):
         def clean_old_eng_bom_lines(relations):
 
             for (
-                _parent_name,
-                product_product_parent_id,
-                _child_name,
-                product_product_child_id,
-                source_id,
-                _rel_args,
+                    _parent_name,
+                    product_product_parent_id,
+                    _child_name,
+                    product_product_child_id,
+                    source_id,
+                    _rel_args,
             ) in relations:
                 check_level(
                     product_product_parent_id, [source_id], product_product_child_id
@@ -611,12 +612,12 @@ class MrpBomExtension(models.Model):
 
         def save_children_boms(sub_relations, bom_id, next_relation, kindBom):
             for (
-                parentName,
-                parentID,
-                childName,
-                childID,
-                sourceID,
-                relArgs,
+                    parentName,
+                    parentID,
+                    childName,
+                    childID,
+                    sourceID,
+                    relArgs,
             ) in sub_relations:
                 if parentName == childName:
                     logging.error(
@@ -835,8 +836,9 @@ class MrpBomExtension(models.Model):
     def unlink(self):
         for mrp_bom in self:
             if mrp_bom.product_tmpl_id.engineering_code:
-                if mrp_bom.product_tmpl_id.engineering_state!=START_STATUS: 
-                    raise UserError(f"the bom {mrp_bom.product_tmpl_id.engineering_code} must be in state {START_STATUS} to be delated")
+                if mrp_bom.product_tmpl_id.engineering_state != START_STATUS:
+                    raise UserError(
+                        f"the bom {mrp_bom.product_tmpl_id.engineering_code} must be in state {START_STATUS} to be delated")
         return super(MrpBomExtension, self).unlink()
 
     def delete_child_row(self, document_id):
@@ -949,7 +951,7 @@ class MrpBomExtension(models.Model):
             bomType = "phantom"
         elif prod_template.categ_id.kit_bom:
             bomType = "phantom"
-        mrp_bom_found_id = self.env["mrp.bom"]
+        mrp_bom_found_id = False
         for mrp_bom_id in self.search(
             [("product_tmpl_id", "=", product_tmpl_id), ("type", "=", bomType)]
         ):
@@ -983,6 +985,9 @@ class MrpBomExtension(models.Model):
         product_product = self.env["product.product"]
         ir_attachment_relation = self.env["ir.attachment.relation"]
         try:
+            #
+            # check module installation for setting the default bom type creation
+            #
             domain = [
                 ("state", "in", ["installed", "to upgrade", "to remove"]),
                 ("name", "=", "plm_engineering"),
@@ -1003,7 +1008,10 @@ class MrpBomExtension(models.Model):
             product_tmpl_id = parent_product_product_id.product_tmpl_id.id
             ir_attachment_relation.removeChildRelation(
                 parent_ir_attachment_id
-            )  # perform default unlink to HiTree, need to perform RfTree also
+            )
+            #
+            # remove link relations
+            #
             ir_attachment_relation.removeChildRelation(
                 parent_ir_attachment_id, linkType="RfTree"
             )
@@ -1017,51 +1025,46 @@ class MrpBomExtension(models.Model):
             #
             summarize_bom = self.env.context.get("SUMMARIZE_BOM", False)
             cache_row = {}
-            for (
-                product_product_id,
-                ir_attachment_id,
-                relationAttributes,
-            ) in childrenOdooTuple:
-                if self.custom_exclude(
-                    product_product_id,
-                    ir_attachment_id,
-                    relationAttributes,
-                    mrp_bom_found_id,
-                ):
+            for child_product_product_id, child_ir_attachment_id, relationAttributes in childrenOdooTuple:
+                if self.custom_exclude(child_product_product_id,
+                                       child_ir_attachment_id,
+                                       relationAttributes,
+                                       mrp_bom_found_id):
                     continue
-                if (
-                    mrp_bom_found_id
-                    and not relationAttributes.get("EXCLUDE", False)
-                    and product_product_id
-                ):
-                    key = f"{product_product_id}_{parent_ir_attachment_id}"
-                    if relationAttributes.get("CUTTED_COMP"):
-                        position = relationAttributes.get("POSITION")
-                        key = f"{key}_{position}"
-                    if summarize_bom and key in cache_row:
-                        cache_row[key].product_qty += relationAttributes.get(
-                            "product_qty", 1
-                        )
-                    else:
-                        mrp_bom_line_id = mrp_bom_found_id.add_child_row(
-                            product_product_id,
-                            parent_ir_attachment_id,
-                            relationAttributes,
-                            bomType,
-                        )
-                        if summarize_bom:
-                            cache_row[key] = mrp_bom_line_id
-                link_kind = relationAttributes.get("link_kind", "HiTree")
-                if relationAttributes.get("RAW_COMP"):
-                    link_kind = "RfTree"
-                ir_attachment_relation.saveDocumentRelationNew(
-                    parent_ir_attachment_id, ir_attachment_id, link_kind=link_kind
-                )
-                if l_tree_document_id and product_product_id:
-                    self.env["plm.component.document.rel"].createFromIds(
-                        self.env["product.product"].browse(product_product_id),
-                        self.env["ir.attachment"].browse(l_tree_document_id),
-                    )
+                #
+                # bom row computation
+                #
+                if not relationAttributes.get('EXCLUDE', False) and mrp_bom_found_id:
+                    if mrp_bom_found_id and child_product_product_id:
+                        key = f"{child_product_product_id}_{parent_ir_attachment_id}"
+                        if relationAttributes.get('CUTTED_COMP'):
+                            position = relationAttributes.get('POSITION')
+                            key = f"{key}_{position}"
+                        if summarize_bom and key in cache_row:
+                            cache_row[key].product_qty += relationAttributes.get('product_qty', 1)
+                        else:
+                            mrp_bom_line_id = mrp_bom_found_id.add_child_row(child_product_product_id,
+                                                                             parent_ir_attachment_id,
+                                                                             relationAttributes,
+                                                                             bomType)
+                            if summarize_bom:
+                                cache_row[key] = mrp_bom_line_id
+                #
+                # Manage attachment attachment relation
+                #
+                link_kind = relationAttributes.get('link_kind', 'HiTree')
+                if relationAttributes.get('RAW_COMP'):
+                    link_kind = 'RfTree'
+                ir_attachment_relation.saveDocumentRelationNew(parent_ir_attachment_id,
+                                                               child_ir_attachment_id,
+                                                               link_kind=link_kind)
+                #
+                # Manage product document relation
+                #
+                if l_tree_document_id and child_product_product_id:
+                    self.env['plm.component.document.rel'].createFromIds(
+                        self.env['product.product'].browse(child_product_product_id),
+                        self.env['ir.attachment'].browse(l_tree_document_id))
             if mrp_bom_found_id and not mrp_bom_found_id.bom_line_ids:
                 mrp_bom_found_id.unlink()
             return True

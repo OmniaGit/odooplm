@@ -75,7 +75,6 @@
 		    <t t-set="record_child" t-value="child_dict['id']"/>
 		    <t t-set="record_child_level" t-value="child_dict['level']"/>
 		    <t t-set="state" t-value="record_child.engineering_state"/>
-			<!-- <t t-set="space_td" t-value="'margin-left: '+ str(record_child_level * 20) + 'px; display: flex; font-weight:bold; color: #008b8b;'"/> -->
 			<tr class="document_report_line" t-att-data-level="record_child_level" onmouseover="this.style.backgroundColor='#e1e5f4'" onmouseout="this.style.backgroundColor=''">
 				<td class="text-center">
                 	<t t-out="record_child_level"/>

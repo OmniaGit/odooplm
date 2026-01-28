@@ -870,9 +870,9 @@ class ProductProduct(models.Model):
                     )
         return list(set(docIDs))
 
-    def _action_ondocuments(self, 
-                            action_name, 
-                            include_statuses=[], 
+    def _action_ondocuments(self,
+                            action_name,
+                            include_statuses=[],
                             check_in_check=True):
         """
         move workflow on documents having the same state of component
@@ -1093,8 +1093,8 @@ class ProductProduct(models.Model):
                             recursive,
                             check_in_check=check_in_check,
                         )
-                product_product_id._action_ondocuments(status, 
-                                                       include_statuses, 
+                product_product_id._action_ondocuments(status,
+                                                       include_statuses,
                                                        check_in_check=check_in_check
                 )
                 product_product_id.product_tmpl_id.move_to_state(status)
@@ -2316,6 +2316,10 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
             "views": [[view_id, "kanban"]],
             "context": ctx,
         }
+
+    @api.model
+    def search_last_revision(self, engineering_code):
+        return self.env['product.template'].search_last_revision(engineering_code)
 
 
 class PlmTemporayMessage(models.TransientModel):

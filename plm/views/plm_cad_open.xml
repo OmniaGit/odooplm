@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 <data>
-
     <record model="ir.ui.view" id="plm_cad_open_search">
         <field name="name">plm.cad.open.search</field>
         <field name="model">plm.cad.open</field>
@@ -47,7 +46,7 @@
         <field name="model">plm.cad.open</field>
         <field name="arch" type="xml">
             <form string="Plm checkout">
-            	<sheet>	
+            	<sheet>
                 <group >
 	                <field name="userid" select="1"/>
 	                <field name="document_id" select="1"/>
@@ -59,7 +58,7 @@
 	                <field name="dbThread"/>
 	                <field name="create_date"/>
                 </group>
-               	</sheet> 
+               	</sheet>
             </form>
         </field>
     </record>
@@ -72,14 +71,16 @@
             <list string="Plm Cad Open" create="false" edit="false" decoration-success="operation_type == 'save'"
             														decoration-info="operation_type == 'open'"
             														decoration-warning="operation_type == 'check-out'">
-                <field name="userid" select="1"/>
-                <field name="document_id" select="1"/>
-                <field name="rel_doc_rev"/>
-                <field name="plm_backup_doc_id" select="1"/>
-                <field name="hostname"/>
-                <field name="operation_type"/>
-                <field name="dbThread"/>
+
                 <field name="create_date"/>
+                <field name="operation_type"/>
+                <field name="document_id"/>
+                <field name="userid"/>
+                <field name="rel_doc_rev"/>
+                <field name="hostname"/>
+                <field name="pws_path"/>
+                <field name="dbThread"/>
+                <field name="plm_backup_doc_id"/>
             </list>
         </field>
     </record>
@@ -91,7 +92,7 @@
         <field name="view_id" ref="plm_cad_open_list"/>
         <field name="search_view_id" ref="plm_cad_open_search"/>
     </record>
- 
+
 </data>
 </odoo>
 

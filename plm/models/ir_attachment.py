@@ -19,27 +19,25 @@
 ##############################################################################
 import copy
 import json
-
 #
-import logging
 import os
+import time
 import random
 import shutil
 import string
+import logging
 from datetime import datetime
 
-import odoo.tools as tools
-import time
 from odoo import _, api, fields, models, SUPERUSER_ID
-from odoo.addons.plm.models.plm_mixin import (
-    PLM_NO_WRITE_STATE,
-    RELEASED_STATUS,
-    CONFIRMED_STATUS,
-    OBSOLATED_STATUS,
-    START_STATUS,
-)
-from odoo.exceptions import UserError, ValidationError
+from odoo.addons.plm.models.plm_mixin import (PLM_NO_WRITE_STATE,
+                                              RELEASED_STATUS,
+                                              CONFIRMED_STATUS,
+                                              OBSOLATED_STATUS,
+                                              UNDER_MODIFY_STATUS,
+                                              START_STATUS)
+from odoo.exceptions import UserError
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
+from pickle import FALSE
 
 _logger = logging.getLogger(__name__)
 
@@ -111,29 +109,28 @@ class IrAttachment(models.Model):
     cad_name = fields.Char("Cad Name")
     is_library = fields.Boolean("Is Library file", default=False)
     library_path = fields.Char("File library path")
+    must_update_from_cad = fields.Boolean("Must Update form CAD",
+                                          #compute="_compute_must_update_from_cad",
+                                          help="""When this flag is enabled the 2d document must be updated in order to guaranteey the update betwin 2d and 3d document""",
+                                          #store=True
+                                          )
 
-    must_update_from_cad = fields.Boolean(
-        "Must Update form CAD",
-        compute="_compute_must_update_from_cad",
-        help="""When this flag is enabled the 2d document must be updated in order to guaranteey the update betwin 2d and 3d document""",
-        store=True,
-    )
     preview_related = fields.Image(
         max_height=1920, max_width=1920, string=_("Child Parent Preview")
     )
 
-    def _compute_must_update_from_cad(self):
-        ir_attachment_relation = self.env["ir.attachment.relation"]
-        for ir_attachment in self:
-            ir_attachment.must_update_from_cad = False
-            if ir_attachment.document_type == "2d":
-                ir_attachment.must_update_from_cad = (
-                    not ir_attachment_relation.is_2d_ok(ir_attachment)
-                )
-            elif ir_attachment.document_type == "pr":
-                ir_attachment.must_update_from_cad = (
-                    not ir_attachment_relation.is_pr_ok(ir_attachment)
-                )
+    # def _compute_must_update_from_cad(self):
+    #     ir_attachment_relation = self.env["ir.attachment.relation"]
+    #     for ir_attachment in self:
+    #         ir_attachment.must_update_from_cad = False
+    #         if ir_attachment.document_type == "2d":
+    #             ir_attachment.must_update_from_cad = (
+    #                 not ir_attachment_relation.is_2d_ok(ir_attachment)
+    #             )
+    #         elif ir_attachment.document_type == "pr":
+    #             ir_attachment.must_update_from_cad = (
+    #                 not ir_attachment_relation.is_pr_ok(ir_attachment)
+    #             )
 
     def _getPrintoutName(self):
         for ir_attachment_id in self:
@@ -1245,9 +1242,9 @@ class IrAttachment(models.Model):
                     to_update[max(to_update)].image_1920 = self.preview
 
     def write(self, vals):
-        if not self.env.context.get("odooPLM"):
+        if not self.env.context.get('odooPLM'):
             return super(IrAttachment, self).write(vals)
-        check = self.env.context.get("check", True)
+        check = self.env.context.get('check', True)
         if check:
             self.writeCheckDatas(vals)
         #
@@ -1256,6 +1253,8 @@ class IrAttachment(models.Model):
         res = super(IrAttachment, self).write(vals)
         #
         self.check_unique()
+        #
+        self.assign_must_update_flag(only_layout=True)
         #
         return res
 
@@ -1535,6 +1534,57 @@ class IrAttachment(models.Model):
         self.env["plm.checkout"].browse(checkOutId).unlink()
         return self.id
 
+    def assign_must_update_flag(self,
+                                only_layout=False):
+        cad_open_obj = self.env['plm.cad.open']
+        for attachment_id in self:
+            plm_cad_open = cad_open_obj.getLastCadSave(attachment_id)
+            db_thread = plm_cad_open.dbThread
+            source_date = plm_cad_open.write_date
+            if attachment_id.document_type=='3d':
+                for layout_attachment_id in attachment_id.getRelatedLayouts():
+                    child_plm_cad_open = cad_open_obj.getLastCadSave(layout_attachment_id)
+                    child_db_thread = child_plm_cad_open.dbThread
+                    if db_thread not in ['', False] and child_db_thread not in ['', False]:
+                        if db_thread == child_db_thread:
+                            layout_attachment_id.must_update_from_cad = False
+                            continue
+                    if child_plm_cad_open.write_date<source_date:
+                        layout_attachment_id.must_update_from_cad = True
+                    else:
+                        layout_attachment_id.must_update_from_cad = False
+            elif attachment_id.document_type=='2d' and not only_layout:
+                for ref_attachment_id in attachment_id.getRelatedModels():
+                    child_plm_cad_open = cad_open_obj.getLastCadSave(ref_attachment_id)
+                    child_db_thread = child_plm_cad_open.dbThread
+                    if db_thread not in ['', False] and child_db_thread not in ['', False]:
+                        if db_thread == child_db_thread:
+                            attachment_id.must_update_from_cad = False
+                            continue
+                    if cad_open_obj.getLastCadSave(ref_attachment_id).write_date<source_date:
+                        attachment_id.must_update_from_cad = False
+                    else:
+                        attachment_id.must_update_from_cad = True
+
+    def getRelatedLayouts(self):
+        out = self.env['ir.attachment']
+        ir_attachment_relation = self.env['ir.attachment.relation']
+        for ir_attachment_id in self:
+            for relation in ir_attachment_relation.search([('child_id', '=', ir_attachment_id.id)]):
+                if f"{relation.parent_id.document_type}".upper()=='2D':
+                    out+= relation.parent_id
+        return out
+
+    def getRelatedModels(self):
+        out = self.env['ir.attachment']
+        ir_attachment_relation = self.env['ir.attachment.relation']
+        for ir_attachment_id in self:
+            for relation in ir_attachment_relation.search([('parent_id', '=', ir_attachment_id.id)]):
+                if f"{relation.child_id.document_type}".upper()=='3D':
+                    out+= relation.child_id
+        return out
+
+
     @api.model
     def _is_checkout(self):
         for ir_attachment_id in self:
@@ -1775,6 +1825,24 @@ class IrAttachment(models.Model):
         for checkoutBrws in checkoutBrwsList:
             return checkoutBrws.id
         return False
+
+    def isCheckedOutByMeOr(self,
+                            host_name,
+                            host_pws):
+        checkoutBrwsList = self.env['plm.checkout'].search(
+            [('documentid', '=', self.id),
+             ('userid', '=', self.env.uid),
+             ('hostname', '=', host_name),
+             ('hostpws', '=', host_pws)
+             ])
+        for checkoutBrws in checkoutBrwsList:
+            return (True, checkoutBrws)
+        for checkoutBrws in self.env['plm.checkout'].search(
+            [('documentid', '=', self.id),
+             ('userid', '=', self.env.uid),
+             ]):
+            return (False, checkoutBrws)
+        return False, False
 
     def checkoutByMeWithUser(self):
         isCheckedOutToMe = False
@@ -2491,28 +2559,29 @@ class IrAttachment(models.Model):
     @api.model
     def clientCanCheckOut(self, doc_attrs):
         for attachment_id in self.getDocumentBrws(doc_attrs):
-            return attachment_id.canCheckOut1()
-        return False, "not_found", f"File Not found from attributes {doc_attrs}"
+            return attachment_id.canCheckOut1(doc_attrs[0]['HOST_NAME'],
+                                              doc_attrs[0]['HOST_PWS'])
+        return False, 'not_found', f'File Not found from attributes {doc_attrs}'
 
-    def canCheckOut1(self):
+    def canCheckOut1(self,
+                     host_name='',
+                     host_pws=''):
         for docBrws in self:
-            if docBrws.isCheckedOutByMe():
-                msg = _(
-                    f"Unable to check-Out a document that is already checked Out By {docBrws.checkout_user}"
-                )
-                return docBrws.id, "check_out_by_me", msg
-            if docBrws.is_checkout:
-                msg = _(
-                    f"Unable to check-Out a document that is already checked IN by user {docBrws.checkout_user}"
-                )
-                return docBrws.id, "check_out_by_user", msg
             if docBrws.engineering_state not in [START_STATUS, False]:
-                msg = _(
-                    f"Unable to check-Out a document that is in state {docBrws.engineering_state}"
-                )
-                return docBrws.id, "check_out_released", msg
-            return docBrws.id, "check_in", ""
-        raise Exception()
+                msg = _(f"Unable to check-Out document {docBrws.name} that is in state {docBrws.engineering_state}")
+                return docBrws.id, 'check_out_released', msg
+            check_out, check_out_browser = docBrws.isCheckedOutByMeOr(host_name,
+                                                                      host_pws)
+            if check_out:
+                msg = _(f"Unable to check-Out document {docBrws.name} that is already checked Out By {docBrws.checkout_user}")
+                return docBrws.id, 'check_out_by_me', msg
+            else:
+                if check_out_browser:
+                    msg = _(f"Unable to check-Out document {docBrws.name} that is already checked out by user {docBrws.checkout_user} on {host_name}, {host_pws}")
+                    return docBrws.id, 'check_out_by_user', msg
+                else:
+                    return docBrws.id, 'check_in', ''
+        raise Exception("canCheckOut1 Case not supported")
 
     def canCheckOut(self, showError=False):
         for docBrws in self:
@@ -2986,39 +3055,36 @@ class IrAttachment(models.Model):
             )
         return False
 
-    def setupCadOpen(self, 
-                     hostname="", 
-                     pws_path="", 
-                     operation_type="",
-                     dbThread=""):
-        plm_cad_open = self.env["plm.cad.open"].sudo()
+    def setupCadOpen(self,
+                     hostname='',
+                     pws_path='',
+                     operation_type='',
+                     dbthread=''):
+        plm_cad_open = self.env['plm.cad.open'].sudo()
         if hostname and pws_path:
             for doc_id in self:
                 last_bck = doc_id.getLastBackupDoc()
-                plm_cad_open_brws = plm_cad_open.search(
-                    [("document_id", "=", doc_id.id)]
-                )
-                plm_cad_open_brws = plm_cad_open.create(
-                    {
-                        "plm_backup_doc_id": last_bck.id,
-                        "userid": self.env.user.id,
-                        "document_id": doc_id.id,
-                        "pws_path": pws_path,
-                        "hostname": hostname,
-                        "operation_type": operation_type,
-                        'dbThread': dbThread,
-                    }
-                )
+                plm_cad_open_brws = plm_cad_open.search([('document_id', '=', doc_id.id)])
+                plm_cad_open_brws = plm_cad_open.create({
+                    'plm_backup_doc_id': last_bck.id,
+                    'userid': self.env.user.id,
+                    'document_id': doc_id.id,
+                    'pws_path': pws_path,
+                    'hostname': hostname,
+                    'dbThread':dbthread,
+                    'operation_type': operation_type
+                })
+                doc_id.assign_must_update_flag()
                 return plm_cad_open_brws
         return plm_cad_open
 
-    def setupCadOpenRPC(self, 
-                        hostname="", 
-                        pws_path="", 
-                        operation_type="", 
+    def setupCadOpenRPC(self,
+                        hostname="",
+                        pws_path="",
+                        operation_type="",
                         dbThread=""):
-        ret = self.setupCadOpen(hostname, 
-                                pws_path, 
+        ret = self.setupCadOpen(hostname,
+                                pws_path,
                                 operation_type,
                                 dbThread)
         return ret.ids
@@ -3796,30 +3862,86 @@ class IrAttachment(models.Model):
         pass
 
     def getDocBom(self, level=0, recursion=True, report_obj=None):
-        for attachment_id in self:
-            children_list = []
-            if recursion and attachment_id.document_type.upper() not in ["2D"]:
-                children = attachment_id.getRelatedOneLevelLinks(
-                    attachment_id.id, ["RfTree", "LyTree", "HiTree"]
-                )
-                for child_id in children:
-                    attachment_child = self.browse(child_id)
-                    child_dict = attachment_child.getDocBom(
-                        level + 1, recursion=False, report_obj=report_obj
+        self.ensure_one()
+
+        children_list = []
+
+        if recursion and self.document_type and self.document_type.upper() != "2D":
+            children = self.getRelatedOneLevelLinks(
+                self.id, ["RfTree", "LyTree", "HiTree"]
+            )
+
+            for child_id in children:
+                child = self.browse(child_id)
+                if child.exists():
+                    child_dict = child.getDocBom(
+                        level=level + 1,
+                        recursion=False,
+                        report_obj=report_obj,
                     )
-                    children_list.append(child_dict)
-            product_product_id = None
-            for product_product_id in attachment_id.linkedcomponents:
-                break
-            vals = {
-                "id": attachment_id,
-                "product_id": product_product_id,
-                "level": level,
-                "report_obj": report_obj,
-                "children": children_list,
-            }
-            break
-        return vals
+                    if child_dict:
+                        children_list.append(child_dict)
+        product = self.linkedcomponents[:1]
+        product_id = product[0] if product else False
+
+        return {
+            "id": self,
+            "product_id": product_id,
+            "level": level,
+            "report_obj": report_obj,
+            "children": children_list,
+        }
+
+    def getDocBomFlat(self,
+                      latest=False):
+        """
+        gat a flat bom list of all the document
+        :latest get the latest code
+        :return: [ir_attachment]
+        """
+        self.ensure_one()
+        #
+        if latest:
+            root_id = self.get_latest_version()
+        else:
+            root_id = self
+        #
+        out = [root_id]
+        check = [root_id]
+        children_list = []
+        if root_id.document_type.upper() in ['2D']:
+            for root_model_attachment_id in root_id.getRelatedOneLevelLinks(root_id.id,
+                                                                            ['LyTree', 'RfTree']):
+                    for model_child_id in self.browse(root_model_attachment_id).getDocBomFlat(latest):
+                        if model_child_id not in check:
+                            out.append(model_child_id)
+        else:
+            for child_id in root_id.getRelatedOneLevelLinks(root_id.id,
+                                                            ['HiTree','RfTree']):
+                for child_root_id in self.browse(child_id).getDocBomFlat(latest):
+                    if child_root_id not in check:
+                        out.append(child_root_id)
+        return out
+
+    def getDocBomFlatSql(self):
+        """
+        gat a flat bom list of all the document
+        :return: [ir_attachment]
+        """
+        self.ensure_one()
+        #
+        out = [self]
+        #
+        to_compute = ['RfTree']
+        if self.document_type.upper() in ['2D']:
+            to_compute.append('LyTree')
+        else:
+            to_compute.append('HiTree')
+        #
+        for link_kind in to_compute:
+            for related_attachment_id in self.get_all_relation_flat_structure_sql(link_kind):
+                out.append(related_attachment_id)
+        return out
 
     @api.model
     def sent_check_out_requests(self, document_id):
@@ -3847,6 +3969,31 @@ class IrAttachment(models.Model):
                     "date_deadline": datetime.today().date(),
                 }
                 self.env["mail.activity"].create(todos)
+        return True
+
+    @api.model
+    def sent_check_out_requests(self,
+                                document_id,
+                                host_name,
+                                host_pws):
+        """
+        create an activity on document asking to check-out the document
+        """
+        for ir_attachment_id in self.browse([document_id]):
+            _id, action, _message = ir_attachment_id.canCheckOut1(host_name,
+                                                                  host_pws)
+            if action == 'check_out_by_user':
+                res_user_id = ir_attachment_id._getCheckOutUser()
+                message = _(f"User {self.env.user.display_name} request this document for make some modification")
+                todos = {'res_id': ir_attachment_id.id,
+                         'res_model_id': self.env['ir.model'].search([('model', '=', self._name)]).id,
+                         'user_id': res_user_id.id,
+                         'summary': _("Check-In request"),
+                         'note': message,
+                         'activity_type_id': self.env.ref("plm.mail_activity_check_out_request").id,
+                         'date_deadline': datetime.today().date(),
+                         }
+                self.env['mail.activity'].create(todos)
         return True
 
     def related_not_update(self):
@@ -4255,5 +4402,248 @@ class IrAttachment(models.Model):
                         out = obj
         return out
 
+    def get_last_cad_save_date(self):
+        """
+        return the last cad save date for te given attachemnt
+        if the cad save is not present
+        we use the attachemnt write_date
+        """
+        last_write_date = self.sudo().env['plm.cad.open'].getLastCadSave(self).write_date
+        if not last_write_date:
+            last_write_date = self.write_date
+        return last_write_date
+
+    def get_retated_product_Template_dict(self,
+                                          latest_version=False):
+
+        def fill_up_product(product_product_id):
+            def fill_up_product_row(product_product_id):
+                product_tmpl_id = product_product_id.product_tmpl_id
+                out = {
+                    'ent_id': product_tmpl_id.id,
+                    'engineering_code': product_tmpl_id.engineering_code,
+                    'engineering_revision': product_tmpl_id.engineering_revision,
+                    'configuration_name': product_product_id.configuration_name,
+                    'name': product_tmpl_id.name
+                }
+
+            out = {'selected': fill_up_product_row(product_product_id)}
+            if latest_version:
+                latest_tmpl_product = product_product_id.product_tmpl_id.get_latest_version()
+                out['last'] = fill_up_product_row(latest_tmpl_product.product_variant_id)
+            return out
+
+        #
+        out = {}
+        for product_id in self.linkedcomponents:
+            out[product_id.id] = fill_up_product(product_id)
+        return out
+
+    def isDownloadabeFromServer(self):
+        self.ensure_one()
+        is_last_version = not self.engineering_state not in [OBSOLATED_STATUS,
+                                                             UNDER_MODIFY_STATUS]
+        if is_last_version:
+            if self.isCollectable:
+                return True
+            return False
+        else:
+            last_version = self.get_latest_version()
+            if last_version.isCollectable:
+                return False
+            return True
+
+    def is_open_by_me(self,
+                      hostname,
+                      pws_path):
+        #
+        obj_plm_cad_open = self.sudo().env['plm.cad.open']
+        #
+        last_open=False
+        for last_open in obj_plm_cad_open.search([
+                                    ('document_id','=', self.id),
+                                    ('operation_type', '=', 'open'),
+                                    ('pws_path', '=', pws_path),
+                                    ('hostname', '=', hostname),
+                                    ('userid', '=', self.env.user.id)
+                                    ]
+                                    ,order='create_date DESC', limit=1):
+            break
+        #
+        if last_open:
+            if obj_plm_cad_open.search_count([
+                                        ('document_id','=', self.id),
+                                        ('operation_type', '=', 'save'),
+                                        ('create_date','>',last_open.create_date)]):
+                #
+                # save from other user
+                #
+                return False
+            else:
+                if obj_plm_cad_open.search_count([
+                                            ('engineering_code','=', self.engineering_code),
+                                            ('rel_doc_rev','!=', self.engineering_revision),
+                                            ('operation_type', '=', 'open'),
+                                            ('pws_path', '=', pws_path),
+                                            ('hostname', '=', hostname),
+                                            ('userid', '=', self.env.user.id),
+                                            ('create_date','>',last_open.create_date)]):
+                    #
+                    # open from me in some folder in different version
+                    #
+                    return False
+        #
+        # never open the file
+        #
+        return True
+
+    def isCollectableNew(self,
+                         hostname,
+                         pws_path):
+        self.ensure_one()
+        is_latest_version = self.engineering_state not in [OBSOLATED_STATUS,
+                                                           UNDER_MODIFY_STATUS]
+        if is_latest_version:
+            if self.isCheckedOutByMe():
+                return "CHECK-OUT"
+            if self.is_open_by_me(hostname,
+                                  pws_path):
+                return "DOWNLOAD-ALLOW-FORCE"
+            return "DOWNLOAD"
+        else:
+            last_revision_id = self.browseLastRev()
+            if last_revision_id.id !=self.id:
+                #
+                # latest version is present
+                #
+                if last_revision_id.isCheckedOutByMe():
+                    return "CHECK-OUT-LATEST"
+                return "DOWNLOAD"
+            else:
+                if self.is_open_by_me(hostname,
+                                      pws_path):
+                    return "DOWNLOAD-ALLOW-FORCE"
+                return "DOWNLOAD"
+
+    def getOutUserInfo(self):
+        self.ensure_one()
+        checkoutBrwsList = self.env['plm.checkout'].search([('documentid', '=', self.id)])
+        for checkOutBrws in checkoutBrwsList:
+            return  {'name': self.getUserSign(checkOutBrws.userid.id),
+                     'hostname': checkOutBrws.hostname,
+                     'pws_path':checkOutBrws.hostpws,
+                     }
+        return  {'name': '',
+                 'hostname': '',
+                 'pws_path':'',
+                 }
+
+    def getCheckInOutFlag(self):
+        self.ensure_one()
+        return {
+            'in': not self.is_checkout,
+            'out':self.is_checkout,
+            'out_user': self.getOutUserInfo()
+            }
+
+    def get_download_dict(self,
+                          latest_attachment_id,
+                          latest):
+        self.ensure_one()
+
+        def get_attachment_dict(ent_id,
+                                latest):
+            return {
+                'name': ent_id.name,
+                'ent_id': ent_id.id,
+                'engineering_code': ent_id.engineering_code,
+                'engineering_revision': ent_id.engineering_revision,
+                'is_library': ent_id.is_library,
+                'related_products': ent_id.get_retated_product_Template_dict(latest),
+                #
+                'flags': self.getCheckInOutFlag(),
+                'last_update': self.get_last_cad_save_date().strftime(DEFAULT_SERVER_DATETIME_FORMAT),
+            }
+
+        #
+        out = {
+            'request_document': get_attachment_dict(self,
+                                                    latest)
+        }
+        #
+        if not latest and self.id != latest_attachment_id.id:
+            out['last_revision_document'] = get_attachment_dict(latest_attachment_id,
+                                                                latest)
+        return out
+
+    def get_all_relation_flat_structure_sql(self,
+                                            link_kind='HiTree'):
+        """
+        smart and fast way to get the document structure
+        this function dose not allow to work on latest version
+        :link_kind kind of link to get the doc bom
+        :return: [browserecord(ir.attachment),..]
+        """
+        sql = f"""
+        WITH RECURSIVE pops (parent_id) AS (
+            SELECT  parent_id,child_id
+            FROM    ir_attachment_relation
+            WHERE   link_kind ='{link_kind}'
+
+            UNION ALL
+
+            SELECT  p.parent_id,t0.child_id
+            FROM    ir_attachment_relation p
+            INNER JOIN pops t0
+            ON t0.parent_id = p.child_id
+            )
+         SELECT distinct on (child_id) child_id
+         FROM  pops
+         where parent_id={self.id}
+        """
+        self.env.cr.execute(sql)
+        return self.browse([row[0] for row in self.env.cr.fetchall()])
+
+    def download_structure(self,
+                           hostname,
+                           hostpws,
+                           latest=False):
+        """
+        get all the data from the document in order to be able to understed how to download it
+        :latest get the latest document structure
+        :return: (
+                    [{  name: '',
+                     ent_id: Int,
+                     engineering_code: str,
+                     engineering_revison: Int,
+                     flags:{in:True/False
+                           out:True/False
+                           out_user:{'name': '',
+                                     'machine': '',
+                                     'pws_path':''
+                                    }
+                           }
+                    'related_products': []
+                    'last_update': datetime
+                    'last_my_open': datetime
+                    'is_downloadable': Boolean
+                    'is_last_revision':Boolean
+                     }
+                 ])
+        """
+        out=[]
+        #
+        self.ensure_one()
+        #
+        if latest:
+            out_main_id = self.get_latest_version().id
+            for document_id in self.getDocBomFlat(latest):
+                out.append(document_id.get_download_dict(hostname,
+                                                         hostpws))
+        else:
+            for document_id in self.getDocBomFlatSql():
+                out.append(document_id.get_download_dict(hostname,
+                                                         hostpws))
+        return out
 #
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

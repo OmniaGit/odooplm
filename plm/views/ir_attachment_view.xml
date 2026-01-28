@@ -96,6 +96,10 @@
                                 type="object">
                             <div class="o_field_widget o_stat_info o_readonly_modifier">
                                 <span>Check-In</span>
+                                <div class="d-flex align-items-center">
+                                    <i class="fa fa-user me-1" style="color:#714B67;"/>
+                                    <field name="checkout_user"/>
+                                </div>
                             </div>
                         </button>
                         <button name="print_Document_Doc_Structure"
@@ -111,11 +115,13 @@
                                 invisible="engineering_revision_count &lt;=1">
                             <field name="engineering_revision_count" string=" " widget="statinfo"/>
                         </button>
-                        <button name="check_out_user"
-                                icon="fa-user"
-                                invisible="checkout_user==False or checkout_user==''">
-                            <field name="checkout_user"/>
-                        </button>
+
+<!--                        <button name="check_out_user"-->
+<!--                                icon="fa-user"-->
+<!--                                invisible="checkout_user == False">-->
+<!--                            <field name="checkout_user"/>-->
+<!--                        </button>-->
+
                         <field name="must_update_from_cad" invisible="1"></field>
                         <button name="related_not_update"
                                 icon="fa-warning"
