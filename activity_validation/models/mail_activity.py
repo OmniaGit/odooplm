@@ -165,9 +165,13 @@ class MailActivity(models.Model):
 
     def activity_format(self):
         out = []
-        for res_dict in super(MailActivity, self).activity_format():
-            if res_dict.get('plm_state', 'draft') not in ['done', 'cancel']:
-                out.append(res_dict)
+        super_res = super(MailActivity, self).activity_format()
+        if self.activity_type_id == self.env.ref("activity_validation.mail_activity_change_request").id:
+            for res_dict in super_res:
+                if res_dict.get('plm_state', 'draft') not in ['done', 'cancel']:
+                    out.append(res_dict)
+        else:
+            return super_res
         return out
 
     def isCustomType(self):

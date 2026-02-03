@@ -10,11 +10,9 @@
                 <field name="product_id" 
                        widget="plm_many2one_image" 
                        options="{'image_field':'image_1920','linked_field':'linkeddocuments'}"/>
-                <button name="go_to_product"
-                        icon="fa-external-link"
-                        type="object"
-                        title="Compute Cost"/>
                 <field name="description"/>
+                <field name="route_ids" widget="many2many_tags" optional="hide"/>
+                <field name="has_vendor" optional="hide"/>
                 <field name="engineering_revision"/>
                 <field name="engineering_state"/>
                 <field name="product_qty"/>
@@ -35,6 +33,10 @@
                 <field string="Product" name="product_id"/>
                 <field string="Description" name="description"/>
                 <field string="Tags" name="product_tag_ids"/>
+                <filter
+                    name="missing_vendor"
+                    string="Missing Vendor"
+                    domain="[('has_vendor','=',False)]"/>
             </search>
         </field>
     </record>

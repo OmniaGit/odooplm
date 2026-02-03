@@ -267,6 +267,13 @@ class MrpBomLineExtension(models.Model):
     product_tag_ids = fields.Many2many(related="product_tmpl_id.product_tag_ids")
 
     product_tag_ids = fields.Many2many(related="product_tmpl_id.product_tag_ids")
+    route_ids = fields.Many2many(related='product_tmpl_id.route_ids')
+    has_vendor = fields.Boolean("Has Vendor", compute="_has_vendor", store=True)
+
+    @api.depends("product_tmpl_id.seller_ids")
+    def _has_vendor(self):
+        for line in self:
+            line.has_vendor = True if line.product_tmpl_id.seller_ids else False
 
     def go_to_product(self):
         return {
