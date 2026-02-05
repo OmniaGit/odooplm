@@ -391,7 +391,6 @@
                 <field name="engineering_code"/>
                 <field name="engineering_revision"/>
                 <field name="description"/>
-                <field name="datas"/>
                 <field name="name"/>
                 <field name="engineering_state"/>
                 <field name="document_type"/>
@@ -481,11 +480,6 @@
                                                     <t t-else="">
                                                         <hr style="background-color: black;height: 1px;"></hr>
                                                     </t>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <field name="datas" filename="name" widget="binary"/>
                                                 </td>
                                             </tr>
                                             <tr>

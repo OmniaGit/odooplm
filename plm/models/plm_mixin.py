@@ -450,6 +450,16 @@ class RevisionBaseMixin(models.AbstractModel):
         return self.search([
             ('engineering_code', '=', self.engineering_code)
         ], order='engineering_revision DESC', limit=1)
+    
+    def get_item_from_code(self, 
+                           engineering_code, 
+                           engineering_revision=0):
+        """
+        get an item from the database knowing the engineering_code and the engineering_revision
+        
+        """
+        return self.search([('engineering_code','=',engineering_code ),
+                            ('engineering_revision','=', engineering_revision)])
 
     def get_previus_version(self):
         self.ensure_one()

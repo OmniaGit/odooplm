@@ -278,7 +278,7 @@ class UploadDocument(Controller):
             if attachment_id._is_checkedout_for_me():
                 out.append((attachment_id.id,
                             attachment_id.name,
-                            attachment_id.write_date.strftime(DEFAULT_SERVER_DATETIME_FORMAT)))
+                            attachment_id.getLastCadSave().strftime(DEFAULT_SERVER_DATETIME_FORMAT)))
         try:
             out = json.dumps(out)
         except Exception as ex:

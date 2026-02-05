@@ -109,17 +109,7 @@ class IrAttachment(models.Model):
                                    max_width=1920,
                                    string="Child Parent Preview")
 
-    # @api.depends("datas")
-    # def _compute_must_update_from_cad(self):
-    #     ir_attachment_relation = self.env['ir.attachment.relation']
-    #     for ir_attachment in self:
-    #         ir_attachment.must_update_from_cad = False
-    #         for layout in ir_attachment.getRelatedLayouts():
-    #             layout.must_update_from_cad = True
-            # if ir_attachment.document_type == '2d':
-            #     ir_attachment.must_update_from_cad = not ir_attachment_relation.is_2d_ok(ir_attachment)
-            # elif ir_attachment.document_type == 'pr':
-            #     ir_attachment.must_update_from_cad = not ir_attachment_relation.is_pr_ok(ir_attachment)
+
 
     def _getPrintoutName(self):
         for ir_attachment_id in self:
@@ -2501,18 +2491,27 @@ class IrAttachment(models.Model):
         #
         #  generate component
         #
-        product_product_id = self.env['product.product'].with_context(plm_saving_context=clientArg).createFromProps(
-                                                        component_props)
+        product_product_id = (
+            self.env['product.product']
+            .with_context(plm_saving_context=clientArg)
+            .createFromProps(component_props)
+        )
         if not product_product_id:
-            logging.warning(f"Unable to create / get product_product from {component_props}" )
+            logging.warning(
+                f"Unable to create / get product_product from {component_props}" 
+                )
+            
         #
         #  Generate document
         #
-        ir_attachment_id, action = self.env['ir.attachment'].with_context(plm_saving_context=clientArg).createFromProps(
-                                            document_props,
-                                            dbThread,
-                                            host_name,
-                                            host_pws)
+        ir_attachment_id, action = (self.env['ir.attachment']
+                                    .with_context(plm_saving_context=clientArg)
+                                    .createFromProps(document_props,
+                                                     dbThread,
+                                                     host_name,
+                                                     host_pws
+                                                     )
+                                    )
         if not ir_attachment_id:
             logging.warning(f"Unable to create / get ir_attachment from {document_props}")
         #
@@ -2858,14 +2857,11 @@ class IrAttachment(models.Model):
         return True
 
     def getLastCadSave(self):
-        for ir_attachment_id in self:
-            for cad_open in self.env['plm.cad.open'].search([
-                ('document_id', '=', ir_attachment_id.id),
-                ('operation_type', '=', 'save'),
-            ],
-                order='create_date DESC', limit=1):
-                return cad_open.create_date
-            return ir_attachment_id.write_date
+        self.ensure_one()
+        cad_open_id = self.env['plm.cad.open'].getLastCadSave(self)
+        if cad_open_id.write_date:
+            return cad_open_id.write_date
+        return ir_attachment_id.write_date
 
     def getDefaulValueDict(self, docBrws, PLM_DT_DELTA, is_root):
         tmp_dict = {}
@@ -3407,9 +3403,13 @@ class IrAttachment(models.Model):
 
     def related_not_update(self):
         for attachment_id in self:
-            relation_ids = self.env['ir.attachment.relation'].search(["|", ('parent_id', '=', attachment_id.id),
-                                                                      ('child_id', '=', attachment_id.id),
-                                                                      ('link_kind', '=', 'LyTree')])
+            relation_ids = self.env['ir.attachment.relation'].search(
+                ["|", 
+                 ('parent_id', '=', attachment_id.id),
+                 ('child_id', '=', attachment_id.id),
+                 ('link_kind', '=', 'LyTree')
+                 ]
+            )
             return {'name': _('Attachment Relations.'),
                     'res_model': 'ir.attachment.relation',
                     'view_type': 'form',
@@ -3457,13 +3457,15 @@ class IrAttachment(models.Model):
             # Collect missing layout
             #
             children = []
-            for doc_id_2d in self.getRelatedLyTree(attachment_id,
-                                                   optional_return_type=['2d']):
+            for doc_id_2d in self.getRelatedLyTree(
+                attachment_id,
+                optional_return_type=["2d"]
+                ):
                 layout_data = self.get_clone_info_attr(doc_id_2d)
-                if 'layouts' in out_parent_attrs:
-                    out_parent_attrs['layouts'].append(layout_data)
+                if "layouts" in out_parent_attrs:
+                    out_parent_attrs["layouts"].append(layout_data)
                 else:
-                    out_parent_attrs['layouts']=[layout_data]
+                    out_parent_attrs["layouts"]=[layout_data]
             #
             # Collect children missing layouts
             #
@@ -3704,7 +3706,7 @@ class IrAttachment(models.Model):
                 f"{out_attachment_value['engineering_code']}{exte}"
             )
         #
-        del out_attachment_value['id']
+        if "id" in out_attachment_value: del out_attachment_value["id"]
         #
         return json.dumps(out_attachment_value)
 
