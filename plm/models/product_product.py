@@ -740,8 +740,9 @@ class ProductProduct(models.Model):
 
     def _action_ondocuments(self,
                             action_name,
-                            include_statuses=[],
-                            check_in_check=True):
+                            include_statuses=None,
+                            check_in_check=True,
+                            **kwargs):
         """
             move workflow on documents having the same state of component
         """
