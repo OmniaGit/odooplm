@@ -4035,7 +4035,7 @@ class IrAttachment(models.Model):
         WITH RECURSIVE cte (parent_id, child_id,link_kind) AS (
           SELECT parent_id, child_id,link_kind
           FROM ir_attachment_relation
-          WHERE parent_id = {self.id}
+          WHERE parent_id = {self.id} or child_id ={self.id}
         
           UNION
         
