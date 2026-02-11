@@ -104,7 +104,7 @@ class IrAttachment(models.Model):
                                           help="""When this flag is enabled the 2d document must be updated in order to guaranteey the update betwin 2d and 3d document""",
                                           #store=True
                                           )
-    
+
     preview_related = fields.Image(max_height=1920, 
                                    max_width=1920,
                                    string="Child Parent Preview")
@@ -4032,24 +4032,30 @@ class IrAttachment(models.Model):
         :return: [browserecord(ir.attachment),..]
         """
         sql = f"""
-        WITH RECURSIVE pops (parent_id) AS (
-            SELECT  parent_id,child_id
-            FROM    ir_attachment_relation
-            WHERE   link_kind ='{link_kind}'
-
-            UNION ALL
-
-            SELECT  p.parent_id,t0.child_id
-            FROM    ir_attachment_relation p
-            INNER JOIN pops t0 
-            ON t0.parent_id = p.child_id
-            )
-         SELECT distinct on (child_id) child_id
-         FROM  pops
-         where parent_id={self.id}
+        WITH RECURSIVE cte (parent_id, child_id,link_kind) AS (
+          SELECT parent_id, child_id,link_kind
+          FROM ir_attachment_relation
+          WHERE parent_id = {self.id}
+        
+          UNION
+        
+          SELECT ir_attachment_relation.parent_id,
+                 ir_attachment_relation.child_id,
+                 ir_attachment_relation.link_kind
+          FROM "ir_attachment_relation"
+            INNER JOIN cte
+            ON ir_attachment_relation.child_id = cte.parent_id
+        )
+        SELECT parent_id,child_id
+        FROM cte
+        where link_kind='{link_kind}'
         """
+        ids = set()
         self.env.cr.execute(sql)
-        return self.browse([row[0] for row in self.env.cr.fetchall()])
+        for parent_id, child_id in self.env.cr.fetchall():
+            ids.add(parent_id)
+            ids.add(child_id)
+        return self.browse(list(ids))
 
     def download_structure(self,
                            hostname,

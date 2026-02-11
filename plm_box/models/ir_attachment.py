@@ -227,7 +227,7 @@ class Plm_box_document(models.Model):
                             doc_dict[str_box_id][str_doc_id]["update"] = "delete"
                         else:
                             doc_dict[str_box_id][str_doc_id]["update"] = "upload"
-        logging.info("Box sincronize res %r" % (doc_dict))
+        logging.info("Box synchronize res %r" % (doc_dict))
         return doc_dict
 
     def getDocumentStateMulty(self):
