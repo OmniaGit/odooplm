@@ -155,9 +155,9 @@ class UploadDocument(Controller):
         :attachemnt_id internal odoo id for the given attachment
         :return: file request
         """
-        for ir_attachment_id in request.env['ir.attachment'].search([('id','=', attachment_id)]):
-            return request.env['ir.binary']._get_stream_from(ir_attachment_id,
-                                                             field_name='datas').get_response()
+        for ir_attachment_id in request.env['ir.attachment'].sudo().search([('id','=', attachment_id)]):
+            return request.env['ir.binary'].sudo()._get_stream_from(ir_attachment_id,
+                                                                    field_name='datas').get_response()
         return Response(status=500, 
                         qcontext=f"Attachment {attachment_id} not found")
 
