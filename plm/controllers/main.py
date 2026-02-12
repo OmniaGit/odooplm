@@ -133,9 +133,9 @@ class UploadDocument(Controller):
         latest=False
         if mode=='latest':
             latest=True
-        for ir_attachment_id in request.env['ir.attachment'].search([('id','=', attachment_id)]):
+        for ir_attachment_id in request.env['ir.attachment'].sudo().search([('id','=', attachment_id)]):
             try:
-                return Response(json.dumps(ir_attachment_id.download_structure(hostname,
+                return Response(json.dumps(ir_attachment_id.sudo().download_structure(hostname,
                                                                                hostpws,
                                                                                latest)))
             except Exception as ex:
