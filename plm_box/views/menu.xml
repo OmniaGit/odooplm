@@ -15,4 +15,11 @@
         groups="plm_box.group_plm_box_admin"
         id="menu_box_docs"
         parent="plm_box.menu_plm_box_main"/>
+
+    <menuitem
+        id="menu_plm_box_documents"
+        name="PLM Box Documents"
+        parent="menu_plm_box_main"
+        action="action_plm_box_documents_custom"
+    />
 </odoo>
