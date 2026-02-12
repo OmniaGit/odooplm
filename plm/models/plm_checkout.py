@@ -35,12 +35,12 @@ class PlmCheckout(models.Model):
     _description = "Document that are locked from someone"
 
     userid = fields.Many2one(
-        "res.users", _("Related User"), index=True, ondelete="cascade"
+        "res.users", "Related User", index=True, ondelete="cascade"
     )
-    hostname = fields.Char(_("hostname"), index=True, size=64)
-    hostpws = fields.Char(_("PWS Directory"), index=True, size=1024)
+    hostname = fields.Char("hostname", index=True, size=64)
+    hostpws = fields.Char("PWS Directory", index=True, size=1024)
     documentid = fields.Many2one(
-        "ir.attachment", _("Related Document"), index=True, ondelete="cascade"
+        "ir.attachment", "Related Document", index=True, ondelete="cascade"
     )
     rel_doc_rev = fields.Integer(
         related="documentid.engineering_revision", string="Revision", store=True

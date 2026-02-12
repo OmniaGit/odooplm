@@ -31,18 +31,17 @@ class PlmMaterial(models.Model):
     _name = "plm.material"
     _description = "PLM Materials"
 
-    name = fields.Char(_("Designation"), required=True, translate=True)
-    description = fields.Char(_("Description"), size=128)
+    name = fields.Char("Designation", required=True, translate=True)
+    description = fields.Char("Description", size=128)
     sequence = fields.Integer(
-        _("Sequence"),
-        help=_(
+        "Sequence",
+        help=
             "Gives the sequence order when displaying a list of product categories."
-        ),
     )
 
     _name_uniq = models.Constraint(
         "unique(name)",
-        _("Raw Material has to be unique !"),
+        "Raw Material has to be unique !",
     )
 
     def copy(self, default=None):
@@ -50,6 +49,3 @@ class PlmMaterial(models.Model):
             default = {}
         default["name"] = self.name + " (copy)"
         return super(PlmMaterial, self).copy(default=default)
-
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

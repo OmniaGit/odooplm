@@ -25,7 +25,7 @@ Created on 11 Aug 2016
 @author: Daniel Smerghetto
 """
 from odoo.tools.safe_eval import safe_eval
-from odoo.osv import expression
+from odoo.fields import Domain
 from odoo.exceptions import UserError
 from odoo import models
 from odoo import fields
@@ -44,20 +44,20 @@ class PlmBackupDocument(models.Model):
     _name = "plm.backupdoc"
     _description = "manage your document back up"
 
-    userid = fields.Many2one("res.users", _("Related User"))
-    existingfile = fields.Char(_("Physical Document Location"), size=1024)
-    documentid = fields.Many2one("ir.attachment", _("Related Document"))
+    userid = fields.Many2one("res.users", string="Related User")
+    existingfile = fields.Char(string="Physical Document Location", size=1024)
+    documentid = fields.Many2one("ir.attachment", string="Related Document")
     engineering_revision = fields.Integer(
-        related="documentid.engineering_revision", string=_("Revision"), store=True
+        related="documentid.engineering_revision", string="Revision", store=True
     )
     engineering_state = fields.Selection(
-        related="documentid.engineering_state", string=_("Status"), store=True
+        related="documentid.engineering_state", string="Status", store=True
     )
     document_name = fields.Char(
-        related="documentid.engineering_code", string=_("Stored Name"), store=True
+        related="documentid.engineering_code", string="Stored Name", store=True
     )
-    printout = fields.Binary(_("Printout Content"))
-    preview = fields.Binary(_("Preview Content"))
+    printout = fields.Binary(string="Printout Content")
+    preview = fields.Binary(string="Preview Content")
     orig_data_fstore = fields.Char(string="Original FStore Name")
 
     @api.depends('document_name')
@@ -222,9 +222,6 @@ class BackupDocWizard(models.TransientModel):
             "plm.plm_action_document_form"
         )
         domain = safe_eval(action_vals.get("domain", "[]"))
-        domain = expression.AND([domain, [("id", "in", [documentId])]])
+        domain = Domain.AND([domain, [("id", "in", [documentId])]])
         action_vals["domain"] = domain
         return action_vals
-
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

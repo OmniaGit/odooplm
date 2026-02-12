@@ -22,7 +22,7 @@
 from odoo import _, api, fields, models
 from odoo.addons.plm.models.plm_mixin import USED_STATES
 
-USED_STATES.append(("suspended", _("Suspended")))
+USED_STATES.append(("suspended", "Suspended"))
 
 
 class PlmDocumentExtension(models.Model):

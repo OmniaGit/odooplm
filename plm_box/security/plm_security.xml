@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
     <record id="group_plm_box_user" model="res.groups">
         <field name="name">Plm Box User</field>
         <field name="privilege_id" ref="plm.res_groups_privilege_odooplm"/>

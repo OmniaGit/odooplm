@@ -29,7 +29,7 @@ import logging
 import sys
 
 from odoo import models, fields, api, _
-from odoo.osv.expression import AND
+from odoo.fields import Domain
 
 from odoo.addons.plm.models.plm_mixin import (
     PLM_NO_WRITE_STATE,

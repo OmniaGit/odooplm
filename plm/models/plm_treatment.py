@@ -32,25 +32,21 @@ class PlmTreatment(models.Model):
     _name = "plm.treatment"
     _description = "Thermal Treatment"
 
-    name = fields.Char(_("Specification"), required=True, translate=True)
-    description = fields.Char(_("Description"), size=128)
+    name = fields.Char("Specification", required=True, translate=True)
+    description = fields.Char("Description", size=128)
     sequence = fields.Integer(
-        _("Sequence"),
-        help=_(
+        "Sequence",
+        help=
             "Gives the sequence order when displaying a list of product categories."
-        ),
-    )
+        )
 
     _name_uniq = models.Constraint(
         "unique(name)",
-        _("Thermal Treatment has to be unique !"),
-    )
+        "Thermal Treatment has to be unique !"
+    ),
 
     def copy(self, default=None):
         if not default:
             default = {}
         default["name"] = self.name + " (copy)"
         return super(PlmTreatment, self).copy(default=default)
-
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
