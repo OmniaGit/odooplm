@@ -3357,7 +3357,7 @@ class IrAttachment(models.Model):
                 if root_id.id in check:
                     return
                 check.append(root_id.id)
-                out.append(model_child_id)    
+                out.append(root_id)    
                 for root_model_attachment_id in root_id.getRelatedOneLevelLinks(root_id.id,
                                                                                 link_kinds):
 
