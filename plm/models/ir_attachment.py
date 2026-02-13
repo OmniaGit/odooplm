@@ -3341,25 +3341,37 @@ class IrAttachment(models.Model):
         #
         out = [root_id]
         check = [root_id]
+        #
+        def get_all_ids(attachment_id,
+                        link_kinds, 
+                        latest):
+            out = [attachment_id]
+            check = [attachment_id.id]
+            #
+            def _get_all_ids(attachment_id):
+                
+                if latest:
+                    root_id = attachment_id.get_latest_version()
+                else:
+                    root_id = attachment_id
+                computed_id = []
+                for root_model_attachment_id in root_id.getRelatedOneLevelLinks(root_id.id,
+                                                                                link_kinds):
+                    for model_child_id in get_all_ids(self.browse(root_model_attachment_id)):
+                        if model_child_id.id not in check:
+                            check,append(model_child_id.id)
+                            out.append(model_child_id)
+            #
+            return _get_all_ids(attachment_id)
         
         if root_id.document_type.upper() in ['2D']:
-            computed_id = []
-            for root_model_attachment_id in root_id.getRelatedOneLevelLinks(root_id.id,
-                                                                            ['LyTree', 'RfTree']):
-                if root_model_attachment_id not in computed_id:
-                    computed_id.append(root_model_attachment_id)
-                    for model_child_id in self.browse(root_model_attachment_id).getDocBomFlat(latest):
-                        if model_child_id not in check:
-                            out.append(model_child_id)
+            out+=get_all_ids(root_id,
+                             ['LyTree', 'RfTree'],
+                             latest)
         else:
-            computed_id = []
-            for child_id in root_id.getRelatedOneLevelLinks(root_id.id,
-                                                            ['HiTree','RfTree']):
-                if root_model_attachment_id not in child_id:
-                    computed_id.append(child_id)
-                    for child_root_id in self.browse(child_id).getDocBomFlat(latest):
-                        if child_root_id not in check:
-                            out.append(child_root_id)
+            out+=get_all_ids(root_id,
+                             ['HiTree', 'RfTree'],
+                             latest)
         return out
 
     def getDocBomFlatSql(self):
