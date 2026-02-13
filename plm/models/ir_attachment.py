@@ -3359,7 +3359,7 @@ class IrAttachment(models.Model):
                                                                                 link_kinds):
                     for model_child_id in get_all_ids(self.browse(root_model_attachment_id)):
                         if model_child_id.id not in check:
-                            check,append(model_child_id.id)
+                            check.append(model_child_id.id)
                             out.append(model_child_id)
             #
             return _get_all_ids(attachment_id)
