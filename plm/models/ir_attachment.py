@@ -3334,14 +3334,6 @@ class IrAttachment(models.Model):
         """
         self.ensure_one()
         #
-        if latest:
-            root_id = self.get_latest_version()
-        else:
-            root_id = self
-        #
-        out = [root_id]
-        check = [root_id]
-        #
         def get_all_ids(attachment_id,
                         link_kinds, 
                         latest):
@@ -3363,17 +3355,16 @@ class IrAttachment(models.Model):
 
                     _get_all_ids(self.browse(root_model_attachment_id))
            #
-            return _get_all_ids(attachment_id)
+            _get_all_ids(attachment_id)
         
-        if root_id.document_type.upper() in ['2D']:
-            out+=get_all_ids(root_id,
+        if self.document_type.upper() in ['2D']:
+            return get_all_ids(self,
                              ['LyTree', 'RfTree'],
                              latest)
         else:
-            out+=get_all_ids(root_id,
+            return get_all_ids(self,
                              ['HiTree', 'RfTree'],
                              latest)
-        return out
 
     def getDocBomFlatSql(self):
         """
