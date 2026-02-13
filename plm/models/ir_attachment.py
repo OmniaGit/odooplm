@@ -3334,11 +3334,12 @@ class IrAttachment(models.Model):
         """
         self.ensure_one()
         #
+        
         def get_all_ids(attachment_id,
                         link_kinds, 
                         latest):
-            out = [attachment_id]
-            check = [attachment_id.id]
+            out=[]
+            check = []
             #
             def _get_all_ids(attachment_id):
                 if latest:
