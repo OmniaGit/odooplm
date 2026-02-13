@@ -3341,19 +3341,25 @@ class IrAttachment(models.Model):
         #
         out = [root_id]
         check = [root_id]
-        children_list = []
+        
         if root_id.document_type.upper() in ['2D']:
+            computed_id = []
             for root_model_attachment_id in root_id.getRelatedOneLevelLinks(root_id.id,
                                                                             ['LyTree', 'RfTree']):
+                if root_model_attachment_id not in computed_id:
+                    computed_id.append(root_model_attachment_id)
                     for model_child_id in self.browse(root_model_attachment_id).getDocBomFlat(latest):
                         if model_child_id not in check:
                             out.append(model_child_id)
         else:
+            computed_id = []
             for child_id in root_id.getRelatedOneLevelLinks(root_id.id,
                                                             ['HiTree','RfTree']):
-                for child_root_id in self.browse(child_id).getDocBomFlat(latest):
-                    if child_root_id not in check:
-                        out.append(child_root_id)
+                if root_model_attachment_id not in child_id:
+                    computed_id.append(child_id)
+                    for child_root_id in self.browse(child_id).getDocBomFlat(latest):
+                        if child_root_id not in check:
+                            out.append(child_root_id)
         return out
 
     def getDocBomFlatSql(self):
