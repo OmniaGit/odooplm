@@ -3357,7 +3357,7 @@ class IrAttachment(models.Model):
                 computed_id = []
                 for root_model_attachment_id in root_id.getRelatedOneLevelLinks(root_id.id,
                                                                                 link_kinds):
-                    for model_child_id in get_all_ids(self.browse(root_model_attachment_id)):
+                    for model_child_id in _get_all_ids(self.browse(root_model_attachment_id)):
                         if model_child_id.id not in check:
                             check.append(model_child_id.id)
                             out.append(model_child_id)
