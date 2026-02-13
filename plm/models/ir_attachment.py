@@ -3357,7 +3357,8 @@ class IrAttachment(models.Model):
                     _get_all_ids(self.browse(root_model_attachment_id))
            #
             _get_all_ids(attachment_id)
-        
+            return out
+        #
         if self.document_type.upper() in ['2D']:
             return get_all_ids(self,
                              ['LyTree', 'RfTree'],
