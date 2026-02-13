@@ -45,7 +45,6 @@ DEFAULT_SERVER_DATETIME_FORMAT = "%s %s" % (
     DEFAULT_SERVER_TIME_FORMAT,
 )
 
-
 def correctDate(fromTimeStr, context):
     serverUtcTime = parser.parse(fromTimeStr.strftime(DEFAULT_SERVER_DATETIME_FORMAT))
     utcDate = serverUtcTime.replace(tzinfo=pytz.utc).astimezone(
@@ -53,11 +52,10 @@ def correctDate(fromTimeStr, context):
     )
     return utcDate.replace(tzinfo=None)
 
-
 class Plm_box_document(models.Model):
     _inherit = "ir.attachment"
 
-    name = fields.Char(_("Attachment Name"), required=False)
+    name = fields.Char(string="Attachment Name", required=False)
     is_plm_box = fields.Boolean("Is Plm Box document")
     plm_box_id = fields.Many2one("plm.box")
 

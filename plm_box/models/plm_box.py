@@ -60,52 +60,68 @@ class Plm_box(models.Model):
     _description = "Model to manage a box inside the plm module"
     _inherit = "revision.plm.mixin"
     _rec_name = "engineering_code"
+    _parent_name = "parent_id"
+    _parent_store = True
 
-    box_id = fields.Integer(_("Box ID"))
-    version = fields.Integer(_("Version"))
-    description = fields.Text(_("Description"))
+    box_id = fields.Integer(string="Box ID")
+    version = fields.Integer(string="Version")
+    description = fields.Text(string="Description")
     csv_structure = fields.Text(
-        _("CSV Structure"),
+        string="CSV Structure",
         default="""{"engineering_code": "","engineering_revision": "","qty": ""}""",
     )
 
-    document_rel = fields.One2many("ir.attachment", "plm_box_id", "Documents")
+    document_rel = fields.One2many("ir.attachment", "plm_box_id", string="Documents")
     plm_box_rel = fields.Many2many(
         "plm.box",
         "plm_box_box_rel",
         "plm_box_parent_id",
         "plm_box_child_id",
-        _("Children Box"),
+        string="Children Box",
     )
     groups_rel = fields.Many2many(
         "res.groups",
         "plm_box_groups_rel",
         "plm_box_id",
         "group_id",
-        _("Groups Allowed"),
+        string="Groups Allowed",
     )
-    create_date = fields.Datetime(_("Date Created"), readonly=True)
-    write_date = fields.Datetime(_("Date Modified"), readonly=True)
+    create_date = fields.Datetime(string="Date Created", readonly=True)
+    write_date = fields.Datetime(string="Date Modified", readonly=True)
     product_id = fields.Many2many(
-        "product.product", "plm_box_products_rel", "box_id", "product_id", _("Product")
+        "product.product", "plm_box_products_rel", "box_id", "product_id", string="Product"
     )
     project_id = fields.Many2many(
-        "project.project", "plm_box_proj_rel", "box_id", "project_id", _("Project")
+        "project.project", "plm_box_proj_rel", "box_id", "project_id", string="Project"
     )
     task_id = fields.Many2many(
-        "project.task", "plm_box_task_rel", "box_id", "task_id", _("Task")
+        "project.task", "plm_box_task_rel", "box_id", "task_id", string="Task"
     )
     sale_ord_id = fields.Many2many(
-        "sale.order", "plm_box_sale_ord_rel", "box_id", "sale_ord_id", _("Sale Order")
+        "sale.order", "plm_box_sale_ord_rel", "box_id", "sale_ord_id", string="Sale Order"
     )
     user_rel_id = fields.Many2many(
-        "res.users", "plm_box_user_rel", "box_id", "user_id", _("User")
+        "res.users", "plm_box_user_rel", "box_id", "user_id", string="User"
     )
     bom_id = fields.Many2many(
-        "mrp.bom", "plm_box_bom_rel", "box_id", "bom_id", _("Bill Of Material")
+        "mrp.bom", "plm_box_bom_rel", "box_id", "bom_id", string="Bill Of Material"
     )
     wc_id = fields.Many2many(
-        "mrp.workcenter", "plm_box_wc_rel", "box_id", "wc_id", _("Work Center")
+        "mrp.workcenter", "plm_box_wc_rel", "box_id", "wc_id", string="Work Center"
+    )
+
+    parent_id = fields.Many2one(
+        "plm.box",
+        string="Parent Folder",
+        index=True
+    )
+
+    parent_path = fields.Char(index=True)
+
+    child_ids = fields.One2many(
+        "plm.box",
+        "parent_id",
+        string="Sub Folders"
     )
 
     def unlink(self):
@@ -885,6 +901,3 @@ class Plm_box(models.Model):
             outDict["entities"]["document_rel"][
                 str(document.id)
             ] = self.getDocDictValues(document)
-
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
