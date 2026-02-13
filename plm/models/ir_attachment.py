@@ -4089,8 +4089,7 @@ class IrAttachment(models.Model):
         self.ensure_one()
         #
         if latest:
-            out_main_id = self.get_latest_version().id
-            for document_id in out_main_id.getDocBomFlat(latest):
+            for document_id in self.getDocBomFlat(latest):
                 out.append(document_id.get_download_dict(hostname,
                                                          hostpws))
         else:
