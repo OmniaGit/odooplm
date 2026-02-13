@@ -101,6 +101,17 @@
         <field name="perm_create" eval="1"/>
         <field name="perm_unlink" eval="1"/>
     </record>
+
+    <record id="plm_ir_ui_view-read" model="ir.model.access">
+        <field name="name">Plm Ir Ui View</field>
+        <field name="model_id" ref="model_ir_ui_view"/>
+        <field name="group_id" ref="group_plm_integration_user"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="0"/>
+        <field name="perm_create" eval="0"/>
+        <field name="perm_unlink" eval="0"/>
+    </record>
+    
 <!-- plm_temporary_message -->
     <record id="plm_plm_temporary_message_view" model="ir.model.access">
         <field name="name">PLM Temporary message</field>
