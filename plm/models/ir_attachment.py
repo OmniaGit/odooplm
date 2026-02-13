@@ -3349,19 +3349,20 @@ class IrAttachment(models.Model):
             check = [attachment_id.id]
             #
             def _get_all_ids(attachment_id):
-                
                 if latest:
                     root_id = attachment_id.get_latest_version()
                 else:
                     root_id = attachment_id
-                computed_id = []
+                
+                if root_id.id in check:
+                    return
+                check.append(root_id.id)
+                out.append(model_child_id)    
                 for root_model_attachment_id in root_id.getRelatedOneLevelLinks(root_id.id,
                                                                                 link_kinds):
-                    for model_child_id in _get_all_ids(self.browse(root_model_attachment_id)):
-                        if model_child_id.id not in check:
-                            check.append(model_child_id.id)
-                            out.append(model_child_id)
-            #
+
+                    _get_all_ids(self.browse(root_model_attachment_id))
+           #
             return _get_all_ids(attachment_id)
         
         if root_id.document_type.upper() in ['2D']:
