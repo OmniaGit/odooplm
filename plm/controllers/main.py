@@ -82,7 +82,7 @@ class UploadDocument(Controller):
                 to_write['preview'] = base64.b64encode(preview.stream.read())
             ir_attachment_id = request.env['ir.attachment'].browse(doc_id)
             ir_attachment_id.write(to_write)
-            ir_attachment_id.sudo().update_component_preview()
+            ir_attachment_id.sudo().update_component_preview(kw.get('product_id',False))
             ir_attachment_id.setupCadOpen(hostname=kw.get('hostname', ''), 
                                           pws_path=kw.get('hostpws', ''), 
                                           operation_type='save',

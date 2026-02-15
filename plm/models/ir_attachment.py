@@ -1059,12 +1059,20 @@ class IrAttachment(models.Model):
         res.with_context(create=True).check_unique()
         return res
 
-    def update_component_preview(self):
+    def update_component_preview(self,
+                                 product_id=False):
         for ir_attachment_id in self:
             if ir_attachment_id.document_type == '3d' and ir_attachment_id.preview:
+                try:
+                    if product_id:
+                        product_product_id = self.env['product.product'].browse(int(product_id))
+                        product_product_id.image_1920 = self.preview
+                        break
+                except Exception as ex:
+                    ogging.error(ex)
                 to_update = {}
-                for product_tmpl in ir_attachment_id.linkedcomponents:
-                    to_update[product_tmpl.engineering_revision] = product_tmpl
+                for product_product_id in ir_attachment_id.linkedcomponents:
+                    to_update[product_product_id.engineering_revision] = product_product_id
                 if to_update:
                     to_update[max(to_update)].image_1920 = self.preview
 
