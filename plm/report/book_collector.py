@@ -142,6 +142,61 @@ class BookCollector(object):
         outputStream.close()
 
 
+def packDocumentsNew(docRepository, 
+                     documents, 
+                     bookCollector):
+    """
+        pack the documenta for paper size
+    """
+    packed = []
+    output0 = []
+    output1 = []
+    output2 = []
+    output3 = []
+    output4 = []
+    if not bookCollector:
+        bookCollector = BookCollector()
+    #
+    for product_id, document in documents:
+        if document.id not in packed:
+            appendPage = False
+            if document.printout and document.printout != 'None':
+                byteIoStream = BytesIO(base64.b64decode(document.printout))
+                appendPage = True
+            elif isPdf(document.name):
+                value = getDocumentStream(docRepository, 
+                                          document)
+                if value:
+                    byteIoStream = BytesIO(value)
+                    appendPage = True
+            if appendPage:
+                nameStream, paper = getPagePaperFormat(product_id, byteIoStream)
+                if nameStream:
+                    byteIoStream = nameStream
+                if(paper == 0):
+                    output0.append((byteIoStream, document))
+                elif(paper == 1):
+                    output1.append((byteIoStream, document))
+                elif(paper == 2):
+                    output2.append((byteIoStream, document))
+                elif(paper == 3):
+                    output3.append((byteIoStream, document))
+                elif(paper == 4):
+                    output4.append((byteIoStream, document))
+                else:
+                    output0.append((byteIoStream, document))
+                packed.append(document.id)
+    for pag in output0 + output1 + output2 + output3 + output4:
+        bookCollector.addPage(pag)
+    if bookCollector is not None:
+        pdf_string = BytesIO()
+        bookCollector.collector.write(pdf_string)
+        out = pdf_string.getvalue()
+        pdf_string.close()
+        return (out, 'pdf')
+    return (False, '')
+
+
 def packDocuments(docRepository, documents, bookCollector):
     """
         pack the documenta for paper size
@@ -234,26 +289,41 @@ def paperFormat(_boundingBox):
             paper = 4                                     # Format A4
             return (orientation, paper)
         return (orientation, paper)
+                
+def getPagePaperFormat(product_id, 
+                       byteIoStream):
+    #
+    reader = PdfFileReader(byteIoStream,
+                           strict=False)
+    _orientation, paper = paperFormat(reader.getPage(0).mediaBox)
+    
+    stream = extract_pdf_from_name(reader, product_id.engineering_code)
+    return stream, paper
 
 def extract_page_name(file_orig,
                       name):
     BASE_NAME = os.path.dirname(file_orig)
-    reader = pyPdf.PdfFileReader(file_orig) # path to PDF
+    reader = PdfFileReader(file_orig) # path to PDF
+    stream = extract_pdf_from_name(reader, name)
+    #
+    file_path = os.path.join(BASE_NAME, f"{page_title}.pdf")
+    print(f"Generate pdf {file_path}")
+    with open(file_path, "wb") as output:
+        output.write(stream.read())
 
-    for i, outline in enumerate(reader.getOutlines()):
-        
-        if isinstance(outline,dict) and outline.get('/Type')=='/Fit':
-            page_number = reader.getDestinationPageNumber(outline)
+def extract_pdf_from_name(reader,
+                           name):
+    page_number=-1
+    for outline in reader.getOutlines():
+        if isinstance(outline,dict) and \
+                      outline.get('/Type')=='/Fit':
+            page_number+=1
             page_title = outline.title
             if page_title==name:
-                print(f"Extracting {page_number} on page: {page_title}")
-                writer = pyPdf.PdfFileWriter()
                 page = reader.getPage(page_number)
+                writer = PdfFileWriter()
                 writer.addPage(page)
-                file_path = os.path.join(BASE_NAME, f"{page_title}.pdf")
-                print(f"Generate pdf {file_path}")
-                with open(file_path, "wb") as output:
-                    writer.write(output)
-                print("Page generated")
-                break
-    
+                out = BytesIO()
+                writer.write(out)
+                return out
+    return False
