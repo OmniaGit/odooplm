@@ -46,6 +46,6 @@ class IrAttachment(models.Model):
         view_id = self.env["ir.model.data"]._xmlid_to_res_id(
             "plm_pdf_workorder.plm_pdf_show_document_attachment")
 
-        url = f"{base_url}/web#id={self.id}&view_id={view_id}&model=ir.attachment&view_type=form"
+        url = f"{base_url}web#id={self.id}&view_id={view_id}&model=ir.attachment&view_type=form"
 
         return {'type': 'ir.actions.act_url', 'url': url, 'target': '_blank'}

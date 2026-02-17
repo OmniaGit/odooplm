@@ -19,10 +19,10 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from odoo import _, fields, models
+from odoo import fields, models
 
 
 class Plm_checkout_custom(models.Model):
     _inherit = "plm.checkout"
 
-    write_uid = fields.Integer(_("Write User Id"))
+    write_uid = fields.Integer(string="Write User Id")

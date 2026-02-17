@@ -34,61 +34,55 @@ class PlmDescription(models.Model):
     _name = "plm.description"
     _description = "PLM Descriptions"
 
-    name = fields.Char(_("Note to Description"), translate=True)
-    description = fields.Char(_("Standard Description"), default="")
-    description_en = fields.Char(_("Description English"))
+    name = fields.Char("Note to Description", translate=True)
+    description = fields.Char("Standard Description", default="")
+    description_en = fields.Char("Description English")
     umc1 = fields.Char(
-        _("UM / Feature 1"),
-        help=_("Allow to specify a unit measure or a label for the feature."),
+        "UM / Feature 1",
+        help="Allow to specify a unit measure or a label for the feature.",
     )
     fmt1 = fields.Char(
-        _("Format Feature 1"),
+        "Format Feature 1",
         default="",
-        help=_(
+        help=
             "Allow to represent the measure: %s%s allow to build um and value, %s builds only value, none builds only value."
-        ),
     )
     umc2 = fields.Char(
-        _("UM / Feature 2"),
-        help=_("Allow to specify a unit measure or a label for the feature."),
+        "UM / Feature 2",
+        help="Allow to specify a unit measure or a label for the feature.",
     )
     fmt2 = fields.Char(
-        _("Format Feature 2"),
+        "Format Feature 2",
         default="",
-        help=_(
+        help=
             "Allow to represent the measure: %s%s allow to build um and value, %s builds only value, none builds only value."
-        ),
     )
     umc3 = fields.Char(
-        _("UM / Feature 3"),
-        help=_("Allow to specify a unit measure or a label for the feature."),
+        "UM / Feature 3",
+        help="Allow to specify a unit measure or a label for the feature.",
     )
     fmt3 = fields.Char(
-        _("Format Feature 3"),
+        "Format Feature 3",
         default="",
-        help=_(
+        help=
             "Allow to represent the measure: %s%s allow to build um and value, %s builds only value, none builds only value."
-        ),
     )
     fmtend = fields.Char(
-        _("Format Feature Composed"),
+        "Format Feature Composed",
         default="",
-        help=_(
+        help=
             "Allow to represent a normalized composition of technical features : %s%s allows to build chained values."
-        ),
     )
     unitab = fields.Char(
-        _("Normative Rule"),
+        "Normative Rule",
         default="",
-        help=_(
+        help=
             "Specify normative rule (UNI, ISO, DIN...). It will be queued to build the product description."
-        ),
     )
     sequence = fields.Integer(
-        _("Sequence"),
-        help=_(
+        "Sequence",
+        help=
             "Assign the sequence order when displaying a list of product categories."
-        ),
     )
     show_help = fields.Boolean("Visible", default=False)
 

@@ -112,83 +112,83 @@ class ProductProduct(models.Model):
 
     tmp_material = fields.Many2one(
         "plm.material",
-        _("Raw Material"),
+        "Raw Material",
         required=False,
-        help=_("Select raw material for current product"),
+        help="Select raw material for current product",
     )
     tmp_surface = fields.Many2one(
         "plm.finishing",
-        _("Surface Finishing"),
+        "Surface Finishing",
         required=False,
-        help=_("Select surface finishing for current product"),
+        help="Select surface finishing for current product",
     )
     tmp_treatment = fields.Many2one(
         "plm.treatment",
-        _("Thermal Treatment"),
+        string="Thermal Treatment",
         required=False,
-        help=_("Select thermal treatment for current product"),
+        help="Select thermal treatment for current product",
     )
     father_part_ids = fields.Many2many(
         "product.product",
         compute=_father_part_compute,
-        string=_("BoM Hierarchy"),
+        string="BoM Hierarchy",
         store=False,
     )
-    create_date = fields.Datetime(_("Date Created"), readonly=True)
-    write_date = fields.Datetime(_("Date Modified"), readonly=True)
+    create_date = fields.Datetime("Date Created", readonly=True)
+    write_date = fields.Datetime("Date Modified", readonly=True)
     std_description = fields.Many2one(
         "plm.description",
-        _("Standard Description"),
+        string="Standard Description",
         required=False,
         default=False,
-        help=_("Select standard description for current product."),
+        help="Select standard description for current product.",
     )
     std_umc1 = fields.Char(
-        _("UM / Feature 1"),
+        "UM / Feature 1",
         size=32,
         default="",
-        help=_("Allow to specify a unit measure for the first feature."),
+        help="Allow to specify a unit measure for the first feature.",
     )
     std_value1 = fields.Float(
-        _("Value 1"), default=0, help=_("Assign value to the first characteristic.")
+        "Value 1", default=0, help="Assign value to the first characteristic."
     )
     std_umc2 = fields.Char(
-        _("UM / Feature 2"),
+        "UM / Feature 2",
         size=32,
         default="",
-        help=_("Allow to specify a unit measure for the second feature."),
+        help="Allow to specify a unit measure for the second feature.",
     )
     std_value2 = fields.Float(
-        _("Value 2"), default=0, help=_("Assign value to the second characteristic.")
+        "Value 2", default=0, help="Assign value to the second characteristic."
     )
     std_umc3 = fields.Char(
-        _("UM / Feature 3"),
+        "UM / Feature 3",
         size=32,
         default="",
-        help=_("Allow to specifiy a unit measure for the third feature."),
+        help="Allow to specifiy a unit measure for the third feature.",
     )
     std_value3 = fields.Float(
-        _("Value 3"), default=0, help=_("Assign value to the second characteristic.")
+        "Value 3", default=0, help="Assign value to the second characteristic."
     )
 
-    desc_modify = fields.Text(_("Modification Description"), default="")
-    source_product = fields.Many2one("product.product", _("Generated From"))
+    desc_modify = fields.Text("Modification Description", default="")
+    source_product = fields.Many2one("product.product", "Generated From")
     # Don't overload std_umc1, std_umc2, std_umc3 setting them related to std_description because odoo try to set value
     # of related fields and integration users doesn't have write permissions in std_description. The result is that
     # integration users can't create products if in changed values there is std_description
 
-    show_std_field1 = fields.Boolean(_("Show std field 1"), compute="_computeStd")
-    show_std_field2 = fields.Boolean(_("Show std field 2"), compute="_computeStd")
-    show_std_field3 = fields.Boolean(_("Show std field 3"), compute="_computeStd")
+    show_std_field1 = fields.Boolean("Show std field 1", compute="_computeStd")
+    show_std_field2 = fields.Boolean("Show std field 2", compute="_computeStd")
+    show_std_field3 = fields.Boolean("Show std field 3", compute="_computeStd")
 
     readonly_std_umc1 = fields.Boolean(
-        _("put readOnly the field standard description 1")
+        "put readOnly the field standard description 1"
     )
     readonly_std_umc2 = fields.Boolean(
-        _("put readOnly the field standard description 2")
+        "put readOnly the field standard description 2"
     )
     readonly_std_umc3 = fields.Boolean(
-        _("put readOnly the field standard description 3")
+        "put readOnly the field standard description 3"
     )
 
     linkeddocuments = fields.Many2many(
@@ -196,11 +196,11 @@ class ProductProduct(models.Model):
         "plm_component_document_rel",
         "component_id",
         "document_id",
-        _("Linked Docs"),
+        string="Linked Docs",
         ondelete="cascade",
     )
 
-    kit_bom = fields.Boolean(_("KIT Bom Type"))
+    kit_bom = fields.Boolean("KIT Bom Type")
 
     configuration_name = fields.Char("Configuration Name")
 
@@ -2151,11 +2151,7 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
                 result.append(res)
                 continue
             elif prod.engineering_code:
-                eng_code = "[%s_%s] %s" % (
-                    prod.engineering_code,
-                    prod.engineering_revision,
-                    eng_code,
-                )
+                eng_code = f'[{prod.engineering_code}_{prod.engineering_revision}] {eng_code}'
             result.append((prod.id, eng_code))
         return result
 
@@ -2325,25 +2321,26 @@ Please try to contact OmniaSolutions to solve this error, or install Plm Sale Fi
 class PlmTemporayMessage(models.TransientModel):
     _name = "plm.temporary.message"
     _description = "Temporary Class"
-    name = fields.Text(_("Bom Result"), readonly=True)
+
+    name = fields.Text("Bom Result", readonly=True)
 
 
 class ProductProductDashboard(models.Model):
     _name = "report.plmcomponent"
     _description = "Report Component"
     _auto = False
-    count_component_draft = fields.Integer(_("Draft"), readonly=True, translate=True)
+    count_component_draft = fields.Integer("Draft", readonly=True, translate=True)
     count_component_confirmed = fields.Integer(
-        _("Confirmed"), readonly=True, translate=True
+        "Confirmed", readonly=True, translate=True
     )
     count_component_released = fields.Integer(
-        _("Released"), readonly=True, translate=True
+        "Released", readonly=True, translate=True
     )
     count_component_modified = fields.Integer(
-        _("Under Modify"), readonly=True, translate=True
+        "Under Modify", readonly=True, translate=True
     )
     count_component_obsoleted = fields.Integer(
-        _("Obsoleted"), readonly=True, translate=True
+        "Obsoleted", readonly=True, translate=True
     )
 
     @api.model

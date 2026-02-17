@@ -25,7 +25,6 @@ Created on 28 March 2022
 
 @author: Daniel Smerghetto
 """
-from odoo.osv.expression import AND
 from odoo import models, api
 
 

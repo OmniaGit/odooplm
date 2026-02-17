@@ -97,7 +97,10 @@
                             <div class="o_field_widget o_stat_info o_readonly_modifier">
                                 <span>Check-In</span>
                                 <div class="d-flex align-items-center">
-                                    <i class="fa fa-user me-1" style="color:#714B67;"/>
+                                    <i class="fa fa-user me-1"
+                                       style="color:#714B67;"
+                                       title="Checkout User"
+                                       aria-label="Checkout User"/>
                                     <field name="checkout_user"/>
                                 </div>
                             </div>
@@ -116,11 +119,11 @@
                             <field name="engineering_revision_count" string=" " widget="statinfo"/>
                         </button>
 
-<!--                        <button name="check_out_user"-->
-<!--                                icon="fa-user"-->
-<!--                                invisible="checkout_user == False">-->
-<!--                            <field name="checkout_user"/>-->
-<!--                        </button>-->
+                        <!--                        <button name="check_out_user"-->
+                        <!--                                icon="fa-user"-->
+                        <!--                                invisible="checkout_user == False">-->
+                        <!--                            <field name="checkout_user"/>-->
+                        <!--                        </button>-->
 
                         <field name="must_update_from_cad" invisible="1"></field>
                         <button name="related_not_update"
@@ -281,7 +284,8 @@
                   decoration-muted="engineering_state == 'obsoleted'">
                 <field name="document_type" invisible="True"/>
                 <field name="preview" widget="image" invisible="preview == False" options="{ 'size': [60, 60]}"/>
-                <field name="preview_related" widget="image" invisible="preview != False" options="{ 'size': [60, 60]}"/>
+                <field name="preview_related" widget="image" invisible="preview != False"
+                       options="{ 'size': [60, 60]}"/>
                 <button
                     class="fa fa-print"
                     type="object"
@@ -410,7 +414,7 @@
                         <div class="row">
                             <div class="col-4" style="border-right: 1px solid lightgray;">
                                 <div
-                                        style="margin-right: 3px;border-left: 1px solid lightgray;border-right: 1px solid lightgray;">
+                                    style="margin-right: 3px;border-left: 1px solid lightgray;border-right: 1px solid lightgray;">
                                     <field name="preview"
                                            widget="image"
                                            options="{'zoom': true, 'zoom_delay': 800}"
@@ -517,7 +521,8 @@
                                                         <strong>State:</strong>
                                                         <t t-if="stateToUse == 'draft'">
                                                             <b>
-                                                                <span style="color: rgb(110, 51, 197);padding-left: 5px;">
+                                                                <span
+                                                                    style="color: rgb(110, 51, 197);padding-left: 5px;">
                                                                     <u>
                                                                         <field name="engineering_state"/>
                                                                     </u>
@@ -536,7 +541,7 @@
                                                         <t t-elif="stateToUse == 'released'">
                                                             <b>
                                                                 <span
-                                                                        style="color: rgba(0, 170, 34, 0.66);padding-left: 5px;">
+                                                                    style="color: rgba(0, 170, 34, 0.66);padding-left: 5px;">
                                                                     <u>
                                                                         <field name="engineering_state"/>
                                                                     </u>
@@ -545,7 +550,8 @@
                                                         </t>
                                                         <t t-elif="stateToUse == 'undermodify'">
                                                             <b>
-                                                                <span style="color: rgb(218, 159, 34);padding-left: 5px;">
+                                                                <span
+                                                                    style="color: rgb(218, 159, 34);padding-left: 5px;">
                                                                     <u>
                                                                         <field name="engineering_state"/>
                                                                     </u>
@@ -554,7 +560,8 @@
                                                         </t>
                                                         <t t-elif="stateToUse == 'obsoleted'">
                                                             <b>
-                                                                <span style="color: rgb(231, 43, 26);padding-left: 5px;">
+                                                                <span
+                                                                    style="color: rgb(231, 43, 26);padding-left: 5px;">
                                                                     <u>
                                                                         <field name="engineering_state"/>
                                                                     </u>

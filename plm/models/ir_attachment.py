@@ -53,25 +53,25 @@ class IrAttachment(models.Model):
     _description = "Ir Attachment"
     _inherit = ["ir.attachment", "revision.plm.mixin"]
 
-    printout = fields.Binary(_("Printout Content"), help=_("Print PDF content."))
-    printout_name = fields.Char(_("Printout Name"), compute="_getPrintoutName")
+    printout = fields.Binary(string="Printout Content", help="Print PDF content.")
+    printout_name = fields.Char(string="Printout Name", compute="_getPrintoutName")
     preview = fields.Image(
-        _("Preview Content"), max_width=1920, max_height=1920, attachment=False
+        string="Preview Content", max_width=1920, max_height=1920, attachment=False
     )
 
     checkout_user = fields.Char(
-        string=_("Checked-Out to"), compute="_get_checkout_state"
+        string="Checked-Out to", compute="_get_checkout_state"
     )
 
     is_checkout = fields.Boolean(
-        _("Is Checked-Out"), compute="_is_checkout", store=False
+        string="Is Checked-Out", compute="_is_checkout", store=False
     )
     linkedcomponents = fields.Many2many(
         "product.product",
         "plm_component_document_rel",
         "document_id",
         "component_id",
-        _("Linked Parts"),
+        "Linked Parts",
         ondelete="cascade",
     )
     is_linkedcomponents = fields.Boolean(
@@ -88,21 +88,20 @@ class IrAttachment(models.Model):
 
     document_type = fields.Selection(
         [
-            ("other", _("Other")),
-            ("2d", _("2D")),
-            ("3d", _("3D")),
-            ("pr", _("Presentation")),
+            ("other", "Other"),
+            ("2d", "2D"),
+            ("3d", "3D"),
+            ("pr", "Presentation"),
         ],
         compute="_compute_document_type",
         store=True,
-        string=_("Document Type"),
+        string="Document Type",
     )
-    desc_modify = fields.Text(_("Modification Description"), default="")
+    desc_modify = fields.Text(string="Modification Description", default="")
     is_plm = fields.Boolean(
         "Is A Plm Document",
-        help=_(
+        help=
             "If the flag is set, the document is managed by the plm module, and imply its backup at each save and the visibility on some views."
-        ),
     )
     attachment_revision_count = fields.Integer(compute="_attachment_revision_count")
     first_source_path = fields.Char("Source path of the first time save")
@@ -116,7 +115,7 @@ class IrAttachment(models.Model):
                                           )
 
     preview_related = fields.Image(
-        max_height=1920, max_width=1920, string=_("Child Parent Preview")
+        max_height=1920, max_width=1920, string="Child Parent Preview"
     )
 
 

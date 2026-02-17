@@ -31,18 +31,17 @@ class PlmFinishing(models.Model):
     _name = "plm.finishing"
     _description = "Surface Finishing"
 
-    name = fields.Char(_("Specification"), required=True, translate=True)
-    description = fields.Char(_("Description"), size=128)
+    name = fields.Char("Specification", required=True, translate=True)
+    description = fields.Char("Description", size=128)
     sequence = fields.Integer(
-        _("Sequence"),
-        help=_(
+        "Sequence",
+        help=
             "Gives the sequence order when displaying a list of product categories."
-        ),
-    )
+        )
 
     _name_uniq = models.Constraint(
         "unique(name)",
-        _("Surface Finishing has to be unique !"),
+        "Surface Finishing has to be unique !",
     )
 
     def copy(self, default=None):
