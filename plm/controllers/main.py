@@ -122,7 +122,7 @@ class UploadDocument(Controller):
                                attachment_id,
                                hostname,
                                hostpws,
-                               mode='active'):
+                               mode='active',*k,**Kw):
         """
         get all the data from the document in order to be able to understed how to download it
         :attachment_id int ir_attachment id

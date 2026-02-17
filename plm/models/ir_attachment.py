@@ -27,7 +27,7 @@ import shutil
 import string
 import logging
 from datetime import datetime
-
+import odoo.tools as tools
 from odoo import _, api, fields, models, SUPERUSER_ID
 from odoo.addons.plm.models.plm_mixin import (PLM_NO_WRITE_STATE,
                                               RELEASED_STATUS,
@@ -119,18 +119,7 @@ class IrAttachment(models.Model):
         max_height=1920, max_width=1920, string=_("Child Parent Preview")
     )
 
-    # def _compute_must_update_from_cad(self):
-    #     ir_attachment_relation = self.env["ir.attachment.relation"]
-    #     for ir_attachment in self:
-    #         ir_attachment.must_update_from_cad = False
-    #         if ir_attachment.document_type == "2d":
-    #             ir_attachment.must_update_from_cad = (
-    #                 not ir_attachment_relation.is_2d_ok(ir_attachment)
-    #             )
-    #         elif ir_attachment.document_type == "pr":
-    #             ir_attachment.must_update_from_cad = (
-    #                 not ir_attachment_relation.is_pr_ok(ir_attachment)
-    #             )
+
 
     def _getPrintoutName(self):
         for ir_attachment_id in self:
@@ -2957,13 +2946,18 @@ class IrAttachment(models.Model):
         )
         if not product_product_id:
             logging.warning(
-                "Unable to create / get product_product from %s" % component_props
+                f"Unable to create / get product_product from {component_props}" 
             )
+        #
         #  generate document
+        #
         ir_attachment_id, action = (
             self.env["ir.attachment"]
             .with_context(plm_saving_context=clientArg)
-            .createFromProps(document_props, dbThread, host_name, host_pws)
+            .createFromProps(document_props,
+                             dbThread,
+                             host_name,
+                             host_pws)
         )
         if not ir_attachment_id:
             logging.warning(
@@ -3647,6 +3641,27 @@ class IrAttachment(models.Model):
                         )
                         appendItem(out["to_info"], tmp_dict)
             return tmp_dict
+    
+    def getOutUserInfo(self):
+        self.ensure_one()
+        checkoutBrwsList = self.env['plm.checkout'].search([('documentid', '=', self.id)])
+        for checkOutBrws in checkoutBrwsList:
+            return  {'name': self.getUserSign(checkOutBrws.userid.id),
+                     'hostname': checkOutBrws.hostname,
+                     'pws_path':checkOutBrws.hostpws,
+                     }
+        return  {'name': '',
+                 'hostname': '',
+                 'pws_path':'',
+                 }
+        
+    def getCheckInOutFlag(self):
+        self.ensure_one()
+        return {
+            'in': not self.is_checkout,
+            'out':self.is_checkout,
+            'out_user': self.getOutUserInfo()
+            }
 
         def recursionf(
             doc_id,
@@ -3892,6 +3907,26 @@ class IrAttachment(models.Model):
             "children": children_list,
         }
 
+    def get_retated_product_Template_dict(self):
+        """
+        get the product related as simple dicrionary
+        """
+        def fill_up_product(product_product_id):
+            def fill_up_product_row(product_product_id):
+                product_tmpl_id = product_product_id.product_tmpl_id
+                return {
+                        'ent_id':product_tmpl_id.id,
+                        'engineering_code': product_tmpl_id.engineering_code,
+                        'engineering_revision': product_tmpl_id.engineering_revision,
+                        'configuration_name':product_product_id.configuration_name,
+                        'name': product_tmpl_id.name
+                        }
+        #
+        out={}
+        for product_id in self.linkedcomponents:
+            out[product_id.id] = fill_up_product(product_id)
+        return out
+
     def getDocBomFlat(self,
                       latest=False):
         """
@@ -3944,34 +3979,6 @@ class IrAttachment(models.Model):
         return out
 
     @api.model
-    def sent_check_out_requests(self, document_id):
-        """
-        create an activity on document asking to check-out the document
-        """
-        for ir_attachment_id in self.browse([document_id]):
-            _id, action, _message = ir_attachment_id.canCheckOut1()
-            if action == "check_out_by_user":
-                res_user_id = ir_attachment_id._getCheckOutUser()
-                message = _(
-                    f"User {self.env.user.display_name} request this document for make some modification"
-                )
-                todos = {
-                    "res_id": ir_attachment_id.id,
-                    "res_model_id": self.env["ir.model"]
-                    .search([("model", "=", self._name)])
-                    .id,
-                    "user_id": res_user_id.id,
-                    "summary": _("Check-In request"),
-                    "note": message,
-                    "activity_type_id": self.env.ref(
-                        "plm.mail_activity_check_out_request"
-                    ).id,
-                    "date_deadline": datetime.today().date(),
-                }
-                self.env["mail.activity"].create(todos)
-        return True
-
-    @api.model
     def sent_check_out_requests(self,
                                 document_id,
                                 host_name,
@@ -3999,11 +4006,10 @@ class IrAttachment(models.Model):
     def related_not_update(self):
         for attachment_id in self:
             relation_ids = self.env["ir.attachment.relation"].search(
-                [
-                    "|",
-                    ("parent_id", "=", attachment_id.id),
-                    ("child_id", "=", attachment_id.id),
-                    ("link_kind", "=", "LyTree"),
+                ["|",
+                 ("parent_id", "=", attachment_id.id),
+                 ("child_id", "=", attachment_id.id),
+                 ("link_kind", "=", "LyTree"),
                 ]
             )
             return {
@@ -4061,20 +4067,21 @@ class IrAttachment(models.Model):
             #
             children = []
             for doc_id_2d in self.getRelatedLyTree(
-                attachment_id, optional_return_type=["2d"]
-            ):
+                attachment_id, 
+                optional_return_type=["2d"]
+                ):
                 layout_data = self.get_clone_info_attr(doc_id_2d)
-                if "layouts" in parent_attrs:
-                    parent_attrs["layouts"].append(layout_data)
+                if "layouts" in out_parent_attrs:
+                    out_parent_attrs["layouts"].append(layout_data)
                 else:
-                    parent_attrs["layouts"] = [layout_data]
+                    out_parent_attrs["layouts"] = [layout_data]
             #
             # Collect children missing layouts
             #
             for child_attrs_structure in children_attrs_structure:
                 children.append(_recursion(child_attrs_structure))
             #
-            return (parent_attrs, children)
+            return (out_parent_attrs, children)
 
         return json.dumps(_recursion(json.loads(args[0])))
 
@@ -4389,16 +4396,18 @@ class IrAttachment(models.Model):
             if child.id == self.id:
                 out += parent_id
                 if recursion:
-                    for obj in self.getRelatedRfTreeNew(
-                        parent_id, recursion, evaluated, latest
-                    ):
+                    for obj in self.getRelatedRfTreeNew(parent_id, 
+                                                        recursion, 
+                                                        evaluated,
+                                                        latest):
                         out = obj
             else:
                 out += child_id
                 if recursion:
-                    for obj in self.getRelatedRfTreeNew(
-                        child_id, recursion, evaluated, latest
-                    ):
+                    for obj in self.getRelatedRfTreeNew(child_id, 
+                                                        recursion, 
+                                                        evaluated,
+                                                        latest):
                         out = obj
         return out
 
@@ -4410,29 +4419,26 @@ class IrAttachment(models.Model):
         """
         last_write_date = self.sudo().env['plm.cad.open'].getLastCadSave(self).write_date
         if not last_write_date:
-            last_write_date = self.write_date
+            last_write_date = datetime.strptime("01/01/2000 0:0:0", '%d/%m/%Y %H:%M:%S')
         return last_write_date
 
-    def get_retated_product_Template_dict(self,
-                                          latest_version=False):
+    def get_last_my_open(self):
+        last_open_date = self.sudo().env['plm.cad.open'].getLastCadOpenByUser(self,
+                                                                              self.env.user).write_date
+        if not last_open_date:
+            last_open_date = self.write_date
+        return last_open_date
 
         def fill_up_product(product_product_id):
             def fill_up_product_row(product_product_id):
                 product_tmpl_id = product_product_id.product_tmpl_id
-                out = {
+                return {
                     'ent_id': product_tmpl_id.id,
                     'engineering_code': product_tmpl_id.engineering_code,
                     'engineering_revision': product_tmpl_id.engineering_revision,
                     'configuration_name': product_product_id.configuration_name,
                     'name': product_tmpl_id.name
                 }
-
-            out = {'selected': fill_up_product_row(product_product_id)}
-            if latest_version:
-                latest_tmpl_product = product_product_id.product_tmpl_id.get_latest_version()
-                out['last'] = fill_up_product_row(latest_tmpl_product.product_variant_id)
-            return out
-
         #
         out = {}
         for product_id in self.linkedcomponents:
@@ -4525,56 +4531,32 @@ class IrAttachment(models.Model):
                     return "DOWNLOAD-ALLOW-FORCE"
                 return "DOWNLOAD"
 
-    def getOutUserInfo(self):
-        self.ensure_one()
-        checkoutBrwsList = self.env['plm.checkout'].search([('documentid', '=', self.id)])
-        for checkOutBrws in checkoutBrwsList:
-            return  {'name': self.getUserSign(checkOutBrws.userid.id),
-                     'hostname': checkOutBrws.hostname,
-                     'pws_path':checkOutBrws.hostpws,
-                     }
-        return  {'name': '',
-                 'hostname': '',
-                 'pws_path':'',
-                 }
-
-    def getCheckInOutFlag(self):
+    def get_download_dict(self,
+                          hostname,
+                          pws_path):
+        """
+        get a suitable dictionary that is used by the client in order to support the open feature
+        :hostname name of the host client machine that is asking for the attachment
+        :psw_path name of the host pws path of machine that is asking for the attachment
+        """
         self.ensure_one()
         return {
-            'in': not self.is_checkout,
-            'out':self.is_checkout,
-            'out_user': self.getOutUserInfo()
+            'name': self.name,
+            'ent_id': self.id,
+            'engineering_code': self.engineering_code,
+            'engineering_revision': self.engineering_revision,
+            'is_library': self.is_library,
+            'library_path': self.library_path,
+            'related_products': self.get_retated_product_Template_dict(),
+            #
+            'flags': self.getCheckInOutFlag(),
+            'last_update': self.get_last_cad_save_date().strftime(DEFAULT_SERVER_DATETIME_FORMAT),
+            'last_my_open': self.get_last_my_open().strftime(DEFAULT_SERVER_DATETIME_FORMAT),
+            'is_downloadable': self.isCollectableNew(hostname, 
+                                                     pws_path),
+            'is_last_revision': True if self.engineering_state not in [OBSOLATED_STATUS,
+                                                                         UNDER_MODIFY_STATUS] else False
             }
-
-    def get_download_dict(self,
-                          latest_attachment_id,
-                          latest):
-        self.ensure_one()
-
-        def get_attachment_dict(ent_id,
-                                latest):
-            return {
-                'name': ent_id.name,
-                'ent_id': ent_id.id,
-                'engineering_code': ent_id.engineering_code,
-                'engineering_revision': ent_id.engineering_revision,
-                'is_library': ent_id.is_library,
-                'related_products': ent_id.get_retated_product_Template_dict(latest),
-                #
-                'flags': self.getCheckInOutFlag(),
-                'last_update': self.get_last_cad_save_date().strftime(DEFAULT_SERVER_DATETIME_FORMAT),
-            }
-
-        #
-        out = {
-            'request_document': get_attachment_dict(self,
-                                                    latest)
-        }
-        #
-        if not latest and self.id != latest_attachment_id.id:
-            out['last_revision_document'] = get_attachment_dict(latest_attachment_id,
-                                                                latest)
-        return out
 
     def get_all_relation_flat_structure_sql(self,
                                             link_kind='HiTree'):

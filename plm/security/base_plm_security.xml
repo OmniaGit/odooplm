@@ -2,34 +2,34 @@
 <odoo>
 
 
-<!--    <record id="odooplm_module_category" model="ir.module.category">-->
-<!--        <field name="name">OdooPLM</field>-->
-<!--    </record>-->
-<!--    <record model="res.groups.privilege" id="res_groups_privilege_odooplm">-->
-<!--        <field name="name">OdooPLM</field>-->
-<!--        <field name="category_id" ref="plm.odooplm_module_category"/>-->
-<!--    </record>-->
+   <record id="odooplm_module_category" model="ir.module.category">
+       <field name="name">OdooPLM</field>
+   </record>
+   <record model="res.groups.privilege" id="res_groups_privilege_odooplm">
+       <field name="name">OdooPLM</field>
+       <field name="category_id" ref="plm.odooplm_module_category"/>
+   </record>
 
 
     <!-- View User  -->
     <record id="group_plm_view_user" model="res.groups">
         <field name="name">OdooPLM - View User</field>
-<!--        <field name="privilege_id" ref="res_groups_privilege_odooplm"/>-->
-<!--        <field name="implied_ids" eval="[(4, ref('mrp.group_mrp_user'))]"/>-->
+       <field name="privilege_id" ref="res_groups_privilege_odooplm"/>
+       <field name="implied_ids" eval="[(4, ref('mrp.group_mrp_user'))]"/>
     </record>
 
     <!-- Integration User  -->
     <record id="group_plm_integration_user" model="res.groups">
         <field name="name">OdooPLM - Integration User</field>
-<!--        <field name="privilege_id" ref="res_groups_privilege_odooplm"/>-->
-<!--        <field name="implied_ids" eval="[(4, ref('group_plm_view_user'))]"/>-->
+       <field name="privilege_id" ref="res_groups_privilege_odooplm"/>
+       <field name="implied_ids" eval="[(4, ref('group_plm_view_user'))]"/>
     </record>
 
     <!-- Administrator  -->
     <record id="group_plm_admin" model="res.groups">
         <field name="name">OdooPLM - Administrator</field>
-<!--        <field name="privilege_id" ref="res_groups_privilege_odooplm"/>-->
-<!--        <field name="implied_ids" eval="[(4, ref('group_plm_integration_user'))]"/>-->
+       <field name="privilege_id" ref="res_groups_privilege_odooplm"/>
+       <field name="implied_ids" eval="[(4, ref('group_plm_integration_user'))]"/>
         <field name="user_ids" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
     </record>
 
