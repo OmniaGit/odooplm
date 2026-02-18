@@ -1069,7 +1069,7 @@ class IrAttachment(models.Model):
                         product_product_id.image_1920 = self.preview
                         break
                 except Exception as ex:
-                    ogging.error(ex)
+                    logging.error(ex)
                 to_update = {}
                 for product_product_id in ir_attachment_id.linkedcomponents:
                     to_update[product_product_id.engineering_revision] = product_product_id
@@ -3987,7 +3987,20 @@ class IrAttachment(models.Model):
         # never open the file
         #
         return True
-
+    
+    def isCollectable(self, hostname, pws_path):
+        self.ensure_one()
+        out = True
+        if self.isCheckedOutByMe(): out = False
+        plm_cad_open = self.sudo().env['plm.cad.open'].getLastCadOpenByUser(self, self.env.user)
+        if plm_cad_open:
+            if plm_cad_open.hostname == hostname and plm_cad_open.pws_path == pws_path:
+                last_revision_id = self.browseLastRev()
+                if last_revision_id != last_revision_id:
+                    if last_revision_id.isCheckedOutByMe():
+                        out = False
+        return out
+    
     def isCollectableNew(self,
                          hostname,
                          pws_path):
