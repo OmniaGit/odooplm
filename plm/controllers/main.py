@@ -314,6 +314,8 @@ class UploadDocument(Controller):
             contex_brw = request.env['ir.attachment'].with_context(new_context)
             to_write['is_plm'] = True
             if not ir_attachment_id:
+                to_write['res_model'] = 'plm.access'
+                to_write['res_id'] = request.env.ref('plm.plm_basic_access_model').id
                 ir_attachment_id = contex_brw.create(to_write)
             else:
                 ir_attachment_id.with_context(new_context).write(to_write)

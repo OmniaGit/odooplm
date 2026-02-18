@@ -1281,7 +1281,7 @@ class IrAttachment(models.Model):
             msg = 'Document %r has not document content so cannot be checked-in' % (self.id)
             logging.warning(msg)
             return False
-        self.env['plm.checkout'].browse(checkOutId).unlink()
+        self.env['plm.checkout'].browse(checkOutId).sudo().unlink()
         return self.id
 
     def assign_must_update_flag(self,
@@ -2158,7 +2158,7 @@ class IrAttachment(models.Model):
                               'hostname': hostName,
                               'hostpws': hostPws,
                               'documentid': document.id}
-                    plm_checkout_id = self.env['plm.checkout'].create(values).id
+                    plm_checkout_id = self.env['plm.checkout'].sudo().create(values).id
                     break
         return plm_checkout_id, msg
 
