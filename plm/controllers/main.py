@@ -236,6 +236,8 @@ class UploadDocument(Controller):
             if not zip_ir_attachment_id:
                 if from_ir_attachment_id.engineering_code == zip_name:
                     to_write['engineering_code'] = filename
+                to_write['res_model'] = 'plm.access'
+                to_write['res_id'] = request.env.ref('plm.plm_basic_access_model').id
                 zip_ir_attachment_id  = contex_brw.create(to_write)
             else:
                 del to_write['name']
