@@ -180,9 +180,13 @@ class PlmDocumentRelations(models.Model):
                               ('child_id', '=', child_ir_attachment_id),
                               ('link_kind', '=', link_kind)]):
             return True
-        self.create({'parent_id': parent_ir_attachment_id,
+        try:
+            self.create({'parent_id': parent_ir_attachment_id,
                          'child_id': child_ir_attachment_id,
                          'link_kind': link_kind})
+        except Exception as ex:
+            logging.warning("Errorrr """)
+            logging.error(ex)
         return True
 
     @api.model
