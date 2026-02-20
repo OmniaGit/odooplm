@@ -4088,13 +4088,12 @@ class IrAttachment(models.Model):
                     ir_attachment_relation e
                 INNER JOIN subordinates s ON s.child_id = e.parent_id and s.link_kind=e.link_kind 
         ) 
-        SELECT child_id from subordinates ;
+        SELECT child_id from subordinates;
         """
         ids = set()
         ids.add(self.id)
         self.env.cr.execute(sql)
         for child_id in self.env.cr.fetchall():
-            ids.add(parent_id)
             ids.add(child_id)
         return self.browse(list(ids))
 
