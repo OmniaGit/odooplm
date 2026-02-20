@@ -4078,7 +4078,7 @@ class IrAttachment(models.Model):
             FROM
                 ir_attachment_relation
             WHERE
-                parent_id = {self.id} or child_id ={self.id} and link_kind={link_kind}
+                parent_id = {self.id} or child_id ={self.id} and link_kind='{link_kind}'
             UNION
                 SELECT
                     e.parent_id,
