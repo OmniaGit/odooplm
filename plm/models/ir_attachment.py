@@ -4094,7 +4094,7 @@ class IrAttachment(models.Model):
         ids.add(self.id)
         self.env.cr.execute(sql)
         for child_id in self.env.cr.fetchall():
-            ids.add(child_id)
+            ids.add(child_id[0])
         return self.browse(list(ids))
 
     def download_structure(self,
