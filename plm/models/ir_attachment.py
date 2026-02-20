@@ -4070,27 +4070,30 @@ class IrAttachment(models.Model):
         :return: [browserecord(ir.attachment),..]
         """
         sql = f"""
-        WITH RECURSIVE cte (parent_id, child_id,link_kind) AS (
-          SELECT parent_id, child_id,link_kind
-          FROM ir_attachment_relation
-          WHERE parent_id = {self.id} or child_id ={self.id}
-        
-          UNION
-        
-          SELECT ir_attachment_relation.parent_id,
-                 ir_attachment_relation.child_id,
-                 ir_attachment_relation.link_kind
-          FROM "ir_attachment_relation"
-            INNER JOIN cte
-            ON ir_attachment_relation.child_id = cte.parent_id
-        )
-        SELECT parent_id,child_id
-        FROM cte
-        where link_kind='{link_kind}'
+        WITH RECURSIVE subordinates AS (
+            SELECT
+                parent_id,
+                child_id,
+                link_kind
+            FROM
+                ir_attachment_relation
+            WHERE
+                parent_id = {self.id} or child_id ={self.id} and link_kind={link_kind}
+            UNION
+                SELECT
+                    e.parent_id,
+                    e.child_id,
+                    e.link_kind
+                FROM
+                    ir_attachment_relation e
+                INNER JOIN subordinates s ON s.child_id = e.parent_id and s.link_kind=e.link_kind 
+        ) 
+        SELECT child_id from subordinates ;
         """
         ids = set()
+        ids.add(self.id)
         self.env.cr.execute(sql)
-        for parent_id, child_id in self.env.cr.fetchall():
+        for child_id in self.env.cr.fetchall():
             ids.add(parent_id)
             ids.add(child_id)
         return self.browse(list(ids))
