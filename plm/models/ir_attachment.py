@@ -2869,7 +2869,7 @@ class IrAttachment(models.Model):
         cad_open_id = self.env['plm.cad.open'].getLastCadSave(self)
         if cad_open_id.write_date:
             return cad_open_id.write_date
-        return write_date
+        return self.write_date
 
     def getDefaulValueDict(self, docBrws, PLM_DT_DELTA, is_root):
         tmp_dict = {}
