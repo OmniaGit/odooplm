@@ -40,8 +40,8 @@ class PlmCadOpen(models.Model):
     document_id = fields.Many2one('ir.attachment', 'Related Document', index=True)
     rel_doc_rev = fields.Integer(related='document_id.engineering_revision', string="Revision", store=True)
     engineering_code = fields.Char(related='document_id.engineering_code', string="Code", store=True)
-    pws_path = fields.Char('PWS Path')
-    hostname = fields.Char('Hostname')
+    pws_path = fields.Char('PWS Path', index=True)
+    hostname = fields.Char('Hostname', index=True)
     operation_type = fields.Char('Operation Type', index=True)
 
     dbThread = fields.Char("Related Db Thread", index=True)
