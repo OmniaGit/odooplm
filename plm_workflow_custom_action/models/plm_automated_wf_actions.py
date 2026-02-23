@@ -108,7 +108,7 @@ class PlmAutomatedWFAction(models.Model):
             base_domain = [("id", "=", active_id)]
             for act in sudo_self.child_ids.sorted():
                 if sudo_self.domain:
-                    base_domain = base_domain + json.loads(sudo_self.domain.replace("'", ""))
+                    base_domain = base_domain + json.loads(sudo_self.domain)
                     obj_id = sudo_self.env[active_model].search(base_domain)
                 else:
                     obj_id = sudo_self.env[active_model].browse(active_id)
