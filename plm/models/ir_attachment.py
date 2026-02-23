@@ -3970,11 +3970,12 @@ class IrAttachment(models.Model):
             if obj_plm_cad_open.search_count([
                                         ('document_id','=', self.id),
                                         ('operation_type', '=', 'save'),
+                                        ('userid', '!=', self.env.user.id),
                                         ('create_date','>',last_open.create_date)]):
                 #
                 # save from other user
                 #
-                return False
+                return False # Not Download
             else:
                 if obj_plm_cad_open.search_count([
                                             ('engineering_code','=', self.engineering_code),
@@ -3987,11 +3988,11 @@ class IrAttachment(models.Model):
                     #
                     # open from me in some folder in different version 
                     #
-                    return False
+                    return False # Not Download
         #
         # never open the file
         #
-        return True
+        return True # Download
     
     def isCollectable(self, hostname, pws_path):
         self.ensure_one()
