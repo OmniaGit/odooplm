@@ -41,9 +41,9 @@ class PlmCadOpen(models.Model):
         related="document_id.engineering_revision", string="Revision", store=True
     )
     engineering_code = fields.Char(related='document_id.engineering_code', string="Code", store=True)
-    pws_path = fields.Char("PWS Path")
-    hostname = fields.Char("Hostname")
-    operation_type = fields.Char("Operation Type", index=True)
+    pws_path = fields.Char('PWS Path', index=True)
+    hostname = fields.Char('Hostname', index=True)
+    operation_type = fields.Char('Operation Type', index=True)
     dbThread = fields.Char("Related Db Thread", index=True)
 
     def get_full_location(self):

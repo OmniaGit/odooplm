@@ -154,9 +154,9 @@ class UploadDocument(Controller):
         latest=False
         if mode=='latest':
             latest=True
-        for ir_attachment_id in request.env['ir.attachment'].search([('id','=', attachment_id)]):
+        for ir_attachment_id in request.env['ir.attachment'].sudo().search([('id','=', attachment_id)]):
             try:
-                return Response(json.dumps(ir_attachment_id.download_structure(hostname,
+                return Response(json.dumps(ir_attachment_id.sudo().download_structure(hostname,
                                                                                hostpws,
                                                                                latest)))
             except Exception as ex:
@@ -176,10 +176,10 @@ class UploadDocument(Controller):
         :attachemnt_id internal odoo id for the given attachment
         :return: file request
         """
-        for ir_attachment_id in request.env['ir.attachment'].search([('id','=', attachment_id)]):
-            return request.env['ir.binary']._get_stream_from(ir_attachment_id,
-                                                             field_name='datas').get_response()
-        return Response(status=500,
+        for ir_attachment_id in request.env['ir.attachment'].sudo().search([('id','=', attachment_id)]):
+            return request.env['ir.binary'].sudo()._get_stream_from(ir_attachment_id,
+                                                                    field_name='datas').get_response()
+        return Response(status=500, 
                         qcontext=f"Attachment {attachment_id} not found")
 
     @route("/plm_document_upload/download", type="http", auth="user", methods=["GET"])
@@ -273,8 +273,10 @@ class UploadDocument(Controller):
             to_write["is_plm"] = True
             if not zip_ir_attachment_id:
                 if from_ir_attachment_id.engineering_code == zip_name:
-                    to_write["engineering_code"] = filename
-                zip_ir_attachment_id = contex_brw.create(to_write)
+                    to_write['engineering_code'] = filename
+                to_write['res_model'] = 'plm.access'
+                to_write['res_id'] = request.env.ref('plm.plm_basic_access_model').id
+                zip_ir_attachment_id  = contex_brw.create(to_write)
             else:
                 del to_write["name"]
                 del to_write["engineering_code"]
@@ -342,7 +344,7 @@ class UploadDocument(Controller):
         try:
             out = json.dumps(out)
         except Exception as ex:
-            logging.error(f"Error dumps object {ex}")
+            logging.error(f"Error dumps object {out}")
             out = json.dumps([])
         return Response(out)
 
@@ -384,6 +386,8 @@ class UploadDocument(Controller):
             contex_brw = request.env["ir.attachment"].with_context(new_context)
             to_write["is_plm"] = True
             if not ir_attachment_id:
+                to_write['res_model'] = 'plm.access'
+                to_write['res_id'] = request.env.ref('plm.plm_basic_access_model').id
                 ir_attachment_id = contex_brw.create(to_write)
             else:
                 ir_attachment_id.with_context(new_context).write(to_write)

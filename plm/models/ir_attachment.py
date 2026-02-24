@@ -1220,12 +1220,20 @@ class IrAttachment(models.Model):
         res.with_context(create=True).check_unique()
         return res
 
-    def update_component_preview(self):
+    def update_component_preview(self,
+                                 product_id=False):
         for ir_attachment_id in self:
-            if ir_attachment_id.document_type == "3d" and ir_attachment_id.preview:
+            if ir_attachment_id.document_type == '3d' and ir_attachment_id.preview:
+                try:
+                    if product_id:
+                        product_product_id = self.env['product.product'].browse(int(product_id))
+                        product_product_id.image_1920 = self.preview
+                        break
+                except Exception as ex:
+                    logging.error(ex)
                 to_update = {}
-                for product_tmpl in ir_attachment_id.linkedcomponents:
-                    to_update[product_tmpl.engineering_revision] = product_tmpl
+                for product_product_id in ir_attachment_id.linkedcomponents:
+                    to_update[product_product_id.engineering_revision] = product_product_id
                 if to_update:
                     to_update[max(to_update)].image_1920 = self.preview
 
@@ -1321,35 +1329,25 @@ class IrAttachment(models.Model):
         return parent_dict
 
     def unlinkCheckDocumentRelations(self):
-        mrp_bom_line = self.env["mrp.bom.line"]
-        for checkObj in self:
+        ctx = self.env.context.copy()
+        mrp_bom_line = self.env['mrp.bom.line']
+        for ir_attachment_id in self:
             #
             # Check document document relations
             #
-            id_parents = checkObj.getParentDocuments()
+            id_parents = ir_attachment_id.getParentDocuments()
             for child_doc, parent_docs in id_parents.items():
                 if parent_docs:
-                    msg = _(
-                        "You cannot unlink a component child that is present in a related documents:\n"
-                    )
+                    msg = _('You cannot unlink a component child that is present in a related documents:\n')
                     for parent_doc in parent_docs:
-                        msg += _(
-                            "\t Engineering Name = %r   Engineering Revision = %r   Id = %r\n"
-                        ) % (
-                                   parent_doc.engineering_code,
-                                   parent_doc.engineering_revision,
-                                   parent_doc.id,
-                               )
+                        msg += _(f'\t Engineering Name = {parent_doc.engineering_code}   Engineering Revision = {parent_doc.engineering_revision}   Id = {parent_doc.id}\n') 
                     raise UserError(msg)
 
-            for ir_attachment_id in self:
-                latest_attachment = ir_attachment_id.get_latest_version()[0]
-                for mrp_bom_line_id in mrp_bom_line.search([
-                    ("source_id", "=", latest_attachment.id)
-                ]):
-                    raise UserError(
-                        f"Unable to delete the Attachment that is present on the bom {mrp_bom_line_id.bom_id.display_name}"
-                    )
+            #
+            # Check Bom relations
+            #
+            for mrp_bom_line_id in mrp_bom_line.search([('source_id','=', ir_attachment_id.id)]):
+                raise UserError(f"Unable to delete the Attachment that is present on the bom {mrp_bom_line_id.bom_id.display_name}")
 
     def unlinkRestorePreviousDocument(self):
         for checkObj in self:
@@ -1394,7 +1392,7 @@ class IrAttachment(models.Model):
                 oldObject.remaining_unlink()
 
     def unlink(self):
-        for checkObj in self:
+        for checkObj in self.filtered(lambda x :x.is_plm==True):
             checkObj.unlinkCheckDocumentRelations()
             checkObj.linkedcomponents = False
             checkObj.unlinkRestorePreviousDocument()
@@ -1537,10 +1535,15 @@ class IrAttachment(models.Model):
                         if db_thread == child_db_thread:
                             layout_attachment_id.must_update_from_cad = False
                             continue
-                    if child_plm_cad_open.write_date<source_date:
+                    #
+                    if not source_date or not child_plm_cad_open.write_date:
                         layout_attachment_id.must_update_from_cad = True
                     else:
-                        layout_attachment_id.must_update_from_cad = False
+                        if child_plm_cad_open.write_date<source_date:
+                            layout_attachment_id.must_update_from_cad = True
+                        else:
+                            layout_attachment_id.must_update_from_cad = False
+                    #
             elif attachment_id.document_type=='2d' and not only_layout:
                 for ref_attachment_id in attachment_id.getRelatedModels():
                     child_plm_cad_open = cad_open_obj.getLastCadSave(ref_attachment_id)
@@ -1553,25 +1556,6 @@ class IrAttachment(models.Model):
                         attachment_id.must_update_from_cad = False
                     else:
                         attachment_id.must_update_from_cad = True
-
-    def getRelatedLayouts(self):
-        out = self.env['ir.attachment']
-        ir_attachment_relation = self.env['ir.attachment.relation']
-        for ir_attachment_id in self:
-            for relation in ir_attachment_relation.search([('child_id', '=', ir_attachment_id.id)]):
-                if f"{relation.parent_id.document_type}".upper()=='2D':
-                    out+= relation.parent_id
-        return out
-
-    def getRelatedModels(self):
-        out = self.env['ir.attachment']
-        ir_attachment_relation = self.env['ir.attachment.relation']
-        for ir_attachment_id in self:
-            for relation in ir_attachment_relation.search([('parent_id', '=', ir_attachment_id.id)]):
-                if f"{relation.child_id.document_type}".upper()=='3D':
-                    out+= relation.child_id
-        return out
-
 
     @api.model
     def _is_checkout(self):
@@ -1633,6 +1617,15 @@ class IrAttachment(models.Model):
                 ["|", ("parent_id", "=", ir_a_id), ("child_id", "=", ir_a_id)]
             )
 
+    def getRelatedModels(self):
+        out = self.env['ir.attachment']
+        ir_attachment_relation = self.env['ir.attachment.relation']
+        for ir_attachment_id in self:
+            for relation in ir_attachment_relation.search([('parent_id', '=', ir_attachment_id.id)]): 
+                if f"{relation.child_id.document_type}".upper()=='3D':
+                    out+= relation.child_id
+        return out
+                        
     def _compute_linkedcomponents(self):
         for record in self:
             if record.linkedcomponents:
@@ -1689,8 +1682,8 @@ class IrAttachment(models.Model):
         """ """
         for ir_attachment_id in self:
             key = f"{ir_attachment_id.engineering_code}_{ir_attachment_id.engineering_revision}"
-            for dbthread in self.env["plm.dbthread"].get_last_dbthread(key):
-                if dbthread.done and dbthread.error_message:
+            for dbthread in self.env['plm.dbthread'].get_last_dbthread(key):
+                if dbthread.done == True and dbthread.error_message:
                     return False
         return True
 
@@ -2699,8 +2692,8 @@ class IrAttachment(models.Model):
             docVals = [docVals]
         out = self.env[self._name]
         for doc_dict in docVals:
-            docName = doc_dict.get("engineering_code", "")
-            docRev = doc_dict.get("engineering_revision", None)
+            docName = doc_dict.get('engineering_code', '')
+            docRev = doc_dict.get('engineering_revision', 0)
             if not docName or docRev is None:
                 continue
             for ir_attachment_id in self.search(
@@ -3359,17 +3352,11 @@ class IrAttachment(models.Model):
         return True
 
     def getLastCadSave(self):
-        for ir_attachment_id in self:
-            for cad_open in self.env["plm.cad.open"].search(
-                [
-                    ("document_id", "=", ir_attachment_id.id),
-                    ("operation_type", "=", "save"),
-                ],
-                order="create_date DESC",
-                limit=1,
-            ):
-                return cad_open.create_date
-            return ir_attachment_id.write_date
+        self.ensure_one()
+        cad_open_id = self.env['plm.cad.open'].getLastCadSave(self)
+        if cad_open_id.write_date:
+            return cad_open_id.write_date
+        return self.write_date
 
     def getDefaulValueDict(self, docBrws, PLM_DT_DELTA, is_root):
         tmp_dict = {}
@@ -3935,27 +3922,39 @@ class IrAttachment(models.Model):
         """
         self.ensure_one()
         #
-        if latest:
-            root_id = self.get_latest_version()
-        else:
-            root_id = self
+        
+        def get_all_ids(attachment_id,
+                        link_kinds, 
+                        latest):
+            out=[]
+            check = []
+            #
+            def _get_all_ids(attachment_id):
+                if latest:
+                    root_id = attachment_id.get_latest_version()
+                else:
+                    root_id = attachment_id
+                
+                if root_id.id in check:
+                    return
+                check.append(root_id.id)
+                out.append(root_id)    
+                for root_model_attachment_id in root_id.getRelatedOneLevelLinks(root_id.id,
+                                                                                link_kinds):
+
+                    _get_all_ids(self.browse(root_model_attachment_id))
+           #
+            _get_all_ids(attachment_id)
+            return out
         #
-        out = [root_id]
-        check = [root_id]
-        children_list = []
-        if root_id.document_type.upper() in ['2D']:
-            for root_model_attachment_id in root_id.getRelatedOneLevelLinks(root_id.id,
-                                                                            ['LyTree', 'RfTree']):
-                    for model_child_id in self.browse(root_model_attachment_id).getDocBomFlat(latest):
-                        if model_child_id not in check:
-                            out.append(model_child_id)
+        if self.document_type.upper() in ['2D']:
+            return get_all_ids(self,
+                             ['LyTree', 'RfTree'],
+                             latest)
         else:
-            for child_id in root_id.getRelatedOneLevelLinks(root_id.id,
-                                                            ['HiTree','RfTree']):
-                for child_root_id in self.browse(child_id).getDocBomFlat(latest):
-                    if child_root_id not in check:
-                        out.append(child_root_id)
-        return out
+            return get_all_ids(self,
+                             ['HiTree', 'RfTree'],
+                             latest)
 
     def getDocBomFlatSql(self):
         """
@@ -4202,6 +4201,89 @@ class IrAttachment(models.Model):
         #
 
         return json.dumps(out)
+    
+    def getDocumentChechOutDict(self, document_id):
+        out_template = {'id':0,
+                        'document_name':'', 
+                        'document_revision':0, 
+                        'workflow':'',
+                        'type':'', 
+                        'layouts' : [],
+                        'file_name':'',
+                        'message': 'template',
+                        'check_in_out_flag': {'in': False,
+                                              'out':False,
+                                              'out_user': {}},
+            }
+        out_data = copy.copy(out_template)
+        if document_id:
+            out_data['id'] = document_id.id
+            out_data['document_name'] = document_id.engineering_code
+            out_data['document_revision'] = document_id.engineering_revision
+            out_data['file_name']= document_id.name
+            out_data['workflow'] = document_id.engineering_state
+            out_data['type'] = document_id.document_type.upper()
+            out_data['layouts'] = document_id.getLayoutsCheckInOutState()
+            out_data['message'] = "Found"
+            out_data['check_in_out_flag'] = document_id.getCheckInOutFlag()
+        return out_data
+        
+    @api.model
+    def getCheckOutInState(self,
+                          args):
+        """
+        :args data in {'engineering_code':, 'engineering_revision':, 'file-readonly_flag':}
+        :return:   [{'document_name':, 
+                     'document_revision':, 
+                     'type':, 
+                     'file_name':,
+                     'workflow':,
+                     'layouts' : [<some -structure>],
+                     'message': '',
+                     'check_in_out_flag': {'in': True/False,
+                                           'out':True/False,
+                                           'out_user': {'name':'<odoo_user>',
+                                                        'machine':'<machine_name>',
+                                                        'pws_path':<pws_checkout_path>}
+                                                        'workflow':<status>,
+                                                    }},
+                    
+         
+        """
+        out = []
+        for document_attributes in json.loads(args[0]):
+            document_id = self.getDocumentBrws(document_attributes)
+            out.append(self.getDocumentChechOutDict(document_id))
+        #
+        return json.dumps(out)
+    
+    def getLayoutsCheckInOutState(self):
+        self.ensure_one()
+        out=[]
+        for layout_id in self.getRelatedLayouts():
+            out.append(self.getDocumentChechOutDict(layout_id))
+        return out
+
+    def getOutUserInfo(self):
+        self.ensure_one()
+        checkoutBrwsList = self.env['plm.checkout'].search([('documentid', '=', self.id)])
+        for checkOutBrws in checkoutBrwsList:
+            return  {'name': self.getUserSign(checkOutBrws.userid.id),
+                     'hostname': checkOutBrws.hostname,
+                     'pws_path':checkOutBrws.hostpws,
+                     }
+        return  {'name': '',
+                 'hostname': '',
+                 'pws_path':'',
+                 }
+
+    def getCheckInOutFlag(self):
+        self.ensure_one()
+        return {
+            'in': not self.is_checkout,
+            'out':self.is_checkout,
+            'out_user': self.getOutUserInfo()
+            }
 
     @api.model
     def GetCloneDocumentValues(self, args):
@@ -4479,11 +4561,12 @@ class IrAttachment(models.Model):
             if obj_plm_cad_open.search_count([
                                         ('document_id','=', self.id),
                                         ('operation_type', '=', 'save'),
+                                        ('userid', '!=', self.env.user.id),
                                         ('create_date','>',last_open.create_date)]):
                 #
                 # save from other user
                 #
-                return False
+                return False # Not Download
             else:
                 if obj_plm_cad_open.search_count([
                                             ('engineering_code','=', self.engineering_code),
@@ -4496,11 +4579,25 @@ class IrAttachment(models.Model):
                     #
                     # open from me in some folder in different version
                     #
-                    return False
+                    return False # Not Download
         #
         # never open the file
         #
-        return True
+        return True # Download
+    
+    def isCollectable(self, hostname, pws_path):
+        self.ensure_one()
+        out = True
+        if self.isCheckedOutByMe(): out = False
+        plm_cad_open = self.sudo().env['plm.cad.open'].getLastCadOpenByUser(self, self.env.user)
+        if plm_cad_open:
+            if plm_cad_open.hostname == hostname and plm_cad_open.pws_path == pws_path:
+                last_revision_id = self.browseLastRev()
+                if last_revision_id != last_revision_id:
+                    if last_revision_id.isCheckedOutByMe():
+                        out = False
+        return out
+    
 
     def isCollectableNew(self,
                          hostname,
@@ -4566,24 +4663,32 @@ class IrAttachment(models.Model):
         :return: [browserecord(ir.attachment),..]
         """
         sql = f"""
-        WITH RECURSIVE pops (parent_id) AS (
-            SELECT  parent_id,child_id
-            FROM    ir_attachment_relation
-            WHERE   link_kind ='{link_kind}'
-
-            UNION ALL
-
-            SELECT  p.parent_id,t0.child_id
-            FROM    ir_attachment_relation p
-            INNER JOIN pops t0
-            ON t0.parent_id = p.child_id
-            )
-         SELECT distinct on (child_id) child_id
-         FROM  pops
-         where parent_id={self.id}
+        WITH RECURSIVE subordinates AS (
+            SELECT
+                parent_id,
+                child_id,
+                link_kind
+            FROM
+                ir_attachment_relation
+            WHERE
+                parent_id = {self.id} or child_id ={self.id} and link_kind='{link_kind}'
+            UNION
+                SELECT
+                    e.parent_id,
+                    e.child_id,
+                    e.link_kind
+                FROM
+                    ir_attachment_relation e
+                INNER JOIN subordinates s ON s.child_id = e.parent_id and s.link_kind=e.link_kind 
+        ) 
+        SELECT child_id from subordinates;
         """
+        ids = set()
+        ids.add(self.id)
         self.env.cr.execute(sql)
-        return self.browse([row[0] for row in self.env.cr.fetchall()])
+        for child_id in self.env.cr.fetchall():
+            ids.add(child_id[0])
+        return self.browse(list(ids))
 
     def download_structure(self,
                            hostname,
@@ -4617,7 +4722,6 @@ class IrAttachment(models.Model):
         self.ensure_one()
         #
         if latest:
-            out_main_id = self.get_latest_version().id
             for document_id in self.getDocBomFlat(latest):
                 out.append(document_id.get_download_dict(hostname,
                                                          hostpws))
