@@ -1519,7 +1519,16 @@ class IrAttachment(models.Model):
             return False
         self.env["plm.checkout"].browse(checkOutId).unlink()
         return self.id
-
+    
+    def getRelatedLayouts(self):
+        out = self.env['ir.attachment']
+        ir_attachment_relation = self.env['ir.attachment.relation']
+        for ir_attachment_id in self:
+            for relation in ir_attachment_relation.search([('child_id', '=', ir_attachment_id.id)]):
+                if f"{relation.parent_id.document_type}".upper()=='2D':
+                    out+= relation.parent_id
+        return out
+    
     def assign_must_update_flag(self,
                                 only_layout=False):
         cad_open_obj = self.env['plm.cad.open']
