@@ -1096,5 +1096,5 @@ class MrpBomExtension(models.Model):
         )
         if not bom_type:
             available_types = ["engineering", "spare"]
-            domain = AND([domain, [("type", "not in", available_types)]])
+            domain = Domain.AND([domain, [("type", "not in", available_types)]])
         return domain
