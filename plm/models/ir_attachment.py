@@ -615,6 +615,22 @@ class IrAttachment(models.Model):
             'check_out_user_name':self.checkout_user,
             }
 
+    def isCollectable(self, hostname, pws_path):
+        self.ensure_one()
+        out = True
+        if self.isCheckedOutByMe():
+            out = False
+        plm_cad_open = (
+            self.sudo().env["plm.cad.open"].getLastCadOpenByUser(self, self.env.user)
+        )
+        if plm_cad_open:
+            if plm_cad_open.hostname == hostname and plm_cad_open.pws_path == pws_path:
+                last_revision_id = self.browseLastRev()
+                if last_revision_id != last_revision_id:
+                    if last_revision_id.isCheckedOutByMe():
+                        out = False
+        return out
+
     def _data_check_files(self, 
                           targetIds, 
                           listedFiles=(), 
@@ -1315,11 +1331,20 @@ class IrAttachment(models.Model):
                     if db_thread not in ['', False] and child_db_thread not in ['', False]:
                         if db_thread == child_db_thread:
                             attachment_id.must_update_from_cad = False
-                            continue                    
+                            continue
                     if cad_open_obj.getLastCadSave(ref_attachment_id).write_date<source_date:
                         attachment_id.must_update_from_cad = False
                     else:
                         attachment_id.must_update_from_cad = True
+
+    def getRelatedModels(self):
+        out = self.env['ir.attachment']
+        ir_attachment_relation = self.env['ir.attachment.relation']
+        for ir_attachment_id in self:
+            for relation in ir_attachment_relation.search([('parent_id', '=', ir_attachment_id.id)]):
+                if f"{relation.child_id.document_type}".upper()=='3D':
+                    out+= relation.child_id
+        return out
 
     @api.model
     def _is_checkout(self):
@@ -3399,6 +3424,8 @@ class IrAttachment(models.Model):
         for link_kind in to_compute:
             for related_attachment_id in self.get_all_relation_flat_structure_sql(link_kind):
                 out.append(related_attachment_id)
+                if link_kind=='2D':
+                    out+=related_attachment_id.getDocBomFlatSql()
         return out
 
     @api.model

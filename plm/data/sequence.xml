@@ -1,60 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <data noupdate="1">
-        <!-- Sequences for plm.finishing --> 
-        <record id="seq_plm_finishing" model="ir.sequence">
-            <field name="name">PLM Finishing Sequence</field>
-            <field name="code">plm.finishing</field>
-            <field name="prefix">SF</field>
-            <field name="padding">5</field>
-        </record>
-    </data>
-    
-    <data noupdate="1">
-        <!-- Sequences for plm.material --> 
-        <record id="seq_plm_description" model="ir.sequence">
-            <field name="name">PLM description Sequence</field>
-            <field name="code">plm.description</field>
-            <field name="prefix">DS</field>
-            <field name="padding">5</field>
-        </record>
-    </data>
-
-    <data noupdate="1">
-        <!-- Sequences for plm.treatment --> 
-        <record id="seq_plm_treatment" model="ir.sequence">
-            <field name="name">PLM Treatment Sequence</field>
-            <field name="code">plm.treatment</field>
-            <field name="prefix">TT</field>
-            <field name="padding">5</field>
-        </record>
-    </data>
-
-    <data noupdate="1">
-        <!-- Sequences for plm.material --> 
-        <record id="seq_plm_material" model="ir.sequence">
-            <field name="name">PLM Material Sequence</field>
-            <field name="code">plm.material</field>
-            <field name="prefix">RM</field>
-            <field name="padding">5</field>
-        </record>
-    </data>
-    
 	<data noupdate="1">
-        <record id="sequence_document" model="ir.sequence">
-            <field name="name">Document Sequence</field>
-            <field eval="6" name="padding"/>
-            <field name="code">ir.attachment.progress</field>
-        </record> 
-    </data>
+		<!-- Sequences for plm.finishing -->
+		<record id="seq_plm_finishing" model="ir.sequence">
+			<field name="name">PLM Finishing Sequence</field>
+			<field name="code">plm.finishing</field>
+			<field name="prefix">SF</field>
+			<field name="padding">5</field>
+		</record>
+	</data>
 
-    <data noupdate="1">
-        <record id="sequence_plm_dbthread" model="ir.sequence">
-            <field name="name">db Thread sequence</field>
-            <field eval="6" name="padding"/>
-            <field name="code">plm.dbthread.progress</field>
-        </record> 
-    </data>
+	<data noupdate="1">
+		<!-- Sequences for plm.material -->
+		<record id="seq_plm_description" model="ir.sequence">
+			<field name="name">PLM description Sequence</field>
+			<field name="code">plm.description</field>
+			<field name="prefix">DS</field>
+			<field name="padding">5</field>
+		</record>
+	</data>
+
+	<data noupdate="1">
+		<!-- Sequences for plm.treatment -->
+		<record id="seq_plm_treatment" model="ir.sequence">
+			<field name="name">PLM Treatment Sequence</field>
+			<field name="code">plm.treatment</field>
+			<field name="prefix">TT</field>
+			<field name="padding">5</field>
+		</record>
+	</data>
+
+	<data noupdate="1">
+		<!-- Sequences for plm.material -->
+		<record id="seq_plm_material" model="ir.sequence">
+			<field name="name">PLM Material Sequence</field>
+			<field name="code">plm.material</field>
+			<field name="prefix">RM</field>
+			<field name="padding">5</field>
+		</record>
+	</data>
+
+	<data noupdate="1">
+		<record id="sequence_document" model="ir.sequence">
+			<field name="name">Document Sequence</field>
+			<field eval="6" name="padding" />
+			<field name="code">ir.attachment.progress</field>
+		</record>
+	</data>
+
+	<data noupdate="1">
+		<record id="sequence_plm_dbthread" model="ir.sequence">
+			<field name="name">db Thread sequence</field>
+			<field eval="6" name="padding" />
+			<field name="code">plm.dbthread.progress</field>
+		</record>
+	</data>
 
 </odoo>
