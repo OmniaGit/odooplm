@@ -3372,7 +3372,6 @@ class IrAttachment(models.Model):
         """
         self.ensure_one()
         #
-        
         def get_all_ids(attachment_id,
                         link_kinds, 
                         latest):
@@ -3395,12 +3394,26 @@ class IrAttachment(models.Model):
                     _get_all_ids(self.browse(root_model_attachment_id))
            #
             _get_all_ids(attachment_id)
+            #
             return out
         #
         if self.document_type.upper() in ['2D']:
-            return get_all_ids(self,
-                             ['LyTree', 'RfTree'],
-                             latest)
+            out=[]
+            check=[]
+            for attachment_id in get_all_ids(self,
+                                              ['LyTree', 'RfTree'],
+                                              latest):
+                if attachment_id.id not in check:
+                    check.append(attachment_id.id)
+                    out.append(attachment_id)
+                    if attachment_id.document_type.upper() in ['3D']:
+                        for model_attachment_id in get_all_ids(attachment_id,
+                                                               ['HiTree', 'RfTree'],
+                                                               latest):
+                            if model_attachment_id.id not in check:
+                                check.append(model_attachment_id.id)
+                                out.append(model_attachment_id)
+            return out
         else:
             return get_all_ids(self,
                              ['HiTree', 'RfTree'],
@@ -3424,7 +3437,7 @@ class IrAttachment(models.Model):
         for link_kind in to_compute:
             for related_attachment_id in self.get_all_relation_flat_structure_sql(link_kind):
                 out.append(related_attachment_id)
-                if link_kind=='2D':
+                if link_kind=='LyTree' and self.id!=related_attachment_id.id:
                     out+=related_attachment_id.getDocBomFlatSql()
         return out
 

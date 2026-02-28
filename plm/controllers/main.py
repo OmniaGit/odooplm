@@ -91,13 +91,12 @@ class UploadDocument(Controller):
             return Response('Upload succeeded', status=200)
         logging.info('no upload %r' % (doc_id))
         return Response('Failed upload', status=400)
+
     
-    #http://localhost:8069//plm/download_structure
     @route('/plm/download_structure', 
            type='http', 
            auth='user', 
            methods=['GET'])
-    @webservice
     def plm_download_structure(self, 
                                attachment_id,
                                hostname,
