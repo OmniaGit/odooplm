@@ -48,12 +48,19 @@ try:
     import cadquery as cq
 except Exception as ex:
     logging.warning(ex)
+try:
+    from to_3mf.stl_to_3mf import stl_to_3mf
+except Exception as ex:
+    logging.warning(ex)
 from .cad_excenge import convert as exConvert
 from .cad_excenge import FORMAT_FROM as ex_from_format
 from .cad_excenge import FORMAT_TO as ex_from_to
 
-ALLOW_CONVERSION_FORMAT = [".dxf", ".obj", ".stp", ".step", ".stl"]
-
+ALLOW_CONVERSION_FORMAT = [".dxf", 
+                           ".obj", 
+                           ".stp", 
+                           ".step", 
+                           ".stl"]
 
 class ir_attachment(models.Model):
     _inherit = "ir.attachment"
@@ -227,31 +234,38 @@ class ir_attachment(models.Model):
 
     def convert_from_stl_to(self, toFormat):
         newFileName = ""
-        if toFormat.replace(".", "").lower() not in ["png", "pdf", "svg", "jpg"]:
+        if toFormat.replace(".", "").lower() not in ["png", 
+                                                     "pdf", 
+                                                     "svg", 
+                                                     "jpg",
+                                                     "3mf"]:
             raise UserError("Format %s not supported" % toFormat)
         store_fname = self._full_path(self.store_fname)
         with tempfile.TemporaryDirectory() as tmpdirname:
             name, exte = os.path.splitext(self.name)
             newFileName = os.path.join(tmpdirname, "%s%s" % (name, toFormat))
-            #
-            # Create a new plot
-            #
-            figure = plt.figure()
-            axes = mplot3d.Axes3D(figure)
-            #
-            # Load the STL files and add the vectors to the plot
-            #
-            your_mesh = mesh.Mesh.from_file(store_fname)
-            axes.add_collection3d(mplot3d.art3d.Poly3DCollection(your_mesh.vectors))
-            #
-            # Auto scale to the mesh size
-            #
-            scale = your_mesh.points.flatten()
-            axes.auto_scale_xyz(scale, scale, scale)
-            #
-
-            plt.savefig(newFileName, dpi=100, transparent=True)
-            plt.close()
+            if toFormat=='3mf':
+                stl_to_3mf([store_fname], newFileName)
+            else:
+                #
+                # Create a new plot
+                #
+                figure = plt.figure()
+                axes = mplot3d.Axes3D(figure)
+                #
+                # Load the STL files and add the vectors to the plot
+                #
+                your_mesh = mesh.Mesh.from_file(store_fname)
+                axes.add_collection3d(mplot3d.art3d.Poly3DCollection(your_mesh.vectors))
+                #
+                # Auto scale to the mesh size
+                #
+                scale = your_mesh.points.flatten()
+                axes.auto_scale_xyz(scale, scale, scale)
+                #
+    
+                plt.savefig(newFileName, dpi=100, transparent=True)
+                plt.close()
         return newFileName
 
     def convert_to_format(self, toFormat, excangePath=None):

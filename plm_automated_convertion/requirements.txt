@@ -1,0 +1,5 @@
+ezdxf
+matplotlib
+mpl_toolkits
+cadquery
+to-3mf
