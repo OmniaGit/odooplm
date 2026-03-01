@@ -241,11 +241,12 @@ class ir_attachment(models.Model):
                                                      "3mf"]:
             raise UserError("Format %s not supported" % toFormat)
         store_fname = self._full_path(self.store_fname)
-        with tempfile.TemporaryDirectory() as tmpdirname:
+        with tempfile.TemporaryDirectory(delete=False ) as tmpdirname:
             name, exte = os.path.splitext(self.name)
             newFileName = os.path.join(tmpdirname, "%s%s" % (name, toFormat))
-            if toFormat=='3mf':
-                stl_to_3mf([store_fname], newFileName)
+            if toFormat=='.3mf':
+                stl_to_3mf([store_fname], 
+                           newFileName)
             else:
                 #
                 # Create a new plot
@@ -264,7 +265,9 @@ class ir_attachment(models.Model):
                 axes.auto_scale_xyz(scale, scale, scale)
                 #
     
-                plt.savefig(newFileName, dpi=100, transparent=True)
+                plt.savefig(newFileName, 
+                            dpi=300, 
+                            transparent=True)
                 plt.close()
         return newFileName
 
