@@ -48,11 +48,20 @@ try:
     import cadquery as cq
 except Exception as ex:
     logging.warning(ex)
+try:
+    from to_3mf.stl_to_3mf import stl_to_3mf
+except Exception as ex:
+    logging.warning(ex)
+
 from .cad_excenge import convert as exConvert
 from .cad_excenge import FORMAT_FROM as ex_from_format
 from .cad_excenge import FORMAT_TO as ex_from_to
 
-ALLOW_CONVERSION_FORMAT = [".dxf", ".obj", ".stp", ".step", ".stl"]
+ALLOW_CONVERSION_FORMAT = [".dxf",
+                           ".obj",
+                           ".stp",
+                           ".step",
+                           ".stl"]
 
 
 class ir_attachment(models.Model):
@@ -227,31 +236,48 @@ class ir_attachment(models.Model):
 
     def convert_from_stl_to(self, toFormat):
         newFileName = ""
-        if toFormat.replace(".", "").lower() not in ["png", "pdf", "svg", "jpg"]:
-            raise UserError("Format %s not supported" % toFormat)
-        store_fname = self._full_path(self.store_fname)
-        with tempfile.TemporaryDirectory() as tmpdirname:
-            name, exte = os.path.splitext(self.name)
-            newFileName = os.path.join(tmpdirname, "%s%s" % (name, toFormat))
-            #
-            # Create a new plot
-            #
-            figure = plt.figure()
-            axes = mplot3d.Axes3D(figure)
-            #
-            # Load the STL files and add the vectors to the plot
-            #
-            your_mesh = mesh.Mesh.from_file(store_fname)
-            axes.add_collection3d(mplot3d.art3d.Poly3DCollection(your_mesh.vectors))
-            #
-            # Auto scale to the mesh size
-            #
-            scale = your_mesh.points.flatten()
-            axes.auto_scale_xyz(scale, scale, scale)
-            #
+        try:
+            if toFormat.replace(".", "").lower() not in ["png",
+                                                         "pdf",
+                                                         "svg",
+                                                         "jpg",
+                                                         "3mf"]:
+                raise UserError("Format %s not supported" % toFormat)
+            store_fname = self._full_path(self.store_fname)
+            result = cq.importers.importStep(store_fname)
+            with tempfile.TemporaryDirectory() as tmpdirname:
+                name, exte = os.path.splitext(self.name)
+                stlName = os.path.join(tmpdirname, "%s.stl" % name)
+                cq.exporters.export(
+                    result, stlName, tolerance=1.0, angularTolerance=1.0
+                )
+                newFileName = os.path.join(
+                    tempfile.gettempdir(), "%s%s" % (name, toFormat)
+                )
+                if ".stl".lower() in toFormat:
+                    shutil.copy(stlName, newFileName)
+                    return newFileName
+                #
+                # Create a new plot
+                #
+                figure = plt.figure()
+                axes = mplot3d.Axes3D(figure)
+                #
+                # Load the STL files and add the vectors to the plot
+                #
+                your_mesh = mesh.Mesh.from_file(stlName)
+                axes.add_collection3d(mplot3d.art3d.Poly3DCollection(your_mesh.vectors))
+                #
+                # Auto scale to the mesh size
+                #
+                scale = your_mesh.points.flatten()
+                axes.auto_scale_xyz(scale, scale, scale)
+                #
 
-            plt.savefig(newFileName, dpi=100, transparent=True)
-            plt.close()
+                plt.savefig(newFileName, dpi=100, transparent=True)
+                plt.close()
+        except Exception as ex:
+            raise UserError("Cannot convert due to error %r" % (ex))
         return newFileName
 
     def convert_to_format(self, toFormat, excangePath=None):

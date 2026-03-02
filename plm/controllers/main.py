@@ -117,7 +117,6 @@ class UploadDocument(Controller):
            type='http',
            auth='user',
            methods=['GET'])
-    @webservice
     def plm_download_structure(self,
                                attachment_id,
                                hostname,
@@ -179,7 +178,7 @@ class UploadDocument(Controller):
         for ir_attachment_id in request.env['ir.attachment'].sudo().search([('id','=', attachment_id)]):
             return request.env['ir.binary'].sudo()._get_stream_from(ir_attachment_id,
                                                                     field_name='datas').get_response()
-        return Response(status=500, 
+        return Response(status=500,
                         qcontext=f"Attachment {attachment_id} not found")
 
     @route("/plm_document_upload/download", type="http", auth="user", methods=["GET"])

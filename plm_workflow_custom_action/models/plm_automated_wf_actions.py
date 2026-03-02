@@ -66,16 +66,17 @@ class PlmAutomatedWFAction(models.Model):
 
     def _run(self):
         res = False
-        active_id = self.env.context["active_id"]
-        active_model = self.env.context["active_model"]
-        if active_model == self.apply_to:
+        sudo_self = self.sudo()
+        active_id = sudo_self.env.context["active_id"]
+        active_model = sudo_self.env.context["active_model"]
+        if active_model == sudo_self.apply_to:
             base_domain = [("id", "=", active_id)]
-            for act in self.child_ids.sorted():
-                if self.domain:
-                    base_domain = base_domain + json.loads(self.domain.replace("'", ""))
-                    obj_id = self.env[active_model].search(base_domain)
+            for act in sudo_self.child_ids.sorted():
+                if sudo_self.domain:
+                    base_domain = base_domain + json.loads(sudo_self.domain)
+                    obj_id = sudo_self.env[active_model].search(base_domain)
                 else:
-                    obj_id = self.env[active_model].browse(active_id)
+                    obj_id = sudo_self.env[active_model].browse(active_id)
                 if obj_id:
                     res = act.run() or res
         return res
