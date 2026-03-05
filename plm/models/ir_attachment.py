@@ -3773,8 +3773,7 @@ class IrAttachment(models.Model):
                     continue
                 is_check_in = doc_id.ischecked_in()
                 if is_check_in:
-                    newer_in_odoo = doc_id.checkNewer(hostname,
-                                                      hostpws)
+                    newer_in_odoo = not self.is_open_by_me(hostname, hostpws)
                     if newer_in_odoo:
                         doc_fields["checkout"] = False
                         doc_fields["newer"] = True
@@ -4078,7 +4077,7 @@ class IrAttachment(models.Model):
             out_parent_attrs = self.get_clone_info_attr(attachment_id,
                                                         product_product_id)
             out_parent_attrs['CONFIGURATION_NAME'] = parent_attrs.get('product',{}).get('CONFIGURATION_NAME','')
-            out_parent_attrs['CONFIGURATIONS'] = parent_attrs.get('product',{}).get('CONFIGURATIONS',[])
+            out_parent_attrs['INTEGRATION_FILE_TYPE'] = parent_attrs.get('document',{}).get('INTEGRATION_FILE_TYPE','')
             out_parent_attrs['CONFIGURATIONS_ATTRIBUTES']={}
             for config_name, config_attrs in parent_attrs.get('product',{}).get('CONFIGURATIONS_ATTRIBUTES',{}).items():
                 config_product_product_id, config_attachment_id = self._GetproductDocumentID(tuple(parent_attrs.values()))
