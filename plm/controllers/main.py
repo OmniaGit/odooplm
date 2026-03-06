@@ -17,17 +17,83 @@ def webservice(f):
         except Exception as e:
             logging.error(e)
             return Response(response=f"{e}", status=500)
-    return wrap   
-    
+    return wrap
+
 class UploadDocument(Controller):
 
-    @route('/plm_document_upload/isalive', type='http', auth='none', methods=['GET'], csrf=False)
+    @route('/plm/download_structure',
+           type='http',
+           auth='user',
+           methods=['GET'])
+    def plm_download_structure(self,
+                               attachment_id,
+                               hostname,
+                               hostpws,
+                               mode='active'):
+        """
+        get all the data from the document in order to be able to understed how to download it
+        :attachment_id int ir_attachment id
+        :hostname host name where the request came
+        :hostpws host pws where tehe request came
+        :mode if latest value is passed get the latest version
+                get all the data from the document in order to be able to understed how to download it
+        :return: (
+                    <attachmen_id used for download>,
+                    [{  name: '',
+                     ent_id: Int,
+                     engineering_code: str,
+                     engineering_revison: Int,
+                     flags:{in:True/False
+                           out:True/False
+                           out_user:{'name': '',
+                                     'machine': '',
+                                     'pws_path':''
+                                    }
+                           }
+                    'related_products': []
+                    'last_update': datetime
+                    'last_my_open': datetime
+                    'is_downloadable': Boolean
+                    'is_last_revision':Boolean
+                     }
+                 ] )
+        """
+        latest=False
+        if mode=='latest':
+            latest=True
+        for ir_attachment_id in request.env['ir.attachment'].sudo().search([('id','=', attachment_id)]):
+            try:
+                return Response(json.dumps(ir_attachment_id.sudo().download_structure(hostname,
+                                                                               hostpws,
+                                                                               latest)))
+            except Exception as ex:
+                logging.error(ex)
+                raise ex
+        raise Exception(f"Attachment with id {attachment_id} not found")
+
+    @route('/plm/download',
+           type='http',
+           auth='user',
+           methods=['GET'])
     @webservice
+    def plm_download(self,
+                     attachment_id):
+        """
+        downlaod an odoo attachemnt
+        :attachemnt_id internal odoo id for the given attachment
+        :return: file request
+        """
+        for ir_attachment_id in request.env['ir.attachment'].sudo().search([('id','=', attachment_id)]):
+            return request.env['ir.binary'].sudo()._get_stream_from(ir_attachment_id,
+                                                                    field_name='datas').get_response()
+        return Response(status=500,
+                        qcontext=f"Attachment {attachment_id} not found")
+
+    @route('/plm_document_upload/isalive', type='http', auth='none', methods=['GET'], csrf=False)
     def isalive(self):
         return Response('True', status=200)
 
     @route('/plm_document_upload/login', type='http', auth='none', methods=['POST'], csrf=False)
-    @webservice
     def login(self,
               login,
               password,
@@ -42,7 +108,6 @@ class UploadDocument(Controller):
         })
 
     @route('/plm_document_upload/upload_pdf', type='http', auth='user', methods=['POST'], csrf=False)
-    @webservice
     def upload_pdf(self,
                    file_stream=None,
                    doc_id=False,
@@ -62,7 +127,6 @@ class UploadDocument(Controller):
         return Response('Failed upload', status=400)
 
     @route('/plm_document_upload/upload', type='http', auth='user', methods=['POST'], csrf=False)
-    @webservice
     def upload(self,
                mod_file=None,
                doc_id=False,
@@ -86,10 +150,9 @@ class UploadDocument(Controller):
             logging.info('upload %r' % (doc_id))
             return Response('Upload succeeded', status=200)
         logging.info('no upload %r' % (doc_id))
-        return Response('Failed upload', status=400)      
-        
+        return Response('Failed upload', status=400)
+
     @route('/plm_document_upload/download', type='http', auth='user', methods=['GET'])
-    @webservice
     def download(self,
                  requestvals='[[],[],-1]',
                  **kw):
@@ -115,7 +178,6 @@ class UploadDocument(Controller):
                         headers={'result': [result2]})
 
     @route('/plm_document_upload/upload_preview', type='http', auth='user', methods=['POST'], csrf=False)
-    @webservice
     def upload_preview(self,
                        mod_file=None,
                        doc_id=False,
@@ -135,8 +197,7 @@ class UploadDocument(Controller):
         return Response('Failed upload', status=400)
 
     @route('/plm_document_upload/zip_archive', type='http', auth='user', methods=['POST'], csrf=False)
-    @webservice
-    def upload_zip(self, 
+    def upload_zip(self,
                    attachment_id=None,
                    filename='', **kw):
         logging.info('start upload zip %r' % (attachment_id))
@@ -175,13 +236,12 @@ class UploadDocument(Controller):
             if not link_id:
                 request.env['ir.attachment.relation'].create({'parent_id': from_ir_attachment_id.id,
                                                               'child_id': zip_ir_attachment_id.id,
-                                                              'link_kind': 'PkgTree'})                     
+                                                              'link_kind': 'PkgTree'})
             return Response('Zip Upload succeeded', status=200)
         logging.info('Zip no upload %r' % (attachment_id))
         return Response('Zip Failed upload', status=400)
 
     @route('/plm_document_upload/get_zip_archive', type='http', auth='user', methods=['get'], csrf=False)
-    @webservice
     def download_zip(self, ir_attachment_id=None, **kw):
         ir_attachment_id = json.loads(ir_attachment_id)
         attachment = request.env['ir.attachment']
@@ -194,7 +254,6 @@ class UploadDocument(Controller):
 
 
     @route('/plm_document_upload/get_files_write_time', type='http', auth='user', methods=['get'], csrf=False)
-    @webservice
     def get_files_write_time(self,
                              ir_attachment_ids=None,
                              **kw):
@@ -207,10 +266,9 @@ class UploadDocument(Controller):
                         attachment_brws.name,
                         attachment_brws.write_date.strftime(DEFAULT_SERVER_DATETIME_FORMAT)))
         return Response(json.dumps(out))
-        
+
 
     @route('/plm_document_upload/extra_file', type='http', auth='user', methods=['POST'], csrf=False)
-    @webservice
     def upload_extra_file(self,
                           product_id='',
                           doc_name='',
@@ -235,7 +293,7 @@ class UploadDocument(Controller):
         #
         if upload_same_revision and product_id:
             value1 = kw.get('file_stream').stream.read()
-            
+
             file_name = kw.get('filename')
             _name, exte = os.path.splitext(file_name)
             doc_name = "%s_%s" % (product_id.engineering_code,
@@ -249,7 +307,7 @@ class UploadDocument(Controller):
             if ir_attachment_id:
                 ir_attachment_id.with_context(new_context).write(to_write)
             else:
-                
+
                 new_file_name = "%s_%s.%s" % (product_id.engineering_code,
                                               doc_rev,
                                               exte.replace(".",""))
@@ -268,14 +326,14 @@ class UploadDocument(Controller):
                             'engineering_code': doc_name,
                             'is_plm':True,
                             'engineering_revision': doc_rev}
-                
-                
-              
+
+
+
                 if not ir_attachment_id:
                     ir_attachment_id = contex_brw.create(to_write)
                 else:
                     ir_attachment_id.with_context(new_context).write(to_write)
-                
+
         if ir_attachment_id and related_attachment_id:
             link_id = link_id.search([('parent_id', '=', related_attachment_id),
                                       ('child_id', '=', ir_attachment_id.id),
@@ -283,7 +341,7 @@ class UploadDocument(Controller):
         if not link_id:
             request.env['ir.attachment.relation'].create({'parent_id': related_attachment_id,
                                                           'child_id': ir_attachment_id.id,
-                                                          'link_kind': 'ExtraTree'})    
+                                                          'link_kind': 'ExtraTree'})
         if product_id:
             product_id = request.env['product.product'].browse(product_id)
             request.env['plm.component.document.rel'].createFromIds(product_id.id, ir_attachment_id)
@@ -294,28 +352,25 @@ class UploadDocument(Controller):
                     break
 
     @route('/plm/ir_attachment_preview/<int:id>', type='http', auth='user', methods=['GET'], csrf=False)
-    @webservice
     def get_preview(self, id):
         ir_attachement = request.env['ir.attachment'].sudo()
         for record in ir_attachement.search_read([('id','=', id)], ['preview']):
             return base64.b64decode(record.get('preview'))
 
     @route('/plm/product_product_preview/<int:product_id>', type='http', auth='user', methods=['GET'], csrf=False)
-    @webservice
     def get_pp_preview(self, product_id):
         product_product_sudo = request.env['product.product'].sudo()
         for product_product_id in product_product_sudo.search([('id','=', product_id)]):
             return base64.b64decode(product_product_id.image_1920)
 
     @route('/plm/ir_attachment_printout/<int:id>', type='http', auth='user', methods=['GET'], csrf=False)
-    @webservice
     def get_printout(self, id):
         try:
             for ir_attachement_id in request.env['ir.attachment'].sudo().browse(id):
                 if ir_attachement_id.printout:
                     print_out_data = request.env['report.plm.ir_attachment_pdf']._render_qweb_pdf(ir_attachement_id)
                     print_out_data = print_out_data[0]
-                    if print_out_data: 
+                    if print_out_data:
                         headers = [('Content-Type', 'application/pdf'),
                                    ('Content-Length', len(print_out_data)),
                                    ('Content-Disposition', f'inline; filename="{ir_attachement_id.engineering_code}_{ir_attachement_id.engineering_revision}.pdf"')]

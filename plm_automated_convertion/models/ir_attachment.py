@@ -44,7 +44,7 @@ from ezdxf import recover
 from ezdxf.addons.drawing import matplotlib
 ALLOW_CONVERSION_FORMAT = ['.dxf','.obj','.stp','.step','.stl']
 #
-from .obj2png import ObjFile 
+from .obj2png import ObjFile
 #
 from stl import mesh
 import matplotlib.pyplot as plt
@@ -53,21 +53,30 @@ from mpl_toolkits import mplot3d
 try:
     import cadquery as cq
 except Exception as ex:
-    logging.warning(ex)        
+    logging.warning(ex)
+try:
+    from to_3mf.stl_to_3mf import stl_to_3mf
+except Exception as ex:
+    logging.warning(ex)
 #
 #
 from .cad_excenge import convert as exConvert
 from .cad_excenge import FORMAT_FROM as ex_from_format
 from .cad_excenge import FORMAT_TO as ex_from_to
-#
-#
+
+ALLOW_CONVERSION_FORMAT = [".dxf",
+                           ".obj",
+                           ".stp",
+                           ".step",
+                           ".stl"]
+
 class ir_attachment(models.Model):
     _inherit = 'ir.attachment'
 
     is_converted_document = fields.Boolean('Is Converted Document')
     source_convert_document = fields.Many2one('ir.attachment', 'Source Convert Document')
     converted_documents = fields.One2many('ir.attachment', 'source_convert_document', 'Converted documents')
-    
+
     def show_convert_wizard(self):
         context = dict(self.env.context or {})
         context['default_document_id'] = self.id
@@ -103,10 +112,10 @@ class ir_attachment(models.Model):
                 _clean_name, ext = os.path.splitext(document.name)
                 parent_categs = self.checkParentCateg(categ)
                 rules = convert_rule.search([('product_category', 'in', parent_categs.ids),
-                                             ('start_format', 'ilike', ext) 
+                                             ('start_format', 'ilike', ext)
                                              ])
                 rules += convert_rule.search([('convert_alone_documents', '=', True),
-                                             ('start_format', 'ilike', ext) 
+                                             ('start_format', 'ilike', ext)
                                              ])
                 for rule in rules:
                     if not components and not rule.convert_alone_documents:
@@ -137,13 +146,13 @@ class ir_attachment(models.Model):
         """
         if toFormat.replace(".", "") not in ['png','pdf','svg','jpg']:
             raise UserError("Format %s not supported" % toFormat)
-            
+
         store_fname = self._full_path(self.store_fname)
-        
+
         doc, auditor = recover.readfile(store_fname)
         if not auditor.has_errors:
             tmpdirname = tempfile.gettempdir()
-            name, exte = os.path.splitext(self.name)   
+            name, exte = os.path.splitext(self.name)
             newFileName=os.path.join(tmpdirname, '%s%s' % (name, toFormat))
             matplotlib.qsave(doc.modelspace(), newFileName)
             return newFileName
@@ -155,15 +164,15 @@ class ir_attachment(models.Model):
         """
         if toFormat.replace(".", "") not in ['png','pdf','svg','jpg']:
             raise UserError("Format %s not supported" % toFormat)
-            
+
         store_fname = self._full_path(self.store_fname)
         o=ObjFile(store_fname)
         tmpdirname = tempfile.gettempdir()
-        name, exte = os.path.splitext(self.name)   
+        name, exte = os.path.splitext(self.name)
         newFileName=os.path.join(tmpdirname, '%s%s' % (name, toFormat))
         o.Plot(newFileName, dpi=100)
         return newFileName
-    
+
     def convert_from_step_to(self, toFormat):
         newFileName = ''
         try:
@@ -178,7 +187,7 @@ class ir_attachment(models.Model):
                                     stlName,
                                     tolerance=1.0,
                                     angularTolerance=1.0)
-                newFileName=os.path.join(tempfile.gettempdir(), '%s%s' % (name, toFormat))   
+                newFileName=os.path.join(tempfile.gettempdir(), '%s%s' % (name, toFormat))
                 if  '.stl'.lower() in toFormat:
                     shutil.copy(stlName, newFileName)
                     return newFileName
@@ -198,7 +207,7 @@ class ir_attachment(models.Model):
                 scale = your_mesh.points.flatten()
                 axes.auto_scale_xyz(scale, scale, scale)
                 #
-             
+
                 plt.savefig(newFileName,
                             dpi=100,
                             transparent=True)
@@ -209,33 +218,41 @@ class ir_attachment(models.Model):
 
     def convert_from_stl_to(self, toFormat):
         newFileName = ''
-        if toFormat.replace(".", "").lower() not in ['png','pdf','svg','jpg']:
+        if toFormat.replace(".", "").lower() not in ["png",
+                                                     "pdf",
+                                                     "svg",
+                                                     "jpg",
+                                                     "3mf"]:
             raise UserError("Format %s not supported" % toFormat)
         store_fname = self._full_path(self.store_fname)
-        with tempfile.TemporaryDirectory() as tmpdirname:
+        with tempfile.TemporaryDirectory(delete=False ) as tmpdirname:
             name, exte = os.path.splitext(self.name)
-            newFileName=os.path.join(tempfile.gettempdir(), '%s%s' % (name, toFormat))   
+            newFileName=os.path.join(tempfile.gettempdir(), '%s%s' % (name, toFormat))
             #
             # Create a new plot
             #
-            figure = plt.figure()
-            axes = mplot3d.Axes3D(figure)
-            #
-            # Load the STL files and add the vectors to the plot
-            #
-            your_mesh = mesh.Mesh.from_file(store_fname)
-            axes.add_collection3d(mplot3d.art3d.Poly3DCollection(your_mesh.vectors))
-            #
-            # Auto scale to the mesh size
-            #
-            scale = your_mesh.points.flatten()
-            axes.auto_scale_xyz(scale, scale, scale)
-            #
-         
-            plt.savefig(newFileName,
-                        dpi=100,
-                        transparent=True)
-            plt.close()
+            if toFormat == '3mf':
+                stl_to_3mf([store_fname], newFileName)
+            else:
+                #
+                # Create a new plot
+                #
+                figure = plt.figure()
+                axes = mplot3d.Axes3D(figure)
+                #
+                # Load the STL files and add the vectors to the plot
+                #
+                your_mesh = mesh.Mesh.from_file(store_fname)
+                axes.add_collection3d(mplot3d.art3d.Poly3DCollection(your_mesh.vectors))
+                #
+                # Auto scale to the mesh size
+                #
+                scale = your_mesh.points.flatten()
+                axes.auto_scale_xyz(scale, scale, scale)
+                #
+
+                plt.savefig(newFileName, dpi=100, transparent=True)
+                plt.close()
         return newFileName
 
     def convert_to_format(self, toFormat, excangePath=None):
@@ -275,7 +292,7 @@ class ir_attachment(models.Model):
                         else:
                             raise UserError(_("Format %s not supported") % toFormat)
             raise UserError(_("Format %s not supported") % toFormat)
-                        
+
     def _updatePreview(self):
         for ir_attachment in self:
             store_fname = ir_attachment._full_path(ir_attachment.store_fname)
@@ -290,16 +307,16 @@ class ir_attachment(models.Model):
 
     def _updatePreviewFromStl(self, fromFile):
         with tempfile.TemporaryDirectory() as tmpdirname:
-            name, exte = os.path.splitext(self.name) 
+            name, exte = os.path.splitext(self.name)
             pngName=os.path.join(tmpdirname, '%s.png' % name)
             converted_file = self.convert_from_stl_to('.png')
             with open(converted_file,'rb') as pngStream:
                 self.preview =  base64.b64encode(pngStream.read())
 
-    
+
     def _updatePreviewFromStp(self, fromFile):
         with tempfile.TemporaryDirectory() as tmpdirname:
-            name, exte = os.path.splitext(self.name) 
+            name, exte = os.path.splitext(self.name)
             pngName=os.path.join(tmpdirname, '%s.png' % name)
             converted_file = self.convert_from_step_to('.png')
             with open(converted_file,'rb') as pngStream:
@@ -307,17 +324,17 @@ class ir_attachment(models.Model):
 
     def _updatePreviewFromObj(self, fromFile):
         with tempfile.TemporaryDirectory() as tmpdirname:
-            name, exte = os.path.splitext(self.name) 
+            name, exte = os.path.splitext(self.name)
             pngName=os.path.join(tmpdirname, '%s.png' % name)
             converted_file = self.convert_from_obj_to('.png')
             with open(converted_file,'rb') as pngStream:
                 self.preview =  base64.b64encode(pngStream.read())
-                    
+
     def _updatePreviewFromDxf(self, fromFile):
             doc, auditor = recover.readfile(fromFile)
             if not auditor.has_errors:
                 with tempfile.TemporaryDirectory() as tmpdirname:
-                    name, exte = os.path.splitext(self.name)   
+                    name, exte = os.path.splitext(self.name)
                     pngName=os.path.join(tmpdirname, '%s.png' % name)
                     matplotlib.qsave(doc.modelspace(), pngName)
                     pdfName=os.path.join(tmpdirname, '%s.pdf' % name)
@@ -326,8 +343,8 @@ class ir_attachment(models.Model):
                         self.preview =  base64.b64encode(pngStream.read())
                     with open(pdfName,'rb') as pdfStream:
                         self.printout =  base64.b64encode(pdfStream.read())
-            
-            
+
+
     def createPreviewStack(self):
         obj_stack = self.env['plm.convert.stack']
         for ir_attachment in self:

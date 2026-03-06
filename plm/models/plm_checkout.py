@@ -61,7 +61,7 @@ class PlmCheckout(models.Model):
         ('documentid', 'unique (documentid)', _('The documentid must be unique !'))
     ]
 
-    
+
     def name_get(self):
         result = []
         for r in self:
@@ -94,10 +94,11 @@ class PlmCheckout(models.Model):
                 raise UserError(_("Unable to check-out the required document (" + str(docBrws.engineering_code) + "-" + str(docBrws.engineering_revision) + ")."))
             self._adjustRelations([docBrws.id])
         newCheckoutBrws = super().create(vals)
+        newCheckoutBrws.documentid.assign_must_update_flag()
         docBrws.message_post(body=_('Checked-Out ID %r' % (newCheckoutBrws.id)))
         return newCheckoutBrws
 
-    
+
     def unlink(self):
         documentType = self.env['ir.attachment']
         docids = []
@@ -117,6 +118,7 @@ class PlmCheckout(models.Model):
         if dummy:
             for doc_id in documentType.browse(docids):
                 doc_id.message_post(body=_('Checked-In'))
+                doc_id.assign_must_update_flag()
         return dummy
 
 

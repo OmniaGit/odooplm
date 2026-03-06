@@ -33,7 +33,7 @@ from odoo.exceptions import UserError
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
 from odoo.addons.plm.models.plm_mixin import USED_STATES
-    
+
 
 class PlmAutomatedWFAction(models.Model):
     _name ='plm.automatedwfaction'
@@ -47,44 +47,39 @@ class PlmAutomatedWFAction(models.Model):
                                      ('after', 'After')],
                                      string="Perform",
                                      help="you can choose to perform the action before or after the workflow action")
-    
+
     apply_to = fields.Selection([('product.product','Product'),
                                  ('ir.attachment', 'Attachment')],
                                  string="Apply To",
                                  help="Apply this action to the workflow model")
-    
+
     domain = fields.Char("Domain", help="""specifie the domain of the action""")
 
     child_ids = fields.Many2many('ir.actions.server',
                                  'rel_plm_server_actions',
                                  'server_id',
                                  'action_id',
-                                 string='Child Actions', 
+                                 string='Child Actions',
                                  help='Child server actions that will be executed. Note that the last return returned action value will be used as global return value.')
     def name_get(self):
         out=[]
         for o in self:
             out.append((o.id,"[%s | %s] %s" % (o.to_state, o.before_after, o.name or '')))
-        return out 
-    
+        return out
+
     def _run(self):
         res = False
-        active_id = self.env.context['active_id']
-        active_model = self.env.context['active_model']
-        if active_model ==self.apply_to:
-            base_domain = [('id', '=', active_id)]
-            for act in self.child_ids.sorted():
-                if self.domain:
-                    base_domain = base_domain + json.loads(self.domain.replace("\'",""))
-                    obj_id = self.env[active_model].search(base_domain)
+        sudo_self = self.sudo()
+        active_id = sudo_self.env.context["active_id"]
+        active_model = sudo_self.env.context["active_model"]
+        if active_model == sudo_self.apply_to:
+            base_domain = [("id", "=", active_id)]
+            for act in sudo_self.child_ids.sorted():
+                if sudo_self.domain:
+                    base_domain = base_domain + json.loads(sudo_self.domain)
+                    obj_id = sudo_self.env[active_model].search(base_domain)
                 else:
-                    obj_id = self.env[active_model].browse(active_id)
+                    obj_id = sudo_self.env[active_model].browse(active_id)
                 if obj_id:
                     res = act.run() or res
         return res
-        
-    
-    
-    
-    
-    
