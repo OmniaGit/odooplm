@@ -39,8 +39,8 @@ class PlmCadOpen(models.Model):
     userid = fields.Many2one('res.users', _('Related User'), index=True)
     document_id = fields.Many2one('ir.attachment', _('Related Document'), index=True)
     rel_doc_rev = fields.Integer(related='document_id.engineering_revision', string="Revision", store=True)
-    pws_path = fields.Char(_('PWS Path'))
-    hostname = fields.Char(_('Hostname'))
+    pws_path = fields.Char('PWS Path', index=True)
+    hostname = fields.Char('Hostname', index=True)
     operation_type = fields.Char(_('Operation Type'), index=True)
     dbThread = fields.Char("Related Db Thread", index=True)
 
@@ -61,7 +61,7 @@ class PlmCadOpen(models.Model):
             ], order='create_date DESC', limit=1):
             return plm_cad_open
         return self
-    
+
     @api.model
     def run_clean_cad_open_bck_scheduler(self):
         logging.info('Start Cad open Clean Scheduler')
@@ -86,7 +86,7 @@ class PlmCadOpen(models.Model):
                     })
                 cad_open_id.unlink()
         logging.info('End Cad open Clean Scheduler')
-        
+
     def name_get(self):
         result = []
         for r in self:

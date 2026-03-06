@@ -20,7 +20,7 @@
 ##############################################################################
 {
     "name": "Product Lifecycle Management",
-    "version": "16.0.36",
+    "version": "16.0.20.0.1",
     "author": "OmniaSolutions",
     "website": "https://odooplm.omniasolutions.website",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
@@ -33,6 +33,7 @@
     "data": [
         # data
         "data/data.xml",
+        "data/sequence.xml",
         # security
         "security/base_plm_security.xml",
         # views

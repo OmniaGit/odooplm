@@ -21,7 +21,7 @@
 ##############################################################################
 {
     "name": "Product Lifecycle Management Batch conversion",
-    "version": "16.0.1",
+    "version": "16.0.1.0.0",
     "author": "OmniaSolutions",
     "website": "https://odooplm.omniasolutions.website",
     "category": "Manufacturing/Product Lifecycle Management (PLM)",
@@ -29,11 +29,14 @@
     "license": "AGPL-3",
     "summary": "CAD editors batch conversion tool",
     "depends": ["plm"],
-    'external_dependencies': {'python': ['ezdxf',
-                                         'matplotlib',
-                                         'cadquery',
-                                         'numpy-stl']},
-    "data": [  
+    'external_dependencies': {
+        'python': ["ezdxf",
+                   "matplotlib",
+                   "cadquery",
+                   "numpy-stl",
+                   "to-3mf"]
+        },
+    "data": [
         #
         # security
         #
