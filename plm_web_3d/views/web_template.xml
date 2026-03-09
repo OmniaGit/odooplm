@@ -66,6 +66,38 @@
                                             <option value="workshop3">WorkShop 3</option>
                                         </select>
                                     </li>
+                                    <!--  light -->
+                                    <li class="plm_web_button">
+                                        <label for="transparency_slider">Light Distance:</label>
+                                        <input name="transparency_slider" id="object_distance" type="range" min="1"
+                                               max="1000" value="15"/>
+                                    </li>
+                                    <li class="plm_web_button">
+                                        <label for="transparency_slider">Light1:</label>
+                                        <input name="transparency_slider" id="object_light1" type="range" min="1"
+                                               max="100" value="50"/>
+                                    </li>
+                                    <li class="plm_web_button">
+                                        <label for="transparency_slider">Light2:</label>
+                                        <input name="transparency_slider" id="object_light2" type="range" min="1"
+                                               max="100" value="50"/>
+                                    </li>
+                                    <li class="plm_web_button">
+                                        <label for="transparency_slider">Light3:</label>
+                                        <input name="transparency_slider" id="object_light3" type="range" min="1"
+                                               max="100" value="50"/>
+                                    </li>
+                                    <li class="plm_web_button">
+                                        <label for="transparency_slider">Camera Light :</label>
+                                        <input name="transparency_slider" id="object_light_camera" type="range" min="1"
+                                               max="100" value="50"/>
+                                    </li>
+                                    <li class="plm_web_button">
+                                        <label for="transparency_slider">Ambient Light :</label>
+                                        <input name="transparency_slider" id="object_light_ambient" type="range" min="1"
+                                               max="100" value="50"/>
+                                    </li>
+                                    <!--  -->
                                     <li class="plm_web_button">
                                         <label for="transparency_slider">Transparency:</label>
                                         <input name="transparency_slider" id="object_transparency" type="range" min="0"
@@ -75,12 +107,6 @@
                                         <label for="explosion_slider">Explosion:</label>
                                         <input name="explosion_slider" id="object_explosion" type="range" min="0" max="100"
                                                value="0"/>
-                                    </li>
-                                    <li class="plm_web_button">
-                                        <div id="color_object_grp">
-                                            <label for="object_color">Color:</label>
-                                            <input type="color" id="object_color" name="object_color" value="#b2ffc8"/>
-                                        </div>
                                     </li>
                                 </lu>
                         </div>
