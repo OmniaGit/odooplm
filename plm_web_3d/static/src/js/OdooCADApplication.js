@@ -58,6 +58,19 @@ function createSphereHelper() {
   scene.add(sphereHelper);
 }
 
+document.getElementById("toggle_light_settings").onclick = function () {
+    const group = document.getElementById("light_settings_group");
+
+    if (group.style.display === "none") {
+        group.style.display = "block";
+        this.innerHTML = "<b>▼ Light Settings</b>";
+    } else {
+        group.style.display = "none";
+        this.innerHTML = "<b>▶ Light Settings</b>";
+    }
+};
+
+
 function fitCameraToSelection(selection, fitOffset = 1.2 ) {
 	  const box = new THREE.Box3();
 	  for( const object of Object.values(selection) ) {
@@ -381,7 +394,7 @@ function initcommand(){
     object_light_camera.oninput = chenge_light_camera;
     var object_light_ambient = document.getElementById("object_light_ambient");
     object_light_ambient.oninput = chenge_light_ambient;
-    
+
 	var object_transparency = document.getElementById("object_transparency");
 	object_transparency.oninput = change_object_transparency;
 
@@ -705,7 +718,7 @@ function resetLight(bbox, size) {
     change_light_position(size)
     }
 
-function change_light_position(size){ 
+function change_light_position(size){
     var mult = size * 1000;
     //
 	var x = bbox_center.x + mult;

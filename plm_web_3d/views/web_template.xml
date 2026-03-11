@@ -13,18 +13,27 @@
                     }
                     }
                 </script>
+
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
+                <script type="text/javascript" src="/plm_web_3d/static/src/js/markup_system.js"/>
+
                 <script type="module">
                     import { tweenCamera,camera } from "../plm_web_3d/static/src/js/OdooCADApplication.js";
                     window.tweenCamera = tweenCamera;
                     window.camera = camera;
                 </script>
+
                 <link rel="stylesheet" type="text/css"
                       href="../plm_web_3d/static/src/css/OdooCADApplication.css"></link>
                 <link rel="stylesheet"
                       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"></link>
             </head>
             <body style="margin: 0;">
-                <div id="main_3d_web">
+                <div id="main_3d_web"
+                     class="viewer_container"
+                     t-att-data-res-id="document_id"
+                     data-res-model="ir.attachment"
+                     t-att-data-file-name="document_name">
 
                     <span id="active_model" t-att-active_model="document_id" t-att-document_name="document_name"></span>
                     <div id="odoo_plm_title">
@@ -49,68 +58,97 @@
                             </div>
                         </div>
                         <div class="activatorDiv d-none" id="activatorDiv">
-                                <lu id="bottom_command" class="d-none">
-                                    <li class="plm_web_button" id="fit_view"><i class="fa fa-home"></i>Fit
-                                    </li>
-                                    <li class="plm_web_button" id="save_view"><i class="fa fa-save"></i>Save
-                                    </li>
-                                    <li class="plm_web_button">
-                                        <label for="webgl_background">BackGround:</label>
-                                        <select name="webgl_background" id="webgl_background">
-                                            <option value="tecnical">Tecnical</option>
-                                            <option value="room1">Room 1</option>
-                                            <option value="room2">Room 2</option>
-                                            <option value="outdoor">Outdoor 1</option>
-                                            <option value="workshop1">WorkShop 1</option>
-                                            <option value="workshop2">WorkShop 2</option>
-                                            <option value="workshop3">WorkShop 3</option>
-                                        </select>
-                                    </li>
-                                    <!--  light -->
-                                    <li class="plm_web_button">
-                                        <label for="transparency_slider">Light Distance:</label>
-                                        <input name="transparency_slider" id="object_distance" type="range" min="1"
-                                               max="1000" value="15"/>
-                                    </li>
-                                    <li class="plm_web_button">
-                                        <label for="transparency_slider">Light1:</label>
-                                        <input name="transparency_slider" id="object_light1" type="range" min="1"
-                                               max="100" value="50"/>
-                                    </li>
-                                    <li class="plm_web_button">
-                                        <label for="transparency_slider">Light2:</label>
-                                        <input name="transparency_slider" id="object_light2" type="range" min="1"
-                                               max="100" value="50"/>
-                                    </li>
-                                    <li class="plm_web_button">
-                                        <label for="transparency_slider">Light3:</label>
-                                        <input name="transparency_slider" id="object_light3" type="range" min="1"
-                                               max="100" value="50"/>
-                                    </li>
-                                    <li class="plm_web_button">
-                                        <label for="transparency_slider">Camera Light :</label>
-                                        <input name="transparency_slider" id="object_light_camera" type="range" min="1"
-                                               max="100" value="50"/>
-                                    </li>
-                                    <li class="plm_web_button">
-                                        <label for="transparency_slider">Ambient Light :</label>
-                                        <input name="transparency_slider" id="object_light_ambient" type="range" min="1"
-                                               max="100" value="50"/>
-                                    </li>
-                                    <!--  -->
-                                    <li class="plm_web_button">
-                                        <label for="transparency_slider">Transparency:</label>
-                                        <input name="transparency_slider" id="object_transparency" type="range" min="0"
-                                               max="100" value="90"/>
-                                    </li>
-                                    <li class="plm_web_button">
-                                        <label for="explosion_slider">Explosion:</label>
-                                        <input name="explosion_slider" id="object_explosion" type="range" min="0" max="100"
-                                               value="0"/>
-                                    </li>
-                                </lu>
+                            <div id="dropdown_menu_left">
+                                <div class="plm_button" id="fit_view"><i class="fa fa-home"></i>Fit</div>
+                                <div class="plm_button" id="save_view"><i class="fa fa-save"></i>Save</div>
+                                <div class="plm_button" id="markup_button"><i class="fa fa-edit"></i>Markup</div>
+                                <div class="plm_button" >
+                                    <label for="webgl_background">BackGround:</label>
+                                    <select name="webgl_background" id="webgl_background">
+                                        <option value="tecnical">Tecnical</option>
+                                        <option value="room1">Room 1</option>
+                                        <option value="room2">Room 2</option>
+                                        <option value="outdoor">Outdoor 1</option>
+                                        <option value="workshop1">WorkShop 1</option>
+                                        <option value="workshop2">WorkShop 2</option>
+                                        <option value="workshop3">WorkShop 3</option>
+                                    </select>
+                                </div>
+                                <div class="plm_button" id="toggle_light_settings" style="cursor:pointer;">
+                                    <b>▶ Light Settings</b>
+                                </div>
+                                <div class="plm_button" id="light_settings_group" style="display:none; padding-left:10px;">
+                                    <div>
+                                        <label>Light Distance:</label>
+                                        <input id="object_distance" type="range" min="1" max="1000" value="15"/>
+                                    </div>
+
+                                    <div>
+                                        <label>Light1:</label>
+                                        <input id="object_light1" type="range" min="1" max="100" value="50"/>
+                                    </div>
+
+                                    <div>
+                                        <label>Light2:</label>
+                                        <input id="object_light2" type="range" min="1" max="100" value="50"/>
+                                    </div>
+
+                                    <div>
+                                        <label>Light3:</label>
+                                        <input id="object_light3" type="range" min="1" max="100" value="50"/>
+                                    </div>
+
+                                    <div>
+                                        <label>Camera Light:</label>
+                                        <input id="object_light_camera" type="range" min="1" max="100" value="50"/>
+                                    </div>
+
+                                    <div>
+                                        <label>Ambient Light:</label>
+                                        <input id="object_light_ambient" type="range" min="1" max="100" value="50"/>
+                                    </div>
+
+                                </div>
+                                <div class="plm_button" >
+                                    <label for="transparency_slider">Transparency:</label>
+                                    <input name="transparency_slider" id="object_transparency" type="range" min="0"
+                                           max="100" value="90"/>
+                                </div>
+                                <div id="plm_button1" >
+                                    <label for="explosion_slider">Explosion:</label>
+                                    <input name="explosion_slider" id="object_explosion" type="range" min="0" max="100"
+                                           value="0"/>
+                                </div>
+                            </div>
                         </div>
                     </div>
+                    <div id="main_3d_web" class="viewer_container">
+                        <canvas id="odoo_canvas"></canvas>
+
+                        <div id="markup_editor">
+
+                            <div id="markup_toolbar">
+                                <button id="draw_btn">✏️ Draw</button>
+                                <button id="rect_btn">▭ Rect</button>
+                                <button id="circle_btn">◯ Circle</button>
+                                <button id="arrow_btn">➤ Arrow</button>
+                                <button id="text_btn">T Text</button>
+                                <button id="clear_btn">🧹 Clear</button>
+                                <button id="undo_btn">↩️ Undo</button>
+                                <button id="redo_btn">↪️ Redo</button>
+                                <button id="save_btn">💾 Save</button>
+                                <button id="close_btn">✖ Close</button>
+                            </div>
+
+                            <canvas id="markup_canvas"></canvas>
+
+                            <div id="markup_comment_box">
+                                <textarea id="markup_comment" placeholder="Write Message..."></textarea>
+                                <button id="submit_markup">Submit</button>
+                            </div>
+                        </div>
+                    </div>
+
                     <div id="datasheet">
                         <div id="click_show" class="click_show">
                             <hr class="hover_line"/>
@@ -125,14 +163,16 @@
                                 <hr class="datacard_line"/>
                                 <lu id="product_info">
                                 </lu>
-                                <br/>
+
+
                                 <div class="info_header">
                                     <b>Document Information</b>
                                 </div>
                                 <hr class="datacard_line"/>
                                 <lu id="document_info">
                                 </lu>
-                                <br/>
+
+
                                 <div class="info_header">
                                     <b>Document Structure</b>
                                 </div>
@@ -189,9 +229,9 @@
                             </div>
                         </div>
                     </ViewCubeContainer>
-                    <canvas id="odoo_canvas"/>
                 </div>
             </body>
         </html>
     </template>
 </odoo>
+
