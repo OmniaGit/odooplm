@@ -69,7 +69,13 @@
     z-index: 300;
 }
 
-#activatorClick { box-shadow: 2px 2px 5px 1px grey; }
+#activatorClick {
+    padding: 4px;
+    box-shadow: 2px 2px 5px 1px grey;
+    border-radius: 2px;
+    cursor: pointer;
+    width: 25px;
+}
 
 .main_command_slide .activator {
     border-radius: 2px;
@@ -244,22 +250,13 @@ div.info_header {
 }
 
 #click_show {
-    padding: 2px;
+    padding: 4px;
     box-shadow: 2px 2px 5px 1px grey;
     border-radius: 2px;
-    text-align: right;
-    width: 10%;
     cursor: pointer;
-    margin-left: 90%;
-}
-#click_show:hover { background-color: gray; }
-
-.click_show {
-    margin-left: unset !important;
-    margin-right: unset !important;
-    width: 25px !important;
-    right: 0px !important;
-    position: absolute !important;
+    width: 25px;
+    position: absolute;
+    right: 7px;
 }
 
 #tree_structure {
@@ -279,7 +276,7 @@ li.attribute_info { text-align: left; }
     left: unset !important;
     top: unset !important;
     bottom: 25px !important;
-    right: 105px !important;
+    right: 65px !important;
     transform-style: preserve-3d;
     transform: translateZ(-100px);
     position: absolute;
@@ -322,8 +319,8 @@ ul, #myUL { list-style-type: none; }
 .document_tree_line > i:hover    { background-color: #eda3da; }
 
 canvas#odoo_canvas {
-    height: -webkit-fill-available !important;
-    width:  -webkit-fill-available !important;
+    width: 100% !important;
+    height: 85% !important;
 }
 
 /* ── MARKUP EDITOR ── */
@@ -339,9 +336,11 @@ canvas#odoo_canvas {
     top: 0; left: 0;
     width: 100%; height: 100%;
 }
+
+/* ── CHANGED: toolbar stays centered, wraps, avoids side hamburgers ── */
 #markup_toolbar {
     position: absolute;
-    top: 20px;
+    top: 60px;
     left: 50%;
     transform: translateX(-50%);
     background: white;
@@ -349,9 +348,12 @@ canvas#odoo_canvas {
     border-radius: 6px;
     box-shadow: 0 3px 12px rgba(0,0,0,0.25);
     display: flex;
-    gap: 8px;
+    flex-wrap: wrap;
+    gap: 6px;
     z-index: 200;
     white-space: nowrap;
+    max-width: 30%;
+    justify-content: center;
 }
 #markup_toolbar button {
     border: 1px solid #997992;
@@ -362,6 +364,7 @@ canvas#odoo_canvas {
 }
 #markup_toolbar button:hover { background: #E0E0E0; }
 
+/* ── CHANGED: comment box stays above view cube ── */
 #markup_comment_box {
     position: absolute;
     bottom: 20px;
@@ -403,31 +406,38 @@ canvas#odoo_canvas {
 #markup_editor[style*="display: none"] #markup_comment_box { display: none !important; }
 
 /* =================================================================
-   RESPONSIVE ≤ 900px
+   RESPONSIVE ≤ 900px for tablet view
 ================================================================= */
 @media (max-width: 900px) {
+    .activatorDiv,
+    #main_div{
+        max-height:70vh !important;
+        overflow:auto !important;
+    }
 
-    /* panels: each takes ~half width, no overlap */
+    /* ── LEFT PANEL ── */
     .main_command_slide {
-        left: 0 !important;
-        max-width: 47vw !important;
+        left: 10px !important;
+        width: calc(50% - 40px) !important;
+        max-width: calc(50% - 40px) !important;
     }
     .activatorDiv {
         min-width: unset !important;
-        width: 46vw !important;
-        max-width: 46vw !important;
-        margin-right: 2px !important;
+        width: 100% !important;
+        max-width: 100% !important;
         font-size: 12px !important;
     }
+
+    /* ── RIGHT PANEL ── */
     #datasheet {
-        right: 0 !important;
-        max-width: 47vw !important;
+        right: 10px !important;
+        width: calc(50% - 40px) !important;
+        max-width: calc(50% - 40px) !important;
     }
     #main_div {
         min-width: unset !important;
-        width: 46vw !important;
-        max-width: 46vw !important;
-        margin-left: 2px !important;
+        width: 100% !important;
+        max-width: 100% !important;
         font-size: 12px !important;
     }
 
@@ -437,7 +447,7 @@ canvas#odoo_canvas {
     #dropdown_menu_left { font-size: 12px !important; padding-left: 8px !important; }
     select, input[type=range] { max-width: 100% !important; }
 
-    /* cube: small, bottom-right, below panels */
+    /* cube */
     .cube {
         bottom: 10px !important;
         right: 10px !important;
@@ -452,18 +462,19 @@ canvas#odoo_canvas {
         line-height: normal !important;
     }
 
-    /* markup toolbar: full width, buttons wrap */
+    /* ── CHANGED: toolbar between hamburgers ── */
     #markup_toolbar {
-        top: 8px !important;
-        left: 5% !important;
-        right: 5% !important;
-        width: 90% !important;
+        top: 55px !important;
+        left: 15% !important;
+        right: 15% !important;
+        width: 70% !important;
         transform: none !important;
         flex-wrap: wrap !important;
         gap: 4px !important;
-        padding: 5px 8px !important;
+        padding: 5px 6px !important;
         justify-content: center !important;
         white-space: normal !important;
+        max-width: unset !important;
     }
     #markup_toolbar button {
         padding: 4px 8px !important;
@@ -474,9 +485,9 @@ canvas#odoo_canvas {
         text-align: center !important;
     }
 
-    /* comment box: full width at bottom */
+    /* ── CHANGED: comment box above view cube ── */
     #markup_comment_box {
-        bottom: 8px !important;
+        bottom: 80px !important;
         left: 5% !important;
         right: 5% !important;
         width: 90% !important;
@@ -502,7 +513,7 @@ canvas#odoo_canvas {
 }
 
 /* =================================================================
-   VERY SMALL ≤ 480px
+   VERY SMALL ≤ 480px for medium  mobile view
 ================================================================= */
 @media (max-width: 480px) {
 
@@ -514,11 +525,24 @@ canvas#odoo_canvas {
 
     .header_image { height: 28px !important; }
 
+    /* ── CHANGED: toolbar between hamburgers on small mobile ── */
+    #markup_toolbar {
+        top: 50px !important;
+        left: 12% !important;
+        right: 20% !important;
+        width: 69% !important;
+        max-width: unset !important;
+    }
     #markup_toolbar button {
         font-size: 10px !important;
         padding: 3px 5px !important;
         min-width: 40px !important;
         height: 24px !important;
+    }
+
+    /* ── CHANGED: comment box above view cube on small mobile ── */
+    #markup_comment_box {
+        bottom: 90px !important;
     }
 
     .cube {
@@ -532,3 +556,26 @@ canvas#odoo_canvas {
     }
 }
 
+@media (max-width: 900px) {
+    .cube {
+        bottom: 10px !important;
+        right: 10px !important;
+        left: unset !important;
+        z-index: 1 !important;
+        width: 55px !important;
+        height: 55px !important;
+    }
+
+    #datasheet {
+        z-index: 302 !important;
+    }
+}
+
+@media (max-width:480px){
+    #click_show,
+    #activatorClick{
+        width: 12px;
+        height: 17px;
+        padding:3px;
+    }
+}

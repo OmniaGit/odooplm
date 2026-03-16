@@ -122,7 +122,7 @@
                             </div>
                         </div>
                     </div>
-                    <div id="main_3d_web" class="viewer_container">
+                    <div class="viewer_container">
                         <canvas id="odoo_canvas"></canvas>
 
                         <div id="markup_editor">
