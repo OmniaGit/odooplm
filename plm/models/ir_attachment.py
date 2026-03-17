@@ -3251,7 +3251,7 @@ class IrAttachment(models.Model):
                     continue
                 is_check_in = doc_id.ischecked_in()
                 if is_check_in:
-                    newer_in_odoo = not self.is_open_by_me(hostname,hostpws)
+                    newer_in_odoo = not doc_id.is_open_by_me(hostname,hostpws)
                     if newer_in_odoo:
                         doc_fields['checkout'] = False
                         doc_fields['newer'] = True
@@ -3705,7 +3705,8 @@ class IrAttachment(models.Model):
         out = []
         for document_attributes in json.loads(args[0]):
             document_id = self.getDocumentBrws(document_attributes)
-            out.append(self.getDocumentChechOutDict(document_id))
+            if document_id.exists():
+                out.append(self.getDocumentChechOutDict(document_id))
         #
         return json.dumps(out)
     
