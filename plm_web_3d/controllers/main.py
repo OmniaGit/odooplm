@@ -2,7 +2,7 @@
 import base64
 import functools
 import json
-
+from odoo import http
 from odoo.http import Controller, route, request, Response
 
 
@@ -110,3 +110,21 @@ class Web3DView(Controller):
                 break
 
         return out
+
+    @http.route('/plm_web_3d/save_markup', type='json', auth='user')
+    def save_markup(self, image=None, comment=None, res_model=None, res_id=None):
+        record = request.env[res_model].sudo().browse(int(res_id))
+        image_binary = base64.b64decode(image.split(',')[1])
+        if record:
+            record.message_post(
+                body=comment,
+                attachments=[('markup.png', image_binary)]
+            )
+            if record.linkedcomponents:
+                for component in record.linkedcomponents:
+                    component.message_post(
+                        body=comment,
+                        attachments=[('markup.png', image_binary)],
+                    )
+
+        return {"status": "ok"}
