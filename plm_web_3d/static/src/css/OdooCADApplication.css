@@ -1,5 +1,5 @@
 /* =========================================================
-   OdooCADApplication.css  —  COMPLETE FINAL VERSION
+   OdooCADApplication.css — FIXED VERSION
 ========================================================= */
 
 /* ── BASE ── */
@@ -50,7 +50,7 @@
 
 #plm_web_button:hover { background-color: red; }
 
-/* ── MAIN 3D CONTAINER — keeps left/right margin ── */
+/* ── MAIN 3D CONTAINER ── */
 #main_3d_web {
     margin: auto;
     max-width: 90%;
@@ -66,7 +66,7 @@
     top: 60px;
     left: 7px;
     height: 300px !important;
-    z-index: 300;
+    z-index: 400 !important;
 }
 
 #activatorClick {
@@ -215,12 +215,14 @@ label { background-color: white; }
 
 /* ── DATASHEET ── */
 #datasheet {
-    overflow: hidden;
+    overflow: visible;
     position: absolute;
     top: 60px;
     right: 7px;
+    z-index: 400 !important;
 }
 
+/* ── FIX 1: Remove forced visibility so JS toggle works ── */
 #main_div {
     box-shadow: 2px 2px 5px 1px grey;
     background-color: white;
@@ -229,13 +231,24 @@ label { background-color: white; }
     padding: 2px;
     margin-top: 27px;
     width: 300px;
+    height: 400px;
+    /* REMOVED: visibility: visible !important and opacity: 1 !important */
+    /* These were preventing JS from hiding the panel */
     visibility: hidden;
     opacity: 0;
+    transition: visibility 0.2s, opacity 0.2s;
     resize: horizontal;
     overflow: auto;
     direction: rtl;
     min-width: 300px;
 }
+
+/* When JS sets it visible */
+#main_div.panel-open {
+    visibility: visible;
+    opacity: 0.95;
+}
+
 #main_div_hidden {
     padding: 5px;
     transition: visibility 0.3s linear, opacity 0.3s linear;
@@ -327,131 +340,323 @@ canvas#odoo_canvas {
 #markup_editor {
     display: none;
     position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     z-index: 120;
+    overflow: hidden;
 }
 #markup_canvas {
     position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: auto;
 }
 
-/* ── CHANGED: toolbar stays centered, wraps, avoids side hamburgers ── */
-#markup_toolbar {
-    position: absolute;
-    top: 60px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: white;
-    padding: 8px 12px;
-    border-radius: 6px;
-    box-shadow: 0 3px 12px rgba(0,0,0,0.25);
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    z-index: 200;
-    white-space: nowrap;
-    max-width: 30%;
-    justify-content: center;
-}
-#markup_toolbar button {
-    border: 1px solid #997992;
-    background: white;
-    padding: 6px 12px;
-    border-radius: 3px;
-    cursor: pointer;
-}
-#markup_toolbar button:hover { background: #E0E0E0; }
+/* ── ORIGINAL MARKUP TOOLBAR/COMMENT — always hidden, JS builds UI from clones ── */
+#markup_toolbar    { display: none !important; }
+#markup_comment_box { display: none !important; }
 
-/* ── CHANGED: comment box stays above view cube ── */
-#markup_comment_box {
+/* ================================================================
+   MARKUP CONTROLS ROW (mcr-*)
+   Built by JS inside #markup_editor. All styling lives here.
+================================================================ */
+
+/* ── MARKUP CONTROLS ROW ──
+   Uses flex-direction: column-reverse so that when content wraps to multiple
+   rows, it grows UPWARD from the bottom edge — never clipped by overflow:hidden.
+   Row order from bottom: toolbar, then comment row above it.
+*/
+.mcr-wrap {
     position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: transparent;
-    border: none;
-    box-shadow: none;
-    z-index: 250;
+    bottom: 6px;
+    left: 20%;
+    right: 6px;
     display: flex;
     flex-direction: row;
-    gap: 10px;
-    width: 420px;
-    max-width: 90%;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    z-index: 500;
+    box-sizing: border-box;
+    pointer-events: auto;
 }
-#markup_comment {
-    flex: 1;
-    min-height: 50px;
-    padding: 10px;
+
+/* Toolbar pill — bottom row, buttons wrap within */
+.mcr-toolbar {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 4px;
+    background: rgba(255,255,255,0.95);
+    padding: 3px 8px;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    box-sizing: border-box;
+    width: auto;
+}
+
+/* Each toolbar button */
+.mcr-btn {
+    height: 32px;
+    padding: 3px 9px;
+    font-size: 12px;
+    white-space: nowrap;
+    cursor: pointer;
+    border: 1px solid #997992;
+    border-radius: 4px;
+    background: white;
+    flex-shrink: 0;
+}
+.mcr-btn:hover { background: #E0E0E0; }
+
+/* Comment + Submit — row above toolbar */
+.mcr-comment-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 5px;
+    box-sizing: border-box;
+    width: auto;
+}
+
+/* Comment input */
+.mcr-input {
+    width: 260px;
+    height: 34px;
+    padding: 5px 10px;
     border: 1px solid #997992;
     border-radius: 6px;
-    resize: none;
-    font-size: 14px;
+    font-size: 12px;
     font-family: inherit;
-    background: rgba(255,255,255,0.9);
+    background: rgba(255,255,255,0.95);
+    box-sizing: border-box;
+    min-width: 0;
 }
-#submit_markup {
-    padding: 10px 18px;
+
+/* Submit button */
+.mcr-submit {
+    height: 34px;
+    padding: 0 16px;
     background: #572649;
     color: white;
     border: none;
     border-radius: 6px;
     cursor: pointer;
+    font-size: 12px;
     font-weight: bold;
     white-space: nowrap;
+    flex-shrink: 0;
 }
-#submit_markup:hover { background: #714B67; }
-#markup_editor[style*="display: none"] #markup_comment_box { display: none !important; }
+.mcr-submit:hover { background: #714B67; }
+
+/* Groups comment row + activity panel so panel sits directly above comment box */
+.mcr-comment-group {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+    flex-shrink: 0;
+    position: relative;
+}
+
+/* Activity panel — floats above comment row, does NOT affect layout */
+.mcr-activity-panel {
+    position: absolute;
+    bottom: calc(100% + 6px);
+    right: 0;
+    width: 360px;
+    max-width: 90vw;
+    background: rgba(255,255,255,0.98);
+    border: 1px solid #997992;
+    border-radius: 8px;
+    padding: 8px 10px;
+    box-sizing: border-box;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.15);
+    z-index: 600;
+}
+.mcr-ap-row {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 5px;
+}
+.mcr-ap-label {
+    font-size: 10px;
+    color: #714B67;
+    font-weight: bold;
+    margin-bottom: 2px;
+    background: transparent;
+}
+.mcr-ap-input {
+    height: 28px;
+    padding: 3px 7px;
+    border: 1px solid #997992;
+    border-radius: 4px;
+    font-size: 12px;
+    font-family: inherit;
+    box-sizing: border-box;
+    background: white;
+    color: #333;
+    width: 100%;
+}
+.mcr-ap-input:focus { outline: 1px solid #714B67; }
+
+/* Action group: Activity title → checkbox → Submit, stacked vertically */
+.mcr-action-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    flex-shrink: 0;
+}
+.mcr-activity-title {
+    font-size: 11px;
+    font-weight: bold;
+    color: #572649;
+    text-align: center;
+    user-select: none;
+    background: transparent;
+    line-height: 1.2;
+}
+
+/* Activity checkbox inside comment row */
+.mcr-activity-label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    flex-shrink: 0;
+    padding: 2px 6px;
+    background: rgba(255,255,255,0.95);
+    border: 1px solid #997992;
+    border-radius: 4px;
+    height: auto;
+    box-sizing: border-box;
+    white-space: nowrap;
+    font-size: 11px;
+    color: #572649;
+    font-weight: bold;
+}
+.mcr-activity-text {
+    font-size: 11px;
+    color: #572649;
+    font-weight: bold;
+    user-select: none;
+}
+.mcr-activity-check {
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+    accent-color: #572649;
+    flex-shrink: 0;
+}
+@media (max-width: 1023px) {
+    .mcr-activity-label { height: 27px; padding: 0 3px; }
+}
+@media (max-width: 520px) {
+    .mcr-activity-label { height: 25px; padding: 0 3px; }
+}
+
+/* ── TABLET 521px–1023px ── */
+@media (max-width: 1023px) {
+    .mcr-wrap         { gap: 4px; bottom: 5px; left: 4px; right: 4px; flex-direction: column-reverse; align-items: stretch; }
+    .mcr-toolbar      { gap: 3px; padding: 3px 6px; flex-wrap: wrap; }
+    .mcr-btn          { height: 28px; padding: 2px 7px; font-size: 11px; }
+    .mcr-comment-group{ width: 100%; }
+    .mcr-comment-row  { width: 100%; }
+    .mcr-input        { flex: 1; width: auto; height: 28px; font-size: 11px; padding: 3px 8px; }
+    .mcr-submit       { height: 28px; padding: 0 10px; font-size: 11px; }
+}
+
+/* ── MOBILE ≤ 520px ── */
+@media (max-width: 520px) {
+    .mcr-wrap         { gap: 3px; bottom: 4px; left: 3px; right: 3px; flex-direction: column-reverse; align-items: stretch; }
+    .mcr-toolbar      { gap: 2px; padding: 3px 5px; flex-wrap: wrap; }
+    .mcr-btn          { height: 26px; padding: 2px 6px; font-size: 10px; }
+    .mcr-comment-group{ width: 100%; }
+    .mcr-comment-row  { width: 100%; }
+    .mcr-input        { flex: 1; width: auto; height: 26px; font-size: 10px; padding: 3px 6px; }
+    .mcr-submit       { height: 26px; padding: 0 10px; font-size: 10px; }
+}
 
 /* =================================================================
-   RESPONSIVE ≤ 900px for tablet view
+   LAPTOP 1024px – 1640px
 ================================================================= */
-@media (max-width: 900px) {
-    .activatorDiv,
-    #main_div{
-        max-height:70vh !important;
-        overflow:auto !important;
+@media (min-width: 1024px) and (max-width: 1640px) {
+
+
+    #markup_logs_list { max-height: 200px !important; }
+
+    .cube {
+        bottom: 100px !important;
+        right: 15px !important;
+        width: 65px !important;
+        height: 65px !important;
+    }
+    .cube__face {
+        width: 65px !important;
+        height: 65px !important;
+        font-size: 11px !important;
+        line-height: normal !important;
     }
 
-    /* ── LEFT PANEL ── */
+
+}
+
+/* =================================================================
+   TABLET ≤ 1023px
+================================================================= */
+@media (max-width: 1023px) {
+
+
     .main_command_slide {
-        left: 10px !important;
-        width: calc(50% - 40px) !important;
-        max-width: calc(50% - 40px) !important;
+        left: 5px !important;
+        width: calc(50% - 15px) !important;
+        max-width: calc(50% - 15px) !important;
     }
     .activatorDiv {
         min-width: unset !important;
         width: 100% !important;
         max-width: 100% !important;
-        font-size: 12px !important;
+        font-size: 11px !important;
+        box-sizing: border-box !important;
+        max-height: 70vh !important;
+        overflow: auto !important;
     }
 
-    /* ── RIGHT PANEL ── */
     #datasheet {
-        right: 10px !important;
-        width: calc(50% - 40px) !important;
-        max-width: calc(50% - 40px) !important;
+        right: 5px !important;
+        width: calc(50% - 15px) !important;
+        max-width: calc(50% - 15px) !important;
+        z-index: 302 !important;
     }
     #main_div {
         min-width: unset !important;
         width: 100% !important;
         max-width: 100% !important;
-        font-size: 12px !important;
+        font-size: 11px !important;
+        box-sizing: border-box !important;
+        max-height: 70vh !important;
+        overflow: auto !important;
     }
 
-    /* text inside panels */
     .plm_button,
     li.attribute_info,
-    #dropdown_menu_left { font-size: 12px !important; padding-left: 8px !important; }
+    #dropdown_menu_left { font-size: 11px !important; padding-left: 6px !important; }
     select, input[type=range] { max-width: 100% !important; }
 
-    /* cube */
+    #markup_logs_list { max-height: 160px !important; }
+
     .cube {
-        bottom: 10px !important;
+        bottom: 175px !important;
         right: 10px !important;
-        z-index: 1 !important;
+        z-index: 10 !important;
         width: 55px !important;
         height: 55px !important;
     }
@@ -462,90 +667,47 @@ canvas#odoo_canvas {
         line-height: normal !important;
     }
 
-    /* ── CHANGED: toolbar between hamburgers ── */
-    #markup_toolbar {
-        top: 55px !important;
-        left: 15% !important;
-        right: 15% !important;
-        width: 70% !important;
-        transform: none !important;
-        flex-wrap: wrap !important;
-        gap: 4px !important;
-        padding: 5px 6px !important;
-        justify-content: center !important;
-        white-space: normal !important;
-        max-width: unset !important;
-    }
-    #markup_toolbar button {
-        padding: 4px 8px !important;
-        font-size: 11px !important;
-        height: 28px !important;
-        flex: 1 1 auto !important;
-        min-width: 50px !important;
-        text-align: center !important;
-    }
 
-    /* ── CHANGED: comment box above view cube ── */
-    #markup_comment_box {
-        bottom: 80px !important;
-        left: 5% !important;
-        right: 5% !important;
-        width: 90% !important;
-        max-width: 90% !important;
-        transform: none !important;
-        flex-direction: row !important;
-        gap: 8px !important;
-        align-items: flex-end !important;
-    }
-    #markup_comment {
-        min-height: 38px !important;
-        max-height: 60px !important;
-        font-size: 12px !important;
-        padding: 6px !important;
-    }
-    #submit_markup {
-        min-width: 64px !important;
-        padding: 8px 10px !important;
-        font-size: 12px !important;
-        height: 38px !important;
-        width: auto !important;
-    }
 }
 
 /* =================================================================
-   VERY SMALL ≤ 480px for medium  mobile view
+   MOBILE ≤ 480px
 ================================================================= */
 @media (max-width: 480px) {
 
-    .activatorDiv, #main_div {
-        width: 44vw !important;
-        max-width: 44vw !important;
+
+    .main_command_slide {
+        left: 3px !important;
+        width: calc(50% - 8px) !important;
+        max-width: calc(50% - 8px) !important;
+    }
+    .activatorDiv {
+        min-width: unset !important;
+        width: 100% !important;
+        max-width: 100% !important;
         font-size: 10px !important;
+        box-sizing: border-box !important;
     }
 
-    .header_image { height: 28px !important; }
-
-    /* ── CHANGED: toolbar between hamburgers on small mobile ── */
-    #markup_toolbar {
-        top: 50px !important;
-        left: 12% !important;
-        right: 20% !important;
-        width: 69% !important;
-        max-width: unset !important;
+    #datasheet {
+        right: 3px !important;
+        width: calc(50% - 8px) !important;
+        max-width: calc(50% - 8px) !important;
     }
-    #markup_toolbar button {
+    #main_div {
+        min-width: unset !important;
+        width: 100% !important;
+        max-width: 100% !important;
         font-size: 10px !important;
-        padding: 3px 5px !important;
-        min-width: 40px !important;
-        height: 24px !important;
+        box-sizing: border-box !important;
     }
 
-    /* ── CHANGED: comment box above view cube on small mobile ── */
-    #markup_comment_box {
-        bottom: 90px !important;
-    }
+    #markup_logs_list { max-height: 120px !important; }
 
     .cube {
+        bottom: 195px !important;
+        right: 5px !important;
+        z-index: 10 !important;
         width: 44px !important;
         height: 44px !important;
     }
@@ -554,28 +716,112 @@ canvas#odoo_canvas {
         height: 44px !important;
         font-size: 7px !important;
     }
-}
 
-@media (max-width: 900px) {
-    .cube {
-        bottom: 10px !important;
-        right: 10px !important;
-        left: unset !important;
-        z-index: 1 !important;
-        width: 55px !important;
-        height: 55px !important;
-    }
 
-    #datasheet {
-        z-index: 302 !important;
-    }
-}
 
-@media (max-width:480px){
     #click_show,
-    #activatorClick{
-        width: 12px;
-        height: 17px;
-        padding:3px;
+    #activatorClick {
+        width: 18px;
+        height: 18px;
+        padding: 3px;
     }
+}
+
+/* ── MARKUP LOGS ── */
+.markup_log_item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 8px;
+    border-bottom: 1px solid #e0d0e0;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+}
+.markup_log_item:hover { background-color: #eda3da; }
+.markup_log_date {
+    color: #714B67;
+    font-weight: bold;
+    white-space: nowrap;
+    font-size: 13px;
+}
+.markup_log_comment {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #333;
+    font-weight: bold;
+}
+.markup_log_eye {
+    cursor: pointer;
+    color: #714B67;
+    font-size: 18px;
+    padding: 3px 5px;
+    border-radius: 3px;
+}
+.markup_log_eye:hover { background: #997992; color: white; }
+.markup_log_label {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #333;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/* ── MARKUP LOGS SCROLLABLE LIST ── */
+#markup_logs_list {
+    max-height: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: #997992 #f0e8f0;
+}
+#markup_logs_list::-webkit-scrollbar       { width: 5px; }
+#markup_logs_list::-webkit-scrollbar-track { background: #f0e8f0; border-radius: 10px; }
+#markup_logs_list::-webkit-scrollbar-thumb { background: #997992; border-radius: 10px; }
+#markup_logs_list::-webkit-scrollbar-thumb:hover { background: #714B67; }
+
+/* ── MARKUP LOG PREVIEW MODAL ── */
+#markup_log_modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.75);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+}
+#markup_log_modal.open { display: flex; }
+#markup_log_modal_inner {
+    background: white;
+    border-radius: 10px;
+    padding: 16px;
+    max-width: 90%;
+    max-height: 90%;
+    overflow: auto;
+    position: relative;
+    text-align: center;
+}
+#markup_log_modal_close {
+    position: absolute;
+    top: 8px; right: 12px;
+    font-size: 20px;
+    cursor: pointer;
+    color: #714B67;
+    font-weight: bold;
+}
+#markup_log_modal_img {
+    max-width: 100%;
+    border-radius: 6px;
+    margin-top: 10px;
+}
+#markup_log_modal_comment {
+    margin-top: 10px;
+    font-size: 13px;
+    color: #333;
+    font-style: italic;
 }
