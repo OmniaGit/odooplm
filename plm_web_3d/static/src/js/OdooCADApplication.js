@@ -28,11 +28,12 @@ let camera, scene, canvas , renderer, labelRenderer, controls, mouse;
 let planeMeshFloar, planeGrid;
 let objectAxesHelper;
 let raycaster ;
-let light1, light2, light3;
+let light1, light2, light3,cameraLight, ambientLight;
 var srcRefresh = false;
 var togleBackgoundV= false;
 let drawingLine = false;
 let lineId = 0;
+let bbox_center = new THREE.Vector3();
 const fov = 75;
 const near = 0.1;
 const far = 1000;
@@ -56,6 +57,19 @@ function createSphereHelper() {
   sphereHelper.visible = false;
   scene.add(sphereHelper);
 }
+
+document.getElementById("toggle_light_settings").onclick = function () {
+    const group = document.getElementById("light_settings_group");
+
+    if (group.style.display === "none") {
+        group.style.display = "block";
+        this.innerHTML = "<b>▼ Light Settings</b>";
+    } else {
+        group.style.display = "none";
+        this.innerHTML = "<b>▶ Light Settings</b>";
+    }
+};
+
 
 function fitCameraToSelection(selection, fitOffset = 1.2 ) {
 	  const box = new THREE.Box3();
@@ -113,7 +127,7 @@ function togleBackgound(){
 
 function tecnicalBckground(){
 	objectAxesHelper.visible=true;
-	planeMeshFloar = new THREE.Mesh( new THREE.PlaneBufferGeometry( 2000, 2000 ),
+	planeMeshFloar = new THREE.Mesh( new THREE.PlaneGeometry( 2000, 2000 ),
 			new THREE.MeshPhongMaterial( { color: 0x999999, depthWrite: false } ) );
 	planeGrid = new THREE.GridHelper( 200, 40, 0x000000, 0x000000 );
 	planeMeshFloar.rotation.x = - Math.PI / 2;
@@ -310,11 +324,6 @@ function init() {
 
 }
 
-
-
-
-
-
 function getCameraCSSMatrix(matrix) {
 
   var elements = matrix.elements;
@@ -372,14 +381,25 @@ function initcommand(){
 	document.addEventListener('keyup', onKeyup);
 	const html_canvas =  document.getElementById('odoo_canvas');
 	html_canvas.addEventListener("OdooCAD_fit_items", fitCameraToSelectionEvent, false);
+    // light
+    var object_light_distance = document.getElementById("object_distance")
+    object_light_distance.oninput = chenge_light_distance;
+    var object_light1 = document.getElementById("object_light1");
+    object_light1.oninput = chenge_light1;
+    var object_light2 = document.getElementById("object_light2");
+    object_light2.oninput = chenge_light2;
+    var object_light3 = document.getElementById("object_light3");
+    object_light3.oninput = chenge_light3;
+    var object_light_camera = document.getElementById("object_light_camera");
+    object_light_camera.oninput = chenge_light_camera;
+    var object_light_ambient = document.getElementById("object_light_ambient");
+    object_light_ambient.oninput = chenge_light_ambient;
+
 	var object_transparency = document.getElementById("object_transparency");
 	object_transparency.oninput = change_object_transparency;
 
     var object_explosion = document.getElementById("object_explosion");
     object_explosion.oninput = change_object_explosion;
-
-	var colorPicker = document.getElementById("object_color");
-	colorPicker.oninput = change_object_color;
 	/*
 	 * Make screen shot
 	 */
@@ -504,7 +524,35 @@ var change_object_transparency = function(event) {
         });
 	}
 }
+var chenge_light_distance =  function(event){
+    var value = this.value;
+    change_light_position(value/1000);
+}
+var chenge_light1 = function(event){
+    var value = this.value;
+    light1.intensity= value/100;
+}
+var chenge_light2 = function(event){
+    var value = this.value;
+    light2.intensity= value/100;
+}
+var chenge_light3 = function(event){
+    var value = this.value;
+    light3.intensity= value/100;
+}
+var chenge_light_ambient = function(event){
+    var value = this.value;
+    ambientLight.intensity= value/100;
+}
+var chenge_light_camera = function(event){
+    var value = this.value;
+    cameraLight.intensity= value/100;
+}
 
+/*, light2, light3, ambientLight;
+var chenge_light_ambient = funciton(event){
+    var value = this.value;
+}*/
 var change_object_explosion = function(event){
     var entitys_BBOX = OdooCad.active_bbox;
     var center = new THREE.Vector3();
@@ -648,6 +696,10 @@ function addCamera(){
 			near,
 			far);
 	camera.position.z = 2;
+	// light
+    cameraLight = new THREE.PointLight( 0xffffff, 0.5 );
+    camera.add( cameraLight );
+    scene.add(camera);
 }
 
 function addOrbit(){
@@ -661,18 +713,26 @@ function addOrbit(){
 }
 
 function resetLight(bbox, size) {
-	var mult = size * 1000;
-	var center = new THREE.Vector3();
-	bbox.getCenter(center);
-	var x = center.x + mult;
-	var y = center.y + mult;
-	var z = center.z + mult;
+	bbox_center = new THREE.Vector3();
+	bbox.getCenter(bbox_center);
+    change_light_position(size)
+    }
+
+function change_light_position(size){
+    var mult = size * 1000;
+    //
+	var x = bbox_center.x + mult;
+	var y = bbox_center.y + mult;
+	var z = bbox_center.z + mult;
+	//
 	light1.position.z = z;
 	light1.position.y = - y;
 	light1.position.x = - x;
+	//
 	light2.position.z = z;
 	light2.position.x = - x;
 	light2.position.y = y;
+	//
 	light3.position.z = z;
 	light3.position.x = x;
 	light3.position.y = - y;
@@ -683,30 +743,33 @@ function addLight(){
 	const group = new THREE.Group();
 	scene.add( group );
 
-	light1 = new THREE.DirectionalLight( 0xf7d962, 0.1);
+	light1 = new THREE.SpotLight( 0xf7d962, 0.1);
 	light1.castShadow = true; // default false
 	light1.position.z = 70;
 	light1.position.y = - 70;
 	light1.position.x = - 70;
+	light1.intensity = 0.5;
 	scene.add( light1 );
 
-	light2 = new THREE.DirectionalLight( 0xffdddd, 0.1 );
+	light2 = new THREE.SpotLight( 0xffdddd, 0.1 );
 	light2.castShadow = true; // default false
 	light2.position.z = 70;
 	light2.position.x = - 70;
 	light2.position.y = 70;
+	light2.intensity =0.5;
 	scene.add( light2 );
 
-	light3 = new THREE.DirectionalLight( 0xf7d962, 0.1 );
+	light3 = new THREE.SpotLight( 0xf7d962, 0.1 );
 	light3.castShadow = true; // default false
 	light3.position.z = 70;
 	light3.position.x = 70;
 	light3.position.y = - 70;
+	light3.intensity = 0.5;
 	scene.add( light3 );
 
-    const ambientLight = new THREE.HemisphereLight('#b199ff',           // bright sky color
-                                                  'darkslategrey',  // dim ground color
-                                                  1.5,                // intensity
+    ambientLight = new THREE.HemisphereLight('#b199ff',        // bright sky color
+                                             'darkslategrey',  // dim ground color
+                                             0.5,              // intensity
     );
 
     scene.add(ambientLight);
