@@ -636,16 +636,12 @@ function sendMarkupToBackend(imageData, comment, canvasJson) {
     let fileName = container.dataset.fileName || "markup";
     fileName = fileName.replace(/\.[^/.]+$/, "") + ".jpg";
 
-    console.log("SENDING:", resId, resModel);
-
     const activityCheckbox = document.getElementById("activity_view");
     const scheduleActivity = activityCheckbox && activityCheckbox.checked;
 
     const dueDate = document.getElementById("mcr_due_date")?.value || "";
     const summary = document.getElementById("mcr_summary")?.value || "";
     const userId  = parseInt(document.getElementById("mcr_user_id")?.value) || false;
-
-    console.log("SUMMARY SENT:", summary);
 
     fetch("/plm_web_3d/save_markup", {
         method: "POST",
@@ -661,8 +657,6 @@ function sendMarkupToBackend(imageData, comment, canvasJson) {
                 res_model: resModel,
                 res_id: resId,
                 schedule_activity: scheduleActivity,
-
-
                 activity_due_date: dueDate,
                 activity_summary: summary,
                 activity_user_id: userId
@@ -671,9 +665,9 @@ function sendMarkupToBackend(imageData, comment, canvasJson) {
     })
     .then(r => r.json())
     .then(() => {
-
         if (!scheduleActivity) {
-            addMarkupLog(imageData, comment, canvasJson, new Date().toLocaleDateString());
+            const displayComment = comment || (fileName + " - Markup Logged");
+            addMarkupLog(imageData, displayComment, canvasJson, new Date().toLocaleDateString());
         }
 
         const commentTextarea = document.getElementById("markup_comment");
@@ -729,12 +723,11 @@ function initExistingMarkups() {
     .then(data => {
         if (data.result?.markups) {
             data.result.markups.reverse().forEach(m => {
-                const dateOnly   = new Date(m.create_date).toLocaleDateString();
-                const snapshot   = m.snapshot ? "data:image/jpeg;base64," + m.snapshot : null;
-                const canvasData = typeof m.canvas_data === "string"
-                    ? m.canvas_data
-                    : JSON.stringify(m.canvas_data);
-                addMarkupLog(snapshot, m.comment, canvasData, dateOnly, m.id);
+                const dateOnly      = new Date(m.create_date).toLocaleDateString();
+                const snapshot      = m.snapshot ? "data:image/jpeg;base64," + m.snapshot : null;
+                const canvasData    = typeof m.canvas_data === "string" ? m.canvas_data : JSON.stringify(m.canvas_data);
+                const displayComment = m.comment || ((m.filename || 'markup.jpg') + " - Markup Logged");
+                addMarkupLog(snapshot, displayComment, canvasData, dateOnly, m.id);
             });
         }
     })
@@ -801,7 +794,6 @@ function addMarkupLog(screenshotDataUrl, commentText, canvasJson, dateStr, marku
 }
 
 function deleteMarkup(markupId, itemElement) {
-    if (!confirm("Delete this markup?")) return;
 
     fetch("/plm/markup/delete", {
         method: "POST",
@@ -1101,4 +1093,33 @@ window.addEventListener("load", function () {
             });
         });
     }
+});
+
+//---------Hyperlink 3d viewer-------------------
+
+window.addEventListener("load", function () {
+    const params   = new URLSearchParams(window.location.search);
+    const markupId = params.get("markup_id");
+    if (!markupId) return;
+
+    fetch("/plm_web_3d/markup/addon", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            jsonrpc: "2.0",
+            method: "call",
+            params: { markup_id: parseInt(markupId) }
+        })
+    })
+    .then(r => r.json())
+    .then(data => {
+        const m = data.result?.markup;
+        if (!m) return;
+        const snapshot   = m.snapshot ? "data:image/jpeg;base64," + m.snapshot : null;
+        const canvasData = typeof m.canvas_data === "string" ? m.canvas_data : JSON.stringify(m.canvas_data);
+        setTimeout(function () {
+            loadMarkupIntoEditor(canvasData, snapshot);
+        }, 1000);
+    })
+    .catch(err => console.error("Auto-load markup error:", err));
 });
