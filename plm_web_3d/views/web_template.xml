@@ -166,11 +166,16 @@
                                          style="display:none; margin-top:6px; font-size:11px; text-align:center;">
                                     </div>
                                 </div>
-                                <textarea id="markup_comment" placeholder="Write Message..."></textarea>
-                                <label>
-                                    <input type="checkbox" id="activity_view"/>
-                                </label>
-                                <button id="submit_markup">Submit</button>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <textarea id="markup_comment" placeholder="Write Message..."></textarea>
+                                    <div style="display: flex; flex-direction: column; align-items: center; gap: 6px;">
+                                        <label>
+                                            <input type="checkbox" id="activity_view"/>
+                                            Activity
+                                        </label>
+                                        <button id="submit_markup">Submit</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
