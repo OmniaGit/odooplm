@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
 <data>
- 
+
     <record model="ir.ui.view" id="view_plm_backupdoc">
         <field name="name">plm.backupdoc</field>
         <field name="model">plm.backupdoc</field>
@@ -37,23 +37,23 @@
         <field name="priority" eval="1"/>
         <field name="arch" type="xml">
             <search string="Backup Document Set">
-                <filter 
+                <filter
                         name="last_month_filter"
                         string="Last Month"
                         domain="[('create_date','&lt;=', (datetime.date.today() - relativedelta(days=31,months=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today() - relativedelta(days=1,months=1)).strftime('%%Y-%%m-%%d'))]"
-                        help="Checked-Out in last month"/>      
-                         
-                <filter 
+                        help="Checked-Out in last month"/>
+
+                <filter
                         name="last_week_filter"
                         string="Last Week"
                         domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"
                         help="Checked-Out in last week"/>
-                <filter 
+                <filter
                         name="latest_7_days"
                         string="Latest 7 Days"
                         domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
                         help="Checked-Out in latest 7 days"/>
-                 <filter 
+                 <filter
                         name = "yesterday"
                         string="Yesterday"
                         domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
@@ -94,7 +94,7 @@
             </list>
         </field>
     </record>
-  
+
     <record model="ir.actions.act_window" id="action_plm_backupdoc">
         <field name="name">Backup Data Set</field>
         <field name="res_model">plm.backupdoc</field>
@@ -123,12 +123,43 @@
         </field>
     </record>
 
-         <record id="act_restore_document" model="ir.actions.act_window">
+    <record id="act_restore_document" model="ir.actions.act_window">
             <field name="name">Restore Document</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">plm.backupdoc_wizard</field>
             <field name="binding_model_id" ref="plm.model_plm_backupdoc"/>
             <field name="view_id" ref="restore_document_button_view"/>
+            <field name="target">new</field>
+        </record>
+
+    <record id="restore_all_documents_button_view" model="ir.ui.view">
+            <field name="name">Restore All Documents</field>
+            <field name="model">plm.backupdoc_wizard</field>
+            <field name="arch" type="xml">
+                <form string="Restore Entire Document Tree">
+                    <sheet>
+                        <h2>Restore Entire Document Tree</h2>
+                        <group>
+                            <field name="backup_date" options="{'datepicker': {'maxDate': 'today'}}"/>
+                        </group>
+                    </sheet>
+                    <footer>
+                        <button special="cancel" string="Cancel"/>
+                        <button string="Restore All"
+                                name="action_restore_all_documents"
+                                type="object"
+                                class="btn-primary"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+    <record id="act_restore_all_documents" model="ir.actions.act_window">
+            <field name="name">Restore All Documents</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">plm.backupdoc_wizard</field>
+            <field name="binding_model_id" ref="plm.model_plm_backupdoc"/>
+            <field name="view_id" ref="restore_all_documents_button_view"/>
             <field name="target">new</field>
         </record>
 </data>
