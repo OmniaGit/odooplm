@@ -825,3 +825,33 @@ canvas#odoo_canvas {
     color: #333;
     font-style: italic;
 }
+
+/* ── TOAST NOTIFICATIONS ── */
+.custom-toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    min-width: 280px;
+    max-width: 380px;
+    padding: 12px 18px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    transform: translateX(40px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: none;
+}
+
+.custom-toast.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.custom-toast.info    { background-color: #0d6efd; }
+.custom-toast.warning { background-color: #fd7e14; }
+.custom-toast.danger  { background-color: #dc3545; }
+.custom-toast.success { background-color: #198754; }

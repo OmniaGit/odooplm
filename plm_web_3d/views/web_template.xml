@@ -129,6 +129,7 @@
                                 <button id="circle_btn">◯ Circle</button>
                                 <button id="arrow_btn">➤ Arrow</button>
                                 <button id="text_btn">T Text</button>
+                                <button id="delete_btn">🗑️ Remove</button>
                                 <button id="clear_btn">🧹 Clear</button>
                                 <button id="undo_btn">↩️ Undo</button>
                                 <button id="redo_btn">↪️ Redo</button>
