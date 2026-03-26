@@ -113,7 +113,7 @@ class Web3DView(Controller):
         return out
 
     @http.route('/plm_web_3d/save_markup', type='json', auth='user')
-    def save_markup(self, image=None, filename=None, comment=None,
+    def save_markup(self, image=None, base_image=None, filename=None, comment=None,
                     res_model=None, res_id=None, canvas_json=None,
                     schedule_activity=False,
                     activity_summary=None,
@@ -121,6 +121,8 @@ class Web3DView(Controller):
                     activity_user_id=None):
 
         image_binary = base64.b64decode(image.split(',')[1])
+        base_binary = base64.b64decode(base_image.split(',')[1]) if base_image else image_binary
+
         filename = filename or 'markup.jpg'
         default_note = f"{filename} - Markup Logged"
 
@@ -134,6 +136,7 @@ class Web3DView(Controller):
         markup_log = request.env['plm.markup.log'].sudo().create({
             'comment': comment,
             'snapshot': base64.b64encode(image_binary),
+            'base_image': base64.b64encode(base_binary),
             'filename': filename,
             'canvas_data': canvas_json,
             'res_id': int(res_id) if res_id else 0,
@@ -206,15 +209,18 @@ class Web3DView(Controller):
 
                     if has_components:
                         for component in record.linkedcomponents:
-                            component.message_post(
+                            msg = component.message_post(
                                 body=Markup(chatter_body),
                                 attachments=[(filename, image_binary)],
                             )
+                            if not markup_log.message_id:
+                                markup_log.sudo().write({'message_id': msg.id})
                     else:
-                        record.message_post(
+                        msg = record.message_post(
                             body=Markup(chatter_body),
                             attachments=[(filename, image_binary)]
                         )
+                        markup_log.sudo().write({'message_id': msg.id})
 
         return {"status": "ok"}
 
@@ -234,6 +240,7 @@ class Web3DView(Controller):
                 'comment': l.comment,
                 'filename': l.filename or 'markup.jpg',
                 'snapshot': l.snapshot.decode() if l.snapshot else False,
+                'base_image': l.base_image.decode() if l.base_image else False,
                 'canvas_data': l.canvas_data,
                 'create_date': str(l.create_date),
             } for l in logs]
@@ -241,24 +248,41 @@ class Web3DView(Controller):
 
     @http.route('/plm/markup/delete', type='json', auth='user')
     def delete_markup(self, markup_id=None):
+        if not markup_id:
+            return {'success': False}
+
         log = request.env['plm.markup.log'].sudo().browse(int(markup_id))
-        if log.exists():
-            log.unlink()
-            return {'success': True}
-        return {'success': False}
+        if not log.exists():
+            return {'success': False}
+
+        user = request.env.user
+        is_creator = log.create_uid.id == user.id
+        is_admin = user.has_group('plm.group_plm_admin')
+
+        if not (is_creator or is_admin):
+            return {'success': False}
+
+        if log.message_id:
+            log.message_id.sudo().unlink()
+        log.sudo().unlink()
+
+        return {'success': True}
 
     @http.route('/plm_web_3d/markup/addon', type='json', auth='user')
     def load_markup_addon(self, markup_id=None):
         if not markup_id:
             return {'markup': False}
+
         log = request.env['plm.markup.log'].sudo().browse(int(markup_id))
         if not log.exists():
             return {'markup': False}
+
         return {
             'markup': {
                 'id': log.id,
                 'comment': log.comment,
                 'snapshot': log.snapshot.decode() if log.snapshot else False,
+                'base_image': log.base_image.decode() if log.base_image else False,
                 'canvas_data': log.canvas_data,
             }
         }
