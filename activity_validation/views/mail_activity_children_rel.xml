@@ -1,21 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-<data>
+	<data>
 
-    <record model="ir.ui.view" id="mail_activity_children_rel_list">
-        <field name="name">mail.activity.children.rel.list</field>
-        <field name="model">mail.activity.children.rel</field>
-        <field name="priority" eval="1"/>
-        <field name="arch" type="xml">
-            <list string="Children activities">
-                <field name="name"/>
-                <field name="user_id" invisible ="'mail_children_activity_id', '!=', False"/>
-                <field name="activity_user_id" invisible="'mail_children_activity_id', '==', False"/>
-                <field name="mail_children_activity_id"/>
-                <field name="plm_state"/>
-            </list>
-        </field>
-    </record>
-    
-</data>
+		<record model="ir.ui.view" id="mail_activity_children_rel_list">
+			<field name="name">mail.activity.children.rel.list</field>
+			<field name="model">mail.activity.children.rel</field>
+			<field name="priority" eval="1" />
+			<field name="arch" type="xml">
+				<list string="Children activities">
+					<field name="name" />
+					<field name="user_id"
+						invisible="'mail_children_activity_id', '!=', False" />
+					<field name="activity_user_id"
+						invisible="'mail_children_activity_id', '==', False" />
+					<field name="mail_children_activity_id" />
+					<field name="plm_state" />
+				</list>
+			</field>
+		</record>
+
+	</data>
 </odoo>

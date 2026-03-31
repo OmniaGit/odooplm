@@ -1,258 +1,258 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data>
+	<data>
 
-        <record id="mail_activity_view_list_activity_validation" model="ir.ui.view">
-            <field name="name">mail.activity.view.list.activity.validation</field>
-            <field name="model">mail.activity</field>
-            <field name="inherit_id" ref="mail.mail_activity_view_tree"/>
-            <field name="arch" type="xml">
-                <xpath expr="//field[@name='activity_type_id']" position="after">
-                	<field name="user_id"/>
-                </xpath>
-            </field>
-        </record>
+		<record id="mail_activity_view_list_activity_validation"
+			model="ir.ui.view">
+			<field name="name">mail.activity.view.list.activity.validation</field>
+			<field name="model">mail.activity</field>
+			<field name="inherit_id" ref="mail.mail_activity_view_tree" />
+			<field name="arch" type="xml">
+				<xpath expr="//field[@name='activity_type_id']"
+					position="after">
+					<field name="user_id" />
+				</xpath>
+			</field>
+		</record>
 
-        <record id="plm_mail_activity_schedule_view_form_inherit" model="ir.ui.view">
-        <field name="name">plm.mail.activity.schedule.view.form.inherit</field>
-        <field name="model">mail.activity.schedule</field>
-        <field name="inherit_id" ref="mail.mail_activity_schedule_view_form"/>
-            <field name="arch" type="xml">
+		<record id="plm_mail_activity_schedule_view_form_inherit"
+			model="ir.ui.view">
+			<field name="name">plm.mail.activity.schedule.view.form.inherit</field>
+			<field name="model">mail.activity.schedule</field>
+			<field name="inherit_id"
+				ref="mail.mail_activity_schedule_view_form" />
+			<field name="arch" type="xml">
 
-                <xpath expr="//sheet/group[1]" position="before">
-                    <field name="change_activity_type" invisible="1"/>
-	                <field name="plm_state"
-	                        widget="statusbar"
-	                        statusbar_visible="draft,in_progress,eco,exception"
-	                        colspan="4"
-	                        invisible="change_activity_type not in ['request', 'plm_activity']"
-	                        readonly="change_activity_type=='plm_activity'"
-	                        />
-                    <div class="o_row" col="4">
-                        <button string="Progress"
-                                name="action_in_progress"
-                                type="object"
-                                class="btn-primary"
-                                icon="fa-gears"
-                                invisible="change_activity_type not in ['request', 'plm_activity'] or plm_state not in ['draft']"/>
-                        <button string="Progress"
-                                name="action_in_progress"
-                                type="object"
-                                class="btn-primary"
-                                icon="fa-gears"
-                                invisible="change_activity_type not in ['request', 'plm_activity'] or plm_state not in ['exception'] or has_parent==False"/>
-                        <button string="ECO"
-                                name="action_to_eco"
-                                type="object"
-                                class="btn-primary"
-                                icon="fa-list-alt"
-                                invisible="plm_state not in ['in_progress', 'exception'] or has_parent==True or has_parent_eco==True"/>
-                        <button string="Draft" name="action_to_draft" type="object" class="btn-primary" icon="fa-book"
-                            invisible="plm_state not in ['in_progress']"/>
-                        <button string="Exception" name="action_to_exception" type="object" class="btn-primary" icon="fa-bullhorn"
-                            invisible="change_activity_type not in ['request', 'plm_activity'] or plm_state not in ['eco', 'in_progress']"/>
-                        <button string="Cancel" name="action_to_cancel" type="object" class="btn-primary" icon="fa-times-circle"
-                            invisible="change_activity_type not in ['request', 'plm_activity'] or  plm_state not in ['exception', 'draft', 'eco', 'in_progress']"/>
-                        <button string="Done" name="action_to_done" type="object" class="btn-primary" icon="fa-check-circle"
-                            invisible="change_activity_type not in ['request', 'plm_activity'] or plm_state not in ['exception', 'eco', 'in_progress']"/>
-                    </div>
+				<xpath expr="//sheet/group[1]" position="before">
+					<field name="change_activity_type" invisible="1" />
+					<field name="plm_state" widget="statusbar"
+						statusbar_visible="draft,in_progress,eco,exception" colspan="4"
+						invisible="change_activity_type not in ['request', 'plm_activity']"
+						readonly="change_activity_type=='plm_activity'" />
+					<div class="o_row" col="4">
+						<button string="Progress" name="action_in_progress"
+							type="object" class="btn-primary" icon="fa-gears"
+							invisible="change_activity_type not in ['request', 'plm_activity'] or plm_state not in ['draft']" />
+						<button string="Progress" name="action_in_progress"
+							type="object" class="btn-primary" icon="fa-gears"
+							invisible="change_activity_type not in ['request', 'plm_activity'] or plm_state not in ['exception'] or has_parent==False" />
+						<button string="ECO" name="action_to_eco" type="object"
+							class="btn-primary" icon="fa-list-alt"
+							invisible="plm_state not in ['in_progress', 'exception'] or has_parent==True or has_parent_eco==True" />
+						<button string="Draft" name="action_to_draft" type="object"
+							class="btn-primary" icon="fa-book"
+							invisible="plm_state not in ['in_progress']" />
+						<button string="Exception" name="action_to_exception"
+							type="object" class="btn-primary" icon="fa-bullhorn"
+							invisible="change_activity_type not in ['request', 'plm_activity'] or plm_state not in ['eco', 'in_progress']" />
+						<button string="Cancel" name="action_to_cancel"
+							type="object" class="btn-primary" icon="fa-times-circle"
+							invisible="change_activity_type not in ['request', 'plm_activity'] or  plm_state not in ['exception', 'draft', 'eco', 'in_progress']" />
+						<button string="Done" name="action_to_done" type="object"
+							class="btn-primary" icon="fa-check-circle"
+							invisible="change_activity_type not in ['request', 'plm_activity'] or plm_state not in ['exception', 'eco', 'in_progress']" />
+					</div>
 
-                    <div class="o_row o_kanban_top_right" col="4"
-                        style="margin-top: 2px;margin-bottom:2px"
-                        invisible="change_activity_type not in ['request', 'plm_activity']">
-                        <button string="Open Releted Ent"
-                                name="action_open_releted_ent"
-                                type="object"
-                                class="btn-primary"
-                                icon="fa-chain"/>
+					<div class="o_row o_kanban_top_right" col="4"
+						style="margin-top: 2px;margin-bottom:2px"
+						invisible="change_activity_type not in ['request', 'plm_activity']">
+						<button string="Open Releted Ent"
+							name="action_open_releted_ent" type="object" class="btn-primary"
+							icon="fa-chain" />
 
-                        <field name="change_activity_type" invisible="True"/>
-                        <field name="has_parent" invisible="True"/>
-                        <field name="has_parent_eco" invisible="True"/>
-                    </div>
+						<field name="change_activity_type" invisible="True" />
+						<field name="has_parent" invisible="True" />
+						<field name="has_parent_eco" invisible="True" />
+					</div>
 
-                </xpath>
-                <xpath expr="//field[@name='note']" position="before">
-                    <label for="children_ids"
-                           invisible="change_activity_type != 'request'"
-                           readonly="plm_state in ['eco', 'done']"/>
-                    <field name="children_ids"
-                           nolabel="1"
-                           invisible="change_activity_type != 'request'"
-                           readonly="plm_state=='eco'">
-                        <list editable='bottom'>
-                            <field name="name"/>
-                            <field name="user_id"/>
-                            <field name="activity_user_id"/>
-                            <field name="plm_state" />
-                        </list>
-                    </field>
-                    <field name="default_plm_activity" invisible="True"/>
-                    <field name="res_model_id" invisible="True"/>
-                    <label for="eco_child_ids"
-                           invisible="change_activity_type != 'request' or plm_state not in  ['eco', 'done']"/>
-                    <field name="eco_child_ids"
-                           nolabel="1"
-                           invisible="has_parent==True or has_parent_eco==True or plm_state not in ['eco', 'done']"
-                           context="{'default_res_model_id': res_model_id, 'default_activity_type_id': default_plm_activity}">
-                        <list editable='bottom' >
-                            <field name="res_model" invisible="True"/>
-                            <field name="activity_type_id" invisible="True"/>
-                            <field name="summary"/>
-                            <field name="date_deadline"/>
-                            <field name="activity_user_id"/>
-                            <field name="plm_state" readonly="True"/>
-                            <field name="res_model_id" invisible="True"/>
-                        </list>
-                    </field>
-                </xpath>
-            </field>
-        </record>
+				</xpath>
+				<xpath expr="//field[@name='note']" position="before">
+					<label for="children_ids"
+						invisible="change_activity_type != 'request'"
+						readonly="plm_state in ['eco', 'done']" />
+					<field name="children_ids" nolabel="1"
+						invisible="change_activity_type != 'request'"
+						readonly="plm_state=='eco'">
+						<list editable='bottom'>
+							<field name="name" />
+							<field name="user_id" />
+							<field name="activity_user_id" />
+							<field name="plm_state" />
+						</list>
+					</field>
+					<field name="default_plm_activity" invisible="True" />
+					<field name="res_model_id" invisible="True" />
+					<label for="eco_child_ids"
+						invisible="change_activity_type != 'request' or plm_state not in  ['eco', 'done']" />
+					<field name="eco_child_ids" nolabel="1"
+						invisible="has_parent==True or has_parent_eco==True or plm_state not in ['eco', 'done']"
+						context="{'default_res_model_id': res_model_id, 'default_activity_type_id': default_plm_activity}">
+						<list editable='bottom'>
+							<field name="res_model" invisible="True" />
+							<field name="activity_type_id" invisible="True" />
+							<field name="summary" />
+							<field name="date_deadline" />
+							<field name="activity_user_id" />
+							<field name="plm_state" readonly="True" />
+							<field name="res_model_id" invisible="True" />
+						</list>
+					</field>
+				</xpath>
+			</field>
+		</record>
 
-        <record id="mail_activity_view_form_popup_inherit" model="ir.ui.view">
-            <field name="name">mail.activity.inherit</field>
-            <field name="model">mail.activity</field>
-            <field name="inherit_id" ref="mail.mail_activity_view_form_popup" />
-            <field name="arch" type="xml">
+		<record id="mail_activity_view_form_popup_inherit"
+			model="ir.ui.view">
+			<field name="name">mail.activity.inherit</field>
+			<field name="model">mail.activity</field>
+			<field name="inherit_id"
+				ref="mail.mail_activity_view_form_popup" />
+			<field name="arch" type="xml">
 
-                <xpath expr="//group[3]" position="before">
-                    <field name="plm_state"
-                        widget="statusbar"
-                        statusbar_visible="draft,in_progress,eco,exception"
-                        colspan="4"
-                        invisible="change_activity_type not in ['request', 'plm_activity']"
-                        readonly="change_activity_type=='plm_activity'"
-                        />
-                    <div class="o_row" col="4">
-                        <button string="Progress"
-                                name="action_in_progress"
-                                type="object"
-                                class="btn-primary"
-                                icon="fa-gears"
-                                invisible="change_activity_type not in ['request', 'plm_activity'] or plm_state not in ['draft']"/>
-                        <button string="Progress"
-                                name="action_in_progress"
-                                type="object"
-                                class="btn-primary"
-                                icon="fa-gears"
-                                invisible="change_activity_type not in ['request', 'plm_activity'] or plm_state not in ['exception'] or has_parent==False"/>
-                        <button string="ECO"
-                                name="action_to_eco"
-                                type="object"
-                                class="btn-primary"
-                                icon="fa-list-alt"
-                                invisible="plm_state not in ['in_progress', 'exception'] or has_parent==True or has_parent_eco==True"/>
-                        <button string="Draft" name="action_to_draft" type="object" class="btn-primary" icon="fa-book"
-                            invisible="plm_state not in ['in_progress']"/>
-                        <button string="Exception" name="action_to_exception" type="object" class="btn-primary" icon="fa-bullhorn"
-                            invisible="change_activity_type not in ['request', 'plm_activity'] or plm_state not in ['eco', 'in_progress']"/>
-                        <button string="Cancel" name="action_to_cancel" type="object" class="btn-primary" icon="fa-times-circle"
-                            invisible="change_activity_type not in ['request', 'plm_activity'] or  plm_state not in ['exception', 'draft', 'eco', 'in_progress']"/>
-                        <button string="Done" name="action_to_done" type="object" class="btn-primary" icon="fa-check-circle"
-                            invisible="change_activity_type not in ['request', 'plm_activity'] or plm_state not in ['exception', 'eco', 'in_progress']"/>
-                    </div>
-                    <hr></hr>
-                    <div class="o_row o_kanban_top_right" col="4">
-                        <button string="Open Releted Ent" name="action_open_releted_ent" type="object"
-                                class="btn-primary" icon="fa-check-circle"/>
+				<xpath expr="//group[3]" position="before">
+					<field name="plm_state" widget="statusbar"
+						statusbar_visible="draft,in_progress,eco,exception" colspan="4"
+						invisible="change_activity_type not in ['request', 'plm_activity']"
+						readonly="change_activity_type=='plm_activity'" />
+					<div class="o_row" col="4">
+						<button string="Progress" name="action_in_progress"
+							type="object" class="btn-primary" icon="fa-gears"
+							invisible="change_activity_type not in ['request', 'plm_activity'] or plm_state not in ['draft']" />
+						<button string="Progress" name="action_in_progress"
+							type="object" class="btn-primary" icon="fa-gears"
+							invisible="change_activity_type not in ['request', 'plm_activity'] or plm_state not in ['exception'] or has_parent==False" />
+						<button string="ECO" name="action_to_eco" type="object"
+							class="btn-primary" icon="fa-list-alt"
+							invisible="plm_state not in ['in_progress', 'exception'] or has_parent==True or has_parent_eco==True" />
+						<button string="Draft" name="action_to_draft" type="object"
+							class="btn-primary" icon="fa-book"
+							invisible="plm_state not in ['in_progress']" />
+						<button string="Exception" name="action_to_exception"
+							type="object" class="btn-primary" icon="fa-bullhorn"
+							invisible="change_activity_type not in ['request', 'plm_activity'] or plm_state not in ['eco', 'in_progress']" />
+						<button string="Cancel" name="action_to_cancel"
+							type="object" class="btn-primary" icon="fa-times-circle"
+							invisible="change_activity_type not in ['request', 'plm_activity'] or  plm_state not in ['exception', 'draft', 'eco', 'in_progress']" />
+						<button string="Done" name="action_to_done" type="object"
+							class="btn-primary" icon="fa-check-circle"
+							invisible="change_activity_type not in ['request', 'plm_activity'] or plm_state not in ['exception', 'eco', 'in_progress']" />
+					</div>
+					<hr></hr>
+					<div class="o_row o_kanban_top_right" col="4">
+						<button string="Open Releted Ent"
+							name="action_open_releted_ent" type="object" class="btn-primary"
+							icon="fa-check-circle" />
 
-                        <field name="change_activity_type" invisible="True"/>
-                        <field name="has_parent" invisible="True"/>
-                        <field name="has_parent_eco" invisible="True"/>
-                    </div>
-                    <hr></hr>
-                </xpath>
-                <xpath expr="//field[@name='note']" position="before">
-                    <label for="children_ids"
-                           invisible="change_activity_type != 'request'"
-                           readonly="plm_state in ['eco', 'done']"/>
-                    <field name="children_ids" nolabel="1" invisible="change_activity_type != 'request'" readonly="plm_state=='eco'">
-                        <list editable='bottom'>
-                            <field name="name"/>
-                            <field name="user_id"/>
-                            <field name="activity_user_id"/>
-                            <field name="mail_children_activity_id" invisible="1" force_save="1"/>
-                            <field name="plm_state" />
-                        </list>
-                    </field>
-                    <field name="default_plm_activity" invisible="True"/>
-                    <label for="eco_child_ids"
-                           invisible="change_activity_type != 'request' or plm_state not in  ['eco', 'done']"/>
-                    <field name="eco_child_ids"
-                           nolabel="1"
-                           invisible="has_parent==True or has_parent_eco==True or plm_state not in ['eco', 'done']"
-                           context="{'default_res_model_id': res_model_id, 'default_activity_type_id': default_plm_activity, 'default_res_id': res_id}">
-                        <list editable='bottom' can_create="true" >
-                            <field name="res_name" invisible="True"/>
-                            <field name="res_model" invisible="True"/>
-                            <field name="activity_type_id" invisible="True"/>
-                            <field name="summary"/>
-                            <field name="date_deadline"/>
-                            <field name="user_id"/>
-                            <field name="plm_state" readonly="True"/>
-                            <field name="res_model_id" invisible="True"/>
-                        </list>
-                    </field>
-                </xpath>
+						<field name="change_activity_type" invisible="True" />
+						<field name="has_parent" invisible="True" />
+						<field name="has_parent_eco" invisible="True" />
+					</div>
+					<hr></hr>
+				</xpath>
+				<xpath expr="//field[@name='note']" position="before">
+					<label for="children_ids"
+						invisible="change_activity_type != 'request'"
+						readonly="plm_state in ['eco', 'done']" />
+					<field name="children_ids" nolabel="1"
+						invisible="change_activity_type != 'request'"
+						readonly="plm_state=='eco'">
+						<list editable='bottom'>
+							<field name="name" />
+							<field name="user_id" />
+							<field name="activity_user_id" />
+							<field name="mail_children_activity_id" invisible="1"
+								force_save="1" />
+							<field name="plm_state" />
+						</list>
+					</field>
+					<field name="default_plm_activity" invisible="True" />
+					<label for="eco_child_ids"
+						invisible="change_activity_type != 'request' or plm_state not in  ['eco', 'done']" />
+					<field name="eco_child_ids" nolabel="1"
+						invisible="has_parent==True or has_parent_eco==True or plm_state not in ['eco', 'done']"
+						context="{'default_res_model_id': res_model_id, 'default_activity_type_id': default_plm_activity, 'default_res_id': res_id}">
+						<list editable='bottom' can_create="true">
+							<field name="res_name" invisible="True" />
+							<field name="res_model" invisible="True" />
+							<field name="activity_type_id" invisible="True" />
+							<field name="summary" />
+							<field name="date_deadline" />
+							<field name="user_id" />
+							<field name="plm_state" readonly="True" />
+							<field name="res_model_id" invisible="True" />
+						</list>
+					</field>
+				</xpath>
 
 
-                <xpath expr="//footer/button[@name='action_done']" position="attributes">
-                    <attribute name="invisible">change_activity_type in ['request', 'plm_activity']</attribute>
-                </xpath>
+				<xpath expr="//footer/button[@name='action_done']"
+					position="attributes">
+					<attribute name="invisible">change_activity_type in ['request',
+						'plm_activity']</attribute>
+				</xpath>
 
-                <xpath expr="//footer/button[@name='action_done_schedule_next']" position="attributes">
-                    <attribute name="invisible">change_activity_type in ['request', 'plm_activity']</attribute>
-                </xpath>
+				<xpath
+					expr="//footer/button[@name='action_done_schedule_next']"
+					position="attributes">
+					<attribute name="invisible">change_activity_type in ['request',
+						'plm_activity']</attribute>
+				</xpath>
 
-                <xpath expr="//footer/button[@name='action_done_schedule_next']" position="attributes">
-                    <attribute name="invisible">change_activity_type in ['request', 'plm_activity']</attribute>
-                </xpath>
+				<xpath
+					expr="//footer/button[@name='action_done_schedule_next']"
+					position="attributes">
+					<attribute name="invisible">change_activity_type in ['request',
+						'plm_activity']</attribute>
+				</xpath>
 
-            </field>
-        </record>
+			</field>
+		</record>
 
-		<template id="plm_message_activity_done" inherit_id="mail.message_activity_done">
-		    <xpath expr="//div//p[1]" position="after">
-			    <t t-if="activity.exists() and activity.change_activity_type in ['request', 'plm_activity']">
-			        <div>View: <a href="#" t-att-data-oe-id="activity.id" data-oe-model="mail.activity">Activity</a></div>
-			    </t>
-		    </xpath>
+		<template id="plm_message_activity_done"
+			inherit_id="mail.message_activity_done">
+			<xpath expr="//div//p[1]" position="after">
+				<t
+					t-if="activity.exists() and activity.change_activity_type in ['request', 'plm_activity']">
+					<div>
+						View:
+						<a href="#" t-att-data-oe-id="activity.id"
+							data-oe-model="mail.activity">Activity</a>
+					</div>
+				</t>
+			</xpath>
 		</template>
 
-    <record model="ir.ui.view" id="plm_activity_search">
-        <field name="name">plm.activity.search</field>
-        <field name="model">mail.activity</field>
-        <field name="type">search</field>
-        <field name="priority" eval="15"/>
-        <field name="arch" type="xml">
-            <search string="Activities">
-                <filter name="change_orders"
-                        string="ECR / ECO"
-                        domain="[('activity_type_id.change_activity_type','in', ('request', 'order'))]"
-                        />
-                        <field name="res_name"/>
-                        <field name="user_id"/>
-                        <field name="activity_type_id"/>
-                <group expand="0" string="Group By">
-                	<filter string="Activity Type" name="group_activity_type" domain="[]" context="{'group_by': 'activity_type_id'}"/>
-                </group>
-            </search>
-        </field>
-    </record>
+		<record model="ir.ui.view" id="plm_activity_search">
+			<field name="name">plm.activity.search</field>
+			<field name="model">mail.activity</field>
+			<field name="type">search</field>
+			<field name="priority" eval="15" />
+			<field name="arch" type="xml">
+				<search string="Activities">
+					<filter name="change_orders" string="ECR / ECO"
+						domain="[('activity_type_id.change_activity_type','in', ('request', 'order'))]" />
+					<field name="res_name" />
+					<field name="user_id" />
+					<field name="activity_type_id" />
+					<group expand="0" string="Group By">
+						<filter string="Activity Type" name="group_activity_type"
+							domain="[]" context="{'group_by': 'activity_type_id'}" />
+					</group>
+				</search>
+			</field>
+		</record>
 
-    <record model="ir.actions.act_window" id="plm_action_view_activities">
-        <field name="name">Activities</field>
-        <field name="res_model">mail.activity</field>
-        <field name="view_mode">list,form</field>
-    </record>
+		<record model="ir.actions.act_window"
+			id="plm_action_view_activities">
+			<field name="name">Activities</field>
+			<field name="res_model">mail.activity</field>
+			<field name="view_mode">list,form</field>
+		</record>
 
-    <menuitem
-            id="plm_menu_activities"
-            name="Activities"
-            parent="plm.plm_menu"
-            sequence="20"
-            action="plm_action_view_activities"
-            groups="plm.group_plm_integration_user"/>
+		<menuitem id="plm_menu_activities" name="Activities"
+			parent="plm.plm_menu" sequence="20"
+			action="plm_action_view_activities"
+			groups="plm.group_plm_integration_user" />
 
-    </data>
+	</data>
 </odoo>

@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data>
+	<data>
 
-        <record id="mail_activity_change_request" model="mail.activity.type">
-            <field name="name">Change Request</field>
-            <field name="icon">fa-edit</field>
-            <field name="sequence">3</field>
-            <field name="res_model">product.product</field>
-            <field name="sequence">200</field>
-            <field name="change_activity_type">request</field>
-            <field name="keep_done">True</field>
-        </record>
-    </data>
+		<record id="mail_activity_change_request"
+			model="mail.activity.type">
+			<field name="name">Change Request</field>
+			<field name="icon">fa-edit</field>
+			<field name="sequence">3</field>
+			<field name="res_model">product.product</field>
+			<field name="sequence">200</field>
+			<field name="change_activity_type">request</field>
+			<field name="keep_done">True</field>
+		</record>
+	</data>
 </odoo>

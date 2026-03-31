@@ -1,27 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 	<!-- Main template -->
-    <template id="report_product_template_bom_activity">
-        <t t-set="data_report_landscape" t-value="True"/>
-        <t t-call="web.basic_layout">
-            <t t-foreach="docs" t-as="product_product">
-                <div class="page">
-                    <t t-call="activity_validation.report_product_product_bom"/>
-                </div>
-                <p style="page-break-before:always;"> </p>
-            </t>
-        </t>
-    </template>
+	<template id="report_product_template_bom_activity">
+		<t t-set="data_report_landscape" t-value="True" />
+		<t t-call="web.basic_layout">
+			<t t-foreach="docs" t-as="product_product">
+				<div class="page">
+					<t t-call="activity_validation.report_product_product_bom" />
+				</div>
+				<p style="page-break-before:always;">
+				</p>
+			</t>
+		</t>
+	</template>
 
-	<record id="bom_activity_product_template_report_action" model="ir.actions.report">
-	    <field name="name">BoM Activity Overview</field>
-	    <field name="model">product.template</field>
-	    <field name="report_type">qweb-html</field>
-	    <field name="report_name">activity_validation.report_product_template_bom_activity</field>
-	    <field name="report_file">activity_validation.report_product_template_bom_activity</field>
-	    <field name="print_report_name">'BOM_Activity_Hierarchy_' + object.name</field>
-        <field name="paperformat_id" ref="paperformat_product_bom_report"/>
-	    <field name="binding_model_id" ref="product.model_product_template"/>
-	    <field name="binding_type">report</field>
+	<record id="bom_activity_product_template_report_action"
+		model="ir.actions.report">
+		<field name="name">BoM Activity Overview</field>
+		<field name="model">product.template</field>
+		<field name="report_type">qweb-html</field>
+		<field name="report_name">activity_validation.report_product_template_bom_activity</field>
+		<field name="report_file">activity_validation.report_product_template_bom_activity</field>
+		<field name="print_report_name">'BOM_Activity_Hierarchy_' + object.name</field>
+		<field name="paperformat_id"
+			ref="paperformat_product_bom_report" />
+		<field name="binding_model_id"
+			ref="product.model_product_template" />
+		<field name="binding_type">report</field>
 	</record>
 </odoo>
