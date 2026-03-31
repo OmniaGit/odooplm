@@ -18,7 +18,10 @@ let _loadGeneration = 0;
 
 window.addEventListener("load", () => {
     const markupBtn = document.getElementById("markup_button");
+    const markupBtnPerm = document.getElementById("markup_button_perm");
     if (markupBtn) markupBtn.addEventListener("click", openMarkupEditor);
+    if (markupBtnPerm) markupBtnPerm.addEventListener("click", openMarkupEditor);
+
 });
 
 window.addEventListener("load", function () {
@@ -350,15 +353,35 @@ document.addEventListener("keydown", function (e) {
     if (e.key === "Delete" || e.key === "Backspace") {
         const activeObjects = fabricCanvas?.getActiveObjects();
         if (!activeObjects || activeObjects.length === 0) return;
-
         saveState();
-
-        activeObjects.forEach(obj => {
-            fabricCanvas.remove(obj);
-        });
-
+        activeObjects.forEach(obj => { fabricCanvas.remove(obj); });
         fabricCanvas.discardActiveObject();
         fabricCanvas.requestRenderAll();
+    }
+
+    if (e.key === "Escape") {
+        const editor = document.getElementById("markup_editor");
+        if (!editor || window.getComputedStyle(editor).display === "none") return;
+
+        const modal = document.getElementById("markup_esc_modal");
+        if (!modal) return;
+        modal.style.display = "flex";
+
+        // Wire Save → reuse mcr-submit click logic (sync comment then submitMarkup)
+        document.getElementById("markup_esc_save").onclick = function () {
+            modal.style.display = "none";
+            const commentInner = document.getElementById("markup_comment_inner");
+            const commentOrig  = document.getElementById("markup_comment");
+            if (commentInner && commentOrig) commentOrig.value = commentInner.value;
+            submitMarkup();
+        };
+
+        // Wire Close → reuse close_btn logic
+        document.getElementById("markup_esc_close").onclick = function () {
+            modal.style.display = "none";
+            const closeBtn = document.getElementById("close_btn");
+            if (closeBtn) closeBtn.click();
+        };
     }
 });
 
@@ -463,18 +486,26 @@ function initFabricEvents() {
     });
 }
 
+// ✅ FIXED: submitMarkup() - Canvas alignment issue resolved
 function submitMarkup() {
     const comment     = document.getElementById("markup_comment").value;
     const threeCanvas = document.getElementById("odoo_canvas");
+    const fabricCanvasEl = fabricCanvas.lowerCanvasEl;
 
+    // ✅ FIX: Use Fabric canvas dimensions as the base (viewport size)
+    // This ensures proper alignment because Fabric canvas is set to viewport size in openMarkupEditor()
     const mergedCanvas  = document.createElement("canvas");
-    mergedCanvas.width  = threeCanvas.width;
-    mergedCanvas.height = threeCanvas.height;
+    mergedCanvas.width  = fabricCanvasEl.width;
+    mergedCanvas.height = fabricCanvasEl.height;
 
     const ctx = mergedCanvas.getContext("2d");
 
-    ctx.drawImage(threeCanvas, 0, 0);
-    ctx.drawImage(fabricCanvas.lowerCanvasEl, 0, 0);
+    // ✅ FIX: Scale the Three.js canvas to match Fabric canvas dimensions
+    // This prevents stretching/misalignment that occurs when using different canvas sizes
+    ctx.drawImage(threeCanvas, 0, 0, mergedCanvas.width, mergedCanvas.height);
+
+    // Draw Fabric canvas on top (same resolution)
+    ctx.drawImage(fabricCanvasEl, 0, 0);
 
     const finalImage = mergedCanvas.toDataURL("image/png");
 

@@ -56,6 +56,19 @@
                                 <hr class="hover_line"/>
                             </div>
                         </div>
+
+                        <div id="dropdown_menu_left_permenant">
+                            <div class="plm_button_per" id="fit_view_perm">
+                                <i class="fa fa-home"></i>
+                            </div>
+                            <div class="plm_button_per" id="save_view_perm">
+                                <i class="fa fa-save"></i>
+                            </div>
+                            <div class="plm_button_per" id="markup_button_perm">
+                                <i class="fa fa-edit"></i>
+                            </div>
+                        </div>
+
                         <div class="activatorDiv d-none" id="activatorDiv">
                             <div id="dropdown_menu_left">
                                 <div class="plm_button" id="fit_view"><i class="fa fa-home"></i>Fit
@@ -274,6 +287,21 @@
                         <div id="markup_log_modal_date" style="font-weight:bold; color:#714B67;"></div>
                         <img id="markup_log_modal_img" src="" alt="Markup Screenshot"/>
                         <div id="markup_log_modal_comment"></div>
+                    </div>
+                </div>
+
+                <!-- ESC Confirm Modal -->
+                <div id="markup_esc_modal"
+                     style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:99999; justify-content:center; align-items:center;">
+                    <div
+                        style="background:white; border-radius:10px; border:2px solid #714B67; padding:24px 28px; min-width:280px; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,0.3);">
+                        <div style="font-size:15px; font-weight:bold; color:#572649; margin-bottom:18px;">Are you sure
+                            you want to close?
+                        </div>
+                        <div style="display:flex; justify-content:center; gap:12px;">
+                            <button id="markup_esc_save" class="mcr-submit" style="min-width:80px;">Save</button>
+                            <button id="markup_esc_close" class="mcr-btn" style="min-width:80px;">Close</button>
+                        </div>
                     </div>
                 </div>
             </body>
