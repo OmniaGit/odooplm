@@ -73,7 +73,8 @@ class PlmDocumentRelations(models.Model):
     link_kind = fields.Char('Kind of Link',      # LyTree | HiTree | RfTree | PkgTree
                             default='HiTree',
                             size=64,
-                            required=True)
+                            required=True,
+                            index=True)
     create_date = fields.Datetime('Date Created',
                                   readonly=True)
     #  TODO: To remove userid field for version 10

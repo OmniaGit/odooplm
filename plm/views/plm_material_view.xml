@@ -1,26 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 <data>
-    <record model="ir.ui.view" id="view_plm_material">
-        <field name="name">plm.material.view</field>
-        <field name="model">plm.material</field>
-        <field name="arch" type="xml">
-            <form string="Material">
-            	<sheet>	
-                <group colspan="4" col="6">
-                    <field name="name" select="1" colspan="4"/>
-                    <field name="description" select="1"/>
-                    <field name="sequence"/>
-                </group>
-               	</sheet> 
-            </form>
-        </field>
-    </record>
-    
     <record model="ir.ui.view" id="plm_view_material_list">
         <field name="name">plm.view.material.list</field>
         <field name="model">plm.material</field>
-        <field name="priority" eval="1"/>
+        <field name="priority" eval="10"/>
         <field name="arch" type="xml">
             <list string="Materials"  editable="bottom">
                    <field name="name"/>
@@ -34,11 +18,10 @@
         <field name="name">Materials</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">plm.material</field>
-        <field name="view_mode">list,form</field>
+        <field name="view_mode">list</field>
         <field name="view_id" ref="plm_view_material_list"/>
     </record>
-    
-    
+
 </data>
 </odoo>
 
