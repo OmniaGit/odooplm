@@ -12,6 +12,8 @@
                     	<field name="activity_task_id" colspan="4"/>
                     	<label for="project_ids"/>
                         <field name="project_ids" nolabel="1" colspan="4"/>
+                        <label for="tasks_ids"/>
+                        <field name="tasks_ids" nolabel="1" colspan="4"/>
                     </group>
                 </page>
             </page>
@@ -30,8 +32,8 @@
                         <field name="activity_task_id" />
                     </group>
                     <group name="project_infos">
-                    	<label for="project_ids"/>
-                        <field name="project_ids" nolabel="1" context="{'default_plm_use_plm': True}" />
+                        <field name="project_ids" context="{'default_plm_use_plm': True}" />
+                        <field name="tasks_ids" />
                     </group>
                 </page>
             </page>

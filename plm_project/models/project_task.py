@@ -55,7 +55,7 @@ class ProjectTask(models.Model):
     _inherit = "project.task"
 
     activity_product_ids = fields.One2many(
-        "product.product", "activity_task_id", string="Product Ids"
+        "product.product", "activity_task_id", string="Activite Products"
     )
     plm_step_key = fields.Selection(
         selection=lambda self: [(k, v) for k, v in _default_chain(self.env)[1].items()],
@@ -66,6 +66,14 @@ class ProjectTask(models.Model):
     )
     plm_subtasks_generated = fields.Boolean(default=False, copy=False)
 
+    plm_product_ids = fields.Many2many(
+        "product.product",
+        "project_task_rel",
+        "task_id",
+        "product_id",
+        string="Task Products",
+    )
+    
     # ------------------------------------------------------------------
     # Utilities
     # ------------------------------------------------------------------

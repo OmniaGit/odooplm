@@ -39,6 +39,15 @@ class ProductExtension(models.Model):
         "project_id",
         string="Projects",
     )
+    
+    tasks_ids = fields.Many2many(
+        "project.task",
+        "project_task_rel",
+        "product_id",
+        "task_id",
+        string="Tasks",
+    )
+    
     activity_task_id = fields.Many2one("project.task", "Activity Task")
 
     def createConfirmActivity(self):
