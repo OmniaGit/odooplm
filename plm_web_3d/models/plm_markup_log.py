@@ -26,7 +26,9 @@ class PlmMarkupLog(models.Model):
 
     comment     = fields.Text()
     snapshot    = fields.Binary()
+    base_image = fields.Binary()
     filename    = fields.Char()
     canvas_data = fields.Text()
     res_id      = fields.Integer(string='Document ID', index=True)
     res_model   = fields.Char(string='Document Model')
+    message_id = fields.Many2one('mail.message', string='Chatter Message', ondelete='set null')

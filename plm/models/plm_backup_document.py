@@ -26,7 +26,7 @@ Created on 11 Aug 2016
 """
 from odoo.tools.safe_eval import safe_eval
 from odoo.osv import expression
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 from odoo import models
 from odoo import fields
 from odoo import api
@@ -34,6 +34,7 @@ from odoo import _
 import logging
 import os
 import stat
+import datetime
 
 
 class PlmBackupDocument(models.Model):
@@ -41,7 +42,7 @@ class PlmBackupDocument(models.Model):
         Only administrator is allowed to remove elements by this table
     """
     _name = 'plm.backupdoc'
-    
+
     _description = "manage your document back up"
 
     userid = fields.Many2one('res.users',
@@ -75,7 +76,7 @@ class PlmBackupDocument(models.Model):
 
     def remaining_unlink(self):
         super(PlmBackupDocument, self).unlink()
-    
+
     def unlink(self):
         documentType = self.env['ir.attachment']
         for plm_backup_document_id in self:
@@ -124,7 +125,8 @@ class BackupDocWizard(models.TransientModel):
     _name = 'plm.backupdoc_wizard'
     _description = "Back up document wizard"
 
-    
+    backup_date = fields.Date(string="Backup Date", default=fields.Date.today)
+
     def action_restore_document(self):
         ctx = self.env.context.copy()
         ctx['check'] = False
@@ -165,11 +167,144 @@ class BackupDocWizard(models.TransientModel):
                     logging.info('[action_restore_document] Created document %r' % (documentId))
                 else:
                     logging.warning('[action_restore_document] Create document failed for %r' % (documentId))
-        
+
         action_vals = self.env['ir.actions.act_window']._for_xml_id('plm.plm_action_document_form')
         domain = safe_eval(action_vals.get('domain', "[]"))
         domain = expression.AND([domain, [('id', 'in', [documentId])]])
         action_vals['domain'] = domain
+        return action_vals
+
+    def action_restore_all_documents(self):
+        """
+        Restore a document and its child documents to a selected backup date.
+        Runs via a wizard and only if all documents are in draft and checked in.
+        Restores both the selected document and all related children.
+        """
+        self.ensure_one()
+
+        if not self.backup_date:
+            raise ValidationError(_("Please select a restore date before continuing."))
+
+        active_ids = self.env.context.get("active_ids", [])
+        if len(active_ids) != 1:
+            raise ValidationError(_("Please select exactly one backup document to restore."))
+
+        root_bck = self.env["plm.backupdoc"].browse(active_ids[0])
+        root_attachment = root_bck.documentid
+        if not root_attachment:
+            raise ValidationError(
+                _("The selected backup entry has no linked document. Cannot restore.")
+            )
+
+        ir_att = self.env["ir.attachment"]
+        root_id = root_attachment.id
+
+        tree_ids = set()
+        tree_ids.add(root_id)
+        tree_ids.update(ir_att.getRelatedHiTree(root_id, recursion=True, getRftree=True))
+        tree_ids.update(ir_att.getRelatedLyTree(root_id))
+        tree_ids.update(ir_att.getRelatedRfTree(root_id, recursion=True))
+        tree_ids.update(ir_att.getRelatedPkgTree(root_id))
+
+        logging.info(
+            "[action_restore_all_documents] Root id=%s → tree contains %d document(s).",
+            root_id, len(tree_ids),
+        )
+
+        target_date = self.backup_date
+        day_start = datetime.datetime.combine(target_date, datetime.time.min)
+        day_end = datetime.datetime.combine(target_date, datetime.time.max)
+
+        invalid_state_found = False
+        not_checked_in_found = False
+        backup_missing = False
+        ready_pairs = []
+
+        for att in self.env["ir.attachment"].browse(list(tree_ids)):
+            if att.engineering_state != "draft":
+                invalid_state_found = True
+                continue
+
+            if not att.ischecked_in():
+                not_checked_in_found = True
+                continue
+
+            bck = self.env["plm.backupdoc"].search(
+                [
+                    ("documentid", "=", att.id),
+                    ("create_date", ">=", day_start),
+                    ("create_date", "<=", day_end),
+                ],
+                order="create_date DESC",
+                limit=1,
+            )
+
+            if not bck:
+                backup_missing = True
+                continue
+
+            ready_pairs.append((att, bck))
+        if invalid_state_found:
+            raise ValidationError(
+                _("Restore is only allowed when all documents are in 'draft' state.")
+            )
+
+        if not_checked_in_found:
+            raise ValidationError(
+                _("All documents must be checked-in before restore.")
+            )
+
+        if backup_missing:
+            raise ValidationError(
+                _("The document is not available for backup on the selected date.")
+            )
+
+        ctx = self.env.context.copy()
+        ctx["backup"] = False
+        ctx["check"] = False
+
+        restored_ids = []
+        for att, bck in ready_pairs:
+            write_res = att.sudo().with_context(ctx).write(
+                {
+                    "printout": bck.printout,
+                    "preview": bck.preview,
+                }
+            )
+
+            # Swap store_fname directly in the DB – same raw-SQL as action_restore_document
+            self.env.cr.execute(
+                "UPDATE ir_attachment SET store_fname = %s WHERE id = %s",
+                (bck.existingfile, att.id),
+            )
+
+            if write_res:
+                logging.info(
+                    "[action_restore_all_documents] Restored id=%s (%s Rev.%s) "
+                    "<- backup id=%s created on %s",
+                    att.id, att.engineering_code, att.engineering_revision,
+                    bck.id, bck.create_date,
+                )
+            else:
+                logging.warning(
+                    "[action_restore_all_documents] ORM write failed for id=%s", att.id
+                )
+
+            restored_ids.append(att.id)
+
+        if not restored_ids:
+            raise ValidationError(_("No documents were restored. Please check the server logs."))
+
+        logging.info(
+            "[action_restore_all_documents] Done – restored %d document(s): %s",
+            len(restored_ids), restored_ids,
+        )
+
+        action_vals = self.env["ir.actions.act_window"]._for_xml_id(
+            "plm.plm_action_document_form"
+        )
+        action_vals["domain"] = [("id", "in", restored_ids)]
+        action_vals["name"] = _("Restored Documents")
         return action_vals
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

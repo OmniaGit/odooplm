@@ -7,21 +7,23 @@ let tempShape = null;
 let undoStack = [];
 let redoStack = [];
 let isRedoing = false;
-// Track whether editor was opened from a saved snapshot (edit mode)
+let _isLoadingJSON = false;
+let _baseScreenshotData = null;
+let _currentBaseImage = null;
 let isSnapshotEditMode = false;
+let _currentSnapshotUrl = null;
+let _snapshotScale = 1;
+let _markupsInitialised = false;
+let _loadGeneration = 0;
 
 window.addEventListener("load", () => {
     const markupBtn = document.getElementById("markup_button");
-    if (markupBtn) {
-        markupBtn.addEventListener("click", openMarkupEditor);
-    }
+    if (markupBtn) markupBtn.addEventListener("click", openMarkupEditor);
 });
 
 window.addEventListener("load", function () {
     const submitBtn = document.getElementById("submit_markup");
-    if (submitBtn) {
-        submitBtn.addEventListener("click", submitMarkup);
-    }
+    if (submitBtn) submitBtn.addEventListener("click", submitMarkup);
     initExistingMarkups();
 });
 
@@ -69,14 +71,12 @@ function _positionEditorControls(tRect) {
     commentInput.placeholder = "Write Message...";
     commentInput.className   = "mcr-input";
 
-    // Activity panel — built fresh (not cloned) to avoid dark inline styles from HTML
     var activityPanelClone = document.createElement("div");
     activityPanelClone.id        = "mcr_activity_panel";
     activityPanelClone.className = "mcr-activity-panel";
     activityPanelClone.style.display = "none";
 
     var today = new Date().toISOString().split("T")[0];
-
     activityPanelClone.innerHTML =
         '<div class="mcr-ap-row">' +
             '<label class="mcr-ap-label">Due Date</label>' +
@@ -91,7 +91,6 @@ function _positionEditorControls(tRect) {
             '<select id="mcr_user_id" class="mcr-ap-input"><option value="">Loading users...</option></select>' +
         '</div>';
 
-    // Load users into the cloned select
     fetch("/web/dataset/call_kw", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -125,7 +124,6 @@ function _positionEditorControls(tRect) {
         if (sel) sel.innerHTML = '<option value="">Error loading users</option>';
     });
 
-    // Activity checkbox
     var activityLabel = document.createElement("label");
     activityLabel.className = "mcr-activity-label";
     activityLabel.title     = "Schedule Activity";
@@ -134,18 +132,15 @@ function _positionEditorControls(tRect) {
     activityCheck.type      = "checkbox";
     activityCheck.className = "mcr-activity-check";
     activityCheck.onchange  = function() {
-        // Sync to original hidden checkbox
         var orig = document.getElementById("activity_view");
         if (orig) {
             orig.checked = this.checked;
             orig.dispatchEvent(new Event("change"));
         }
-        // Show/hide the cloned panel above comment row
         if (activityPanelClone) {
             activityPanelClone.style.display = this.checked ? "block" : "none";
         }
     };
-
     activityLabel.appendChild(activityCheck);
 
     var submitBtn = document.createElement("button");
@@ -162,7 +157,6 @@ function _positionEditorControls(tRect) {
     commentRow.appendChild(activityLabel);
     commentRow.appendChild(submitBtn);
 
-    // Sub-container keeps activity panel directly above comment row (aligned together)
     var commentGroup = document.createElement("div");
     commentGroup.className = "mcr-comment-group";
     if (activityPanelClone) commentGroup.appendChild(activityPanelClone);
@@ -181,11 +175,9 @@ function _resetEditorControls() {
     if (commentBox) commentBox.style.display = "none";
 }
 
-
 function _setSidePanelsAbove(above) {
     var container = document.getElementById("main_3d_web");
     if (!container) return;
-    // Only raise z-index — never touch position, which would break absolute-positioned panels
     Array.from(container.children).forEach(function(child) {
         if (child.id !== "markup_editor" && child.id !== "odoo_canvas") {
             child.style.zIndex = above ? "200" : "";
@@ -227,6 +219,12 @@ function openMarkupEditor() {
     _positionEditorControls(tRect);
     _setSidePanelsAbove(true);
 
+    const rawCanvas = document.getElementById("markup_canvas");
+    if (rawCanvas) {
+        rawCanvas.width  = w;
+        rawCanvas.height = h;
+    }
+
     if (!fabricCanvas) {
         fabricCanvas = new fabric.Canvas("markup_canvas");
         fabricCanvas.setWidth(w);
@@ -237,107 +235,140 @@ function openMarkupEditor() {
         fabricCanvas.setWidth(w);
         fabricCanvas.setHeight(h);
     }
-}
 
-function resizeCanvas() {
-    const threeCanvas = document.getElementById("odoo_canvas");
-    if (!threeCanvas || !fabricCanvas) return;
-    fabricCanvas.setWidth(threeCanvas.clientWidth);
-    fabricCanvas.setHeight(threeCanvas.clientHeight);
+    if (!isSnapshotEditMode) {
+        try {
+            _baseScreenshotData = threeCanvas.toDataURL("image/png");
+        } catch (e) {
+            console.warn("Screenshot capture failed:", e);
+            _baseScreenshotData = null;
+        }
+    }
 }
 
 function saveState() {
-    if (isRedoing) return;
+    if (isRedoing)      return;
+    if (_isLoadingJSON) return;
     undoStack.push(JSON.stringify(fabricCanvas));
     redoStack = [];
 }
 
 function undo() {
-    if (undoStack.length > 0) {
-        isRedoing = true;
-        redoStack.push(JSON.stringify(fabricCanvas));
-        const lastState = undoStack.pop();
-        fabricCanvas.loadFromJSON(lastState, function () {
+    if (undoStack.length === 0) return;
+
+    isRedoing = true;
+    redoStack.push(JSON.stringify(fabricCanvas));
+
+    _isLoadingJSON = true;
+    fabricCanvas.loadFromJSON(undoStack.pop(), function () {
+
+        _isLoadingJSON = false;
+        if (_currentBaseImage) {
+            _reapplyBaseBackground(() => {
+                isRedoing = false;
+            });
+        } else if (isSnapshotEditMode && _currentSnapshotUrl) {
+            _reapplySnapshotBackground(() => {
+                isRedoing = false;
+            });
+        } else {
             fabricCanvas.renderAll();
             isRedoing = false;
-        });
-    }
+        }
+    });
 }
 
 function redo() {
-    if (redoStack.length > 0) {
-        isRedoing = true;
-        undoStack.push(JSON.stringify(fabricCanvas));
-        const nextState = redoStack.pop();
-        fabricCanvas.loadFromJSON(nextState, function () {
+    if (redoStack.length === 0) return;
+
+    isRedoing = true;
+    undoStack.push(JSON.stringify(fabricCanvas));
+
+    _isLoadingJSON = true;
+
+    fabricCanvas.loadFromJSON(redoStack.pop(), function () {
+
+        _isLoadingJSON = false;
+
+        if (_currentBaseImage) {
+            _reapplyBaseBackground(() => {
+                isRedoing = false;
+            });
+        } else if (isSnapshotEditMode && _currentSnapshotUrl) {
+            _reapplySnapshotBackground(() => {
+                isRedoing = false;
+            });
+        } else {
             fabricCanvas.renderAll();
             isRedoing = false;
-        });
-    }
+        }
+    });
 }
 
 function initToolbar() {
     const actions = {
-        "draw_btn": () => {
-            currentTool = "draw";
-            fabricCanvas.isDrawingMode = true;
-            fabricCanvas.freeDrawingBrush.width = 3;
-            fabricCanvas.freeDrawingBrush.color = "red";
+        "draw_btn":   () => { currentTool = "draw";   fabricCanvas.isDrawingMode = true;  fabricCanvas.freeDrawingBrush.width = 3; fabricCanvas.freeDrawingBrush.color = "red"; },
+        "rect_btn":   () => { currentTool = "rect";   fabricCanvas.isDrawingMode = false; },
+        "circle_btn": () => { currentTool = "circle"; fabricCanvas.isDrawingMode = false; },
+        "text_btn":   () => { currentTool = "text";   fabricCanvas.isDrawingMode = false; },
+        "arrow_btn":  () => { currentTool = "arrow";  fabricCanvas.isDrawingMode = false; },
+        "delete_btn": () => {
+            const activeObjects = fabricCanvas.getActiveObjects();
+            if (!activeObjects || activeObjects.length === 0) return;
+            saveState();
+
+            activeObjects.forEach(obj => {
+                fabricCanvas.remove(obj);
+            });
+
+            fabricCanvas.discardActiveObject();
+            fabricCanvas.requestRenderAll();
         },
-        "rect_btn": () => {
-            currentTool = "rect";
-            fabricCanvas.isDrawingMode = false;
-        },
-        "circle_btn": () => {
-            currentTool = "circle";
-            fabricCanvas.isDrawingMode = false;
-        },
-        "text_btn": () => {
-            currentTool = "text";
-            fabricCanvas.isDrawingMode = false;
-        },
-        "arrow_btn": () => {
-            currentTool = "arrow";
-            fabricCanvas.isDrawingMode = false;
-        },
+
         "clear_btn": () => {
             saveState();
-            fabricCanvas.clear();
-            // If in snapshot mode, re-apply snapshot background after clear
-            if (isSnapshotEditMode) {
-                _reapplySnapshotBackground();
-            }
+            const objects = fabricCanvas.getObjects();
+            objects.forEach(obj => {
+                fabricCanvas.remove(obj);
+            });
+            fabricCanvas.discardActiveObject();
+            fabricCanvas.requestRenderAll();
         },
-        "undo_btn": () => undo(),
-        "redo_btn": () => redo(),
-        "close_btn": () => {
-            _closeEditor();
-        },
+
+        "undo_btn":   () => undo(),
+        "redo_btn":   () => redo(),
+        "close_btn":  () => _closeEditor(),
     };
+
     for (const [id, func] of Object.entries(actions)) {
         const btn = document.getElementById(id);
         if (btn) btn.onclick = func;
     }
 }
 
-// ─── Internal helpers ───────────────────────────────────────────────────────
+document.addEventListener("keydown", function (e) {
+    if (e.key === "Delete" || e.key === "Backspace") {
+        const activeObjects = fabricCanvas?.getActiveObjects();
+        if (!activeObjects || activeObjects.length === 0) return;
 
-let _currentSnapshotUrl = null;
-let _snapshotScale = 1; // uniform scale — set once when snapshot is first loaded
+        saveState();
+
+        activeObjects.forEach(obj => {
+            fabricCanvas.remove(obj);
+        });
+
+        fabricCanvas.discardActiveObject();
+        fabricCanvas.requestRenderAll();
+    }
+});
 
 function _reapplySnapshotBackground(callback) {
     if (!_currentSnapshotUrl || !fabricCanvas) return;
     fabric.Image.fromURL(_currentSnapshotUrl, function (img) {
-        // Use the pre-computed uniform scale (set in loadMarkupIntoEditor).
-        // Never recalculate per-axis here — that would cause stretch on re-apply.
         img.set({
-            left: 0,
-            top: 0,
-            scaleX: _snapshotScale,
-            scaleY: _snapshotScale,
-            selectable: false,
-            evented: false,
-            excludeFromExport: true
+            left: 0, top: 0,
+            scaleX: _snapshotScale, scaleY: _snapshotScale,
+            selectable: false, evented: false, excludeFromExport: true
         });
         fabricCanvas.setBackgroundImage(img, function () {
             fabricCanvas.renderAll();
@@ -347,17 +378,16 @@ function _reapplySnapshotBackground(callback) {
 }
 
 function _closeEditor() {
+    _currentBaseImage = null;
     if (fabricCanvas) {
         fabricCanvas.clear();
         fabricCanvas.setBackgroundImage(null, fabricCanvas.renderAll.bind(fabricCanvas));
     }
-
-    isSnapshotEditMode = false;
+    isSnapshotEditMode  = false;
     _currentSnapshotUrl = null;
-
-    undoStack = [];
-    redoStack = [];
-    currentTool = null;
+    _baseScreenshotData = null;
+    _isLoadingJSON      = false;
+    undoStack = []; redoStack = []; currentTool = null;
     const commentTextarea = document.getElementById("markup_comment");
     if (commentTextarea) commentTextarea.value = "";
     document.getElementById("markup_editor").style.display = "none";
@@ -365,67 +395,34 @@ function _closeEditor() {
     _setSidePanelsAbove(false);
 }
 
-// ────────────────────────────────────────────────────────────────────────────
-
 function initFabricEvents() {
-    fabricCanvas.on("object:added", () => {
+    fabricCanvas.on("object:added", function () {
+        if (_isLoadingJSON) return;
         if (!isRedoing) saveState();
     });
 
-    fabricCanvas.on("object:modified", () => {
+    fabricCanvas.on("object:modified", function () {
+        if (_isLoadingJSON) return;
         saveState();
     });
 
     fabricCanvas.on("mouse:down", function (opt) {
         if (opt.target) return;
         const pointer = fabricCanvas.getPointer(opt.e);
-        startX = pointer.x;
-        startY = pointer.y;
+        startX = pointer.x; startY = pointer.y;
         if (tempShape) return;
+
         if (currentTool === "rect") {
-            tempShape = new fabric.Rect({
-                left: startX,
-                top: startY,
-                width: 1,
-                height: 1,
-                fill: "transparent",
-                stroke: "red",
-                strokeWidth: 2
-            });
+            tempShape = new fabric.Rect({ left: startX, top: startY, width: 1, height: 1, fill: "transparent", stroke: "red", strokeWidth: 2 });
             fabricCanvas.add(tempShape);
-        }
-        else if (currentTool === "circle") {
-            tempShape = new fabric.Circle({
-                left: startX,
-                top: startY,
-                radius: 1,
-                fill: "transparent",
-                stroke: "blue",
-                strokeWidth: 2
-            });
+        } else if (currentTool === "circle") {
+            tempShape = new fabric.Circle({ left: startX, top: startY, radius: 1, fill: "transparent", stroke: "blue", strokeWidth: 2 });
             fabricCanvas.add(tempShape);
-        }
-        else if (currentTool === "arrow") {
-            const pointer = fabricCanvas.getPointer(opt.e);
-            startX = pointer.x;
-            startY = pointer.y;
-            tempShape = new fabric.Path(`M ${startX} ${startY} L ${startX} ${startY}`, {
-                stroke: '#fff',
-                strokeWidth: 2,
-                fill: 'red',
-                selectable: false,
-                objectCaching: false
-            });
+        } else if (currentTool === "arrow") {
+            tempShape = new fabric.Path(`M ${startX} ${startY} L ${startX} ${startY}`, { stroke: '#fff', strokeWidth: 2, fill: 'red', selectable: false, objectCaching: false });
             fabricCanvas.add(tempShape);
-        }
-        else if (currentTool === "text") {
-            const text = new fabric.IText("Text", {
-                left: startX,
-                top: startY,
-                fontSize: 24,
-                fill: "#000",
-                backgroundColor: "#fff"
-            });
+        } else if (currentTool === "text") {
+            const text = new fabric.IText("Text", { left: startX, top: startY, fontSize: 24, fill: "#000", backgroundColor: "#fff" });
             fabricCanvas.add(text);
             fabricCanvas.setActiveObject(text);
             text.enterEditing();
@@ -437,47 +434,28 @@ function initFabricEvents() {
         if (!tempShape) return;
         const pointer = fabricCanvas.getPointer(opt.e);
         if (currentTool === "rect") {
-            tempShape.set({
-                width: pointer.x - startX,
-                height: pointer.y - startY
-            });
-        }
-        else if (currentTool === "circle") {
-            const radius = Math.sqrt(Math.pow(pointer.x - startX, 2) + Math.pow(pointer.y - startY, 2));
-            tempShape.set({ radius: radius });
-        }
-        else if (currentTool === "arrow") {
-            const headLength = 20;
-            const shaftWidth = 10;
-            const headWidth = 24;
+            tempShape.set({ width: pointer.x - startX, height: pointer.y - startY });
+        } else if (currentTool === "circle") {
+            tempShape.set({ radius: Math.sqrt(Math.pow(pointer.x - startX, 2) + Math.pow(pointer.y - startY, 2)) });
+        } else if (currentTool === "arrow") {
+            const headLength = 20, shaftWidth = 10, headWidth = 24;
             const angle = Math.atan2(pointer.y - startY, pointer.x - startX);
-            const x0 = startX, y0 = startY;
-            const x1 = pointer.x, y1 = pointer.y;
-            const tX = x1 - headLength * Math.cos(angle);
-            const tY = y1 - headLength * Math.sin(angle);
-            const p1x = tX + (headWidth / 2) * Math.cos(angle + Math.PI / 2);
-            const p1y = tY + (headWidth / 2) * Math.sin(angle + Math.PI / 2);
-            const p2x = tX + (headWidth / 2) * Math.cos(angle - Math.PI / 2);
-            const p2y = tY + (headWidth / 2) * Math.sin(angle - Math.PI / 2);
-            const s1x = tX + (shaftWidth / 2) * Math.cos(angle + Math.PI / 2);
-            const s1y = tY + (shaftWidth / 2) * Math.sin(angle + Math.PI / 2);
-            const s2x = tX + (shaftWidth / 2) * Math.cos(angle - Math.PI / 2);
-            const s2y = tY + (shaftWidth / 2) * Math.sin(angle - Math.PI / 2);
-            const tail1x = x0 + (shaftWidth / 2) * Math.cos(angle + Math.PI / 2);
-            const tail1y = y0 + (shaftWidth / 2) * Math.sin(angle + Math.PI / 2);
-            const tail2x = x0 + (shaftWidth / 2) * Math.cos(angle - Math.PI / 2);
-            const tail2y = y0 + (shaftWidth / 2) * Math.sin(angle - Math.PI / 2);
-            const pathData = `M ${tail1x},${tail1y} L ${s1x},${s1y} L ${p1x},${p1y} L ${x1},${y1} L ${p2x},${p2y} L ${s2x},${s2y} L ${tail2x},${tail2y} Z`;
-            tempShape.set({ path: new fabric.Path(pathData).path });
+            const x0 = startX, y0 = startY, x1 = pointer.x, y1 = pointer.y;
+            const tX  = x1 - headLength * Math.cos(angle),  tY  = y1 - headLength * Math.sin(angle);
+            const p1x = tX + (headWidth/2)*Math.cos(angle+Math.PI/2), p1y = tY + (headWidth/2)*Math.sin(angle+Math.PI/2);
+            const p2x = tX + (headWidth/2)*Math.cos(angle-Math.PI/2), p2y = tY + (headWidth/2)*Math.sin(angle-Math.PI/2);
+            const s1x = tX + (shaftWidth/2)*Math.cos(angle+Math.PI/2), s1y = tY + (shaftWidth/2)*Math.sin(angle+Math.PI/2);
+            const s2x = tX + (shaftWidth/2)*Math.cos(angle-Math.PI/2), s2y = tY + (shaftWidth/2)*Math.sin(angle-Math.PI/2);
+            const t1x = x0 + (shaftWidth/2)*Math.cos(angle+Math.PI/2), t1y = y0 + (shaftWidth/2)*Math.sin(angle+Math.PI/2);
+            const t2x = x0 + (shaftWidth/2)*Math.cos(angle-Math.PI/2), t2y = y0 + (shaftWidth/2)*Math.sin(angle-Math.PI/2);
+            tempShape.set({ path: new fabric.Path(`M ${t1x},${t1y} L ${s1x},${s1y} L ${p1x},${p1y} L ${x1},${y1} L ${p2x},${p2y} L ${s2x},${s2y} L ${t2x},${t2y} Z`).path });
         }
         fabricCanvas.renderAll();
     });
 
     fabricCanvas.on("mouse:up", function () {
         if (tempShape) {
-            tempShape.set({
-                selectable: true
-            });
+            tempShape.set({ selectable: true });
             fabricCanvas.setActiveObject(tempShape);
             tempShape.setCoords();
         }
@@ -485,258 +463,152 @@ function initFabricEvents() {
     });
 }
 
-function saveMarkupWithBackground() {
-    const viewer      = document.getElementById("main_3d_web");
-    const threeCanvas = document.getElementById("odoo_canvas");
-    let fileName = (viewer.dataset.fileName || "markup").replace(/\.[^/.]+$/, "") + ".jpg";
-
-    const fW = threeCanvas.clientWidth;
-    const fH = threeCanvas.clientHeight;
-
-    const bgImg = new Image();
-    bgImg.onload = function () {
-        const tmp = document.createElement("canvas");
-        tmp.width  = fW;
-        tmp.height = fH;
-        const ctx = tmp.getContext("2d");
-        ctx.drawImage(bgImg, 0, 0, fW, fH);
-
-        const markupImg = new Image();
-        markupImg.onload = function () {
-            ctx.drawImage(markupImg, 0, 0, fW, fH);
-            const link = document.createElement("a");
-            link.href = tmp.toDataURL("image/jpeg");
-            link.download = fileName;
-            link.click();
-        };
-        markupImg.src = fabricCanvas.toDataURL({ format: "png" });
-    };
-    bgImg.src = threeCanvas.toDataURL("image/jpeg");
-}
-
 function submitMarkup() {
-    const comment = document.getElementById("markup_comment").value;
-
-    if (isSnapshotEditMode && _currentSnapshotUrl) {
-        const snapshotImg = new Image();
-        snapshotImg.crossOrigin = "anonymous";
-        snapshotImg.onload = function () {
-            const fW = fabricCanvas.getWidth();
-            const fH = fabricCanvas.getHeight();
-            const tmp = document.createElement("canvas");
-            tmp.width  = fW;
-            tmp.height = fH;
-            const ctx = tmp.getContext("2d");
-            ctx.drawImage(snapshotImg, 0, 0, fW, fH);
-
-            const markupImg = new Image();
-            markupImg.onload = function () {
-                ctx.drawImage(markupImg, 0, 0, fW, fH);
-                sendMarkupToBackend(tmp.toDataURL("image/jpeg"), comment, JSON.stringify(fabricCanvas.toJSON()));
-            };
-            markupImg.src = fabricCanvas.toDataURL({ format: "png" });
-        };
-        snapshotImg.src = _currentSnapshotUrl;
-        return;
-    }
-
+    const comment     = document.getElementById("markup_comment").value;
     const threeCanvas = document.getElementById("odoo_canvas");
-    const fW = threeCanvas.clientWidth;
-    const fH = threeCanvas.clientHeight;
 
-    const bgImg = new Image();
-    bgImg.onload = function () {
-        const tmp = document.createElement("canvas");
-        tmp.width  = fW;
-        tmp.height = fH;
-        const ctx = tmp.getContext("2d");
-        ctx.drawImage(bgImg, 0, 0, fW, fH);
+    const mergedCanvas  = document.createElement("canvas");
+    mergedCanvas.width  = threeCanvas.width;
+    mergedCanvas.height = threeCanvas.height;
 
-        const markupImg = new Image();
-        markupImg.onload = function () {
-            ctx.drawImage(markupImg, 0, 0, fW, fH);
-            sendMarkupToBackend(tmp.toDataURL("image/jpeg"), comment, JSON.stringify(fabricCanvas.toJSON()));
-        };
-        markupImg.src = fabricCanvas.toDataURL({ format: "png" });
-    };
-    bgImg.src = threeCanvas.toDataURL("image/jpeg");
-}
+    const ctx = mergedCanvas.getContext("2d");
 
+    ctx.drawImage(threeCanvas, 0, 0);
+    ctx.drawImage(fabricCanvas.lowerCanvasEl, 0, 0);
 
-function _scheduleActivity(resId, dueDate, summary, userId, note, imageData) {
-    function rpc(model, method, args, kwargs) {
-        return fetch("/web/dataset/call_kw", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                jsonrpc: "2.0", method: "call",
-                params: { model, method, args, kwargs: kwargs || {} }
-            })
-        })
-        .then(r => r.json())
-        .then(data => {
-            if (data.error) throw new Error(data.error.data.message || "RPC Error");
-            return data.result;
-        });
+    const finalImage = mergedCanvas.toDataURL("image/png");
+
+    let cleanBackground = null;
+
+    if (_currentBaseImage) {
+        cleanBackground = _currentBaseImage;
     }
 
-    // Step 1: Upload markup image as ir.attachment (if available)
-    var imageUploadPromise = Promise.resolve(null);
-    if (imageData) {
-        var b64 = imageData.replace(/^data:image\/\w+;base64,/, "");
-        imageUploadPromise = rpc("ir.attachment", "create", [{
-            name:     "markup_" + new Date().toISOString().slice(0,10) + ".jpg",
-            type:     "binary",
-            datas:    b64,
-            res_model: "ir.attachment",
-            res_id:   resId
-        }]).catch(function() { return null; });
+    else if (_baseScreenshotData) {
+        cleanBackground = _baseScreenshotData;
     }
 
-    return imageUploadPromise.then(function(attachmentId) {
-        // Build note HTML — include comment + inline image preview
-        var noteHtml = note ? "<p>" + note + "</p>" : "";
-        if (attachmentId) {
-            noteHtml += '<p><img src="/web/image/ir.attachment/' + attachmentId + '/datas" style="max-width:400px;border-radius:4px;margin-top:4px;" alt="Markup"/></p>';
-        }
+    else {
+        cleanBackground = threeCanvas.toDataURL("image/png");
+    }
 
-        return rpc("mail.activity.type", "search_read",
-            [[["name", "ilike", "to"]]],
-            { fields: ["id", "name"], limit: 5 }
-        ).then(results => {
-            const exact = results?.find(r => r.name.toLowerCase().replace("-","").includes("todo"));
-            return exact ? exact.id : (results?.[0]?.id || 1);
-        }).then(activityTypeId => {
-            return rpc("ir.model", "search_read",
-                [[["model", "=", "ir.attachment"]]],
-                { fields: ["id"], limit: 1 }
-            ).then(models => {
-                if (!models?.length) throw new Error("ir.model not found");
-                var activityVals = {
-                    res_model_id:     models[0].id,
-                    res_id:           resId,
-                    activity_type_id: activityTypeId,
-                    date_deadline:    dueDate,
-                    summary:          summary || "",
-                    note:             noteHtml,
-                    user_id:          userId  || false
-                };
-                return rpc("mail.activity", "create", [activityVals]);
-            });
-        });
-    });
+    const fabricJsonObj = fabricCanvas.toJSON();
+
+    if (fabricJsonObj.backgroundImage) {
+        delete fabricJsonObj.backgroundImage;
+    }
+
+    sendMarkupToBackend(
+        finalImage,
+        cleanBackground,
+        comment,
+        JSON.stringify(fabricJsonObj)
+    );
 }
 
-function sendMarkupToBackend(imageData, comment, canvasJson) {
+function sendMarkupToBackend(imageData, baseImage, comment, canvasJson) {
     const container = document.getElementById("main_3d_web");
-
-    const resId = container.dataset.resId;
-    const resModel = container.dataset.resModel;
-
-    let fileName = container.dataset.fileName || "markup";
-    fileName = fileName.replace(/\.[^/.]+$/, "") + ".jpg";
+    const resId     = container.dataset.resId;
+    const resModel  = container.dataset.resModel;
+    let   fileName  = (container.dataset.fileName || "markup").replace(/\.[^/.]+$/, "") + ".jpg";
 
     const activityCheckbox = document.getElementById("activity_view");
     const scheduleActivity = activityCheckbox && activityCheckbox.checked;
-
     const dueDate = document.getElementById("mcr_due_date")?.value || "";
-    const summary = document.getElementById("mcr_summary")?.value || "";
+    const summary = document.getElementById("mcr_summary")?.value  || "";
     const userId  = parseInt(document.getElementById("mcr_user_id")?.value) || false;
 
     fetch("/plm_web_3d/save_markup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-            jsonrpc: "2.0",
-            method: "call",
+            jsonrpc: "2.0", method: "call",
             params: {
-                image: imageData,
-                comment: comment,
-                filename: fileName,
-                canvas_json: canvasJson,
-                res_model: resModel,
-                res_id: resId,
+                image:             imageData,
+                base_image:        baseImage,
+                comment,
+                filename:          fileName,
+                canvas_json:       canvasJson,
+                res_model:         resModel,
+                res_id:            resId,
                 schedule_activity: scheduleActivity,
                 activity_due_date: dueDate,
-                activity_summary: summary,
-                activity_user_id: userId
-            }
-        })
-    })
-    .then(r => r.json())
-    .then(() => {
-        if (!scheduleActivity) {
-            const displayComment = comment || (fileName + " - Markup Logged");
-            addMarkupLog(imageData, displayComment, canvasJson, new Date().toLocaleDateString());
-        }
-
-        const commentTextarea = document.getElementById("markup_comment");
-        if (commentTextarea) commentTextarea.value = "";
-
-        if (activityCheckbox) activityCheckbox.checked = false;
-
-        if (fabricCanvas) fabricCanvas.clear();
-
-        undoStack = [];
-        redoStack = [];
-        currentTool = null;
-        isSnapshotEditMode = false;
-        _currentSnapshotUrl = null;
-
-        const editor = document.getElementById("markup_editor");
-        if (editor) editor.style.display = "none";
-
-        _resetEditorControls();
-        _setSidePanelsAbove(false);
-    })
-    .catch(err => {
-        console.error("Markup submit error:", err);
-    });
-}
-
-// Log Tracking Function  -----------------
-function initExistingMarkups() {
-    const container = document.getElementById("main_3d_web");
-    if (!container) return;
-
-    const resId    = container.dataset.resId;
-    const resModel = container.dataset.resModel;
-
-    if (!resId) {
-        console.warn("initExistingMarkups: no resId found");
-        return;
-    }
-
-    fetch("/plm/markup/load", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            jsonrpc: "2.0",
-            method: "call",
-            params: {
-                res_id:    parseInt(resId),
-                res_model: resModel || ""
+                activity_summary:  summary,
+                activity_user_id:  userId
             }
         })
     })
     .then(r => r.json())
     .then(data => {
+        const newId = data.result?.markup_id || null;
+
+        if (!scheduleActivity) {
+            const displayComment = comment || (fileName + " - Markup Logged");
+            addMarkupLog(baseImage, baseImage, displayComment, canvasJson, new Date().toLocaleDateString(), newId);
+        }
+
+        const commentTextarea = document.getElementById("markup_comment");
+        if (commentTextarea) commentTextarea.value = "";
+        if (activityCheckbox) activityCheckbox.checked = false;
+        if (fabricCanvas)     fabricCanvas.clear();
+
+        undoStack = []; redoStack = []; currentTool = null;
+        isSnapshotEditMode = false; _currentSnapshotUrl = null; _baseScreenshotData = null;
+
+        const editor = document.getElementById("markup_editor");
+        if (editor) editor.style.display = "none";
+        _resetEditorControls();
+        _setSidePanelsAbove(false);
+    })
+    .catch(err => console.error("Markup submit error:", err));
+}
+
+function initExistingMarkups() {
+    if (_markupsInitialised) return;
+    _markupsInitialised = true;
+
+    const container = document.getElementById("main_3d_web");
+    if (!container) return;
+    const resId    = container.dataset.resId;
+    const resModel = container.dataset.resModel;
+    if (!resId) { console.warn("initExistingMarkups: no resId found"); return; }
+
+    fetch("/plm/markup/load", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ jsonrpc: "2.0", method: "call",
+            params: { res_id: parseInt(resId), res_model: resModel || "" } })
+    })
+    .then(r => r.json())
+    .then(data => {
         if (data.result?.markups) {
             data.result.markups.reverse().forEach(m => {
-                const dateOnly      = new Date(m.create_date).toLocaleDateString();
-                const snapshot      = m.snapshot ? "data:image/jpeg;base64," + m.snapshot : null;
-                const canvasData    = typeof m.canvas_data === "string" ? m.canvas_data : JSON.stringify(m.canvas_data);
+                const dateOnly       = new Date(m.create_date).toLocaleDateString();
+                const snapshotUrl = m.snapshot
+                    ? "data:image/jpeg;base64," + m.snapshot
+                    : null;
+
+                const baseImageUrl = m.base_image
+                    ? "data:image/jpeg;base64," + m.base_image
+                    : null;
+
+                const canvasData     = typeof m.canvas_data === "string" ? m.canvas_data : JSON.stringify(m.canvas_data);
                 const displayComment = m.comment || ((m.filename || 'markup.jpg') + " - Markup Logged");
-                addMarkupLog(snapshot, displayComment, canvasData, dateOnly, m.id);
+                addMarkupLog(snapshotUrl, baseImageUrl, displayComment, canvasData, dateOnly, m.id);
             });
         }
     })
     .catch(err => console.error("Load error:", err));
 }
 
-function addMarkupLog(screenshotDataUrl, commentText, canvasJson, dateStr, markupId) {
+function addMarkupLog(snapshotUrl, baseImageUrl, commentText, canvasJson, dateStr, markupId) {
     const logList = document.getElementById("markup_logs_list");
     if (!logList) return;
+
+    if (markupId) {
+        const existing = logList.querySelector(`[data-markup-id="${markupId}"]`);
+        if (existing) return;
+    }
 
     const placeholder = logList.querySelector("small");
     if (placeholder) placeholder.remove();
@@ -745,64 +617,188 @@ function addMarkupLog(screenshotDataUrl, commentText, canvasJson, dateStr, marku
     item.className = "markup_log_item";
     if (markupId) item.dataset.markupId = markupId;
 
-    const eye = document.createElement("span");
+    const eye   = document.createElement("span");
     eye.className = "markup_log_eye fa fa-eye";
-    eye.title = "View Screenshot";
+    eye.title     = "View Screenshot";
 
     const label = document.createElement("span");
-    label.className = "markup_log_label";
+    label.className   = "markup_log_label";
     label.textContent = dateStr + (commentText ? " - " + commentText : "");
 
-    const edit = document.createElement("span");
+    const edit  = document.createElement("span");
     edit.className = "markup_log_load fa fa-pencil";
-    edit.title = "Load into Editor";
+    edit.title     = "Load into Editor";
 
-    const del = document.createElement("span");
-    del.className = "markup_log_delete fa fa-trash";
-    del.title = "Delete";
-    del.style.cursor = "pointer";
+    const del   = document.createElement("span");
+    del.className        = "markup_log_delete fa fa-trash";
+    del.title            = "Delete";
+    del.style.cursor     = "pointer";
     del.style.marginLeft = "6px";
-    del.style.color = "#a00";
+    del.style.color      = "#a00";
 
     item.appendChild(eye);
     item.appendChild(label);
     item.appendChild(edit);
     item.appendChild(del);
 
-    item.addEventListener("click", function () {
-        openMarkupLogModal(screenshotDataUrl, commentText, dateStr);
-    });
-
-    eye.addEventListener("click", function (e) {
+    function onView(e) {
         e.stopPropagation();
-        openMarkupLogModal(screenshotDataUrl, commentText, dateStr);
-    });
-
-    edit.addEventListener("click", function (e) {
+        openMarkupLogModal(snapshotUrl || baseImageUrl, commentText, dateStr);
+    }
+    function onEdit(e) {
         e.stopPropagation();
-        loadMarkupIntoEditor(canvasJson, screenshotDataUrl);
-    });
 
-    del.addEventListener("click", function (e) {
-        e.stopPropagation();
-        if (markupId) {
-            deleteMarkup(markupId, item);
+        if (!baseImageUrl) {
+            alert("Base image missing. Cannot edit.");
+            return;
         }
-    });
+        loadMarkupIntoEditor(canvasJson, baseImageUrl);
+    }
+
+    function onDelete(e) {
+        e.stopPropagation();
+        if (markupId) deleteMarkup(markupId, item);
+    }
+
+    function onRowClick() {
+        openMarkupLogModal(snapshotUrl || baseImageUrl, commentText, dateStr);
+    }
+
+    eye.addEventListener("click",  onView);
+    edit.addEventListener("click", onEdit);
+    del.addEventListener("click",  onDelete);
+    item.addEventListener("click", onRowClick);
 
     logList.prepend(item);
 }
 
-function deleteMarkup(markupId, itemElement) {
+function loadMarkupIntoEditor(canvasJson, bgUrl) {
+    _currentBaseImage = bgUrl;
 
+    if (!bgUrl) {
+        alert("No editable data found.");
+        return;
+    }
+
+    if (bgUrl && !bgUrl.startsWith("data:image")) {
+        bgUrl = "data:image/png;base64," + bgUrl;
+    }
+
+    console.log("bgUrl preview:", bgUrl.substring(0, 100));
+
+    const myGen = ++_loadGeneration;
+
+    openMarkupEditor();
+
+    isSnapshotEditMode  = false;
+    _currentSnapshotUrl = null;
+
+    _isLoadingJSON = true;
+
+    if (fabricCanvas) {
+        fabricCanvas.discardActiveObject();
+        fabricCanvas.clear();
+
+        fabricCanvas.backgroundImage = null;
+        fabricCanvas.setOverlayImage(null, fabricCanvas.renderAll.bind(fabricCanvas));
+    }
+
+    undoStack = [];
+    redoStack = [];
+
+    fabricCanvas.renderOnAddRemove = false;
+    let parsed = null;
+
+    if (canvasJson) {
+        parsed = typeof canvasJson === "string"
+            ? JSON.parse(canvasJson)
+            : canvasJson;
+
+        if (parsed.backgroundImage) {
+            delete parsed.backgroundImage;
+        }
+    }
+
+    fabricCanvas.loadFromJSON(parsed || {}, function () {
+        if (myGen !== _loadGeneration) return;
+
+        fabric.Image.fromURL(
+            bgUrl,
+            function (img) {
+                if (myGen !== _loadGeneration) return;
+
+                if (!img) {
+                    console.error("❌ Image failed to load");
+                    return;
+                }
+
+                const canvasW = fabricCanvas.getWidth();
+                const canvasH = fabricCanvas.getHeight();
+
+                const scale = Math.min(canvasW / img.width, canvasH / img.height);
+
+                img.set({
+                    left: 0,
+                    top: 0,
+                    originX: "left",
+                    originY: "top",
+                    scaleX: scale,
+                    scaleY: scale,
+                    selectable: false,
+                    evented: false,
+                    excludeFromExport: true
+                });
+                fabricCanvas.backgroundImage = img;
+
+                _isLoadingJSON = false;
+
+                fabricCanvas.renderOnAddRemove = true;
+                fabricCanvas.requestRenderAll();
+
+                saveState();
+            },
+            {
+                crossOrigin: "anonymous",
+                onError: function () {
+                    console.error("Failed to load base image");
+                }
+            }
+        );
+    });
+}
+
+window.loadMarkupIntoEditor = loadMarkupIntoEditor;
+
+function openMarkupLogModal(imageUrl, commentText, dateStr) {
+    const modal = document.getElementById("markup_log_modal");
+    if (!modal) return;
+    document.getElementById("markup_log_modal_date").textContent    = dateStr;
+    document.getElementById("markup_log_modal_img").src             = imageUrl;
+    document.getElementById("markup_log_modal_comment").textContent = commentText || "";
+    modal.classList.add("open");
+}
+
+window.addEventListener("load", function () {
+    const closeBtn = document.getElementById("markup_log_modal_close");
+    if (closeBtn) closeBtn.addEventListener("click", () => document.getElementById("markup_log_modal").classList.remove("open"));
+    const modal = document.getElementById("markup_log_modal");
+    if (modal) modal.addEventListener("click", e => { if (e.target === modal) modal.classList.remove("open"); });
+});
+
+let toastOffset = 0;
+function showToast(message, type = "info") {
+    const toast = document.createElement("div");
+    toast.className = `custom-toast ${type}`; toast.textContent = message;
+    toastOffset += 70; toast.style.top = `${toastOffset}px`;
+    document.body.appendChild(toast);
+    requestAnimationFrame(() => requestAnimationFrame(() => toast.classList.add("show")));
+    setTimeout(() => { toast.classList.remove("show"); setTimeout(() => { toast.remove(); toastOffset = Math.max(0, toastOffset - 70); }, 300); }, 3500);
+}
+
+function deleteMarkup(markupId, itemElement) {
     fetch("/plm/markup/delete", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            jsonrpc: "2.0",
-            method: "call",
-            params: { markup_id: markupId }
-        })
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ jsonrpc: "2.0", method: "call", params: { markup_id: markupId } })
     })
     .then(r => r.json())
     .then(data => {
@@ -814,162 +810,27 @@ function deleteMarkup(markupId, itemElement) {
                 empty.textContent = "No markups yet.";
                 logList.appendChild(empty);
             }
+        } else {
+            showToast("You are not allowed to delete this markup.", "warning");
         }
     })
-    .catch(err => console.error("Delete error:", err));
-}
-
-function loadMarkupIntoEditor(canvasJson, snapshotUrl) {
-    if (!snapshotUrl && !canvasJson) {
-        alert("No saved state found for this log.");
-        return;
-    }
-
-    if (snapshotUrl) {
-        isSnapshotEditMode = true;
-        _currentSnapshotUrl = snapshotUrl;
-
-        fabric.Image.fromURL(snapshotUrl, function (img) {
-            const threeCanvas = document.getElementById("odoo_canvas");
-            const container   = document.getElementById("main_3d_web");
-            const cRect = container.getBoundingClientRect();
-            const tRect = threeCanvas.getBoundingClientRect();
-
-            // Editor covers exactly the odoo_canvas area
-            const left = tRect.left - cRect.left;
-            const top  = tRect.top  - cRect.top;
-            const editorW = tRect.width;
-            const editorH = tRect.height;
-
-            const editor = document.getElementById("markup_editor");
-            if (editor) {
-                container.style.position = "relative";
-                editor.style.cssText = [
-                    "display: block",
-                    "position: absolute",
-                    "left: "   + left    + "px",
-                    "top: "    + top     + "px",
-                    "width: "  + editorW + "px",
-                    "height: " + editorH + "px",
-                    "margin: 0",
-                    "padding: 0",
-                    "overflow: hidden",
-                    "z-index: 100",
-                    "pointer-events: auto",
-                    "box-sizing: border-box"
-                ].join(";");
-                _positionEditorControls(tRect);
-                _setSidePanelsAbove(true);
-            }
-
-            if (!fabricCanvas) {
-                fabricCanvas = new fabric.Canvas("markup_canvas");
-                initFabricEvents();
-                initToolbar();
-            }
-
-            // Scale fabric canvas to fill the editor display area exactly.
-            // The snapshot is scaled uniformly to fit — scaleX/Y applied to background image.
-            const scaleX = editorW / img.width;
-            const scaleY = editorH / img.height;
-            _snapshotScale = Math.min(scaleX, scaleY);
-
-            fabricCanvas.setWidth(editorW);
-            fabricCanvas.setHeight(editorH);
-
-            fabricCanvas.clear();
-
-            img.set({
-                left: 0,
-                top: 0,
-                scaleX: scaleX,
-                scaleY: scaleY,
-                selectable: false,
-                evented: false,
-                excludeFromExport: true
-            });
-
-            fabricCanvas.setBackgroundImage(img, function () {
-                fabricCanvas.renderAll();
-                undoStack = [];
-                redoStack = [];
-                saveState();
-            });
-
-        }, { crossOrigin: 'anonymous' });
-
-    } else {
-        openMarkupEditor();
-        fabricCanvas.loadFromJSON(canvasJson, function () {
-            fabricCanvas.renderAll();
-            saveState();
-        });
-    }
-}
-
-
-function openMarkupLogModal(screenshotDataUrl, commentText, dateStr) {
-    const modal = document.getElementById("markup_log_modal");
-    if (!modal) return;
-    document.getElementById("markup_log_modal_date").textContent = dateStr;
-    document.getElementById("markup_log_modal_img").src = screenshotDataUrl;
-    document.getElementById("markup_log_modal_comment").textContent = commentText || "";
-    modal.classList.add("open");
+    .catch(err => { console.error("Delete error:", err); showToast("Something went wrong while deleting.", "danger"); });
 }
 
 window.addEventListener("load", function () {
-    const closeBtn = document.getElementById("markup_log_modal_close");
-    if (closeBtn) {
-        closeBtn.addEventListener("click", function () {
-            document.getElementById("markup_log_modal").classList.remove("open");
-        });
-    }
-    const modal = document.getElementById("markup_log_modal");
-    if (modal) {
-        modal.addEventListener("click", function (e) {
-            if (e.target === modal) modal.classList.remove("open");
-        });
-    }
-});
-
-
-// Activity Panel -----------------
-
-window.addEventListener("load", function () {
-
     function rpcCall(model, method, args, kwargs) {
         return fetch("/web/dataset/call_kw", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                jsonrpc: "2.0",
-                method: "call",
-                params: {
-                    model: model,
-                    method: method,
-                    args: args,
-                    kwargs: kwargs || {}
-                }
-            })
-        })
-        .then(function (r) { return r.json(); })
-        .then(function (data) {
-            if (data.error) throw new Error(data.error.data.message || "RPC Error");
-            return data.result;
-        });
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ jsonrpc: "2.0", method: "call", params: { model, method, args, kwargs: kwargs || {} } })
+        }).then(r => r.json()).then(data => { if (data.error) throw new Error(data.error.data.message || "RPC Error"); return data.result; });
     }
 
     function getToDoActivityTypeId() {
-        return rpcCall(
-            "mail.activity.type", "search_read",
-            [[["name", "ilike", "to"]]],
-            { fields: ["id", "name"], limit: 5 }
-        ).then(function (results) {
-            if (results && results.length) {
-                const exact = results.find(function (r) {
-                    return r.name.toLowerCase().replace("-", "").includes("todo");
-                });
-                return exact ? exact.id : results[0].id;
+        return rpcCall("mail.activity.type","search_read",[[["name","ilike","to"]]],{ fields:["id","name"], limit:5 })
+        .then(results => {
+            if (results?.length) {
+                const e = results.find(r => r.name.toLowerCase().replace("-","").includes("todo"));
+                return e ? e.id : results[0].id;
             }
             return 1;
         });
@@ -978,101 +839,71 @@ window.addEventListener("load", function () {
     function loadActivityUsers() {
         const select = document.getElementById("activity_user_id");
         if (!select) return;
-        rpcCall(
-            "res.users", "search_read",
-            [[["share", "=", false], ["active", "=", true]]],
-            { fields: ["id", "name"], order: "name asc", limit: 100 }
-        ).then(function (users) {
+        rpcCall("res.users","search_read",[[["share","=",false],["active","=",true]]],{ fields:["id","name"], order:"name asc", limit:100 })
+        .then(users => {
             select.innerHTML = "";
-            users.forEach(function (u) {
-                const opt = document.createElement("option");
-                opt.value = u.id;
-                opt.textContent = u.name;
-                select.appendChild(opt);
+            users.forEach(u => {
+                const o = document.createElement("option");
+                o.value = u.id;
+                o.textContent = u.name;
+                select.appendChild(o);
             });
-            if (window.odoo && odoo.session_info && odoo.session_info.uid) {
-                select.value = odoo.session_info.uid;
-            }
-        }).catch(function () {
-            select.innerHTML = '<option value="">Error loading users</option>';
-        });
+            if (window.odoo?.session_info?.uid) select.value = odoo.session_info.uid;
+        })
+        .catch(() => { select.innerHTML = '<option value="">Error loading users</option>'; });
     }
 
     function showActivityMsg(text, color) {
-        const msgEl = document.getElementById("activity_msg");
-        if (!msgEl) return;
-        msgEl.textContent = text;
-        msgEl.style.color = color;
-        msgEl.style.display = "block";
+        const el = document.getElementById("activity_msg");
+        if (!el) return;
+        el.textContent = text; el.style.color = color; el.style.display = "block";
     }
 
     function resetActivityForm() {
         const today = new Date().toISOString().split("T")[0];
-        const dueDateEl = document.getElementById("activity_due_date");
-        const summaryEl = document.getElementById("activity_summary");
-        const noteEl    = document.getElementById("activity_note");
-        const msgEl     = document.getElementById("activity_msg");
-        if (dueDateEl) dueDateEl.value = today;
-        if (summaryEl) summaryEl.value = "";
-        if (noteEl)    noteEl.value    = "";
-        if (msgEl)     msgEl.style.display = "none";
+        ["activity_due_date","activity_summary","activity_note"].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.value = id === "activity_due_date" ? today : "";
+        });
+        const mg = document.getElementById("activity_msg");
+        if (mg) mg.style.display = "none";
     }
 
     let usersLoaded = false;
-    const activityViewBtn  = document.getElementById("activity_view");
-    const activityPanel    = document.getElementById("activity_form_panel");
-
+    const activityViewBtn = document.getElementById("activity_view");
+    const activityPanel   = document.getElementById("activity_form_panel");
     if (activityViewBtn && activityPanel) {
         activityViewBtn.addEventListener("click", function () {
             const isOpen = activityPanel.style.display !== "none";
             activityPanel.style.display = isOpen ? "none" : "block";
             if (!isOpen) {
                 resetActivityForm();
-                if (!usersLoaded) {
-                    loadActivityUsers();
-                    usersLoaded = true;
-                }
+                if (!usersLoaded) { loadActivityUsers(); usersLoaded = true; }
             }
         });
     }
 
     const cancelBtn = document.getElementById("activity_cancel_btn");
-    if (cancelBtn) {
-        cancelBtn.addEventListener("click", function () {
-            if (activityPanel) activityPanel.style.display = "none";
-        });
-    }
+    if (cancelBtn) cancelBtn.addEventListener("click", () => { if (activityPanel) activityPanel.style.display = "none"; });
 
-    const submitBtn = document.getElementById("activity_submit_btn");
-    if (submitBtn) {
-        submitBtn.addEventListener("click", function () {
+    const submitBtn2 = document.getElementById("activity_submit_btn");
+    if (submitBtn2) {
+        submitBtn2.addEventListener("click", function () {
             const container = document.getElementById("main_3d_web");
-            const resId     = container ? parseInt(container.dataset.resId) : null;
-            const dueDate   = document.getElementById("activity_due_date")  ? document.getElementById("activity_due_date").value  : "";
-            const summary   = document.getElementById("activity_summary")   ? document.getElementById("activity_summary").value   : "";
-            const note      = document.getElementById("activity_note")      ? document.getElementById("activity_note").value      : "";
-            const userId    = document.getElementById("activity_user_id")   ? parseInt(document.getElementById("activity_user_id").value) : false;
-
-            if (!dueDate) {
-                showActivityMsg("⚠️ Please set a due date.", "orange");
-                return;
-            }
-            if (!resId) {
-                showActivityMsg("⚠️ Could not determine document ID.", "orange");
-                return;
-            }
-
-            getToDoActivityTypeId().then(function (activityTypeId) {
-                return rpcCall(
-                    "ir.model", "search_read",
-                    [[["model", "=", "ir.attachment"]]],
-                    { fields: ["id"], limit: 1 }
-                ).then(function (models) {
-                    if (!models || !models.length) throw new Error("ir.model not found for ir.attachment");
-                    const resModelId = models[0].id;
-
-                    return rpcCall("mail.activity", "create", [{
-                        res_model_id:     resModelId,
+            const resId   = container ? parseInt(container.dataset.resId) : null;
+            const dueDate = document.getElementById("activity_due_date")?.value || "";
+            const summary = document.getElementById("activity_summary")?.value  || "";
+            const note    = document.getElementById("activity_note")?.value     || "";
+            const userId  = parseInt(document.getElementById("activity_user_id")?.value) || false;
+            if (!dueDate) { showActivityMsg("Please set a due date.", "orange"); return; }
+            if (!resId)   { showActivityMsg("Could not determine document ID.", "orange"); return; }
+            getToDoActivityTypeId()
+            .then(activityTypeId =>
+                rpcCall("ir.model","search_read",[[["model","=","ir.attachment"]]],{ fields:["id"], limit:1 })
+                .then(models => {
+                    if (!models?.length) throw new Error("ir.model not found");
+                    return rpcCall("mail.activity","create",[{
+                        res_model_id:     models[0].id,
                         res_id:           resId,
                         activity_type_id: activityTypeId,
                         date_deadline:    dueDate,
@@ -1080,22 +911,19 @@ window.addEventListener("load", function () {
                         note:             note    || "",
                         user_id:          userId  || false
                     }]);
-                });
-            }).then(function () {
-                showActivityMsg("✅ Activity scheduled!", "#00a09d");
-                setTimeout(function () {
+                })
+            )
+            .then(() => {
+                showActivityMsg("Activity scheduled!", "#00a09d");
+                setTimeout(() => {
                     if (activityPanel) activityPanel.style.display = "none";
                     resetActivityForm();
                 }, 1800);
-            }).catch(function (err) {
-                showActivityMsg("❌ " + err.message, "tomato");
-                console.error("Activity create error:", err);
-            });
+            })
+            .catch(err => { showActivityMsg(err.message, "tomato"); console.error(err); });
         });
     }
 });
-
-//---------Hyperlink 3d viewer-------------------
 
 window.addEventListener("load", function () {
     const params   = new URLSearchParams(window.location.search);
@@ -1115,11 +943,57 @@ window.addEventListener("load", function () {
     .then(data => {
         const m = data.result?.markup;
         if (!m) return;
-        const snapshot   = m.snapshot ? "data:image/jpeg;base64," + m.snapshot : null;
-        const canvasData = typeof m.canvas_data === "string" ? m.canvas_data : JSON.stringify(m.canvas_data);
-        setTimeout(function () {
-            loadMarkupIntoEditor(canvasData, snapshot);
-        }, 1000);
+
+        let bgUrl = null;
+
+        if (m.base_image) {
+            bgUrl = "data:image/jpeg;base64," + m.base_image;
+        } else {
+            console.warn(" No base image, fallback to snapshot (not ideal)");
+            bgUrl = m.snapshot ? "data:image/jpeg;base64," + m.snapshot : null;
+        }
+
+        const canvasData = typeof m.canvas_data === "string"
+            ? m.canvas_data
+            : JSON.stringify(m.canvas_data);
+
+        console.log("Auto-load markup:", {
+            hasBase: !!m.base_image,
+            hasSnapshot: !!m.snapshot
+        });
+        setTimeout(() => {
+            loadMarkupIntoEditor(canvasData, bgUrl);
+        }, 300);
     })
     .catch(err => console.error("Auto-load markup error:", err));
 });
+
+function _reapplyBaseBackground(callback) {
+    if (!_currentBaseImage || !fabricCanvas) return;
+
+    fabric.Image.fromURL(_currentBaseImage, function (img) {
+
+        const canvasW = fabricCanvas.getWidth();
+        const canvasH = fabricCanvas.getHeight();
+
+        const scale = Math.min(canvasW / img.width, canvasH / img.height);
+
+        img.set({
+            left: 0,
+            top: 0,
+            originX: "left",
+            originY: "top",
+            scaleX: scale,
+            scaleY: scale,
+            selectable: false,
+            evented: false,
+            excludeFromExport: true
+        });
+
+        fabricCanvas.setBackgroundImage(img, function () {
+            fabricCanvas.renderAll();
+            if (callback) callback();
+        });
+
+    }, { crossOrigin: "anonymous" });
+}
