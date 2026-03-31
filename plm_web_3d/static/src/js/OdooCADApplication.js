@@ -379,6 +379,20 @@ function initcommand(){
 	document.addEventListener('pointermove', onPointerMove );
 	document.addEventListener('keydown', onKeyDone);
 	document.addEventListener('keyup', onKeyup);
+
+
+    // Permanent menu delegates → real buttons
+   document.getElementById("fit_view_perm").onclick = function() {
+       fitCameraToSelectionEvent();
+   };
+   document.getElementById("save_view_perm").onclick = function() {
+       saveAsImage();
+   };
+   document.getElementById("markup_button_perm").onclick = function() {
+       // markup lives in markup_system.js — call directly
+       openMarkupEditor();
+   };
+
 	const html_canvas =  document.getElementById('odoo_canvas');
 	html_canvas.addEventListener("OdooCAD_fit_items", fitCameraToSelectionEvent, false);
     // light
@@ -424,23 +438,27 @@ function initcommand(){
 	xmlhttp.send();
 }
 function onActivatorClick(event) {
-	  // highlight the mouseover target
-	  let activatorDiv = document.getElementById("activatorDiv");
-	  let main_command_slide = document.getElementById('mainCommandSlide')
-//	  $(bottom_command).toggleClass('d-none')
-	  if (activatorDiv.classList.contains('d-none')) {
-	    activatorDiv.style.visibility = 'visible';
-	    activatorDiv.style.opacity=0.8;
-	    activatorDiv.classList.remove('d-none');
-	    main_command_slide.style.height= '210px';
-	  }
-	  else{
-	    activatorDiv.style.visibility= 'invisible';
-	    activatorDiv.style.opacity=0;
-	    activatorDiv.classList.add('d-none');
-	    main_command_slide.style.height= '26px';
-	  }
-	}
+      // highlight the mouseover target
+      let activatorDiv = document.getElementById("activatorDiv");
+      let permanentMenu = document.getElementById("dropdown_menu_left_permenant");
+      let main_command_slide = document.getElementById('mainCommandSlide')
+//    $(bottom_command).toggleClass('d-none')
+      if (activatorDiv.classList.contains('d-none')) {
+        permanentMenu.style.display = 'none';
+        activatorDiv.style.visibility = 'visible';
+        activatorDiv.style.opacity=0.8;
+        activatorDiv.classList.remove('d-none');
+        main_command_slide.style.height= '210px';
+      }
+      else{
+        permanentMenu.style.display = 'block';
+        activatorDiv.style.visibility= 'invisible';
+        activatorDiv.style.opacity=0;
+        activatorDiv.classList.add('d-none');
+        main_command_slide.style.height= '26px';
+      }
+    }
+
 function on_data_card_button_click(event) {
 	  // highlight the mouseover target
 	  let main_div = document.getElementById("main_div");
@@ -553,20 +571,38 @@ var chenge_light_camera = function(event){
 var chenge_light_ambient = funciton(event){
     var value = this.value;
 }*/
-var change_object_explosion = function(event){
+var change_object_explosion = function(event) {
     var entitys_BBOX = OdooCad.active_bbox;
     var center = new THREE.Vector3();
-    var items = OdooCad.items;
-    var value = this.value;
-    var factor= entitys_BBOX.max.length()/10000
-    for (let i = 0; i < items.length; i=i+1) {
-        var loop_item = items[i];
-            explode(loop_item,
-                    entitys_BBOX.getCenter(center),
-                    value,
-                    factor) ;
+    var value = parseFloat(this.value);
+    var factor = entitys_BBOX.max.length() / 20000;
+
+    // Store original positions only once before first explosion
+    if (!_explosionInitialized) {
+        storeOriginalPositions();
+        _explosionInitialized = true;
+    }
+
+    // Slider back to 0 → restore all original positions
+    if (value === 0) {
+        for (const [guid, obj] of Object.entries(OdooCad.tree_ref_elements)) {
+            var orig = _originalPositions.get(guid);
+            if (orig) obj.position.copy(orig);
         }
+        render();
+        return;
+    }
+
+    entitys_BBOX.getCenter(center);
+
+    // Explode each named tree item independently
+    for (const [guid, obj] of Object.entries(OdooCad.tree_ref_elements)) {
+        explode(obj, guid, center, value, factor);
+    }
+
+    render();
 }
+
 
 var fitCameraToSelectionEvent = function(e){
     if (Object.values(OdooCad.tree_ref_elements).length>0){
@@ -921,53 +957,49 @@ function getElementByXpath(path, document_env) {
  * box_ct_world : a vec3 center of the bounding box
  *
  */
-function explode(obj,
-                 box_center,
-                 speed,
-                 factor){
-    //var scene = this.el.sceneEl.object3D ; //I am using Aframe , so this is how I retrieve the whole scene .
-    if(obj instanceof THREE.Mesh){
-        var position = obj.position ;
+var _originalPositions = new Map();
+var _explosionInitialized = false;
 
-        position.setFromMatrixPosition(scene.matrixWorld) ;
+function storeOriginalPositions() {
+    _originalPositions.clear();
+    // Store positions of each NAMED tree item (Group level), not raw meshes
+    for (const [guid, obj] of Object.entries(OdooCad.tree_ref_elements)) {
+        _originalPositions.set(guid, obj.position.clone());
+    }
+}
 
-        var addx =0 ;
-        var addy =0 ;
-        var addz =0 ;
+function explode(obj, guid, box_center, speed, factor) {
+    var originalPos = _originalPositions.get(guid);
+    if (!originalPos) return;
 
-        /**
-         * This is the vector from the center of the box to the node . we use that to translate every meshes away from the center
-         */
-        var addx =(position.x - box_center.x) * speed * factor;
-        var addy =(position.y - box_center.y) * speed * factor;
-        var addz =(position.z - box_center.z) * speed * factor;
-        var explode_vectorx=  addx;
-        var explode_vectory=  addy;
-        var explode_vectorz=  addz;
+    var dir = new THREE.Vector3(
+        originalPos.x - box_center.x,
+        originalPos.y - box_center.y,
+        originalPos.z - box_center.z
+    );
 
-        var vector = new THREE.Vector3(explode_vectorx , explode_vectory, explode_vectorz) ;
-        obj.position.set(vector.x , vector.y , vector.z ) ;
+    // Fallback: part sits at center → use its bounding box center as direction
+    if (dir.length() < 0.001) {
+        var bbox = new THREE.Box3().setFromObject(obj);
+        var bCenter = new THREE.Vector3();
+        bbox.getCenter(bCenter);
+        dir.set(
+            bCenter.x - box_center.x,
+            bCenter.y - box_center.y,
+            bCenter.z - box_center.z
+        );
+    }
 
-        if(obj.children.length != 0 ){
-          for(var i = 0 ; i < obj.children.length ; i++){
-             explode(obj.children[i],
-                     box_center,
-                     speed,
-                     factor);
-          }
-        }
-      }
-      else{
-        if(obj.children.length != 0 ){
-            for(var i = 0 ; i < obj.children.length ; i++){
-                explode(obj.children[i],
-                        box_center,
-                        speed,
-                        factor);
-            }
-        }
-     }
-};
+    if (dir.length() > 0.001) {
+        dir.normalize().multiplyScalar(speed * factor * 100);
+    }
+
+    obj.position.set(
+        originalPos.x + dir.x,
+        originalPos.y + dir.y,
+        originalPos.z + dir.z
+    );
+}
 
 
 
