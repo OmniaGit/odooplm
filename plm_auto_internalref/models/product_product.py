@@ -39,7 +39,7 @@ class ProductProductExtension(models.Model):
     def create(self, vals):
         for val_dict in vals:
             new_default_code = self.computeDefaultCode(val_dict)
-            if new_default_code:
+            if new_default_code and 'engineering_code' in val_dict and val_dict['engineering_code']!=False:
                 logging.info("OdooPLM: Default Code set to %s " % (new_default_code))
                 val_dict["default_code"] = new_default_code
         return super().create(vals)
@@ -81,7 +81,7 @@ class ProductProductExtension(models.Model):
         ret = False
         for product in self:
             new_default_code = product.computeDefaultCode(vals, product)
-            if product.default_code!=product.computeDefaultCode(vals, product):
+            if product.engineering_code and product.default_code!=new_default_code:
                 logging.info("OdooPLM: Default Code set to %s " % (new_default_code))
                 vals["default_code"] = new_default_code
             ret = super(models.Model, product).write(vals)
