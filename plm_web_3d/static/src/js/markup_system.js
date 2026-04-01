@@ -15,6 +15,7 @@ let _currentSnapshotUrl = null;
 let _snapshotScale = 1;
 let _markupsInitialised = false;
 let _loadGeneration = 0;
+let _hasChanges = false;
 
 window.addEventListener("load", () => {
     const markupBtn = document.getElementById("markup_button");
@@ -73,6 +74,9 @@ function _positionEditorControls(tRect) {
     commentInput.type        = "text";
     commentInput.placeholder = "Write Message...";
     commentInput.className   = "mcr-input";
+    commentInput.addEventListener("input", function() {
+        _hasChanges = true;
+    });
 
     var activityPanelClone = document.createElement("div");
     activityPanelClone.id        = "mcr_activity_panel";
@@ -247,6 +251,7 @@ function openMarkupEditor() {
             _baseScreenshotData = null;
         }
     }
+    _hasChanges = false;
 }
 
 function saveState() {
@@ -351,6 +356,10 @@ function initToolbar() {
 
 document.addEventListener("keydown", function (e) {
     if (e.key === "Delete" || e.key === "Backspace") {
+        if (fabricCanvas && fabricCanvas.getActiveObject() &&
+                fabricCanvas.getActiveObject().isEditing) {
+                return;
+            }
         const activeObjects = fabricCanvas?.getActiveObjects();
         if (!activeObjects || activeObjects.length === 0) return;
         saveState();
@@ -362,6 +371,8 @@ document.addEventListener("keydown", function (e) {
     if (e.key === "Escape") {
         const editor = document.getElementById("markup_editor");
         if (!editor || window.getComputedStyle(editor).display === "none") return;
+
+        if (!_hasChanges) return;
 
         const modal = document.getElementById("markup_esc_modal");
         if (!modal) return;
@@ -421,12 +432,16 @@ function _closeEditor() {
 function initFabricEvents() {
     fabricCanvas.on("object:added", function () {
         if (_isLoadingJSON) return;
-        if (!isRedoing) saveState();
+        if (!isRedoing) {
+            saveState();
+            _hasChanges = true;
+        }
     });
 
     fabricCanvas.on("object:modified", function () {
         if (_isLoadingJSON) return;
         saveState();
+        _hasChanges = true;
     });
 
     fabricCanvas.on("mouse:down", function (opt) {
@@ -1028,3 +1043,13 @@ function _reapplyBaseBackground(callback) {
 
     }, { crossOrigin: "anonymous" });
 }
+
+window.addEventListener("load", function () {
+    const modal = document.getElementById("markup_esc_modal");
+    const closeIcon = document.getElementById("markup_log_modal_close2");
+    if (closeIcon) {
+        closeIcon.addEventListener("click", () => {
+            modal.style.display = "none";
+        });
+    }
+});

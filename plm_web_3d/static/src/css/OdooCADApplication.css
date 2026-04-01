@@ -863,13 +863,24 @@ canvas#odoo_canvas {
     padding: 5px;
 }
 
+#markup_log_modal_close2 {
+    font-size: 20px;
+    cursor: pointer;
+    color: #714B67;
+    font-weight: bold;
+    margin-left: 100%;
+}
+
+
 #dropdown_menu_left_permenant {
     display: block;
     background-color: white;
-    border-radius: 2px;
+    border-radius: 10px;
     border: 2px solid #714B67;
-    padding: 2px;
-    margin-top: 30px;
+    padding: 3px;
+    margin-top: 28px;
     width: 25px;
     margin-left: 1px;
+    height: 85px;
 }
+
