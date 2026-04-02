@@ -1308,6 +1308,7 @@ class IrAttachment(models.Model):
             if plm_cad_open:
                 db_thread = plm_cad_open.dbThread
                 source_date = plm_cad_open.write_date
+                #
                 if attachment_id.document_type=='3d':
                     for layout_attachment_id in attachment_id.getRelatedLayouts():
                         child_plm_cad_open = cad_open_obj.getLastCadSave(layout_attachment_id)
@@ -1337,8 +1338,6 @@ class IrAttachment(models.Model):
                             attachment_id.must_update_from_cad = False
                         else:
                             attachment_id.must_update_from_cad = True
-            else:
-                attachment_id.must_update_from_cad = True
 
     def getRelatedModels(self):
         out = self.env['ir.attachment']
