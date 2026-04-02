@@ -1561,7 +1561,7 @@ class IrAttachment(models.Model):
                         if db_thread == child_db_thread:
                             attachment_id.must_update_from_cad = False
                             continue
-                    if cad_open_obj.getLastCadSave(ref_attachment_id).write_date<source_date:
+                    if child_plm_cad_open and child_plm_cad_open.write_date<source_date:
                         attachment_id.must_update_from_cad = False
                     else:
                         attachment_id.must_update_from_cad = True

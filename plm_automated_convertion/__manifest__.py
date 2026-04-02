@@ -44,7 +44,11 @@
 
     ],
     "external_dependencies": {
-        "python": ["ezdxf", "matplotlib", "cadquery", "numpy-stl"]
+        "python": ["ezdxf", 
+                   "matplotlib", 
+                   "cadquery", 
+                   "numpy-stl",
+                   "to-3mf"]
     },
     "installable": True,
     "application": False,

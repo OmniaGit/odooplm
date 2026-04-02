@@ -28,7 +28,7 @@
     "sequence": 15,
     "summary": "PLM Client Custom Procedure",
     "license": "AGPL-3",
-    "depends": ["plm", "plm_automated_convertion"],
+    "depends": ["plm"],
     "data": [
         "security/ir.model.access.csv",
         "data/ir_cron.xml",
