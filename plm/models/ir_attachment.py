@@ -1305,37 +1305,40 @@ class IrAttachment(models.Model):
         cad_open_obj = self.env['plm.cad.open']
         for attachment_id in self:
             plm_cad_open = cad_open_obj.getLastCadSave(attachment_id)
-            db_thread = plm_cad_open.dbThread
-            source_date = plm_cad_open.write_date
-            if attachment_id.document_type=='3d':
-                for layout_attachment_id in attachment_id.getRelatedLayouts():
-                    child_plm_cad_open = cad_open_obj.getLastCadSave(layout_attachment_id)
-                    child_db_thread = child_plm_cad_open.dbThread
-                    if db_thread not in ['', False] and child_db_thread not in ['', False]:
-                        if db_thread == child_db_thread:
-                            layout_attachment_id.must_update_from_cad = False
-                            continue
-                    #
-                    if not source_date or not child_plm_cad_open.write_date:
-                        layout_attachment_id.must_update_from_cad = True
-                    else:
-                        if child_plm_cad_open.write_date<source_date:
+            if plm_cad_open:
+                db_thread = plm_cad_open.dbThread
+                source_date = plm_cad_open.write_date
+                if attachment_id.document_type=='3d':
+                    for layout_attachment_id in attachment_id.getRelatedLayouts():
+                        child_plm_cad_open = cad_open_obj.getLastCadSave(layout_attachment_id)
+                        child_db_thread = child_plm_cad_open.dbThread
+                        if db_thread not in ['', False] and child_db_thread not in ['', False]:
+                            if db_thread == child_db_thread:
+                                layout_attachment_id.must_update_from_cad = False
+                                continue
+                        #
+                        if not source_date or not child_plm_cad_open.write_date:
                             layout_attachment_id.must_update_from_cad = True
                         else:
-                            layout_attachment_id.must_update_from_cad = False
-                    #
-            elif attachment_id.document_type=='2d' and not only_layout:
-                for ref_attachment_id in attachment_id.getRelatedModels():
-                    child_plm_cad_open = cad_open_obj.getLastCadSave(ref_attachment_id)
-                    child_db_thread = child_plm_cad_open.dbThread
-                    if db_thread not in ['', False] and child_db_thread not in ['', False]:
-                        if db_thread == child_db_thread:
+                            if child_plm_cad_open.write_date<source_date:
+                                layout_attachment_id.must_update_from_cad = True
+                            else:
+                                layout_attachment_id.must_update_from_cad = False
+                        #
+                elif attachment_id.document_type=='2d' and not only_layout:
+                    for ref_attachment_id in attachment_id.getRelatedModels():
+                        child_plm_cad_open = cad_open_obj.getLastCadSave(ref_attachment_id)
+                        child_db_thread = child_plm_cad_open.dbThread
+                        if db_thread not in ['', False] and child_db_thread not in ['', False]:
+                            if db_thread == child_db_thread:
+                                attachment_id.must_update_from_cad = False
+                                continue
+                        if child_plm_cad_open and child_plm_cad_open.write_date<source_date:
                             attachment_id.must_update_from_cad = False
-                            continue
-                    if child_plm_cad_open and child_plm_cad_open.write_date<source_date:
-                        attachment_id.must_update_from_cad = False
-                    else:
-                        attachment_id.must_update_from_cad = True
+                        else:
+                            attachment_id.must_update_from_cad = True
+            else:
+                attachment_id.must_update_from_cad = True
 
     def getRelatedModels(self):
         out = self.env['ir.attachment']
