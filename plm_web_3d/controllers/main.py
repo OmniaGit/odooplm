@@ -286,3 +286,59 @@ class Web3DView(Controller):
                 'canvas_data': log.canvas_data,
             }
         }
+
+    @http.route('/plm/markup/update', type='json', auth='user')
+    def update_markup(self, markup_id, image, base_image, canvas_json, **kwargs):
+        if not markup_id:
+            return {'success': False}
+
+        log = request.env['plm.markup.log'].sudo().browse(int(markup_id))
+        if not log.exists():
+            return {'success': False}
+
+        user = request.env.user
+        is_creator = log.create_uid.id == user.id
+        is_admin = user.has_group('plm.group_plm_admin')
+
+        if not (is_creator or is_admin):
+            return {'success': False, 'error': 'Not allowed'}
+
+        image_binary = base64.b64decode(image.split(',')[1] if ',' in image else image)
+        base_binary = base64.b64decode(base_image.split(',')[1] if base_image and ',' in base_image else base_image)
+
+        log.sudo().write({
+            'snapshot': base64.b64encode(image_binary),
+            'base_image': base64.b64encode(base_binary),
+            'canvas_data': canvas_json,
+        })
+
+        # ── Post updated markup to chatter ──
+        if log.res_model and log.res_id:
+            record = request.env[log.res_model].sudo().browse(log.res_id)
+            if record.exists():
+                filename = log.filename or 'markup.jpg'
+                chatter_body = f'<p>Markup updated by {user.name}</p>'
+
+                viewer_url = (
+                    f"/plm/show_treejs_model"
+                    f"?document_id={log.res_id}"
+                    f"&document_name={record.name}"
+                    f"&markup_id={log.id}"
+                )
+                chatter_body += f'<p><a href="{viewer_url}" target="_blank">🔗 Click here to view updated markup in 3D Viewer</a></p>'
+
+                has_components = hasattr(record, 'linkedcomponents') and record.linkedcomponents
+
+                if has_components:
+                    for component in record.linkedcomponents:
+                        component.message_post(
+                            body=Markup(chatter_body),
+                            attachments=[(filename, image_binary)],
+                        )
+                else:
+                    record.message_post(
+                        body=Markup(chatter_body),
+                        attachments=[(filename, image_binary)],
+                    )
+
+        return {'success': True}
